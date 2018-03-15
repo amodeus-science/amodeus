@@ -1,6 +1,6 @@
 # cd.ethz.idsc.amodeus <a href="https://travis-ci.org/idsc-frazzoli/amodeus"><img src="https://travis-ci.org/idsc-frazzoli/amodeus.svg?branch=master" alt="Build Status"></a>
 
-Autonomous mobility-on-demand simulation tool.
+Autonomous mobility-on-demand simulation library, version `1.0.0`
 
 ## Purpose
 
@@ -29,3 +29,28 @@ Zurich
 San Francisco
 
 </table>
+
+## Integration
+
+Specify `repository` and `dependency` of the amodeus library in the `pom.xml` file of your maven project:
+
+    <repositories>
+      <repository>
+        <id>amodeus-mvn-repo</id>
+        <url>https://raw.github.com/idsc-frazzoli/amodeus/mvn-repo/</url>
+        <snapshots>
+          <enabled>true</enabled>
+          <updatePolicy>always</updatePolicy>
+        </snapshots>
+      </repository>
+    </repositories>
+    
+    <dependencies>
+      <dependency>
+        <groupId>ch.ethz.idsc</groupId>
+        <artifactId>amodeus</artifactId>
+        <version>1.0.0</version>
+      </dependency>
+    </dependencies>
+
+The source code is attached to every release.
