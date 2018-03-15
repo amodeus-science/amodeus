@@ -1,0 +1,54 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
+package ch.ethz.idsc.amodeus.dispatcher.util;
+
+import java.util.List;
+import java.util.Map;
+
+import org.matsim.api.core.v01.network.Link;
+
+import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNode;
+import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.alg.Dimensions;
+import ch.ethz.idsc.tensor.sca.Floor;
+import ch.ethz.idsc.tensor.sca.Sign;
+
+public enum FeasibleRebalanceCreator {
+    ;
+    /** @param rebalanceInput
+     * @param availableVehicles
+     * @return returns a scaled rebalanceInput which is feasible considering the available number of
+     *         vehicles */
+    public static Tensor returnFeasibleRebalance(Tensor rebalanceInput, Map<VirtualNode<Link>, //
+            List<RoboTaxi>> availableVehicles) {
+
+        GlobalAssert.that(Dimensions.of(rebalanceInput).get(0) == Dimensions.of(rebalanceInput).get(1));
+        GlobalAssert.that(Dimensions.of(rebalanceInput).get(0) == availableVehicles.size());
+        GlobalAssert.that(rebalanceInput.flatten(-1).map(Scalar.class::cast).allMatch(Sign::isPositiveOrZero));
+
+        Tensor feasibleRebalance = rebalanceInput.copy();
+        for (int i = 0; i < Dimensions.of(rebalanceInput).get(0); ++i) {
+            // count number of outgoing vehicles per vNode
+            double outgoingNmrvNode = 0.0;
+            Tensor outgoingVehicles = rebalanceInput.get(i);
+            for (int j = 0; j < Dimensions.of(rebalanceInput).get(0); ++j) {
+                outgoingNmrvNode = outgoingNmrvNode + (Integer) (outgoingVehicles.Get(j)).number();
+            }
+            int outgoingVeh = (int) outgoingNmrvNode;
+            int finalI = i;
+            int availableVehvNode = availableVehicles //
+                    .get(availableVehicles.keySet().stream().filter(v -> v.getIndex() == finalI).findAny().get()).size();
+            // if number of outoing vehicles too small, reduce proportionally
+            if (availableVehvNode < outgoingVeh) {
+                long shrinkingFactor = ((long) availableVehvNode / ((long) outgoingVeh));
+                Tensor newRow = Floor.of(rebalanceInput.get(i).multiply(RealScalar.of(shrinkingFactor)));
+                feasibleRebalance.set(newRow, i);
+            }
+        }
+        return feasibleRebalance;
+    }
+
+}

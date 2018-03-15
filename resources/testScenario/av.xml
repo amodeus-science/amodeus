@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE av SYSTEM "https://www.matsim.org/files/dtd/av_v1.dtd">
+
+<av>
+  <param name="marginalUtilityOfWaitingTime" value="-12.86" />
+  <timing>
+    <param name="pickupDurationPerStop" value="15.0" />
+    <param name="pickupDurationPerPassenger" value="0.0" />
+    <param name="dropoffDurationPerStop" value="10.0" />
+    <param name="dropoffDurationPerPassenger" value="0.0" />
+  </timing>
+  <operator id="op1">
+    <generator strategy="PopulationDensity">
+      <param name="numberOfVehicles" value="200" />
+    </generator>
+    <dispatcher strategy="DemandSupplyBalancingDispatcher">
+      <param name="dispatchPeriod" value="10" />
+    </dispatcher>
+    <pricing>
+      <param name="pricePerKm" value="0.001" />
+      <param name="pricePerMin" value="0.0" />
+      <param name="pricePerTrip" value="3.0" />
+      <param name="dailySubscriptionFee" value="0.0" />
+    </pricing>
+  </operator>
+</av>
+
