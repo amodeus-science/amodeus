@@ -113,7 +113,8 @@ public class Analysis {
         System.out.println("Found files: " + size);
         int numVehicles = storageSupplier.getSimulationObject(1).vehicles.size();
 
-        analysisSummary = new AnalysisSummary(numVehicles, size);
+        ScenarioParameters scenarioParameters = new ScenarioParameters(workingDirectory);
+        analysisSummary = new AnalysisSummary(numVehicles, size, scenarioParameters);
 
         // default List of Analysis Elements which will be loaded
         analysisElements.add(analysisSummary.getSimulationInformationElement());

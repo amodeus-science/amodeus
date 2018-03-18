@@ -11,7 +11,6 @@ import org.matsim.api.core.v01.population.Population;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.traveldata.TravelDataIO;
-import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkIO;
@@ -20,13 +19,13 @@ public enum VirtualNetworkPreparer {
     ;
     private static VirtualNetwork<Link> virtualNetwork;
 
-    public static void run(Network network, Population population, ScenarioOptions scenOptions) throws Exception {
+    public static void run(Network network, Population population, ScenarioOptions scenOptions, File workingDirectory) throws Exception {
 
         VirtualNetworkCreators virtualNetworkCreators = scenOptions.getVirtualNetworkCreator();
         virtualNetwork = virtualNetworkCreators.create(network, population, scenOptions);
 
         //
-        final File vnDir = new File(scenOptions.getVirtualNetworkName());
+        final File vnDir = new File(workingDirectory, scenOptions.getVirtualNetworkName());
         System.out.println("vnDir = " + vnDir.getAbsolutePath());
         vnDir.mkdir(); // create folder if necessary
         GlobalAssert.that(Objects.nonNull(virtualNetwork));
@@ -39,6 +38,6 @@ public enum VirtualNetworkPreparer {
         System.out.println("saved travelData byte format to : " + new File(vnDir, scenOptions.getTravelDataName()));
 
         virtualNetwork.printVirtualNetworkInfo();
-        System.out.println("successfully converted simulation data files from in " + MultiFileTools.getWorkingDirectory());
+        System.out.println("successfully converted simulation data files from in " + workingDirectory);
     }
 }

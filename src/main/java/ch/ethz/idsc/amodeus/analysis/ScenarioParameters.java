@@ -36,11 +36,9 @@ public class ScenarioParameters implements Serializable {
     public final String user;
     public final String date;
 
-    public ScenarioParameters() {
-        File workingDirectory = null;
+    public ScenarioParameters(File workingDirectory) {
         ScenarioOptions scenOptions = null;
         try {
-            workingDirectory = new File("").getCanonicalFile();
             scenOptions = ScenarioOptions.load(workingDirectory);
         } catch (IOException e) {
             e.printStackTrace();
@@ -75,7 +73,7 @@ public class ScenarioParameters implements Serializable {
 
         VirtualNetwork<Link> virtualNetwork = null;
         try {
-            virtualNetwork = VirtualNetworkGet.readDefault(network);
+            virtualNetwork = VirtualNetworkGet.readDefault(network, workingDirectory);
 
         } catch (IOException e) {
             System.err.println("INFO not able to load virtual network for report");

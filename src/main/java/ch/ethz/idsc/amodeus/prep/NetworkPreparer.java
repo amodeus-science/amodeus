@@ -15,7 +15,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 public enum NetworkPreparer {
     ;
 
-    public static Network run(Network network, ScenarioOptions scenOptions) {
+    public static Network run(Network network, ScenarioOptions scenOptions, File workingDirectory) {
         GlobalAssert.that(Objects.nonNull(network));
         System.out.println("++++++++++++++++++++++++ NETWORK PREPARER +++++++++++++++++++++++++++++++");
         System.out.println("Network (Link) size original: " + network.getLinks().values().size());
@@ -28,8 +28,8 @@ public enum NetworkPreparer {
         modifiedNetwork.setEffectiveCellSize(network.getEffectiveCellSize());
         modifiedNetwork.setEffectiveLaneWidth(network.getEffectiveLaneWidth());
 
-        final File fileExportGz = new File(scenOptions.getPreparedNetworkName() + ".xml.gz");
-        final File fileExport = new File(scenOptions.getPreparedNetworkName() + ".xml");
+        final File fileExportGz = new File(workingDirectory, scenOptions.getPreparedNetworkName() + ".xml.gz");
+        final File fileExport = new File(workingDirectory, scenOptions.getPreparedNetworkName() + ".xml");
         {
             // write the modified population to file
             NetworkWriter nw = new NetworkWriter(modifiedNetwork);

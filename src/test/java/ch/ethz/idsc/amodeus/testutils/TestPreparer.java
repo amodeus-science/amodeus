@@ -49,18 +49,18 @@ public class TestPreparer {
 
         // 1) cut network (and reduce population to new network)
         networkPrepared = scenario.getNetwork();
-        NetworkPreparer.run(networkPrepared, scenarioOptions);
+        NetworkPreparer.run(networkPrepared, scenarioOptions, workingDirectory);
 
         // 2) adapt the population to new network
         populationPrepared = scenario.getPopulation();
-        PopulationPreparer.run(networkPrepared, populationPrepared, scenarioOptions, config);
+        PopulationPreparer.run(networkPrepared, populationPrepared, scenarioOptions, config, workingDirectory);
 
         // 3) create virtual Network
-        VirtualNetworkPreparer.run(networkPrepared, populationPrepared, scenarioOptions);
+        VirtualNetworkPreparer.run(networkPrepared, populationPrepared, scenarioOptions, workingDirectory);
 
         // 4) save a simulation config file
         // IncludeActTypeOf.BaselineCH(config); // Only needed in Some Scenarios
-        ConfigCreator.createSimulationConfigFile(config, scenarioOptions);
+        ConfigCreator.createSimulationConfigFile(config, scenarioOptions, workingDirectory);
 
     }
 
