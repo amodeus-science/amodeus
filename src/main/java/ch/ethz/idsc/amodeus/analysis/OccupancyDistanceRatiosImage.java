@@ -27,7 +27,7 @@ public class OccupancyDistanceRatiosImage implements AnalysisExport {
                     "Time", //
                     "occupancy / distance ratio", //
                     de.time, //
-                    de.ratios, //
+                    de.getRatios(), //
                     1.0);
         } catch (Exception e1) {
             System.err.println("The Modular Ratios Plot was not sucessful!!");

@@ -28,7 +28,6 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkGet;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkIO;
-import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
@@ -164,10 +163,10 @@ public class ScenarioPipeLineTest {
         assertTrue(e.equals(RealScalar.of(ate.getSimulationInformationElement().vehicleSize()))));
 
         /** distance and occupancy ratios */
-        Scalar occupancyRatio = Mean.of(ate.getDistancElement().ratios).Get(0);
-        Scalar distanceRatio = Mean.of(ate.getDistancElement().ratios).Get(1);
-        assertTrue(occupancyRatio.equals(RationalScalar.of(35729, 432000)));
-        assertTrue(distanceRatio.equals(RealScalar.of(0.6757250816100977)));
+        double occupancyRatio = Mean.of(ate.getDistancElement().getRatios()).Get(0).number().doubleValue();
+        double distanceRatio = Mean.of(ate.getDistancElement().getRatios()).Get(1).number().doubleValue();
+        assertEquals(0.08269953703703704, occupancyRatio,0.000000001);
+        assertEquals(0.6787081756904005, distanceRatio,0.000000001);
 
         /** fleet distances */
         assertTrue(ate.getDistancElement().totalDistance >= 0.0);

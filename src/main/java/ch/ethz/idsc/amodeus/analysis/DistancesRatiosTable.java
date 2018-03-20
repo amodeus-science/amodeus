@@ -14,7 +14,7 @@ public class DistancesRatiosTable implements AnalysisExport {
 
         TableBuilder tableBuilder = new TableBuilder();
         for (int index = 0; index < de.time.length(); ++index)
-            tableBuilder.appendRow(de.time.Get(index), de.ratios.get(index));
+            tableBuilder.appendRow(de.time.Get(index), de.getRatios().get(index));
 
         try {
             SaveUtils.saveFile(tableBuilder.toTable(), "DistanceRatios", relativeDirectory);

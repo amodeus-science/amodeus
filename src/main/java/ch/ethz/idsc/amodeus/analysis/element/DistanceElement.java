@@ -32,7 +32,7 @@ public class DistanceElement implements AnalysisElement {
     public final Set<Integer> requestIndices = new HashSet<>();
 
     // fields assigned in compile
-    Tensor distRatio;
+    private Tensor distRatio;
     public Tensor totalDistancesPerVehicle;
     public Tensor distancesOverDay;
     public double totalDistance;
@@ -42,7 +42,7 @@ public class DistanceElement implements AnalysisElement {
     public double totalDistanceRatio;
 
     // distRatio;
-    public Tensor ratios;
+    private Tensor ratios;
 
     public DistanceElement(int numVehicles, int size) {
         IntStream.range(0, numVehicles).forEach(i -> list.add(new VehicleStatistic(size)));
@@ -91,6 +91,14 @@ public class DistanceElement implements AnalysisElement {
         totalDistanceRatio = totalDistanceWtCst / totalDistance;
         ratios = Transpose.of(Join.of(Tensors.of(occupancyTensor), Tensors.of(distRatio)));
 
+    }
+    
+    public Tensor getRatios(){
+        return ratios.copy();
+    }
+    
+    public Tensor getDistRatio(){
+        return distRatio.copy();
     }
 
 }
