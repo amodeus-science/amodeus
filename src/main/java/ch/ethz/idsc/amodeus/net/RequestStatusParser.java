@@ -55,7 +55,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
         default:
             break;
         }
-        return RequestStatus.EMPTY;
+        return RequestStatus.INVALID;
     }
 
 }
