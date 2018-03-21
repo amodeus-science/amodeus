@@ -2,15 +2,25 @@
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
 public enum RequestStatus {
+    /** REGULAR REQUEST PROCESS */
+    /** Request entered system. */
     REQUESTED("req", "requested"), //
-    /** For roboTaxis: Open Request assigned to Vehicle */
+    /** Robotaxi has been assigned to the open request. */
     ASSIGNED("asd", "assigned"), //
+    /** Robotaxi is on pickup drive. */
     PICKUPDRIVE("otw", "on the way"), //
+    /** Pickup is taking place (1 time step only). */
     PICKUP("pup", "pickup"), //
+    /** Robotaxi driving with customer. */
     DRIVING("drv", "driving"), //
-    CANCELLED("can", "cancelled"), //
+    /** Dropoff is taking place (1 time step only). */
     DROPOFF("dof", "dropoff"), //
-    EMPTY("noc", "no customer"), //
+    
+    /** IRREGULAR REQEUST STATII */
+    /** Request cancelled before pickup. */
+    CANCELLED("can", "cancelled"), //
+    /** Used to label invalid requests in datasets. */
+    INVALID("noc", "invalid"), //
     ;
 
     public final String tag;

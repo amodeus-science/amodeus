@@ -22,6 +22,6 @@ public class RequestContainer implements Serializable {
     public int fromLinkIndex = -1; // where the person is now
     public double submissionTime = -1;
     public int toLinkIndex = -1; // where the person wants to go
-    public RequestStatus requestStatus = RequestStatus.EMPTY;
+    public RequestStatus requestStatus = RequestStatus.INVALID;
 
 }
