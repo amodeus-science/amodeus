@@ -20,7 +20,9 @@ public enum RequestStatus {
     /** Request cancelled before pickup. */
     CANCELLED("can", "cancelled"), //
     /** Used to label invalid requests in datasets. */
-    INVALID("noc", "invalid"), //
+    INVALID("inv", "invalid"), //
+    /** Used to label invalid requests in datasets. */
+    EMPTY("emp", "empty"), //
     ;
 
     public final String tag;
