@@ -16,6 +16,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.core.gbl.MatsimRandom;
 
 import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
@@ -47,6 +48,13 @@ public class ScenarioPipeLineTest {
 
     @BeforeClass
     public static void setUpOnce() throws Exception {
+        // TODO: This reset call should eventually be removed. Right now we need this to reset the random number generator for MATSim. 
+        // In general, this is not necessary, because all MATSim components use MatsimRandom.getLocalInstance(). However,
+        // the PopulationDensity strategy in the av package uses MatsimRandom.getRandom(), which is NOT reset between 
+        // simulations and iterations. Once the av package makes proper use of MatsimRandom generator, this can be removed
+        // here (should happen once av:0.1.5 is used here). /shoerl mar18
+        MatsimRandom.reset();
+        
         System.out.print("GLPK version is: ");
         System.out.println(GLPK.glp_version());
 
