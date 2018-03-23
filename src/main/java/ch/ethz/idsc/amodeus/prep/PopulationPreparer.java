@@ -21,7 +21,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 public enum PopulationPreparer {
     ;
-    public static void run(Network network, Population population, ScenarioOptions scenOptions, Config config) throws Exception {
+    public static void run(Network network, Population population, ScenarioOptions scenOptions, Config config, File workingDirectory) throws Exception {
         System.out.println("++++++++++++++++++++++++ POPULATION PREPARER ++++++++++++++++++++++++++++++++");
         System.out.println("Original population size: " + population.getPersons().values().size());
 
@@ -33,8 +33,8 @@ public enum PopulationPreparer {
         System.out.println("Population after decimation:" + population.getPersons().values().size());
         GlobalAssert.that(0 < population.getPersons().size());
 
-        final File fileExportGz = new File(scenOptions.getPreparedPopulationName() + ".xml.gz");
-        final File fileExport = new File(scenOptions.getPreparedPopulationName() + ".xml");
+        final File fileExportGz = new File(workingDirectory, scenOptions.getPreparedPopulationName() + ".xml.gz");
+        final File fileExport = new File(workingDirectory, scenOptions.getPreparedPopulationName() + ".xml");
 
         {
             // write the modified population to file

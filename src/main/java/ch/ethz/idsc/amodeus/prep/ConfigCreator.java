@@ -1,6 +1,8 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.prep;
 
+import java.io.File;
+
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigWriter;
 
@@ -10,7 +12,7 @@ import ch.ethz.matsim.av.framework.AVConfigGroup;
 public enum ConfigCreator {
     ;
 
-    public static void createSimulationConfigFile(Config fullConfig, ScenarioOptions scenOptions) {
+    public static void createSimulationConfigFile(Config fullConfig, ScenarioOptions scenOptions, File workingDirectory) {
 
         // change population and network such that converted is loaded
         fullConfig.network().setInputFile(scenOptions.getPreparedNetworkName() + ".xml.gz");
@@ -20,7 +22,7 @@ public enum ConfigCreator {
         fullConfig.addModule(avConfigGroup);
 
         // save under correct name
-        new ConfigWriter(fullConfig).writeFileV2(scenOptions.getSimulationConfigName());
+        new ConfigWriter(fullConfig).writeFileV2(new File(workingDirectory, scenOptions.getSimulationConfigName()).getAbsolutePath());
     }
 
 }

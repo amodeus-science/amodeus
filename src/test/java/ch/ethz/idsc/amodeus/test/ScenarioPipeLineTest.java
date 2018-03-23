@@ -23,7 +23,6 @@ import ch.ethz.idsc.amodeus.testutils.TestPreparer;
 import ch.ethz.idsc.amodeus.testutils.TestServer;
 import ch.ethz.idsc.amodeus.testutils.TestUtils;
 import ch.ethz.idsc.amodeus.traveldata.TravelDataTestHelper;
-import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkGet;
@@ -39,6 +38,9 @@ import ch.ethz.idsc.tensor.red.Total;
 
 public class ScenarioPipeLineTest {
 
+    private static final File WORKING_DIRECTORY = new File("__test_working_directory");
+    private static File activeWorkingDirectory = null;
+
     private static TestPreparer testPreparer;
     private static TestServer testServer;
     private static VirtualNetwork<Link> vNCreated;
@@ -47,12 +49,22 @@ public class ScenarioPipeLineTest {
 
     @BeforeClass
     public static void setUpOnce() throws Exception {
+        if (WORKING_DIRECTORY.exists()) {
+            throw new IllegalStateException("To run the test the working directory must be deleted: " + WORKING_DIRECTORY.getAbsolutePath());
+        }
+
+        if (!WORKING_DIRECTORY.mkdir()) {
+            throw new IllegalStateException("Cannot create test working directory: " + WORKING_DIRECTORY.getAbsolutePath());
+        }
+
+        activeWorkingDirectory = WORKING_DIRECTORY;
+
         System.out.print("GLPK version is: ");
         System.out.println(GLPK.glp_version());
 
         // copy scenario data into main directory
         File scenarioDirectory = new File(TestUtils.getSuperFolder("amodeus"), "resources/testScenario");
-        File workingDirectory = MultiFileTools.getWorkingDirectory();
+        File workingDirectory = activeWorkingDirectory;
         GlobalAssert.that(workingDirectory.exists());
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
 
@@ -63,11 +75,11 @@ public class ScenarioPipeLineTest {
         testServer = TestServer.run().on(workingDirectory);
 
         // prepare travel data test
-        vNCreated = VirtualNetworkGet.readDefault(testPreparer.getPreparedNetwork());
+        vNCreated = VirtualNetworkGet.readDefault(testPreparer.getPreparedNetwork(), workingDirectory);
         Map<String, Link> map = new HashMap<>();
         testPreparer.getPreparedNetwork().getLinks().entrySet().forEach(e -> map.put(e.getKey().toString(), e.getValue()));
         vNSaved = VirtualNetworkIO.fromByte(map, new File("resources/testComparisonFiles/virtualNetwork"));
-        travelDataTestHelper = TravelDataTestHelper.prepare(vNCreated, vNSaved);
+        travelDataTestHelper = TravelDataTestHelper.prepare(vNCreated, vNSaved, workingDirectory);
 
     }
 
@@ -79,13 +91,13 @@ public class ScenarioPipeLineTest {
         System.out.print("Preparer Test:\t");
 
         // creation of files
-        File preparedPopulationFile = new File("preparedPopulation.xml");
+        File preparedPopulationFile = new File(WORKING_DIRECTORY, "preparedPopulation.xml");
         assertTrue(preparedPopulationFile.exists());
 
-        File preparedNetworkFile = new File("preparedNetwork.xml");
+        File preparedNetworkFile = new File(WORKING_DIRECTORY, "preparedNetwork.xml");
         assertTrue(preparedNetworkFile.exists());
 
-        File config = new File("config.xml");
+        File config = new File(WORKING_DIRECTORY, "config.xml");
         assertTrue(config.exists());
 
         // consistency of network (here no cutting)
@@ -131,14 +143,14 @@ public class ScenarioPipeLineTest {
         System.out.print("Server Test:\t");
 
         // scenario options
-        File workingDirectory = MultiFileTools.getWorkingDirectory();
+        File workingDirectory = activeWorkingDirectory;
         ScenarioOptions scenarioOptions = ScenarioOptions.load(workingDirectory);
         assertEquals("config.xml", scenarioOptions.getSimulationConfigName());
         assertEquals("preparedNetwork", scenarioOptions.getPreparedNetworkName());
         assertEquals("preparedPopulation", scenarioOptions.getPreparedPopulationName());
 
         // simulation objects should exist after simulation (simulation data)
-        File simobj = new File("output/001/simobj/it.00");
+        File simobj = new File(WORKING_DIRECTORY, "output/simobj/it.00");
         assertTrue(simobj.exists());
         assertEquals(109, simobj.listFiles().length);
         assertTrue(new File(simobj, "0108000/0108000.bin").exists());
@@ -201,33 +213,37 @@ public class ScenarioPipeLineTest {
         assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getWaitingTimes().totalWaitTimeMean));
 
         /** presence of plot files */
-        assertTrue((new File("output/001/data/binnedWaitingTimes.png")).exists());
-        assertTrue((new File("output/001/data/distanceDistribution.png")).exists());
-        assertTrue((new File("output/001/data/occAndDistRatios.png")).exists());
-        assertTrue((new File("output/001/data/stackedDistance.png")).exists());
-        assertTrue((new File("output/001/data/statusDistribution.png")).exists());
+        assertTrue((new File(WORKING_DIRECTORY, "output/data/binnedWaitingTimes.png")).exists());
+        assertTrue((new File(WORKING_DIRECTORY, "output/data/distanceDistribution.png")).exists());
+        assertTrue((new File(WORKING_DIRECTORY, "output/data/occAndDistRatios.png")).exists());
+        assertTrue((new File(WORKING_DIRECTORY, "output/data/stackedDistance.png")).exists());
+        assertTrue((new File(WORKING_DIRECTORY, "output/data/statusDistribution.png")).exists());
 
-        assertTrue((new File("output/001/data/scenarioParameters.obj")).exists());
+        assertTrue((new File(WORKING_DIRECTORY, "output/data/scenarioParameters.obj")).exists());
 
-        assertTrue((new File("output/001/data/WaitingTimes")).isDirectory());
-        assertTrue((new File("output/001/data/WaitingTimes/WaitingTimes.mathematica")).exists());
+        assertTrue((new File(WORKING_DIRECTORY, "output/data/WaitingTimes")).isDirectory());
+        assertTrue((new File(WORKING_DIRECTORY, "output/data/WaitingTimes/WaitingTimes.mathematica")).exists());
 
-        assertTrue((new File("output/001/data/StatusDistribution")).isDirectory());
-        assertTrue((new File("output/001/data/StatusDistribution/StatusDistribution.mathematica")).exists());
+        assertTrue((new File(WORKING_DIRECTORY, "output/data/StatusDistribution")).isDirectory());
+        assertTrue((new File(WORKING_DIRECTORY, "output/data/StatusDistribution/StatusDistribution.mathematica")).exists());
 
-        assertTrue((new File("output/001/data/DistancesOverDay")).isDirectory());
-        assertTrue((new File("output/001/data/DistancesOverDay/DistancesOverDay.mathematica")).exists());
+        assertTrue((new File(WORKING_DIRECTORY, "output/data/DistancesOverDay")).isDirectory());
+        assertTrue((new File(WORKING_DIRECTORY, "output/data/DistancesOverDay/DistancesOverDay.mathematica")).exists());
 
-        assertTrue((new File("output/001/data/DistanceRatios")).isDirectory());
-        assertTrue((new File("output/001/data/DistanceRatios/DistanceRatios.mathematica")).exists());
+        assertTrue((new File(WORKING_DIRECTORY, "output/data/DistanceRatios")).isDirectory());
+        assertTrue((new File(WORKING_DIRECTORY, "output/data/DistanceRatios/DistanceRatios.mathematica")).exists());
 
-        assertTrue(new File("output/001/report/report.html").exists());
-        assertTrue(new File("output/001/report/av.xml").exists());
-        assertTrue(new File("output/001/report/config.xml").exists());
+        assertTrue(new File(WORKING_DIRECTORY, "output/report/report.html").exists());
+        assertTrue(new File(WORKING_DIRECTORY, "output/report/av.xml").exists());
+        assertTrue(new File(WORKING_DIRECTORY, "output/report/config.xml").exists());
     }
 
     @AfterClass
     public static void tearDownOnce() throws IOException {
-        TestFileHandling.removeGeneratedFiles();
+        TestFileHandling.removeGeneratedFiles(activeWorkingDirectory);
+
+        if (activeWorkingDirectory != null) {
+            activeWorkingDirectory.delete();
+        }
     }
 }

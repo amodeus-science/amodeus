@@ -10,15 +10,15 @@ import ch.ethz.idsc.tensor.sca.Chop;
 
 public class TravelDataTestHelper {
     
-    public static TravelDataTestHelper prepare(VirtualNetwork<Link> vNCreated, VirtualNetwork<Link> vNSaved) throws Exception {
-        return new TravelDataTestHelper(vNCreated, vNSaved);
+    public static TravelDataTestHelper prepare(VirtualNetwork<Link> vNCreated, VirtualNetwork<Link> vNSaved, File workingDirectory) throws Exception {
+        return new TravelDataTestHelper(vNCreated, vNSaved, workingDirectory);
     }
 
     private TravelData tDCreated;
     private TravelData tDSaved;
 
-    private TravelDataTestHelper(VirtualNetwork<Link> vNCreated, VirtualNetwork<Link> vNSaved) throws Exception {
-        tDCreated = TravelDataGet.readDefault(vNCreated);
+    private TravelDataTestHelper(VirtualNetwork<Link> vNCreated, VirtualNetwork<Link> vNSaved, File workingDirectory) throws Exception {
+        tDCreated = TravelDataGet.readDefault(vNCreated, workingDirectory);
         tDSaved = TravelDataIO.read(new File("resources/testComparisonFiles/travelData"), vNSaved);
     }
 

@@ -30,31 +30,31 @@ import ch.ethz.idsc.amodeus.util.io.FileDelete;
 
     }
 
-    public static void removeGeneratedFiles() throws IOException {
+    public static void removeGeneratedFiles(File workingDirectory) throws IOException {
 
         /** single files */
         Collection<File> singleFiles = new ArrayList<>();
-        singleFiles.add(new File("av.xml"));
-        singleFiles.add(new File("config.xml"));
-        singleFiles.add(new File("config_full.xml"));
-        singleFiles.add(new File("linkSpeedData.bin"));
-        singleFiles.add(new File("preparedNetwork.xml"));
-        singleFiles.add(new File("preparedNetwork.xml.gz"));
-        singleFiles.add(new File("preparedPopulation.xml"));
-        singleFiles.add(new File("preparedPopulation.xml.gz"));
-        singleFiles.add(new File("network.xml"));
-        singleFiles.add(new File("population.xml"));
-        singleFiles.add(new File("AmodeusOptions.properties"));
+        singleFiles.add(new File(workingDirectory, "av.xml"));
+        singleFiles.add(new File(workingDirectory, "config.xml"));
+        singleFiles.add(new File(workingDirectory, "config_full.xml"));
+        singleFiles.add(new File(workingDirectory, "linkSpeedData.bin"));
+        singleFiles.add(new File(workingDirectory, "preparedNetwork.xml"));
+        singleFiles.add(new File(workingDirectory, "preparedNetwork.xml.gz"));
+        singleFiles.add(new File(workingDirectory, "preparedPopulation.xml"));
+        singleFiles.add(new File(workingDirectory, "preparedPopulation.xml.gz"));
+        singleFiles.add(new File(workingDirectory, "network.xml"));
+        singleFiles.add(new File(workingDirectory, "population.xml"));
+        singleFiles.add(new File(workingDirectory, "AmodeusOptions.properties"));
 
         for (File file : singleFiles) {
             FileDelete.of(file, 0, 1);
         }
 
         /** virtual network folder */
-        FileDelete.of(new File("virtualNetwork"), 1, 4);
+        FileDelete.of(new File(workingDirectory, "virtualNetwork"), 1, 4);
 
         /** output folder */
-        FileDelete.of(new File("output"), 5, 10999);
+        FileDelete.of(new File(workingDirectory, "output"), 5, 10999);
 
     }
 

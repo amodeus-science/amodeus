@@ -22,9 +22,9 @@ import com.google.inject.name.Names;
 import ch.ethz.idsc.amodeus.analysis.Analysis;
 import ch.ethz.idsc.amodeus.data.LocationSpec;
 import ch.ethz.idsc.amodeus.data.ReferenceFrame;
-import ch.ethz.idsc.amodeus.matsim.mod.AmodeusModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDispatcherModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusGeneratorModule;
+import ch.ethz.idsc.amodeus.matsim.mod.AmodeusModule;
 import ch.ethz.idsc.amodeus.net.DatabaseModule;
 import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationServer;
@@ -94,6 +94,7 @@ public class TestServer {
             activityParams.setTypicalDuration(3600.0); // TODO fix this to meaningful values --> Sebastian how should we solve this?
         }
 
+        config.controler().setOutputDirectory(new File(workingDirectory, "output").getAbsolutePath());
         outputdirectory = config.controler().getOutputDirectory();
         System.out.println("outputdirectory = " + outputdirectory);
 
@@ -132,7 +133,7 @@ public class TestServer {
         // close port for visualization
         SimulationServer.INSTANCE.stopAccepting();
 
-        Analysis analysis = Analysis.setup(workingDirectory, configFile, new File(workingDirectory, "output/001"), network);
+        Analysis analysis = Analysis.setup(workingDirectory, configFile, new File(workingDirectory, "output"), network);
         ate = new AnalysisTestExport();
         analysis.addAnalysisExport(ate);
         analysis.run();
