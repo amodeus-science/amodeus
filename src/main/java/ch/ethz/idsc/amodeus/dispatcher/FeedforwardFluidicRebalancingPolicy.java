@@ -1,6 +1,5 @@
 package ch.ethz.idsc.amodeus.dispatcher;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -24,11 +23,9 @@ import ch.ethz.idsc.amodeus.dispatcher.util.HungarBiPartVehicleDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
-import ch.ethz.idsc.amodeus.traveldata.TravelDataGet;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualLink;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkGet;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNode;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -166,9 +163,14 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
         private EventsManager eventsManager;
 
         @Inject
+        @Named(AVModule.AV_MODE)
         private Network network;
 
-        public static VirtualNetwork<Link> virtualNetwork;
+        @Inject(optional = true)
+        private VirtualNetwork<Link> virtualNetwork;
+
+        @Inject(optional = true)
+        private TravelData travelData;
 
         @Inject
         private Config config;
@@ -179,14 +181,6 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
 
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
             AbstractVehicleDestMatcher abstractVehicleDestMatcher = new HungarBiPartVehicleDestMatcher(new EuclideanDistanceFunction());
-            TravelData travelData = null;
-            try {
-                virtualNetwork = VirtualNetworkGet.readDefault(network);
-                travelData = TravelDataGet.readDefault(virtualNetwork);
-            } catch (IOException e) {
-                e.printStackTrace();
-                GlobalAssert.that(false);
-            }
 
             return new FeedforwardFluidicRebalancingPolicy(config, avconfig, generatorConfig, travelTime, router, eventsManager, network, virtualNetwork, abstractVirtualNodeDest,
                     abstractVehicleDestMatcher, travelData);

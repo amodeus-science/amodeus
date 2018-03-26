@@ -11,6 +11,8 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.api.core.v01.network.Network;
+import org.matsim.api.core.v01.population.Population;
 import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
 import org.matsim.contrib.dvrp.trafficmonitoring.DvrpTravelTimeModule;
 import org.matsim.core.config.Config;
@@ -18,13 +20,16 @@ import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
 import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.Controler;
+import org.matsim.core.gbl.MatsimRandom;
 
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDispatcherModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusModule;
 import ch.ethz.idsc.amodeus.prep.MatsimKMEANSVirtualNetworkCreator;
+import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.matsim.av.config.AVConfig;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
@@ -37,15 +42,15 @@ import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
 
 @RunWith(Parameterized.class)
 public class StandardMATSimScenarioTest {
-    @Parameters
+    @Parameters(name = "{0}")
     public static Collection<Object[]> data() {
         // SingleHeuristic is added as a reference case, to check that the av package is
         // working properly
 
         // ATTENTION: DriveByDispatcher is not tested, because of long runtime.
 
-        return Arrays.asList(
-                new Object[][] { { "SingleHeuristic" }, { "DemandSupplyBalancingDispatcher" }, { "GlobalBipartiteMatchingDispatcher" }, { "AdaptiveRealTimeRebalancingPolicy" } });
+        return Arrays.asList(new Object[][] { { "SingleHeuristic" }, { "DemandSupplyBalancingDispatcher" }, { "GlobalBipartiteMatchingDispatcher" },
+                { "AdaptiveRealTimeRebalancingPolicy" }, { "FeedforwardFluidicRebalancingPolicy" } });
     }
 
     final private String dispatcher;
@@ -59,6 +64,8 @@ public class StandardMATSimScenarioTest {
         /* This test runs a small test scenario with the different dispatchers and makes
          * sure that all 100 generated agents arrive */
 
+        MatsimRandom.reset();
+        
         // Set up
         Config config = ConfigUtils.createConfig(new AVConfigGroup(), new DvrpConfigGroup());
         Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
@@ -89,6 +96,16 @@ public class StandardMATSimScenarioTest {
                 // sceanario, we need to provide a custom one for the LPFB dispatcher
 
                 return MatsimKMEANSVirtualNetworkCreator.createVirtualNetwork(scenario.getPopulation(), scenario.getNetwork(), 2, true);
+            }
+            
+            @Provides
+            @Singleton
+            public TravelData provideTravelData(VirtualNetwork<Link> virtualNetwork, @Named(AVModule.AV_MODE) Network network, Population population ) {
+                // Same as for the virtual network: For the LPFF dispatcher we need travel 
+                // data, which we generate on the fly here.
+                
+                TravelData travelData = new TravelData(virtualNetwork, network, population, 300);
+                return travelData;
             }
         });
 
