@@ -5,6 +5,7 @@ import org.matsim.core.controler.AbstractModule;
 
 import ch.ethz.idsc.amodeus.dispatcher.DemandSupplyBalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.DriveByDispatcher;
+import ch.ethz.idsc.amodeus.dispatcher.FeedforwardFluidicRebalancingPolicy;
 import ch.ethz.idsc.amodeus.dispatcher.GlobalBipartiteMatchingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.AdaptiveRealTimeRebalancingPolicy;
 import ch.ethz.matsim.av.framework.AVUtils;
@@ -27,6 +28,9 @@ public class AmodeusDispatcherModule extends AbstractModule {
 
         bind(AdaptiveRealTimeRebalancingPolicy.Factory.class);
         AVUtils.bindDispatcherFactory(binder(), AdaptiveRealTimeRebalancingPolicy.class.getSimpleName()).to(AdaptiveRealTimeRebalancingPolicy.Factory.class);
+
+        bind(FeedforwardFluidicRebalancingPolicy.Factory.class);
+        AVUtils.bindDispatcherFactory(binder(), FeedforwardFluidicRebalancingPolicy.class.getSimpleName()).to(FeedforwardFluidicRebalancingPolicy.Factory.class);
 
     }
 }
