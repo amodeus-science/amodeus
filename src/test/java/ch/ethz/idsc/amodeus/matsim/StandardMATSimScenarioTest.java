@@ -20,6 +20,7 @@ import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
 import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.Controler;
+import org.matsim.core.gbl.MatsimRandom;
 
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
@@ -63,6 +64,8 @@ public class StandardMATSimScenarioTest {
         /* This test runs a small test scenario with the different dispatchers and makes
          * sure that all 100 generated agents arrive */
 
+        MatsimRandom.reset();
+        
         // Set up
         Config config = ConfigUtils.createConfig(new AVConfigGroup(), new DvrpConfigGroup());
         Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
