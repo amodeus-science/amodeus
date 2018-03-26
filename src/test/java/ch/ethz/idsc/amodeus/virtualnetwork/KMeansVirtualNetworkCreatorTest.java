@@ -24,7 +24,7 @@ import ch.ethz.idsc.amodeus.testutils.TestUtils;
 
 public class KMeansVirtualNetworkCreatorTest {
 
-    private static int nCreations = 20;
+    private static int nCreations = 5;
     private static List<VirtualNetwork<Link>> virtualNetworks = new ArrayList<>();
     private static int numVNodes;
 
