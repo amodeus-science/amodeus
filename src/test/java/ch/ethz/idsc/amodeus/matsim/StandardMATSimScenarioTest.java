@@ -41,7 +41,7 @@ import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
 
 @RunWith(Parameterized.class)
 public class StandardMATSimScenarioTest {
-    @Parameters
+    @Parameters(name = "{0}")
     public static Collection<Object[]> data() {
         // SingleHeuristic is added as a reference case, to check that the av package is
         // working properly
