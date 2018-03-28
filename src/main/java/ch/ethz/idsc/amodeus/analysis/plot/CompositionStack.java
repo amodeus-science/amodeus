@@ -16,7 +16,7 @@ import org.jfree.ui.RectangleEdge;
 public enum CompositionStack {
     ;
 
-    private static final int WIDTH = 1000; /* Width of the image */
+    private static final int WIDTH = 700; /* Width of the image */
     private static final int HEIGHT = 125; /* Height of the image */
 
     public static void of(File directory, String fileTitle, String diagramTitle, //
