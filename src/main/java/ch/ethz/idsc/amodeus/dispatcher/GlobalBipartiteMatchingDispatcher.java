@@ -11,7 +11,8 @@ import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatchingUtils;
-import ch.ethz.idsc.amodeus.dispatcher.util.NetworkDistanceFunction;
+import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
+import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -26,8 +27,9 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
 
     private final int dispatchPeriod;
+    private final DistanceHeuristics distanceHeuristics;
     private Tensor printVals = Tensors.empty();
-    private final NetworkDistanceFunction ndf;
+    private final DistanceFunction distanceFunction;
     private final Network network;
 
     private GlobalBipartiteMatchingDispatcher( //
@@ -40,7 +42,9 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
         super(config, avDispatcherConfig, travelTime, parallelLeastCostPathCalculator, eventsManager);
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
-        this.ndf = new NetworkDistanceFunction(network);
+        distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getStringStrict("distanceHeuristics").toUpperCase());
+        System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
+        this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
         this.network = network;
     }
 
@@ -52,7 +56,7 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
             printVals = BipartiteMatchingUtils.executePickup(this::setRoboTaxiPickup, //
                     getDivertableRoboTaxis(), getAVRequests(), //
                     // new EuclideanDistanceFunction(), network, false);
-                    ndf, network, false);
+                    distanceFunction, network, false);
         }
 
     }
