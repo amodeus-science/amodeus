@@ -58,11 +58,16 @@ public enum TimeChart {
 
         // line thickness
         for (int k = 0; k < time.length(); k++) {
-            timechart.getXYPlot().getRenderer().setSeriesPaint(k, colorScheme.of(k));
             timechart.getXYPlot().getRenderer().setSeriesStroke(k, new BasicStroke(2.0f));
         }
 
-        // Font Text are being set by the general ChartTheme loaded in Main Analysis Class
+        // color themes
+        // Adapt colors & style
+        for (int i = 0; i < labels.length; i++) {
+            timechart.getXYPlot().getRenderer().setSeriesPaint(i, colorScheme.of(i));
+        }
+
+        // TODO Does not need to be set anymore since the settings are centralized in ChartTheme for all Chart types
         // set text fonts
         // timechart.getTitle().setFont(DiagramSettings.FONT_TITLE);
         // timechart.getXYPlot().getDomainAxis().setLabelFont(DiagramSettings.FONT_AXIS);

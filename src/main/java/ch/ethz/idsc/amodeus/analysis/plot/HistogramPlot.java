@@ -2,15 +2,17 @@
 package ch.ethz.idsc.amodeus.analysis.plot;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.io.File;
 import java.util.List;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.CategoryAnchor;
 import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.data.xy.IntervalXYDataset;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Tensor;
@@ -51,15 +53,25 @@ public enum HistogramPlot {
                 dataset.addValue(bin.Get(j).number().doubleValue(), labels.length > 0 ? labels[i] : "", binName(binSize, j));
             }
         }
-        
+
         JFreeChart chart = ChartFactory.createBarChart(diagramTitle, axisLabelX, axisLabelY, dataset, //
                 PlotOrientation.VERTICAL, labels.length > 0 ? true : false, false, false);
         chart.getCategoryPlot().getDomainAxis().setLowerMargin(0.0);
         chart.getCategoryPlot().getDomainAxis().setUpperMargin(0.0);
         chart.getCategoryPlot().getDomainAxis().setCategoryMargin(0.0);
         chart.getCategoryPlot().getDomainAxis().setCategoryLabelPositions(CategoryLabelPositions.UP_90);
-        
-        // Does not need to be set anymore since the settings are centralized in ChartTheme for all Chart types
+        chart.getCategoryPlot().setRangeGridlinePaint(Color.lightGray);
+        chart.getCategoryPlot().setRangeGridlinesVisible(true);
+        chart.getCategoryPlot().setDomainGridlinePaint(Color.lightGray);
+        chart.getCategoryPlot().setDomainGridlinesVisible(true);
+        chart.getCategoryPlot().setDomainGridlinePosition(CategoryAnchor.START);
+
+        BarRenderer renderer = new BarRenderer();
+        renderer.setDrawBarOutline(true);
+
+        chart.getCategoryPlot().setRenderer(renderer);
+
+        // TODO Does not need to be set anymore since the settings are centralized in ChartTheme for all Chart types
         // chart.getPlot().setBackgroundPaint(DiagramSettings.COLOR_BACKGROUND_PAINT);
         // chart.getCategoryPlot().setRangeGridlinePaint(DiagramSettings.COLOR_GRIDLINE_PAINT);
         // chart.getCategoryPlot().getDomainAxis().setTickLabelFont(DiagramSettings.FONT_TICK);

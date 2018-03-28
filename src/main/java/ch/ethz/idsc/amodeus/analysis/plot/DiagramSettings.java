@@ -7,6 +7,7 @@ import java.awt.Font;
 public enum DiagramSettings {
     ;
 
+    // TODO Use ChartTheme instead, which is loaded in Analysis Class and valid for all ChartFactory plots!
     /* package */ static final Font FONT_TITLE = new Font("Dialog", Font.BOLD, 24);
     /* package */ static final Font FONT_AXIS = new Font("Dialog", Font.BOLD, 18);
     /* package */ static final Font FONT_TICK = new Font("Dialog", Font.PLAIN, 14);

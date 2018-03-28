@@ -8,7 +8,6 @@ import java.util.Objects;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.renderer.category.BarRenderer;
-import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.config.Config;
@@ -111,7 +110,6 @@ public class Analysis {
         chartTheme = ChartTheme.valueOf(scenOptions.getChartTheme());
         
         ChartFactory.setChartTheme(chartTheme.getChartTheme(false));
-        
         BarRenderer.setDefaultBarPainter(new StandardBarPainter());
         BarRenderer.setDefaultShadowsVisible(false);
 

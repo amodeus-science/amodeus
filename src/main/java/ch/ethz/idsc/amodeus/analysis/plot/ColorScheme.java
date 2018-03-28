@@ -22,11 +22,11 @@ public enum ColorScheme {
             new Color(0, 255, 0), 
             new Color(32, 32, 32)), 
     COLORFUL(                           // Colorful theme matching the RoboTaxiStatii
-            Color.RED,
-            Color.ORANGE,
-            Color.BLUE,
-            Color.GREEN,
-            Color.LIGHT_GRAY),
+            new Color(255, 0, 0), 
+            new Color(255, 192, 0), 
+            new Color(0, 0, 255), 
+            new Color(0, 255, 0), 
+            new Color(224, 224, 224)), 
     ;
 
     private final Color[] colors;
