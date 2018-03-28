@@ -5,11 +5,12 @@ import java.io.File;
 
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.amodeus.analysis.element.DistanceElement;
+import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
 import ch.ethz.idsc.tensor.io.TableBuilder;
 
 public class DistancesOverDayTable implements AnalysisExport {
     @Override
-    public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory) {
+    public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorScheme colorScheme) {
         DistanceElement de = analysisSummary.getDistanceElement();
 
         TableBuilder tableBuilder = new TableBuilder();

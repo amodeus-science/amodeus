@@ -6,12 +6,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.CategoryItemRenderer;
+import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisElement;
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
+import ch.ethz.idsc.amodeus.analysis.plot.ChartTheme;
+import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
 import ch.ethz.idsc.amodeus.analysis.report.AnalysisReport;
 import ch.ethz.idsc.amodeus.analysis.report.HtmlReport;
 import ch.ethz.idsc.amodeus.analysis.report.HtmlReportElement;
@@ -69,6 +75,8 @@ public class Analysis {
     private final int size;
     private final AnalysisSummary analysisSummary;
     private final HtmlReport htmlReport;
+    private final ColorScheme colorScheme;
+    private final ChartTheme chartTheme;
 
     /** Constructor of the Analysis Class can be called with any combination of null and the respective parameter.
      * 
@@ -97,6 +105,15 @@ public class Analysis {
         if (Objects.isNull(network)) {
             network = NetworkLoader.loadNetwork(configFile);
         }
+        
+        // load colorScheme & theme
+        colorScheme = ColorScheme.valueOf(scenOptions.getColorScheme());
+        chartTheme = ChartTheme.valueOf(scenOptions.getChartTheme());
+        
+        ChartFactory.setChartTheme(chartTheme.getChartTheme(false));
+        
+        BarRenderer.setDefaultBarPainter(new StandardBarPainter());
+        BarRenderer.setDefaultShadowsVisible(false);
 
         outputDirectory.mkdir();
         dataDirectory = new File(outputDirectory, DATAFOLDERNAME);
@@ -169,7 +186,7 @@ public class Analysis {
         analysisElements.forEach(AnalysisElement::consolidate);
 
         for (AnalysisExport analysisExport : analysisExports)
-            analysisExport.summaryTarget(analysisSummary, dataDirectory);
+            analysisExport.summaryTarget(analysisSummary, dataDirectory, colorScheme);
 
         // Generate the Reports
         analysisReports.forEach(analysisReport -> analysisReport.generate(analysisSummary));

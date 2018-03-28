@@ -4,11 +4,12 @@ package ch.ethz.idsc.amodeus.analysis;
 import java.io.File;
 
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
+import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
 import ch.ethz.idsc.tensor.io.Export;
 
 public class ScenarioParametersExport implements AnalysisExport {
     @Override
-    public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory) {
+    public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorScheme colorScheme) {
         ScenarioParameters scenarioParameters = analysisSummary.getScenarioParameters();
         try {
             Export.object(new File(relativeDirectory, "scenarioParameters.obj"), scenarioParameters);

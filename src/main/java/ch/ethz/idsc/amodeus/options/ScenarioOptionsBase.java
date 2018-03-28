@@ -22,6 +22,8 @@ public enum ScenarioOptionsBase {
     public static final String VIRTUALNETWORKNAMEIDENTIFIER = "virtualNetwork";
     public static final String TRAVELDATAFILENAME = "travelDataFileName";
     public static final String LINKSPEEDDATAFILENAME = "linkSpeedDataFileName";
+    public static final String COLORSCHEMEIDENTIFIER = "colorScheme";
+    public static final String CHARTTHEMEIDENTIFIER = "chartTheme";
     public static final String DTTRAVELDATAIDENTIFIER = "dtTravelData";
     public static final String NUMVNODESIDENTIFIER = "numVirtualNodes";
     public static final String COMPLETEGRAPHIDENTIFIER = "completeGraph";
@@ -45,6 +47,8 @@ public enum ScenarioOptionsBase {
         properties.setProperty(VIRTUALNETWORKNAMEIDENTIFIER, "virtualNetwork");
         properties.setProperty(TRAVELDATAFILENAME, "travelData");
         properties.setProperty(LINKSPEEDDATAFILENAME, "linkSpeedData");
+        properties.setProperty(COLORSCHEMEIDENTIFIER, "NONE");
+        properties.setProperty(CHARTTHEMEIDENTIFIER, "STANDARD");
         properties.setProperty(NETWORKUPDATEDNAMEIDENTIFIER, "preparedNetwork");
         properties.setProperty(POPULATIONUPDATEDNAMEIDENTIFIER, "preparedPopulation");
         properties.setProperty(VIRTUALNETWORKCREATORIDENTIFIER, VirtualNetworkCreators.KMEANS.name());

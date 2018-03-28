@@ -5,13 +5,14 @@ import java.io.File;
 
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.amodeus.analysis.element.WaitingTimesElement;
+import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
 import ch.ethz.idsc.amodeus.analysis.plot.TimeChart;
 
 public class BinnedWaitingTimesImage implements AnalysisExport {
     public static final String FILENAME = "binnedWaitingTimes";
 
     @Override
-    public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory) {
+    public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorScheme colorScheme) {
         WaitingTimesElement wt = analysisSummary.getWaitingTimes();
 
         String xAxisLabel = "Time";
@@ -32,7 +33,8 @@ public class BinnedWaitingTimesImage implements AnalysisExport {
                     yAxisLabel, //
                     wt.time, //
                     wt.waitTimePlotValues, //
-                    wt.maximumWaitTime / scalingFactor);
+                    wt.maximumWaitTime / scalingFactor,
+                    colorScheme);
         } catch (Exception e) {
             System.err.println("Binned Waiting Times Plot was unsucessfull!");
             e.printStackTrace();

@@ -26,7 +26,7 @@ public enum StackedTimeChart {
 
     public static void of(File directory, String fileTitle, String diagramTitle, //
             boolean filter, int filterSize, Double[] scale, //
-            String[] labels, String yAxisLabel, Tensor time, Tensor values) throws Exception {
+            String[] labels, String yAxisLabel, Tensor time, Tensor values, ColorScheme colorScheme) throws Exception {
 
         GlobalAssert.that(time.length() == values.length());
         GlobalAssert.that(Transpose.of(values).length() == labels.length);
@@ -48,7 +48,7 @@ public enum StackedTimeChart {
 
         JFreeChart timechart = ChartFactory.createStackedXYAreaChart(diagramTitle, "Time", //
                 yAxisLabel, dataset, PlotOrientation.VERTICAL, false, false, false);
-
+        
         timechart.getPlot().setBackgroundPaint(Color.white);
         timechart.getXYPlot().setRangeGridlinePaint(Color.lightGray);
         timechart.getXYPlot().setDomainGridlinePaint(Color.lightGray);
@@ -63,6 +63,10 @@ public enum StackedTimeChart {
         timechart.getXYPlot().getRangeAxis().setLabelFont(DiagramSettings.FONT_AXIS);
         timechart.getXYPlot().getDomainAxis().setTickLabelFont(DiagramSettings.FONT_TICK);
         timechart.getXYPlot().getRangeAxis().setTickLabelFont(DiagramSettings.FONT_TICK);
+        
+        for (int i = 0; i < labels.length; i++) {
+            timechart.getXYPlot().getRenderer().setSeriesPaint(i, colorScheme.of(i));
+        }
 
         LegendTitle legend = new LegendTitle(timechart.getXYPlot().getRenderer());
         legend.setItemFont(DiagramSettings.FONT_TICK);
