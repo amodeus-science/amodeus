@@ -57,21 +57,31 @@ import ch.ethz.idsc.tensor.alg.Array;
             int count = 0;
             for (VehicleContainer vehicleContainer : list) {
                 final int index = offset + count;
-                switch (vehicleContainer.roboTaxiStatus) {
-                case DRIVEWITHCUSTOMER:
-                    distanceWithCustomer.set(contrib, index);
-                    distanceTotal.set(contrib, index); // applies to all three
-                    break;
-                case DRIVETOCUSTOMER:
-                    distancePickup.set(contrib, index);
-                    distanceTotal.set(contrib, index); // applies to all three
-                    break;
-                case REBALANCEDRIVE:
-                    distanceRebalance.set(contrib, index);
-                    distanceTotal.set(contrib, index); // applies to all three
-                    break;
-                default:
-                    break;
+                System.out.println("index: " + index);
+                System.out.println("dtLen: " + distanceTotal.length());
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                if (index < distanceTotal.length()) { 
+                    switch (vehicleContainer.roboTaxiStatus) {
+                    case DRIVEWITHCUSTOMER:
+                        distanceWithCustomer.set(contrib, index);
+                        distanceTotal.set(contrib, index); // applies to all three
+                        break;
+                    case DRIVETOCUSTOMER:
+                        distancePickup.set(contrib, index);
+                        distanceTotal.set(contrib, index); // applies to all three
+                        break;
+                    case REBALANCEDRIVE:
+                        distanceRebalance.set(contrib, index);
+                        distanceTotal.set(contrib, index); // applies to all three
+                        break;
+                    default:
+                        break;
+                    }
                 }
                 ++count;
             }
