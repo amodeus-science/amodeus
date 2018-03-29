@@ -2,6 +2,7 @@
 package ch.ethz.idsc.amodeus.options;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -19,6 +20,12 @@ public class ScenarioOptions {
         return new ScenarioOptions(properties);
     }
 
+    public void saveProperties(File file) throws IOException {
+        try (FileOutputStream ostream = new FileOutputStream(file)) {
+            properties.store(ostream,
+                    "This is a Copy of the actual Config File used in the Simulation \n");
+        }
+    }
     private ScenarioOptions(Properties properties) {
         this.properties = properties;
     }
