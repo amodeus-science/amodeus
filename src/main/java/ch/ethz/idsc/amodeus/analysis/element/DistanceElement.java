@@ -70,9 +70,7 @@ public class DistanceElement implements AnalysisElement {
 
     @Override
     public void consolidate() {
-        // no need to to consolidate again, if vehicles still driving only small fraction of distance lost
-        // if vehicles are already in stay, then no difference. if consolidate is run here it will 
-        // result in a runtime erro (indexoutofbounds)
+        list.forEach(VehicleStatistic::consolidate);
         // ---
         Tensor distTotal = list.stream().map(vs -> vs.distanceTotal).reduce(Tensor::add).get().multiply(km2m);
         Tensor distWtCst = list.stream().map(vs -> vs.distanceWithCustomer).reduce(Tensor::add).get().multiply(km2m);
