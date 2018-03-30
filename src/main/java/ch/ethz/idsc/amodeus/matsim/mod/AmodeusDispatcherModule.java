@@ -7,6 +7,7 @@ import ch.ethz.idsc.amodeus.dispatcher.DemandSupplyBalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.DriveByDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.FeedforwardFluidicRebalancingPolicy;
 import ch.ethz.idsc.amodeus.dispatcher.GlobalBipartiteMatchingDispatcher;
+import ch.ethz.idsc.amodeus.dispatcher.GlobalBipartiteMatchingDispatcherTemp;
 import ch.ethz.idsc.amodeus.dispatcher.AdaptiveRealTimeRebalancingPolicy;
 import ch.ethz.matsim.av.framework.AVUtils;
 
@@ -23,6 +24,10 @@ public class AmodeusDispatcherModule extends AbstractModule {
 
         bind(GlobalBipartiteMatchingDispatcher.Factory.class);
         AVUtils.bindDispatcherFactory(binder(), GlobalBipartiteMatchingDispatcher.class.getSimpleName()).to(GlobalBipartiteMatchingDispatcher.Factory.class);
+        
+        bind(GlobalBipartiteMatchingDispatcherTemp.Factory.class);
+        AVUtils.bindDispatcherFactory(binder(), GlobalBipartiteMatchingDispatcherTemp.class.getSimpleName()).to(GlobalBipartiteMatchingDispatcherTemp.Factory.class);
+
 
         /** dispatchers for PartitionedDispatcher */
 
