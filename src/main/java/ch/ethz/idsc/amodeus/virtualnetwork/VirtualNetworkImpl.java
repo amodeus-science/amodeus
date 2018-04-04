@@ -26,7 +26,7 @@ public class VirtualNetworkImpl<T> implements VirtualNetwork<T>, Serializable {
     private final Map<String, VirtualNode<T>> networkElementsSerializable = new LinkedHashMap<>();
     private final Map<Point, VirtualLink<T>> virtualLinkPairs = new LinkedHashMap<>();
 
-    /* package */ VirtualNetworkImpl() {
+    public VirtualNetworkImpl() {
         virtualNetworkID = System.currentTimeMillis();
     }
 
