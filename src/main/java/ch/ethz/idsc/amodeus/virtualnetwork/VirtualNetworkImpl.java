@@ -15,10 +15,8 @@ import java.util.function.Function;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
-public class VirtualNetworkImpl<T> implements VirtualNetwork<T>, Serializable {
+/* package */ class VirtualNetworkImpl<T> implements VirtualNetwork<T>, Serializable {
 
-    private static final long serialVersionUID = -6592030325318967592L; // FIXME added this to make it compatible with virtual network loaded from resources, that was saved before
-                                                                        // changing class to public
     private final long virtualNetworkID; // to ensure that other objects dependant on virtualNetwork are derived of that particular network
     private final Map<Integer, VirtualNode<T>> virtualNodes = new LinkedHashMap<>();
     private final Map<Integer, VirtualLink<T>> virtualLinks = new LinkedHashMap<>();
@@ -28,7 +26,7 @@ public class VirtualNetworkImpl<T> implements VirtualNetwork<T>, Serializable {
     private final Map<String, VirtualNode<T>> networkElementsSerializable = new LinkedHashMap<>();
     private final Map<Point, VirtualLink<T>> virtualLinkPairs = new LinkedHashMap<>();
 
-    public VirtualNetworkImpl() {
+    /* package */ VirtualNetworkImpl() {
         virtualNetworkID = System.currentTimeMillis();
     }
 
