@@ -44,8 +44,7 @@ public class RequestsPerWaitingTimeImage implements AnalysisExport {
                     waitBinSize.number().doubleValue(), //
                     "% of requests", //
                     "Waiting Times [s]", //
-                    DiagramSettings.WIDTH, DiagramSettings.HEIGHT,
-                    colorScheme);
+                    DiagramSettings.WIDTH, DiagramSettings.HEIGHT, colorScheme);
         } catch (Exception e) {
             System.err.println("Plot of the Wait Times per Requests Failed");
             e.printStackTrace();

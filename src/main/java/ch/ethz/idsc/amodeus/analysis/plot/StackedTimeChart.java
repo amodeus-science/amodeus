@@ -48,7 +48,7 @@ public enum StackedTimeChart {
 
         JFreeChart timechart = ChartFactory.createStackedXYAreaChart(diagramTitle, "Time", //
                 yAxisLabel, dataset, PlotOrientation.VERTICAL, false, false, false);
-        
+
         timechart.getPlot().setBackgroundPaint(Color.white);
         timechart.getXYPlot().setRangeGridlinePaint(Color.lightGray);
         timechart.getXYPlot().setDomainGridlinePaint(Color.lightGray);

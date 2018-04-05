@@ -39,7 +39,7 @@ public enum CompositionStack {
 
         StackedBarRenderer renderer = new StackedBarRenderer();
         renderer.setDrawBarOutline(true);
-        
+
         chart.getCategoryPlot().setRenderer(renderer);
 
         // Adapt colors & style

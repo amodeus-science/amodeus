@@ -48,13 +48,13 @@ public class ScenarioPipeLineTest {
 
     @BeforeClass
     public static void setUpOnce() throws Exception {
-        // TODO: This reset call should eventually be removed. Right now we need this to reset the random number generator for MATSim. 
+        // TODO: This reset call should eventually be removed. Right now we need this to reset the random number generator for MATSim.
         // In general, this is not necessary, because all MATSim components use MatsimRandom.getLocalInstance(). However,
-        // the PopulationDensity strategy in the av package uses MatsimRandom.getRandom(), which is NOT reset between 
+        // the PopulationDensity strategy in the av package uses MatsimRandom.getRandom(), which is NOT reset between
         // simulations and iterations. Once the av package makes proper use of MatsimRandom generator, this can be removed
         // here (should happen once av:0.1.5 is used here). /shoerl mar18
         MatsimRandom.reset();
-        
+
         System.out.print("GLPK version is: ");
         System.out.println(GLPK.glp_version());
 

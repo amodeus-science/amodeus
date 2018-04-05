@@ -46,6 +46,6 @@ public enum ChartTheme {
             return theme;
         }
     };
-    
+
     public abstract StandardChartTheme getChartTheme(boolean shadow);
 }

@@ -1,7 +1,6 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.analysis.plot;
 
-import ch.ethz.idsc.amodeus.analysis.plot.HistogramPlot;
 import junit.framework.TestCase;
 
 public class HistogramPlotTest extends TestCase {

@@ -9,7 +9,7 @@ import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.tensor.sca.Chop;
 
 public class TravelDataTestHelper {
-    
+
     public static TravelDataTestHelper prepare(VirtualNetwork<Link> vNCreated, VirtualNetwork<Link> vNSaved) throws Exception {
         return new TravelDataTestHelper(vNCreated, vNSaved);
     }

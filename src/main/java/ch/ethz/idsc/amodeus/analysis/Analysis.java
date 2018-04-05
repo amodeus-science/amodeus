@@ -104,11 +104,11 @@ public class Analysis {
         if (Objects.isNull(network)) {
             network = NetworkLoader.loadNetwork(configFile);
         }
-        
+
         // load colorScheme & theme
         colorScheme = ColorScheme.valueOf(scenOptions.getColorScheme());
         chartTheme = ChartTheme.valueOf(scenOptions.getChartTheme());
-        
+
         ChartFactory.setChartTheme(chartTheme.getChartTheme(false));
         BarRenderer.setDefaultBarPainter(new StandardBarPainter());
         BarRenderer.setDefaultShadowsVisible(false);

@@ -55,11 +55,11 @@ public class ScenarioOptions {
     public String getLinkSpeedDataName() {
         return getString(ScenarioOptionsBase.LINKSPEEDDATAFILENAME);
     }
-    
+
     public String getColorScheme() {
         return getString(ScenarioOptionsBase.COLORSCHEMEIDENTIFIER);
     }
-    
+
     public String getChartTheme() {
         return getString(ScenarioOptionsBase.CHARTTHEMEIDENTIFIER);
     }
@@ -96,11 +96,7 @@ public class ScenarioOptions {
     public File getShapeFile() {
         File shapeFile = new File(getString(ScenarioOptionsBase.SHAPEFILEIDENTIFIER));
         System.out.println("shapeFile = " + shapeFile.getAbsolutePath());
-        if (shapeFile.exists()) {
-            return shapeFile;
-        } else {
-            return null;
-        }
+        return shapeFile.exists() ? shapeFile : null;
     }
 
     // base access functions ==================================================
