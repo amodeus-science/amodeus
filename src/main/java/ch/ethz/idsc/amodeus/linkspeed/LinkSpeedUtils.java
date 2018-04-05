@@ -10,7 +10,7 @@ import ch.ethz.idsc.tensor.io.Import;
 public class LinkSpeedUtils {
 
     public static LinkSpeedDataContainer loadLinkSpeedData(File inputFile) {
-        if (inputFile.isFile()){
+        if (inputFile.isFile()) {
             System.out.println("INFO loading link speed data from file " + inputFile.getAbsolutePath());
             try {
                 return Import.object(inputFile);
@@ -18,7 +18,7 @@ public class LinkSpeedUtils {
                 return null;
             } catch (ClassNotFoundException | DataFormatException e) {
                 return null;
-            }            
+            }
         }
         System.err.println("INFO LinkSpeedData not available");
         return null;

@@ -56,6 +56,14 @@ public class ScenarioOptions {
         return getString(ScenarioOptionsBase.LINKSPEEDDATAFILENAME);
     }
 
+    public String getColorScheme() {
+        return getString(ScenarioOptionsBase.COLORSCHEMEIDENTIFIER);
+    }
+
+    public String getChartTheme() {
+        return getString(ScenarioOptionsBase.CHARTTHEMEIDENTIFIER);
+    }
+
     public LocationSpec getLocationSpec() {
         return LocationSpecs.DATABASE.fromString( //
                 properties.getProperty(ScenarioOptionsBase.LOCATIONSPECIDENTIFIER));
