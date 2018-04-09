@@ -10,7 +10,9 @@ import org.matsim.core.router.util.TravelTime;
 
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
-/* package */ class InstantPathFactory {
+/** InstantPathFactory may be used by 3rd party dispatchers to compute routes
+ * Example: MPCDispatcher */
+public class InstantPathFactory {
     final ParallelLeastCostPathCalculator parallelLeastCostPathCalculator;
     final TravelTime travelTime;
 
