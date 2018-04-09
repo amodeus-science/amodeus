@@ -65,7 +65,7 @@ public class StandardMATSimScenarioTest {
          * sure that all 100 generated agents arrive */
 
         MatsimRandom.reset();
-        
+
         // Set up
         Config config = ConfigUtils.createConfig(new AVConfigGroup(), new DvrpConfigGroup());
         Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
@@ -97,13 +97,13 @@ public class StandardMATSimScenarioTest {
 
                 return MatsimKMEANSVirtualNetworkCreator.createVirtualNetwork(scenario.getPopulation(), scenario.getNetwork(), 2, true);
             }
-            
+
             @Provides
             @Singleton
-            public TravelData provideTravelData(VirtualNetwork<Link> virtualNetwork, @Named(AVModule.AV_MODE) Network network, Population population ) {
-                // Same as for the virtual network: For the LPFF dispatcher we need travel 
+            public TravelData provideTravelData(VirtualNetwork<Link> virtualNetwork, @Named(AVModule.AV_MODE) Network network, Population population) {
+                // Same as for the virtual network: For the LPFF dispatcher we need travel
                 // data, which we generate on the fly here.
-                
+
                 TravelData travelData = new TravelData(virtualNetwork, network, population, 300);
                 return travelData;
             }

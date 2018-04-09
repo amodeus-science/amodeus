@@ -21,9 +21,9 @@ public class WaitingTimesHtml implements HtmlReportElement {
         HtmlBodyElement aRElement = new HtmlBodyElement();
         aRElement.getHTMLGenerator().insertTextLeft(aRElement.getHTMLGenerator().bold("Waiting Times") + //
                 "\n\tMean:" + //
-                "\n\t" + WaitingTimesElement.QUANTILE1 * 10 + "% quantile:" + //
-                "\n\t" + WaitingTimesElement.QUANTILE2 * 10 + "% quantile:" + //
-                "\n\t" + WaitingTimesElement.QUANTILE3 * 10 + "% quantile:" + //
+                "\n\t" + WaitingTimesElement.QUANTILE1 * 100 + "% quantile:" + //
+                "\n\t" + WaitingTimesElement.QUANTILE2 * 100 + "% quantile:" + //
+                "\n\t" + WaitingTimesElement.QUANTILE3 * 100 + "% quantile:" + //
                 "\n\tMaximum:" //
         );
         aRElement.getHTMLGenerator().insertTextLeft(" " + //

@@ -5,7 +5,6 @@ import java.util.Calendar;
 
 import org.jfree.data.time.Second;
 
-import ch.ethz.idsc.amodeus.analysis.plot.StaticHelper;
 import junit.framework.TestCase;
 
 public class DiagramUtilTest extends TestCase {
