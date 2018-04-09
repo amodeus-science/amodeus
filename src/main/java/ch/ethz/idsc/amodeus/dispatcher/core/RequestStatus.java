@@ -15,7 +15,7 @@ public enum RequestStatus {
     DRIVING("drv", "driving"), //
     /** Dropoff is taking place (1 time step only). */
     DROPOFF("dof", "dropoff"), //
-    
+
     /** IRREGULAR REQEUST STATII */
     /** Request cancelled before pickup. */
     CANCELLED("can", "cancelled"), //

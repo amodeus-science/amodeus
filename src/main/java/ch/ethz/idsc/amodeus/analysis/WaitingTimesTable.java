@@ -5,12 +5,13 @@ import java.io.File;
 
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.amodeus.analysis.element.WaitingTimesElement;
+import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
 import ch.ethz.idsc.tensor.io.TableBuilder;
 
 public class WaitingTimesTable implements AnalysisExport {
 
     @Override
-    public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory) {
+    public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorScheme colorScheme) {
         WaitingTimesElement wt = analysisSummary.getWaitingTimes();
 
         TableBuilder tableBuilder = new TableBuilder();

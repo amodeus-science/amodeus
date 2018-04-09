@@ -6,13 +6,14 @@ import java.util.Arrays;
 
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionElement;
+import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
 import ch.ethz.idsc.amodeus.analysis.plot.StackedTimeChart;
 
 public class StatusDistributionImage implements AnalysisExport {
     public static final String FILENAME = "statusDistribution";
 
     @Override
-    public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory) {
+    public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorScheme colorScheme) {
         String[] statusLabels = StaticHelper.descriptions();
         StatusDistributionElement st = analysisSummary.getStatusDistribution();
 
@@ -29,7 +30,8 @@ public class StatusDistributionImage implements AnalysisExport {
                     statusLabels, //
                     "RoboTaxis", //
                     st.time, //
-                    st.statusTensor);
+                    st.statusTensor, //
+                    colorScheme);
         } catch (Exception e1) {
             System.err.println("The Modular status dist with Tensor was not carried out!!");
             e1.printStackTrace();
