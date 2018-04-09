@@ -22,11 +22,11 @@ public class LinkSpeedTimeSeries implements Serializable {
         data.put(time, Tensors.vector(speed));
     }
 
-    /* package */Tensor getSpeedsAt(Integer time) {
+    public Tensor getSpeedsAt(Integer time) {
         return data.get(time);
     }
 
-    /* package */ Set<Integer> getRecordedTimes() {
+    public Set<Integer> getRecordedTimes() {
         return data.keySet();
     }
 
@@ -42,6 +42,12 @@ public class LinkSpeedTimeSeries implements Serializable {
         } else {
             data.put(time, Tensors.vector(speed));
         }
+    }
+    
+    
+    public void resetSpeed(Integer time, double speed) {
+        GlobalAssert.that(speed >= 0);
+        data.put(time, Tensors.vector(speed));
     }
 
 }
