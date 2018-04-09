@@ -6,16 +6,20 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
 import javax.swing.JCheckBox;
+import javax.swing.JTextArea;
 
 import ch.ethz.idsc.amodeus.net.OsmLink;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.util.gui.GraphicsUtil;
+import ch.ethz.idsc.amodeus.util.gui.LazyMouse;
+import ch.ethz.idsc.amodeus.util.gui.LazyMouseListener;
 import ch.ethz.idsc.amodeus.util.gui.RowPanel;
 import ch.ethz.idsc.owl.data.nd.NdCenterInterface;
 import ch.ethz.idsc.owl.data.nd.NdCluster;
@@ -55,6 +59,7 @@ public class LinkLayer extends ViewerLayer {
     private static final Color LINKCOLOR = new Color(153, 153, 102, 64);
     private boolean drawLinks = true; // false;
     private boolean drawLabel = true; // false;
+    private final JTextArea jTextArea = new JTextArea(2, 10);
     private int count = 0;
 
     @Override
@@ -113,6 +118,7 @@ public class LinkLayer extends ViewerLayer {
                                 "\u2192 " + street.osmLink.link.getId().toString() + " \u2192", //
                                 p1.x + 10, p1.y + 10);
                         graphics.setTransform(saveAT);
+                        jTextArea.setText(street.osmLink.link.getId().toString());
                     }
                     GraphicsUtil.setQualityDefault(graphics);
                 }
@@ -157,5 +163,19 @@ public class LinkLayer extends ViewerLayer {
             jCheckBox.addActionListener(event -> setDrawLabel(jCheckBox.isSelected()));
             rowPanel.add(jCheckBox);
         }
+        {
+
+            rowPanel.add(jTextArea);
+        }
+        LazyMouseListener lazyMouseListener = new LazyMouseListener() {
+            @Override
+            public void lazyClicked(MouseEvent mouseEvent) {
+                // System.out.println("here lazy");
+                // amodeusComponent.
+                // TODO extract lat-log coordinate and store and visualize in component
+            }
+        };
+        LazyMouse lazyMouse = new LazyMouse(lazyMouseListener);
+        lazyMouse.addListenersTo(amodeusComponent);
     }
 }
