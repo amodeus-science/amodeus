@@ -1,8 +1,8 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.linkspeed;
 
-import java.util.List;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
@@ -12,7 +12,8 @@ import org.matsim.core.trafficmonitoring.TravelTimeDataArrayFactory;
 
 import com.google.inject.Singleton;
 
-import ch.ethz.idsc.amodeus.linkspeed.LinkSpeedDataContainer.LinkSpeedDataSet;
+import ch.ethz.idsc.subare.util.GlobalAssert;
+import ch.ethz.idsc.tensor.RealScalar;
 
 @Singleton
 public class DefaultTaxiTrafficData implements TaxiTrafficData {
@@ -22,14 +23,14 @@ public class DefaultTaxiTrafficData implements TaxiTrafficData {
     private final int timeBinSize;
     private final int numSlots;
     private final Network network;
+    private final int DAYLENGTH = 86400; // TODO magic const.
 
     public DefaultTaxiTrafficData(LinkSpeedDataContainer lsData, int timeBinSize, Network network) {
         System.out.println("Loading LinkSpeedData into Simulation");
-        if (lsData != null) {
-            this.lsData = lsData;
-        }
+        GlobalAssert.that(Objects.nonNull(lsData));
+        this.lsData = lsData;
         this.timeBinSize = timeBinSize;
-        this.numSlots = (86400 / timeBinSize); // TODO magic const.
+        this.numSlots = (DAYLENGTH / timeBinSize);
         this.network = network;
         this.createTravelTimeData();
     }
@@ -50,17 +51,19 @@ public class DefaultTaxiTrafficData implements TaxiTrafficData {
         TravelTimeDataArrayFactory factory = new TravelTimeDataArrayFactory(this.network, this.numSlots);
         this.trafficData = new TaxiTrafficDataContainer(this.numSlots);
 
-        for (Entry<Integer, LinkSpeedDataSet> entry : lsData.linkSet.entrySet()) {
+        for (Entry<Integer, LinkSpeedTimeSeries> entry : lsData.linkSet.entrySet()) {
             Id<Link> linkID = Id.createLinkId(entry.getKey());
             Link link = this.network.getLinks().get(linkID);
             double linkLength = link.getLength();
             TravelTimeData ttData = factory.createTravelTimeData(linkID);
-            for (Entry<Integer, List<Double>> lsDataSet : entry.getValue().data.entrySet()) {
-                int timeStamp = lsDataSet.getKey();
-                for (double freeSpeed : lsDataSet.getValue()) {
-                    ttData.addTravelTime(trafficData.getTimeSlot(timeStamp), (linkLength / freeSpeed));
-                }
+
+            LinkSpeedTimeSeries lsData = entry.getValue();
+            for (Integer time : lsData.getRecordedTimes()) {
+                lsData.getSpeedsAt(time).flatten(-1).forEach(t -> {
+                    ttData.addTravelTime(trafficData.getTimeSlot(time), (linkLength / ((RealScalar) t).number().doubleValue()));
+                });
             }
+
             trafficData.addData(linkID, ttData);
         }
         System.out.println("LinkSpeedData loaded into TravelTimeDataArray [lsData size: " + lsData.linkSet.size() + " links]");
