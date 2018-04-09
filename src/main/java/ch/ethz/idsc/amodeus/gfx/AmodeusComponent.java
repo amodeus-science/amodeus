@@ -19,8 +19,8 @@ import org.matsim.api.core.v01.Coord;
 import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.util.gui.GraphicsUtil;
-import ch.ethz.idsc.amodeus.view.jmapviewer.JMapViewer;
 import ch.ethz.idsc.amodeus.view.jmapviewer.AmodeusHeatMap;
+import ch.ethz.idsc.amodeus.view.jmapviewer.JMapViewer;
 import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.ICoordinate;
 
 public class AmodeusComponent extends JMapViewer {
@@ -52,6 +52,7 @@ public class AmodeusComponent extends JMapViewer {
     private int infoFontSize = 13;
 
     public final JLabel jLabel = new JLabel(" ");
+    final AmodeusComponentMouse amodeusComponentMouse = new AmodeusComponentMouse(this);
 
     /** constructs an component without any {@link ViewerLayer}s
      * 
@@ -60,6 +61,9 @@ public class AmodeusComponent extends JMapViewer {
      * @param db */
     public AmodeusComponent(MatsimStaticDatabase db) {
         this.db = db;
+        // ---
+        addMouseListener(amodeusComponentMouse);
+        addMouseMotionListener(amodeusComponentMouse);
     }
 
     public void addLayer(ViewerLayer viewerLayer) {

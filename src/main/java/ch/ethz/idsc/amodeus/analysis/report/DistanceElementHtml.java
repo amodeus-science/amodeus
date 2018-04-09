@@ -47,7 +47,7 @@ public class DistanceElementHtml implements HtmlReportElement {
                 "\n" + //
                 "\n" + DECIMAL.format(de.totalDistanceWtCst / de.requestIndices.size()) + " km");
         File img = new File(IMAGE_FOLDER, StackedDistanceChartImage.FILENAME + ".png");
-        aRElement.getHTMLGenerator().insertImgRight(img.getPath(), 250, 400);
+        aRElement.getHTMLGenerator().insertImg(img.getPath(), 700, 125);
         bodyElements.put(aRKey, aRElement);
         return bodyElements;
     }

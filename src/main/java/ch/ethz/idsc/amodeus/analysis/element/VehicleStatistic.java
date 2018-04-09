@@ -57,10 +57,7 @@ import ch.ethz.idsc.tensor.alg.Array;
             int count = 0;
             for (VehicleContainer vehicleContainer : list) {
                 final int index = offset + count;
-                System.out.println("index: " + index);
-                System.out.println("dtLen: " + distanceTotal.length());
-                System.out.println("offst: " + offset);
-//                if (index < distanceTotal.length()) { 
+                if (index < distanceTotal.length()) {
                     switch (vehicleContainer.roboTaxiStatus) {
                     case DRIVEWITHCUSTOMER:
                         distanceWithCustomer.set(contrib, index);
@@ -77,7 +74,7 @@ import ch.ethz.idsc.tensor.alg.Array;
                     default:
                         break;
                     }
-  //              }
+                }
                 ++count;
             }
         }
