@@ -19,19 +19,21 @@ public class WaitingTimesHtml implements HtmlReportElement {
         WaitingTimesElement wt = analysisSummary.getWaitingTimes();
         // Waiting Times:
         HtmlBodyElement aRElement = new HtmlBodyElement();
-        aRElement.getHTMLGenerator().insertTextLeft(aRElement.getHTMLGenerator().bold("Waiting Times") + //
-                "\n\tMean:" + //
-                "\n\t" + WaitingTimesElement.QUANTILE1 * 100 + "% quantile:" + //
-                "\n\t" + WaitingTimesElement.QUANTILE2 * 100 + "% quantile:" + //
-                "\n\t" + WaitingTimesElement.QUANTILE3 * 100 + "% quantile:" + //
-                "\n\tMaximum:" //
+        aRElement.getHTMLGenerator()
+                .insertTextLeft(aRElement.getHTMLGenerator().bold("Waiting Times") + //
+                        "\n\tMean:" + //
+                        "\n\t" + WaitingTimesElement.QUANTILE1 * 100 + "% quantile:" + //
+                        "\n\t" + WaitingTimesElement.QUANTILE2 * 100 + "% quantile:" + //
+                        "\n\t" + WaitingTimesElement.QUANTILE3 * 100 + "% quantile:" + //
+                        "\n\tMaximum:" //
         );
-        aRElement.getHTMLGenerator().insertTextLeft(" " + //
-                "\n" + Time.writeTime(wt.totalWaitTimeMean.number().doubleValue()) + //
-                "\n" + Time.writeTime(wt.totalWaitTimeQuantile.Get(0).number().doubleValue()) + //
-                "\n" + Time.writeTime(wt.totalWaitTimeQuantile.Get(1).number().doubleValue()) + //
-                "\n" + Time.writeTime(wt.totalWaitTimeQuantile.Get(2).number().doubleValue()) + //
-                "\n" + Time.writeTime(wt.maximumWaitTime)//
+        aRElement.getHTMLGenerator()
+                .insertTextLeft(" " + //
+                        "\n" + Time.writeTime(wt.totalWaitTimeMean.number().doubleValue()) + //
+                        "\n" + Time.writeTime(wt.totalWaitTimeQuantile.Get(0).number().doubleValue()) + //
+                        "\n" + Time.writeTime(wt.totalWaitTimeQuantile.Get(1).number().doubleValue()) + //
+                        "\n" + Time.writeTime(wt.totalWaitTimeQuantile.Get(2).number().doubleValue()) + //
+                        "\n" + Time.writeTime(wt.maximumWaitTime)//
         );
         aRElement.getHTMLGenerator().newLine();
         aRElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + BinnedWaitingTimesImage.FILENAME + ".png", 800, 600);

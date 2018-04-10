@@ -38,6 +38,17 @@ public class SafeConfig {
         return alt;
     }
 
+    public String getString(String key, String alt) {
+        try {
+            String string = reflectiveConfigGroup.getParams().get(key);
+            if (string != null)
+                return string;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return alt;
+    }
+
     public int getIntegerStrict(String key) {
         String string = reflectiveConfigGroup.getParams().get(key);
         GlobalAssert.that(string != null);
