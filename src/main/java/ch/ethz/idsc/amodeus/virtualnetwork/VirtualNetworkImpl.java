@@ -54,9 +54,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     public final VirtualNode<T> getVirtualNode(T element) {
         GlobalAssert.that(Objects.nonNull(element));
         if (!networkElements.containsKey(element)) {
-            System.out.println("T: " + (String) element);
-            System.out.println("virtualNode not found ");
-            return null;
+            throw new IllegalStateException("Element not found in VirtualNetwork: " + element.toString());
         }
         return networkElements.get(element);
     }

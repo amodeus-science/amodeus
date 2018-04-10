@@ -186,8 +186,7 @@ public class AmodeusViewerFrame implements Runnable {
                 Point point = mouseEvent.getPoint();
                 boolean cursorHand = getJMapViewer().getAttribution().handleAttributionCursor(point);
                 amodeusComponent.setCursor(new Cursor(cursorHand //
-                        ? Cursor.HAND_CURSOR
-                        : Cursor.DEFAULT_CURSOR));
+                        ? Cursor.HAND_CURSOR : Cursor.DEFAULT_CURSOR));
             }
         });
 

@@ -35,8 +35,7 @@ package ch.ethz.idsc.amodeus.view.gheat.gui;
   */
 import java.awt.Color;
 
-/**
- * <p>
+/** <p>
  * <code>ColorUtilities</code> contains a set of tools to perform
  * common color operations easily.
  * </p>
@@ -45,8 +44,7 @@ import java.awt.Color;
 /* package */ enum ColorUtilities {
     ;
 
-    /**
-     * <p>
+    /** <p>
      * Returns the HSL (Hue/Saturation/Luminance) equivalent of a given
      * RGB color. All three HSL components are between 0.0 and 1.0.
      * </p>
@@ -58,8 +56,7 @@ import java.awt.Color;
         return RGBtoHSL(color.getRed(), color.getGreen(), color.getBlue(), null);
     }
 
-    /**
-     * <p>
+    /** <p>
      * Returns the HSL (Hue/Saturation/Luminance) equivalent of a given
      * RGB color. All three HSL components are between 0.0 and 1.0.
      * </p>
@@ -76,8 +73,7 @@ import java.awt.Color;
         return RGBtoHSL(color.getRed(), color.getGreen(), color.getBlue(), hsl);
     }
 
-    /**
-     * <p>
+    /** <p>
      * Returns the HSL (Hue/Saturation/Luminance) equivalent of a given
      * RGB color. All three HSL components are between 0.0 and 1.0.
      * </p>
@@ -93,8 +89,7 @@ import java.awt.Color;
         return RGBtoHSL(r, g, b, null);
     }
 
-    /**
-     * <p>
+    /** <p>
      * Returns the HSL (Hue/Saturation/Luminance) equivalent of a given
      * RGB color. All three HSL components are floats between 0.0 and 1.0.
      * </p>
@@ -183,8 +178,7 @@ import java.awt.Color;
         return hsl;
     }
 
-    /**
-     * <p>
+    /** <p>
      * Returns the RGB equivalent of a given HSL (Hue/Saturation/Luminance)
      * color.
      * </p>
@@ -201,8 +195,7 @@ import java.awt.Color;
         return new Color(rgb[0], rgb[1], rgb[2]);
     }
 
-    /**
-     * <p>
+    /** <p>
      * Returns the RGB equivalent of a given HSL (Hue/Saturation/Luminance)
      * color. All three RGB components are integers between 0 and 255.
      * </p>
