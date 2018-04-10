@@ -54,7 +54,8 @@ public class Analysis {
      * 
      * @param workingDirectory default: current working directory. Is the file where the config file, AmodeusOptions file and the outputfolder are located
      * @param configFile default: SimulationConfig file as defined in AmodeusOptions. Stores the data of the corresponding outputdirectory and Network.
-     * @param outputDirectory: default: value stored in the Simulation Config file. Can be changed if for example an other outputfolder from the Sequential Server
+     * @param outputDirectory: default: value stored in the Simulation Config file. Can be changed if for example an other outputfolder from the Sequential
+     *            Server
      *            has to be analysed.
      * @param network: default: Network defined in the Config file. Can be used to reduce runtime if the Network was already loaded in a previous step (e.g.
      *            Scenario Server)
@@ -81,7 +82,8 @@ public class Analysis {
      * 
      * @param workingDirectory default: current working directory. Is the file where the config file, AmodeusOptions file and the outputfolder are located
      * @param configFile default: SimulationConfig file as defined in AmodeusOptions. Stores the data of the corresponding outputdirectory and Network.
-     * @param outputDirectory: default: value stored in the Simulation Config file. Can be changed if for example an other outputfolder from the Sequential Server
+     * @param outputDirectory: default: value stored in the Simulation Config file. Can be changed if for example an other outputfolder from the Sequential
+     *            Server
      *            has to be analysed.
      * @param network: default: Network defined in the Config file. Can be used to reduce runtime if the Network was already loaded in a previous step (e.g.
      *            Scenario Server)
