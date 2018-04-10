@@ -63,15 +63,16 @@ public class DistanceElement implements AnalysisElement {
         occupancyTensor.append(occupancyRatio);
 
         /** register Simulation Object for distance analysis */
-        ++index;
         for (VehicleContainer vehicleContainer : simulationObject.vehicles)
             list.get(vehicleContainer.vehicleIndex).register(index, vehicleContainer);
+
+        ++index;
     }
 
     @Override
     public void consolidate() {
-//        list.forEach(VehicleStatistic::consolidate);
-        // ---
+        list.forEach(VehicleStatistic::consolidate);
+
         Tensor distTotal = list.stream().map(vs -> vs.distanceTotal).reduce(Tensor::add).get().multiply(km2m);
         Tensor distWtCst = list.stream().map(vs -> vs.distanceWithCustomer).reduce(Tensor::add).get().multiply(km2m);
         Tensor distPicku = list.stream().map(vs -> vs.distancePickup).reduce(Tensor::add).get().multiply(km2m);

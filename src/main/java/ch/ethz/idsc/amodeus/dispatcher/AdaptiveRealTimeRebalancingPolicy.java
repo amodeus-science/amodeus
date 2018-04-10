@@ -19,6 +19,8 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVehicleDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatchingUtils;
+import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
+import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
 import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.FeasibleRebalanceCreator;
 import ch.ethz.idsc.amodeus.dispatcher.util.HungarBiPartVehicleDestMatcher;
@@ -59,7 +61,8 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
     private int total_rebalanceCount = 0;
     private Tensor printVals = Tensors.empty();
     private final LPVehicleRebalancing lpVehicleRebalancing;
-    private final NetworkDistanceFunction ndf;
+    private final DistanceFunction distanceFunction;
+    private final DistanceHeuristics distanceHeuristics;
     private final Network network;
 
     public AdaptiveRealTimeRebalancingPolicy( //
@@ -81,7 +84,10 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
         rebalancingPeriod = safeConfig.getInteger("rebalancingPeriod", 300);
         this.network = network;
-        this.ndf = new NetworkDistanceFunction(network);
+        distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getString("distanceHeuristics", //
+                DistanceHeuristics.EUCLIDEAN.name()).toUpperCase());
+        System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
+        this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
 
     }
 
@@ -174,7 +180,8 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
         if (round_now % dispatchPeriod == 0) {
             // printVals = BipartiteMatchingUtils.executePickup(this::setRoboTaxiPickup, getDivertableRoboTaxis(), getAVRequests(), new
             // EuclideanDistanceFunction(), network, false);
-            printVals = BipartiteMatchingUtils.executePickup(this::setRoboTaxiPickup, getDivertableRoboTaxis(), getAVRequests(), ndf, network, false);
+            printVals = BipartiteMatchingUtils.executePickup(this::setRoboTaxiPickup, getDivertableRoboTaxis(), //
+                    getAVRequests(), distanceFunction, network, false);
         }
     }
 

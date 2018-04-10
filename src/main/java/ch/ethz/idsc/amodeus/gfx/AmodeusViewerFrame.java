@@ -32,7 +32,6 @@ import ch.ethz.idsc.amodeus.util.gui.SpinnerLabel;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.view.jmapviewer.Coordinate;
 import ch.ethz.idsc.amodeus.view.jmapviewer.JMapViewer;
-import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.ICoordinate;
 import ch.ethz.idsc.tensor.RealScalar;
 
 /** Demonstrates the usage of {@link JMapViewer} */
@@ -181,31 +180,16 @@ public class AmodeusViewerFrame implements Runnable {
             panelConfig.add(jToggleButton);
         }
 
-        getJMapViewer().addMouseListener(new MouseAdapter() {
+        amodeusComponent.addMouseMotionListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
-                ICoordinate asd = getJMapViewer().getPosition(e.getPoint());
-                System.out.println(asd.getLat() + "  " + asd);
-
-                Point p = getJMapViewer().getMapPosition(asd.getLat(), asd.getLon());
-                System.out.println(p);
+            public void mouseMoved(MouseEvent mouseEvent) {
+                Point point = mouseEvent.getPoint();
+                boolean cursorHand = getJMapViewer().getAttribution().handleAttributionCursor(point);
+                amodeusComponent.setCursor(new Cursor(cursorHand //
+                        ? Cursor.HAND_CURSOR : Cursor.DEFAULT_CURSOR));
             }
         });
 
-        getJMapViewer().addMouseMotionListener(new MouseAdapter() {
-            @Override
-            public void mouseMoved(MouseEvent e) {
-                Point p = e.getPoint();
-                boolean cursorHand = getJMapViewer().getAttribution().handleAttributionCursor(p);
-                if (cursorHand) {
-                    getJMapViewer().setCursor(new Cursor(Cursor.HAND_CURSOR));
-                } else {
-                    getJMapViewer().setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                }
-                // if (showToolTip.isSelected())
-                // getJMapViewer().setToolTipText(getJMapViewer().getPosition(p).toString());
-            }
-        });
         reindex(storageUtils);
         thread = new Thread(this);
         thread.start();

@@ -26,7 +26,7 @@ public enum StackedTimeChart {
 
     public static void of(File directory, String fileTitle, String diagramTitle, //
             boolean filter, int filterSize, Double[] scale, //
-            String[] labels, String yAxisLabel, Tensor time, Tensor values) throws Exception {
+            String[] labels, String yAxisLabel, Tensor time, Tensor values, ColorScheme colorScheme) throws Exception {
 
         GlobalAssert.that(time.length() == values.length());
         GlobalAssert.that(Transpose.of(values).length() == labels.length);
@@ -58,14 +58,19 @@ public enum StackedTimeChart {
         timechart.getXYPlot().setDomainAxis(domainAxis);
         timechart.getXYPlot().getDomainAxis().setAutoTickUnitSelection(true);
 
-        timechart.getTitle().setFont(DiagramSettings.FONT_TITLE);
-        timechart.getXYPlot().getDomainAxis().setLabelFont(DiagramSettings.FONT_AXIS);
-        timechart.getXYPlot().getRangeAxis().setLabelFont(DiagramSettings.FONT_AXIS);
-        timechart.getXYPlot().getDomainAxis().setTickLabelFont(DiagramSettings.FONT_TICK);
-        timechart.getXYPlot().getRangeAxis().setTickLabelFont(DiagramSettings.FONT_TICK);
+        // TODO Does not need to be set anymore since the settings are centralized in ChartTheme for all Chart types
+        // timechart.getTitle().setFont(DiagramSettings.FONT_TITLE);
+        // timechart.getXYPlot().getDomainAxis().setLabelFont(DiagramSettings.FONT_AXIS);
+        // timechart.getXYPlot().getRangeAxis().setLabelFont(DiagramSettings.FONT_AXIS);
+        // timechart.getXYPlot().getDomainAxis().setTickLabelFont(DiagramSettings.FONT_TICK);
+        // timechart.getXYPlot().getRangeAxis().setTickLabelFont(DiagramSettings.FONT_TICK);
+
+        for (int i = 0; i < labels.length; i++) {
+            timechart.getXYPlot().getRenderer().setSeriesPaint(i, colorScheme.of(i));
+        }
 
         LegendTitle legend = new LegendTitle(timechart.getXYPlot().getRenderer());
-        legend.setItemFont(DiagramSettings.FONT_TICK);
+        // legend.setItemFont(DiagramSettings.FONT_TICK);
         legend.setPosition(RectangleEdge.TOP);
         timechart.addLegend(legend);
 
