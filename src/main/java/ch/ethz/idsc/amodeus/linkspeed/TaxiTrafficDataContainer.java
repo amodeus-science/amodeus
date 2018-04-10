@@ -28,11 +28,11 @@ class TaxiTrafficDataContainer {
 
     // TODO fix this function to something more nice.
     public int getTimeSlot(double time) {
-        if(time > 0.0){
+        if (time > 0.0) {
             int slot = (int) (((time / 86400) * numSlots) - 1);
             if (slot <= numSlots - 1)
                 return slot;
-            return numSlots - 1;            
+            return numSlots - 1;
         }
         return 0;
     }
