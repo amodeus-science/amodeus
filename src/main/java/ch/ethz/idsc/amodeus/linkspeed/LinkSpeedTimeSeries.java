@@ -12,7 +12,6 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 public class LinkSpeedTimeSeries implements Serializable {
-    private static final long serialVersionUID = 6461313925304077143L;
 
     /** keyMap contains times and Tensor a list of recorded speeds at the time */
     private SortedMap<Integer, Tensor> data;
@@ -43,8 +42,7 @@ public class LinkSpeedTimeSeries implements Serializable {
             data.put(time, Tensors.vector(speed));
         }
     }
-    
-    
+
     public void resetSpeed(Integer time, double speed) {
         GlobalAssert.that(speed >= 0);
         data.put(time, Tensors.vector(speed));

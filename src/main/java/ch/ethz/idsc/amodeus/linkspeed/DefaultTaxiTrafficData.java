@@ -13,7 +13,6 @@ import org.matsim.core.trafficmonitoring.TravelTimeDataArrayFactory;
 import com.google.inject.Singleton;
 
 import ch.ethz.idsc.subare.util.GlobalAssert;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 @Singleton
@@ -24,7 +23,7 @@ public class DefaultTaxiTrafficData implements TaxiTrafficData {
     private final int timeBinSize;
     private final int numSlots;
     private final Network network;
-    private final int DAYLENGTH = 86400; // TODO magic const.
+    private static final int DAYLENGTH = 86400; // TODO magic const.
 
     public DefaultTaxiTrafficData(LinkSpeedDataContainer lsData, int timeBinSize, Network network) {
         System.out.println("Loading LinkSpeedData into Simulation");
@@ -52,38 +51,22 @@ public class DefaultTaxiTrafficData implements TaxiTrafficData {
         TravelTimeDataArrayFactory factory = new TravelTimeDataArrayFactory(this.network, this.numSlots);
         this.trafficData = new TaxiTrafficDataContainer(this.numSlots);
 
-        for (Entry<Integer, LinkSpeedTimeSeries> entry : lsData.linkSet.entrySet()) {
+        for (Entry<Integer, LinkSpeedTimeSeries> entry : lsData.getLinkSet().entrySet()) {
             Id<Link> linkID = Id.createLinkId(entry.getKey());
-            Link link = this.network.getLinks().get(linkID);
-            double linkLength = link.getLength();
+
             TravelTimeData ttData = factory.createTravelTimeData(linkID);
 
             LinkSpeedTimeSeries lsData = entry.getValue();
             for (Integer time : lsData.getRecordedTimes()) {
 
-                // IMPLEMENTATION DEBUG
                 Tensor speedRecordings = lsData.getSpeedsAt(time);
                 double travelTime = speedRecordings.Get(0).number().doubleValue();
-                // double travelTime = 1000000 * link.getLength() / link.getFreespeed();
                 ttData.setTravelTime(trafficData.getTimeSlot(time), travelTime);
-                // System.out.println("haahahaaaaaaaa aha ha!");
-                // ttData.addTravelTime(trafficData.getTimeSlot(time), travelTime);
 
-                // IMPLEMENTATION BEFORE
-                // Tensor speedRecordings = lsData.getSpeedsAt(time);
-                //// System.out.println(speedRecordings);
-                // speedRecordings.flatten(-1).forEach(t -> {
-                //// System.out.println("t: " + t);
-                // double travelTime = (linkLength / ((RealScalar) t).number().doubleValue());
-                //// System.out.println("travelTime : " + travelTime);
-                //// System.out.println("time: " + time);
-                //// System.out.println("trafficData.getTimeSlot(time) " + trafficData.getTimeSlot(time));
-                // ttData.addTravelTime(trafficData.getTimeSlot(time),travelTime );
-                // });
             }
 
             trafficData.addData(linkID, ttData);
         }
-        System.out.println("LinkSpeedData loaded into TravelTimeDataArray [lsData size: " + lsData.linkSet.size() + " links]");
+        System.out.println("LinkSpeedData loaded into TravelTimeDataArray [lsData size: " + lsData.getLinkSet().size() + " links]");
     }
 }
