@@ -35,9 +35,10 @@ public enum MatsimKMEANSVirtualNetworkCreator {
         network.getLinks().values().forEach(l -> uElements.get(l.getFromNode()).add(l));
         network.getLinks().values().forEach(l -> uElements.get(l.getToNode()).add(l));
 
+        int tryIterations = 100;
         KMeansVirtualNetworkCreator<Link, Node> vnc = new KMeansVirtualNetworkCreator<>( //
                 data, elements, uElements, TensorLocation::of, //
-                NetworkCreatorUtils::linkToID, lbounds, ubounds, numVNodes, completeGraph);
+                NetworkCreatorUtils::linkToID, lbounds, ubounds, numVNodes, completeGraph, tryIterations);
 
         return vnc.getVirtualNetwork();
 

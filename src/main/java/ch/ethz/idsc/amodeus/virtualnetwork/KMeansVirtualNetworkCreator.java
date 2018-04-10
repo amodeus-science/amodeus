@@ -48,20 +48,26 @@ public class KMeansVirtualNetworkCreator<T, U> {
      * @param numVNodes
      * @param completeGraph */
     public KMeansVirtualNetworkCreator(double data[][], Collection<T> elements, Map<U, HashSet<T>> uElements, Function<T, Tensor> locationOf, //
-            Function<T, String> nameOf, Tensor lbounds, Tensor ubounds, int numVNodes, boolean completeGraph) {
-        virtualNetwork = createVirtualNetwork(data, elements, uElements, locationOf, nameOf, lbounds, ubounds, numVNodes, completeGraph);
+            Function<T, String> nameOf, Tensor lbounds, Tensor ubounds, int numVNodes, boolean completeGraph, //
+            int tryIterations) {
+        virtualNetwork = createVirtualNetwork(data, elements, uElements, locationOf, nameOf, lbounds, ubounds, numVNodes, completeGraph, tryIterations);
     }
 
     public VirtualNetwork<T> getVirtualNetwork() {
         return virtualNetwork;
     }
 
+    public Clustering<KMeansModel> getClustering() {
+        return c;
+    }
+
     private VirtualNetwork<T> createVirtualNetwork(double data[][], Collection<T> elements, Map<U, HashSet<T>> uElements, Function<T, Tensor> locationOf, //
-            Function<T, String> nameOf, Tensor lbounds, Tensor ubounds, int numVNodes, boolean completeGraph) {
+            Function<T, String> nameOf, Tensor lbounds, Tensor ubounds, int numVNodes, boolean completeGraph, //
+            int tryIterations) {
 
         long initSeed = 1;
         int iterations = 0;
-        while (iterations < 100) {
+        while (iterations < tryIterations) {
             System.out.println("trying to crate K-means virtual network, attempt: " + iterations + 1);
             VirtualNetwork<T> virtualNetwork = createVirtualNetwork(data, elements, uElements, locationOf, nameOf, //
                     lbounds, ubounds, numVNodes, completeGraph, initSeed);

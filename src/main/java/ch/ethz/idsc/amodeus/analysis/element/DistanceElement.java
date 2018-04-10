@@ -63,9 +63,10 @@ public class DistanceElement implements AnalysisElement {
         occupancyTensor.append(occupancyRatio);
 
         /** register Simulation Object for distance analysis */
-        ++index;
         for (VehicleContainer vehicleContainer : simulationObject.vehicles)
             list.get(vehicleContainer.vehicleIndex).register(index, vehicleContainer);
+
+        ++index;
     }
 
     @Override
