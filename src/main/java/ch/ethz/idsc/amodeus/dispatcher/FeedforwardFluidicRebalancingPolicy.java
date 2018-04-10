@@ -18,6 +18,8 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVehicleDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatchingUtils;
+import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
+import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
 import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.FeasibleRebalanceCreator;
 import ch.ethz.idsc.amodeus.dispatcher.util.HungarBiPartVehicleDestMatcher;
@@ -54,6 +56,8 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
     private final int nVNodes;
     private final int nVLinks;
     private final Network network;
+    private final DistanceFunction distanceFunction;
+    private final DistanceHeuristics distanceHeuristics;
     Tensor printVals = Tensors.empty();
     TravelData travelData;
     Tensor rebalancingRate;
@@ -84,6 +88,9 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
         SafeConfig safeConfig = SafeConfig.wrap(avconfig);
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
         rebalancingPeriod = safeConfig.getInteger("rebalancingPeriod", 30);
+        distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getStringStrict("distanceHeuristics").toUpperCase());
+        System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
+        this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
     }
 
     @Override
@@ -138,7 +145,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
         // bipartite matching
         if (round_now % dispatchPeriod == 0) {
             printVals = BipartiteMatchingUtils.executePickup(this::setRoboTaxiPickup, getDivertableRoboTaxis(), getAVRequests(), //
-                    new EuclideanDistanceFunction(), network, false);
+                    distanceFunction, network, false);
         }
     }
 
