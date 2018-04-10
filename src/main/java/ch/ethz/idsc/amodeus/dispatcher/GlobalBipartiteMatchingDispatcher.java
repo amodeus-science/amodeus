@@ -42,7 +42,8 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
         super(config, avDispatcherConfig, travelTime, parallelLeastCostPathCalculator, eventsManager);
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
-        distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getStringStrict("distanceHeuristics").toUpperCase());
+        distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getString("distanceHeuristics",//
+                DistanceHeuristics.EUCLIDEAN.name()).toUpperCase());
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
         this.network = network;
