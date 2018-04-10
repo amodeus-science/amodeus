@@ -120,12 +120,12 @@ public class HtmlReport implements AnalysisReport {
             dest.delete();
             File avFile = new File(configFile.getParentFile(), "av.xml");
             Files.copy(avFile.toPath(), dest.toPath());
-        } 
-        {// save scenario Options 
+        }
+        {// save scenario Options
             File dest = new File(reportFolder, ScenarioOptionsBase.getOptionsFileName());
             scenarioOptions.saveProperties(dest);
         }
-        
+
     }
 
 }

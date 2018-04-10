@@ -22,10 +22,10 @@ public class ScenarioOptions {
 
     public void saveProperties(File file) throws IOException {
         try (FileOutputStream ostream = new FileOutputStream(file)) {
-            properties.store(ostream,
-                    "This is a Copy of the actual Config File used in the Simulation \n");
+            properties.store(ostream, "This is a Copy of the actual Config File used in the Simulation \n");
         }
     }
+
     private ScenarioOptions(Properties properties) {
         this.properties = properties;
     }
