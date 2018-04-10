@@ -9,6 +9,7 @@ import ch.ethz.idsc.amodeus.analysis.element.DistanceElement;
 import ch.ethz.idsc.amodeus.analysis.element.RequestRobotaxiInformationElement;
 import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionElement;
 import ch.ethz.idsc.amodeus.analysis.element.WaitingTimesElement;
+import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
 
 public class AnalysisTestExport implements AnalysisExport {
 
@@ -18,7 +19,7 @@ public class AnalysisTestExport implements AnalysisExport {
     private WaitingTimesElement waitingTimes;
 
     @Override
-    public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory) {
+    public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorScheme colorScheme) {
         simulationInformationElement = analysisSummary.getSimulationInformationElement();
         statusDistribution = analysisSummary.getStatusDistribution();
         distanceElement = analysisSummary.getDistanceElement();

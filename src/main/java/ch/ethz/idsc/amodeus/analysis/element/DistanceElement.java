@@ -72,7 +72,7 @@ public class DistanceElement implements AnalysisElement {
     @Override
     public void consolidate() {
         list.forEach(VehicleStatistic::consolidate);
-        // ---
+
         Tensor distTotal = list.stream().map(vs -> vs.distanceTotal).reduce(Tensor::add).get().multiply(km2m);
         Tensor distWtCst = list.stream().map(vs -> vs.distanceWithCustomer).reduce(Tensor::add).get().multiply(km2m);
         Tensor distPicku = list.stream().map(vs -> vs.distancePickup).reduce(Tensor::add).get().multiply(km2m);
