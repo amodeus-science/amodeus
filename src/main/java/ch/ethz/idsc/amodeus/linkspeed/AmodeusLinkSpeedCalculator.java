@@ -13,8 +13,12 @@ final class AmodeusLinkSpeedCalculator implements LinkSpeedCalculator {
         this.trafficData = trafficData;
     }
 
+    // TODO is this math.min necessary? Hard to debug...
     @Override
     public double getMaximumVelocity(QVehicle vehicle, Link link, double time) {
-        return Math.min(trafficData.getTravelTimeData(link, time), link.getFreespeed(time));
+        // first argument: time [s]
+        // second argument: speed [m/s]
+        double trafficSpeed = link.getLength()/trafficData.getTravelTimeData(link, time);
+        return Math.min(trafficSpeed, link.getFreespeed(time));
     }
 }

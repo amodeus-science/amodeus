@@ -14,6 +14,7 @@ import com.google.inject.Singleton;
 
 import ch.ethz.idsc.subare.util.GlobalAssert;
 import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Tensor;
 
 @Singleton
 public class DefaultTaxiTrafficData implements TaxiTrafficData {
@@ -59,9 +60,26 @@ public class DefaultTaxiTrafficData implements TaxiTrafficData {
 
             LinkSpeedTimeSeries lsData = entry.getValue();
             for (Integer time : lsData.getRecordedTimes()) {
-                lsData.getSpeedsAt(time).flatten(-1).forEach(t -> {
-                    ttData.addTravelTime(trafficData.getTimeSlot(time), (linkLength / ((RealScalar) t).number().doubleValue()));
-                });
+
+                // IMPLEMENTATION DEBUG
+                Tensor speedRecordings = lsData.getSpeedsAt(time);
+                double travelTime = speedRecordings.Get(0).number().doubleValue();
+                // double travelTime = 1000000 * link.getLength() / link.getFreespeed();
+                ttData.setTravelTime(trafficData.getTimeSlot(time), travelTime);
+                // System.out.println("haahahaaaaaaaa aha ha!");
+                // ttData.addTravelTime(trafficData.getTimeSlot(time), travelTime);
+
+                // IMPLEMENTATION BEFORE
+                // Tensor speedRecordings = lsData.getSpeedsAt(time);
+                //// System.out.println(speedRecordings);
+                // speedRecordings.flatten(-1).forEach(t -> {
+                //// System.out.println("t: " + t);
+                // double travelTime = (linkLength / ((RealScalar) t).number().doubleValue());
+                //// System.out.println("travelTime : " + travelTime);
+                //// System.out.println("time: " + time);
+                //// System.out.println("trafficData.getTimeSlot(time) " + trafficData.getTimeSlot(time));
+                // ttData.addTravelTime(trafficData.getTimeSlot(time),travelTime );
+                // });
             }
 
             trafficData.addData(linkID, ttData);
