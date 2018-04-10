@@ -11,7 +11,6 @@ import java.util.NavigableMap;
 import java.util.TreeMap;
 
 import org.matsim.api.core.v01.Coord;
-import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
@@ -50,7 +49,7 @@ public class MatsimStaticDatabase {
     public static MatsimStaticDatabase INSTANCE;
 
     /** rapid lookup from MATSIM side */
-    private final Map<Id<Link>, Integer> linkInteger = new HashMap<>();
+    private final Map<Link, Integer> linkInteger = new HashMap<>();
     public final ReferenceFrame referenceFrame;
 
     /** rapid lookup from Viewer */
@@ -68,18 +67,18 @@ public class MatsimStaticDatabase {
         list = new ArrayList<>(linkMap.values());
         int index = 0;
         for (OsmLink osmLink : list) {
-            linkInteger.put(osmLink.link.getId(), index);
+            linkInteger.put(osmLink.link, index);
             ++index;
         }
     }
 
     public int getLinkIndex(Link link) {
-        return linkInteger.get(link.getId());
+        return linkInteger.get(link);
     }
 
     /** @return unmodifiable map that assigns a link to
      *         the corresponding index of the OsmLink in list */
-    public Map<Id<Link>, Integer> getLinkInteger() {
+    public Map<Link, Integer> getLinkInteger() {
         return Collections.unmodifiableMap(linkInteger);
     }
 
