@@ -103,7 +103,8 @@ public class StandardMATSimScenarioTest {
             network.addLink(ptBackwardLink);
         }
 
-        // Also, a routed population may have "pt interaction" activities, which take place at links that are not part of the road network. Amodeus must be able to
+        // Also, a routed population may have "pt interaction" activities, which take place at links that are not part of the road network. Amodeus must be able
+        // to
         // handle these cases.
 
         for (Person person : scenario.getPopulation().getPersons().values()) {
