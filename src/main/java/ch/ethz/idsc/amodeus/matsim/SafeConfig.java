@@ -37,7 +37,7 @@ public class SafeConfig {
         }
         return alt;
     }
-    
+
     public String getString(String key, String alt) {
         try {
             String string = reflectiveConfigGroup.getParams().get(key);
@@ -48,7 +48,6 @@ public class SafeConfig {
         }
         return alt;
     }
-    
 
     public int getIntegerStrict(String key) {
         String string = reflectiveConfigGroup.getParams().get(key);

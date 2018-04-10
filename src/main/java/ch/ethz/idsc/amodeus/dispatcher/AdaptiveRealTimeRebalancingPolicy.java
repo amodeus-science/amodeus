@@ -84,7 +84,7 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
         rebalancingPeriod = safeConfig.getInteger("rebalancingPeriod", 300);
         this.network = network;
-        distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getString("distanceHeuristics",//
+        distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getString("distanceHeuristics", //
                 DistanceHeuristics.EUCLIDEAN.name()).toUpperCase());
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
