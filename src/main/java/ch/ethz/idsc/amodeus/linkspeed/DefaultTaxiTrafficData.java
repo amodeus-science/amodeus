@@ -61,6 +61,7 @@ public class DefaultTaxiTrafficData implements TaxiTrafficData {
 
                 Tensor speedRecordings = lsData.getSpeedsAt(time);
                 double travelTime = speedRecordings.Get(0).number().doubleValue();
+                GlobalAssert.that(travelTime > 0.0);
                 ttData.setTravelTime(trafficData.getTimeSlot(time), travelTime);
 
             }
