@@ -83,7 +83,7 @@ public enum BipartiteMatchingUtilsTemp {
             }else{
                 double distNew = distanceFunctionAcc.getDistance(newTaxi, entry.getValue()) ;
                 double distAss = distanceFunctionAcc.getDistance(asgndTaxi, entry.getValue());
-                if(distNew < distAss){
+                if(distNew < distAss*0.99){
                     chckdMap.put(newTaxi, entry.getValue());
                 }
             }
