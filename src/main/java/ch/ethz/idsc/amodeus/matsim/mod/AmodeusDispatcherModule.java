@@ -4,10 +4,13 @@ package ch.ethz.idsc.amodeus.matsim.mod;
 import org.matsim.core.controler.AbstractModule;
 
 import ch.ethz.idsc.amodeus.dispatcher.AdaptiveRealTimeRebalancingPolicy;
+import ch.ethz.idsc.amodeus.dispatcher.AdaptiveRealTimeRebalancingPolicyTemp;
 import ch.ethz.idsc.amodeus.dispatcher.DemandSupplyBalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.DriveByDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.FeedforwardFluidicRebalancingPolicy;
+import ch.ethz.idsc.amodeus.dispatcher.FeedforwardFluidicRebalancingPolicyTemp;
 import ch.ethz.idsc.amodeus.dispatcher.GlobalBipartiteMatchingDispatcher;
+import ch.ethz.idsc.amodeus.dispatcher.GlobalBipartiteMatchingDispatcherTemp;
 import ch.ethz.matsim.av.framework.AVUtils;
 
 public class AmodeusDispatcherModule extends AbstractModule {
@@ -23,6 +26,18 @@ public class AmodeusDispatcherModule extends AbstractModule {
 
         bind(GlobalBipartiteMatchingDispatcher.Factory.class);
         AVUtils.bindDispatcherFactory(binder(), GlobalBipartiteMatchingDispatcher.class.getSimpleName()).to(GlobalBipartiteMatchingDispatcher.Factory.class);
+
+        bind(GlobalBipartiteMatchingDispatcherTemp.Factory.class);
+        AVUtils.bindDispatcherFactory(binder(), GlobalBipartiteMatchingDispatcherTemp.class.getSimpleName()).to(GlobalBipartiteMatchingDispatcherTemp.Factory.class);
+        
+        bind(FeedforwardFluidicRebalancingPolicyTemp.Factory.class);
+        AVUtils.bindDispatcherFactory(binder(), FeedforwardFluidicRebalancingPolicyTemp.class.getSimpleName()).to(FeedforwardFluidicRebalancingPolicyTemp.Factory.class);
+
+        bind(AdaptiveRealTimeRebalancingPolicyTemp.Factory.class);
+        AVUtils.bindDispatcherFactory(binder(), AdaptiveRealTimeRebalancingPolicyTemp.class.getSimpleName()).to(AdaptiveRealTimeRebalancingPolicyTemp.Factory.class);
+
+        
+ 
 
         /** dispatchers for PartitionedDispatcher */
 
