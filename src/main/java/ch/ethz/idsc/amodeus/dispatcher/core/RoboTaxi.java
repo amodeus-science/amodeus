@@ -157,7 +157,9 @@ public class RoboTaxi {
         if (status.equals(RoboTaxiStatus.STAY)) {
             return true;
         }
-        Task avT = getSchedule().getCurrentTask();
+        Task avT = getSchedule().getCurrentTask(); 
+        if(!(avT instanceof AVDriveTask))
+            return true;            
         GlobalAssert.that(avT instanceof AVDriveTask);
         AVDriveTask avDT = (AVDriveTask) avT;
         if (avDT.getPath().getLinkCount() == 1) {
