@@ -3,6 +3,7 @@ package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.Objects;
 
+import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.data.Vehicle;
@@ -13,6 +14,7 @@ import org.matsim.contrib.dvrp.util.LinkTimePair;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.schedule.AVDriveTask;
+import ch.ethz.matsim.av.schedule.AVStayTask;
 
 /** RoboTaxi is central classs to be used in all dispatchers. Dispatchers control
  * a fleet of RoboTaxis, each is uniquely associated to an AVVehicle object in
@@ -20,6 +22,8 @@ import ch.ethz.matsim.av.schedule.AVDriveTask;
  * 
  * @author Claudio Ruch */
 public class RoboTaxi {
+    static private final Logger logger = Logger.getLogger(RoboTaxi.class);
+    
     private final AVVehicle avVehicle;
     private RoboTaxiStatus status;
 
@@ -158,6 +162,13 @@ public class RoboTaxi {
             return true;
         }
         Task avT = getSchedule().getCurrentTask();
+        
+        if (avT instanceof AVStayTask) {
+            // TODO: For now, this works, but probably needs fixing somewhere upfront /sh, apr 2018
+            logger.warn("RoboTaxiStatus != STAY, but Schedule.getCurrentTask() == AVStayTask; probably needs fixing");
+            return true;
+        }
+        
         GlobalAssert.that(avT instanceof AVDriveTask);
         AVDriveTask avDT = (AVDriveTask) avT;
         if (avDT.getPath().getLinkCount() == 1) {
