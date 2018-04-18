@@ -13,6 +13,9 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 
+import ch.ethz.idsc.amodeus.dispatcher.util.distance_function.DistanceFunction;
+import ch.ethz.idsc.amodeus.dispatcher.util.distance_function.DistanceFunctionFactory;
+import ch.ethz.idsc.amodeus.dispatcher.util.distance_function.EuclideanDistanceFunctionFactory;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.framework.AVQSimPlugin;
 
@@ -45,5 +48,17 @@ public class AmodeusModule extends AbstractModule {
          * network here. Eventually Amodeus should be able to cope with what is defined by default. */
 
         return fullNetwork;
+    }
+
+    @Provides
+    @Singleton
+    public DistanceFunctionFactory provideDistanceFunctionFactory() {
+        return new EuclideanDistanceFunctionFactory();
+    }
+
+    @Provides
+    @Singleton
+    public DistanceFunction provideDistanceFunction(DistanceFunctionFactory factory, @Named(AVModule.AV_MODE) Network network) {
+        return factory.createDistanceFunction(network);
     }
 }

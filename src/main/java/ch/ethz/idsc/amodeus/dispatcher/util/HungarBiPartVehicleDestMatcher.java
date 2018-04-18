@@ -10,6 +10,7 @@ import java.util.Map;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.util.distance_function.DistanceFunction;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.util.math.HungarianAlgorithm;
 import ch.ethz.matsim.av.passenger.AVRequest;

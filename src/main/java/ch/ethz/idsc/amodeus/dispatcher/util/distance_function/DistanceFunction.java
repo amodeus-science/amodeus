@@ -1,5 +1,5 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.dispatcher.util;
+package ch.ethz.idsc.amodeus.dispatcher.util.distance_function;
 
 import org.matsim.api.core.v01.network.Link;
 
