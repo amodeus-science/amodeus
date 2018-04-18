@@ -2,17 +2,12 @@
 package ch.ethz.idsc.amodeus.traveldata;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
 import org.gnu.glpk.GLPKConstants;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
-import org.matsim.api.core.v01.population.Activity;
-import org.matsim.api.core.v01.population.Leg;
-import org.matsim.api.core.v01.population.Person;
-import org.matsim.api.core.v01.population.Plan;
-import org.matsim.api.core.v01.population.PlanElement;
-import org.matsim.api.core.v01.population.Population;
 
 import ch.ethz.idsc.amodeus.dispatcher.util.LPVehicleRebalancing;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
@@ -54,8 +49,8 @@ public class TravelData implements Serializable {
      * @param virtualNetworkIn
      * @param population
      * @param dtIn time step for calculation */
-    public TravelData(VirtualNetwork<Link> virtualNetworkIn, Network network, Population population, int dtIn) {
-        System.out.println("reading travel data for population of size " + population.getPersons().size());
+    public TravelData(VirtualNetwork<Link> virtualNetworkIn, Network network, Collection<TravelDataItem> items, int dtIn) {
+        System.out.println("Reading " + items.size() + " travel data items");
 
         virtualNetwork = virtualNetworkIn;
         virtualNetworkID = virtualNetworkIn.getvNetworkID();
@@ -73,37 +68,17 @@ public class TravelData implements Serializable {
         pij = Array.zeros(numberTimeSteps, virtualNetwork.getvNodesCount(), virtualNetwork.getvNodesCount());
         alphaijPSF = Array.zeros(numberTimeSteps, virtualNetwork.getvNodesCount(), virtualNetwork.getvNodesCount());
 
-        // fill based on population file
-        for (Person person : population.getPersons().values()) {
-            for (Plan plan : person.getPlans()) {
+        for (TravelDataItem item : items) {
+            int timeIndex = (int) Math.floor((item.time / dt));
+            int vNodeIndexFrom = virtualNetwork.getVirtualNode(item.startLink).getIndex();
+            int vNodeIndexTo = virtualNetwork.getVirtualNode(item.endLink).getIndex();
 
-                for (int i = 1; i < plan.getPlanElements().size() - 1; ++i) {
-                    PlanElement planElMins = plan.getPlanElements().get(i - 1);
-                    PlanElement planElMidl = plan.getPlanElements().get(i);
-                    PlanElement planElPlus = plan.getPlanElements().get(i + 1);
+            // add customer/dt to arrival rate
+            lambda.set(s -> s.add(RealScalar.of(dt).reciprocal()), timeIndex, vNodeIndexFrom);
 
-                    if (planElMidl instanceof Leg) {
-                        Leg leg = (Leg) planElMidl;
-                        if (leg.getMode().equals("av")) {
-                            // get time and vNode index
-                            double depTime = leg.getDepartureTime();
+            // add trips to pij (has to be normed later)
+            pij.set(s -> s.add(RealScalar.ONE), timeIndex, vNodeIndexFrom, vNodeIndexTo);
 
-                            int timeIndex = (int) Math.floor((depTime / dt));
-                            Link linkFrom = network.getLinks().get(((Activity) planElMins).getLinkId());
-                            Link linkTo = network.getLinks().get(((Activity) planElPlus).getLinkId());
-                            int vNodeIndexFrom = virtualNetwork.getVirtualNode(linkFrom).getIndex();
-                            int vNodeIndexTo = virtualNetwork.getVirtualNode(linkTo).getIndex();
-
-                            // add customer/dt to arrival rate
-                            lambda.set(s -> s.add(RealScalar.of(dt).reciprocal()), timeIndex, vNodeIndexFrom);
-
-                            // add trips to pij (has to be normed later)
-                            pij.set(s -> s.add(RealScalar.ONE), timeIndex, vNodeIndexFrom, vNodeIndexTo);
-
-                        }
-                    }
-                }
-            }
         }
 
         // norm pij such that it is row stochastic, i.e. sum(p_ij)_j = 1 for all i and all time indexes
