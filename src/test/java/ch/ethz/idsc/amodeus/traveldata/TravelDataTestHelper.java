@@ -14,8 +14,8 @@ public class TravelDataTestHelper {
         return new TravelDataTestHelper(vNCreated, vNSaved);
     }
 
-    private TravelData tDCreated;
-    private TravelData tDSaved;
+    private final TravelData tDCreated;
+    private final TravelData tDSaved;
 
     private TravelDataTestHelper(VirtualNetwork<Link> vNCreated, VirtualNetwork<Link> vNSaved) throws Exception {
         tDCreated = TravelDataGet.readDefault(vNCreated);

@@ -46,7 +46,6 @@ import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDispatcherModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusModule;
 import ch.ethz.idsc.amodeus.prep.MatsimKMEANSVirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
-import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.traveldata.TravelDataGet;
 import ch.ethz.idsc.amodeus.traveldata.iterative.IterativeTravelDataModule;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
@@ -170,6 +169,7 @@ public class StandardMATSimScenarioTest {
         controler.addOverridingModule(new AbstractModule() {
             @Override
             public void install() {
+                // ---
             }
 
             @Provides

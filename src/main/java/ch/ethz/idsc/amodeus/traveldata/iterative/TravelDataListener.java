@@ -18,6 +18,7 @@ import org.matsim.core.controler.listener.IterationEndsListener;
 
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.traveldata.TravelDataItem;
+import ch.ethz.idsc.amodeus.traveldata.TravelDataItems;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 
 public class TravelDataListener implements PersonDepartureEventHandler, PersonArrivalEventHandler, IterationEndsListener {
@@ -52,7 +53,7 @@ public class TravelDataListener implements PersonDepartureEventHandler, PersonAr
         if (item != null) {
             item.endLink = network.getLinks().get(event.getLinkId());
 
-            if (virtualNetwork.hasVirtualNodeFor(item.startLink) && virtualNetwork.hasVirtualNodeFor(item.endLink)) {
+            if (TravelDataItems.isContained(virtualNetwork, item)) {
                 data.add(item);
             }
         }

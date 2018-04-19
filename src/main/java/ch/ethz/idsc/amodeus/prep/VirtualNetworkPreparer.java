@@ -10,7 +10,6 @@ import org.matsim.api.core.v01.population.Population;
 
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
-import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.traveldata.TravelDataGet;
 import ch.ethz.idsc.amodeus.traveldata.TravelDataIO;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;

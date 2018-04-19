@@ -61,7 +61,7 @@ public enum TravelDataGet {
                     item.startLink = network.getLinks().get(trip.getOriginActivity().getLinkId());
                     item.endLink = network.getLinks().get(trip.getDestinationActivity().getLinkId());
 
-                    if (virtualNetwork.hasVirtualNodeFor(item.startLink) && virtualNetwork.hasVirtualNodeFor(item.endLink)) {
+                    if (TravelDataItems.isContained(virtualNetwork, item)) {
                         items.add(item);
                     }
                 }
