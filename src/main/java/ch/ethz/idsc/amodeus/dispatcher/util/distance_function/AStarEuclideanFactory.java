@@ -66,7 +66,7 @@ public class AStarEuclideanFactory implements LeastCostPathCalculatorFactory {
         FastRouterDelegateFactory fastRouterFactory = new ArrayFastRouterDelegateFactory();
 
         try {
-            Constructor<FastAStarEuclidean> constructor = FastAStarEuclidean.class.getDeclaredConstructor(RoutingNetwork.class, PreProcessLandmarks.class, TravelDisutility.class,
+            Constructor<FastAStarEuclidean> constructor = FastAStarEuclidean.class.getDeclaredConstructor(RoutingNetwork.class, PreProcessEuclidean.class, TravelDisutility.class,
                     TravelTime.class, double.class, FastRouterDelegateFactory.class);
 
             constructor.setAccessible(true);

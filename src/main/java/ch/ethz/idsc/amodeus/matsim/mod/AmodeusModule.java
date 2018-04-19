@@ -16,13 +16,20 @@ import com.google.inject.name.Named;
 import ch.ethz.idsc.amodeus.dispatcher.util.distance_function.DistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.distance_function.DistanceFunctionFactory;
 import ch.ethz.idsc.amodeus.dispatcher.util.distance_function.EuclideanDistanceFunctionFactory;
+import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.framework.AVQSimPlugin;
 
 public class AmodeusModule extends AbstractModule {
+    final private ScenarioOptions scenarioOptions;
+
+    public AmodeusModule(ScenarioOptions scenarioOptions) {
+        this.scenarioOptions = scenarioOptions;
+    }
+
     @Override
     public void install() {
-        // ---
+        install(new AmodeusDistanceFunctionModule(scenarioOptions));
     }
 
     @Provides

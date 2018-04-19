@@ -22,6 +22,7 @@ import ch.ethz.idsc.amodeus.dispatcher.util.FeasibleRebalanceCreator;
 import ch.ethz.idsc.amodeus.dispatcher.util.HungarBiPartVehicleDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.distance_function.DistanceFunction;
+import ch.ethz.idsc.amodeus.dispatcher.util.distance_function.DistanceFunctionFactory;
 import ch.ethz.idsc.amodeus.dispatcher.util.distance_function.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
@@ -181,7 +182,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
         private Config config;
 
         @Inject
-        private DistanceFunction distanceFunction;
+        private Map<String, DistanceFunctionFactory> distanceFunctionFactories;
 
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig) {
@@ -190,6 +191,10 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
             AbstractVehicleDestMatcher abstractVehicleDestMatcher = new HungarBiPartVehicleDestMatcher(new EuclideanDistanceFunction());
 
+            DistanceFunction distanceFunction = distanceFunctionFactories //
+                    .get(avconfig.getParams().getOrDefault("distanceFunction", "euclidean")) //
+                    .createDistanceFunction(network);
+            
             return new FeedforwardFluidicRebalancingPolicy(config, avconfig, generatorConfig, travelTime, router, eventsManager, network, virtualNetwork, abstractVirtualNodeDest,
                     abstractVehicleDestMatcher, travelData, distanceFunction);
         }

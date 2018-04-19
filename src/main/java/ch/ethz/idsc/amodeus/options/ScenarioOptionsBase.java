@@ -34,6 +34,8 @@ public enum ScenarioOptionsBase {
     public static final String VIRTUALNETWORKCREATORIDENTIFIER = "virtualNetworkCreator";
     public static final String WAITFORCLIENTSIDENTIFIER = "waitForClients";
     public static final String SHAPEFILEIDENTIFIER = "shapeFile";
+    public static final String NUMBEROFASTARLANDMARKS = "numberOfAStarLandmarks";
+    public static final String ASTAROVERDOFACTOR = "astarOverdoFactor";
 
     public static Properties getDefault() {
         Properties properties = new Properties();
@@ -54,6 +56,8 @@ public enum ScenarioOptionsBase {
         properties.setProperty(VIRTUALNETWORKCREATORIDENTIFIER, VirtualNetworkCreators.KMEANS.name());
         properties.setProperty(POPULATIONCUTTERIDENTIFIER, PopulationCutters.NETWORKBASED.name());
         properties.setProperty(SHAPEFILEIDENTIFIER, "AbsoluteShapeFileName");
+        properties.setProperty(NUMBEROFASTARLANDMARKS, "16");
+        properties.setProperty(ASTAROVERDOFACTOR, "1.0");
         return properties;
     }
 

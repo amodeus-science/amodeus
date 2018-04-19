@@ -19,6 +19,10 @@ public class ScenarioOptions {
         return new ScenarioOptions(properties);
     }
 
+    public static ScenarioOptions create() {
+        return new ScenarioOptions(ScenarioOptionsBase.getDefault());
+    }
+
     private ScenarioOptions(Properties properties) {
         this.properties = properties;
     }
@@ -99,6 +103,14 @@ public class ScenarioOptions {
         return shapeFile.exists() ? shapeFile : null;
     }
 
+    public int getNumberOfAStarLandmarks() {
+        return getInt(ScenarioOptionsBase.NUMBEROFASTARLANDMARKS);
+    }
+
+    public double getAStarOverdoFactor() {
+        return getDouble(ScenarioOptionsBase.ASTAROVERDOFACTOR);
+    }
+
     // base access functions ==================================================
     public final String getString(String key) {
         return properties.getProperty(key);
@@ -112,4 +124,7 @@ public class ScenarioOptions {
         return Integer.valueOf(properties.getProperty(key));
     }
 
+    public final double getDouble(String key) {
+        return Double.valueOf(properties.getProperty(key));
+    }
 }

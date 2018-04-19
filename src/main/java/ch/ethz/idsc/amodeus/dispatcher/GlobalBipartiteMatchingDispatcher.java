@@ -1,6 +1,8 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher;
 
+import java.util.Map;
+
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
@@ -12,6 +14,7 @@ import com.google.inject.name.Named;
 import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatchingUtils;
 import ch.ethz.idsc.amodeus.dispatcher.util.distance_function.DistanceFunction;
+import ch.ethz.idsc.amodeus.dispatcher.util.distance_function.DistanceFunctionFactory;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -86,10 +89,14 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
         private Config config;
 
         @Inject
-        private DistanceFunction distanceFunction;
+        private Map<String, DistanceFunctionFactory> distanceFunctionFactories;
 
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig) {
+            DistanceFunction distanceFunction = distanceFunctionFactories //
+                    .get(avconfig.getParams().getOrDefault("distanceFunction", "euclidean")) //
+                    .createDistanceFunction(network);
+
             return new GlobalBipartiteMatchingDispatcher( //
                     network, config, avconfig, travelTime, router, eventsManager, distanceFunction);
         }
