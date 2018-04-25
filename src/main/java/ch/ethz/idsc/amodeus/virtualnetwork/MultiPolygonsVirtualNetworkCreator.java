@@ -68,6 +68,12 @@ public class MultiPolygonsVirtualNetworkCreator<T, U> {
                     vNodeTMap.get(virtualNode).add(t);
                 }
             }
+            
+            // ignore polygons that do not contain any link
+            if(vNodeTMap.get(virtualNode).isEmpty()) {
+                vNodeTMap.remove(virtualNode);
+                vNodeIndex--;
+            }
         }
 
         CreatorUtils.addToVNodes(vNodeTMap, nameOf, virtualNetwork);
