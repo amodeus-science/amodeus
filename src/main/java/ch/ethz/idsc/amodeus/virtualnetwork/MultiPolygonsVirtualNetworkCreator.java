@@ -50,24 +50,36 @@ public class MultiPolygonsVirtualNetworkCreator<T, U> {
         Map<VirtualNode<T>, Set<T>> vNodeTMap = new LinkedHashMap<>();
         int vNodeIndex = 0;
         for (MultiPolygon polygon : multipolygons.getPolygons()) {
-            String indexStr = VirtualNodes.getIdString(vNodeIndex);
-            System.out.println(indexStr);
-            Tensor centroid = Tensors.vector(polygon.getCentroid().getX(), //
-                    polygon.getCentroid().getY());
-            VirtualNode<T> virtualNode = //
-                    new VirtualNode<>(vNodeIndex, indexStr, new HashMap<>(), centroid);
-            vNodeTMap.put(virtualNode, new LinkedHashSet<T>());
-            vNodeIndex++;
 
+            final Set<T> set = new LinkedHashSet<>();
             // associate links to the node in which they are contained
             for (T t : elements) {
                 Tensor tPos = locationOf.apply(t);
                 Coordinate coordinate = new Coordinate(tPos.Get(0).number().doubleValue(), //
                         tPos.Get(1).number().doubleValue());
-                if (polygon.contains(factory.createPoint(coordinate))) {
-                    vNodeTMap.get(virtualNode).add(t);
-                }
+                if (polygon.contains(factory.createPoint(coordinate)))
+                    set.add(t);
             }
+
+            if (!set.isEmpty()) {
+
+                String indexStr = VirtualNodes.getIdString(vNodeIndex);
+                System.out.println(indexStr);
+                Tensor centroid = Tensors.vector( //
+                        polygon.getCentroid().getX(), //
+                        polygon.getCentroid().getY());
+                final VirtualNode<T> virtualNode = //
+                        new VirtualNode<>(vNodeIndex, indexStr, new HashMap<>(), centroid);
+                vNodeTMap.put(virtualNode, set);
+                ++vNodeIndex;
+            }
+
+            // // ignore polygons that do not contain any link
+            // if (vNodeTMap.get(virtualNode).isEmpty()) {
+            // System.err.println("removing virtual node");
+            // vNodeTMap.remove(virtualNode);
+            // vNodeIndex--;
+            // }
         }
 
         CreatorUtils.addToVNodes(vNodeTMap, nameOf, virtualNetwork);

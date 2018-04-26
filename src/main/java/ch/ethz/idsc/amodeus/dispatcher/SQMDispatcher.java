@@ -133,7 +133,7 @@ public class SQMDispatcher extends PartitionedDispatcher {
     }
 
     /** Returns the nearest {@link Link}'s to the according {@link VirtualNode}'s.
-     * Using either LinkUtils.getLinkfromCoord or NetworkUtils.getNearestLink.
+     * Using fastLinkLookup
      * 
      * @param nodes
      *            {@link Collection} of {@link VirtualNode}'s which are the virtual
@@ -143,34 +143,17 @@ public class SQMDispatcher extends PartitionedDispatcher {
      * @author fluric */
     private ArrayList<Link> assignNodesToNearestLinks(Collection<VirtualNode<Link>> nodes) {
         ArrayList<Link> list = new ArrayList<>();
-        Tensor center;
         Coord coord;
 
-        System.out.println("The assigned Links are:");
-
         for (VirtualNode<Link> node : nodes) {
-            // get the center coordinates
-            center = node.getCoord();
-            coord = new Coord((double) center.Get(0).number(), (double) center.Get(1).number());
-            System.out.println("center of virtual station: " + center.toString());
+            // get the center coordinate
+            coord = new Coord((double) node.getCoord().Get(0).number(), (double) node.getCoord().Get(1).number());
 
             // find the closest link
+            int index = fastLinkLookup.getLinkFromXY(coord);
+            Link closest = MatsimStaticDatabase.INSTANCE.getOsmLink(index).link;
 
-            // method 1: NetworkUtils
-            Link closestNU = NetworkUtils.getNearestLink(network, coord);
-            System.out.println("with NetworkUtils: " + closestNU.getCoord().toString());
-
-            // method 2: LinkUtils
-            // always use transformation coords_toWGS84 before using
-            // LinkUtils.getLinkfromCoord
-            int index = fastLinkLookup.getLinkFromWGS84(coords_toWGS84.transform(coord));
-            Link closestLU = MatsimStaticDatabase.INSTANCE.getOsmLink(index).link;
-            System.out.println("with LinkUtils: " + closestLU.getCoord().toString());
-
-            System.out.println("distance from center with NetworkUtils: " + CoordUtils.calcEuclideanDistance(closestNU.getCoord(), coord));
-            System.out.println("distance from center with LinkUtils: " + CoordUtils.calcEuclideanDistance(closestLU.getCoord(), coord));
-
-            list.add(closestLU);
+            list.add(closest);
         }
 
         return list;

@@ -3,6 +3,7 @@ package ch.ethz.idsc.amodeus.gfx;
 
 import java.awt.Point;
 import java.awt.Shape;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -39,24 +40,29 @@ import ch.ethz.idsc.tensor.opt.ConvexHull;
 
     Map<VirtualNode<Link>, Shape> getShapes(AmodeusComponent amodeusComponent) {
         Map<VirtualNode<Link>, Shape> map = new LinkedHashMap<>(); // ordering matters
-        for (Entry<VirtualNode<Link>, Tensor> entry : convexHulls.entrySet()) {
-            Tensor hull = entry.getValue();
-            Path2D path2d = new Path2D.Double();
-            boolean init = false;
-            for (Tensor vector : hull) {
-                Coord coord = new Coord( //
-                        vector.Get(0).number().doubleValue(), //
-                        vector.Get(1).number().doubleValue());
-                Point point = amodeusComponent.getMapPositionAlways(coord);
-                if (!init) {
-                    init = true;
-                    path2d.moveTo(point.getX(), point.getY());
-                } else
-                    path2d.lineTo(point.getX(), point.getY());
-            }
-            path2d.closePath();
-            map.put(entry.getKey(), path2d);
-        }
+        for (Entry<VirtualNode<Link>, Tensor> entry : convexHulls.entrySet())
+            map.put(entry.getKey(), createShape(amodeusComponent, entry.getValue()));
         return map;
+    }
+
+    private static Shape createShape(AmodeusComponent amodeusComponent, Tensor hull) {
+        if (Tensors.isEmpty(hull))
+            return new Ellipse2D.Double(0, 0, 0, 0);
+
+        Path2D path2d = new Path2D.Double();
+        boolean init = false;
+        for (Tensor vector : hull) {
+            Coord coord = new Coord( //
+                    vector.Get(0).number().doubleValue(), //
+                    vector.Get(1).number().doubleValue());
+            Point point = amodeusComponent.getMapPositionAlways(coord);
+            if (!init) {
+                init = true;
+                path2d.moveTo(point.getX(), point.getY());
+            } else
+                path2d.lineTo(point.getX(), point.getY());
+        }
+        path2d.closePath();
+        return path2d;
     }
 }

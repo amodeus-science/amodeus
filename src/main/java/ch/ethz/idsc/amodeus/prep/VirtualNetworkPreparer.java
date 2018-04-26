@@ -33,10 +33,13 @@ public enum VirtualNetworkPreparer {
         VirtualNetworkIO.toByte(new File(vnDir, scenOptions.getVirtualNetworkName()), virtualNetwork);
         System.out.println("saved virtual network byte format to : " + new File(vnDir, scenOptions.getVirtualNetworkName()));
 
-        // generate travelData
-        TravelData travelData = new TravelData(virtualNetwork, network, population, scenOptions.getdtTravelData());
-        TravelDataIO.write(new File(vnDir, scenOptions.getTravelDataName()), travelData);
-        System.out.println("saved travelData byte format to : " + new File(vnDir, scenOptions.getTravelDataName()));
+        // generate travelData, disabled if travelData=0
+        int dt = scenOptions.getdtTravelData();
+        if (0 < dt) {
+            TravelData travelData = new TravelData(virtualNetwork, network, population, dt);
+            TravelDataIO.write(new File(vnDir, scenOptions.getTravelDataName()), travelData);
+            System.out.println("saved travelData byte format to : " + new File(vnDir, scenOptions.getTravelDataName()));
+        }
 
         virtualNetwork.printVirtualNetworkInfo();
         System.out.println("successfully converted simulation data files from in " + MultiFileTools.getWorkingDirectory());
