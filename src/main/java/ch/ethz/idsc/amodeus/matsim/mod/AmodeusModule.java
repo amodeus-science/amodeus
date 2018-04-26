@@ -13,9 +13,9 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 
-import ch.ethz.idsc.amodeus.dispatcher.util.distance_function.DistanceFunction;
-import ch.ethz.idsc.amodeus.dispatcher.util.distance_function.DistanceFunctionFactory;
-import ch.ethz.idsc.amodeus.dispatcher.util.distance_function.EuclideanDistanceFunctionFactory;
+import ch.ethz.idsc.amodeus.dispatcher.distance.DistanceFunction;
+import ch.ethz.idsc.amodeus.dispatcher.distance.DistanceFunctionFactory;
+import ch.ethz.idsc.amodeus.dispatcher.distance.EuclideanDistanceFunctionFactory;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.framework.AVQSimPlugin;

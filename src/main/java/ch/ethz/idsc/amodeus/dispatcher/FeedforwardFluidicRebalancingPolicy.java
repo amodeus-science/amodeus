@@ -15,15 +15,15 @@ import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.PartitionedDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.distance.DistanceFunction;
+import ch.ethz.idsc.amodeus.dispatcher.distance.DistanceFunctionFactory;
+import ch.ethz.idsc.amodeus.dispatcher.distance.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVehicleDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatchingUtils;
 import ch.ethz.idsc.amodeus.dispatcher.util.FeasibleRebalanceCreator;
 import ch.ethz.idsc.amodeus.dispatcher.util.HungarBiPartVehicleDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
-import ch.ethz.idsc.amodeus.dispatcher.util.distance_function.DistanceFunction;
-import ch.ethz.idsc.amodeus.dispatcher.util.distance_function.DistanceFunctionFactory;
-import ch.ethz.idsc.amodeus.dispatcher.util.distance_function.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
@@ -194,7 +194,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
             DistanceFunction distanceFunction = distanceFunctionFactories //
                     .get(avconfig.getParams().getOrDefault("distanceFunction", "euclidean")) //
                     .createDistanceFunction(network);
-            
+
             return new FeedforwardFluidicRebalancingPolicy(config, avconfig, generatorConfig, travelTime, router, eventsManager, network, virtualNetwork, abstractVirtualNodeDest,
                     abstractVehicleDestMatcher, travelData, distanceFunction);
         }

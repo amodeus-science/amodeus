@@ -1,9 +1,10 @@
-package ch.ethz.idsc.amodeus.dispatcher.util.distance_function;
+package ch.ethz.idsc.amodeus.dispatcher.distance;
 
 import org.matsim.api.core.v01.network.Network;
 
+/** @author sebhoerl */
 public class AStarEuclideanDistanceFunctionFactory implements DistanceFunctionFactory {
-    final private double overdoFactor;
+    private final double overdoFactor;
 
     public AStarEuclideanDistanceFunctionFactory(double overdoFactor) {
         this.overdoFactor = overdoFactor;

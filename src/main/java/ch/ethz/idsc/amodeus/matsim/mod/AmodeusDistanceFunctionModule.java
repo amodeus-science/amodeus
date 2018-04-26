@@ -6,11 +6,11 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.multibindings.MapBinder;
 
-import ch.ethz.idsc.amodeus.dispatcher.util.distance_function.AStarEuclideanDistanceFunctionFactory;
-import ch.ethz.idsc.amodeus.dispatcher.util.distance_function.AStarLandmarksDistanceFunctionFactory;
-import ch.ethz.idsc.amodeus.dispatcher.util.distance_function.DijkstraDistanceFunctionFactory;
-import ch.ethz.idsc.amodeus.dispatcher.util.distance_function.DistanceFunctionFactory;
-import ch.ethz.idsc.amodeus.dispatcher.util.distance_function.EuclideanDistanceFunctionFactory;
+import ch.ethz.idsc.amodeus.dispatcher.distance.AStarEuclideanDistanceFunctionFactory;
+import ch.ethz.idsc.amodeus.dispatcher.distance.AStarLandmarksDistanceFunctionFactory;
+import ch.ethz.idsc.amodeus.dispatcher.distance.DijkstraDistanceFunctionFactory;
+import ch.ethz.idsc.amodeus.dispatcher.distance.DistanceFunctionFactory;
+import ch.ethz.idsc.amodeus.dispatcher.distance.EuclideanDistanceFunctionFactory;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 
 public class AmodeusDistanceFunctionModule extends AbstractModule {
