@@ -35,7 +35,7 @@ public enum VirtualNetworkPreparer {
 
         // generate travelData, disabled if travelData=0
         int dt = scenOptions.getdtTravelData();
-        if (dt > 0) {
+        if (0 < dt) {
             TravelData travelData = new TravelData(virtualNetwork, network, population, dt);
             TravelDataIO.write(new File(vnDir, scenOptions.getTravelDataName()), travelData);
             System.out.println("saved travelData byte format to : " + new File(vnDir, scenOptions.getTravelDataName()));
