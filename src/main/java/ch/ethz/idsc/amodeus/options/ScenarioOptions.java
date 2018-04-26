@@ -69,6 +69,7 @@ public class ScenarioOptions {
                 properties.getProperty(ScenarioOptionsBase.LOCATIONSPECIDENTIFIER));
     }
 
+    /** @return non-negative number, careful: may also return 0 */
     public int getdtTravelData() {
         return getInt(ScenarioOptionsBase.DTTRAVELDATAIDENTIFIER);
     }
