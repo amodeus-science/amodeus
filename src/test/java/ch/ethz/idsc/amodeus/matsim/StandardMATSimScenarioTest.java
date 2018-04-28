@@ -77,7 +77,7 @@ public class StandardMATSimScenarioTest {
         this.dispatcher = dispatcher;
     }
 
-    private void makeMultimodal(Scenario scenario) {
+    private static void makeMultimodal(Scenario scenario) {
         // Add pt-links to the network to test a multimodal network as it appears in standard MATSim use cases
 
         Network network = scenario.getNetwork();
@@ -117,7 +117,7 @@ public class StandardMATSimScenarioTest {
         }
     }
 
-    private void fixInvalidActivityLocations(Network network, Population population) {
+    private static void fixInvalidActivityLocations(Network network, Population population) {
         // In the test fixture there are agents who start and end activities on non-car links. This should not be happen and is fixed here.
 
         Network roadNetwork = NetworkUtils.createNetwork();
@@ -166,6 +166,7 @@ public class StandardMATSimScenarioTest {
         controler.addOverridingModule(new AbstractModule() {
             @Override
             public void install() {
+                // ---
             }
 
             @Provides

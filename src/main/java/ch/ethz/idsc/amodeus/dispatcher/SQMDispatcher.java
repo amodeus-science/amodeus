@@ -13,10 +13,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
-import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.router.util.TravelTime;
-import org.matsim.core.utils.geometry.CoordUtils;
-import org.matsim.core.utils.geometry.CoordinateTransformation;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -24,13 +21,12 @@ import com.google.inject.name.Named;
 import ch.ethz.idsc.amodeus.dispatcher.core.PartitionedDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
 import ch.ethz.idsc.amodeus.net.FastLinkLookup;
+import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkGet;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNode;
-import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.config.AVGeneratorConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
@@ -54,9 +50,7 @@ public class SQMDispatcher extends PartitionedDispatcher {
     private final Map<VirtualNode<Link>, RoboTaxi> nodeToTaxi = new HashMap<>();
     private final Map<RoboTaxi, VirtualNode<Link>> taxiToNode = new HashMap<>();
     private final Map<VirtualNode<Link>, Link> nodeToLink = new HashMap<>();
-    private final Network network;
     private final List<Link> virtualCenters;
-    private final CoordinateTransformation coords_toWGS84 = MatsimStaticDatabase.INSTANCE.referenceFrame.coords_toWGS84();
     private final FastLinkLookup fastLinkLookup;
 
     protected SQMDispatcher(//
@@ -71,7 +65,6 @@ public class SQMDispatcher extends PartitionedDispatcher {
         super(config, avconfig, travelTime, router, eventsManager, virtualNetwork);
         GlobalAssert.that(virtualNetwork != null);
         GlobalAssert.that((int) generatorConfig.getNumberOfVehicles() == virtualNetwork.getvNodesCount());
-        this.network = network;
         this.fastLinkLookup = new FastLinkLookup(network, MatsimStaticDatabase.INSTANCE);
         this.virtualCenters = assignNodesToNearestLinks(virtualNetwork.getVirtualNodes());
     }
