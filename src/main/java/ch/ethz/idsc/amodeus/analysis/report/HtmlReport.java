@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
+import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 public class HtmlReport implements AnalysisReport {
@@ -120,6 +121,11 @@ public class HtmlReport implements AnalysisReport {
             File avFile = new File(configFile.getParentFile(), "av.xml");
             Files.copy(avFile.toPath(), dest.toPath());
         }
+        {// save scenario Options
+            File dest = new File(reportFolder, ScenarioOptionsBase.getOptionsFileName());
+            scenarioOptions.saveProperties(dest);
+        }
+
     }
 
 }

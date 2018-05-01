@@ -8,6 +8,7 @@ import org.matsim.core.utils.misc.Time;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.ScenarioParameters;
+import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 
 public class ScenarioParametersHtml implements HtmlReportElement {
 
@@ -27,6 +28,7 @@ public class ScenarioParametersHtml implements HtmlReportElement {
         htmlUtils.newLine();
         htmlUtils.insertLink("av.xml", "AV File");
         htmlUtils.insertLink("av_config.xml", "AV_Config File");
+        htmlUtils.insertLink(ScenarioOptionsBase.getOptionsFileName(), "Amodeus Properties File");
         htmlUtils.newLine();
         htmlUtils.insertTextLeft("Dispatcher:" + //
                 "\nRebalancing Period:" + //

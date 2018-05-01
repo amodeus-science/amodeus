@@ -16,6 +16,7 @@ import javax.swing.JCheckBox;
 
 import org.matsim.api.core.v01.Coord;
 
+import ch.ethz.idsc.amodeus.dispatcher.core.RequestStatus;
 import ch.ethz.idsc.amodeus.net.OsmLink;
 import ch.ethz.idsc.amodeus.net.RequestContainer;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
@@ -51,7 +52,10 @@ public class RequestsLayer extends ViewerLayer {
                 // all streets have positive indexes
                 GlobalAssert.that(entry.getKey() >= 0);
                 OsmLink osmLink = amodeusComponent.db.getOsmLink(entry.getKey());
-                final int size = entry.getValue().size();
+                // Only add requests which haven't been picked up to HeatMap
+                Long size = entry.getValue().stream() //
+                        .filter(rc -> rc.requestStatus.compareTo(RequestStatus.PICKUP) <= 0) //
+                        .collect(Collectors.counting());
                 for (int count = 0; count < size; ++count) {
                     Coord coord = osmLink.getAt(count / (double) size);
                     requestHeatMap.addPoint(coord.getX(), coord.getY());

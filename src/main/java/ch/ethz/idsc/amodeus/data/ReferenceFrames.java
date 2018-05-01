@@ -2,8 +2,10 @@
 package ch.ethz.idsc.amodeus.data;
 
 import org.matsim.core.utils.geometry.CoordinateTransformation;
+import org.matsim.core.utils.geometry.transformations.CH1903LV03PlustoWGS84;
 import org.matsim.core.utils.geometry.transformations.GeotoolsTransformation;
 import org.matsim.core.utils.geometry.transformations.IdentityTransformation;
+import org.matsim.core.utils.geometry.transformations.WGS84toCH1903LV03Plus;
 
 public enum ReferenceFrames implements ReferenceFrame {
     IDENTITY( //
@@ -11,7 +13,13 @@ public enum ReferenceFrames implements ReferenceFrame {
             new IdentityTransformation()), //
     SANFRANCISCO( //
             new GeotoolsTransformation("EPSG:26743", "WGS84"), //
-            new GeotoolsTransformation("WGS84", "EPSG:26743"))//
+            new GeotoolsTransformation("WGS84", "EPSG:26743")), //
+    SIOUXFALLS( //
+            new SiouxFallstoWGS84(), //
+            new WGS84toSiouxFalls()), //
+    SWITZERLAND( //
+            new CH1903LV03PlustoWGS84(), //
+            new WGS84toCH1903LV03Plus()), //
     ;
     // ---
     private final CoordinateTransformation coords_toWGS84;
