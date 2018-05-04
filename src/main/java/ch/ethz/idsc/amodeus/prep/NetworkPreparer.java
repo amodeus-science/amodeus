@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.core.network.algorithms.NetworkCleaner;
 import org.matsim.core.network.io.NetworkWriter;
 
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
@@ -27,6 +28,10 @@ public enum NetworkPreparer {
         modifiedNetwork.setCapacityPeriod(network.getCapacityPeriod());
         modifiedNetwork.setEffectiveCellSize(network.getEffectiveCellSize());
         modifiedNetwork.setEffectiveLaneWidth(network.getEffectiveLaneWidth());
+        
+        /** make sure network is a complete graph where every node is reachable from every other node*/
+        NetworkCleaner cleaner = new NetworkCleaner();
+        NetworkCleaner.reduceToBiggestCluster(modifiedNetwork,cleaner.searchBiggestCluster(modifiedNetwork));
 
         final File fileExportGz = new File(scenOptions.getPreparedNetworkName() + ".xml.gz");
         final File fileExport = new File(scenOptions.getPreparedNetworkName() + ".xml");
