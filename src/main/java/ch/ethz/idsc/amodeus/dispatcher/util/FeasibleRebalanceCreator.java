@@ -43,7 +43,7 @@ public enum FeasibleRebalanceCreator {
                     .get(availableVehicles.keySet().stream().filter(v -> v.getIndex() == finalI).findAny().get()).size();
             // if number of outoing vehicles too small, reduce proportionally
             if (availableVehvNode < outgoingVeh) {
-                long shrinkingFactor = ((long) availableVehvNode / ((long) outgoingVeh));
+                double shrinkingFactor = ((double) availableVehvNode / ((double) outgoingVeh));
                 Tensor newRow = Floor.of(rebalanceInput.get(i).multiply(RealScalar.of(shrinkingFactor)));
                 feasibleRebalance.set(newRow, i);
             }
