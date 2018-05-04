@@ -24,14 +24,16 @@ public class DefaultTaxiTrafficData implements TaxiTrafficData {
     private final int numSlots;
     private final Network network;
     private static final int DAYLENGTH = 86400; // TODO magic const.
+    private final double alpha;
 
-    public DefaultTaxiTrafficData(LinkSpeedDataContainer lsData, int timeBinSize, Network network) {
+    public DefaultTaxiTrafficData(LinkSpeedDataContainer lsData, int timeBinSize, Network network, double alpha) {
         System.out.println("Loading LinkSpeedData into Simulation");
         GlobalAssert.that(Objects.nonNull(lsData));
         this.lsData = lsData;
         this.timeBinSize = timeBinSize;
         this.numSlots = (DAYLENGTH / timeBinSize);
         this.network = network;
+        this.alpha = alpha;        
         this.createTravelTimeData();
     }
 
@@ -62,8 +64,13 @@ public class DefaultTaxiTrafficData implements TaxiTrafficData {
 
                 Tensor speedRecordings = lsData.getSpeedsAt(time);
                 double speedRecorded = speedRecordings.Get(0).number().doubleValue();
-                GlobalAssert.that(speedRecorded > 0.0);
-                double travelTime = link.getLength() / speedRecorded;
+                /** for fast calibration */
+                double freespeed = link.getFreespeed();
+                double speedRecalpha = freespeed - (alpha/1.0)*(freespeed-speedRecorded);
+
+                /** for fast calibration end */                                
+                GlobalAssert.that(speedRecalpha > 0.0);
+                double travelTime = link.getLength() / speedRecalpha;
                 ttData.setTravelTime(trafficData.getTimeSlot(time), travelTime);
 
             }

@@ -15,11 +15,17 @@ import org.matsim.core.mobsim.qsim.qnetsimengine.linkspeedcalculator.LinkSpeedCa
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 
+import ch.ethz.idsc.owl.data.GlobalAssert;
+
 public class TrafficDataModule extends AbstractModule {
     private final LinkSpeedDataContainer lsData;
+    private final double alpha;
 
-    public TrafficDataModule(LinkSpeedDataContainer lsData) {
+    public TrafficDataModule(LinkSpeedDataContainer lsData, double alpha) {
+        GlobalAssert.that(alpha >= 0.0); // alpha = 0.0 --> freeflow speeds.
+        GlobalAssert.that(alpha <= 1.0); // alpha = 1.0 --> maximally reduced speeds.
         this.lsData = Objects.isNull(lsData) ? new LinkSpeedDataContainer() : lsData;
+        this.alpha = alpha;
     }
 
     @Provides
@@ -34,7 +40,7 @@ public class TrafficDataModule extends AbstractModule {
     @Provides
     @Singleton
     public DefaultTaxiTrafficData provideTaxiTrafficData(Network network, TravelTimeCalculatorConfigGroup config) {
-        return new DefaultTaxiTrafficData(lsData, config.getTraveltimeBinSize(), network);
+        return new DefaultTaxiTrafficData(lsData, config.getTraveltimeBinSize(), network, alpha);
     }
 
     @Override
