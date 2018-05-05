@@ -1,7 +1,7 @@
 before_install:
-  - sudo apt-get -qq update
-  - sudo apt-get install swig
-  - ./travis_script.sh
+  - sudo apt-get -qq update > /dev/null
+  - sudo apt-get install swig > /dev/null
+  - ./travis_script.sh > /dev/null
   - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/travis/glpk/lib/jni
 
 language: java
