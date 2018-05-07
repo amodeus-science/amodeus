@@ -1,6 +1,8 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher;
 
+import java.util.Map;
+
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
@@ -10,9 +12,9 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
+import ch.ethz.idsc.amodeus.dispatcher.distance.DistanceFunction;
+import ch.ethz.idsc.amodeus.dispatcher.distance.DistanceFunctionFactory;
 import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatchingUtils;
-import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
-import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -27,7 +29,6 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
 
     private final int dispatchPeriod;
-    private final DistanceHeuristics distanceHeuristics;
     private Tensor printVals = Tensors.empty();
     private final DistanceFunction distanceFunction;
     private final Network network;
@@ -38,14 +39,12 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
             AVDispatcherConfig avDispatcherConfig, //
             TravelTime travelTime, //
             ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, //
-            EventsManager eventsManager) {
+            EventsManager eventsManager, //
+            DistanceFunction distanceFunction) {
         super(config, avDispatcherConfig, travelTime, parallelLeastCostPathCalculator, eventsManager);
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
-        distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getString("distanceHeuristics", //
-                DistanceHeuristics.EUCLIDEAN.name()).toUpperCase());
-        System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
-        this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
+        this.distanceFunction = distanceFunction;
         this.network = network;
     }
 
@@ -89,10 +88,17 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
         @Inject
         private Config config;
 
+        @Inject
+        private Map<String, DistanceFunctionFactory> distanceFunctionFactories;
+
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig) {
+            DistanceFunction distanceFunction = distanceFunctionFactories //
+                    .get(avconfig.getParams().getOrDefault("distanceFunction", "euclidean")) //
+                    .createDistanceFunction(network);
+
             return new GlobalBipartiteMatchingDispatcher( //
-                    network, config, avconfig, travelTime, router, eventsManager);
+                    network, config, avconfig, travelTime, router, eventsManager, distanceFunction);
         }
     }
 }

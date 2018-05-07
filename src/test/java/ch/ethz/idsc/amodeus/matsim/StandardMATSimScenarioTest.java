@@ -44,6 +44,7 @@ import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDispatcherModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusModule;
+import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.prep.MatsimKMEANSVirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
@@ -157,10 +158,12 @@ public class StandardMATSimScenarioTest {
         modeParams.setMarginalUtilityOfTraveling(8.86);
         modeParams.setConstant(0.0);
 
+        ScenarioOptions scenarioOptions = ScenarioOptions.create();
+
         Controler controler = new Controler(scenario);
         controler.addOverridingModule(new DvrpTravelTimeModule());
         controler.addOverridingModule(new AVModule());
-        controler.addOverridingModule(new AmodeusModule());
+        controler.addOverridingModule(new AmodeusModule(scenarioOptions));
         controler.addOverridingModule(new AmodeusDispatcherModule());
 
         controler.addOverridingModule(new AbstractModule() {

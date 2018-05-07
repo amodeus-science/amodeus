@@ -13,13 +13,23 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 
+import ch.ethz.idsc.amodeus.dispatcher.distance.DistanceFunction;
+import ch.ethz.idsc.amodeus.dispatcher.distance.DistanceFunctionFactory;
+import ch.ethz.idsc.amodeus.dispatcher.distance.EuclideanDistanceFunctionFactory;
+import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.framework.AVQSimPlugin;
 
 public class AmodeusModule extends AbstractModule {
+    final private ScenarioOptions scenarioOptions;
+
+    public AmodeusModule(ScenarioOptions scenarioOptions) {
+        this.scenarioOptions = scenarioOptions;
+    }
+
     @Override
     public void install() {
-        // ---
+        install(new AmodeusDistanceFunctionModule(scenarioOptions));
     }
 
     @Provides
@@ -45,5 +55,17 @@ public class AmodeusModule extends AbstractModule {
          * network here. Eventually Amodeus should be able to cope with what is defined by default. */
 
         return fullNetwork;
+    }
+
+    @Provides
+    @Singleton
+    public DistanceFunctionFactory provideDistanceFunctionFactory() {
+        return new EuclideanDistanceFunctionFactory();
+    }
+
+    @Provides
+    @Singleton
+    public DistanceFunction provideDistanceFunction(DistanceFunctionFactory factory, @Named(AVModule.AV_MODE) Network network) {
+        return factory.createDistanceFunction(network);
     }
 }

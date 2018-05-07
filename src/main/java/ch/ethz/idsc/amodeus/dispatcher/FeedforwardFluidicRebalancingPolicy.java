@@ -15,12 +15,12 @@ import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.PartitionedDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.distance.DistanceFunction;
+import ch.ethz.idsc.amodeus.dispatcher.distance.DistanceFunctionFactory;
+import ch.ethz.idsc.amodeus.dispatcher.distance.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVehicleDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatchingUtils;
-import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
-import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
-import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.FeasibleRebalanceCreator;
 import ch.ethz.idsc.amodeus.dispatcher.util.HungarBiPartVehicleDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
@@ -57,7 +57,6 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
     private final int nVLinks;
     private final Network network;
     private final DistanceFunction distanceFunction;
-    private final DistanceHeuristics distanceHeuristics;
     Tensor printVals = Tensors.empty();
     TravelData travelData;
     Tensor rebalancingRate;
@@ -75,7 +74,8 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
             VirtualNetwork<Link> virtualNetwork, //
             AbstractVirtualNodeDest abstractVirtualNodeDest, //
             AbstractVehicleDestMatcher abstractVehicleDestMatcher, //
-            TravelData travelData) {
+            TravelData travelData, //
+            DistanceFunction distanceFunction) {
         super(config, avconfig, travelTime, router, eventsManager, virtualNetwork);
         virtualNodeDest = abstractVirtualNodeDest;
         vehicleDestMatcher = abstractVehicleDestMatcher;
@@ -88,10 +88,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
         SafeConfig safeConfig = SafeConfig.wrap(avconfig);
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
         rebalancingPeriod = safeConfig.getInteger("rebalancingPeriod", 30);
-        distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getString("distanceHeuristics", //
-                DistanceHeuristics.EUCLIDEAN.name()).toUpperCase());
-        System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
-        this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
+        this.distanceFunction = distanceFunction;
     }
 
     @Override
@@ -184,6 +181,9 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
         @Inject
         private Config config;
 
+        @Inject
+        private Map<String, DistanceFunctionFactory> distanceFunctionFactories;
+
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig) {
             AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
@@ -191,8 +191,12 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
             AbstractVehicleDestMatcher abstractVehicleDestMatcher = new HungarBiPartVehicleDestMatcher(new EuclideanDistanceFunction());
 
+            DistanceFunction distanceFunction = distanceFunctionFactories //
+                    .get(avconfig.getParams().getOrDefault("distanceFunction", "euclidean")) //
+                    .createDistanceFunction(network);
+
             return new FeedforwardFluidicRebalancingPolicy(config, avconfig, generatorConfig, travelTime, router, eventsManager, network, virtualNetwork, abstractVirtualNodeDest,
-                    abstractVehicleDestMatcher, travelData);
+                    abstractVehicleDestMatcher, travelData, distanceFunction);
         }
     }
 }

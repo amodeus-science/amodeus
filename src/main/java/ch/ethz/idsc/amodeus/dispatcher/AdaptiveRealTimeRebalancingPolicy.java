@@ -16,12 +16,12 @@ import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.PartitionedDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.distance.DistanceFunction;
+import ch.ethz.idsc.amodeus.dispatcher.distance.DistanceFunctionFactory;
+import ch.ethz.idsc.amodeus.dispatcher.distance.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVehicleDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatchingUtils;
-import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
-import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
-import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.FeasibleRebalanceCreator;
 import ch.ethz.idsc.amodeus.dispatcher.util.HungarBiPartVehicleDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.LPVehicleRebalancing;
@@ -61,7 +61,6 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
     private Tensor printVals = Tensors.empty();
     private final LPVehicleRebalancing lpVehicleRebalancing;
     private final DistanceFunction distanceFunction;
-    private final DistanceHeuristics distanceHeuristics;
     private final Network network;
 
     public AdaptiveRealTimeRebalancingPolicy( //
@@ -73,7 +72,8 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
             Network network, //
             VirtualNetwork<Link> virtualNetwork, //
             AbstractVirtualNodeDest abstractVirtualNodeDest, //
-            AbstractVehicleDestMatcher abstractVehicleDestMatcher) {
+            AbstractVehicleDestMatcher abstractVehicleDestMatcher, //
+            DistanceFunction distanceFunction) {
         super(config, avconfig, travelTime, router, eventsManager, virtualNetwork);
         virtualNodeDest = abstractVirtualNodeDest;
         vehicleDestMatcher = abstractVehicleDestMatcher;
@@ -83,11 +83,7 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
         rebalancingPeriod = safeConfig.getInteger("rebalancingPeriod", 300);
         this.network = network;
-        distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getString("distanceHeuristics", //
-                DistanceHeuristics.EUCLIDEAN.name()).toUpperCase());
-        System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
-        this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
-
+        this.distanceFunction = distanceFunction;
     }
 
     @Override
@@ -215,6 +211,9 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
         @Inject
         private Config config;
 
+        @Inject
+        private Map<String, DistanceFunctionFactory> distanceFunctionFactories;
+
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig) {
             AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
@@ -222,8 +221,12 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
             AbstractVehicleDestMatcher abstractVehicleDestMatcher = new HungarBiPartVehicleDestMatcher(new EuclideanDistanceFunction());
 
+            DistanceFunction distanceFunction = distanceFunctionFactories //
+                    .get(avconfig.getParams().getOrDefault("distanceFunction", "euclidean")) //
+                    .createDistanceFunction(network);
+
             return new AdaptiveRealTimeRebalancingPolicy(config, avconfig, generatorConfig, travelTime, router, eventsManager, network, virtualNetwork, abstractVirtualNodeDest,
-                    abstractVehicleDestMatcher);
+                    abstractVehicleDestMatcher, distanceFunction);
         }
     }
 }

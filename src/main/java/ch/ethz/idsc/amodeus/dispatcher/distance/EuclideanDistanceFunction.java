@@ -1,5 +1,5 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.dispatcher.util;
+package ch.ethz.idsc.amodeus.dispatcher.distance;
 
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.core.utils.geometry.CoordUtils;
@@ -11,13 +11,11 @@ public class EuclideanDistanceFunction implements DistanceFunction {
 
     @Override
     public double getDistance(RoboTaxi robotaxi, AVRequest avrequest) {
-
         return CoordUtils.calcEuclideanDistance(robotaxi.getDivertableLocation().getCoord(), avrequest.getFromLink().getCoord());
     }
 
     @Override
     public double getDistance(RoboTaxi robotaxi, Link link) {
-
         return CoordUtils.calcEuclideanDistance(robotaxi.getDivertableLocation().getCoord(), link.getCoord());
 
     }
