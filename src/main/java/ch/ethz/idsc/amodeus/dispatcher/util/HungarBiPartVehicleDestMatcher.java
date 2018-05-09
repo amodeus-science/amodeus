@@ -10,8 +10,8 @@ import java.util.Map;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.util.hungarian.HungarianAlgorithmWrap;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.amodeus.util.math.HungarianAlgorithm;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** array matching with Euclidean distance as criteria */
@@ -63,7 +63,8 @@ public class HungarBiPartVehicleDestMatcher extends AbstractVehicleDestMatcher {
         }
 
         // vehicle at position i is assigned to destination matchinghungarianAlgorithm[j]
-        int[] matchinghungarianAlgorithm = new HungarianAlgorithm(distancematrix).execute(); // O(n^3)
+        // int[] matchinghungarianAlgorithm = new HungarianAlgorithm(distancematrix).execute(); // O(n^3)
+        int[] matchinghungarianAlgorithm = HungarianAlgorithmWrap.matching(distancematrix);
 
         // do the assignment according to the Hungarian algorithm (only for the matched elements, otherwise keep current drive destination)
         final Map<RoboTaxi, T> map = new HashMap<>();
