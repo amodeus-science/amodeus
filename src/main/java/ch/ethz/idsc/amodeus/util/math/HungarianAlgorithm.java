@@ -45,6 +45,9 @@ import java.util.Arrays;
  * maximum among the number of workers and the number of jobs.
  *
  * @author Kevin L. Stern */
+// IMPLEMENTATION IS DEPRECATED
+// INSTEAD USE HungarianAlgorithmWrap
+@Deprecated
 public class HungarianAlgorithm {
     private final double[][] costMatrix;
     private final int rows, cols, dim;
