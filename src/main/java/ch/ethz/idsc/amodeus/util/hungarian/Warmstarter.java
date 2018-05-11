@@ -1,4 +1,4 @@
-// code by sstauber
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.util.hungarian;
 
 import java.util.ArrayList;
@@ -10,6 +10,7 @@ import org.matsim.contrib.dvrp.data.Vehicle;
 
 import ch.ethz.matsim.av.passenger.AVRequest;
 
+/** @author Samuel J. Stauber */
 public class Warmstarter {
     private static final int UNASSIGNED = -1;
     private static final double EPS = 1e-8;

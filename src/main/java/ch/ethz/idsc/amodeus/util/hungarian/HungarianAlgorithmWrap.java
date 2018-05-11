@@ -9,7 +9,7 @@ public enum HungarianAlgorithmWrap {
     ;
 
     public static int[] matching(double[][] distancematrix) {
-        return matching(distancematrix, 1e-10);
+        return matching(distancematrix, StaticHelper.EPS_DEFAULT);
     }
 
     public static int[] matching(double[][] distancematrix, double eps) {

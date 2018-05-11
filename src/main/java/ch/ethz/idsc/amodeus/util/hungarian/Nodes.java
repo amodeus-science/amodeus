@@ -1,4 +1,4 @@
-// code by Samuel Stauber
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.util.hungarian;
 
 import java.util.Collections;
@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/** @author Samuel J. Stauber */
 class Nodes {
     private final Set<Integer> nodes = new HashSet<>();
     private final Set<Integer> notNodes;
