@@ -12,7 +12,7 @@ import org.matsim.core.trafficmonitoring.TravelTimeDataArrayFactory;
 
 import com.google.inject.Singleton;
 
-import ch.ethz.idsc.subare.util.GlobalAssert;
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Tensor;
 
 @Singleton

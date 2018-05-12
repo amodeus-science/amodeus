@@ -8,9 +8,9 @@ import java.util.Set;
 import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.owl.data.nd.NdCenterInterface;
-import ch.ethz.idsc.owl.data.nd.NdCluster;
-import ch.ethz.idsc.owl.data.nd.NdTreeMap;
+import ch.ethz.idsc.amodeus.util.nd.NdCenterInterface;
+import ch.ethz.idsc.amodeus.util.nd.NdCluster;
+import ch.ethz.idsc.amodeus.util.nd.NdTreeMap;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
