@@ -1,4 +1,4 @@
-// code by Samuel J. Stauber
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.util.hungarian;
 
 import java.util.Arrays;
@@ -7,6 +7,7 @@ import java.util.Set;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
+/** @author Samuel J. Stauber */
 final class AlternatingTree {
     private static final int UNASSIGNED = -1;
 

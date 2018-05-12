@@ -48,9 +48,9 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
 /** Implementation of the "Adaptive Real-Time Rebalancing Policy" presented in
- * Pavone, M., Smith, S.L., Frazzoli, E. and Rus, D., 2012. Robotic load balancing for mobility-on-demand systems.
- * The International Journal of Robotics
- * Research, 31(7), pp.839-854. */
+ * Pavone, M., Smith, S.L., Frazzoli, E. and Rus, D., 2012.
+ * Robotic load balancing for mobility-on-demand systems.
+ * The International Journal of Robotics Research, 31(7), pp.839-854. */
 public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
     private final int rebalancingPeriod;
     private final int dispatchPeriod;

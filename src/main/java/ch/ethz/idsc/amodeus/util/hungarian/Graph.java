@@ -1,10 +1,11 @@
-// code by Samuel J. Stauber
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.util.hungarian;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+/** @author Samuel J. Stauber */
 class Graph {
     protected static final int UNASSIGNED = -1;
     // ---

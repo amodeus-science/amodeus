@@ -44,9 +44,9 @@ import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
 /** Implementation of the "Feedforward Fluidic Optimal Rebalancing Policy" presented in
- * Pavone, M., Smith, S.L., Frazzoli, E. and Rus, D., 2012. Robotic load balancing for mobility-on-demand systems.
- * The International Journal of Robotics
- * Research, 31(7), pp.839-854. */
+ * Pavone, M., Smith, S.L., Frazzoli, E. and Rus, D., 2012.
+ * Robotic load balancing for mobility-on-demand systems.
+ * The International Journal of Robotics Research, 31(7), pp.839-854. */
 public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
     public final int dispatchPeriod;
     public final int rebalancingPeriod;
