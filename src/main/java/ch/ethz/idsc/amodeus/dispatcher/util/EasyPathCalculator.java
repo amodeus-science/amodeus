@@ -11,7 +11,7 @@ import org.matsim.core.router.util.TravelDisutility;
 import org.matsim.core.router.util.TravelTime;
 import org.matsim.vehicles.Vehicle;
 
-import ch.ethz.idsc.owl.data.GlobalAssert;
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 public enum EasyPathCalculator {
     ;

@@ -2,7 +2,7 @@ package ch.ethz.idsc.amodeus.glpk;
 
 import org.gnu.glpk.GLPK;
 
-import ch.ethz.idsc.owl.bot.util.UserHome;
+import ch.ethz.idsc.amodeus.util.math.UserHome;
 import junit.framework.TestCase;
 
 public class GlpkTest extends TestCase {
