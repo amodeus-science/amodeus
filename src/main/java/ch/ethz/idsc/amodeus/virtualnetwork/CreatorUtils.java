@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
-import ch.ethz.idsc.owl.data.nd.NdCenterInterface;
-import ch.ethz.idsc.owl.data.nd.NdCluster;
-import ch.ethz.idsc.owl.data.nd.NdTreeMap;
+import ch.ethz.idsc.amodeus.util.nd.NdCenterInterface;
+import ch.ethz.idsc.amodeus.util.nd.NdCluster;
+import ch.ethz.idsc.amodeus.util.nd.NdTreeMap;
 import ch.ethz.idsc.tensor.Tensor;
 
 public enum CreatorUtils {

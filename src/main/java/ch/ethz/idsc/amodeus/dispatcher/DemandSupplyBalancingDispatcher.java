@@ -27,7 +27,7 @@ import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
-/** Implementation of the "demand-supply-balancing" dispatching heurist presented in
+/** Implementation of the "demand-supply-balancing" dispatching heuristic presented in
  * Maciejewski, Michal, and Joschka Bischoff. "Large-scale microscopic simulation of taxi services."
  * Procedia Computer Science 52 (2015): 358-364. */
 public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {

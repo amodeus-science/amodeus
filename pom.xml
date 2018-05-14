@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ch.ethz.idsc</groupId>
 	<artifactId>amodeus</artifactId>
-	<version>1.0.0</version>
+	<version>1.1.0</version>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -61,11 +61,6 @@
 			<artifactId>glpk-java</artifactId>
 			<version>1.5.0</version>
 		</dependency>
-		<dependency>
-			<groupId>ch.ethz.idsc</groupId>
-			<artifactId>owl</artifactId>
-			<version>0.0.5</version>
-		</dependency>
 		<dependency><!-- workaround since jaxb api is not part of java 9 -->
 			<groupId>javax.xml.bind</groupId>
 			<artifactId>jaxb-api</artifactId>
@@ -81,14 +76,6 @@
 		<repository>
 			<id>tensor-mvn-repo</id>
 			<url>https://raw.github.com/idsc-frazzoli/tensor/mvn-repo/</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>owl-mvn-repo</id>
-			<url>https://raw.github.com/idsc-frazzoli/owl/mvn-repo/</url>
 			<snapshots>
 				<enabled>true</enabled>
 				<updatePolicy>always</updatePolicy>

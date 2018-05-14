@@ -23,7 +23,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
  * @author Claudio Ruch */
 public class RoboTaxi {
     static private final Logger logger = Logger.getLogger(RoboTaxi.class);
-    
+
     private final AVVehicle avVehicle;
     private RoboTaxiStatus status;
 
@@ -162,13 +162,13 @@ public class RoboTaxi {
             return true;
         }
         Task avT = getSchedule().getCurrentTask();
-        
+
         if (avT instanceof AVStayTask) {
             // TODO: For now, this works, but probably needs fixing somewhere upfront /sh, apr 2018
             logger.warn("RoboTaxiStatus != STAY, but Schedule.getCurrentTask() == AVStayTask; probably needs fixing");
             return true;
         }
-        
+
         GlobalAssert.that(avT instanceof AVDriveTask);
         AVDriveTask avDT = (AVDriveTask) avT;
         if (avDT.getPath().getLinkCount() == 1) {

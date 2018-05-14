@@ -1,15 +1,15 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.owl;
+package ch.ethz.idsc.amodeus.util.nd;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.NavigableMap;
 
-import ch.ethz.idsc.owl.data.nd.NdCenterInterface;
-import ch.ethz.idsc.owl.data.nd.NdCluster;
-import ch.ethz.idsc.owl.data.nd.NdEntry;
-import ch.ethz.idsc.owl.data.nd.NdMap;
-import ch.ethz.idsc.owl.data.nd.NdTreeMap;
+import ch.ethz.idsc.amodeus.util.nd.NdCenterInterface;
+import ch.ethz.idsc.amodeus.util.nd.NdCluster;
+import ch.ethz.idsc.amodeus.util.nd.NdEntry;
+import ch.ethz.idsc.amodeus.util.nd.NdMap;
+import ch.ethz.idsc.amodeus.util.nd.NdTreeMap;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;

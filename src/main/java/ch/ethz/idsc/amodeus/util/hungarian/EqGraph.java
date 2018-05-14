@@ -1,6 +1,7 @@
-// code by Samuel J. Stauber
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.util.hungarian;
 
+/** @author Samuel J. Stauber */
 final class EqGraph extends Graph {
     private final AlternatingTree at;
 

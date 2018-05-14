@@ -1,7 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.util.hungarian;
 
-import ch.ethz.idsc.subare.util.UserHome;
+import ch.ethz.idsc.amodeus.util.math.UserHome;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.io.Put;
 
@@ -9,7 +9,7 @@ public enum HungarianAlgorithmWrap {
     ;
 
     public static int[] matching(double[][] distancematrix) {
-        return matching(distancematrix, 1e-10);
+        return matching(distancematrix, StaticHelper.EPS_DEFAULT);
     }
 
     public static int[] matching(double[][] distancematrix, double eps) {

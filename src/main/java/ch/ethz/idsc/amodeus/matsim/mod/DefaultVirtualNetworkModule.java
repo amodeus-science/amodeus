@@ -32,7 +32,7 @@ public class DefaultVirtualNetworkModule extends AbstractModule {
             throw new RuntimeException(e);
         }
     }
-    
+
     @Provides
     @Singleton
     public TravelData provideTravelData(VirtualNetwork<Link> virtualNetwork) {
