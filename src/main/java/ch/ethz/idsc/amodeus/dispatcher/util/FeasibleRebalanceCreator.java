@@ -35,7 +35,7 @@ public enum FeasibleRebalanceCreator {
             double outgoingNmrvNode = 0.0;
             Tensor outgoingVehicles = rebalanceInput.get(i);
             for (int j = 0; j < Dimensions.of(rebalanceInput).get(0); ++j) {
-                outgoingNmrvNode = outgoingNmrvNode + (Integer) (outgoingVehicles.Get(j)).number();
+                outgoingNmrvNode = outgoingNmrvNode + outgoingVehicles.Get(j).number().doubleValue();
             }
             int outgoingVeh = (int) outgoingNmrvNode;
             int finalI = i;
