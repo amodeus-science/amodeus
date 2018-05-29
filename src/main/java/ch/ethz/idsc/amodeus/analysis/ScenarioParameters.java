@@ -22,6 +22,7 @@ import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkGet;
 import ch.ethz.matsim.av.config.AVConfig;
 import ch.ethz.matsim.av.config.AVConfigReader;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
+import ch.ethz.matsim.av.config.AVGeneratorConfig;
 import ch.ethz.matsim.av.config.AVOperatorConfig;
 
 public class ScenarioParameters implements Serializable {
@@ -29,9 +30,11 @@ public class ScenarioParameters implements Serializable {
     public final int iterations;
     public final int redispatchPeriod;
     public final int rebalancingPeriod;
+    public final int virtualNodeNumber;
 
     public final String virtualNodes;
     public final String dispatcher;
+    public final String vehicleGenerator;
     public final String networkName;
     public final String user;
     public final String date;
@@ -59,10 +62,12 @@ public class ScenarioParameters implements Serializable {
         AVOperatorConfig oc = avConfig.getOperatorConfigs().iterator().next();
         AVDispatcherConfig avdispatcherconfig = oc.getDispatcherConfig();
         SafeConfig safeConfig = SafeConfig.wrap(avdispatcherconfig);
+        AVGeneratorConfig avgeneratorconfig = oc.getGeneratorConfig();
 
         redispatchPeriod = safeConfig.getInteger("dispatchPeriod", -1);
         rebalancingPeriod = safeConfig.getInteger("rebalancingPeriod", -1);
         dispatcher = avdispatcherconfig.getStrategyName();
+        vehicleGenerator = avgeneratorconfig.getStrategyName();
         Scenario scenario = ScenarioUtils.loadScenario(config);
 
         populationSize = scenario.getPopulation().getPersons().values().size();
@@ -82,10 +87,13 @@ public class ScenarioParameters implements Serializable {
             e.printStackTrace();
         }
 
-        if (Objects.isNull(virtualNetwork))
+        if (Objects.isNull(virtualNetwork)) {
             virtualNodes = "no virtual network found";
-        else
+            virtualNodeNumber = 0;
+        } else {
             virtualNodes = Integer.toString(virtualNetwork.getvNodesCount()) + " virtual nodes.";
+            virtualNodeNumber = virtualNetwork.getvNodesCount();
+        }
 
         iterations = config.controler().getLastIteration();
 
