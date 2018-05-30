@@ -34,6 +34,7 @@ public class ScenarioParameters implements Serializable {
 
     public final String virtualNodes;
     public final String dispatcher;
+    public final String distanceHeuristic;
     public final String vehicleGenerator;
     public final String networkName;
     public final String user;
@@ -70,6 +71,7 @@ public class ScenarioParameters implements Serializable {
         vehicleGenerator = avgeneratorconfig.getStrategyName();
         Scenario scenario = ScenarioUtils.loadScenario(config);
 
+        distanceHeuristic = safeConfig.getString("distanceHeuristics", "-1");
         populationSize = scenario.getPopulation().getPersons().values().size();
 
         Network network = scenario.getNetwork();
