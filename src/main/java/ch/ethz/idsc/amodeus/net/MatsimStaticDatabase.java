@@ -93,10 +93,10 @@ public class MatsimStaticDatabase {
     public Coord getCenter() {
         Tensor points = Tensor.of(getOsmLinks().stream() //
                 .map(osmLink -> osmLink.getAt(.5)) //
-                .map(CoordUtil::toTensor));
+                .map(TensorCoords::toTensor));
         // Tensor mean = Mean.of(points); // <- mean is fast but doesn't produce as good estimate as median
         Tensor median = TensorMap.of(Median::of, Transpose.of(points), 1);
-        return CoordUtil.toCoord(median);
+        return TensorCoords.toCoord(median);
     }
 
     public int getOsmLinksSize() {

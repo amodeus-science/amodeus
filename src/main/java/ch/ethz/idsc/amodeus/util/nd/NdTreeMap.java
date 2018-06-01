@@ -45,10 +45,8 @@ public class NdTreeMap<V> implements NdMap<V>, Serializable {
      *            for leaf nodes with maxDepth, which have unlimited queue size.
      * @param maxDepth 16 is reasonable for most applications */
     public NdTreeMap(Tensor lbounds, Tensor ubounds, int maxDensity, int maxDepth) {
-        VectorQ.elseThrow(lbounds);
-        VectorQ.elseThrow(ubounds);
-        if (lbounds.length() != ubounds.length())
-            throw TensorRuntimeException.of(lbounds, ubounds);
+        VectorQ.require(lbounds);
+        VectorQ.requireLength(ubounds, lbounds.length());
         if (!IntStream.range(0, lbounds.length()).allMatch(index -> Scalars.lessEquals(lbounds.Get(index), ubounds.Get(index))))
             throw TensorRuntimeException.of(lbounds, ubounds);
         global_lBounds = lbounds.unmodifiable();

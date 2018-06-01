@@ -18,7 +18,7 @@ import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
-import ch.ethz.idsc.amodeus.prep.NetworkCreatorUtils;
+import ch.ethz.idsc.amodeus.net.TensorCoords;
 import ch.ethz.idsc.amodeus.util.gui.RowPanel;
 import ch.ethz.idsc.amodeus.util.gui.SpinnerLabel;
 import ch.ethz.idsc.amodeus.view.gheat.gui.ColorSchemes;
@@ -143,8 +143,8 @@ public class VirtualNetworkLayer extends ViewerLayer {
             for (VirtualLink<Link> vl : virtualNetwork.getVirtualLinks()) {
                 VirtualNode<Link> n1 = vl.getFrom();
                 VirtualNode<Link> n2 = vl.getTo();
-                Coord c1 = db.referenceFrame.coords_toWGS84().transform(NetworkCreatorUtils.fromTensor(n1.getCoord()));
-                Coord c2 = db.referenceFrame.coords_toWGS84().transform(NetworkCreatorUtils.fromTensor(n2.getCoord()));
+                Coord c1 = db.referenceFrame.coords_toWGS84().transform(TensorCoords.toCoord(n1.getCoord()));
+                Coord c2 = db.referenceFrame.coords_toWGS84().transform(TensorCoords.toCoord(n2.getCoord()));
                 Point p1 = amodeusComponent.getMapPositionAlways(c1);
                 Point p2 = amodeusComponent.getMapPositionAlways(c2);
                 Shape shape = new Line2D.Double(p1.x, p1.y, p2.x, p2.y);
