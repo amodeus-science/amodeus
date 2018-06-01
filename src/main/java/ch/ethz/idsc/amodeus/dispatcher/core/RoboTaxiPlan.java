@@ -1,6 +1,8 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
+import java.io.Serializable;
+import java.util.Collections;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
@@ -10,17 +12,15 @@ import org.matsim.contrib.dvrp.schedule.Task;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.schedule.AVStayTask;
 
-public class RoboTaxiPlan {
+public class RoboTaxiPlan implements Serializable {
 
-    /* package */ static RoboTaxiPlan of(RoboTaxi robotaxi, double time) {
-        return new RoboTaxiPlan(robotaxi, time);
+    /* package */ static RoboTaxiPlan of(Schedule schedule, double time) {
+        return new RoboTaxiPlan(schedule, time);
     }
 
-    public final NavigableMap<Double, RoboTaxiPlanEntry> plans = new TreeMap<>();
+    private final NavigableMap<Double, RoboTaxiPlanEntry> plans = new TreeMap<>();
 
-    private RoboTaxiPlan(RoboTaxi roboTaxi, double time) {
-
-        Schedule schedule = roboTaxi.getSchedule();
+    private RoboTaxiPlan(Schedule schedule, double time) {
 
         /** observed three cases: 1 task STAY, 2 tasks REB, 3 tasks with Customer
          * step 1 is to count the open tasks */
@@ -34,45 +34,53 @@ public class RoboTaxiPlan {
         if (upComing.size() == 1) {
             Task stayTask = upComing.firstEntry().getValue();
             GlobalAssert.that(stayTask instanceof AVStayTask);
-            RoboTaxiPlanEntry entry = new RoboTaxiPlanEntry();
-            entry.beginTime = stayTask.getBeginTime();
-            entry.endTime = stayTask.getEndTime();
-            entry.status = RoboTaxiStatus.STAY;
+            RoboTaxiPlanEntry entry = new RoboTaxiPlanEntry( //
+                    stayTask.getBeginTime(), //
+                    stayTask.getEndTime(), //
+                    RoboTaxiStatus.STAY);
             plans.put(entry.beginTime, entry);
-        }
+        } else //
 
         if (upComing.size() == 2) {
             int i = 0;
             for (Task task : upComing.values()) {
                 ++i;
-                RoboTaxiPlanEntry entry = new RoboTaxiPlanEntry();
-                entry.beginTime = task.getBeginTime();
-                entry.endTime = task.getEndTime();
+                RoboTaxiStatus status = null;
                 if (i == 1) {
-                    entry.status = RoboTaxiStatus.REBALANCEDRIVE;
-                }
+                    status = RoboTaxiStatus.REBALANCEDRIVE;
+                } else //
                 if (i == 2) {
-                    entry.status = RoboTaxiStatus.STAY;
+                    status = RoboTaxiStatus.STAY;
                 }
+                RoboTaxiPlanEntry entry = new RoboTaxiPlanEntry( //
+                        task.getBeginTime(), //
+                        task.getEndTime(), //
+                        status);
                 plans.put(entry.beginTime, entry);
             }
-        }
+        } else //
 
         if (upComing.size() == 3) {
             int i = 0;
             for (Task task : upComing.values()) {
                 ++i;
-                RoboTaxiPlanEntry entry = new RoboTaxiPlanEntry();
-                entry.beginTime = task.getBeginTime();
-                entry.endTime = task.getEndTime();
-                if (i == 1 || i == 2) {
-                    entry.status = RoboTaxiStatus.DRIVEWITHCUSTOMER;
+                RoboTaxiStatus status = null;
+                if (i == 1 || i == 2) { // FIXME
+                    status = RoboTaxiStatus.DRIVEWITHCUSTOMER;
                 }
                 if (i == 2) {
-                    entry.status = RoboTaxiStatus.STAY;
+                    status = RoboTaxiStatus.STAY;
                 }
+                RoboTaxiPlanEntry entry = new RoboTaxiPlanEntry( //
+                        task.getBeginTime(), //
+                        task.getEndTime(), //
+                        status);
                 plans.put(entry.beginTime, entry);
             }
         }
+    }
+
+    public NavigableMap<Double, RoboTaxiPlanEntry> getPlans() {
+        return Collections.unmodifiableNavigableMap(plans);
     }
 }
