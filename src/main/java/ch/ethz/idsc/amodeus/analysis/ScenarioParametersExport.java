@@ -8,15 +8,19 @@ import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
 import ch.ethz.idsc.tensor.io.Export;
 
 public class ScenarioParametersExport implements AnalysisExport {
+    public static final String FILENAME = "scenarioParameters.obj";
+
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorScheme colorScheme) {
         ScenarioParameters scenarioParameters = analysisSummary.getScenarioParameters();
+
         try {
-            Export.object(new File(relativeDirectory, "scenarioParameters.obj"), scenarioParameters);
-        } catch (Exception e1) {
-            System.err.println("Scenario Parameters could not be found");
-            e1.printStackTrace();
+            Export.object(new File(relativeDirectory, FILENAME), scenarioParameters);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            throw new RuntimeException();
         }
+
     }
 
 }

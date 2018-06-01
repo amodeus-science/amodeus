@@ -4,6 +4,7 @@ package ch.ethz.idsc.amodeus.analysis;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
@@ -22,16 +23,25 @@ import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkGet;
 import ch.ethz.matsim.av.config.AVConfig;
 import ch.ethz.matsim.av.config.AVConfigReader;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
+import ch.ethz.matsim.av.config.AVGeneratorConfig;
 import ch.ethz.matsim.av.config.AVOperatorConfig;
 
 public class ScenarioParameters implements Serializable {
+    public static final int UNDEFINED_INT = -1;
+    public static final String UNDEFINED_STRING = "";
+    public static final DateFormat DATEFORMAT = new SimpleDateFormat("yyyy/MM/dd - HH:mm:ss");
+    // ---
     public final int populationSize;
     public final int iterations;
     public final int redispatchPeriod;
     public final int rebalancingPeriod;
+    public final int virtualNodesCount;
 
+    @Deprecated
     public final String virtualNodes;
     public final String dispatcher;
+    public final String distanceHeuristic;
+    public final String vehicleGenerator;
     public final String networkName;
     public final String user;
     public final String date;
@@ -49,7 +59,7 @@ public class ScenarioParameters implements Serializable {
         Config config = ConfigUtils.loadConfig(configFile.toString());
 
         user = System.getProperty("user.name");
-        date = new SimpleDateFormat("yyyy/MM/dd - HH:mm:ss").format(new Date());
+        date = DATEFORMAT.format(new Date());
 
         File basePath = new File(config.getContext().getPath()).getParentFile();
         File configPath = new File(basePath, "av.xml");
@@ -59,12 +69,15 @@ public class ScenarioParameters implements Serializable {
         AVOperatorConfig oc = avConfig.getOperatorConfigs().iterator().next();
         AVDispatcherConfig avdispatcherconfig = oc.getDispatcherConfig();
         SafeConfig safeConfig = SafeConfig.wrap(avdispatcherconfig);
+        AVGeneratorConfig avgeneratorconfig = oc.getGeneratorConfig();
 
-        redispatchPeriod = safeConfig.getInteger("dispatchPeriod", -1);
-        rebalancingPeriod = safeConfig.getInteger("rebalancingPeriod", -1);
+        redispatchPeriod = safeConfig.getInteger("dispatchPeriod", UNDEFINED_INT);
+        rebalancingPeriod = safeConfig.getInteger("rebalancingPeriod", UNDEFINED_INT);
         dispatcher = avdispatcherconfig.getStrategyName();
+        vehicleGenerator = avgeneratorconfig.getStrategyName();
         Scenario scenario = ScenarioUtils.loadScenario(config);
 
+        distanceHeuristic = safeConfig.getString("distanceHeuristics", UNDEFINED_STRING);
         populationSize = scenario.getPopulation().getPersons().values().size();
 
         Network network = scenario.getNetwork();
@@ -82,10 +95,13 @@ public class ScenarioParameters implements Serializable {
             e.printStackTrace();
         }
 
-        if (Objects.isNull(virtualNetwork))
+        if (Objects.isNull(virtualNetwork)) {
             virtualNodes = "no virtual network found";
-        else
+            virtualNodesCount = UNDEFINED_INT;
+        } else {
             virtualNodes = Integer.toString(virtualNetwork.getvNodesCount()) + " virtual nodes.";
+            virtualNodesCount = virtualNetwork.getvNodesCount();
+        }
 
         iterations = config.controler().getLastIteration();
 

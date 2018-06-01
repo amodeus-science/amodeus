@@ -18,6 +18,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.gbl.MatsimRandom;
 
+import ch.ethz.idsc.amodeus.analysis.ScenarioParametersExport;
 import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.testutils.TestPreparer;
@@ -215,7 +216,7 @@ public class ScenarioPipeLineTest {
         assertTrue((new File("output/001/data/stackedDistance.png")).exists());
         assertTrue((new File("output/001/data/statusDistribution.png")).exists());
 
-        assertTrue((new File("output/001/data/scenarioParameters.obj")).exists());
+        assertTrue((new File("output/001/data", ScenarioParametersExport.FILENAME)).exists());
 
         assertTrue((new File("output/001/data/WaitingTimes")).isDirectory());
         assertTrue((new File("output/001/data/WaitingTimes/WaitingTimes.mathematica")).exists());
