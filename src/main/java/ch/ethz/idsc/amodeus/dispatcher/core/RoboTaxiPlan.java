@@ -65,10 +65,10 @@ public class RoboTaxiPlan implements Serializable {
             for (Task task : upComing.values()) {
                 ++i;
                 RoboTaxiStatus status = null;
-                if (i == 1 || i == 2) { // FIXME
+                if (i == 1 || i == 2) {
                     status = RoboTaxiStatus.DRIVEWITHCUSTOMER;
                 }
-                if (i == 2) {
+                if (i == 3) { // 
                     status = RoboTaxiStatus.STAY;
                 }
                 RoboTaxiPlanEntry entry = new RoboTaxiPlanEntry( //
