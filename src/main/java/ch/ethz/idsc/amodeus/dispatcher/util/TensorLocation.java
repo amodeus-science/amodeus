@@ -1,12 +1,11 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.util;
 
-import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.net.TensorCoords;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 public enum TensorLocation {
@@ -24,11 +23,7 @@ public enum TensorLocation {
         return ofLink(link);
     }
 
-    public static Tensor of(Coord coord) {
-        return Tensors.vectorDouble(coord.getX(), coord.getY());
-    }
-
     private static Tensor ofLink(Link link) {
-        return of(link.getCoord());
+        return TensorCoords.toTensor(link.getCoord());
     }
 }

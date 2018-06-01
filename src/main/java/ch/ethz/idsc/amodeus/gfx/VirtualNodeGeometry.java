@@ -54,9 +54,6 @@ import ch.ethz.idsc.tensor.opt.ConvexHull;
         boolean init = false;
         for (Tensor vector : hull) {
             Coord coord = TensorCoords.toCoord(vector);
-            // new Coord( //
-            // vector.Get(0).number().doubleValue(), //
-            // vector.Get(1).number().doubleValue());
             Point point = amodeusComponent.getMapPositionAlways(coord);
             if (!init) {
                 init = true;

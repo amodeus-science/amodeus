@@ -135,15 +135,13 @@ public class SQMDispatcher extends PartitionedDispatcher {
      * @return nearestLinks {@link ArrayList} of {@link Link}'s which are the
      *         closest links to corresponding virtual nodes
      * @author fluric */
-    private ArrayList<Link> assignNodesToNearestLinks(Collection<VirtualNode<Link>> nodes) {
-        ArrayList<Link> list = new ArrayList<>();
-        Coord coord;
+    private List<Link> assignNodesToNearestLinks(Collection<VirtualNode<Link>> nodes) {
+        List<Link> list = new ArrayList<>();
 
         for (VirtualNode<Link> node : nodes) {
             // get the center coordinate
 
-            coord = TensorCoords.toCoord(node.getCoord());
-            // new Coord((double) node.getCoord().Get(0).number(), (double) node.getCoord().Get(1).number());
+            Coord coord = TensorCoords.toCoord(node.getCoord());
 
             // find the closest link
             int index = fastLinkLookup.getLinkFromXY(coord);
