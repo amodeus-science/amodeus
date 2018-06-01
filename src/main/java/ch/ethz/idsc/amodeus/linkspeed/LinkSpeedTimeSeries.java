@@ -14,7 +14,7 @@ import ch.ethz.idsc.tensor.Tensors;
 public class LinkSpeedTimeSeries implements Serializable {
 
     /** keyMap contains times and Tensor a list of recorded speeds at the time */
-    private final SortedMap<Integer, Tensor> data;
+    private SortedMap<Integer, Tensor> data;
 
     public LinkSpeedTimeSeries(int time, double speed) {
         data = new TreeMap<>();
