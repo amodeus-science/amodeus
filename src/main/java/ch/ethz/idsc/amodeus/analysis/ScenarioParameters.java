@@ -8,7 +8,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
-import java.util.Optional;
 
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Link;
@@ -29,6 +28,7 @@ import ch.ethz.matsim.av.config.AVOperatorConfig;
 
 public class ScenarioParameters implements Serializable {
     public static final int UNDEFINED_INT = -1;
+    public static final String UNDEFINED_STRING = "";
     public static final DateFormat DATEFORMAT = new SimpleDateFormat("yyyy/MM/dd - HH:mm:ss");
     // ---
     public final int populationSize;
@@ -40,7 +40,7 @@ public class ScenarioParameters implements Serializable {
     @Deprecated
     public final String virtualNodes;
     public final String dispatcher;
-    public final Optional<String> distanceHeuristic;
+    public final String distanceHeuristic;
     public final String vehicleGenerator;
     public final String networkName;
     public final String user;
@@ -77,8 +77,7 @@ public class ScenarioParameters implements Serializable {
         vehicleGenerator = avgeneratorconfig.getStrategyName();
         Scenario scenario = ScenarioUtils.loadScenario(config);
 
-        distanceHeuristic = Optional.ofNullable( //
-                safeConfig.getString("distanceHeuristics", null));
+        distanceHeuristic = safeConfig.getString("distanceHeuristics", UNDEFINED_STRING);
         populationSize = scenario.getPopulation().getPersons().values().size();
 
         Network network = scenario.getNetwork();
