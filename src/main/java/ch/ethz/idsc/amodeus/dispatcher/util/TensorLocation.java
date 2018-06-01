@@ -13,19 +13,22 @@ public enum TensorLocation {
     ;
 
     public static Tensor of(AVRequest avRequest) {
-        return tensorOf(avRequest.getFromLink());
+        return ofLink(avRequest.getFromLink());
     }
 
     public static Tensor of(RoboTaxi robotaxi) {
-        return tensorOf(robotaxi.getDivertableLocation());
+        return ofLink(robotaxi.getDivertableLocation());
     }
 
     public static Tensor of(Link link) {
-        return tensorOf(link);
+        return ofLink(link);
     }
 
-    private static Tensor tensorOf(Link link) {
-        Coord coord = link.getCoord();
+    public static Tensor of(Coord coord) {
         return Tensors.vectorDouble(coord.getX(), coord.getY());
+    }
+
+    private static Tensor ofLink(Link link) {
+        return of(link.getCoord());
     }
 }

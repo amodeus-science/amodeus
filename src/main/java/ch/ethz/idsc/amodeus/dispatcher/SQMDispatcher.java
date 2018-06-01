@@ -23,6 +23,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.net.FastLinkLookup;
 import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.TensorCoords;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkGet;
@@ -140,7 +141,9 @@ public class SQMDispatcher extends PartitionedDispatcher {
 
         for (VirtualNode<Link> node : nodes) {
             // get the center coordinate
-            coord = new Coord((double) node.getCoord().Get(0).number(), (double) node.getCoord().Get(1).number());
+
+            coord = TensorCoords.toCoord(node.getCoord());
+            // new Coord((double) node.getCoord().Get(0).number(), (double) node.getCoord().Get(1).number());
 
             // find the closest link
             int index = fastLinkLookup.getLinkFromXY(coord);

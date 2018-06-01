@@ -14,6 +14,7 @@ import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
 import ch.ethz.idsc.amodeus.net.OsmLink;
+import ch.ethz.idsc.amodeus.net.TensorCoords;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNode;
 import ch.ethz.idsc.tensor.Tensor;
@@ -52,9 +53,10 @@ import ch.ethz.idsc.tensor.opt.ConvexHull;
         Path2D path2d = new Path2D.Double();
         boolean init = false;
         for (Tensor vector : hull) {
-            Coord coord = new Coord( //
-                    vector.Get(0).number().doubleValue(), //
-                    vector.Get(1).number().doubleValue());
+            Coord coord = TensorCoords.toCoord(vector);
+            // new Coord( //
+            // vector.Get(0).number().doubleValue(), //
+            // vector.Get(1).number().doubleValue());
             Point point = amodeusComponent.getMapPositionAlways(coord);
             if (!init) {
                 init = true;
