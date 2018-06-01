@@ -92,6 +92,12 @@ public class RoboTaxi {
         return status;
     }
 
+    /** @return RoboTaxiPlan with RoboTaxiPlan.plans() Navigable Map containing all RoboTaxiPlanEntry
+     *         elements sorted according to begin time */
+    public RoboTaxiPlan getCurrentPlans(double time) {
+        return RoboTaxiPlan.of(getSchedule(), time);
+    }
+
     // ===================================================================================
     // methods to be used by Core package
 
