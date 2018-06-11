@@ -75,7 +75,7 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
     // Methods to use EXTERNALLY in derived dispatchers
 
     /** @return {@Collection} of all {@AVRequests} which are currently open. Requests are removed from list in setAcceptRequest function */
-    protected synchronized final Collection<AVRequest> getAVRequests() {
+    public synchronized final Collection<AVRequest> getAVRequests() {
         return Collections.unmodifiableCollection(pendingRequests);
     }
 
@@ -254,7 +254,7 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
         return pickupRegister.containsValue(robotaxi);
     }
     
-    protected final RoboTaxi getPickupTaxi(AVRequest avr) {
+    public final RoboTaxi getPickupTaxi(AVRequest avr) {
         if(pickupRegister.containsKey(avr)){
             return pickupRegister.get(avr);
         }
