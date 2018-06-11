@@ -36,6 +36,14 @@ public enum BipartiteMatchingUtils {
         return infoLine;
     }
 
+    public static Tensor executePickup(BiConsumer<RoboTaxi, AVRequest> setFunction, Collection<RoboTaxi> roboTaxis, Collection<AVRequest> requests, //
+            DistanceFunction distanceFunction, Network network, boolean reducewithKDTree) {
+        if (distanceFunction instanceof EuclideanDistanceFunction && ((EuclideanDistanceFunction) distanceFunction).cyclicSolutionPreventer != null) {
+            GlobalAssert.that(false);
+        }
+        return executePickup(null, setFunction, roboTaxis, requests, distanceFunction, network, reducewithKDTree);
+    }
+
     public static Tensor executeRebalance(BiConsumer<RoboTaxi, Link> setFunction, Collection<RoboTaxi> roboTaxis, Collection<AVRequest> requests, //
             DistanceFunction distanceFunction, Network network, boolean reducewithKDTree) {
         Tensor infoLine = Tensors.empty();
