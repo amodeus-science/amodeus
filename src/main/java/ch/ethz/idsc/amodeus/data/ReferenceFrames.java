@@ -11,8 +11,14 @@ public enum ReferenceFrames implements ReferenceFrame {
             new IdentityTransformation()), //
     SANFRANCISCO( //
             new GeotoolsTransformation("EPSG:26743", "WGS84"), //
-            new GeotoolsTransformation("WGS84", "EPSG:26743"))//
-    ;
+            new GeotoolsTransformation("WGS84", "EPSG:26743")), //
+    BERLIN(new GeotoolsTransformation("EPSG:31468", "WGS84"), // If it doesnt work check: https://github.com/juliuste/gauss-krueger
+            new GeotoolsTransformation("WGS84", "EPSG:31468")), //
+
+    SANTIAGO_DE_CHILE( //
+            new GeotoolsTransformation("EPSG:32719", "WGS84"), //
+            new GeotoolsTransformation("WGS84", "EPSG:32719")),//
+    ;;
     // ---
     private final CoordinateTransformation coords_toWGS84;
     private final CoordinateTransformation coords_fromWGS84;
