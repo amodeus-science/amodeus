@@ -256,7 +256,7 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
     }
 
     /** @param avRequest
-     * @return robotaxi assigned to given avRequest, or null if no taxi is assigned to avRequest */
+     * @return robotaxi assigned to given avRequest, or empty if no taxi is assigned to avRequest */
     public final Optional<RoboTaxi> getPickupTaxi(AVRequest avRequest) {
         return Optional.ofNullable(pickupRegister.get(avRequest));
     }

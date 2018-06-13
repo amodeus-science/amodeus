@@ -37,8 +37,6 @@ public class ScenarioParameters implements Serializable {
     public final int rebalancingPeriod;
     public final int virtualNodesCount;
 
-    // @Deprecated
-    // public final String virtualNodes;
     public final String dispatcher;
     public final String distanceHeuristic;
     public final String vehicleGenerator;
