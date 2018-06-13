@@ -179,8 +179,11 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
         if (round_now % dispatchPeriod == 0) {
             // printVals = BipartiteMatchingUtils.executePickup(this::setRoboTaxiPickup, getDivertableRoboTaxis(), getAVRequests(), new
             // EuclideanDistanceFunction(), network, false);
-            printVals = BipartiteMatchingUtils.executePickup(this::setRoboTaxiPickup, getDivertableRoboTaxis(), //
-                    getAVRequests(), distanceFunction, network, false);
+            printVals = BipartiteMatchingUtils.executePickup( //
+                    this, //
+                    getDivertableRoboTaxis(), //
+                    getAVRequests(), //
+                    distanceFunction, network, false);
         }
     }
 
