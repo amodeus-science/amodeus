@@ -253,9 +253,9 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
     /* package */ final boolean isInPickupRegister(RoboTaxi robotaxi) {
         return pickupRegister.containsValue(robotaxi);
     }
-    
+
     public final RoboTaxi getPickupTaxi(AVRequest avr) {
-        if(pickupRegister.containsKey(avr)){
+        if (pickupRegister.containsKey(avr)) {
             return pickupRegister.get(avr);
         }
         return null;

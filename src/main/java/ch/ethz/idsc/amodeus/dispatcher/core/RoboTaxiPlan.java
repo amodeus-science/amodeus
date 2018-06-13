@@ -68,7 +68,7 @@ public class RoboTaxiPlan implements Serializable {
                 if (i == 1 || i == 2) {
                     status = RoboTaxiStatus.DRIVEWITHCUSTOMER;
                 }
-                if (i == 3) { // 
+                if (i == 3) { //
                     status = RoboTaxiStatus.STAY;
                 }
                 RoboTaxiPlanEntry entry = new RoboTaxiPlanEntry( //

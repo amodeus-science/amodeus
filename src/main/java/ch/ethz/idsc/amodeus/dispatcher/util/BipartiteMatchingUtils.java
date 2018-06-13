@@ -26,8 +26,9 @@ public enum BipartiteMatchingUtils {
         Tensor infoLine = Tensors.empty();
         Map<RoboTaxi, AVRequest> gbpMatch = globalBipartiteMatching(roboTaxis, requests, distanceFunction, network, infoLine, reducewithKDTree);
 
-        if (distanceFunction instanceof EuclideanDistanceFunction && ((EuclideanDistanceFunction) distanceFunction).cyclicSolutionPreventer != null) {
-            removeCyclicSolutions(dispatcher, ((EuclideanDistanceFunction) distanceFunction).cyclicSolutionPreventer, gbpMatch);
+        if (distanceFunction instanceof NonCyclicDistanceFunction) {
+            DistanceFunction accDistanceFunction = ((NonCyclicDistanceFunction) distanceFunction).cyclicSolutionPreventer;
+            removeCyclicSolutions(dispatcher, accDistanceFunction, gbpMatch);
         }
 
         for (Entry<RoboTaxi, AVRequest> entry : gbpMatch.entrySet()) {
@@ -38,9 +39,7 @@ public enum BipartiteMatchingUtils {
 
     public static Tensor executePickup(BiConsumer<RoboTaxi, AVRequest> setFunction, Collection<RoboTaxi> roboTaxis, Collection<AVRequest> requests, //
             DistanceFunction distanceFunction, Network network, boolean reducewithKDTree) {
-        if (distanceFunction instanceof EuclideanDistanceFunction && ((EuclideanDistanceFunction) distanceFunction).cyclicSolutionPreventer != null) {
-            GlobalAssert.that(false);
-        }
+        GlobalAssert.that(!(distanceFunction instanceof NonCyclicDistanceFunction));
         return executePickup(null, setFunction, roboTaxis, requests, distanceFunction, network, reducewithKDTree);
     }
 

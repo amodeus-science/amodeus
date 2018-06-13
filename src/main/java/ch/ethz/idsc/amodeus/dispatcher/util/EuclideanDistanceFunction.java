@@ -8,32 +8,20 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 public class EuclideanDistanceFunction implements DistanceFunction {
-    public EuclideanDistanceFunction() {
-        this.cyclicSolutionPreventer = null;
-    }
-
-    public EuclideanDistanceFunction(DistanceFunction cyclicSolutionPreventer) {
-        this.cyclicSolutionPreventer = cyclicSolutionPreventer;
-    }
-
     @Override
-    public double getDistance(RoboTaxi robotaxi, AVRequest avrequest) {
-
+    public final double getDistance(RoboTaxi robotaxi, AVRequest avrequest) {
         return CoordUtils.calcEuclideanDistance(robotaxi.getDivertableLocation().getCoord(), avrequest.getFromLink().getCoord());
     }
 
     @Override
-    public double getDistance(RoboTaxi robotaxi, Link link) {
-
+    public final double getDistance(RoboTaxi robotaxi, Link link) {
         return CoordUtils.calcEuclideanDistance(robotaxi.getDivertableLocation().getCoord(), link.getCoord());
 
     }
 
     @Override
-    public double getDistance(Link from, Link to) {
+    public final double getDistance(Link from, Link to) {
         return CoordUtils.calcEuclideanDistance(from.getCoord(), to.getCoord());
     }
-
-    DistanceFunction cyclicSolutionPreventer;
 
 }
