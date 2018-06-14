@@ -98,8 +98,8 @@ public enum BipartiteMatchingUtils {
                     double distOld = accDistanceFunction.getDistance(oldTaxi, entry.getValue());
                     if (distNew + MARGIN_EPS >= distOld) {
                         // prevent new assignment when the new taxi is not closer in network distance AND
-                        // (the previously assigned taxi is either assigned to a request further away or to none anymore)
-                        // if (copyTaxiToAV.get(asgndTaxi) == null) || accDistanceFunction.getDistance(asgndTaxi, copyTaxiToAV.get(asgndTaxi)) > distAss) {
+                        // (the old taxi is either assigned to a request further away or to none anymore)
+                        // if (copyTaxiToAV.get(oldTaxi) == null || accDistanceFunction.getDistance(oldTaxi, copyTaxiToAV.get(oldTaxi)) + MARGIN_EPS > distOld) {
                         taxiToAV.remove(newTaxi);
                         // }
                     }
