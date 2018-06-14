@@ -192,6 +192,16 @@ public class SpinnerLabel<Type> {
         spinnerListeners.add(spinnerListener);
     }
 
+    public void setSpinnerListener(SpinnerListener<Type> spinnerListener) {
+        removeSpinnerListeners();
+        addSpinnerListener(spinnerListener);
+    }
+
+    public void removeSpinnerListeners() {
+        while (!spinnerListeners.isEmpty())
+            spinnerListeners.remove(0);
+    }
+
     public void setCyclic(boolean myBoolean) {
         cyclic = myBoolean;
     }
@@ -282,7 +292,7 @@ public class SpinnerLabel<Type> {
         return myType == null ? "" : myType.toString();
     }
 
-    private void updateLabel() {
+    public void updateLabel() {
         jLabel.setText(stringFormat(getValue()));
         myJSpinner.setEnabled(1 < list.size()); // added recently to indicate that there is nothing to scroll
     }
