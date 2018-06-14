@@ -16,7 +16,7 @@ public enum DistanceHeuristics {
     EUCLIDEANNONCYCLIC {
         @Override
         public DistanceFunction getDistanceFunction(Network network) {
-            return new EuclideanDistanceFunction(new NetworkDistanceFunction(network, new FastAStarLandmarksFactory()));
+            return new NonCyclicDistanceFunction(new NetworkDistanceFunction(network, new FastAStarLandmarksFactory()));
         }
     },
     DIJKSTRA {

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -75,6 +76,7 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
     // Methods to use EXTERNALLY in derived dispatchers
 
     /** @return {@Collection} of all {@AVRequests} which are currently open. Requests are removed from list in setAcceptRequest function */
+    // TODO document why function became public
     public synchronized final Collection<AVRequest> getAVRequests() {
         return Collections.unmodifiableCollection(pendingRequests);
     }
@@ -110,7 +112,6 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
 
     /** @return {@Collection} of {@RoboTaxi} which can be redirected during iteration */
     protected final Collection<RoboTaxi> getDivertableRoboTaxis() {
-
         return getRoboTaxis().stream() //
                 .filter(RoboTaxi::isWithoutDirective) //
                 .filter(RoboTaxi::isWithoutCustomer) //
@@ -131,7 +132,7 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
      * 
      * @param roboTaxi
      * @param avRequest */
-    protected void setRoboTaxiPickup(RoboTaxi roboTaxi, AVRequest avRequest) {
+    public void setRoboTaxiPickup(RoboTaxi roboTaxi, AVRequest avRequest) {
         GlobalAssert.that(roboTaxi.isWithoutCustomer());
         GlobalAssert.that(pendingRequests.contains(avRequest));
 
@@ -253,12 +254,11 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
     /* package */ final boolean isInPickupRegister(RoboTaxi robotaxi) {
         return pickupRegister.containsValue(robotaxi);
     }
-    
-    public final RoboTaxi getPickupTaxi(AVRequest avr) {
-        if(pickupRegister.containsKey(avr)){
-            return pickupRegister.get(avr);
-        }
-        return null;
+
+    /** @param avRequest
+     * @return robotaxi assigned to given avRequest, or empty if no taxi is assigned to avRequest */
+    public final Optional<RoboTaxi> getPickupTaxi(AVRequest avRequest) {
+        return Optional.ofNullable(pickupRegister.get(avRequest));
     }
 
     /** complete all matchings if a {@link RoboTaxi} has arrived at the fromLink of an {@link AVRequest} */

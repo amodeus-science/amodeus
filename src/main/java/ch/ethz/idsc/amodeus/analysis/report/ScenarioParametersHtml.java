@@ -14,6 +14,7 @@ public class ScenarioParametersHtml implements HtmlReportElement {
     @Override
     public Map<String, HtmlBodyElement> process(AnalysisSummary analysisSummary) {
         ScenarioParameters scenarioParameters = analysisSummary.getScenarioParameters();
+
         HtmlBodyElement bodyElement = new HtmlBodyElement();
         HtmlGenerator htmlUtils = bodyElement.getHTMLGenerator();
         htmlUtils.insertTextLeft("User:" + //
@@ -40,7 +41,7 @@ public class ScenarioParametersHtml implements HtmlReportElement {
                 "\nPopulation:"// + //
         );
         htmlUtils.insertTextLeft(scenarioParameters.networkName + //
-                "\n" + scenarioParameters.virtualNodes + //
+                "\n" + scenarioParameters.getVirtualNetworkDescription() + //
                 "\n" + scenarioParameters.populationSize // + //
         );
         Map<String, HtmlBodyElement> bodyElements = new HashMap<>();
@@ -48,5 +49,4 @@ public class ScenarioParametersHtml implements HtmlReportElement {
         return bodyElements;
 
     }
-
 }
