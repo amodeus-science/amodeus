@@ -12,6 +12,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -62,8 +63,13 @@ public class AmodeusViewerFrame implements Runnable {
     private final SpinnerLabel<Integer> spinnerLabelSpeed = new SpinnerLabel<>();
     private final JSlider jSlider = new JSlider(0, 1, 0);
 
-    /** Constructs the {@code Demo}. */
+    /** the new constructor is public AmodeusViewerFrame(AmodeusComponent amodeusComponent, File workingDirectory, File defaultDirectory) */
     public AmodeusViewerFrame(AmodeusComponent amodeusComponent, File outputDirectory) {
+        this(amodeusComponent, outputDirectory, outputDirectory);
+    }
+
+    /** Constructs the {@code Demo}. */
+    public AmodeusViewerFrame(AmodeusComponent amodeusComponent, File workingDirectory, File defaultDirectory) {
         this.amodeusComponent = amodeusComponent;
         // ---
         jFrame.setTitle(TITLE);
@@ -117,7 +123,7 @@ public class AmodeusViewerFrame implements Runnable {
         }
 
         // find the maximal folder depth of the simulation objects relative to the working directory
-        currentMaxDepth = SimulationFolderUtils.getMaxDepth(outputDirectory, SIMOBJ) - 1;
+        currentMaxDepth = SimulationFolderUtils.getMaxDepth(workingDirectory, SIMOBJ) - 1;
         if (currentMaxDepth < 0) {
             System.out.println("ERROR: no simulation objects found in this working directory!");
             GlobalAssert.that(false);
@@ -186,7 +192,7 @@ public class AmodeusViewerFrame implements Runnable {
                         : Cursor.DEFAULT_CURSOR));
             }
         });
-        updateSubsequentSpinnerLabels(outputDirectory, 0);
+        updateSubsequentSpinnerLabels(workingDirectory, defaultDirectory, 0);
         thread = new Thread(this);
         thread.start();
     }
@@ -214,7 +220,7 @@ public class AmodeusViewerFrame implements Runnable {
         }
     }
 
-    void updateSubsequentSpinnerLabels(File rootDirectory, int listIndex) {
+    private void updateSubsequentSpinnerLabels(File rootDirectory, File defaultDirectory, int listIndex) {
         if (listIndex >= currentMaxDepth)
             return;
         SpinnerLabel<String> spinnerLabelFolder = spinnerLabelFolderList.get(listIndex);
@@ -226,27 +232,43 @@ public class AmodeusViewerFrame implements Runnable {
         spinnerLabelFolder.setSpinnerListener(s -> {
             File selectedFolder = new File(rootDirectory, s);
 
-            setSpinnerLabel(selectedFolder, listIndex);
+            setSpinnerLabel(selectedFolder, null, listIndex);
             spinnerLabelFolder.updateLabel();
         });
 
-        // set default value
-        spinnerLabelFolder.setIndex(0);
-        setSpinnerLabel(subfolders[0], listIndex);
+        // set default value else just take the first folder
+        int index = 0;
+        if (defaultDirectory != null) {
+            index = getDefaultFolderIndex(rootDirectory, defaultDirectory);
+        }
+
+        spinnerLabelFolder.setIndex(index);
+        setSpinnerLabel(subfolders[index], defaultDirectory, listIndex);
         spinnerLabelFolder.updateLabel();
     }
 
-    void setSpinnerLabel(File selectedFolder, int index) {
+    private int getDefaultFolderIndex(File rootDirectory, File defaultDirectory) {
+        if (rootDirectory.equals(defaultDirectory))
+            return 0;
+        File rootChild = defaultDirectory;
+        while (!rootDirectory.equals(rootChild.getParentFile())) {
+            rootChild = rootChild.getParentFile();
+        }
+        List<File> subfolders = Arrays.asList(MultiFileTools.getAllDirectoriesSortedWithSubfolderName(rootDirectory, SIMOBJ));
+        return subfolders.indexOf(rootChild);
+    }
+
+    private void setSpinnerLabel(File selectedFolder, File defaultDirectory, int index) {
         if (MultiFileTools.containsFolderName(selectedFolder, SIMOBJ)) {
             this.storageUtils = new StorageUtils(selectedFolder);
             reindex(storageUtils);
             removeSubsequentSpinnerLabels(index + 1);
         } else {
-            updateSubsequentSpinnerLabels(selectedFolder, index + 1);
+            updateSubsequentSpinnerLabels(selectedFolder, defaultDirectory, index + 1);
         }
     }
 
-    void removeSubsequentSpinnerLabels(int listIndex) {
+    private void removeSubsequentSpinnerLabels(int listIndex) {
         if (listIndex >= currentMaxDepth)
             return;
         SpinnerLabel<String> spinnerLabelFolder = spinnerLabelFolderList.get(listIndex);
