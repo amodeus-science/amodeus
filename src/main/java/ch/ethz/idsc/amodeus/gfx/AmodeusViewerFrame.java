@@ -247,7 +247,7 @@ public class AmodeusViewerFrame implements Runnable {
         spinnerLabelFolder.updateLabel();
     }
 
-    private int getDefaultFolderIndex(File rootDirectory, File defaultDirectory) {
+    private static int getDefaultFolderIndex(File rootDirectory, File defaultDirectory) {
         if (rootDirectory.equals(defaultDirectory))
             return 0;
         File rootChild = defaultDirectory;

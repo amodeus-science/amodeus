@@ -5,11 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.NavigableMap;
 
-import ch.ethz.idsc.amodeus.util.nd.NdCenterInterface;
-import ch.ethz.idsc.amodeus.util.nd.NdCluster;
-import ch.ethz.idsc.amodeus.util.nd.NdEntry;
-import ch.ethz.idsc.amodeus.util.nd.NdMap;
-import ch.ethz.idsc.amodeus.util.nd.NdTreeMap;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
