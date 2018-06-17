@@ -75,9 +75,8 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
     // ===================================================================================
     // Methods to use EXTERNALLY in derived dispatchers
 
-    /** @return {@Collection} of all {@AVRequests} which are currently open. Requests are removed from list in setAcceptRequest function */
-    // TODO document why function became public
-    public synchronized final Collection<AVRequest> getAVRequests() {
+    /** @return {@Collection} of all {@AVRequests} which are currently open. Requests are removed from list in setAcceptRequest function. */
+    protected synchronized final Collection<AVRequest> getAVRequests() {
         return Collections.unmodifiableCollection(pendingRequests);
     }
 
@@ -256,7 +255,8 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
     }
 
     /** @param avRequest
-     * @return robotaxi assigned to given avRequest, or empty if no taxi is assigned to avRequest */
+     * @return robotaxi assigned to given avRequest, or empty if no taxi is assigned to avRequest
+     *         Used by BipartiteMatching in euclideanNonCyclic, there a comparison to the old av assignment is needed */
     public final Optional<RoboTaxi> getPickupTaxi(AVRequest avRequest) {
         return Optional.ofNullable(pickupRegister.get(avRequest));
     }

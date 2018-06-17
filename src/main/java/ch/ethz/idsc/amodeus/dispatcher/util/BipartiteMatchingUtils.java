@@ -62,7 +62,7 @@ public enum BipartiteMatchingUtils {
             GlobalAssert.that(false);
         }
 
-        // save initial problemsize
+        // save initial problem size
         infoLine.append(Tensors.vectorInt(roboTaxis.size(), requests.size()));
 
         if (reducewithKDTree) {
@@ -82,6 +82,7 @@ public enum BipartiteMatchingUtils {
                 distanceFunction)).matchAVRequest(roboTaxis, requests));
     }
 
+    /** margin accounts for numeric inaccuracy, since in the computer (a+b)+c != a+(b+c) */
     private static final double MARGIN_EPS = 1e-8;
 
     private static void removeCyclicSolutions(UniversalDispatcher universalDispatcher, DistanceFunction accDistanceFunction, Map<RoboTaxi, AVRequest> taxiToAV) {
@@ -98,8 +99,8 @@ public enum BipartiteMatchingUtils {
                     double distOld = accDistanceFunction.getDistance(oldTaxi, entry.getValue());
                     if (distNew + MARGIN_EPS >= distOld) {
                         // prevent new assignment when the new taxi is not closer in network distance AND
-                        // (the previously assigned taxi is either assigned to a request further away or to none anymore)
-                        // if (copyTaxiToAV.get(asgndTaxi) == null) || accDistanceFunction.getDistance(asgndTaxi, copyTaxiToAV.get(asgndTaxi)) > distAss) {
+                        // (the old taxi is either assigned to a request further away or to none anymore)
+                        // if (copyTaxiToAV.get(oldTaxi) == null || accDistanceFunction.getDistance(oldTaxi, copyTaxiToAV.get(oldTaxi)) + MARGIN_EPS > distOld) {
                         taxiToAV.remove(newTaxi);
                         // }
                     }

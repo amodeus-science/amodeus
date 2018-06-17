@@ -14,5 +14,4 @@ public interface ReferenceFrame {
 
     /** @return transformation from simulation coordinates to WGS84 */
     CoordinateTransformation coords_toWGS84();
-
 }

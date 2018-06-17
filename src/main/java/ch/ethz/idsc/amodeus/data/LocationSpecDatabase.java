@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public enum LocationSpecs {
-    DATABASE;
+public enum LocationSpecDatabase {
+    INSTANCE;
 
     private final Map<String, LocationSpec> map = new HashMap<>();
 
@@ -14,8 +14,14 @@ public enum LocationSpecs {
         map.put(locationSpec.name(), locationSpec);
     }
 
+    /** @param string
+     * @return
+     * @throws Exception if string is not associated to a value */
     public LocationSpec fromString(String string) {
-        return Objects.requireNonNull(map.get(string));
-    }
+        LocationSpec locationSpec = map.get(string);
+        if (Objects.isNull(locationSpec))
+            System.err.println("LocationSpecDatabase miss: " + string);
+        return Objects.requireNonNull(locationSpec);
 
+    }
 }
