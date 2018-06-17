@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import ch.ethz.idsc.amodeus.data.LocationSpec;
-import ch.ethz.idsc.amodeus.data.LocationSpecs;
+import ch.ethz.idsc.amodeus.data.LocationSpecDatabase;
 import ch.ethz.idsc.amodeus.prep.PopulationCutters;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreators;
 
@@ -65,7 +65,7 @@ public class ScenarioOptions {
     }
 
     public LocationSpec getLocationSpec() {
-        return LocationSpecs.DATABASE.fromString( //
+        return LocationSpecDatabase.INSTANCE.fromString( //
                 properties.getProperty(ScenarioOptionsBase.LOCATIONSPECIDENTIFIER));
     }
 

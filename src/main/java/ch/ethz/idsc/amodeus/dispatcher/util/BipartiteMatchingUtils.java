@@ -62,7 +62,7 @@ public enum BipartiteMatchingUtils {
             GlobalAssert.that(false);
         }
 
-        // save initial problemsize
+        // save initial problem size
         infoLine.append(Tensors.vectorInt(roboTaxis.size(), requests.size()));
 
         if (reducewithKDTree) {
@@ -82,6 +82,7 @@ public enum BipartiteMatchingUtils {
                 distanceFunction)).matchAVRequest(roboTaxis, requests));
     }
 
+    /** margin accounts for numeric inaccuracy, since in the computer (a+b)+c != a+(b+c) */
     private static final double MARGIN_EPS = 1e-8;
 
     private static void removeCyclicSolutions(UniversalDispatcher universalDispatcher, DistanceFunction accDistanceFunction, Map<RoboTaxi, AVRequest> taxiToAV) {
