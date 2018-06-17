@@ -25,8 +25,8 @@ public class VehiclesLayer extends ViewerLayer {
     private final BitSet bits = new BitSet();
 
     // during development standard colors are a better default
-    private StatusColors statusColors = StatusColors.Pop;
-    private boolean showLocation = true;
+    public StatusColors statusColors = StatusColors.Pop;
+    public boolean showLocation = true;
 
     public VehiclesLayer() {
         bitSet(RoboTaxiStatus.DRIVETOCUSTOMER);

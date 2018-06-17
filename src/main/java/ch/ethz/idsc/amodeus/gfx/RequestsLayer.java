@@ -28,12 +28,12 @@ public class RequestsLayer extends ViewerLayer {
 
     private static final Font REQUESTS_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 10);
     // ---
-    private final AmodeusHeatMap requestHeatMap = new AmodeusHeatMapImpl(ColorSchemes.OrangeContour);
-    private final AmodeusHeatMap requestDestMap = new AmodeusHeatMapImpl(ColorSchemes.GreenContour);
+    public final AmodeusHeatMap requestHeatMap = new AmodeusHeatMapImpl(ColorSchemes.OrangeContour);
+    public final AmodeusHeatMap requestDestMap = new AmodeusHeatMapImpl(ColorSchemes.GreenContour);
 
-    private volatile boolean maxWaitTimeInHud = true;
-    private volatile boolean drawNumber = true;
-    private volatile boolean drawRequestDestinations = false;
+    public volatile boolean maxWaitTimeInHud = true;
+    public volatile boolean drawNumber = true;
+    public volatile boolean drawRequestDestinations = false;
 
     private double maxWaitTime;
 

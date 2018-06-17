@@ -34,10 +34,10 @@ public class LoadLayer extends ViewerLayer {
     private static final int HISTORY_MAX = 10;
 
     private final Map<Long, SimulationObject> lruCache = LruCache.create(HISTORY_MAX);
-    private volatile boolean drawLoad = false;
+    public volatile boolean drawLoad = false;
 
-    private int historyLength = 4;
-    private int loadScale = 5;
+    public volatile int historyLength = 4;
+    public volatile int loadScale = 5;
 
     @Override
     protected void paint(Graphics2D graphics, SimulationObject ref) {

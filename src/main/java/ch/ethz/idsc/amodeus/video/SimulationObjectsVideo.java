@@ -48,10 +48,13 @@ public class SimulationObjectsVideo implements AutoCloseable {
 
         if (first) {
             first &= false;
-            // TODO method is not foolproof
+            // TODO tile loading method is not foolproof
             System.out.println("Loading Tiles...");
             Thread.sleep(millis);
             System.out.println("Starting mp4 Video.");
+
+            StaticHelper.setQualityHigh(graphics);
+            amodeusComponent.paint(graphics);
         }
 
         mp4.append(bufferedImage);
