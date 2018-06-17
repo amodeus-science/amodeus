@@ -1,10 +1,12 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.net;
 
 import java.io.File;
 
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 
-public class SimulationFolderUtils {
+public enum SimulationFolderUtils {
+    ;
     /** This recursive function looks for the folderName and returns the maximal folder depth found to this named folder
      * relative to the root. If no folder with this name was found, -1 is returned */
     public static int getMaxDepth(File root, String folderName) {
