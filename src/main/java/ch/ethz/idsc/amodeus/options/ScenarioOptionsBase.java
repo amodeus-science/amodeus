@@ -10,8 +10,7 @@ import java.util.Properties;
 import ch.ethz.idsc.amodeus.prep.PopulationCutters;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreators;
 
-public enum ScenarioOptionsBase {
-    ;
+public class ScenarioOptionsBase {
 
     private static final String OPTIONSFILENAME = "AmodeusOptions.properties";
 
@@ -33,8 +32,9 @@ public enum ScenarioOptionsBase {
     public static final String MAXPOPULATIONSIZEIDENTIFIER = "maxPopulationSize";
     public static final String VIRTUALNETWORKCREATORIDENTIFIER = "virtualNetworkCreator";
     public static final String WAITFORCLIENTSIDENTIFIER = "waitForClients";
-    public static final String SHAPEFILEIDENTIFIER = "shapeFile";
+	public static final String SHAPEFILEIDENTIFIER = "shapeFile";
 
+    
     public static Properties getDefault() {
         Properties properties = new Properties();
         properties.setProperty(FULLCONFIGIDENTIFIER, "av_config_full.xml");
@@ -56,18 +56,22 @@ public enum ScenarioOptionsBase {
         properties.setProperty(SHAPEFILEIDENTIFIER, "AbsoluteShapeFileName");
         return properties;
     }
-
+    
     public static void saveDefault() throws IOException {
-        saveProperties(getDefault(), OPTIONSFILENAME);
+        saveProperties(getDefault());
     }
 
-    private static void saveProperties(Properties prop, String filename) throws IOException {
-        File defaultFile = new File(filename);
-        try (FileOutputStream ostream = new FileOutputStream(defaultFile)) {
-
-            prop.store(ostream,
-                    "This is a default config file that needs to be modified. In order to" + "work properly a LocationSpec needs to be set, e.g., LocationSpec=SANFRANCISCO \n");
+    protected static void saveProperties(Properties prop) throws IOException {
+        File defaultFile = new File(OPTIONSFILENAME);
+        String header = "This is a default config file that needs to be modified. In order to" + "work properly a LocationSpec needs to be set, e.g., LocationSpec=SANFRANCISCO \n";
+        saveProperties(prop, defaultFile, header);
+    }
+    
+    /* package */ static void saveProperties(Properties prop, File file, String headerString) throws IOException {
+        try (FileOutputStream ostream = new FileOutputStream(file)) {
+            prop.store(ostream, headerString);
         }
+        PropertiesUtils.sortPropertiesAlphabetically(file);
     }
 
     /** @param workingDirectory
@@ -75,7 +79,7 @@ public enum ScenarioOptionsBase {
      * @return Properties object with default options and any options found in
      *         folder
      * @throws IOException */
-    /* package */ static Properties load(File workingDirectory) throws IOException {
+    public static Properties load(File workingDirectory) throws IOException {
         System.out.println("working in directory \n" + workingDirectory.getCanonicalFile());
 
         Properties simOptions = new Properties(getDefault());

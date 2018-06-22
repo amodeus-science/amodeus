@@ -7,110 +7,126 @@ import java.util.Properties;
 
 import ch.ethz.idsc.amodeus.data.LocationSpec;
 import ch.ethz.idsc.amodeus.data.LocationSpecDatabase;
+import ch.ethz.idsc.amodeus.prep.PopulationCutter;
 import ch.ethz.idsc.amodeus.prep.PopulationCutters;
+import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreators;
 
 public class ScenarioOptions {
 
-    private final Properties properties;
+	protected final Properties properties;
 
-    public static ScenarioOptions load(File workingDirectory) throws IOException {
-        Properties properties = ScenarioOptionsBase.load(workingDirectory);
-        return new ScenarioOptions(properties);
-    }
+	protected ScenarioOptions(Properties properties) {
+		this.properties = properties;
+	}
 
-    private ScenarioOptions(Properties properties) {
-        this.properties = properties;
-    }
+	public static ScenarioOptions load(File workingDirectory) throws IOException {
+		Properties properties = ScenarioOptionsBase.load(workingDirectory);
+		return new ScenarioOptions(properties);
+	}
 
-    public void setProperty(String key, String value) {
-        properties.setProperty(key, value);
-    }
+	// PROPERTIES FUNCTIONS
 
-    // specific access functions ==============================================
-    public String getSimulationConfigName() {
-        return getString(ScenarioOptionsBase.SIMUCONFIGIDENTIFIER);
-    }
+	public void setProperty(String key, String value) {
+		properties.setProperty(key, value);
+	}
 
-    public String getPreparerConfigName() {
-        return getString(ScenarioOptionsBase.FULLCONFIGIDENTIFIER);
-    }
+	public void saveAndOverwriteAmodeusOptions() throws IOException {
+		ScenarioOptionsBase.saveProperties(properties);
+	}
 
-    public String getVirtualNetworkName() {
-        return getString(ScenarioOptionsBase.VIRTUALNETWORKNAMEIDENTIFIER);
-    }
+	public void saveToFolder(File folder, String header) throws IOException {
+		File file = new File(folder, ScenarioOptionsBase.getOptionsFileName());
+		ScenarioOptionsBase.saveProperties(properties, file, header);
+	}
 
-    public int getNumVirtualNodes() {
-        return getInt(ScenarioOptionsBase.NUMVNODESIDENTIFIER);
-    }
+	// specific access functions ==============================================
+	public String getSimulationConfigName() {
+		return getString(ScenarioOptionsBase.SIMUCONFIGIDENTIFIER);
+	}
 
-    public boolean isCompleteGraph() {
-        return getBoolean(ScenarioOptionsBase.COMPLETEGRAPHIDENTIFIER);
-    }
+	public String getPreparerConfigName() {
+		return getString(ScenarioOptionsBase.FULLCONFIGIDENTIFIER);
+	}
 
-    public String getTravelDataName() {
-        return getString(ScenarioOptionsBase.TRAVELDATAFILENAME);
-    }
+	public String getVirtualNetworkName() {
+		return getString(ScenarioOptionsBase.VIRTUALNETWORKNAMEIDENTIFIER);
+	}
 
-    public String getLinkSpeedDataName() {
-        return getString(ScenarioOptionsBase.LINKSPEEDDATAFILENAME);
-    }
+	public int getNumVirtualNodes() {
+		return getInt(ScenarioOptionsBase.NUMVNODESIDENTIFIER);
+	}
 
-    public String getColorScheme() {
-        return getString(ScenarioOptionsBase.COLORSCHEMEIDENTIFIER);
-    }
+	public boolean isCompleteGraph() {
+		return getBoolean(ScenarioOptionsBase.COMPLETEGRAPHIDENTIFIER);
+	}
 
-    public String getChartTheme() {
-        return getString(ScenarioOptionsBase.CHARTTHEMEIDENTIFIER);
-    }
+	public String getTravelDataName() {
+		return getString(ScenarioOptionsBase.TRAVELDATAFILENAME);
+	}
 
-    public LocationSpec getLocationSpec() {
-        return LocationSpecDatabase.INSTANCE.fromString( //
-                properties.getProperty(ScenarioOptionsBase.LOCATIONSPECIDENTIFIER));
-    }
+	public String getLinkSpeedDataName() {
+		return getString(ScenarioOptionsBase.LINKSPEEDDATAFILENAME);
+	}
 
-    /** @return non-negative number, careful: may also return 0 */
-    public int getdtTravelData() {
-        return getInt(ScenarioOptionsBase.DTTRAVELDATAIDENTIFIER);
-    }
+	public String getColorScheme() {
+		return getString(ScenarioOptionsBase.COLORSCHEMEIDENTIFIER);
+	}
 
-    public String getPreparedNetworkName() {
-        return getString(ScenarioOptionsBase.NETWORKUPDATEDNAMEIDENTIFIER);
-    }
+	public String getChartTheme() {
+		return getString(ScenarioOptionsBase.CHARTTHEMEIDENTIFIER);
+	}
 
-    public String getPreparedPopulationName() {
-        return getString(ScenarioOptionsBase.POPULATIONUPDATEDNAMEIDENTIFIER);
-    }
+	/** @return non-negative number, careful: may also return 0 */
+	public int getdtTravelData() {
+		return getInt(ScenarioOptionsBase.DTTRAVELDATAIDENTIFIER);
+	}
 
-    public PopulationCutters getPopulationCutter() {
-        return PopulationCutters.valueOf(getString(ScenarioOptionsBase.POPULATIONCUTTERIDENTIFIER));
-    }
+	public String getPreparedNetworkName() {
+		return getString(ScenarioOptionsBase.NETWORKUPDATEDNAMEIDENTIFIER);
+	}
 
-    public VirtualNetworkCreators getVirtualNetworkCreator() {
-        return VirtualNetworkCreators.valueOf(getString(ScenarioOptionsBase.VIRTUALNETWORKCREATORIDENTIFIER));
-    }
+	public String getPreparedPopulationName() {
+		return getString(ScenarioOptionsBase.POPULATIONUPDATEDNAMEIDENTIFIER);
+	}
 
-    public int getMaxPopulationSize() {
-        return getInt(ScenarioOptionsBase.MAXPOPULATIONSIZEIDENTIFIER);
-    }
+	public LocationSpec getLocationSpec() {
+		return LocationSpecDatabase.INSTANCE.fromString( //
+				properties.getProperty(ScenarioOptionsBase.LOCATIONSPECIDENTIFIER));
+	}
 
-    public File getShapeFile() {
-        File shapeFile = new File(getString(ScenarioOptionsBase.SHAPEFILEIDENTIFIER));
-        System.out.println("shapeFile = " + shapeFile.getAbsolutePath());
-        return shapeFile.exists() ? shapeFile : null;
-    }
+	public PopulationCutter getPopulationCutter() {
+		return PopulationCutters.valueOf(getString(ScenarioOptionsBase.POPULATIONCUTTERIDENTIFIER));
+	}
 
-    // base access functions ==================================================
-    public final String getString(String key) {
-        return properties.getProperty(key);
-    }
+	public VirtualNetworkCreator getVirtualNetworkCreator() {
+		VirtualNetworkCreators virtualNetworkCreators = VirtualNetworkCreators
+				.valueOf(getString(ScenarioOptionsBase.VIRTUALNETWORKCREATORIDENTIFIER));
+		virtualNetworkCreators.setScenarioOptions(this);
+		return virtualNetworkCreators;
+	}
 
-    public final boolean getBoolean(String key) {
-        return Boolean.valueOf(properties.getProperty(key));
-    }
+	public int getMaxPopulationSize() {
+		return getInt(ScenarioOptionsBase.MAXPOPULATIONSIZEIDENTIFIER);
+	}
 
-    public final int getInt(String key) {
-        return Integer.valueOf(properties.getProperty(key));
-    }
+	public File getShapeFile() {
+		File shapeFile = new File(getString(ScenarioOptionsBase.SHAPEFILEIDENTIFIER));
+		System.out.println("shapeFile = " + shapeFile.getAbsolutePath());
+		return shapeFile.exists() ? shapeFile : null;
+	}
+
+	// base access functions ==================================================
+	public final String getString(String key) {
+		return properties.getProperty(key);
+	}
+
+	public final boolean getBoolean(String key) {
+		return Boolean.valueOf(properties.getProperty(key));
+	}
+
+	public final int getInt(String key) {
+		return Integer.valueOf(properties.getProperty(key));
+	}
 
 }
