@@ -10,26 +10,26 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 
 public enum VirtualNetworkCreators implements VirtualNetworkCreator {
-	SHAPEFILENETWORK {
-		@Override
-		public VirtualNetwork<Link> create(Network network, Population population) {
-			GlobalAssert.that(scenarioOptions != null);
-			return MatsimShapeFileVirtualNetworkCreator.creatVirtualNetwork(network, scenarioOptions);
-		}
-	},
-	KMEANS {
-		@Override
-		public VirtualNetwork<Link> create(Network network, Population population) {
-			GlobalAssert.that(scenarioOptions != null);
-			return MatsimKMEANSVirtualNetworkCreator.createVirtualNetwork( //
-					population, network, scenarioOptions.getNumVirtualNodes(), scenarioOptions.isCompleteGraph());
-		}
-	};
+    SHAPEFILENETWORK {
+        @Override
+        public VirtualNetwork<Link> create(Network network, Population population) {
+            GlobalAssert.that(scenarioOptions != null);
+            return MatsimShapeFileVirtualNetworkCreator.creatVirtualNetwork(network, scenarioOptions);
+        }
+    },
+    KMEANS {
+        @Override
+        public VirtualNetwork<Link> create(Network network, Population population) {
+            GlobalAssert.that(scenarioOptions != null);
+            return MatsimKMEANSVirtualNetworkCreator.createVirtualNetwork( //
+                    population, network, scenarioOptions.getNumVirtualNodes(), scenarioOptions.isCompleteGraph());
+        }
+    };
 
-	protected ScenarioOptions scenarioOptions = null;
+    protected ScenarioOptions scenarioOptions = null;
 
-	public void setScenarioOptions(ScenarioOptions scenarioOptions) {
-		this.scenarioOptions = scenarioOptions;
-	}
+    public void setScenarioOptions(ScenarioOptions scenarioOptions) {
+        this.scenarioOptions = scenarioOptions;
+    }
 
 }

@@ -9,17 +9,16 @@ import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.Config;
 
 public enum PopulationCutters implements PopulationCutter {
-	NETWORKBASED {
-		@Override
-		public void cut(Population population, Network network, Config config)
-				throws MalformedURLException, IOException {
-			new PopulationCutterNetworkBased(network).process(population);
-		}
-	},
-	NONE {
-		@Override
-		public void cut(Population population, Network network, Config config) {
-			// nothing to do here
-		}
-	};
+    NETWORKBASED {
+        @Override
+        public void cut(Population population, Network network, Config config) throws MalformedURLException, IOException {
+            new PopulationCutterNetworkBased(network).process(population);
+        }
+    },
+    NONE {
+        @Override
+        public void cut(Population population, Network network, Config config) {
+            // nothing to do here
+        }
+    };
 }

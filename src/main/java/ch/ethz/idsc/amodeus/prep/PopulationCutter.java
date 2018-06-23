@@ -9,6 +9,5 @@ import org.matsim.core.config.Config;
 
 public interface PopulationCutter {
 
-	abstract void cut(Population population, Network network, Config config)
-			throws MalformedURLException, IOException, Exception;
+    abstract void cut(Population population, Network network, Config config) throws MalformedURLException, IOException, Exception;
 }

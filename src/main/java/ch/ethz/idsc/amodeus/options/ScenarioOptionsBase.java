@@ -32,9 +32,8 @@ public class ScenarioOptionsBase {
     public static final String MAXPOPULATIONSIZEIDENTIFIER = "maxPopulationSize";
     public static final String VIRTUALNETWORKCREATORIDENTIFIER = "virtualNetworkCreator";
     public static final String WAITFORCLIENTSIDENTIFIER = "waitForClients";
-	public static final String SHAPEFILEIDENTIFIER = "shapeFile";
+    public static final String SHAPEFILEIDENTIFIER = "shapeFile";
 
-    
     public static Properties getDefault() {
         Properties properties = new Properties();
         properties.setProperty(FULLCONFIGIDENTIFIER, "av_config_full.xml");
@@ -56,7 +55,7 @@ public class ScenarioOptionsBase {
         properties.setProperty(SHAPEFILEIDENTIFIER, "AbsoluteShapeFileName");
         return properties;
     }
-    
+
     public static void saveDefault() throws IOException {
         saveProperties(getDefault());
     }
@@ -66,7 +65,7 @@ public class ScenarioOptionsBase {
         String header = "This is a default config file that needs to be modified. In order to" + "work properly a LocationSpec needs to be set, e.g., LocationSpec=SANFRANCISCO \n";
         saveProperties(prop, defaultFile, header);
     }
-    
+
     /* package */ static void saveProperties(Properties prop, File file, String headerString) throws IOException {
         try (FileOutputStream ostream = new FileOutputStream(file)) {
             prop.store(ostream, headerString);

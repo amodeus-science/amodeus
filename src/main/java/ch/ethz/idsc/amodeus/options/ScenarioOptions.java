@@ -14,119 +14,118 @@ import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreators;
 
 public class ScenarioOptions {
 
-	protected final Properties properties;
+    protected final Properties properties;
 
-	protected ScenarioOptions(Properties properties) {
-		this.properties = properties;
-	}
+    protected ScenarioOptions(Properties properties) {
+        this.properties = properties;
+    }
 
-	public static ScenarioOptions load(File workingDirectory) throws IOException {
-		Properties properties = ScenarioOptionsBase.load(workingDirectory);
-		return new ScenarioOptions(properties);
-	}
+    public static ScenarioOptions load(File workingDirectory) throws IOException {
+        Properties properties = ScenarioOptionsBase.load(workingDirectory);
+        return new ScenarioOptions(properties);
+    }
 
-	// PROPERTIES FUNCTIONS
+    // PROPERTIES FUNCTIONS
 
-	public void setProperty(String key, String value) {
-		properties.setProperty(key, value);
-	}
+    public void setProperty(String key, String value) {
+        properties.setProperty(key, value);
+    }
 
-	public void saveAndOverwriteAmodeusOptions() throws IOException {
-		ScenarioOptionsBase.saveProperties(properties);
-	}
+    public void saveAndOverwriteAmodeusOptions() throws IOException {
+        ScenarioOptionsBase.saveProperties(properties);
+    }
 
-	public void saveToFolder(File folder, String header) throws IOException {
-		File file = new File(folder, ScenarioOptionsBase.getOptionsFileName());
-		ScenarioOptionsBase.saveProperties(properties, file, header);
-	}
+    public void saveToFolder(File folder, String header) throws IOException {
+        File file = new File(folder, ScenarioOptionsBase.getOptionsFileName());
+        ScenarioOptionsBase.saveProperties(properties, file, header);
+    }
 
-	// specific access functions ==============================================
-	public String getSimulationConfigName() {
-		return getString(ScenarioOptionsBase.SIMUCONFIGIDENTIFIER);
-	}
+    // specific access functions ==============================================
+    public String getSimulationConfigName() {
+        return getString(ScenarioOptionsBase.SIMUCONFIGIDENTIFIER);
+    }
 
-	public String getPreparerConfigName() {
-		return getString(ScenarioOptionsBase.FULLCONFIGIDENTIFIER);
-	}
+    public String getPreparerConfigName() {
+        return getString(ScenarioOptionsBase.FULLCONFIGIDENTIFIER);
+    }
 
-	public String getVirtualNetworkName() {
-		return getString(ScenarioOptionsBase.VIRTUALNETWORKNAMEIDENTIFIER);
-	}
+    public String getVirtualNetworkName() {
+        return getString(ScenarioOptionsBase.VIRTUALNETWORKNAMEIDENTIFIER);
+    }
 
-	public int getNumVirtualNodes() {
-		return getInt(ScenarioOptionsBase.NUMVNODESIDENTIFIER);
-	}
+    public int getNumVirtualNodes() {
+        return getInt(ScenarioOptionsBase.NUMVNODESIDENTIFIER);
+    }
 
-	public boolean isCompleteGraph() {
-		return getBoolean(ScenarioOptionsBase.COMPLETEGRAPHIDENTIFIER);
-	}
+    public boolean isCompleteGraph() {
+        return getBoolean(ScenarioOptionsBase.COMPLETEGRAPHIDENTIFIER);
+    }
 
-	public String getTravelDataName() {
-		return getString(ScenarioOptionsBase.TRAVELDATAFILENAME);
-	}
+    public String getTravelDataName() {
+        return getString(ScenarioOptionsBase.TRAVELDATAFILENAME);
+    }
 
-	public String getLinkSpeedDataName() {
-		return getString(ScenarioOptionsBase.LINKSPEEDDATAFILENAME);
-	}
+    public String getLinkSpeedDataName() {
+        return getString(ScenarioOptionsBase.LINKSPEEDDATAFILENAME);
+    }
 
-	public String getColorScheme() {
-		return getString(ScenarioOptionsBase.COLORSCHEMEIDENTIFIER);
-	}
+    public String getColorScheme() {
+        return getString(ScenarioOptionsBase.COLORSCHEMEIDENTIFIER);
+    }
 
-	public String getChartTheme() {
-		return getString(ScenarioOptionsBase.CHARTTHEMEIDENTIFIER);
-	}
+    public String getChartTheme() {
+        return getString(ScenarioOptionsBase.CHARTTHEMEIDENTIFIER);
+    }
 
-	/** @return non-negative number, careful: may also return 0 */
-	public int getdtTravelData() {
-		return getInt(ScenarioOptionsBase.DTTRAVELDATAIDENTIFIER);
-	}
+    /** @return non-negative number, careful: may also return 0 */
+    public int getdtTravelData() {
+        return getInt(ScenarioOptionsBase.DTTRAVELDATAIDENTIFIER);
+    }
 
-	public String getPreparedNetworkName() {
-		return getString(ScenarioOptionsBase.NETWORKUPDATEDNAMEIDENTIFIER);
-	}
+    public String getPreparedNetworkName() {
+        return getString(ScenarioOptionsBase.NETWORKUPDATEDNAMEIDENTIFIER);
+    }
 
-	public String getPreparedPopulationName() {
-		return getString(ScenarioOptionsBase.POPULATIONUPDATEDNAMEIDENTIFIER);
-	}
+    public String getPreparedPopulationName() {
+        return getString(ScenarioOptionsBase.POPULATIONUPDATEDNAMEIDENTIFIER);
+    }
 
-	public LocationSpec getLocationSpec() {
-		return LocationSpecDatabase.INSTANCE.fromString( //
-				properties.getProperty(ScenarioOptionsBase.LOCATIONSPECIDENTIFIER));
-	}
+    public LocationSpec getLocationSpec() {
+        return LocationSpecDatabase.INSTANCE.fromString( //
+                properties.getProperty(ScenarioOptionsBase.LOCATIONSPECIDENTIFIER));
+    }
 
-	public PopulationCutter getPopulationCutter() {
-		return PopulationCutters.valueOf(getString(ScenarioOptionsBase.POPULATIONCUTTERIDENTIFIER));
-	}
+    public PopulationCutter getPopulationCutter() {
+        return PopulationCutters.valueOf(getString(ScenarioOptionsBase.POPULATIONCUTTERIDENTIFIER));
+    }
 
-	public VirtualNetworkCreator getVirtualNetworkCreator() {
-		VirtualNetworkCreators virtualNetworkCreators = VirtualNetworkCreators
-				.valueOf(getString(ScenarioOptionsBase.VIRTUALNETWORKCREATORIDENTIFIER));
-		virtualNetworkCreators.setScenarioOptions(this);
-		return virtualNetworkCreators;
-	}
+    public VirtualNetworkCreator getVirtualNetworkCreator() {
+        VirtualNetworkCreators virtualNetworkCreators = VirtualNetworkCreators.valueOf(getString(ScenarioOptionsBase.VIRTUALNETWORKCREATORIDENTIFIER));
+        virtualNetworkCreators.setScenarioOptions(this);
+        return virtualNetworkCreators;
+    }
 
-	public int getMaxPopulationSize() {
-		return getInt(ScenarioOptionsBase.MAXPOPULATIONSIZEIDENTIFIER);
-	}
+    public int getMaxPopulationSize() {
+        return getInt(ScenarioOptionsBase.MAXPOPULATIONSIZEIDENTIFIER);
+    }
 
-	public File getShapeFile() {
-		File shapeFile = new File(getString(ScenarioOptionsBase.SHAPEFILEIDENTIFIER));
-		System.out.println("shapeFile = " + shapeFile.getAbsolutePath());
-		return shapeFile.exists() ? shapeFile : null;
-	}
+    public File getShapeFile() {
+        File shapeFile = new File(getString(ScenarioOptionsBase.SHAPEFILEIDENTIFIER));
+        System.out.println("shapeFile = " + shapeFile.getAbsolutePath());
+        return shapeFile.exists() ? shapeFile : null;
+    }
 
-	// base access functions ==================================================
-	public final String getString(String key) {
-		return properties.getProperty(key);
-	}
+    // base access functions ==================================================
+    public final String getString(String key) {
+        return properties.getProperty(key);
+    }
 
-	public final boolean getBoolean(String key) {
-		return Boolean.valueOf(properties.getProperty(key));
-	}
+    public final boolean getBoolean(String key) {
+        return Boolean.valueOf(properties.getProperty(key));
+    }
 
-	public final int getInt(String key) {
-		return Integer.valueOf(properties.getProperty(key));
-	}
+    public final int getInt(String key) {
+        return Integer.valueOf(properties.getProperty(key));
+    }
 
 }

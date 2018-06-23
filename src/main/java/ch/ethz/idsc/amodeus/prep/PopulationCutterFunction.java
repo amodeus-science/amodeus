@@ -6,7 +6,7 @@ import java.io.IOException;
 import org.matsim.api.core.v01.population.Population;
 
 public interface PopulationCutterFunction {
-	void process(Population population) throws IOException, Exception;
+    void process(Population population) throws IOException, Exception;
 
-	void printCutSummary();
+    void printCutSummary();
 }

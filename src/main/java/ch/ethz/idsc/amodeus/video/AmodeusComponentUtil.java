@@ -32,7 +32,7 @@ public enum AmodeusComponentUtil {
         envelop.add(southWest);
         envelop.add(northWest);
         envelop.add(southEast);
-    
+
         Coord center = MatsimStaticDatabase.INSTANCE.getCenter();
         boolean zoomAdj = false;
         boolean zoomAdjPrev = false;

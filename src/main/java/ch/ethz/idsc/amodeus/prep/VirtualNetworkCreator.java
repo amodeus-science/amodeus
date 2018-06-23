@@ -7,5 +7,5 @@ import org.matsim.api.core.v01.population.Population;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 
 public interface VirtualNetworkCreator {
-	VirtualNetwork<Link> create(Network network, Population population);
+    VirtualNetwork<Link> create(Network network, Population population);
 }
