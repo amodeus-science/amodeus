@@ -19,7 +19,8 @@ import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.scenario.ScenarioUtils;
 
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
-import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreators;
+import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
+import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.testutils.TestUtils;
 
 public class KMeansVirtualNetworkCreatorTest {
@@ -33,25 +34,26 @@ public class KMeansVirtualNetworkCreatorTest {
 
         /* input data */
         File scenarioDirectory = new File(TestUtils.getSuperFolder("amodeus"), "resources/testScenario");
-        ScenarioOptions scenarioOptions = ScenarioOptions.load(scenarioDirectory);
+        ScenarioOptions scenarioOptions = new ScenarioOptions(scenarioDirectory, ScenarioOptionsBase.getDefault());
         File configFile = new File(scenarioDirectory, scenarioOptions.getPreparerConfigName());
         Config config = ConfigUtils.loadConfig(configFile.getAbsolutePath());
         Scenario scenario = ScenarioUtils.loadScenario(config);
         Network network = scenario.getNetwork();
         Population population = scenario.getPopulation();
         numVNodes = scenarioOptions.getNumVirtualNodes();
-        VirtualNetworkCreators virtualNetworkCreators = scenarioOptions.getVirtualNetworkCreator();
+        VirtualNetworkCreator virtualNetworkCreator = scenarioOptions.getVirtualNetworkCreator();
 
         /* generate nCreations networks */
         for (int i = 0; i < nCreations; ++i) {
-            virtualNetworks.add(virtualNetworkCreators.create(network, population, scenarioOptions));
+            virtualNetworks.add(virtualNetworkCreator.create(network, population));
         }
 
     }
 
     @Test
     public void testCreation() {
-        // ensure that every property is the same for every combination of virtual networks
+        // ensure that every property is the same for every combination of virtual
+        // networks
         for (int i = 0; i < virtualNetworks.size(); ++i) {
             for (int j = 0; j < virtualNetworks.size(); ++j) {
 

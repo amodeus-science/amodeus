@@ -2,38 +2,39 @@
 package ch.ethz.idsc.amodeus.options;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
 import ch.ethz.idsc.amodeus.prep.PopulationCutters;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreators;
+import ch.ethz.idsc.amodeus.util.io.FileLines;
 
 public enum ScenarioOptionsBase {
     ;
 
-    private static final String OPTIONSFILENAME = "AmodeusOptions.properties";
+    static final String OPTIONSFILENAME = "AmodeusOptions.properties";
 
     // ---
-    public static final String FULLCONFIGIDENTIFIER = "fullConfig";
-    public static final String SIMUCONFIGIDENTIFIER = "simuConfig";
-    public static final String LOCATIONSPECIDENTIFIER = "LocationSpec";
-    public static final String VIRTUALNETWORKNAMEIDENTIFIER = "virtualNetwork";
-    public static final String TRAVELDATAFILENAME = "travelDataFileName";
-    public static final String LINKSPEEDDATAFILENAME = "linkSpeedDataFileName";
-    public static final String COLORSCHEMEIDENTIFIER = "colorScheme";
-    public static final String CHARTTHEMEIDENTIFIER = "chartTheme";
-    public static final String DTTRAVELDATAIDENTIFIER = "dtTravelData";
-    public static final String NUMVNODESIDENTIFIER = "numVirtualNodes";
-    public static final String COMPLETEGRAPHIDENTIFIER = "completeGraph";
-    public static final String NETWORKUPDATEDNAMEIDENTIFIER = "NetworkUpdateName";
-    public static final String POPULATIONUPDATEDNAMEIDENTIFIER = "PopulationUpdateName";
+    static final String FULLCONFIGIDENTIFIER = "fullConfig";
+    static final String SIMUCONFIGIDENTIFIER = "simuConfig";
+    static final String VIRTUALNETWORKNAMEIDENTIFIER = "virtualNetwork";
+    static final String TRAVELDATAFILENAME = "travelDataFileName";
+    static final String LINKSPEEDDATAFILENAME = "linkSpeedDataFileName";
+    static final String COLORSCHEMEIDENTIFIER = "colorScheme";
+    static final String CHARTTHEMEIDENTIFIER = "chartTheme";
+    static final String DTTRAVELDATAIDENTIFIER = "dtTravelData";
+    static final String NUMVNODESIDENTIFIER = "numVirtualNodes";
+    static final String COMPLETEGRAPHIDENTIFIER = "completeGraph";
+    static final String NETWORKUPDATEDNAMEIDENTIFIER = "NetworkUpdateName";
+    static final String POPULATIONUPDATEDNAMEIDENTIFIER = "PopulationUpdateName";
+    static final String LOCATIONSPECIDENTIFIER = "LocationSpec";
+    static final String MAXPOPULATIONSIZEIDENTIFIER = "maxPopulationSize";
+    static final String SHAPEFILEIDENTIFIER = "shapeFile";
+    // ---
     public static final String POPULATIONCUTTERIDENTIFIER = "populationCutter";
-    public static final String MAXPOPULATIONSIZEIDENTIFIER = "maxPopulationSize";
     public static final String VIRTUALNETWORKCREATORIDENTIFIER = "virtualNetworkCreator";
     public static final String WAITFORCLIENTSIDENTIFIER = "waitForClients";
-    public static final String SHAPEFILEIDENTIFIER = "shapeFile";
 
     public static Properties getDefault() {
         Properties properties = new Properties();
@@ -57,35 +58,20 @@ public enum ScenarioOptionsBase {
         return properties;
     }
 
-    public static void saveDefault() throws IOException {
-        saveProperties(getDefault(), OPTIONSFILENAME);
+    public static void saveProperties(Properties prop) throws IOException {
+        saveProperties(prop, new File(OPTIONSFILENAME));
     }
 
-    private static void saveProperties(Properties prop, String filename) throws IOException {
-        File defaultFile = new File(filename);
-        try (FileOutputStream ostream = new FileOutputStream(defaultFile)) {
+    public static void saveProperties(Properties prop, File file) throws IOException {
+        String header = "This is a default config file that needs to be modified. In order to" + "work properly a LocationSpec needs to be set, e.g., LocationSpec=SANFRANCISCO \n";
+        saveProperties(prop, file, header);
+    }
 
-            prop.store(ostream,
-                    "This is a default config file that needs to be modified. In order to" + "work properly a LocationSpec needs to be set, e.g., LocationSpec=SANFRANCISCO \n");
+    public static void saveProperties(Properties prop, File file, String headerString) throws IOException {
+        try (FileOutputStream ostream = new FileOutputStream(file)) {
+            prop.store(ostream, headerString);
         }
-    }
-
-    /** @param workingDirectory
-     *            with simulation data an dan IDSC.Options.properties file
-     * @return Properties object with default options and any options found in
-     *         folder
-     * @throws IOException */
-    /* package */ static Properties load(File workingDirectory) throws IOException {
-        System.out.println("working in directory \n" + workingDirectory.getCanonicalFile());
-
-        Properties simOptions = new Properties(getDefault());
-        File simOptionsFile = new File(workingDirectory, OPTIONSFILENAME);
-        if (simOptionsFile.exists()) {
-            simOptions.load(new FileInputStream(simOptionsFile));
-        } else
-            ScenarioOptionsBase.saveDefault();
-
-        return simOptions;
+        FileLines.sort(file);
     }
 
     public static String getOptionsFileName() {

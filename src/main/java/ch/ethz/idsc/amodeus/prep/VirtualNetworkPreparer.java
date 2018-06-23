@@ -22,8 +22,8 @@ public enum VirtualNetworkPreparer {
 
     public static void run(Network network, Population population, ScenarioOptions scenOptions) throws Exception {
 
-        VirtualNetworkCreators virtualNetworkCreators = scenOptions.getVirtualNetworkCreator();
-        virtualNetwork = virtualNetworkCreators.create(network, population, scenOptions);
+        VirtualNetworkCreator virtualNetworkCreators = scenOptions.getVirtualNetworkCreator();
+        virtualNetwork = virtualNetworkCreators.create(network, population);
 
         //
         final File vnDir = new File(scenOptions.getVirtualNetworkName());

@@ -4,7 +4,7 @@ package ch.ethz.idsc.amodeus.prep;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
 
-public class PopulationCutterNetworkBased implements PopulationCutter {
+public class PopulationCutterNetworkBased implements PopulationCutterFunction {
 
     private final Network network;
 

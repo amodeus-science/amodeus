@@ -10,6 +10,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
+import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 
 public enum VirtualNetworkGet {
@@ -19,8 +20,8 @@ public enum VirtualNetworkGet {
      * @return null if file does not exist
      * @throws IOException */
     public static VirtualNetwork<Link> readDefault(Network network) throws IOException {
-
-        ScenarioOptions scenarioOptions = ScenarioOptions.load(MultiFileTools.getWorkingDirectory());
+        File workingDirectory = MultiFileTools.getWorkingDirectory();
+        ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
         final File virtualnetworkFile = new File(scenarioOptions.getVirtualNetworkName(), scenarioOptions.getVirtualNetworkName());
         System.out.println("reading network from" + virtualnetworkFile.getAbsoluteFile());
         try {

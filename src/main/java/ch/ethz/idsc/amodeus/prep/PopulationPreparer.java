@@ -25,8 +25,8 @@ public enum PopulationPreparer {
         System.out.println("++++++++++++++++++++++++ POPULATION PREPARER ++++++++++++++++++++++++++++++++");
         System.out.println("Original population size: " + population.getPersons().values().size());
 
-        PopulationCutters populationCutters = scenOptions.getPopulationCutter();
-        populationCutters.cut(population, network, scenOptions, config);
+        PopulationCutter populationCutter = scenOptions.getPopulationCutter();
+        populationCutter.cut(population, network, config);
         System.out.println("Population size after cutting: " + population.getPersons().values().size());
 
         TheApocalypse.reducesThe(population).toNoMoreThan(scenOptions.getMaxPopulationSize()).people();

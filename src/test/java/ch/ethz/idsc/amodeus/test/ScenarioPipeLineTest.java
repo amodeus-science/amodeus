@@ -21,6 +21,7 @@ import org.matsim.core.gbl.MatsimRandom;
 import ch.ethz.idsc.amodeus.analysis.ScenarioParametersExport;
 import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
+import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.testutils.TestPreparer;
 import ch.ethz.idsc.amodeus.testutils.TestServer;
 import ch.ethz.idsc.amodeus.testutils.TestUtils;
@@ -141,7 +142,7 @@ public class ScenarioPipeLineTest {
 
         // scenario options
         File workingDirectory = MultiFileTools.getWorkingDirectory();
-        ScenarioOptions scenarioOptions = ScenarioOptions.load(workingDirectory);
+        ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
         assertEquals("config.xml", scenarioOptions.getSimulationConfigName());
         assertEquals("preparedNetwork", scenarioOptions.getPreparedNetworkName());
         assertEquals("preparedPopulation", scenarioOptions.getPreparedPopulationName());

@@ -7,24 +7,36 @@ import java.util.Properties;
 
 import ch.ethz.idsc.amodeus.data.LocationSpec;
 import ch.ethz.idsc.amodeus.data.LocationSpecDatabase;
+import ch.ethz.idsc.amodeus.prep.PopulationCutter;
 import ch.ethz.idsc.amodeus.prep.PopulationCutters;
+import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreators;
 
 public class ScenarioOptions {
 
-    private final Properties properties;
+    protected final Properties properties;
 
-    public static ScenarioOptions load(File workingDirectory) throws IOException {
-        Properties properties = ScenarioOptionsBase.load(workingDirectory);
-        return new ScenarioOptions(properties);
-    }
-
-    private ScenarioOptions(Properties properties) {
+    protected ScenarioOptions(Properties properties) {
         this.properties = properties;
     }
 
-    public void setProperty(String key, String value) {
+    public ScenarioOptions(File workingDirectory, Properties fallbackDefault) throws IOException {
+        this.properties = StaticHelper.loadOrCreate(workingDirectory, fallbackDefault);
+    }
+
+    // PROPERTIES FUNCTIONS
+
+    public final void setProperty(String key, String value) {
         properties.setProperty(key, value);
+    }
+
+    public void saveAndOverwriteAmodeusOptions() throws IOException {
+        ScenarioOptionsBase.saveProperties(properties);
+    }
+
+    public void saveToFolder(File folder, String header) throws IOException {
+        File file = new File(folder, ScenarioOptionsBase.getOptionsFileName());
+        ScenarioOptionsBase.saveProperties(properties, file, header);
     }
 
     // specific access functions ==============================================
@@ -64,11 +76,6 @@ public class ScenarioOptions {
         return getString(ScenarioOptionsBase.CHARTTHEMEIDENTIFIER);
     }
 
-    public LocationSpec getLocationSpec() {
-        return LocationSpecDatabase.INSTANCE.fromString( //
-                properties.getProperty(ScenarioOptionsBase.LOCATIONSPECIDENTIFIER));
-    }
-
     /** @return non-negative number, careful: may also return 0 */
     public int getdtTravelData() {
         return getInt(ScenarioOptionsBase.DTTRAVELDATAIDENTIFIER);
@@ -82,16 +89,30 @@ public class ScenarioOptions {
         return getString(ScenarioOptionsBase.POPULATIONUPDATEDNAMEIDENTIFIER);
     }
 
-    public PopulationCutters getPopulationCutter() {
+    /** Hint: upcase instance of LocationSpec if necessary
+     * 
+     * @return */
+    public final LocationSpec getLocationSpec() {
+        return LocationSpecDatabase.INSTANCE.fromString( //
+                properties.getProperty(ScenarioOptionsBase.LOCATIONSPECIDENTIFIER));
+    }
+
+    public PopulationCutter getPopulationCutter() {
         return PopulationCutters.valueOf(getString(ScenarioOptionsBase.POPULATIONCUTTERIDENTIFIER));
     }
 
-    public VirtualNetworkCreators getVirtualNetworkCreator() {
-        return VirtualNetworkCreators.valueOf(getString(ScenarioOptionsBase.VIRTUALNETWORKCREATORIDENTIFIER));
+    public VirtualNetworkCreator getVirtualNetworkCreator() {
+        VirtualNetworkCreators virtualNetworkCreators = VirtualNetworkCreators.valueOf(getString(ScenarioOptionsBase.VIRTUALNETWORKCREATORIDENTIFIER));
+        virtualNetworkCreators.setScenarioOptions(this);
+        return virtualNetworkCreators;
     }
 
     public int getMaxPopulationSize() {
         return getInt(ScenarioOptionsBase.MAXPOPULATIONSIZEIDENTIFIER);
+    }
+
+    public void setMaxPopulationSize(int maxNumberPeople) {
+        properties.setProperty(ScenarioOptionsBase.MAXPOPULATIONSIZEIDENTIFIER, String.valueOf(maxNumberPeople));
     }
 
     public File getShapeFile() {

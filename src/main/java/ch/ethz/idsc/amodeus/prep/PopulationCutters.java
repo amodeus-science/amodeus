@@ -8,22 +8,17 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.Config;
 
-import ch.ethz.idsc.amodeus.options.ScenarioOptions;
-
-public enum PopulationCutters {
+public enum PopulationCutters implements PopulationCutter {
     NETWORKBASED {
         @Override
-        public void cut(Population population, Network network, ScenarioOptions scenarioOptions, Config config) throws MalformedURLException, IOException {
+        public void cut(Population population, Network network, Config config) throws MalformedURLException, IOException {
             new PopulationCutterNetworkBased(network).process(population);
         }
     },
     NONE {
         @Override
-        public void cut(Population population, Network network, ScenarioOptions scenarioOptions, Config config) {
+        public void cut(Population population, Network network, Config config) {
             // nothing to do here
         }
     };
-
-    public abstract void cut(Population population, Network network, ScenarioOptions scenarioOptions, Config config) throws MalformedURLException, IOException, Exception;
-
 }
