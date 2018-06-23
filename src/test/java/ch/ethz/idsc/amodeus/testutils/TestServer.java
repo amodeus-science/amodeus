@@ -29,6 +29,7 @@ import ch.ethz.idsc.amodeus.net.DatabaseModule;
 import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationServer;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
+import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.test.AnalysisTestExport;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.framework.AVConfigGroup;
@@ -61,7 +62,7 @@ public class TestServer {
         this.workingDirectory = workingDirectory;
         System.out.println(workingDirectory);
         GlobalAssert.that(workingDirectory.isDirectory());
-        scenarioOptions = ScenarioOptions.load(workingDirectory);
+        scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
         simulate();
         return this;
     }

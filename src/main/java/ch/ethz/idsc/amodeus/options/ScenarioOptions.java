@@ -20,14 +20,13 @@ public class ScenarioOptions {
         this.properties = properties;
     }
 
-    public static ScenarioOptions load(File workingDirectory) throws IOException {
-        Properties properties = ScenarioOptionsBase.load(workingDirectory);
-        return new ScenarioOptions(properties);
+    public ScenarioOptions(File workingDirectory, Properties fallbackDefault) throws IOException {
+        this.properties = StaticHelper.loadOrCreate(workingDirectory, fallbackDefault);
     }
 
     // PROPERTIES FUNCTIONS
 
-    public void setProperty(String key, String value) {
+    public final void setProperty(String key, String value) {
         properties.setProperty(key, value);
     }
 
@@ -90,7 +89,10 @@ public class ScenarioOptions {
         return getString(ScenarioOptionsBase.POPULATIONUPDATEDNAMEIDENTIFIER);
     }
 
-    public LocationSpec getLocationSpec() {
+    /** Hint: upcase instance of LocationSpec if necessary
+     * 
+     * @return */
+    public final LocationSpec getLocationSpec() {
         return LocationSpecDatabase.INSTANCE.fromString( //
                 properties.getProperty(ScenarioOptionsBase.LOCATIONSPECIDENTIFIER));
     }
@@ -107,6 +109,10 @@ public class ScenarioOptions {
 
     public int getMaxPopulationSize() {
         return getInt(ScenarioOptionsBase.MAXPOPULATIONSIZEIDENTIFIER);
+    }
+
+    public void setMaxPopulationSize(int maxNumberPeople) {
+        properties.setProperty(ScenarioOptionsBase.MAXPOPULATIONSIZEIDENTIFIER, String.valueOf(maxNumberPeople));
     }
 
     public File getShapeFile() {

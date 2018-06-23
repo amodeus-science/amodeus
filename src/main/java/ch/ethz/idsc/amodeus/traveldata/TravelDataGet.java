@@ -8,6 +8,7 @@ import java.util.Objects;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
+import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
@@ -17,7 +18,8 @@ public enum TravelDataGet {
 
     public static TravelData readDefault(VirtualNetwork<Link> virtualNetwork) throws IOException {
         GlobalAssert.that(Objects.nonNull(virtualNetwork));
-        ScenarioOptions scenarioOptions = ScenarioOptions.load(MultiFileTools.getWorkingDirectory());
+        File workingDirectory = MultiFileTools.getWorkingDirectory();
+        ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
         final File travelDataFile = new File(scenarioOptions.getVirtualNetworkName(), //
                 scenarioOptions.getTravelDataName());
         System.out.println("loading travelData from " + travelDataFile.getAbsoluteFile());

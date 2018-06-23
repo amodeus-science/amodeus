@@ -18,6 +18,7 @@ import org.matsim.core.scenario.ScenarioUtils;
 
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
+import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkGet;
 import ch.ethz.matsim.av.config.AVConfig;
@@ -49,7 +50,7 @@ public class ScenarioParameters implements Serializable {
         ScenarioOptions scenOptions = null;
         try {
             workingDirectory = new File("").getCanonicalFile();
-            scenOptions = ScenarioOptions.load(workingDirectory);
+            scenOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
         } catch (IOException e) {
             e.printStackTrace();
         }

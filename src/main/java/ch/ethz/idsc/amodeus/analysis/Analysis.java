@@ -27,6 +27,7 @@ import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.net.StorageSupplier;
 import ch.ethz.idsc.amodeus.net.StorageUtils;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
+import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 
 public class Analysis {
     /** Use this method to create an standalone Analysis with all the default values stored in the current Working Directory
@@ -93,7 +94,7 @@ public class Analysis {
         if (Objects.isNull(workingDirectory) || !workingDirectory.isDirectory())
             workingDirectory = new File("").getCanonicalFile();
         System.out.println("workingDirectory in Analysis: " + workingDirectory.getAbsolutePath());
-        ScenarioOptions scenOptions = ScenarioOptions.load(workingDirectory);
+        ScenarioOptions scenOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
         ReferenceFrame referenceFrame = scenOptions.getLocationSpec().referenceFrame();
         if (configFile == null || !configFile.isFile())
             configFile = new File(workingDirectory, scenOptions.getSimulationConfigName());
