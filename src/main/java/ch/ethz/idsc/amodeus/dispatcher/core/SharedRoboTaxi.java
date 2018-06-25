@@ -8,33 +8,29 @@ import ch.ethz.matsim.av.data.AVVehicle;
 
 public class SharedRoboTaxi extends RoboTaxi {
 
-    private int onBoardCustomers = 0;
+	private int onBoardCustomers = 0;
 
-    SharedRoboTaxi(AVVehicle avVehicle, LinkTimePair divertableLinkTime, Link driveDestination) {
-        super(avVehicle, divertableLinkTime, driveDestination);
-    }
+	SharedRoboTaxi(AVVehicle avVehicle, LinkTimePair divertableLinkTime, Link driveDestination) {
+		super(avVehicle, divertableLinkTime, driveDestination);
+	}
 
-    public void pickupNewCustomerOnBoard() {
-        GlobalAssert.that(onBoardCustomers >= 0);
+	public void pickupNewCustomerOnBoard() {
+		GlobalAssert.that(canPickupNewCustomer());
+		onBoardCustomers++;
+	}
 
-        onBoardCustomers++;
-        GlobalAssert.that(onBoardCustomers <= (int) avVehicle.getCapacity());
-    }
+	public boolean canPickupNewCustomer() {
+		return onBoardCustomers >= 0 && onBoardCustomers < (int) avVehicle.getCapacity();
+	}
 
-    public void dropOffCustomer() {
-        GlobalAssert.that(onBoardCustomers > 0);
-        GlobalAssert.that(onBoardCustomers <= (int) avVehicle.getCapacity());
+	public void dropOffCustomer() {
+		GlobalAssert.that(onBoardCustomers > 0);
+		GlobalAssert.that(onBoardCustomers <= (int) avVehicle.getCapacity());
+		onBoardCustomers--;
+	}
 
-        onBoardCustomers--;
-    }
-
-    public int getCurrentNumberOfCustomersOnBoard() {
-
-        return onBoardCustomers;
-    }
-
-    public boolean canPickupNewCustomer() {
-        return isWithoutCustomer() && onBoardCustomers >= 0 && onBoardCustomers <= (int) avVehicle.getCapacity();
-    }
+	public int getCurrentNumberOfCustomersOnBoard() {
+		return onBoardCustomers;
+	}
 
 }
