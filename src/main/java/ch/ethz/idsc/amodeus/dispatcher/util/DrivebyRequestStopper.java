@@ -8,7 +8,7 @@ import java.util.function.BiConsumer;
 
 import org.matsim.api.core.v01.network.Link;
 
-import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.core.UnitCapRoboTaxi;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** * call with setVehiclePickup as biConsumer, this class stops vehicles
@@ -16,10 +16,10 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 public enum DrivebyRequestStopper {
     ;
 
-    public static int stopDrivingBy(Map<Link, List<AVRequest>> requestLocs, Collection<RoboTaxi> roboTaxis, BiConsumer<RoboTaxi, AVRequest> biConsumer) {
+    public static int stopDrivingBy(Map<Link, List<AVRequest>> requestLocs, Collection<UnitCapRoboTaxi> roboTaxis, BiConsumer<UnitCapRoboTaxi, AVRequest> biConsumer) {
         int numDriveByPickup = 0;
 
-        for (RoboTaxi roboTaxi : roboTaxis) {
+        for (UnitCapRoboTaxi roboTaxi : roboTaxis) {
             Link link = roboTaxi.getDivertableLocation();
             if (requestLocs.containsKey(link)) {
                 List<AVRequest> requestList = requestLocs.get(link);

@@ -48,9 +48,9 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 
     private final FuturePathFactory futurePathFactory;
     private final Set<AVRequest> pendingRequests = new LinkedHashSet<>();
-    private final Map<List<AVRequest>, RoboTaxi> pickupRegister = new HashMap<>(); // new RequestRegister
-    private final Map<List<AVRequest>, RoboTaxi> requestRegister = new HashMap<>();
-    private final Map<AVRequest, RoboTaxi> periodFulfilledRequests = new HashMap<>(); // new temporaryRequestRegister for fulfilled requests
+    private final Map<List<AVRequest>, SharedRoboTaxi> pickupRegister = new HashMap<>(); // new RequestRegister
+    private final Map<List<AVRequest>, SharedRoboTaxi> requestRegister = new HashMap<>();
+    private final Map<AVRequest, SharedRoboTaxi> periodFulfilledRequests = new HashMap<>(); // new temporaryRequestRegister for fulfilled requests
     private final Map<Id<Vehicle>, RoboTaxiStatus> oldRoboTaxis = new HashMap<>();
     private final double pickupDurationPerStop;
     private final double dropoffDurationPerStop;
@@ -89,104 +89,107 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 
     /** Example call: getRoboTaxiSubset(AVStatus.STAY, AVStatus.DRIVEWITHCUSTOMER)
      * 
-     * @param status {@AVStatus} of desired robotaxis, e.g., STAY,DRIVETOCUSTOMER,...
-     * @return list of robotaxis which are in {@AVStatus} status */
-    public final List<RoboTaxi> getRoboTaxiSubset(RoboTaxiStatus... status) {
+     * @param status {@AVStatus} of desiredsRoboTaxis, e.g., STAY,DRIVETOCUSTOMER,...
+     * @return list ofsRoboTaxis which are in {@AVStatus} status */
+    public final List<SharedRoboTaxi> getRoboTaxiSubset(RoboTaxiStatus... status) {
         return getRoboTaxiSubset(EnumSet.copyOf(Arrays.asList(status)));
     }
 
-    private List<RoboTaxi> getRoboTaxiSubset(Set<RoboTaxiStatus> status) {
+    private List<SharedRoboTaxi> getRoboTaxiSubset(Set<RoboTaxiStatus> status) {
         return getRoboTaxis().stream().filter(rt -> status.contains(rt.getStatus())).collect(Collectors.toList());
     }
 
-    /** @return divertable robotaxis which currently not on a pickup drive */
-    protected final Collection<RoboTaxi> getDivertableUnassignedRoboTaxis() {
-        Collection<RoboTaxi> divertableUnassignedRoboTaxis = getDivertableRoboTaxis().stream() //
+    /** @return divertablesRoboTaxis which currently not on a pickup drive */
+    protected final Collection<SharedRoboTaxi> getDivertableUnassignedRoboTaxis() {
+        Collection<SharedRoboTaxi> divertableUnassignedRoboTaxis = getDivertableRoboTaxis().stream() //
                 .filter(rt -> !pickupRegister.containsValue(rt)) //
                 .collect(Collectors.toList());
         GlobalAssert.that(!divertableUnassignedRoboTaxis.stream().anyMatch(pickupRegister::containsValue));
-        GlobalAssert.that(divertableUnassignedRoboTaxis.stream().allMatch(RoboTaxi::isWithoutCustomer));
+        GlobalAssert.that(divertableUnassignedRoboTaxis.stream().allMatch(SharedRoboTaxi::isWithoutCustomer));
         return divertableUnassignedRoboTaxis;
     }
 
     /** @return {@Collection} of {@RoboTaxi} which can be redirected during iteration */
-    protected final Collection<RoboTaxi> getDivertableRoboTaxis() {
+    protected final Collection<SharedRoboTaxi> getDivertableRoboTaxis() {
         return getRoboTaxis().stream() //
-                .filter(RoboTaxi::isWithoutDirective) //
-                .filter(RoboTaxi::isWithoutCustomer) //
-                .filter(RoboTaxi::notDrivingOnLastLink) //
+                .filter(SharedRoboTaxi::isWithoutDirective) //
+                .filter(SharedRoboTaxi::isWithoutCustomer) //
+                .filter(SharedRoboTaxi::notDrivingOnLastLink) //
                 .collect(Collectors.toList());
     }
 
     /** @return immutable and inverted copy of pickupRegister, displays which vehicles are currently scheduled to pickup which request */
-    protected final Map<RoboTaxi, List<AVRequest>> getPickupRoboTaxis() {
-        Map<RoboTaxi, List<AVRequest>> pickupPairs = pickupRegister.entrySet().stream()//
+    protected final Map<SharedRoboTaxi, List<AVRequest>> getPickupRoboTaxis() {
+        Map<SharedRoboTaxi, List<AVRequest>> pickupPairs = pickupRegister.entrySet().stream()//
                 .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
         GlobalAssert.that(pickupPairs.keySet().stream().allMatch(rt -> rt.getStatus().equals(RoboTaxiStatus.DRIVETOCUSTOMER)));
         return pickupPairs;
     }
 
-    public void setNewSharedRoboTaxiPickup(RoboTaxi roboTaxi, AVRequest avRequest, int pickupIndex) {
-        SharedRoboTaxi sRoboTaxi = (SharedRoboTaxi) roboTaxi;
+    public void setNewSharedRoboTaxiPickup(SharedRoboTaxi sRoboTaxi, AVRequest avRequest, int pickupIndex) {
         GlobalAssert.that(sRoboTaxi.canPickupNewCustomer());
         GlobalAssert.that(pendingRequests.contains(avRequest));
 
         // 1) enter information into pickup table
         // 2) also do everything for the full-time requestRegister
-        if (!pickupRegister.containsValue(roboTaxi)) { // roboTaxi was not picking up
+        AVRequest avRforPickup = null;
+        if (!pickupRegister.containsValue(sRoboTaxi)) { // sRoboTaxi was not picking up
             List<AVRequest> avRList = Arrays.asList(avRequest);
-            pickupRegister.put(avRList, roboTaxi);
-            requestRegister.put(avRList, roboTaxi);
+            pickupRegister.put(avRList, sRoboTaxi);
+            requestRegister.put(avRList, sRoboTaxi);
+            avRforPickup = avRequest;
         } else {
             List<AVRequest> listToAugment = pickupRegister.entrySet().stream()//
-                    .filter(e -> e.getValue().equals(roboTaxi)).findAny().get().getKey();
-            pickupRegister.remove(listToAugment); // remove List of AVRequest/RoboTaxi pair served before by roboTaxi
-            pickupRegister.remove(listToAugment); // remove List of AVRequest/RoboTaxi pair served before by roboTaxi
+                    .filter(e -> e.getValue().equals(sRoboTaxi)).findAny().get().getKey();
+            pickupRegister.remove(listToAugment); // remove List of AVRequest/RoboTaxi pair served before bysRoboTaxi
+            pickupRegister.remove(listToAugment); // remove List of AVRequest/RoboTaxi pair served before bysRoboTaxi
 
             // Augment list
             // TODO order!!!!!
             GlobalAssert.that(pickupIndex >= 0 && pickupIndex <= listToAugment.size());
             listToAugment.add(pickupIndex, avRequest);
-            pickupRegister.put(listToAugment, roboTaxi); // add new pair
-            requestRegister.put(listToAugment, roboTaxi);
+            pickupRegister.put(listToAugment, sRoboTaxi); // add new pair
+            requestRegister.put(listToAugment, sRoboTaxi);
+            avRforPickup = listToAugment.get(0);
         }
         GlobalAssert.that(pickupRegister.size() == pickupRegister.values().stream().distinct().count());
 
         // 2) set vehicle diversion
-        setRoboTaxiDiversion(roboTaxi, avRequest.getFromLink(), RoboTaxiStatus.DRIVETOCUSTOMER);
+
+        setRoboTaxiDiversion(sRoboTaxi, avRforPickup.getFromLink(), RoboTaxiStatus.DRIVETOCUSTOMER);
     }
 
-    /** Diverts {@link RoboTaxi} to Link if {@link AVRequest} and adds pair to pickupRegister. If the {@roboTaxi} was scheduled to pickup another {@AVRequest}, then
+    /** Diverts {@link SharedRoboTaxi} to Link if {@link AVRequest} and adds pair to pickupRegister. If the {@roboTaxi} was scheduled to pickup another
+     * {@AVRequest}, then
      * this
      * pair is silently revmoved from the pickup register which is a bijection of {@RoboTaxi} and open {@AVRequest}.
      * 
-     * @param roboTaxi
+     * @paramsRoboTaxi
      * @param avRequest */
-    public void setNewSingleRoboTaxiPickup(RoboTaxi roboTaxi, AVRequest avRequest) {
-        SharedRoboTaxi sRoboTaxi = (SharedRoboTaxi) roboTaxi;
+    public void setNewSingleRoboTaxiPickup(SharedRoboTaxi sRoboTaxi, AVRequest avRequest) {
         GlobalAssert.that(sRoboTaxi.canPickupNewCustomer());
         GlobalAssert.that(pendingRequests.contains(avRequest));
 
         List<AVRequest> avRList = Arrays.asList(avRequest);
         // 1) enter information into pickup table
         // 2) also do everything for the full-time requestRegister
-        if (!pickupRegister.containsValue(roboTaxi)) { // roboTaxi was not picking up
-            pickupRegister.put(avRList, roboTaxi);
-            requestRegister.put(avRList, roboTaxi);
+        if (!pickupRegister.containsValue(sRoboTaxi)) { // sRoboTaxi was not picking up
+            pickupRegister.put(avRList, sRoboTaxi);
+            requestRegister.put(avRList, sRoboTaxi);
         } else {
             List<AVRequest> listToRemove = pickupRegister.entrySet().stream()//
-                    .filter(e -> e.getValue().equals(roboTaxi)).findAny().get().getKey();
-            pickupRegister.remove(listToRemove); // remove AVRequest/RoboTaxi pair served before by roboTaxi
+                    .filter(e -> e.getValue().equals(sRoboTaxi)).findAny().get().getKey();
+            pickupRegister.remove(listToRemove); // remove AVRequest/RoboTaxi pair served before bysRoboTaxi
             pickupRegister.remove(avRList); // remove AVRequest/RoboTaxi pair corresponding to avRequest
             requestRegister.remove(listToRemove);
             requestRegister.remove(avRList);
-            pickupRegister.put(avRList, roboTaxi); // add new pair
-            requestRegister.put(avRList, roboTaxi);
+            pickupRegister.put(avRList, sRoboTaxi); // add new pair
+            requestRegister.put(avRList, sRoboTaxi);
         }
         GlobalAssert.that(pickupRegister.size() == pickupRegister.values().stream().distinct().count());
 
         // 2) set vehicle diversion
-        setRoboTaxiDiversion(roboTaxi, avRequest.getFromLink(), RoboTaxiStatus.DRIVETOCUSTOMER);
+        setRoboTaxiDiversion(sRoboTaxi, avRequest.getFromLink(), RoboTaxiStatus.DRIVETOCUSTOMER);
     }
 
     // ===================================================================================
@@ -197,112 +200,112 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
      * happens. In one pass of {@redispatch(...)} in {@VehicleMaintainer}, the function setVehicleDiversion(...) may only be invoked
      * once for a single {@RoboTaxi} vehicle
      *
-     * @param robotaxi {@link RoboTaxi} supplied with a getFunction,e.g., {@link this.getDivertableRoboTaxis}
-     * @param destination {@link Link} the {@link RoboTaxi} should be diverted to
-     * @param avstatus {@link} the {@link AVStatus} the {@link RoboTaxi} has after the diversion, depends if used from {@link setRoboTaxiPickup} or
+     * @paramsRoboTaxi {@link SharedRoboTaxi} supplied with a getFunction,e.g., {@link this.getDivertableRoboTaxis}
+     * @param destination {@link Link} the {@link SharedRoboTaxi} should be diverted to
+     * @param avstatus {@link} the {@link AVStatus} the {@link SharedRoboTaxi} has after the diversion, depends if used from {@link setRoboTaxiPickup} or
      *            {@link setRoboTaxiRebalance} */
-    final void setRoboTaxiDiversion(RoboTaxi robotaxi, Link destination, RoboTaxiStatus avstatus) {
-        // updated status of robotaxi
-        SharedRoboTaxi sRoboTaxi = (SharedRoboTaxi) robotaxi;
-        GlobalAssert.that(sRoboTaxi.canPickupNewCustomer());
-        GlobalAssert.that(robotaxi.isWithoutDirective());
+    final void setRoboTaxiDiversion(SharedRoboTaxi sRoboTaxi, Link destination, RoboTaxiStatus avstatus) {
+        // updated status ofsRoboTaxi
+        GlobalAssert.that(sRoboTaxi.canPickupNewCustomer()); // FIXME
+        GlobalAssert.that(sRoboTaxi.isWithoutDirective()); // FIXME
 
-        robotaxi.setStatus(avstatus);
+       sRoboTaxi.setStatus(avstatus);
 
-        // udpate schedule of robotaxi
-        final Schedule schedule = robotaxi.getSchedule();
+        // udpate schedule ofsRoboTaxi
+        final Schedule schedule = sRoboTaxi.getSchedule();
         Task task = schedule.getCurrentTask(); // <- implies that task is started
         new RoboTaxiTaskAdapter(task) {
-            @Override
-            public void handle(AVDriveTask avDriveTask) {
-                if (!avDriveTask.getPath().getToLink().equals(destination)) { // ignore when vehicle is already going there
-                    FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer( //
-                            robotaxi.getDivertableLocation(), destination, robotaxi.getDivertableTime());
-                    robotaxi.assignDirective(new DriveVehicleDiversionDirective(robotaxi, destination, futurePathContainer));
-                } else
-                    robotaxi.assignDirective(EmptyDirective.INSTANCE);
-            }
 
-            @Override
-            public void handle(AVStayTask avStayTask) {
-                if (!avStayTask.getLink().equals(destination)) { // ignore request where location == target
-                    FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer( //
-                            robotaxi.getDivertableLocation(), destination, robotaxi.getDivertableTime());
-                    robotaxi.assignDirective(new StayVehicleDiversionDirective(robotaxi, destination, futurePathContainer));
-                } else
-                    robotaxi.assignDirective(EmptyDirective.INSTANCE);
-            }
-        };
+    @Override
+    public void handle(AVDriveTask avDriveTask) {
+        if (!avDriveTask.getPath().getToLink().equals(destination)) { // ignore when vehicle is already going there
+            FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer( //
+                    sRoboTaxi.getDivertableLocation(), destination, sRoboTaxi.getDivertableTime());
+            sRoboTaxi.assignDirective(new DriveVehicleDiversionDirective(sRobotaxi, destination, futurePathContainer));
+        } else
+            sRoboTaxi.assignDirective(EmptyDirective.INSTANCE);
     }
 
-    /** Function called from {@link UniversalDispatcher.executePickups} if a RoboTaxi scheduled for pickup has reached the
+    @Override
+    public void handle(AVStayTask avStayTask) {
+        if (!avStayTask.getLink().equals(destination)) { // ignore request where location == target
+            FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer( //
+                    sRoboTaxi.getDivertableLocation(), destination, sRoboTaxi.getDivertableTime());
+            sRoboTaxi.assignDirective(new StayVehicleDiversionDirective(robotaxi, destination, futurePathContainer));
+        } else
+            sRoboTaxi.assignDirective(EmptyDirective.INSTANCE);
+    }
+
+    };}
+
+    /** Function called from {@link UniversalDispatcher.executePickups} if asRoboTaxi scheduled for pickup has reached the
      * from link of the {@link AVRequest}.
      * 
-     * @param roboTaxi
+     * @paramsRoboTaxi
      * @param avRequest */
-    private synchronized final void setAcceptRequest(RoboTaxi roboTaxi, AVRequest avRequest) {
-        roboTaxi.setStatus(RoboTaxiStatus.DRIVEWITHCUSTOMER);
-        roboTaxi.setCurrentDriveDestination(avRequest.getFromLink()); // TODO toLink
+    private synchronized final void setAcceptRequest(SharedRoboTaxi sRoboTaxi, AVRequest avRequest) {
+       sRoboTaxi.setStatus(RoboTaxiStatus.DRIVEWITHCUSTOMER);
+       sRoboTaxi.setCurrentDriveDestination(avRequest.getFromLink()); // TODO toLink
         {
             boolean statusPen = pendingRequests.remove(avRequest);
             GlobalAssert.that(statusPen);
         }
         {
-            RoboTaxi former = pickupRegister.remove(avRequest);
+            SharedRoboTaxi former = pickupRegister.remove(avRequest);
             GlobalAssert.that(roboTaxi == former);
         }
 
         consistencySubCheck();
 
-        final Schedule schedule = roboTaxi.getSchedule();
+        final Schedule schedule =sRoboTaxi.getSchedule();
         // check that current task is last task in schedule
         GlobalAssert.that(schedule.getCurrentTask() == Schedules.getLastTask(schedule));
 
         final double endPickupTime = getTimeNow() + pickupDurationPerStop;
         FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer(avRequest.getFromLink(), avRequest.getToLink(), endPickupTime);
 
-        roboTaxi.assignDirective(new AcceptRequestDirective(roboTaxi, avRequest, futurePathContainer, getTimeNow(), dropoffDurationPerStop));
+       sRoboTaxi.assignDirective(new AcceptRequestDirective(roboTaxi, avRequest, futurePathContainer, getTimeNow(), dropoffDurationPerStop));
 
         ++total_matchedRequests;
     }
 
-    /** Function called from {@link UniversalDispatcher.executeDropoffs} if a RoboTaxi scheduled for dropoff has reached the
+    /** Function called from {@link UniversalDispatcher.executeDropoffs} if asRoboTaxi scheduled for dropoff has reached the
      * from link of the {@link AVRequest}.
      * 
-     * @param roboTaxi
+     * @paramsRoboTaxi
      * @param avRequest */
-    private synchronized final void setPassengerDropoff(RoboTaxi roboTaxi, AVRequest avRequest) {
-        RoboTaxi former = requestRegister.remove(avRequest);
+    private synchronized final void setPassengerDropoff(SharedRoboTaxisRoboTaxi, AVRequest avRequest) {
+        SharedRoboTaxi former = requestRegister.remove(avRequest);
         GlobalAssert.that(roboTaxi == former);
 
         // save avRequests which are matched for one publishPeriod to ensure no requests are lost in the recording.
-        periodFulfilledRequests.put(avRequest, roboTaxi);
+        periodFulfilledRequests.put(avRequest,sRoboTaxi);
 
-        final Schedule schedule = roboTaxi.getSchedule();
+        final Schedule schedule =sRoboTaxi.getSchedule();
         // check that current task is last task in schedule
         GlobalAssert.that(schedule.getCurrentTask() == Schedules.getLastTask(schedule));
     }
 
     @Override
-    /* package */ final boolean isInPickupRegister(RoboTaxi robotaxi) {
+    /* package */ final boolean isInPickupRegister(SharedRoboTaxisRoboTaxi) {
         return pickupRegister.containsValue(robotaxi);
     }
 
     /** @param avRequest
-     * @return robotaxi assigned to given avRequest, or empty if no taxi is assigned to avRequest
+     * @returnsRoboTaxi assigned to given avRequest, or empty if no taxi is assigned to avRequest
      *         Used by BipartiteMatching in euclideanNonCyclic, there a comparison to the old av assignment is needed */
-    public final Optional<RoboTaxi> getPickupTaxi(AVRequest avRequest) {
+    public final Optional<SharedRoboTaxi> getPickupTaxi(AVRequest avRequest) {
         return Optional.ofNullable(pickupRegister.get(avRequest));
     }
 
-    /** complete all matchings if a {@link RoboTaxi} has arrived at the fromLink of an {@link AVRequest} */
+    /** complete all matchings if a {@link SharedRoboTaxi} has arrived at the fromLink of an {@link AVRequest} */
     @Override
     void executePickups() {
-        Map<AVRequest, RoboTaxi> pickupRegisterCopy = new HashMap<>(pickupRegister);
-        for (Entry<AVRequest, RoboTaxi> entry : pickupRegisterCopy.entrySet()) {
+        Map<AVRequest, SharedRoboTaxi> pickupRegisterCopy = new HashMap<>(pickupRegister);
+        for (Entry<AVRequest, SharedRoboTaxi> entry : pickupRegisterCopy.entrySet()) {
             AVRequest avRequest = entry.getKey();
             GlobalAssert.that(pendingRequests.contains(avRequest));
-            RoboTaxi pickupVehicle = entry.getValue();
+            SharedRoboTaxi pickupVehicle = entry.getValue();
             Link pickupVehicleLink = pickupVehicle.getDivertableLocation();
             boolean isOk = pickupVehicle.getSchedule().getCurrentTask() == Schedules.getLastTask(pickupVehicle.getSchedule());
             if (avRequest.getFromLink().equals(pickupVehicleLink) && isOk) {
@@ -311,14 +314,14 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         }
     }
 
-    /** complete all matchings if a {@link RoboTaxi} has arrived at the toLink of an {@link AVRequest} */
+    /** complete all matchings if a {@link SharedRoboTaxi} has arrived at the toLink of an {@link AVRequest} */
     @Override
     void executeDropoffs() {
-        Map<AVRequest, RoboTaxi> requestRegisterCopy = new HashMap<>(requestRegister);
-        for (Entry<AVRequest, RoboTaxi> entry : requestRegisterCopy.entrySet()) {
+        Map<AVRequest, SharedRoboTaxi> requestRegisterCopy = new HashMap<>(requestRegister);
+        for (Entry<AVRequest, SharedRoboTaxi> entry : requestRegisterCopy.entrySet()) {
             if (Objects.nonNull(entry.getValue())) {
                 AVRequest avRequest = entry.getKey();
-                RoboTaxi dropoffVehicle = entry.getValue();
+                SharedRoboTaxi dropoffVehicle = entry.getValue();
                 Link dropoffVehicleLink = dropoffVehicle.getDivertableLocation();
                 boolean isOk = dropoffVehicle.getSchedule().getCurrentTask() == Schedules.getLastTask(dropoffVehicle.getSchedule());
                 if (avRequest.getToLink().equals(dropoffVehicleLink) && isOk) {
@@ -337,7 +340,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         GlobalAssert.that(added);
     }
 
-    /** function stops {@link RoboTaxi} which are still heading towards an {@link AVRequest} but another {@link RoboTaxi} was scheduled to pickup this
+    /** function stops {@link SharedRoboTaxi} which are still heading towards an {@link AVRequest} but another {@link SharedRoboTaxi} was scheduled to pickup this
      * {@link AVRequest} in the meantime */
     @Override
     /* package */ final void stopAbortedPickupRoboTaxis() {
@@ -346,13 +349,13 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         getRoboTaxis().stream()//
                 .filter(rt -> rt.getStatus().equals(RoboTaxiStatus.DRIVETOCUSTOMER))//
                 .filter(rt -> !pickupRegister.containsValue(rt))//
-                .filter(RoboTaxi::isWithoutCustomer)//
-                .filter(RoboTaxi::isWithoutDirective)//
+                .filter(SharedRoboTaxi::canPickupNewCustomer)//
+                .filter(SharedRoboTaxi::isWithoutDirective)//
                 .forEach(rt -> setRoboTaxiDiversion(rt, rt.getDivertableLocation(), RoboTaxiStatus.REBALANCEDRIVE));
         GlobalAssert.that(pickupRegister.size() <= pendingRequests.size());
     }
 
-    /** Consistency checks to be called by {@link RoboTaxiMaintainer.consistencyCheck} in each iteration. */
+    /** Consistency checks to be called by {@linksRoboTaxiMaintainer.consistencyCheck} in each iteration. */
     @Override
     protected final void consistencySubCheck() {
         // TODO checked
@@ -365,7 +368,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         // containment check pickupRegister and pendingRequests
         pickupRegister.keySet().forEach(r -> GlobalAssert.that(pendingRequests.contains(r)));
 
-        // ensure no robotaxi is scheduled to pickup two requests
+        // ensure no RoboTaxi is scheduled to pickup two requests
         GlobalAssert.that(pickupRegister.size() == pickupRegister.values().stream().distinct().count());
 
     }
@@ -377,8 +380,8 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
             SimulationObjectCompiler simulationObjectCompiler = SimulationObjectCompiler.create( //
                     round_now, getInfoLine(), total_matchedRequests);
 
-            Map<AVRequest, RoboTaxi> newRegister = requestRegister;
-            List<RoboTaxi> newRoboTaxis = getRoboTaxis();
+            Map<AVRequest, SharedRoboTaxi> newRegister = requestRegister;
+            List<SharedRoboTaxi> newRoboTaxis = getRoboTaxis();
 
             simulationObjectCompiler.insertFulfilledRequests(periodFulfilledRequests);
             simulationObjectCompiler.insertRequests(newRegister, oldRoboTaxis);

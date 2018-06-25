@@ -7,7 +7,7 @@ import org.matsim.api.core.v01.network.Node;
 import org.matsim.core.router.util.LeastCostPathCalculator;
 import org.matsim.core.router.util.LeastCostPathCalculatorFactory;
 
-import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.core.UnitCapRoboTaxi;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
@@ -19,7 +19,7 @@ public class NetworkDistanceFunction implements DistanceFunction {
     }
 
     @Override
-    public double getDistance(RoboTaxi robotaxi, AVRequest avrequest) {
+    public double getDistance(UnitCapRoboTaxi robotaxi, AVRequest avrequest) {
 
         Node from = robotaxi.getDivertableLocation().getFromNode();
         Node to = avrequest.getFromLink().getFromNode();
@@ -29,7 +29,7 @@ public class NetworkDistanceFunction implements DistanceFunction {
     }
 
     @Override
-    public double getDistance(RoboTaxi robotaxi, Link link) {
+    public double getDistance(UnitCapRoboTaxi robotaxi, Link link) {
 
         Node from = robotaxi.getDivertableLocation().getFromNode();
         Node to = link.getFromNode();

@@ -17,7 +17,7 @@ import org.matsim.core.utils.collections.QuadTree;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.core.UnitCapRoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
@@ -37,9 +37,9 @@ public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
     private final QuadTree<AVRequest> pendingRequestsTree;
     // two data structures are used to enable fast "contains" searching
     private final Set<AVRequest> openRequests = new HashSet<>();
-    private final QuadTree<RoboTaxi> unassignedVehiclesTree;
+    private final QuadTree<UnitCapRoboTaxi> unassignedVehiclesTree;
     // two data structures are used to enable fast "contains" searching
-    private final Set<RoboTaxi> unassignedVehicles = new HashSet<>();
+    private final Set<UnitCapRoboTaxi> unassignedVehicles = new HashSet<>();
 
     private DemandSupplyBalancingDispatcher( //
             Config config, //
@@ -63,7 +63,7 @@ public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
         if (round_now % dispatchPeriod == 0) {
 
             // get open requests and available vehicles
-            Collection<RoboTaxi> robotaxisDivertable = getDivertableUnassignedRoboTaxis();
+            Collection<UnitCapRoboTaxi> robotaxisDivertable = getDivertableUnassignedRoboTaxis();
             addUnassignedVehicles(getDivertableUnassignedRoboTaxis());
 
             List<AVRequest> requests = getUnassignedAVRequests();
@@ -78,14 +78,14 @@ public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
             if (canMatch) {
                 if (oversupply) { // OVERSUPPLY CASE
                     for (AVRequest avr : requests) {
-                        RoboTaxi closestRobotaxi = findClosestVehicle(avr);
+                        UnitCapRoboTaxi closestRobotaxi = findClosestVehicle(avr);
                         if (closestRobotaxi != null) {
                             setRoboTaxiPickup(closestRobotaxi, avr);
                             removeFromTrees(closestRobotaxi, avr);
                         }
                     }
                 } else { // UNDERSUPPLY CASE
-                    for (RoboTaxi robotaxi : robotaxisDivertable) {
+                    for (UnitCapRoboTaxi robotaxi : robotaxisDivertable) {
 
                         AVRequest closestReq = findClosestRequest(robotaxi);
                         if (closestReq != null) {
@@ -98,7 +98,7 @@ public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
         }
     }
 
-    private boolean removeFromTrees(RoboTaxi robotaxi, AVRequest avRequest) {
+    private boolean removeFromTrees(UnitCapRoboTaxi robotaxi, AVRequest avRequest) {
         // remove avRequest
         boolean succRM = openRequests.remove(avRequest);
         boolean succRT = pendingRequestsTree.remove(avRequest.getFromLink().getFromNode().getCoord().getX(), avRequest.getFromLink().getFromNode().getCoord().getY(), avRequest);
@@ -116,7 +116,7 @@ public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
 
     /** @param avRequest
      * @return the RoboTaxi closest to the given request */
-    private RoboTaxi findClosestVehicle(AVRequest avRequest) {
+    private UnitCapRoboTaxi findClosestVehicle(AVRequest avRequest) {
         Coord requestCoord = avRequest.getFromLink().getCoord();
         // System.out.println("treesize " + unassignedVehiclesTree.size());
         return unassignedVehiclesTree.getClosest(requestCoord.getX(), requestCoord.getY());
@@ -125,8 +125,8 @@ public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
     /** ensures that new unassignedVehicles are added to a list with all unassigned vehicles
      * 
      * @param roboTaxis */
-    private void addUnassignedVehicles(Collection<RoboTaxi> roboTaxis) {
-        for (RoboTaxi roboTaxi : roboTaxis) {
+    private void addUnassignedVehicles(Collection<UnitCapRoboTaxi> roboTaxis) {
+        for (UnitCapRoboTaxi roboTaxi : roboTaxis) {
             if (!unassignedVehicles.contains(roboTaxi)) {
                 Coord toMatchVehicleCoord = roboTaxi.getDivertableLocation().getCoord();
                 boolean uaSucc = unassignedVehicles.add(roboTaxi);
@@ -141,7 +141,7 @@ public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
 
     /** @param robotaxi
      * @return the closest Request to robotaxi found with tree-search */
-    private AVRequest findClosestRequest(RoboTaxi robotaxi) {
+    private AVRequest findClosestRequest(UnitCapRoboTaxi robotaxi) {
         Coord vehicleCoord = robotaxi.getDivertableLocation().getFromNode().getCoord();
         return pendingRequestsTree.getClosest(vehicleCoord.getX(), vehicleCoord.getY());
     }

@@ -7,34 +7,34 @@ import java.util.Map;
 
 import org.matsim.api.core.v01.network.Link;
 
-import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.core.UnitCapRoboTaxi;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 public abstract class AbstractVehicleDestMatcher {
 
-    public final Map<RoboTaxi, AVRequest> matchAVRequest( //
-            Collection<RoboTaxi> vehicleLinkPairs, //
+    public final Map<UnitCapRoboTaxi, AVRequest> matchAVRequest( //
+            Collection<UnitCapRoboTaxi> vehicleLinkPairs, //
             Collection<AVRequest> avRequests) {
         if (vehicleLinkPairs.isEmpty() || avRequests.isEmpty())
             return Collections.emptyMap();
         return protected_matchAVRequest(vehicleLinkPairs, avRequests);
     }
 
-    protected abstract Map<RoboTaxi, AVRequest> protected_matchAVRequest( //
-            Collection<RoboTaxi> vehicleLinkPairs, //
+    protected abstract Map<UnitCapRoboTaxi, AVRequest> protected_matchAVRequest( //
+            Collection<UnitCapRoboTaxi> vehicleLinkPairs, //
             Collection<AVRequest> links //
     );
 
-    public final Map<RoboTaxi, Link> matchLink( //
-            Collection<RoboTaxi> vehicleLinkPairs, //
+    public final Map<UnitCapRoboTaxi, Link> matchLink( //
+            Collection<UnitCapRoboTaxi> vehicleLinkPairs, //
             Collection<Link> destinations) {
         if (vehicleLinkPairs.isEmpty() || destinations.isEmpty())
             return Collections.emptyMap();
         return protected_matchLink(vehicleLinkPairs, destinations);
     }
 
-    protected abstract Map<RoboTaxi, Link> protected_matchLink( //
-            Collection<RoboTaxi> vehicleLinkPairs, //
+    protected abstract Map<UnitCapRoboTaxi, Link> protected_matchLink( //
+            Collection<UnitCapRoboTaxi> vehicleLinkPairs, //
             Collection<Link> links //
     );
 

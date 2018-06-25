@@ -1,4 +1,3 @@
-/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.Objects;
@@ -21,8 +20,8 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
  * MATSim.
  * 
  * @author Claudio Ruch */
-public class RoboTaxi {
-    static private final Logger logger = Logger.getLogger(RoboTaxi.class);
+public abstract class AbstractRoboTaxi {
+    static private final Logger logger = Logger.getLogger(UnitCapRoboTaxi.class);
 
     protected final AVVehicle avVehicle;
     private RoboTaxiStatus status;
@@ -40,7 +39,7 @@ public class RoboTaxi {
      * @param avVehicle binding association to MATSim AVVehicle object
      * @param linkTimePair
      * @param driveDestination */
-    /* package */ RoboTaxi(AVVehicle avVehicle, LinkTimePair divertableLinkTime, Link driveDestination) {
+    /* package */ AbstractRoboTaxi(AVVehicle avVehicle, LinkTimePair divertableLinkTime, Link driveDestination) {
         this.avVehicle = avVehicle;
         this.divertableLinkTime = divertableLinkTime;
         this.driveDestination = Objects.requireNonNull(driveDestination);

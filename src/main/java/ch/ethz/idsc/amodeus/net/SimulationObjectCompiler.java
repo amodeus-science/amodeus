@@ -13,7 +13,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.data.Vehicle;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RequestStatus;
-import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.core.UnitCapRoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
@@ -40,8 +40,8 @@ public class SimulationObjectCompiler {
         this.simulationObject = simulationObject;
     }
 
-    public void insertRequests(Map<AVRequest, RoboTaxi> requestRegister, Map<Id<Vehicle>, RoboTaxiStatus> oldRoboTaxis) {
-        for (Entry<AVRequest, RoboTaxi> entry : requestRegister.entrySet()) {
+    public void insertRequests(Map<AVRequest, UnitCapRoboTaxi> requestRegister, Map<Id<Vehicle>, RoboTaxiStatus> oldRoboTaxis) {
+        for (Entry<AVRequest, UnitCapRoboTaxi> entry : requestRegister.entrySet()) {
             if (Objects.nonNull(entry.getValue())) {
                 if (oldRoboTaxis.containsKey(entry.getValue().getId())) {
                     RoboTaxiStatus oldStatus = oldRoboTaxis.get(entry.getValue().getId());
@@ -54,11 +54,11 @@ public class SimulationObjectCompiler {
         }
     }
 
-    public void insertFulfilledRequests(Map<AVRequest, RoboTaxi> requestRegister) {
+    public void insertFulfilledRequests(Map<AVRequest, UnitCapRoboTaxi> requestRegister) {
         requestRegister.forEach((a, r) -> insertRequest(a, RequestStatus.DROPOFF));
     }
 
-    public void insertVehicles(List<RoboTaxi> robotaxis) {
+    public void insertVehicles(List<UnitCapRoboTaxi> robotaxis) {
         robotaxis.forEach(this::insertVehicle);
     }
 
@@ -90,7 +90,7 @@ public class SimulationObjectCompiler {
         simulationObject.requests.add(requestContainer);
     }
 
-    private void insertVehicle(RoboTaxi robotaxi) {
+    private void insertVehicle(UnitCapRoboTaxi robotaxi) {
         VehicleContainer vehicleContainer = new VehicleContainer();
         final String key = robotaxi.getId().toString();
         vehicleContainer.vehicleIndex = db.getVehicleIndex(robotaxi);

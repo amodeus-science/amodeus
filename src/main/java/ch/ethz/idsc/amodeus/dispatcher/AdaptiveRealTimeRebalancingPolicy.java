@@ -15,7 +15,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.PartitionedDispatcher;
-import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.core.UnitCapRoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVehicleDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatchingUtils;
@@ -105,9 +105,9 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
             Map<VirtualNode<Link>, List<AVRequest>> requests = getVirtualNodeRequests();
             // II.i compute rebalancing vehicles and send to virtualNodes
             {
-                Map<VirtualNode<Link>, List<RoboTaxi>> availableVehicles = getVirtualNodeDivertableNotRebalancingRoboTaxis();
+                Map<VirtualNode<Link>, List<UnitCapRoboTaxi>> availableVehicles = getVirtualNodeDivertableNotRebalancingRoboTaxis();
                 int totalAvailable = 0;
-                for (List<RoboTaxi> robotaxiList : availableVehicles.values()) {
+                for (List<UnitCapRoboTaxi> robotaxiList : availableVehicles.values()) {
                     totalAvailable += robotaxiList.size();
                 }
 
@@ -120,8 +120,8 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
                 // calculate excess vehicles per virtual Node i, where v_i excess = vi_own - c_i
                 // =
                 // v_i + sum_j (v_ji) - c_i
-                Map<VirtualNode<Link>, List<RoboTaxi>> v_ij_reb = getVirtualNodeRebalancingToRoboTaxis();
-                Map<VirtualNode<Link>, List<RoboTaxi>> v_ij_cust = getVirtualNodeArrivingWithCustomerRoboTaxis();
+                Map<VirtualNode<Link>, List<UnitCapRoboTaxi>> v_ij_reb = getVirtualNodeRebalancingToRoboTaxis();
+                Map<VirtualNode<Link>, List<UnitCapRoboTaxi>> v_ij_cust = getVirtualNodeArrivingWithCustomerRoboTaxis();
                 Tensor vi_excessT = Array.zeros(virtualNetwork.getvNodesCount());
                 for (VirtualNode<Link> virtualNode : availableVehicles.keySet()) {
                     int viExcessVal = availableVehicles.get(virtualNode).size() + v_ij_reb.get(virtualNode).size() + v_ij_cust.get(virtualNode).size()
@@ -161,12 +161,12 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
 
                 // consistency check: rebalancing destination links must not exceed available
                 // vehicles in virtual node
-                Map<VirtualNode<Link>, List<RoboTaxi>> finalAvailableVehicles = availableVehicles;
+                Map<VirtualNode<Link>, List<UnitCapRoboTaxi>> finalAvailableVehicles = availableVehicles;
                 GlobalAssert.that(virtualNetwork.getVirtualNodes().stream().allMatch(v -> finalAvailableVehicles.get(v).size() >= rebalanceDestinations.get(v).size()));
 
                 // send rebalancing vehicles using the setVehicleRebalance command
                 for (VirtualNode<Link> virtualNode : rebalanceDestinations.keySet()) {
-                    Map<RoboTaxi, Link> rebalanceMatching = vehicleDestMatcher.matchLink(availableVehicles.get(virtualNode), rebalanceDestinations.get(virtualNode));
+                    Map<UnitCapRoboTaxi, Link> rebalanceMatching = vehicleDestMatcher.matchLink(availableVehicles.get(virtualNode), rebalanceDestinations.get(virtualNode));
                     rebalanceMatching.keySet().forEach(v -> setRoboTaxiRebalance(v, rebalanceMatching.get(v)));
                 }
 

@@ -12,7 +12,7 @@ import java.util.function.BiConsumer;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
-import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.core.UnitCapRoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Tensor;
@@ -24,37 +24,37 @@ public enum BipartiteMatchingUtils {
 
     public static Tensor executePickup( //
             UniversalDispatcher universalDispatcher, //
-            Collection<RoboTaxi> roboTaxis, // <- typically universalDispatcher.getDivertableRoboTaxis()
+            Collection<UnitCapRoboTaxi> roboTaxis, // <- typically universalDispatcher.getDivertableRoboTaxis()
             Collection<AVRequest> requests, //
             DistanceFunction distanceFunction, //
             Network network, //
             boolean reducewithKDTree) {
 
         Tensor infoLine = Tensors.empty();
-        Map<RoboTaxi, AVRequest> gbpMatch = globalBipartiteMatching(roboTaxis, requests, distanceFunction, network, infoLine, reducewithKDTree);
+        Map<UnitCapRoboTaxi, AVRequest> gbpMatch = globalBipartiteMatching(roboTaxis, requests, distanceFunction, network, infoLine, reducewithKDTree);
 
         if (distanceFunction instanceof NonCyclicDistanceFunction) {
             DistanceFunction accDistanceFunction = ((NonCyclicDistanceFunction) distanceFunction).cyclicSolutionPreventer;
             removeCyclicSolutions(universalDispatcher, accDistanceFunction, gbpMatch);
         }
 
-        for (Entry<RoboTaxi, AVRequest> entry : gbpMatch.entrySet())
+        for (Entry<UnitCapRoboTaxi, AVRequest> entry : gbpMatch.entrySet())
             universalDispatcher.setRoboTaxiPickup(entry.getKey(), entry.getValue());
 
         return infoLine;
     }
 
-    public static Tensor executeRebalance(BiConsumer<RoboTaxi, Link> setFunction, Collection<RoboTaxi> roboTaxis, Collection<AVRequest> requests, //
+    public static Tensor executeRebalance(BiConsumer<UnitCapRoboTaxi, Link> setFunction, Collection<UnitCapRoboTaxi> roboTaxis, Collection<AVRequest> requests, //
             DistanceFunction distanceFunction, Network network, boolean reducewithKDTree) {
         Tensor infoLine = Tensors.empty();
-        Map<RoboTaxi, AVRequest> gbpMatch = globalBipartiteMatching(roboTaxis, requests, distanceFunction, network, infoLine, reducewithKDTree);
-        for (Entry<RoboTaxi, AVRequest> entry : gbpMatch.entrySet()) {
+        Map<UnitCapRoboTaxi, AVRequest> gbpMatch = globalBipartiteMatching(roboTaxis, requests, distanceFunction, network, infoLine, reducewithKDTree);
+        for (Entry<UnitCapRoboTaxi, AVRequest> entry : gbpMatch.entrySet()) {
             setFunction.accept(entry.getKey(), entry.getValue().getFromLink());
         }
         return infoLine;
     }
 
-    private static Map<RoboTaxi, AVRequest> globalBipartiteMatching(Collection<RoboTaxi> roboTaxis, Collection<AVRequest> requests, //
+    private static Map<UnitCapRoboTaxi, AVRequest> globalBipartiteMatching(Collection<UnitCapRoboTaxi> roboTaxis, Collection<AVRequest> requests, //
             DistanceFunction distanceFunction, Network network, Tensor infoLine, boolean reducewithKDTree) {
 
         if (reducewithKDTree == true && !(distanceFunction instanceof EuclideanDistanceFunction)) {
@@ -67,7 +67,7 @@ public enum BipartiteMatchingUtils {
 
         if (reducewithKDTree) {
             // 1) In case roboTaxis >> requests reduce search space using kd-trees
-            Collection<RoboTaxi> roboTaxisReduced = StaticHelper.reduceRoboTaxis(requests, roboTaxis, network);
+            Collection<UnitCapRoboTaxi> roboTaxisReduced = StaticHelper.reduceRoboTaxis(requests, roboTaxis, network);
 
             // 2) In case requests >> roboTaxis reduce the search space using kd-trees
             Collection<AVRequest> requestsReduced = StaticHelper.reduceRequests(requests, roboTaxis, network);
@@ -85,14 +85,14 @@ public enum BipartiteMatchingUtils {
     /** margin accounts for numeric inaccuracy, since in the computer (a+b)+c != a+(b+c) */
     private static final double MARGIN_EPS = 1e-8;
 
-    private static void removeCyclicSolutions(UniversalDispatcher universalDispatcher, DistanceFunction accDistanceFunction, Map<RoboTaxi, AVRequest> taxiToAV) {
-        Map<RoboTaxi, AVRequest> copyTaxiToAV = new HashMap<>(taxiToAV);
+    private static void removeCyclicSolutions(UniversalDispatcher universalDispatcher, DistanceFunction accDistanceFunction, Map<UnitCapRoboTaxi, AVRequest> taxiToAV) {
+        Map<UnitCapRoboTaxi, AVRequest> copyTaxiToAV = new HashMap<>(taxiToAV);
 
-        for (Entry<RoboTaxi, AVRequest> entry : copyTaxiToAV.entrySet()) {
-            Optional<RoboTaxi> optional = universalDispatcher.getPickupTaxi(entry.getValue()); // previously assigned taxi
+        for (Entry<UnitCapRoboTaxi, AVRequest> entry : copyTaxiToAV.entrySet()) {
+            Optional<UnitCapRoboTaxi> optional = universalDispatcher.getPickupTaxi(entry.getValue()); // previously assigned taxi
             if (optional.isPresent()) { // only do comparison if request has taxi assigned
-                final RoboTaxi oldTaxi = optional.get(); // current pickup taxi of request
-                final RoboTaxi newTaxi = entry.getKey(); // candidate
+                final UnitCapRoboTaxi oldTaxi = optional.get(); // current pickup taxi of request
+                final UnitCapRoboTaxi newTaxi = entry.getKey(); // candidate
                 GlobalAssert.that(Objects.nonNull(newTaxi));
                 if (newTaxi != oldTaxi) { // only consider changed taxi assignments
                     double distNew = accDistanceFunction.getDistance(newTaxi, entry.getValue());
