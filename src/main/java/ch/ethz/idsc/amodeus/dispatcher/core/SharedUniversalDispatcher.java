@@ -126,14 +126,6 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         return pickupPairs;
     }
 
-    /** @return immutable and inverted copy of pickupRegister, displays which vehicles are currently scheduled to pickup which request */
-    protected List<AVRequest> getSharedRoboTaxiPickupRequestsMenu(SharedRoboTaxi sRoboTaxi) {
-        List<AVRequest> currentPickupList = pickupRegister.entrySet().stream()//
-                .filter(e -> e.getValue().equals(sRoboTaxi)).findAny().get().getKey();
-        return (List<AVRequest>) Collections.unmodifiableCollection(currentPickupList);
-
-    }
-
     public void setNewSharedRoboTaxiPickup(RoboTaxi roboTaxi, AVRequest avRequest, int pickupIndex) {
         SharedRoboTaxi sRoboTaxi = (SharedRoboTaxi) roboTaxi;
         GlobalAssert.that(sRoboTaxi.canPickupNewCustomer());
@@ -211,7 +203,8 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
      *            {@link setRoboTaxiRebalance} */
     final void setRoboTaxiDiversion(RoboTaxi robotaxi, Link destination, RoboTaxiStatus avstatus) {
         // updated status of robotaxi
-        GlobalAssert.that(robotaxi.isWithoutCustomer());
+        SharedRoboTaxi sRoboTaxi = (SharedRoboTaxi) robotaxi;
+        GlobalAssert.that(sRoboTaxi.canPickupNewCustomer());
         GlobalAssert.that(robotaxi.isWithoutDirective());
 
         robotaxi.setStatus(avstatus);
@@ -249,7 +242,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
      * @param avRequest */
     private synchronized final void setAcceptRequest(RoboTaxi roboTaxi, AVRequest avRequest) {
         roboTaxi.setStatus(RoboTaxiStatus.DRIVEWITHCUSTOMER);
-        roboTaxi.setCurrentDriveDestination(avRequest.getFromLink());
+        roboTaxi.setCurrentDriveDestination(avRequest.getFromLink()); // TODO toLink
         {
             boolean statusPen = pendingRequests.remove(avRequest);
             GlobalAssert.that(statusPen);
@@ -362,6 +355,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
     /** Consistency checks to be called by {@link RoboTaxiMaintainer.consistencyCheck} in each iteration. */
     @Override
     protected final void consistencySubCheck() {
+        // TODO checked
         // there cannot be more pickup vehicles than open requests
         GlobalAssert.that(pickupRegister.size() <= pendingRequests.size());
 
