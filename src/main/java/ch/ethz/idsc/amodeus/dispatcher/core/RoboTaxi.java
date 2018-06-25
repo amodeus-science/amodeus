@@ -24,7 +24,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 public class RoboTaxi {
     static private final Logger logger = Logger.getLogger(RoboTaxi.class);
 
-    private final AVVehicle avVehicle;
+    protected final AVVehicle avVehicle;
     private RoboTaxiStatus status;
 
     /** last known location of the RoboTaxi */
