@@ -17,7 +17,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         return task.getTaskIdx() == schedule.getTaskCount() - 2;
     }
 
-    static String scheduleOf(UnitCapRoboTaxi robotaxi) {
+    static String scheduleOf(AbstractRoboTaxi robotaxi) {
         Schedule schedule = robotaxi.getSchedule();
         return toString(schedule);
     }
@@ -27,7 +27,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
      * @param scheduleEndTime
      * @param destination */
     static void makeWhole( //
-            UnitCapRoboTaxi robotaxi, double taskEndTime, double scheduleEndTime, Link destination) {
+            AbstractRoboTaxi robotaxi, double taskEndTime, double scheduleEndTime, Link destination) {
         if (taskEndTime < scheduleEndTime) {
             Schedule schedule = robotaxi.getSchedule();
             schedule.addTask(new AVStayTask(taskEndTime, scheduleEndTime, destination));

@@ -24,6 +24,9 @@ import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
 
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedAVCourse;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedAVMealType;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedAVMenu;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.SimulationDistribution;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
@@ -50,6 +53,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
     private final Set<AVRequest> pendingRequests = new LinkedHashSet<>();
     private final Map<List<AVRequest>, SharedRoboTaxi> pickupRegister = new HashMap<>(); // new RequestRegister
     private final Map<List<AVRequest>, SharedRoboTaxi> requestRegister = new HashMap<>();
+    private final Map<SharedRoboTaxi, SharedAVMenu> sharedAvMenus = new HashMap<>();
     private final Map<AVRequest, SharedRoboTaxi> periodFulfilledRequests = new HashMap<>(); // new temporaryRequestRegister for fulfilled requests
     private final Map<Id<Vehicle>, RoboTaxiStatus> oldRoboTaxis = new HashMap<>();
     private final double pickupDurationPerStop;
@@ -70,6 +74,9 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         dropoffDurationPerStop = avDispatcherConfig.getParent().getTimingParameters().getDropoffDurationPerStop();
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
         publishPeriod = safeConfig.getInteger("publishPeriod", 10);
+        // Fill in empty rt menus
+        getRoboTaxis().stream().forEach(rt -> sharedAvMenus.put(rt, new SharedAVMenu()));
+
     }
 
     // ===================================================================================
@@ -209,34 +216,35 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         GlobalAssert.that(sRoboTaxi.canPickupNewCustomer()); // FIXME
         GlobalAssert.that(sRoboTaxi.isWithoutDirective()); // FIXME
 
-       sRoboTaxi.setStatus(avstatus);
+        sRoboTaxi.setStatus(avstatus);
 
         // udpate schedule ofsRoboTaxi
         final Schedule schedule = sRoboTaxi.getSchedule();
         Task task = schedule.getCurrentTask(); // <- implies that task is started
         new RoboTaxiTaskAdapter(task) {
 
-    @Override
-    public void handle(AVDriveTask avDriveTask) {
-        if (!avDriveTask.getPath().getToLink().equals(destination)) { // ignore when vehicle is already going there
-            FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer( //
-                    sRoboTaxi.getDivertableLocation(), destination, sRoboTaxi.getDivertableTime());
-            sRoboTaxi.assignDirective(new DriveVehicleDiversionDirective(sRobotaxi, destination, futurePathContainer));
-        } else
-            sRoboTaxi.assignDirective(EmptyDirective.INSTANCE);
-    }
+            @Override
+            public void handle(AVDriveTask avDriveTask) {
+                if (!avDriveTask.getPath().getToLink().equals(destination)) { // ignore when vehicle is already going there
+                    FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer( //
+                            sRoboTaxi.getDivertableLocation(), destination, sRoboTaxi.getDivertableTime());
+                    sRoboTaxi.assignDirective(new DriveVehicleDiversionDirective(sRoboTaxi, destination, futurePathContainer));
+                } else
+                    sRoboTaxi.assignDirective(EmptyDirective.INSTANCE);
+            }
 
-    @Override
-    public void handle(AVStayTask avStayTask) {
-        if (!avStayTask.getLink().equals(destination)) { // ignore request where location == target
-            FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer( //
-                    sRoboTaxi.getDivertableLocation(), destination, sRoboTaxi.getDivertableTime());
-            sRoboTaxi.assignDirective(new StayVehicleDiversionDirective(robotaxi, destination, futurePathContainer));
-        } else
-            sRoboTaxi.assignDirective(EmptyDirective.INSTANCE);
-    }
+            @Override
+            public void handle(AVStayTask avStayTask) {
+                if (!avStayTask.getLink().equals(destination)) { // ignore request where location == target
+                    FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer( //
+                            sRoboTaxi.getDivertableLocation(), destination, sRoboTaxi.getDivertableTime());
+                    sRoboTaxi.assignDirective(new StayVehicleDiversionDirective(sRoboTaxi, destination, futurePathContainer));
+                } else
+                    sRoboTaxi.assignDirective(EmptyDirective.INSTANCE);
+            }
 
-    };}
+        };
+    }
 
     /** Function called from {@link UniversalDispatcher.executePickups} if asRoboTaxi scheduled for pickup has reached the
      * from link of the {@link AVRequest}.
@@ -244,27 +252,28 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
      * @paramsRoboTaxi
      * @param avRequest */
     private synchronized final void setAcceptRequest(SharedRoboTaxi sRoboTaxi, AVRequest avRequest) {
-       sRoboTaxi.setStatus(RoboTaxiStatus.DRIVEWITHCUSTOMER);
-       sRoboTaxi.setCurrentDriveDestination(avRequest.getFromLink()); // TODO toLink
+        sRoboTaxi.setStatus(RoboTaxiStatus.DRIVEWITHCUSTOMER);
+        sRoboTaxi.setCurrentDriveDestination(avRequest.getFromLink()); // TODO toLink
         {
             boolean statusPen = pendingRequests.remove(avRequest);
             GlobalAssert.that(statusPen);
         }
         {
+            pickupRegister.values().
             SharedRoboTaxi former = pickupRegister.remove(avRequest);
             GlobalAssert.that(roboTaxi == former);
         }
 
         consistencySubCheck();
 
-        final Schedule schedule =sRoboTaxi.getSchedule();
+        final Schedule schedule = sRoboTaxi.getSchedule();
         // check that current task is last task in schedule
         GlobalAssert.that(schedule.getCurrentTask() == Schedules.getLastTask(schedule));
 
         final double endPickupTime = getTimeNow() + pickupDurationPerStop;
         FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer(avRequest.getFromLink(), avRequest.getToLink(), endPickupTime);
 
-       sRoboTaxi.assignDirective(new AcceptRequestDirective(roboTaxi, avRequest, futurePathContainer, getTimeNow(), dropoffDurationPerStop));
+        sRoboTaxi.assignDirective(new AcceptRequestDirective(sRoboTaxi, avRequest, futurePathContainer, getTimeNow(), dropoffDurationPerStop));
 
         ++total_matchedRequests;
     }
@@ -274,26 +283,26 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
      * 
      * @paramsRoboTaxi
      * @param avRequest */
-    private synchronized final void setPassengerDropoff(SharedRoboTaxisRoboTaxi, AVRequest avRequest) {
+    private synchronized final void setPassengerDropoff(SharedRoboTaxi sRoboTaxi, AVRequest avRequest) {
         SharedRoboTaxi former = requestRegister.remove(avRequest);
-        GlobalAssert.that(roboTaxi == former);
+        GlobalAssert.that(sRoboTaxi == former);
 
         // save avRequests which are matched for one publishPeriod to ensure no requests are lost in the recording.
-        periodFulfilledRequests.put(avRequest,sRoboTaxi);
+        periodFulfilledRequests.put(avRequest, sRoboTaxi);
 
-        final Schedule schedule =sRoboTaxi.getSchedule();
+        final Schedule schedule = sRoboTaxi.getSchedule();
         // check that current task is last task in schedule
         GlobalAssert.that(schedule.getCurrentTask() == Schedules.getLastTask(schedule));
     }
 
     @Override
-    /* package */ final boolean isInPickupRegister(SharedRoboTaxisRoboTaxi) {
-        return pickupRegister.containsValue(robotaxi);
+    /* package */ final boolean isInPickupRegister(SharedRoboTaxi sRoboTaxi) {
+        return pickupRegister.containsValue(sRoboTaxi);
     }
 
     /** @param avRequest
      * @returnsRoboTaxi assigned to given avRequest, or empty if no taxi is assigned to avRequest
-     *         Used by BipartiteMatching in euclideanNonCyclic, there a comparison to the old av assignment is needed */
+     *                  Used by BipartiteMatching in euclideanNonCyclic, there a comparison to the old av assignment is needed */
     public final Optional<SharedRoboTaxi> getPickupTaxi(AVRequest avRequest) {
         return Optional.ofNullable(pickupRegister.get(avRequest));
     }
@@ -301,15 +310,21 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
     /** complete all matchings if a {@link SharedRoboTaxi} has arrived at the fromLink of an {@link AVRequest} */
     @Override
     void executePickups() {
-        Map<AVRequest, SharedRoboTaxi> pickupRegisterCopy = new HashMap<>(pickupRegister);
-        for (Entry<AVRequest, SharedRoboTaxi> entry : pickupRegisterCopy.entrySet()) {
-            AVRequest avRequest = entry.getKey();
-            GlobalAssert.that(pendingRequests.contains(avRequest));
+        Map<List<AVRequest>, SharedRoboTaxi> pickupRegisterCopy = new HashMap<>(pickupRegister);
+        for (Entry<List<AVRequest>, SharedRoboTaxi> entry : pickupRegisterCopy.entrySet()) {
+            List<AVRequest> listAvRequest = entry.getKey();
+            GlobalAssert.that(pendingRequests.contains(listAvRequest));
             SharedRoboTaxi pickupVehicle = entry.getValue();
             Link pickupVehicleLink = pickupVehicle.getDivertableLocation();
             boolean isOk = pickupVehicle.getSchedule().getCurrentTask() == Schedules.getLastTask(pickupVehicle.getSchedule());
-            if (avRequest.getFromLink().equals(pickupVehicleLink) && isOk) {
-                setAcceptRequest(pickupVehicle, avRequest);
+
+            SharedAVCourse currentCourse = sharedAvMenus.get(pickupVehicle).getSharedAVStarter();
+            if (currentCourse.getPickupOrDropOff().equals(SharedAVMealType.PICKUP)) {
+                // TODO Check
+                AVRequest avR = listAvRequest.stream().filter(avr -> avr.getId().equals(currentCourse.getRequestId())).collect(Collectors.toList()).get(0);
+                if (avR != null && avR.getFromLink().equals(pickupVehicleLink) && isOk) {
+                    setAcceptRequest(pickupVehicle, avR);
+                }
             }
         }
     }
