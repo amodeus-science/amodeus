@@ -21,4 +21,10 @@ public class SimpleSharedDispatcher extends SharedUniversalDispatcher {
 
     }
 
+    @Override
+    public void reshuffleSharedAVMenu() {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

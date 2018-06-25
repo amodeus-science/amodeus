@@ -1,15 +1,14 @@
 package ch.ethz.idsc.amodeus.dispatcher.shared;
 
 import org.matsim.api.core.v01.Id;
-
-import ch.ethz.matsim.av.passenger.AVRequest;
+import org.matsim.contrib.dvrp.data.Request;
 
 public class SharedAVCourse {
 
-    private final Id<AVRequest> requestId;
+    private final Id<Request> requestId;
     private final SharedAVMealType pickupOrDropOff;
 
-    SharedAVCourse(Id<AVRequest> requestId, SharedAVMealType pickupOrDropOff) {
+    public SharedAVCourse(Id<Request> requestId, SharedAVMealType pickupOrDropOff) {
         this.requestId = requestId;
         this.pickupOrDropOff = pickupOrDropOff;
     }
@@ -28,7 +27,7 @@ public class SharedAVCourse {
         return pickupOrDropOff;
     }
 
-    public Id<AVRequest> getRequestId() {
+    public Id<Request> getRequestId() {
         return requestId;
     }
 
