@@ -3,6 +3,7 @@ package ch.ethz.idsc.amodeus.aido;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
@@ -38,7 +39,7 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
             ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, EventsManager eventsManager, //
             StringClientSocket clientSocket) {
         super(config, avDispatcherConfig, travelTime, parallelLeastCostPathCalculator, eventsManager);
-        this.clientSocket = clientSocket;
+        this.clientSocket = Objects.requireNonNull(clientSocket);
         this.fastLinkLookup = new FastLinkLookup(network, MatsimStaticDatabase.INSTANCE);
 
     }
@@ -50,10 +51,12 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
                     AidoRoboTaxiCompiler.compile(getRoboTaxis()), //
                     AidoRequestCompiler.compile(getAVRequests()));
             clientSocket.write(status.toString() + '\n');
+            System.out.println("ADH toClient: " + status.Get(0));
 
             String fromClient = null;
 
             fromClient = clientSocket.reader.readLine();
+            System.out.println("ADH fromClient: " + fromClient);
 
             Tensor commands = Tensors.fromString(fromClient);
             // TODO consistency checks
@@ -96,12 +99,13 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
         @Inject
         private Config config;
 
-        private StringClientSocket serverSocket = null; // TODO
+        public static StringClientSocket stringSocket; // TODO
+        
 
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig) {
             return new AidoDispatcherHost( //
-                    network, config, avconfig, travelTime, router, eventsManager, serverSocket);
+                    network, config, avconfig, travelTime, router, eventsManager, stringSocket);
         }
     }
 
