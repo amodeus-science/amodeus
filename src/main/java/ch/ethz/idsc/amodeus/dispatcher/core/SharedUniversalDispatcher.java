@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -179,8 +180,10 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 
         if (course.getPickupOrDropOff().equals(SharedAVMealType.PICKUP)) {
             return avR.getFromLink();
-        } else {
+        } else if (course.getPickupOrDropOff().equals(SharedAVMealType.DROPOFF)) {
             return avR.getToLink();
+        } else {
+            throw new IllegalArgumentException("Unknown SharedAVMealType -- please specify it !!!--");
         }
 
     }
@@ -237,6 +240,10 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
      * @paramsRoboTaxi
      * @param avRequest */
     private synchronized final void setAcceptRequest(SharedRoboTaxi sRoboTaxi, AVRequest avRequest) {
+        Link pickupLink = getStarterLink(sRoboTaxi);
+
+        GlobalAssert.that(avRequest.getFromLink().equals(pickupLink));
+
         sRoboTaxi.setStatus(RoboTaxiStatus.DRIVEWITHCUSTOMER);
         sRoboTaxi.setCurrentDriveDestination(avRequest.getFromLink()); // TODO toLink
         {
@@ -256,12 +263,11 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 
         final double endPickupTime = getTimeNow() + pickupDurationPerStop;
 
-        GlobalAssert.that(avRequest.getFromLink().equals(getStarterLink(sRoboTaxi)));
         sRoboTaxi.pickupNewCustomerOnBoard();
 
+        // Remove pickup from menu
         sharedAvMenus.get(sRoboTaxi).removeAVCourse(0);
-        Link specLink = getStarterLink(sRoboTaxi);
-        FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer(avRequest.getFromLink(), specLink, endPickupTime);
+        FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer(avRequest.getFromLink(), pickupLink, endPickupTime);
 
         sRoboTaxi.assignDirective(new AcceptRequestDirective(sRoboTaxi, avRequest, futurePathContainer, getTimeNow(), dropoffDurationPerStop));
 
@@ -274,8 +280,9 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
      * @paramsRoboTaxi
      * @param avRequest */
     private synchronized final void setPassengerDropoff(SharedRoboTaxi sRoboTaxi, AVRequest avRequest) {
-        SharedRoboTaxi former = requestRegister.remove(avRequest);
-        GlobalAssert.that(sRoboTaxi == former);
+        GlobalAssert.that(requestRegister.get(sRoboTaxi).containsValue(avRequest));
+
+        requestRegister.get(sRoboTaxi).remove(avRequest.getId());
 
         // save avRequests which are matched for one publishPeriod to ensure no requests are lost in the recording.
         periodFulfilledRequests.put(avRequest, sRoboTaxi);
@@ -301,18 +308,21 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
     @Override
     void executePickups() {
         Map<AVRequest, SharedRoboTaxi> pickupRegisterCopy = new HashMap<>(pickupRegister);
-        for (Entry<AVRequest, SharedRoboTaxi> entry : pickupRegisterCopy.entrySet()) {
-            AVRequest avRequest = entry.getKey();
-            GlobalAssert.that(pendingRequests.contains(avRequest));
-            SharedRoboTaxi pickupVehicle = entry.getValue();
-            Link pickupVehicleLink = pickupVehicle.getDivertableLocation();
-            boolean isOk = pickupVehicle.getSchedule().getCurrentTask() == Schedules.getLastTask(pickupVehicle.getSchedule());
+        // TODO Ian is there any way of getting unique map values in a more efficient way
+        Set<SharedRoboTaxi> uniqueRt = new HashSet<>();
+        pickupRegisterCopy.values().stream().forEach(rt -> uniqueRt.add(rt));
+        for (SharedRoboTaxi sRt : uniqueRt) {
+            Link pickupVehicleLink = sRt.getDivertableLocation();
+            boolean isOk = sRt.getSchedule().getCurrentTask() == Schedules.getLastTask(sRt.getSchedule());
 
-            SharedAVCourse currentCourse = sharedAvMenus.get(pickupVehicle).getSharedAVStarter();
-            AVRequest avR = requestRegister.get(pickupVehicle).get(currentCourse.getRequestId());
+            SharedAVCourse currentCourse = sharedAvMenus.get(sRt).getSharedAVStarter();
+            AVRequest avR = requestRegister.get(sRt).get(currentCourse.getRequestId());
+
+            GlobalAssert.that(pendingRequests.contains(avR));
+            GlobalAssert.that(pickupRegisterCopy.containsKey(avR));
 
             if (currentCourse.getPickupOrDropOff().equals(SharedAVMealType.PICKUP) && avR.getFromLink().equals(pickupVehicleLink) && isOk) {
-                setAcceptRequest(pickupVehicle, avR);
+                setAcceptRequest(sRt, avR);
             }
         }
     }
@@ -320,20 +330,16 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
     /** complete all matchings if a {@link SharedRoboTaxi} has arrived at the toLink of an {@link AVRequest} */
     @Override
     void executeDropoffs() {
-        Map<AVRequest, SharedRoboTaxi> requestRegisterCopy = new HashMap<>(requestRegister);
-        for (Entry<AVRequest, SharedRoboTaxi> entry : requestRegisterCopy.entrySet()) {
-            if (Objects.nonNull(entry.getValue())) {
-                AVRequest avRequest = entry.getKey();
-                SharedRoboTaxi dropoffVehicle = entry.getValue();
-                Link dropoffVehicleLink = dropoffVehicle.getDivertableLocation();
-                boolean isOk = dropoffVehicle.getSchedule().getCurrentTask() == Schedules.getLastTask(dropoffVehicle.getSchedule());
+        Map<SharedRoboTaxi, Map<Id<Request>, AVRequest>> requestRegisterCopy = new HashMap<>(requestRegister);
+        for (SharedRoboTaxi dropoffVehicle : requestRegisterCopy.keySet()) {
+            Link dropoffVehicleLink = dropoffVehicle.getDivertableLocation();
+            boolean isOk = dropoffVehicle.getSchedule().getCurrentTask() == Schedules.getLastTask(dropoffVehicle.getSchedule());
 
-                SharedAVCourse currentCourse = sharedAvMenus.get(dropoffVehicle).getSharedAVStarter();
-                AVRequest avR = requestRegister.get(dropoffVehicle).get(currentCourse.getRequestId());
+            SharedAVCourse currentCourse = sharedAvMenus.get(dropoffVehicle).getSharedAVStarter();
+            AVRequest avR = requestRegister.get(dropoffVehicle).get(currentCourse.getRequestId());
 
-                if (currentCourse.getPickupOrDropOff().equals(SharedAVMealType.DROPOFF) && avR.getFromLink().equals(dropoffVehicle) && isOk) {
-                    setAcceptRequest(dropoffVehicle, avR);
-                }
+            if (currentCourse.getPickupOrDropOff().equals(SharedAVMealType.DROPOFF) && avR.getToLink().equals(dropoffVehicleLink) && isOk) {
+                setPassengerDropoff(dropoffVehicle, avR);
             }
         }
     }
@@ -343,7 +349,6 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
     @Override
     public final void onRequestSubmitted(AVRequest request) {
         boolean added = pendingRequests.add(request); // <- store request
-        requestRegister.put(request, null);
         GlobalAssert.that(added);
     }
 
