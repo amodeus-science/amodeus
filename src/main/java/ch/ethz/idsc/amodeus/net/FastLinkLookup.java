@@ -28,4 +28,10 @@ public class FastLinkLookup {
         return db.getLinkIndex(quadTree.getClosest(xy.getX(), xy.getY()));
     }
 
+    // TODO
+    public Link getLinkCHANGENAME(Coord gps) {
+        Coord xy = db.referenceFrame.coords_fromWGS84().transform(gps);
+        return quadTree.getClosest(xy.getX(), xy.getY());
+    }
+
 }
