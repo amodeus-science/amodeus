@@ -16,6 +16,7 @@ import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RebalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.FastLinkLookup;
 import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
 import ch.ethz.idsc.amodeus.net.TensorCoords;
@@ -30,10 +31,11 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
 public class AidoDispatcherHost extends RebalancingDispatcher {
 
-    private Map<Integer, RoboTaxi> idRoboTaxiMap = new HashMap(); // TODO fill the map
-    private Map<Integer, AVRequest> idRequestMap = new HashMap(); // TODO fill the map
+    private final Map<Integer, RoboTaxi> idRoboTaxiMap = new HashMap<>();
+    private final Map<Integer, AVRequest> idRequestMap = new HashMap<>();
     private final FastLinkLookup fastLinkLookup;
     private final StringClientSocket clientSocket;
+    private final int dispatchPeriod;
 
     protected AidoDispatcherHost(Network network, Config config, AVDispatcherConfig avDispatcherConfig, TravelTime travelTime,
             ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, EventsManager eventsManager, //
@@ -41,43 +43,55 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
         super(config, avDispatcherConfig, travelTime, parallelLeastCostPathCalculator, eventsManager);
         this.clientSocket = Objects.requireNonNull(clientSocket);
         this.fastLinkLookup = new FastLinkLookup(network, MatsimStaticDatabase.INSTANCE);
+        SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
+        this.dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
 
     }
 
     @Override
     protected void redispatch(double now) {
-        try {
-            Tensor status = Tensors.of(RealScalar.of((long) now), //
-                    AidoRoboTaxiCompiler.compile(getRoboTaxis()), //
-                    AidoRequestCompiler.compile(getAVRequests()));
-            clientSocket.write(status.toString() + '\n');
-            System.out.println("ADH toClient: " + status.Get(0));
+        final long round_now = Math.round(now);
 
-            String fromClient = null;
+        if (round_now % dispatchPeriod == 0) {
 
-            fromClient = clientSocket.reader.readLine();
-            System.out.println("ADH fromClient: " + fromClient);
-
-            Tensor commands = Tensors.fromString(fromClient);
-            // TODO consistency checks
-            Tensor pickups = commands.get(0);
-            for (Tensor pickup : pickups) {
-                RoboTaxi roboTaxi = idRoboTaxiMap.get(pickup.Get(0).number().intValue());
-                AVRequest avRequest = idRequestMap.get(pickup.Get(1).number().intValue());
-                setRoboTaxiPickup(roboTaxi, avRequest);
+            if (getRoboTaxis().size() > 0 && idRoboTaxiMap.isEmpty()) {
+                getRoboTaxis().forEach(//
+                        s -> idRoboTaxiMap.put(MatsimStaticDatabase.INSTANCE.getVehicleIndex(s), s));
             }
 
-            Tensor rebalances = commands.get(1);
-            for (Tensor rebalance : rebalances) {
-                RoboTaxi roboTaxi = idRoboTaxiMap.get(rebalance.Get(0).number().intValue());
-                Link link = fastLinkLookup.getLinkCHANGENAME(TensorCoords.toCoord(rebalance.get(1)));
-                setRoboTaxiRebalance(roboTaxi, link);
+            try {
+                getAVRequests().forEach(//
+                        r -> idRequestMap.put(MatsimStaticDatabase.INSTANCE.getRequestIndex(r), r));
+
+                Tensor status = Tensors.of(RealScalar.of((long) now), //
+                        AidoRoboTaxiCompiler.compile(getRoboTaxis()), //
+                        AidoRequestCompiler.compile(getAVRequests()),//
+                        AidoScoreCompiler.compile(round_now,getRoboTaxis(),getAVRequests()));
+                clientSocket.writeln(status);
+
+                String fromClient = null;
+
+                fromClient = clientSocket.readLine();
+
+                Tensor commands = Tensors.fromString(fromClient);
+                // TODO consistency checks
+                Tensor pickups = commands.get(0);
+                for (Tensor pickup : pickups) {
+                    RoboTaxi roboTaxi = idRoboTaxiMap.get(pickup.Get(0).number().intValue());
+                    AVRequest avRequest = idRequestMap.get(pickup.Get(1).number().intValue());
+                    setRoboTaxiPickup(roboTaxi, avRequest);
+                }
+
+                Tensor rebalances = commands.get(1);
+                for (Tensor rebalance : rebalances) {
+                    RoboTaxi roboTaxi = idRoboTaxiMap.get(rebalance.Get(0).number().intValue());
+                    Link link = fastLinkLookup.getLinkCHANGENAME(TensorCoords.toCoord(rebalance.get(1)));
+                    setRoboTaxiRebalance(roboTaxi, link);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
-
     }
 
     public static class Factory implements AVDispatcherFactory {
@@ -100,7 +114,6 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
         private Config config;
 
         public static StringClientSocket stringSocket; // TODO
-        
 
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig) {

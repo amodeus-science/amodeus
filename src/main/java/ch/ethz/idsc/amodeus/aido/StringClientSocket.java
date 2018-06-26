@@ -10,7 +10,7 @@ import java.net.Socket;
 public class StringClientSocket {
     final Socket socket;
     private PrintWriter writer;
-    public BufferedReader reader = null; //
+    private BufferedReader reader = null; //
     private volatile boolean launched = true;
 
     public StringClientSocket(final Socket socket) {
@@ -46,8 +46,8 @@ public class StringClientSocket {
         myThread.start();
     }
 
-    public synchronized void write(String line) throws Exception {
-        writer.write(line);
+    public synchronized void writeln(Object line) throws Exception {
+        writer.write(line+"\n");
         writer.flush();
     }
 
@@ -67,4 +67,9 @@ public class StringClientSocket {
     private void message(String message) {
         System.out.println(getClass().getSimpleName() + ": " + message);
     }
+    
+    public String readLine() throws Exception{
+        return reader.readLine();
+    }
+    
 }
