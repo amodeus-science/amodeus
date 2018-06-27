@@ -2,7 +2,6 @@
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
