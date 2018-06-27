@@ -20,6 +20,7 @@ import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.FastLinkLookup;
 import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
 import ch.ethz.idsc.amodeus.net.TensorCoords;
+import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -65,8 +66,8 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
 
                 Tensor status = Tensors.of(RealScalar.of((long) now), //
                         AidoRoboTaxiCompiler.compile(getRoboTaxis()), //
-                        AidoRequestCompiler.compile(getAVRequests()),//
-                        AidoScoreCompiler.compile(round_now,getRoboTaxis(),getAVRequests()));
+                        AidoRequestCompiler.compile(getAVRequests()), //
+                        AidoScoreCompiler.compile(round_now, getRoboTaxis(), getAVRequests()));
                 clientSocket.writeln(status);
 
                 String fromClient = null;
@@ -74,7 +75,8 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
                 fromClient = clientSocket.readLine();
 
                 Tensor commands = Tensors.fromString(fromClient);
-                // TODO consistency checks
+                CommandConsistency.check(commands);
+
                 Tensor pickups = commands.get(0);
                 for (Tensor pickup : pickups) {
                     RoboTaxi roboTaxi = idRoboTaxiMap.get(pickup.Get(0).number().intValue());
@@ -113,7 +115,8 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
         @Inject
         private Config config;
 
-        public static StringClientSocket stringSocket; // TODO
+        @Inject
+        private StringClientSocket stringSocket;
 
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig) {
