@@ -82,7 +82,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
                 @Override
                 public void handle(AVPickupTask avPickupTask) {
-                    //TODO
+                    // TODO
                     GlobalAssert.that(robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
                 }
 
@@ -95,7 +95,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
                 @Override
                 public void handle(AVStayTask avStayTask) {
                     // for empty vehicles the current task has to be the last task
-                    if (ScheduleUtils.isLastTask(schedule, avStayTask) && !isInPickupRegister(robotaxi)) {
+                    if (ScheduleUtils.isLastTask(schedule, avStayTask) && !isInPickupRegister(robotaxi) && !isInRequestRegister(robotaxi)) {
                         GlobalAssert.that(avStayTask.getBeginTime() <= getTimeNow());
                         GlobalAssert.that(avStayTask.getLink() != null);
                         robotaxi.setDivertableLinkTime(new LinkTimePair(avStayTask.getLink(), getTimeNow()));
@@ -201,6 +201,8 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     /* package */ abstract void notifySimulationSubscribers(long round_now, StorageUtils storageUtils);
 
     /* package */ abstract boolean isInPickupRegister(SharedRoboTaxi robotaxi);
+
+    /* package */ abstract boolean isInRequestRegister(SharedRoboTaxi robotaxi);
 
     @Override
     public final void onNextTaskStarted(AVVehicle task) {

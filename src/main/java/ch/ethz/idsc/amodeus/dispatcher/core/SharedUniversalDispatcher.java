@@ -330,7 +330,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         final Schedule schedule = sRoboTaxi.getSchedule();
         // check that current task is last task in schedule
         // TODO fix
-        GlobalAssert.that(schedule.getCurrentTask() instanceof AVDriveTask);// == Schedules.getLastTask(schedule));
+        GlobalAssert.that(schedule.getCurrentTask()  == Schedules.getLastTask(schedule)); //instanceof AVDriveTask); 
 
         final double endPickupTime = getTimeNow() + pickupDurationPerStop;
 
@@ -367,7 +367,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 
         final Schedule schedule = sRoboTaxi.getSchedule();
         // check that current task is last task in schedule
-        GlobalAssert.that(schedule.getCurrentTask() instanceof AVDriveTask);// == Schedules.getLastTask(schedule));
+        GlobalAssert.that(schedule.getCurrentTask()  == Schedules.getLastTask(schedule)); //instanceof AVDriveTask);
 
         final double endDropOffTime = getTimeNow() + dropoffDurationPerStop;
 
@@ -387,6 +387,12 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
     @Override
     /* package */ final boolean isInPickupRegister(SharedRoboTaxi sRoboTaxi) {
         return pickupRegister.containsValue(sRoboTaxi);
+    }
+    
+    
+    @Override
+    /* package */ final boolean isInRequestRegister(SharedRoboTaxi sRoboTaxi) {
+        return requestRegister.containsKey(sRoboTaxi);
     }
 
     /** @param avRequest
@@ -409,8 +415,8 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         pickupRegisterCopy.values().stream().forEach(rt -> uniqueRt.add(rt));
         for (SharedRoboTaxi sRt : uniqueRt) {
             Link pickupVehicleLink = sRt.getDivertableLocation();
-            // TODO changed here else it would have stayed in staytask for one second before switching to pickuptask
-            boolean isOk = sRt.getSchedule().getCurrentTask() instanceof AVDriveTask; // == Schedules.getLastTask(sRt.getSchedule());
+            // TODO note that waiting for last staytask  adds a one second staytask before switching to pickuptask
+            boolean isOk = sRt.getSchedule().getCurrentTask() == Schedules.getLastTask(sRt.getSchedule()); //  instanceof AVDriveTask; //
 
             SharedAVCourse currentCourse = sRt.getMenu().getSharedAVStarter();
             AVRequest avR = requestRegister.get(sRt).get(currentCourse.getRequestId());
@@ -431,8 +437,8 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         Map<SharedRoboTaxi, Map<Id<Request>, AVRequest>> requestRegisterCopy = new HashMap<>(requestRegister);
         for (SharedRoboTaxi dropoffVehicle : requestRegisterCopy.keySet()) {
             Link dropoffVehicleLink = dropoffVehicle.getDivertableLocation();
-            // TODO changed here else it would have stayed in staytask for one second before switching to dropoffTask
-            boolean isOk = dropoffVehicle.getSchedule().getCurrentTask() instanceof AVDriveTask; // == Schedules.getLastTask(dropoffVehicle.getSchedule());
+            // TODO note that waiting for last staytask  adds a one second staytask before switching to dropoffTask
+            boolean isOk = dropoffVehicle.getSchedule().getCurrentTask()  == Schedules.getLastTask(dropoffVehicle.getSchedule()); // instanceof AVDriveTask; 
 
             SharedAVCourse currentCourse = dropoffVehicle.getMenu().getSharedAVStarter();
             AVRequest avR = requestRegister.get(dropoffVehicle).get(currentCourse.getRequestId());
