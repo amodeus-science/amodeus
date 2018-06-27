@@ -71,7 +71,12 @@ public class SharedAVMenu {
 	}
 
 	public List<SharedAVCourse> getCurrentSharedAVMenu() {
-		return (List<SharedAVCourse>) Collections.unmodifiableCollection(roboTaxiMenu);
+//		return (List<SharedAVCourse>) Collections.unmodifiableCollection(roboTaxiMenu);
+		return roboTaxiMenu;
+	}
+	
+	public SharedAVMenu copy() {
+		return new SharedAVMenu(this);
 	}
 
 	public SharedAVCourse getSharedAVStarter() {
@@ -90,7 +95,8 @@ public class SharedAVMenu {
 	public boolean equals(Object obj) {
 		if (obj instanceof SharedAVMenu) {
 			SharedAVMenu sAvMenu = (SharedAVMenu) obj;
-			if (sAvMenu.getCurrentSharedAVMenu().size() == roboTaxiMenu.size()) {
+			List<SharedAVCourse> otherMenu =  sAvMenu.getCurrentSharedAVMenu();
+			if (otherMenu.size() == roboTaxiMenu.size()) {
 				for (int i = 0; i < roboTaxiMenu.size(); i++) {
 					if (!roboTaxiMenu.get(i).equals(sAvMenu.getCurrentSharedAVMenu().get(i))) {
 						return false;
@@ -102,9 +108,7 @@ public class SharedAVMenu {
 		return false;
 	}
 
-	public SharedAVMenu copy() {
-		return new SharedAVMenu(this);
-	}
+
 
 	public boolean containsCourse(SharedAVCourse sharedAVCourse) {
 		return roboTaxiMenu.contains(sharedAVCourse);

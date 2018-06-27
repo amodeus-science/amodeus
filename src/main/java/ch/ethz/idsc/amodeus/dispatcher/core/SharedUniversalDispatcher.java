@@ -185,7 +185,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 //				sharedAvMenus);
 		
 		Map<SharedRoboTaxi, SharedAVMenu> sharedAvMenuLastStep = new HashMap<>();
-		getRoboTaxis().forEach(rt -> sharedAvMenuLastStep.put(new SharedRoboTaxi(rt), rt.getMenu().copy()));
+		getRoboTaxis().forEach(rt -> sharedAvMenuLastStep.put(rt, rt.getMenu().copy()));
 		
 		// To be implemented externally in the dispatchers
 		redispatch(now);
@@ -234,7 +234,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 
 	private Link getStarterLink(SharedRoboTaxi sRoboTaxi) {
 		SharedAVCourse course = sRoboTaxi.getMenu().getSharedAVStarter();
-
+		
 		AVRequest avR = requestRegister.get(sRoboTaxi).get(course.getRequestId());
 
 		if (course.getPickupOrDropOff().equals(SharedAVMealType.PICKUP)) {
