@@ -5,6 +5,7 @@ import java.util.Arrays;
 
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
+import org.matsim.contrib.dvrp.schedule.DriveTask;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
 import org.matsim.contrib.dvrp.tracker.OnlineDriveTaskTracker;
@@ -59,14 +60,18 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 			GlobalAssert.that(nextRequest != null);
 			GlobalAssert.that(nextMealType != null);
 			
+			GlobalAssert.that(vrpPathWithTravelData.getDepartureTime() == robotaxi.getDivertableTime());
+            avStayTask.setEndTime(vrpPathWithTravelData.getDepartureTime());
+
 			final double starTimeNextMeal = vrpPathWithTravelData.getArrivalTime();
 
 			final double endTimeNextMeal = nextMealType.equals(SharedAVMealType.DROPOFF)
 					? starTimeNextMeal + dropoffDurationPerStop
 					: starTimeNextMeal + pickupDurationPerStop;
 
-			schedule.addTask(new AVDriveTask( //
-					vrpPathWithTravelData, Arrays.asList(nextRequest)));
+			DriveTask driveTask = new AVDriveTask( //
+					vrpPathWithTravelData, Arrays.asList(nextRequest));
+			schedule.addTask(driveTask);
 
 			Link destLink = null;
 
