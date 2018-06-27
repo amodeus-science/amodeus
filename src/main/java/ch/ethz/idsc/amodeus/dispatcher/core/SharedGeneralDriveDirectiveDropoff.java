@@ -52,7 +52,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
                     Arrays.asList(currentRequest)));
 
             Link destLink = null;
-            if (vrpPathWithTravelData != null) {
+            if (!vrpPathWithTravelData.getFromLink().equals(vrpPathWithTravelData.getToLink())) {
                 schedule.addTask(new AVDriveTask( //
                         vrpPathWithTravelData));
                 destLink = vrpPathWithTravelData.getToLink();

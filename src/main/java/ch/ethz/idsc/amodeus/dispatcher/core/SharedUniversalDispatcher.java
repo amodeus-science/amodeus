@@ -329,7 +329,8 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 
         final Schedule schedule = sRoboTaxi.getSchedule();
         // check that current task is last task in schedule
-        GlobalAssert.that(schedule.getCurrentTask() == Schedules.getLastTask(schedule));
+        // TODO fix
+        GlobalAssert.that(schedule.getCurrentTask() instanceof AVDriveTask);// == Schedules.getLastTask(schedule));
 
         final double endPickupTime = getTimeNow() + pickupDurationPerStop;
 
@@ -341,6 +342,10 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 
         FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer(avRequest.getFromLink(), getStarterLink(sRoboTaxi), endPickupTime);
         sRoboTaxi.assignDirective(new SharedGeneralDriveDirectivePickup(sRoboTaxi, avRequest, futurePathContainer, getTimeNow()));
+
+        // FIXME
+        final double distance = VrpPathUtils.getDistance(futurePathContainer.getVrpPathWithTravelData());
+        avRequest.getRoute().setDistance(distance);
 
         ++total_matchedRequests;
     }
@@ -362,7 +367,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 
         final Schedule schedule = sRoboTaxi.getSchedule();
         // check that current task is last task in schedule
-        GlobalAssert.that(schedule.getCurrentTask() == Schedules.getLastTask(schedule));
+        GlobalAssert.that(schedule.getCurrentTask() instanceof AVDriveTask);// == Schedules.getLastTask(schedule));
 
         final double endDropOffTime = getTimeNow() + dropoffDurationPerStop;
 
@@ -371,9 +376,12 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         SharedAVCourse nextCourse = sRoboTaxi.getMenu().getSharedAVStarter();
         FuturePathContainer futurePathContainer = (nextCourse != null)
                 ? futurePathFactory.createFuturePathContainer(avRequest.getToLink(), getStarterLink(sRoboTaxi), endDropOffTime)
-                : null;
+                : futurePathFactory.createFuturePathContainer(avRequest.getToLink(), avRequest.getToLink(), endDropOffTime);
         sRoboTaxi.assignDirective(new SharedGeneralDriveDirectiveDropoff(sRoboTaxi, avRequest, futurePathContainer, getTimeNow(), dropoffDurationPerStop));
 
+        // FIXME temporary fix.. else it fails in execute dropoffs since there are robotaxis in map but with no requests assigned.
+        if (nextCourse == null)
+            requestRegister.remove(sRoboTaxi);
     }
 
     @Override
@@ -401,7 +409,8 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         pickupRegisterCopy.values().stream().forEach(rt -> uniqueRt.add(rt));
         for (SharedRoboTaxi sRt : uniqueRt) {
             Link pickupVehicleLink = sRt.getDivertableLocation();
-            boolean isOk = sRt.getSchedule().getCurrentTask() == Schedules.getLastTask(sRt.getSchedule());
+            // TODO changed here else it would have stayed in staytask for one second before switching to pickuptask
+            boolean isOk = sRt.getSchedule().getCurrentTask() instanceof AVDriveTask; // == Schedules.getLastTask(sRt.getSchedule());
 
             SharedAVCourse currentCourse = sRt.getMenu().getSharedAVStarter();
             AVRequest avR = requestRegister.get(sRt).get(currentCourse.getRequestId());
@@ -422,7 +431,8 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         Map<SharedRoboTaxi, Map<Id<Request>, AVRequest>> requestRegisterCopy = new HashMap<>(requestRegister);
         for (SharedRoboTaxi dropoffVehicle : requestRegisterCopy.keySet()) {
             Link dropoffVehicleLink = dropoffVehicle.getDivertableLocation();
-            boolean isOk = dropoffVehicle.getSchedule().getCurrentTask() == Schedules.getLastTask(dropoffVehicle.getSchedule());
+            // TODO changed here else it would have stayed in staytask for one second before switching to dropoffTask
+            boolean isOk = dropoffVehicle.getSchedule().getCurrentTask() instanceof AVDriveTask; // == Schedules.getLastTask(dropoffVehicle.getSchedule());
 
             SharedAVCourse currentCourse = dropoffVehicle.getMenu().getSharedAVStarter();
             AVRequest avR = requestRegister.get(dropoffVehicle).get(currentCourse.getRequestId());

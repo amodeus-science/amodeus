@@ -10,52 +10,47 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.schedule.AVDriveTask;
 import ch.ethz.matsim.av.schedule.AVStayTask;
 
-/**
- * for vehicles that are currently driving, but should go to a new destination:
+/** for vehicles that are currently driving, but should go to a new destination:
  * 1) change path of current drive task 2) remove former stay task with old
- * destination 3) append new stay task
- */
+ * destination 3) append new stay task */
 /* package */ final class SharedGeneralStayDirective extends VehicleDiversionDirective {
-	final SharedRoboTaxi robotaxi;
-	final double getTimeNow;
+    final SharedRoboTaxi robotaxi;
+    final double getTimeNow;
 
-	SharedGeneralStayDirective(SharedRoboTaxi robotaxi, Link destLink,  //
-			FuturePathContainer futurePathContainer, final double getTimeNow) {
-		super(robotaxi, destLink, futurePathContainer);
-		this.robotaxi = robotaxi;
-		this.getTimeNow = getTimeNow;
-	}
+    SharedGeneralStayDirective(SharedRoboTaxi robotaxi, Link destLink, //
+            FuturePathContainer futurePathContainer, final double getTimeNow) {
+        super(robotaxi, destLink, futurePathContainer);
+        this.robotaxi = robotaxi;
+        this.getTimeNow = getTimeNow;
+    }
 
-	@Override
-	void executeWithPath(VrpPathWithTravelData vrpPathWithTravelData) {
-		final Schedule schedule = robotaxi.getSchedule();
-		final AVStayTask avStayTask = (AVStayTask) schedule.getCurrentTask(); // <- implies that task is started
-		final double scheduleEndTime = avStayTask.getEndTime(); // typically 108000.0
-		GlobalAssert.that(scheduleEndTime == schedule.getEndTime());
+    @Override
+    void executeWithPath(VrpPathWithTravelData vrpPathWithTravelData) {
+        final Schedule schedule = robotaxi.getSchedule();
+        final AVStayTask avStayTask = (AVStayTask) schedule.getCurrentTask(); // <- implies that task is started
+        final double scheduleEndTime = avStayTask.getEndTime(); // typically 108000.0
+        GlobalAssert.that(scheduleEndTime == schedule.getEndTime());
 
-		final AVDriveTask avDriveTask = new AVDriveTask(vrpPathWithTravelData);
-		final double endDriveTask = avDriveTask.getEndTime();
+        final double endDriveTask = vrpPathWithTravelData.getArrivalTime();
 
-		if (endDriveTask < scheduleEndTime) {
+        if (endDriveTask < scheduleEndTime) {
 
-			GlobalAssert.that(vrpPathWithTravelData.getDepartureTime() == robotaxi.getDivertableTime());
+            GlobalAssert.that(vrpPathWithTravelData.getDepartureTime() == robotaxi.getDivertableTime());
             avStayTask.setEndTime(vrpPathWithTravelData.getDepartureTime());
 
+            DriveTask driveTask = new AVDriveTask( //
+                    vrpPathWithTravelData);
+            schedule.addTask(driveTask);
 
-			DriveTask driveTask = new AVDriveTask( //
-					vrpPathWithTravelData);
-			schedule.addTask(driveTask);
+            ScheduleUtils.makeWhole(robotaxi, endDriveTask, scheduleEndTime, destination);
 
-
-			ScheduleUtils.makeWhole(robotaxi, endDriveTask, scheduleEndTime, destination);
-
-			// jan: following computation is mandatory for the internal scoring
-			// function
+            // jan: following computation is mandatory for the internal scoring
+            // function
             // final double distance = VrpPathUtils.getDistance(vrpPathWithTravelData);
             // nextRequest.getRoute().setDistance(distance);
 
-		} else
-			reportExecutionBypass(endDriveTask - scheduleEndTime);
-	}
+        } else
+            reportExecutionBypass(endDriveTask - scheduleEndTime);
+    }
 
 }
