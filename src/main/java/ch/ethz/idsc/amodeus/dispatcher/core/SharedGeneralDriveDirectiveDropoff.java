@@ -8,87 +8,65 @@ import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
 
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedAVMealType;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.schedule.AVDriveTask;
 import ch.ethz.matsim.av.schedule.AVDropoffTask;
-import ch.ethz.matsim.av.schedule.AVPickupTask;
 import ch.ethz.matsim.av.schedule.AVStayTask;
 
-/**
- * for vehicles that are in stay task and should pickup a customer at the link:
+/** for vehicles that are in stay task and should pickup a customer at the link:
  * 1) finish stay task 2) append pickup task 3) append drive task 4) append
- * dropoff task 5) append new stay task
- */
+ * dropoff task 5) append new stay task */
 /* package */ final class SharedGeneralDriveDirectiveDropoff extends FuturePathDirective {
-	final SharedRoboTaxi robotaxi;
-	final AVRequest nextRequest;
-	final double getTimeNow;
-	final double dropoffDurationPerStop;
-	final double pickupDurationPerStop;
-	final SharedAVMealType nextMealType;
+    final SharedRoboTaxi robotaxi;
+    final AVRequest currentRequest;
+    final double getTimeNow;
+    final double dropoffDurationPerStop;
 
-	public SharedGeneralDriveDirectiveDropoff(SharedRoboTaxi robotaxi, AVRequest nextRequest, //
-			FuturePathContainer futurePathContainer, final double getTimeNow, double dropoffDurationPerStop,
-			double pickupDurationPerStop, SharedAVMealType nextMealType) {
-		super(futurePathContainer);
-		this.robotaxi = robotaxi;
-		this.nextRequest = nextRequest;
-		this.getTimeNow = getTimeNow;
-		this.dropoffDurationPerStop = dropoffDurationPerStop;
-		this.pickupDurationPerStop = pickupDurationPerStop;
-		this.nextMealType = nextMealType;
-	}
+    public SharedGeneralDriveDirectiveDropoff(SharedRoboTaxi robotaxi, AVRequest currentRequest, //
+            FuturePathContainer futurePathContainer, final double getTimeNow, double dropoffDurationPerStop) {
+        super(futurePathContainer);
+        this.robotaxi = robotaxi;
+        this.currentRequest = currentRequest;
+        this.getTimeNow = getTimeNow;
+        this.dropoffDurationPerStop = dropoffDurationPerStop;
+    }
 
-	@Override
-	void executeWithPath(final VrpPathWithTravelData vrpPathWithTravelData) {
-		final Schedule schedule = robotaxi.getSchedule();
-		final AVStayTask avStayTask = (AVStayTask) Schedules.getLastTask(schedule);
-		final double scheduleEndTime = avStayTask.getEndTime();
-		GlobalAssert.that(scheduleEndTime == schedule.getEndTime());
-		final double starTimeNextMeal = vrpPathWithTravelData.getArrivalTime();
-		final double endTimeNextMeal = starTimeNextMeal + dropoffDurationPerStop;
+    @Override
+    void executeWithPath(final VrpPathWithTravelData vrpPathWithTravelData) {
+        final Schedule schedule = robotaxi.getSchedule();
+        final AVStayTask avStayTask = (AVStayTask) Schedules.getLastTask(schedule);
+        final double scheduleEndTime = avStayTask.getEndTime();
+        GlobalAssert.that(scheduleEndTime == schedule.getEndTime());
+        final double endTimeNextTask = (vrpPathWithTravelData != null) ? vrpPathWithTravelData.getArrivalTime() : getTimeNow + dropoffDurationPerStop;
+        GlobalAssert.that(avStayTask.getLink().equals(currentRequest.getToLink()));
 
-		if (endTimeNextMeal < scheduleEndTime) {
+        if (endTimeNextTask < scheduleEndTime) {
 
-			if (nextRequest != null) {
-				GlobalAssert.that(nextMealType != null);
-				avStayTask.setEndTime(getTimeNow); // finish the last task now
+            avStayTask.setEndTime(getTimeNow); // finish the last task now
 
-				schedule.addTask(new AVDriveTask( //
-						vrpPathWithTravelData, Arrays.asList(nextRequest)));
+            schedule.addTask(new AVDropoffTask( //
+                    getTimeNow, // start of dropoff
+                    getTimeNow + dropoffDurationPerStop, // end of dropoff
+                    currentRequest.getToLink(), // location of dropoff
+                    Arrays.asList(currentRequest)));
 
-				// final double endDropoffTime = vrpPathWithTravelData.getArrivalTime() +
-				// dropoffDurationPerStop;
-				Link destLink = null;
-				if (nextMealType.equals(SharedAVMealType.PICKUP)) {
-					destLink = nextRequest.getFromLink();
-					schedule.addTask(new AVPickupTask( //
-							starTimeNextMeal, // start of dropoff
-							endTimeNextMeal, destLink, // location of dropoff
-							Arrays.asList(nextRequest)));
-				} else if (nextMealType.equals(SharedAVMealType.DROPOFF)) {
-					destLink = nextRequest.getToLink();
+            Link destLink = null;
+            if (vrpPathWithTravelData != null) {
+                schedule.addTask(new AVDriveTask( //
+                        vrpPathWithTravelData));
+                destLink = vrpPathWithTravelData.getToLink();
+            } else {
+                destLink = avStayTask.getLink();
+            }
+            ScheduleUtils.makeWhole(robotaxi, endTimeNextTask, scheduleEndTime, destLink);
 
-					schedule.addTask(new AVDropoffTask( //
-							starTimeNextMeal, // start of dropoff
-							endTimeNextMeal, destLink, // location of dropoff
-							Arrays.asList(nextRequest)));
-				} else {
-					throw new IllegalArgumentException("Unknown SharedAVMealType -- please specify it !!!--");
-				}
-				GlobalAssert.that(destLink != null);
-				ScheduleUtils.makeWhole(robotaxi, endTimeNextMeal, scheduleEndTime, destLink);
-
-				// jan: following computation is mandatory for the internal scoring
-				// function
-				final double distance = VrpPathUtils.getDistance(vrpPathWithTravelData);
-				nextRequest.getRoute().setDistance(distance);
-			}
-			// Else do nothing as you alredy have a stay task...
-		} else
-			reportExecutionBypass(endTimeNextMeal - scheduleEndTime);
-	}
+            // jan: following computation is mandatory for the internal scoring
+            // function
+            // final double distance = VrpPathUtils.getDistance(vrpPathWithTravelData);
+            // nextRequest.getRoute().setDistance(distance);
+        } else
+            reportExecutionBypass(endTimeNextTask - scheduleEndTime);
+    }
 
 }
