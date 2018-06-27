@@ -28,199 +28,188 @@ import ch.ethz.matsim.av.schedule.AVDropoffTask;
 import ch.ethz.matsim.av.schedule.AVPickupTask;
 import ch.ethz.matsim.av.schedule.AVStayTask;
 
-/**
- * The purpose of RoboTaxiMaintainer is to register {@link AVVehicle} and
+/** The purpose of RoboTaxiMaintainer is to register {@link AVVehicle} and
  * provide the collection of available vehicles to derived class.
  * <p>
  * manages assignments of {@link AbstractDirective} to {@link AVVehicle}s. path
  * computations attached to assignments are computed in parallel
- * {@link ParallelLeastCostPathCalculator}.
- */
+ * {@link ParallelLeastCostPathCalculator}. */
 
 /* package */ abstract class SharedRoboTaxiMaintainer implements AVDispatcher {
-	protected final EventsManager eventsManager;
-	private final List<SharedRoboTaxi> roboTaxis = new ArrayList<>();
-	private Double private_now = null;
-	public InfoLine infoLine = null;
-	private final StorageUtils storageUtils;
+    protected final EventsManager eventsManager;
+    private final List<SharedRoboTaxi> roboTaxis = new ArrayList<>();
+    private Double private_now = null;
+    public InfoLine infoLine = null;
+    private final StorageUtils storageUtils;
 
-	SharedRoboTaxiMaintainer(EventsManager eventsManager, Config config, AVDispatcherConfig avDispatcherConfig) {
-		SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
-		this.eventsManager = eventsManager;
-		this.infoLine = new InfoLine(safeConfig.getInteger("infoLinePeriod", 10));
-		String outputdirectory = config.controler().getOutputDirectory();
-		this.storageUtils = new StorageUtils(new File(outputdirectory));
+    SharedRoboTaxiMaintainer(EventsManager eventsManager, Config config, AVDispatcherConfig avDispatcherConfig) {
+        SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
+        this.eventsManager = eventsManager;
+        this.infoLine = new InfoLine(safeConfig.getInteger("infoLinePeriod", 10));
+        String outputdirectory = config.controler().getOutputDirectory();
+        this.storageUtils = new StorageUtils(new File(outputdirectory));
 
-	}
+    }
 
-	/**
-	 * @return time of current re-dispatching iteration step
-	 * @throws NullPointerException
-	 *             if dispatching has not started yet
-	 */
-	protected final double getTimeNow() {
-		return private_now;
-	}
+    /** @return time of current re-dispatching iteration step
+     * @throws NullPointerException
+     *             if dispatching has not started yet */
+    protected final double getTimeNow() {
+        return private_now;
+    }
 
-	/** @return collection of RoboTaxis */
-	protected final List<SharedRoboTaxi> getRoboTaxis() {
-		if (roboTaxis.isEmpty() || !roboTaxis.get(0).getSchedule().getStatus().equals(Schedule.ScheduleStatus.STARTED))
-			return Collections.emptyList();
-		return Collections.unmodifiableList(roboTaxis);
-	}
+    /** @return collection of RoboTaxis */
+    protected final List<SharedRoboTaxi> getRoboTaxis() {
+        if (roboTaxis.isEmpty() || !roboTaxis.get(0).getSchedule().getStatus().equals(Schedule.ScheduleStatus.STARTED))
+            return Collections.emptyList();
+        return Collections.unmodifiableList(roboTaxis);
+    }
 
-	private void updateDivertableLocations() {
-		for (SharedRoboTaxi robotaxi : getRoboTaxis()) {
-			GlobalAssert.that(robotaxi.isWithoutDirective());
-			Schedule schedule = robotaxi.getSchedule();
-			new RoboTaxiTaskAdapter(schedule.getCurrentTask()) {
-				@Override
-				public void handle(AVDriveTask avDriveTask) {
-					// for empty cars the drive task is second to last task
-					if (ScheduleUtils.isNextToLastTask(schedule, avDriveTask)) {
-						TaskTracker taskTracker = avDriveTask.getTaskTracker();
-						AmodeusDriveTaskTracker onlineDriveTaskTracker = (AmodeusDriveTaskTracker) taskTracker;
-						LinkTimePair linkTimePair = onlineDriveTaskTracker.getSafeDiversionPoint();
-						robotaxi.setDivertableLinkTime(linkTimePair); // contains null check
-						robotaxi.setCurrentDriveDestination(avDriveTask.getPath().getToLink());
-						GlobalAssert.that(!robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
-					} else
-						GlobalAssert.that(robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
-				}
+    private void updateDivertableLocations() {
+        for (SharedRoboTaxi robotaxi : getRoboTaxis()) {
+            // TODO fix
+            // GlobalAssert.that(robotaxi.isWithoutDirective());
+            Schedule schedule = robotaxi.getSchedule();
+            new RoboTaxiTaskAdapter(schedule.getCurrentTask()) {
+                @Override
+                public void handle(AVDriveTask avDriveTask) {
+                    TaskTracker taskTracker = avDriveTask.getTaskTracker();
+                    AmodeusDriveTaskTracker onlineDriveTaskTracker = (AmodeusDriveTaskTracker) taskTracker;
+                    LinkTimePair linkTimePair = onlineDriveTaskTracker.getSafeDiversionPoint();
+                    robotaxi.setDivertableLinkTime(linkTimePair); // contains null check
+                    robotaxi.setCurrentDriveDestination(avDriveTask.getPath().getToLink());
+                }
 
-				@Override
-				public void handle(AVPickupTask avPickupTask) {
-					GlobalAssert.that(robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
-				}
+                @Override
+                public void handle(AVPickupTask avPickupTask) {
+                    //TODO
+                    GlobalAssert.that(robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
+                }
 
-				@Override
-				public void handle(AVDropoffTask avDropOffTask) {
-					GlobalAssert.that(robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
-				}
+                @Override
+                public void handle(AVDropoffTask avDropOffTask) {
+                    // TODO
+                    GlobalAssert.that(robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
+                }
 
-				@Override
-				public void handle(AVStayTask avStayTask) {
-					// for empty vehicles the current task has to be the last task
-					if (ScheduleUtils.isLastTask(schedule, avStayTask) && !isInPickupRegister(robotaxi)) {
-						GlobalAssert.that(avStayTask.getBeginTime() <= getTimeNow());
-						GlobalAssert.that(avStayTask.getLink() != null);
-						robotaxi.setDivertableLinkTime(new LinkTimePair(avStayTask.getLink(), getTimeNow()));
-						robotaxi.setCurrentDriveDestination(avStayTask.getLink());
-						robotaxi.setStatus(RoboTaxiStatus.STAY);
-					}
-				}
-			};
-		}
-	}
+                @Override
+                public void handle(AVStayTask avStayTask) {
+                    // for empty vehicles the current task has to be the last task
+                    if (ScheduleUtils.isLastTask(schedule, avStayTask) && !isInPickupRegister(robotaxi)) {
+                        GlobalAssert.that(avStayTask.getBeginTime() <= getTimeNow());
+                        GlobalAssert.that(avStayTask.getLink() != null);
+                        robotaxi.setDivertableLinkTime(new LinkTimePair(avStayTask.getLink(), getTimeNow()));
+                        robotaxi.setCurrentDriveDestination(avStayTask.getLink());
+                        robotaxi.setStatus(RoboTaxiStatus.STAY);
+                    }
+                }
+            };
+        }
+    }
 
-	@Override
-	public final void addVehicle(AVVehicle vehicle) {
-		roboTaxis.add(
-				new SharedRoboTaxi(vehicle, new LinkTimePair(vehicle.getStartLink(), 0.0), vehicle.getStartLink()));
-		eventsManager.processEvent(new AVVehicleAssignmentEvent(vehicle, 0));
-	}
+    @Override
+    public final void addVehicle(AVVehicle vehicle) {
+        roboTaxis.add(new SharedRoboTaxi(vehicle, new LinkTimePair(vehicle.getStartLink(), 0.0), vehicle.getStartLink()));
+        eventsManager.processEvent(new AVVehicleAssignmentEvent(vehicle, 0));
+    }
 
-	@Override
-	public final void onNextTimestep(double now) {
-		private_now = now; // <- time available to derived class via getTimeNow()
-		updateInfoLine();
-		notifySimulationSubscribers(Math.round(now), storageUtils);
-		consistencyCheck();
-		beforeStepTasks(); // <- if problems with RoboTaxi Status to Completed consider to set
-							// "simEndtimeInterpretation" to "null"
-		executePickups();
-		executeDropoffs();
-		redispatchInternal(now);
-		afterStepTasks();
-		executeDirectives();
-		consistencyCheck();
+    @Override
+    public final void onNextTimestep(double now) {
+        private_now = now; // <- time available to derived class via getTimeNow()
+        updateInfoLine();
+        notifySimulationSubscribers(Math.round(now), storageUtils);
+        consistencyCheck();
+        beforeStepTasks(); // <- if problems with RoboTaxi Status to Completed consider to set
+                           // "simEndtimeInterpretation" to "null"
+        executePickups();
+        executeDropoffs();
+        redispatchInternal(now);
+        afterStepTasks();
+        executeDirectives();
+        consistencyCheck();
 
-	}
+    }
 
-	protected void updateInfoLine() {
-		String infoLine = getInfoLine();
-		this.infoLine.updateInfoLine(infoLine, getTimeNow());
-	}
+    protected void updateInfoLine() {
+        String infoLine = getInfoLine();
+        this.infoLine.updateInfoLine(infoLine, getTimeNow());
+    }
 
-	/**
-	 * derived classes should override this function to add details
-	 * 
-	 * @return String with infoLine content
-	 */
-	protected String getInfoLine() {
-		final String string = getClass().getSimpleName() + "        ";
-		return String.format("%s@%6d V=(%4ds,%4dd)", //
-				string.substring(0, 6), //
-				(long) getTimeNow(), //
-				roboTaxis.stream().filter(rt -> rt.isInStayTask()).count(), //
-				roboTaxis.stream().filter(rt -> rt.getStatus().isDriving()).count());
-	}
+    /** derived classes should override this function to add details
+     * 
+     * @return String with infoLine content */
+    protected String getInfoLine() {
+        final String string = getClass().getSimpleName() + "        ";
+        return String.format("%s@%6d V=(%4ds,%4dd)", //
+                string.substring(0, 6), //
+                (long) getTimeNow(), //
+                roboTaxis.stream().filter(rt -> rt.isInStayTask()).count(), //
+                roboTaxis.stream().filter(rt -> rt.getStatus().isDriving()).count());
+    }
 
-	private void beforeStepTasks() {
+    private void beforeStepTasks() {
 
-		// update divertable locations of RoboTaxis
-		updateDivertableLocations();
+        // update divertable locations of RoboTaxis
+        updateDivertableLocations();
 
-		// update current locations of RoboTaxis
-		if (private_now > 0) { // at time 0, tasks are not started.
-			updateCurrentLocations();
-		}
+        // update current locations of RoboTaxis
+        if (private_now > 0) { // at time 0, tasks are not started.
+            updateCurrentLocations();
+        }
 
-	}
+    }
 
-	private void afterStepTasks() {
-		stopAbortedPickupRoboTaxis();
-	}
+    private void afterStepTasks() {
+        stopAbortedPickupRoboTaxis();
+    }
 
-	private void consistencyCheck() {
-		consistencySubCheck();
+    private void consistencyCheck() {
+        consistencySubCheck();
 
-	}
+    }
 
-	private void executeDirectives() {
-		roboTaxis.stream().filter(rt -> !rt.isWithoutDirective()).forEach(SharedRoboTaxi::executeDirective);
-	}
+    private void executeDirectives() {
+        roboTaxis.stream().filter(rt -> !rt.isWithoutDirective()).forEach(SharedRoboTaxi::executeDirective);
+    }
 
-	private void updateCurrentLocations() {
-		@SuppressWarnings("unused")
-		int failed = 0;
-		if (!roboTaxis.isEmpty()) {
-			for (SharedRoboTaxi robotaxi : roboTaxis) {
-				final Link link = RoboTaxiLocation.of(robotaxi);
-				if (link != null) {
-					robotaxi.setLastKnownLocation(link);
-				} else {
-					++failed;
-				}
+    private void updateCurrentLocations() {
+        @SuppressWarnings("unused")
+        int failed = 0;
+        if (!roboTaxis.isEmpty()) {
+            for (SharedRoboTaxi robotaxi : roboTaxis) {
+                final Link link = RoboTaxiLocation.of(robotaxi);
+                if (link != null) {
+                    robotaxi.setLastKnownLocation(link);
+                } else {
+                    ++failed;
+                }
 
-			}
-		}
-	}
+            }
+        }
+    }
 
-	/* package */ abstract void redispatchInternal(double now);
+    /* package */ abstract void redispatchInternal(double now);
 
-	/* package */ abstract void executePickups();
+    /* package */ abstract void executePickups();
 
-	/* package */ abstract void executeDropoffs();
+    /* package */ abstract void executeDropoffs();
 
-	/* package */ abstract void stopAbortedPickupRoboTaxis();
+    /* package */ abstract void stopAbortedPickupRoboTaxis();
 
-	/* package */ abstract void consistencySubCheck();
+    /* package */ abstract void consistencySubCheck();
 
-	/* package */ abstract void notifySimulationSubscribers(long round_now, StorageUtils storageUtils);
+    /* package */ abstract void notifySimulationSubscribers(long round_now, StorageUtils storageUtils);
 
-	/* package */ abstract boolean isInPickupRegister(SharedRoboTaxi robotaxi);
+    /* package */ abstract boolean isInPickupRegister(SharedRoboTaxi robotaxi);
 
-	@Override
-	public final void onNextTaskStarted(AVVehicle task) {
-		// intentionally empty
-	}
+    @Override
+    public final void onNextTaskStarted(AVVehicle task) {
+        // intentionally empty
+    }
 
-	/**
-	 * derived classes should override this function
-	 * 
-	 * @param now
-	 */
-	protected abstract void redispatch(double now);
+    /** derived classes should override this function
+     * 
+     * @param now */
+    protected abstract void redispatch(double now);
 
 }
