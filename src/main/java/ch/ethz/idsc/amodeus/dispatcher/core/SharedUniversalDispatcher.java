@@ -84,12 +84,6 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 		dropoffDurationPerStop = avDispatcherConfig.getParent().getTimingParameters().getDropoffDurationPerStop();
 		SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
 		publishPeriod = safeConfig.getInteger("publishPeriod", 10);
-		// Fill in empty rt menus
-		getRoboTaxis().stream().forEach(rt -> {
-//			sharedAvMenus.put(rt, new SharedAVMenu());
-			requestRegister.put(rt, new HashMap<>());
-		});
-
 	}
 
 	// ===================================================================================
@@ -163,6 +157,9 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 		GlobalAssert.that(sRoboTaxi.canPickupNewCustomer());
 		GlobalAssert.that(pendingRequests.contains(avRequest));
 
+		if (!requestRegister.containsKey(sRoboTaxi)) {
+			requestRegister.put(sRoboTaxi, new HashMap<>());
+		}
 		// 1) enter information into pickup table
 		// 2) also do everything for the full-time requestRegister
 		if (pickupRegister.containsKey(avRequest))
