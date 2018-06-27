@@ -12,6 +12,18 @@ public class SharedAVCourse {
         this.requestId = requestId;
         this.pickupOrDropOff = pickupOrDropOff;
     }
+    public SharedAVCourse(SharedAVCourse sharedAVCourse) {
+    	this(sharedAVCourse.requestId, sharedAVCourse.pickupOrDropOff);
+    }
+    
+    public static SharedAVCourse pickupCourse(Id<Request> requestId) {
+		return new SharedAVCourse(requestId, SharedAVMealType.PICKUP);
+	}
+    
+    public static SharedAVCourse dropoffCourse(Id<Request> requestId) {
+		return new SharedAVCourse(requestId, SharedAVMealType.DROPOFF);
+	}
+
 
     @Override
     public boolean equals(Object obj) {
@@ -30,5 +42,9 @@ public class SharedAVCourse {
     public Id<Request> getRequestId() {
         return requestId;
     }
+
+	public SharedAVCourse copy() {
+		return new SharedAVCourse(this);
+	}
 
 }

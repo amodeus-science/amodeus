@@ -73,13 +73,14 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 			// Add pickup or dropoff depending on meal type
 			if (nextMealType.equals(SharedAVMealType.PICKUP)) {
 				destLink = nextRequest.getFromLink();
+				GlobalAssert.that(destination.equals(destLink));
 				schedule.addTask(new AVPickupTask( //
 						starTimeNextMeal, // start of dropoff
 						endTimeNextMeal, destLink, // location of dropoff
 						Arrays.asList(nextRequest)));
 			} else if (nextMealType.equals(SharedAVMealType.DROPOFF)) {
 				destLink = nextRequest.getToLink();
-
+				GlobalAssert.that(destination.equals(destLink));
 				schedule.addTask(new AVDropoffTask( //
 						starTimeNextMeal, // start of dropoff
 						endTimeNextMeal, destLink, // location of dropoff

@@ -46,6 +46,14 @@ public abstract class AbstractRoboTaxi {
         this.directive = null;
         this.status = RoboTaxiStatus.STAY;
     }
+    
+    /**
+     * Constructor for deep Copy
+     * @param abstractRoboTaxi
+     */
+    /* package */AbstractRoboTaxi(AbstractRoboTaxi abstractRoboTaxi) {
+    	this(abstractRoboTaxi.avVehicle, abstractRoboTaxi.divertableLinkTime, abstractRoboTaxi.driveDestination);
+    }
 
     // ===================================================================================
     // methods to be used by dispatchers, public
