@@ -36,6 +36,9 @@ public enum TotalValueIdentifiersAmodeus implements TotalValueIdentifier {
 
 	// Velocities
 	// AVERAGEROBOTAXIVELOCITY("AverageRobotaxiVelocity"), //
+	
+	// COSTS
+	ANNUALFLEETCOST("annualFleetCost"), //
 	;
 
 	private final String identifier;

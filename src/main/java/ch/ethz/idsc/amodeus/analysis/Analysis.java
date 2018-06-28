@@ -13,6 +13,11 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 
+import ch.ethz.idsc.amodeus.analysis.cost.FleetCostElement;
+import ch.ethz.idsc.amodeus.analysis.cost.RoboTaxiCostFunction;
+import ch.ethz.idsc.amodeus.analysis.cost.RoboTaxiCostFunctionsAmodeus;
+import ch.ethz.idsc.amodeus.analysis.cost.RoboTaxiCostParameters;
+import ch.ethz.idsc.amodeus.analysis.cost.RoboTaxiCostParametersImplAmodeus;
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisElement;
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.amodeus.analysis.plot.ChartTheme;
@@ -191,7 +196,6 @@ public class Analysis {
 		totalValues.append(analysisSummary.getStatusDistribution());
 		totalValues.append(analysisSummary.getWaitingTimes());
 		totalValues.append(analysisSummary.getDistanceElement());
-
 		analysisReports.add(totalValues);
 
 	}
@@ -214,6 +218,13 @@ public class Analysis {
 
 	public void addTotalValue(TotalValueAppender totalValueAppender) {
 		totalValues.append(totalValueAppender);
+	}
+
+	public void addCostAnalysis(RoboTaxiCostFunction roboTaxiCostFunction,
+			RoboTaxiCostParameters roboTaxiCostParameters) {
+		FleetCostElement fleetCostElement = new FleetCostElement(roboTaxiCostFunction, roboTaxiCostParameters);
+		analysisExports.add(fleetCostElement);
+		totalValues.append(fleetCostElement);
 	}
 
 	public void run() throws Exception {
