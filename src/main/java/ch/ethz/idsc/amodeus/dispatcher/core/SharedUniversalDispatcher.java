@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.data.Request;
-import org.matsim.contrib.dvrp.data.Vehicle;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
 import org.matsim.contrib.dvrp.schedule.Task;
@@ -30,8 +29,8 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedAVMenu;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.SharedSimulationObjectCompiler;
 import ch.ethz.idsc.amodeus.net.SimulationDistribution;
-
 import ch.ethz.idsc.amodeus.net.SimulationObject;
+import ch.ethz.idsc.amodeus.net.SimulationObjects;
 import ch.ethz.idsc.amodeus.net.StorageUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
@@ -42,19 +41,14 @@ import ch.ethz.matsim.av.schedule.AVDriveTask;
 import ch.ethz.matsim.av.schedule.AVDropoffTask;
 import ch.ethz.matsim.av.schedule.AVPickupTask;
 import ch.ethz.matsim.av.schedule.AVStayTask;
-import io.humble.video.Global;
 
-/**
- * purpose of {@link UniversalDispatcher} is to collect and manage
+/** purpose of {@link UniversalDispatcher} is to collect and manage
  * {@link AVRequest}s alternative implementation of {@link AVDispatcher};
- * supersedes {@link AbstractDispatcher}.
- */
-/*
- * added new requestRegister which does hold information from request to dropoff
+ * supersedes {@link AbstractDispatcher}. */
+/* added new requestRegister which does hold information from request to dropoff
  * of each request which is written to the simulationObject implementation is
  * not very clean yet but functionally stable, depending on the publishPeriod,
- * andya jan '18
- */
+ * andya jan '18 */
 public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer {
 
     private final FuturePathFactory futurePathFactory;
@@ -65,7 +59,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
     private final Map<AVRequest, SharedRoboTaxi> periodFulfilledRequests = new HashMap<>(); // new
                                                                                             // temporaryRequestRegister
                                                                                             // for fulfilled requests
-    private final Map<Id<Vehicle>, RoboTaxiStatus> oldRoboTaxis = new HashMap<>();
+    private final Map<AVRequest, RequestStatus> reqStatuses = new HashMap<>(); // new RequestRegister
     private final double pickupDurationPerStop;
     private final double dropoffDurationPerStop;
     protected int publishPeriod; // not final, so that dispatchers can disable, or manipulate
@@ -163,6 +157,8 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         sRoboTaxi.getMenu().addAVCourseAsaDessert(new SharedAVCourse(avRequest.getId(), SharedAVMealType.PICKUP));
         sRoboTaxi.getMenu().addAVCourseAsaDessert(new SharedAVCourse(avRequest.getId(), SharedAVMealType.DROPOFF));
 
+        reqStatuses.put(avRequest, RequestStatus.ASSIGNED);
+
     }
 
     @Override
@@ -192,6 +188,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
                 } else {
                     avStatus = RoboTaxiStatus.DRIVEWITHCUSTOMER;
                 }
+
                 setRoboTaxiDiversion(sharedRoboTaxi, destLink, avStatus);
 
             }
@@ -330,6 +327,8 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
             GlobalAssert.that(sRoboTaxi == former);
         }
 
+        reqStatuses.put(avRequest, RequestStatus.PICKUP);
+
         consistencySubCheck();
 
         final Schedule schedule = sRoboTaxi.getSchedule();
@@ -454,6 +453,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
     public final void onRequestSubmitted(AVRequest request) {
         boolean added = pendingRequests.add(request); // <- store request
         GlobalAssert.that(added);
+        reqStatuses.put(request, RequestStatus.REQUESTED);
     }
 
     /** function stops {@link SharedRoboTaxi} which are still heading towards an
@@ -487,42 +487,31 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         // containment check pickupRegister and pendingRequests
         pickupRegister.keySet().forEach(r -> GlobalAssert.that(pendingRequests.contains(r)));
 
-        // ensure no RoboTaxi is scheduled to pickup two requests
-        // GlobalAssert.that(pickupRegister.size() ==
-        // pickupRegister.values().stream().distinct().count());
-
     }
 
     /** save simulation data into {@link SimulationObject} for later analysis and
      * visualization. */
     @Override
     protected final void notifySimulationSubscribers(long round_now, StorageUtils storageUtils) {
-         if (publishPeriod > 0 && round_now % publishPeriod == 0) {
-        	 SharedSimulationObjectCompiler simulationObjectCompiler = SharedSimulationObjectCompiler.create( //
-         round_now, getInfoLine(), total_matchedRequests);
-        
-         // FIXME CREATE NEW LOGIC FOR SIMULATION OBJECTS!
-         Map<SharedRoboTaxi, Map<Id<Request>, AVRequest>> newRegister = requestRegister;
-         List<SharedRoboTaxi> newRoboTaxis = getRoboTaxis();
-        
-         simulationObjectCompiler.insertFulfilledRequests(periodFulfilledRequests.keySet());
-         simulationObjectCompiler.insertRequests(newRegister, oldRoboTaxis);
-        
-//         simulationObjectCompiler.insertVehicles(newRoboTaxis);
-//         SimulationObject simulationObject = simulationObjectCompiler.compile();
-//        
-//         // in the first pass, the vehicles is typically empty
-//         // in that case, the simObj will not be stored or communicated
-//         if (SimulationObjects.hasVehicles(simulationObject)) {
-//         // store simObj and distribute to clients
-//         SimulationDistribution.of(simulationObject, storageUtils);
-//         }
-//        
-//         oldRoboTaxis.clear();
-//         newRoboTaxis.forEach(r -> oldRoboTaxis.put(r.getId(), r.getStatus()));
-        
-         periodFulfilledRequests.clear();
-         }
+        if (publishPeriod > 0 && round_now % publishPeriod == 0) {
+            SharedSimulationObjectCompiler simulationObjectCompiler = SharedSimulationObjectCompiler.create( //
+                    round_now, getInfoLine(), total_matchedRequests);
+
+            simulationObjectCompiler.insertRequests(reqStatuses);
+            simulationObjectCompiler.insertFulfilledRequests(periodFulfilledRequests.keySet());
+
+            simulationObjectCompiler.insertVehicles(getRoboTaxis());
+            SimulationObject simulationObject = simulationObjectCompiler.compile();
+
+            // in the first pass, the vehicles is typically empty
+            // in that case, the simObj will not be stored or communicated
+            if (SimulationObjects.hasVehicles(simulationObject)) {
+                // store simObj and distribute to clients
+                SimulationDistribution.of(simulationObject, storageUtils);
+            }
+
+            periodFulfilledRequests.clear();
+        }
     }
 
     /** adds information to InfoLine */

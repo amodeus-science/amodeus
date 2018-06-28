@@ -25,68 +25,90 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
 public class SimpleSharedDispatcher extends SharedUniversalDispatcher {
 
-	private final int dispatchPeriod;
+    private final int dispatchPeriod;
 
-	protected SimpleSharedDispatcher(Config config, AVDispatcherConfig avDispatcherConfig, TravelTime travelTime,
-			ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, EventsManager eventsManager) {
-		super(config, avDispatcherConfig, travelTime, parallelLeastCostPathCalculator, eventsManager);
-		SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
-		dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
+    protected SimpleSharedDispatcher(Config config, AVDispatcherConfig avDispatcherConfig, TravelTime travelTime, ParallelLeastCostPathCalculator parallelLeastCostPathCalculator,
+            EventsManager eventsManager) {
+        super(config, avDispatcherConfig, travelTime, parallelLeastCostPathCalculator, eventsManager);
+        SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
+        dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
 
-	}
+    }
 
-	@Override
-	protected void redispatch(double now) {
-		final long round_now = Math.round(now);
+    @Override
+    protected void redispatch(double now) {
+        final long round_now = Math.round(now);
 
-		if (round_now % dispatchPeriod == 0) {
-			for (SharedRoboTaxi sharedRoboTaxi : getDivertableUnassignedRoboTaxis()) {
-				if (getUnassignedAVRequests().size() >= 2) {
+        if (round_now % dispatchPeriod == 0) {
+            for (SharedRoboTaxi sharedRoboTaxi : getDivertableUnassignedRoboTaxis()) {
+                if (getUnassignedAVRequests().size() >= 5) {
 
-					AVRequest firstRequest = getUnassignedAVRequests().get(0);
-					AVRequest secondRequest = getUnassignedAVRequests().get(1);
-					addSharedRoboTaxiPickup(sharedRoboTaxi, firstRequest);
-					addSharedRoboTaxiPickup(sharedRoboTaxi, secondRequest);
-					// TODO CHECK the menu manipulation
-                    // SharedAVCourse sharedAVCourse = new SharedAVCourse(secondRequest.getId(), SharedAVMealType.PICKUP);
-                    // sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse);
-				} else {
-					// TODO Improve and make function without break
-					break;
-				}
-			}
-		}
+                    AVRequest firstRequest = getUnassignedAVRequests().get(0);
+                    AVRequest secondRequest = getUnassignedAVRequests().get(1);
+                    AVRequest thirdRequest = getUnassignedAVRequests().get(2);
+                    AVRequest fourthRequest = getUnassignedAVRequests().get(3);
+                    AVRequest fifthRequest = getUnassignedAVRequests().get(4);
 
-	}
-	
-	 public static class Factory implements AVDispatcherFactory {
-	        @Inject
-	        @Named(AVModule.AV_MODE)
-	        private ParallelLeastCostPathCalculator router;
+                    addSharedRoboTaxiPickup(sharedRoboTaxi, firstRequest);
 
-	        @Inject
-	        @Named(AVModule.AV_MODE)
-	        private TravelTime travelTime;
+                    addSharedRoboTaxiPickup(sharedRoboTaxi, secondRequest);
+                    SharedAVCourse sharedAVCourse = new SharedAVCourse(secondRequest.getId(), SharedAVMealType.PICKUP);
+                    sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse);
 
-	        @Inject
-	        private EventsManager eventsManager;
+                    addSharedRoboTaxiPickup(sharedRoboTaxi, thirdRequest);
+                    SharedAVCourse sharedAVCourse3 = new SharedAVCourse(thirdRequest.getId(), SharedAVMealType.PICKUP);
+                    sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse3);
+                    sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse3);
 
-	        @Inject(optional = true)
-	        private TravelData travelData;
+                    addSharedRoboTaxiPickup(sharedRoboTaxi, fourthRequest);
+                    SharedAVCourse sharedAVCourse4 = new SharedAVCourse(fourthRequest.getId(), SharedAVMealType.PICKUP);
+                    sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse4);
+                    sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse4);
+                    sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse4);
 
-	        @Inject
-	        private Config config;
+                    addSharedRoboTaxiPickup(sharedRoboTaxi, fifthRequest);
+                    SharedAVCourse sharedAVCourse5 = new SharedAVCourse(fifthRequest.getId(), SharedAVMealType.PICKUP);
+                    sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse5);
+                    sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse5);
+                    sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse5);
+                    sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse5);
+                    // TODO CHECK the menu manipulation
+                } else {
+                    // TODO Improve and make function without break
+                    break;
+                }
+            }
+        }
 
-	        @Override
-	        public AVDispatcher createDispatcher(AVDispatcherConfig avconfig) {
-	            AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
+    }
 
-	            AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
-	            AbstractVehicleDestMatcher abstractVehicleDestMatcher = new HungarBiPartVehicleDestMatcher(new EuclideanDistanceFunction());
+    public static class Factory implements AVDispatcherFactory {
+        @Inject
+        @Named(AVModule.AV_MODE)
+        private ParallelLeastCostPathCalculator router;
 
-	            return new SimpleSharedDispatcher(config, avconfig, travelTime,
-	            		router, eventsManager);
-	        }
-	    }
+        @Inject
+        @Named(AVModule.AV_MODE)
+        private TravelTime travelTime;
+
+        @Inject
+        private EventsManager eventsManager;
+
+        @Inject(optional = true)
+        private TravelData travelData;
+
+        @Inject
+        private Config config;
+
+        @Override
+        public AVDispatcher createDispatcher(AVDispatcherConfig avconfig) {
+            AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
+
+            AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
+            AbstractVehicleDestMatcher abstractVehicleDestMatcher = new HungarBiPartVehicleDestMatcher(new EuclideanDistanceFunction());
+
+            return new SimpleSharedDispatcher(config, avconfig, travelTime, router, eventsManager);
+        }
+    }
 
 }

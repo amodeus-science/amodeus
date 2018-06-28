@@ -9,14 +9,10 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
-import org.matsim.contrib.dvrp.data.Request;
-import org.matsim.contrib.dvrp.data.Vehicle;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.AbstractRoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RequestStatus;
-import ch.ethz.idsc.amodeus.dispatcher.core.UnitCapRoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedRoboTaxi;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
@@ -44,17 +40,9 @@ public class SharedSimulationObjectCompiler {
         this.simulationObject = simulationObject;
     }
 
-    public void insertRequests(Map<SharedRoboTaxi, Map<Id<Request>, AVRequest>> requestRegister, Map<Id<Vehicle>, RoboTaxiStatus> oldRoboTaxis) {
-        for (Entry<SharedRoboTaxi, Map<Id<Request>, AVRequest>> entry : requestRegister.entrySet()) {
-//            if (Objects.nonNull(entry.getValue())) {
-                if (oldRoboTaxis.containsKey(entry.getValue().getId())) {
-                    RoboTaxiStatus oldStatus = oldRoboTaxis.get(entry.getValue().getId());
-                    RoboTaxiStatus newStatus = entry.getValue().getStatus();
-                    insertRequest(entry.getKey(), parseRequestStatus(oldStatus, newStatus));
-                } else
-                    insertRequest(entry.getKey(), RequestStatus.ASSIGNED);
-//            } else
-//                insertRequest(entry.getKey(), RequestStatus.REQUESTED);
+    public void insertRequests(Map<AVRequest, RequestStatus> requestStatuses) {
+        for (Entry<AVRequest, RequestStatus> entry : requestStatuses.entrySet()) {
+            insertRequest(entry.getKey(), entry.getValue());
         }
     }
 
@@ -62,7 +50,7 @@ public class SharedSimulationObjectCompiler {
         requestRegister.forEach(a -> insertRequest(a, RequestStatus.DROPOFF));
     }
 
-    public void insertVehicles(List<UnitCapRoboTaxi> robotaxis) {
+    public void insertVehicles(List<SharedRoboTaxi> robotaxis) {
         robotaxis.forEach(this::insertVehicle);
     }
 
@@ -94,7 +82,7 @@ public class SharedSimulationObjectCompiler {
         simulationObject.requests.add(requestContainer);
     }
 
-    private void insertVehicle(UnitCapRoboTaxi robotaxi) {
+    private void insertVehicle(AbstractRoboTaxi robotaxi) {
         VehicleContainer vehicleContainer = new VehicleContainer();
         final String key = robotaxi.getId().toString();
         vehicleContainer.vehicleIndex = db.getVehicleIndex(robotaxi);

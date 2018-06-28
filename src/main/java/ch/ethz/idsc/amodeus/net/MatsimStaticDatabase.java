@@ -16,7 +16,7 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
 
 import ch.ethz.idsc.amodeus.data.ReferenceFrame;
-import ch.ethz.idsc.amodeus.dispatcher.core.UnitCapRoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.core.AbstractRoboTaxi;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.TensorMap;
 import ch.ethz.idsc.tensor.alg.Transpose;
@@ -107,7 +107,7 @@ public class MatsimStaticDatabase {
         return requestIdIntegerDatabase.getId(avRequest.getId().toString());
     }
 
-    public int getVehicleIndex(UnitCapRoboTaxi robotaxi) {
+    public int getVehicleIndex(AbstractRoboTaxi robotaxi) {
         return vehicleIdIntegerDatabase.getId(robotaxi.getId().toString());
     }
 
