@@ -1,5 +1,8 @@
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 
@@ -31,7 +34,6 @@ public class SharedRoboTaxi extends AbstractRoboTaxi {
 		GlobalAssert.that(menu.getSharedAVStarter().getPickupOrDropOff().equals(SharedAVMealType.PICKUP));
 		onBoardCustomers++;
 		menu.removeAVCourse(0);
-
 	}
 
 	public boolean canPickupNewCustomer() {
