@@ -41,13 +41,12 @@ public class SimpleSharedDispatcher extends SharedUniversalDispatcher {
 
         if (round_now % dispatchPeriod == 0) {
             for (SharedRoboTaxi sharedRoboTaxi : getDivertableUnassignedRoboTaxis()) {
-                if (getUnassignedAVRequests().size() >= 5) {
+                if (getUnassignedAVRequests().size() >= 4) {
 
                     AVRequest firstRequest = getUnassignedAVRequests().get(0);
                     AVRequest secondRequest = getUnassignedAVRequests().get(1);
                     AVRequest thirdRequest = getUnassignedAVRequests().get(2);
                     AVRequest fourthRequest = getUnassignedAVRequests().get(3);
-                    AVRequest fifthRequest = getUnassignedAVRequests().get(4);
 
                     addSharedRoboTaxiPickup(sharedRoboTaxi, firstRequest);
 
@@ -66,12 +65,6 @@ public class SimpleSharedDispatcher extends SharedUniversalDispatcher {
                     sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse4);
                     sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse4);
 
-                    addSharedRoboTaxiPickup(sharedRoboTaxi, fifthRequest);
-                    SharedAVCourse sharedAVCourse5 = new SharedAVCourse(fifthRequest.getId(), SharedAVMealType.PICKUP);
-                    sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse5);
-                    sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse5);
-                    sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse5);
-                    sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse5);
                     // TODO CHECK the menu manipulation
                 } else {
                     // TODO Improve and make function without break
