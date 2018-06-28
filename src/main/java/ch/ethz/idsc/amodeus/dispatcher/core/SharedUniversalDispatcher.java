@@ -39,6 +39,7 @@ import ch.ethz.matsim.av.schedule.AVDriveTask;
 import ch.ethz.matsim.av.schedule.AVDropoffTask;
 import ch.ethz.matsim.av.schedule.AVPickupTask;
 import ch.ethz.matsim.av.schedule.AVStayTask;
+import io.humble.video.Global;
 
 /** purpose of {@link UniversalDispatcher} is to collect and manage
  * {@link AVRequest}s alternative implementation of {@link AVDispatcher};
@@ -329,7 +330,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         GlobalAssert.that(schedule.getCurrentTask() == Schedules.getLastTask(schedule)); // instanceof AVDriveTask);
 
         final double endPickupTime = getTimeNow() + pickupDurationPerStop;
-        
+
         // Remove pickup from menu
         sRoboTaxi.pickupNewCustomerOnBoard();
 
@@ -400,7 +401,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         // TODO Ian is there any way of getting unique map values in a more efficient
         // way
         Set<SharedRoboTaxi> uniqueRt = new HashSet<>();
-        pickupRegisterCopy.values().stream().forEach(rt -> uniqueRt.add(rt));
+        pickupRegisterCopy.values().stream().filter(srt -> srt.getMenu().getSharedAVStarter().getPickupOrDropOff().equals(SharedAVMealType.PICKUP)).forEach(rt -> uniqueRt.add(rt));
         for (SharedRoboTaxi sRt : uniqueRt) {
             Link pickupVehicleLink = sRt.getDivertableLocation();
             // TODO note that waiting for last staytask adds a one second staytask before switching to pickuptask
@@ -411,8 +412,9 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 
             GlobalAssert.that(pendingRequests.contains(avR));
             GlobalAssert.that(pickupRegisterCopy.containsKey(avR));
+            GlobalAssert.that(currentCourse.getPickupOrDropOff().equals(SharedAVMealType.PICKUP));
 
-            if (currentCourse.getPickupOrDropOff().equals(SharedAVMealType.PICKUP) && avR.getFromLink().equals(pickupVehicleLink) && isOk) {
+            if (avR.getFromLink().equals(pickupVehicleLink) && isOk) {
                 setAcceptRequest(sRt, avR);
             }
         }
