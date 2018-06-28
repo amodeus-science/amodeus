@@ -180,6 +180,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         for (SharedRoboTaxi sharedRoboTaxi : getRoboTaxis()) {
             SharedAVMenu menu = sharedRoboTaxi.getMenu();
             GlobalAssert.that(menu.checkNoPickupAfterDropoffOfSameRequest());
+            GlobalAssert.that(sharedRoboTaxi.checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity());
 
             if (!menu.equals(sharedAvMenuLastStep.get(sharedRoboTaxi))) {
                 RoboTaxiStatus avStatus = null;
@@ -496,32 +497,32 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
      * visualization. */
     @Override
     protected final void notifySimulationSubscribers(long round_now, StorageUtils storageUtils) {
-        // if (publishPeriod > 0 && round_now % publishPeriod == 0) {
-        // SimulationObjectCompiler simulationObjectCompiler = SimulationObjectCompiler.create( //
-        // round_now, getInfoLine(), total_matchedRequests);
-        //
-        // // FIXME CREATE NEW LOGIC FOR SIMULATION OBJECTS!
-        // Map<SharedRoboTaxi, Map<Id<Request>, AVRequest>> newRegister = requestRegister;
-        // List<SharedRoboTaxi> newRoboTaxis = getRoboTaxis();
-        //
-        // simulationObjectCompiler.insertFulfilledRequests(periodFulfilledRequests);
-        // simulationObjectCompiler.insertRequests(newRegister, oldRoboTaxis);
-        //
-        // simulationObjectCompiler.insertVehicles(newRoboTaxis);
-        // SimulationObject simulationObject = simulationObjectCompiler.compile();
-        //
-        // // in the first pass, the vehicles is typically empty
-        // // in that case, the simObj will not be stored or communicated
-        // if (SimulationObjects.hasVehicles(simulationObject)) {
-        // // store simObj and distribute to clients
-        // SimulationDistribution.of(simulationObject, storageUtils);
-        // }
-        //
-        // oldRoboTaxis.clear();
-        // newRoboTaxis.forEach(r -> oldRoboTaxis.put(r.getId(), r.getStatus()));
-        //
-        // periodFulfilledRequests.clear();
-        // }
+         if (publishPeriod > 0 && round_now % publishPeriod == 0) {
+        	 SharedSimulationObjectCompiler simulationObjectCompiler = SharedSimulationObjectCompiler.create( //
+         round_now, getInfoLine(), total_matchedRequests);
+        
+         // FIXME CREATE NEW LOGIC FOR SIMULATION OBJECTS!
+         Map<SharedRoboTaxi, Map<Id<Request>, AVRequest>> newRegister = requestRegister;
+         List<SharedRoboTaxi> newRoboTaxis = getRoboTaxis();
+        
+         simulationObjectCompiler.insertFulfilledRequests(periodFulfilledRequests.keySet());
+         simulationObjectCompiler.insertRequests(newRegister, oldRoboTaxis);
+        
+//         simulationObjectCompiler.insertVehicles(newRoboTaxis);
+//         SimulationObject simulationObject = simulationObjectCompiler.compile();
+//        
+//         // in the first pass, the vehicles is typically empty
+//         // in that case, the simObj will not be stored or communicated
+//         if (SimulationObjects.hasVehicles(simulationObject)) {
+//         // store simObj and distribute to clients
+//         SimulationDistribution.of(simulationObject, storageUtils);
+//         }
+//        
+//         oldRoboTaxis.clear();
+//         newRoboTaxis.forEach(r -> oldRoboTaxis.put(r.getId(), r.getStatus()));
+        
+         periodFulfilledRequests.clear();
+         }
     }
 
     /** adds information to InfoLine */

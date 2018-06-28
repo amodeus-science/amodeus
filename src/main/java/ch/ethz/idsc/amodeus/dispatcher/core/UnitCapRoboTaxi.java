@@ -16,7 +16,7 @@ public class UnitCapRoboTaxi extends AbstractRoboTaxi {
 
     UnitCapRoboTaxi(AVVehicle avVehicle, LinkTimePair divertableLinkTime, Link driveDestination) {
         super(avVehicle, divertableLinkTime, driveDestination);
-        GlobalAssert.that((int) avVehicle.getCapacity() == 1);
+        GlobalAssert.that(getCapacity() == 1);
     }
 
 }

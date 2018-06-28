@@ -3,6 +3,7 @@ package ch.ethz.idsc.amodeus.dispatcher.core;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedAVCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedAVMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedAVMenu;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
@@ -34,7 +35,7 @@ public class SharedRoboTaxi extends AbstractRoboTaxi {
 	}
 
 	public boolean canPickupNewCustomer() {
-		return onBoardCustomers >= 0 && onBoardCustomers < (int) avVehicle.getCapacity();
+		return onBoardCustomers >= 0 && onBoardCustomers < getCapacity();
 	}
 	// public boolean canPickupNewCustomer() {
 	// return getNumberOfCustomersOnBoard() >= 0 && getNumberOfCustomersOnBoard() <
@@ -43,7 +44,7 @@ public class SharedRoboTaxi extends AbstractRoboTaxi {
 
 	/* package */ void dropOffCustomer() {
 		GlobalAssert.that(onBoardCustomers > 0);
-		GlobalAssert.that(onBoardCustomers <= (int) avVehicle.getCapacity());
+		GlobalAssert.that(onBoardCustomers <= getCapacity());
 		GlobalAssert.that(menu.getSharedAVStarter().getPickupOrDropOff().equals(SharedAVMealType.DROPOFF));
 		onBoardCustomers--;
 		menu.removeAVCourse(0);
@@ -55,6 +56,23 @@ public class SharedRoboTaxi extends AbstractRoboTaxi {
 
 	public SharedAVMenu getMenu() {
 		return menu;
+	}
+	
+	public boolean checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity() {
+		int futureNumberCustomers = getCurrentNumberOfCustomersOnBoard();
+		for (SharedAVCourse sharedAVCourse : menu.getCurrentSharedAVMenu()) {
+			if (sharedAVCourse.getPickupOrDropOff().equals(SharedAVMealType.PICKUP)) {
+				futureNumberCustomers++;
+			}else if (sharedAVCourse.getPickupOrDropOff().equals(SharedAVMealType.DROPOFF)) {
+				futureNumberCustomers--;
+			}else {
+	            throw new IllegalArgumentException("Unknown SharedAVMealType -- please specify it !!!--");
+			}
+			if (futureNumberCustomers > getCapacity()) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	// public void pickupCustomer(Id<Request> requestId) {
