@@ -1,5 +1,10 @@
 package ch.ethz.idsc.amodeus.dispatcher.shared;
 
+import java.util.List;
+import java.util.Map;
+
+import org.matsim.api.core.v01.network.Link;
+import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
@@ -9,13 +14,20 @@ import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedRoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedUniversalDispatcher;
+import ch.ethz.idsc.amodeus.dispatcher.core.UnitCapRoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVehicleDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
+import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatchingUtils;
+import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
+import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
 import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.HungarBiPartVehicleDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
+import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNode;
+import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.config.AVGeneratorConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
@@ -26,12 +38,25 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 public class SimpleSharedDispatcher extends SharedUniversalDispatcher {
 
     private final int dispatchPeriod;
+    private final DistanceHeuristics distanceHeuristics;
+    private Tensor printVals = Tensors.empty();
+    private final DistanceFunction distanceFunction;
+    private final Network network;
 
-    protected SimpleSharedDispatcher(Config config, AVDispatcherConfig avDispatcherConfig, TravelTime travelTime, ParallelLeastCostPathCalculator parallelLeastCostPathCalculator,
+    protected SimpleSharedDispatcher(Network network, //
+            Config config, //
+            AVDispatcherConfig avDispatcherConfig, //
+            TravelTime travelTime, //
+            ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, //
             EventsManager eventsManager) {
         super(config, avDispatcherConfig, travelTime, parallelLeastCostPathCalculator, eventsManager);
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
+        distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getString("distanceHeuristics", // <- crashes if spelling is wrong
+                DistanceHeuristics.EUCLIDEAN.name()).toUpperCase()); // TODO make EUCLIDEANNONCYCLIC default, also in the other dispatchers
+        System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
+        this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
+        this.network = network;
 
     }
 
@@ -42,6 +67,7 @@ public class SimpleSharedDispatcher extends SharedUniversalDispatcher {
         if (round_now % dispatchPeriod == 0) {
             for (SharedRoboTaxi sharedRoboTaxi : getDivertableUnassignedRoboTaxis()) {
                 if (getUnassignedAVRequests().size() >= 4) {
+
 
                     AVRequest firstRequest = getUnassignedAVRequests().get(0);
                     AVRequest secondRequest = getUnassignedAVRequests().get(1);
@@ -91,6 +117,10 @@ public class SimpleSharedDispatcher extends SharedUniversalDispatcher {
         private TravelData travelData;
 
         @Inject
+        @Named(AVModule.AV_MODE)
+        private Network network;
+
+        @Inject
         private Config config;
 
         @Override
@@ -100,7 +130,7 @@ public class SimpleSharedDispatcher extends SharedUniversalDispatcher {
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
             AbstractVehicleDestMatcher abstractVehicleDestMatcher = new HungarBiPartVehicleDestMatcher(new EuclideanDistanceFunction());
 
-            return new SimpleSharedDispatcher(config, avconfig, travelTime, router, eventsManager);
+            return new SimpleSharedDispatcher(network, config, avconfig, travelTime, router, eventsManager);
         }
     }
 
