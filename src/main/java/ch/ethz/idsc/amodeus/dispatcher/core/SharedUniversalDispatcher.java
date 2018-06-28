@@ -103,7 +103,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 	 *            {@AVStatus} of desiredsRoboTaxis, e.g., STAY,DRIVETOCUSTOMER,...
 	 * @return list ofsRoboTaxis which are in {@AVStatus} status
 	 */
-	public final List<SharedRoboTaxi> getRoboTaxiSubset(RoboTaxiStatus... status) {
+	protected final List<SharedRoboTaxi> getRoboTaxiSubset(RoboTaxiStatus... status) {
 		return getRoboTaxiSubset(EnumSet.copyOf(Arrays.asList(status)));
 	}
 
@@ -111,8 +111,6 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 		return getRoboTaxis().stream().filter(rt -> status.contains(rt.getStatus())).collect(Collectors.toList());
 	}
 
-	// FIXME This function does not make sense when we are talking about shared
-	// vehicles
 	/** @return divertablesRoboTaxis which currently not on a pickup drive */
 	protected final Collection<SharedRoboTaxi> getDivertableUnassignedRoboTaxis() {
 		Collection<SharedRoboTaxi> divertableUnassignedRoboTaxis = getDivertableRoboTaxis().stream() //
@@ -123,19 +121,25 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 		return divertableUnassignedRoboTaxis;
 	}
 
-	// FIXME This function does not make sense when we are talking about shared
-	// vehicles
 	/**
+	 * For a SharedRoboTaxi any vehicle can be diverded unless it got a directive in
+	 * this timestep or it is on the last link
+	 * 
 	 * @return {@Collection} of {@RoboTaxi} which can be redirected during iteration
 	 */
 	protected final Collection<SharedRoboTaxi> getDivertableRoboTaxis() {
 		return getRoboTaxis().stream() //
 				.filter(SharedRoboTaxi::isWithoutDirective) //
-				.filter(SharedRoboTaxi::isWithoutCustomer) //
 				.filter(SharedRoboTaxi::notDrivingOnLastLink) //
 				.collect(Collectors.toList());
 	}
 
+	protected final Collection<SharedRoboTaxi> getRoboTaxisWithAtLeastXFreeSeats(int x) {
+		return getDivertableRoboTaxis().stream() //
+				.filter(rt -> rt.hasAtLeastXSeatsFree(x)) //
+				.collect(Collectors.toList());
+	}
+	
 	/**
 	 * @return immutable copy of pickupRegister, displays which vehicles are
 	 *         currently scheduled to pickup which request
@@ -324,7 +328,6 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 		GlobalAssert.that(avRequest.getFromLink().equals(pickupLink));
 
 		sRoboTaxi.setStatus(RoboTaxiStatus.DRIVEWITHCUSTOMER);
-		sRoboTaxi.setCurrentDriveDestination(avRequest.getFromLink()); // FIXME toLink
 		{
 			boolean statusPen = pendingRequests.remove(avRequest);
 			GlobalAssert.that(statusPen);
@@ -347,7 +350,8 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 
 		// Remove pickup from menu
 		sRoboTaxi.pickupNewCustomerOnBoard();
-
+		// has to be after the remove of the menue which is done in the pick up new customer function
+		sRoboTaxi.setCurrentDriveDestination(getStarterLink(sRoboTaxi));
 		FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer(avRequest.getFromLink(),
 				getStarterLink(sRoboTaxi), endPickupTime);
 		sRoboTaxi.assignDirective(

@@ -54,19 +54,23 @@ public class SharedRoboTaxi extends AbstractRoboTaxi {
 		return onBoardCustomers;
 	}
 
+	/* package */ boolean hasAtLeastXSeatsFree(int x) {
+		return getCapacity() - onBoardCustomers >= x;
+	}
+
 	public SharedAVMenu getMenu() {
 		return menu;
 	}
-	
+
 	public boolean checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity() {
 		int futureNumberCustomers = getCurrentNumberOfCustomersOnBoard();
 		for (SharedAVCourse sharedAVCourse : menu.getCurrentSharedAVMenu()) {
 			if (sharedAVCourse.getPickupOrDropOff().equals(SharedAVMealType.PICKUP)) {
 				futureNumberCustomers++;
-			}else if (sharedAVCourse.getPickupOrDropOff().equals(SharedAVMealType.DROPOFF)) {
+			} else if (sharedAVCourse.getPickupOrDropOff().equals(SharedAVMealType.DROPOFF)) {
 				futureNumberCustomers--;
-			}else {
-	            throw new IllegalArgumentException("Unknown SharedAVMealType -- please specify it !!!--");
+			} else {
+				throw new IllegalArgumentException("Unknown SharedAVMealType -- please specify it !!!--");
 			}
 			if (futureNumberCustomers > getCapacity()) {
 				return false;
