@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,10 +28,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedAVCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedAVMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedAVMenu;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
-import ch.ethz.idsc.amodeus.net.SimulationDistribution;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
-import ch.ethz.idsc.amodeus.net.SimulationObjectCompiler;
-import ch.ethz.idsc.amodeus.net.SimulationObjects;
 import ch.ethz.idsc.amodeus.net.StorageUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
@@ -330,22 +326,15 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         final Schedule schedule = sRoboTaxi.getSchedule();
         // check that current task is last task in schedule
         // TODO fix
-        GlobalAssert.that(schedule.getCurrentTask()  == Schedules.getLastTask(schedule)); //instanceof AVDriveTask); 
+        GlobalAssert.that(schedule.getCurrentTask() == Schedules.getLastTask(schedule)); // instanceof AVDriveTask);
 
         final double endPickupTime = getTimeNow() + pickupDurationPerStop;
-
-        sRoboTaxi.pickupNewCustomerOnBoard();
-        // sRoboTaxi.pickupCustomer(avRequest.getId());
-
+        
         // Remove pickup from menu
-        // sRoboTaxi.getMenu().removeAVCourse(0);
+        sRoboTaxi.pickupNewCustomerOnBoard();
 
         FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer(avRequest.getFromLink(), getStarterLink(sRoboTaxi), endPickupTime);
         sRoboTaxi.assignDirective(new SharedGeneralDriveDirectivePickup(sRoboTaxi, avRequest, futurePathContainer, getTimeNow()));
-
-        // FIXME
-        final double distance = VrpPathUtils.getDistance(futurePathContainer.getVrpPathWithTravelData());
-        avRequest.getRoute().setDistance(distance);
 
         ++total_matchedRequests;
     }
@@ -367,7 +356,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 
         final Schedule schedule = sRoboTaxi.getSchedule();
         // check that current task is last task in schedule
-        GlobalAssert.that(schedule.getCurrentTask()  == Schedules.getLastTask(schedule)); //instanceof AVDriveTask);
+        GlobalAssert.that(schedule.getCurrentTask() == Schedules.getLastTask(schedule)); // instanceof AVDriveTask);
 
         final double endDropOffTime = getTimeNow() + dropoffDurationPerStop;
 
@@ -388,8 +377,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
     /* package */ final boolean isInPickupRegister(SharedRoboTaxi sRoboTaxi) {
         return pickupRegister.containsValue(sRoboTaxi);
     }
-    
-    
+
     @Override
     /* package */ final boolean isInRequestRegister(SharedRoboTaxi sRoboTaxi) {
         return requestRegister.containsKey(sRoboTaxi);
@@ -415,8 +403,8 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         pickupRegisterCopy.values().stream().forEach(rt -> uniqueRt.add(rt));
         for (SharedRoboTaxi sRt : uniqueRt) {
             Link pickupVehicleLink = sRt.getDivertableLocation();
-            // TODO note that waiting for last staytask  adds a one second staytask before switching to pickuptask
-            boolean isOk = sRt.getSchedule().getCurrentTask() == Schedules.getLastTask(sRt.getSchedule()); //  instanceof AVDriveTask; //
+            // TODO note that waiting for last staytask adds a one second staytask before switching to pickuptask
+            boolean isOk = sRt.getSchedule().getCurrentTask() == Schedules.getLastTask(sRt.getSchedule()); // instanceof AVDriveTask; //
 
             SharedAVCourse currentCourse = sRt.getMenu().getSharedAVStarter();
             AVRequest avR = requestRegister.get(sRt).get(currentCourse.getRequestId());
@@ -437,8 +425,8 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         Map<SharedRoboTaxi, Map<Id<Request>, AVRequest>> requestRegisterCopy = new HashMap<>(requestRegister);
         for (SharedRoboTaxi dropoffVehicle : requestRegisterCopy.keySet()) {
             Link dropoffVehicleLink = dropoffVehicle.getDivertableLocation();
-            // TODO note that waiting for last staytask  adds a one second staytask before switching to dropoffTask
-            boolean isOk = dropoffVehicle.getSchedule().getCurrentTask()  == Schedules.getLastTask(dropoffVehicle.getSchedule()); // instanceof AVDriveTask; 
+            // TODO note that waiting for last staytask adds a one second staytask before switching to dropoffTask
+            boolean isOk = dropoffVehicle.getSchedule().getCurrentTask() == Schedules.getLastTask(dropoffVehicle.getSchedule()); // instanceof AVDriveTask;
 
             SharedAVCourse currentCourse = dropoffVehicle.getMenu().getSharedAVStarter();
             AVRequest avR = requestRegister.get(dropoffVehicle).get(currentCourse.getRequestId());
@@ -504,7 +492,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         // round_now, getInfoLine(), total_matchedRequests);
         //
         // // FIXME CREATE NEW LOGIC FOR SIMULATION OBJECTS!
-        // Map<AVRequest, SharedRoboTaxi> newRegister = requestRegister;
+        // Map<SharedRoboTaxi, Map<Id<Request>, AVRequest>> newRegister = requestRegister;
         // List<SharedRoboTaxi> newRoboTaxis = getRoboTaxis();
         //
         // simulationObjectCompiler.insertFulfilledRequests(periodFulfilledRequests);

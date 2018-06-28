@@ -48,8 +48,8 @@ public class SimpleSharedDispatcher extends SharedUniversalDispatcher {
 					addSharedRoboTaxiPickup(sharedRoboTaxi, firstRequest);
 					addSharedRoboTaxiPickup(sharedRoboTaxi, secondRequest);
 					// TODO CHECK the menu manipulation
-					SharedAVCourse sharedAVCourse = new SharedAVCourse(secondRequest.getId(), SharedAVMealType.PICKUP);
-					sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse);
+                    // SharedAVCourse sharedAVCourse = new SharedAVCourse(secondRequest.getId(), SharedAVMealType.PICKUP);
+                    // sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse);
 				} else {
 					// TODO Improve and make function without break
 					break;
