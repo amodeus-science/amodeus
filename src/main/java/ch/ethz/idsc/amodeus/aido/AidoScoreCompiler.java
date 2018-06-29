@@ -41,17 +41,14 @@ import ch.ethz.matsim.av.passenger.AVRequest;
          * in the current time step */
         SimulationObjectCompiler soc = SimulationObjectCompiler.create(time, "inser empty as unused", -1);
         soc.insertVehicles(roboTaxis);
+        // TODO currently returns always zero... :*(
         distElem.register(soc.compile());
-//        distElem.consolidate();
+        // distElem.consolidate();
         Scalar distCst = distElem.getNewestDistances().Get(1);
         Scalar distTot = distElem.getNewestDistances().Get(0);
 
         Scalar score2 = Scalars.lessThan(RealScalar.ZERO, distTot) ? //
                 (distTot.subtract(distCst)).divide(distTot) : RealScalar.ZERO;
-
-        System.out.println("distCst: " + distCst);
-        System.out.println("distTot: " + distTot);
-        System.out.println("score2: " + score2);
 
         score.append(score2);
 
