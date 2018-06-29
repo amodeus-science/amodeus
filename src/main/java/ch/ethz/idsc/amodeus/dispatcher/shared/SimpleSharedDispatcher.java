@@ -12,7 +12,7 @@ import org.matsim.core.router.util.TravelTime;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-import ch.ethz.idsc.amodeus.dispatcher.core.SharedRoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedUniversalDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVehicleDestMatcher;
@@ -65,7 +65,7 @@ public class SimpleSharedDispatcher extends SharedUniversalDispatcher {
         final long round_now = Math.round(now);
 
         if (round_now % dispatchPeriod == 0) {
-            for (SharedRoboTaxi sharedRoboTaxi : getDivertableUnassignedRoboTaxis()) {
+            for (RoboTaxi sharedRoboTaxi : getDivertableUnassignedRoboTaxis()) {
                 if (getUnassignedAVRequests().size() >= 4) {
 
                     AVRequest firstRequest = getUnassignedAVRequests().get(0);

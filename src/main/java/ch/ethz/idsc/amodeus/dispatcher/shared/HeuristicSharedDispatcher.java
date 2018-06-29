@@ -17,7 +17,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedPartitionedDispatcher;
-import ch.ethz.idsc.amodeus.dispatcher.core.SharedRoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVehicleDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
@@ -87,7 +87,7 @@ public class HeuristicSharedDispatcher extends SharedPartitionedDispatcher {
         if (round_now % dispatchPeriod == 0) {
             if (getUnassignedAVRequests().size() >= 4) {
 
-                Map<VirtualNode<Link>, List<SharedRoboTaxi>> availableVehicles = getVirtualNodeDivertableUnassignedRoboTaxi();
+                Map<VirtualNode<Link>, List<RoboTaxi>> availableVehicles = getVirtualNodeDivertableUnassignedRoboTaxi();
                 Map<VirtualNode<Link>, List<AVRequest>> availableRequests = getVirtualNodeRequests();
 
                 for (Entry<VirtualNode<Link>, List<AVRequest>> entry : availableRequests.entrySet()) {
@@ -109,7 +109,7 @@ public class HeuristicSharedDispatcher extends SharedPartitionedDispatcher {
 
                             availableVehicles = getVirtualNodeDivertableUnassignedRoboTaxi();
 
-                            List<SharedRoboTaxi> taxisToPair = new ArrayList<>();
+                            List<RoboTaxi> taxisToPair = new ArrayList<>();
                             if (availableVehicles.get(entry.getKey()).size() >= numberOfTaxis) {
                                 taxisToPair = availableVehicles.get(entry.getKey()).subList(0, numberOfTaxis - 1);
                             } else {
@@ -118,7 +118,7 @@ public class HeuristicSharedDispatcher extends SharedPartitionedDispatcher {
                                     taxisToPair = availableVehicles.get(entry.getKey()).subList(0, availableVehicles.get(entry.getKey()).size() - 1);
                                 }
 
-                                List<SharedRoboTaxi> otherVlTaxis = new ArrayList<>();
+                                List<RoboTaxi> otherVlTaxis = new ArrayList<>();
                                 availableVehicles.entrySet().stream().filter(e -> !e.getKey().equals(entry.getKey()))
                                         .forEach(vl -> vl.getValue().stream().forEach(r -> otherVlTaxis.add(r)));
                                 taxisToPair.addAll(otherVlTaxis.subList(0, numberOfTaxis - taxisToPair.size() - 1));
@@ -128,7 +128,7 @@ public class HeuristicSharedDispatcher extends SharedPartitionedDispatcher {
                             for (int i = 0; i < numberOfTaxis; i++) {
                                 List<AVRequest> subList = shReqsList.subList(i * fixedCapacity, Math.min((i + 1) * fixedCapacity, size));
 
-                                SharedRoboTaxi sRt = taxisToPair.get(i);
+                                RoboTaxi sRt = taxisToPair.get(i);
                                 // Pair taxi to request
                                 subList.stream().forEach(avr -> addSharedRoboTaxiPickup(sRt, avr));
                                 // TODO reorder menu
@@ -179,8 +179,8 @@ public class HeuristicSharedDispatcher extends SharedPartitionedDispatcher {
 
     }
 
-    private Map<VirtualNode<Link>, List<SharedRoboTaxi>> getVirtualNodeDivertableUnassignedRoboTaxi() {
-        return virtualNetwork.binToVirtualNode(getDivertableUnassignedRoboTaxis(), SharedRoboTaxi::getDivertableLocation);
+    private Map<VirtualNode<Link>, List<RoboTaxi>> getVirtualNodeDivertableUnassignedRoboTaxi() {
+        return virtualNetwork.binToVirtualNode(getDivertableUnassignedRoboTaxis(), RoboTaxi::getDivertableLocation);
     }
 
     public static class Factory implements AVDispatcherFactory {

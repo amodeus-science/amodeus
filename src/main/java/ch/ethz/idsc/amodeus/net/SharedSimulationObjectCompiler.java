@@ -11,10 +11,10 @@ import java.util.stream.Collectors;
 
 import org.matsim.api.core.v01.network.Link;
 
-import ch.ethz.idsc.amodeus.dispatcher.core.AbstractRoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RequestStatus;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
-import ch.ethz.idsc.amodeus.dispatcher.core.SharedRoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
@@ -50,7 +50,7 @@ public class SharedSimulationObjectCompiler {
         requestRegister.forEach(a -> insertRequest(a, RequestStatus.DROPOFF));
     }
 
-    public void insertVehicles(List<SharedRoboTaxi> robotaxis) {
+    public void insertVehicles(List<RoboTaxi> robotaxis) {
         robotaxis.forEach(this::insertVehicle);
     }
 
@@ -82,7 +82,7 @@ public class SharedSimulationObjectCompiler {
         simulationObject.requests.add(requestContainer);
     }
 
-    private void insertVehicle(AbstractRoboTaxi robotaxi) {
+    private void insertVehicle(RoboTaxi robotaxi) {
         VehicleContainer vehicleContainer = new VehicleContainer();
         final String key = robotaxi.getId().toString();
         vehicleContainer.vehicleIndex = db.getVehicleIndex(robotaxi);

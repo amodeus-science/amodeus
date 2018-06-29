@@ -12,7 +12,7 @@ import org.matsim.contrib.dvrp.util.LinkTimePair;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 
-import ch.ethz.idsc.amodeus.dispatcher.core.SharedRoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDriveTaskTracker;
@@ -37,7 +37,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
 /* package */ abstract class SharedRoboTaxiMaintainer implements AVDispatcher {
     protected final EventsManager eventsManager;
-    private final List<SharedRoboTaxi> roboTaxis = new ArrayList<>();
+    private final List<RoboTaxi> roboTaxis = new ArrayList<>();
     private Double private_now = null;
     public InfoLine infoLine = null;
     private final StorageUtils storageUtils;
@@ -59,14 +59,14 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     }
 
     /** @return collection of RoboTaxis */
-    protected final List<SharedRoboTaxi> getRoboTaxis() {
+    protected final List<RoboTaxi> getRoboTaxis() {
         if (roboTaxis.isEmpty() || !roboTaxis.get(0).getSchedule().getStatus().equals(Schedule.ScheduleStatus.STARTED))
             return Collections.emptyList();
         return Collections.unmodifiableList(roboTaxis);
     }
 
     private void updateDivertableLocations() {
-        for (SharedRoboTaxi robotaxi : getRoboTaxis()) {
+        for (RoboTaxi robotaxi : getRoboTaxis()) {
             // TODO fix
             // GlobalAssert.that(robotaxi.isWithoutDirective());
             Schedule schedule = robotaxi.getSchedule();
@@ -109,7 +109,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
     @Override
     public final void addVehicle(AVVehicle vehicle) {
-        roboTaxis.add(new SharedRoboTaxi(vehicle, new LinkTimePair(vehicle.getStartLink(), 0.0), vehicle.getStartLink()));
+        roboTaxis.add(new RoboTaxi(vehicle, new LinkTimePair(vehicle.getStartLink(), 0.0), vehicle.getStartLink()));
         eventsManager.processEvent(new AVVehicleAssignmentEvent(vehicle, 0));
     }
 
@@ -169,14 +169,14 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     }
 
     private void executeDirectives() {
-        roboTaxis.stream().filter(rt -> !rt.isWithoutDirective()).forEach(SharedRoboTaxi::executeDirective);
+        roboTaxis.stream().filter(rt -> !rt.isWithoutDirective()).forEach(RoboTaxi::executeDirective);
     }
 
     private void updateCurrentLocations() {
         @SuppressWarnings("unused")
         int failed = 0;
         if (!roboTaxis.isEmpty()) {
-            for (SharedRoboTaxi robotaxi : roboTaxis) {
+            for (RoboTaxi robotaxi : roboTaxis) {
                 final Link link = RoboTaxiLocation.of(robotaxi);
                 if (link != null) {
                     robotaxi.setLastKnownLocation(link);
@@ -200,9 +200,9 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
     /* package */ abstract void notifySimulationSubscribers(long round_now, StorageUtils storageUtils);
 
-    /* package */ abstract boolean isInPickupRegister(SharedRoboTaxi robotaxi);
+    /* package */ abstract boolean isInPickupRegister(RoboTaxi robotaxi);
 
-    /* package */ abstract boolean isInRequestRegister(SharedRoboTaxi robotaxi);
+    /* package */ abstract boolean isInRequestRegister(RoboTaxi robotaxi);
 
     @Override
     public final void onNextTaskStarted(AVVehicle task) {

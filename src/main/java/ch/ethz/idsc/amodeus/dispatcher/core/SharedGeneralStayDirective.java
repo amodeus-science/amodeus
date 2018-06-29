@@ -14,10 +14,10 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
  * 1) change path of current drive task 2) remove former stay task with old
  * destination 3) append new stay task */
 /* package */ final class SharedGeneralStayDirective extends VehicleDiversionDirective {
-    final SharedRoboTaxi robotaxi;
+    final RoboTaxi robotaxi;
     final double getTimeNow;
 
-    SharedGeneralStayDirective(SharedRoboTaxi robotaxi, Link destLink, //
+    SharedGeneralStayDirective(RoboTaxi robotaxi, Link destLink, //
             FuturePathContainer futurePathContainer, final double getTimeNow) {
         super(robotaxi, destLink, futurePathContainer);
         this.robotaxi = robotaxi;

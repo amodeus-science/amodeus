@@ -17,7 +17,7 @@ import org.matsim.api.core.v01.population.Person;
     }
 
     public static RebalanceVehicleEvent create(final double time, //
-            final AbstractRoboTaxi robotaxi, //
+            final RoboTaxi robotaxi, //
             final Link link) {
 
         // get the id of the AV -related agent (driver) as id of vehilce not

@@ -47,27 +47,27 @@ public abstract class SharedPartitionedDispatcher extends SharedRebalancingDispa
 
     /** @return {@link java.util.Map} where all divertable not rebalancing {@link RoboTaxi} are listed at the {@link VirtualNode} where their {@link Link}
      *         divertableLocation is. */
-    protected Map<VirtualNode<Link>, List<SharedRoboTaxi>> getVirtualNodeDivertableNotRebalancingRoboTaxis() {
-        return virtualNetwork.binToVirtualNode(getDivertableNotRebalancingRoboTaxis(), SharedRoboTaxi::getDivertableLocation);
+    protected Map<VirtualNode<Link>, List<RoboTaxi>> getVirtualNodeDivertableNotRebalancingRoboTaxis() {
+        return virtualNetwork.binToVirtualNode(getDivertableNotRebalancingRoboTaxis(), RoboTaxi::getDivertableLocation);
     }
 
     /** @return {@link java.util.Map} where all rebalancing {@link RoboTaxi} are listed at the {@link VirtualNode} where their {@link Link} current
      *         driveDestination is. */
-    protected Map<VirtualNode<Link>, List<SharedRoboTaxi>> getVirtualNodeRebalancingToRoboTaxis() {
-        return virtualNetwork.binToVirtualNode(getRebalancingRoboTaxis(), SharedRoboTaxi::getCurrentDriveDestination);
+    protected Map<VirtualNode<Link>, List<RoboTaxi>> getVirtualNodeRebalancingToRoboTaxis() {
+        return virtualNetwork.binToVirtualNode(getRebalancingRoboTaxis(), RoboTaxi::getCurrentDriveDestination);
     }
 
     /** @return {@link java.util.Map} where all roboTaxis with customer {@link RoboTaxi} are listed at the {@link VirtualNode} where their {@link Link}
      *         current
      *         driveDestination is. */
-    protected Map<VirtualNode<Link>, List<SharedRoboTaxi>> getVirtualNodeArrivingWithCustomerRoboTaxis() {
-        return virtualNetwork.binToVirtualNode(getRoboTaxiSubset(RoboTaxiStatus.DRIVEWITHCUSTOMER), SharedRoboTaxi::getCurrentDriveDestination);
+    protected Map<VirtualNode<Link>, List<RoboTaxi>> getVirtualNodeArrivingWithCustomerRoboTaxis() {
+        return virtualNetwork.binToVirtualNode(getRoboTaxiSubset(RoboTaxiStatus.DRIVEWITHCUSTOMER), RoboTaxi::getCurrentDriveDestination);
     }
 
     /** @return {@link java.util.Map} where all stay roboTaxis with customer {@link RoboTaxi} are listed at the {@link VirtualNode} where their {@link Link}
      *         current
      *         divertableLocation is. */
-    protected Map<VirtualNode<Link>, List<SharedRoboTaxi>> getVirtualNodeStayVehicles() {
-        return virtualNetwork.binToVirtualNode(getRoboTaxiSubset(RoboTaxiStatus.STAY), SharedRoboTaxi::getDivertableLocation);
+    protected Map<VirtualNode<Link>, List<RoboTaxi>> getVirtualNodeStayVehicles() {
+        return virtualNetwork.binToVirtualNode(getRoboTaxiSubset(RoboTaxiStatus.STAY), RoboTaxi::getDivertableLocation);
     }
 }

@@ -18,12 +18,12 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
  * 1) finish stay task 2) append pickup task 3) append drive task 4) append
  * dropoff task 5) append new stay task */
 /* package */ final class SharedGeneralDriveDirectiveDropoff extends FuturePathDirective {
-    final SharedRoboTaxi robotaxi;
+    final RoboTaxi robotaxi;
     final AVRequest currentRequest;
     final double getTimeNow;
     final double dropoffDurationPerStop;
 
-    public SharedGeneralDriveDirectiveDropoff(SharedRoboTaxi robotaxi, AVRequest currentRequest, //
+    public SharedGeneralDriveDirectiveDropoff(RoboTaxi robotaxi, AVRequest currentRequest, //
             FuturePathContainer futurePathContainer, final double getTimeNow, double dropoffDurationPerStop) {
         super(futurePathContainer);
         this.robotaxi = robotaxi;

@@ -26,14 +26,14 @@ public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatc
      * 
      * @param roboTaxi
      * @param destination */
-    protected final void setRoboTaxiRebalance(final SharedRoboTaxi roboTaxi, final Link destination) {
+    protected final void setRoboTaxiRebalance(final RoboTaxi roboTaxi, final Link destination) {
         GlobalAssert.that(roboTaxi.isWithoutCustomer());
         setRoboTaxiDiversion(roboTaxi, destination, RoboTaxiStatus.REBALANCEDRIVE);
         eventsManager.processEvent(RebalanceVehicleEvent.create(getTimeNow(), roboTaxi, destination));
     }
 
     /** @return {@link java.util.List } of all {@link RoboTaxi} which are currently rebalancing. */
-    protected List<SharedRoboTaxi> getRebalancingRoboTaxis() {
+    protected List<RoboTaxi> getRebalancingRoboTaxis() {
         return getRoboTaxis().stream()//
                 .filter(rt -> rt.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE))//
                 .collect(Collectors.toList());
@@ -41,7 +41,7 @@ public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatc
 
     /** @return {@link java.util.List} of all {@link RoboTaxi} which are divertable and not in a rebalacing
      *         task. */
-    protected List<SharedRoboTaxi> getDivertableNotRebalancingRoboTaxis() {
+    protected List<RoboTaxi> getDivertableNotRebalancingRoboTaxis() {
         return getDivertableRoboTaxis().stream()//
                 .filter(rt -> !rt.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE))//
                 .collect(Collectors.toList());
