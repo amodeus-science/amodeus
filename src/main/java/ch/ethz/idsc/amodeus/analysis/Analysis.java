@@ -15,9 +15,7 @@ import org.matsim.core.config.ConfigUtils;
 
 import ch.ethz.idsc.amodeus.analysis.cost.FleetCostElement;
 import ch.ethz.idsc.amodeus.analysis.cost.RoboTaxiCostFunction;
-import ch.ethz.idsc.amodeus.analysis.cost.RoboTaxiCostFunctionsAmodeus;
 import ch.ethz.idsc.amodeus.analysis.cost.RoboTaxiCostParameters;
-import ch.ethz.idsc.amodeus.analysis.cost.RoboTaxiCostParametersImplAmodeus;
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisElement;
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.amodeus.analysis.plot.ChartTheme;

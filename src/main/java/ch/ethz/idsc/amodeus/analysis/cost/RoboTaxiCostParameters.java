@@ -1,10 +1,11 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.analysis.cost;
 
 import java.util.Map;
 
 public interface RoboTaxiCostParameters {
 
-    public Map<CostParameterIdentifier, Double> getCostParameters();
+    Map<CostParameterIdentifier, Double> getCostParameters();
 
-    public Double getCostParameter(CostParameterIdentifier costParameterIdentifier);
+    Double getCostParameter(CostParameterIdentifier costParameterIdentifier);
 }

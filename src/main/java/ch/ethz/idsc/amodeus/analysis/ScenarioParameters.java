@@ -32,7 +32,7 @@ import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.config.AVGeneratorConfig;
 import ch.ethz.matsim.av.config.AVOperatorConfig;
 
-public class ScenarioParameters implements Serializable, TotalValueAppender {
+public class ScenarioParameters implements TotalValueAppender, Serializable {
     public static final int UNDEFINED_INT = -1;
     public static final String UNDEFINED_STRING = "";
     public static final DateFormat DATEFORMAT = new SimpleDateFormat("yyyy/MM/dd - HH:mm:ss");

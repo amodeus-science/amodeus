@@ -34,12 +34,12 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
     private final Map<Integer, RoboTaxi> idRoboTaxiMap = new HashMap<>();
     private final Map<Integer, AVRequest> idRequestMap = new HashMap<>();
     private final FastLinkLookup fastLinkLookup;
-    private final StringClientSocket clientSocket;
+    private final StringSocket clientSocket;
     private final int dispatchPeriod;
 
     protected AidoDispatcherHost(Network network, Config config, AVDispatcherConfig avDispatcherConfig, TravelTime travelTime,
             ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, EventsManager eventsManager, //
-            StringClientSocket clientSocket) {
+            StringSocket clientSocket) {
         super(config, avDispatcherConfig, travelTime, parallelLeastCostPathCalculator, eventsManager);
         this.clientSocket = Objects.requireNonNull(clientSocket);
         this.fastLinkLookup = new FastLinkLookup(network, MatsimStaticDatabase.INSTANCE);
@@ -113,7 +113,7 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
         @Inject
         private Config config;
 
-        public static StringClientSocket stringSocket; // TODO
+        public static StringSocket stringSocket; // TODO
 
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig) {

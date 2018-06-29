@@ -9,7 +9,6 @@ import java.util.Map;
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.StackedDistanceChartImage;
 import ch.ethz.idsc.amodeus.analysis.element.DistanceElement;
-import ch.ethz.idsc.tensor.red.Mean;
 
 public class DistanceElementHtml implements HtmlReportElement {
 
