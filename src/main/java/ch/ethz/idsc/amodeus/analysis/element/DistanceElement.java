@@ -94,4 +94,17 @@ public class DistanceElement implements AnalysisElement {
 
     }
 
+    /** @return newest distances available {distTotal,distWtCst} */
+    public Tensor getNewestDistances() {
+
+        Scalar distTotal = RealScalar.ZERO;
+        list.stream().forEach(vs -> distTotal.add(vs.getLatestRecordings().Get(0)));
+
+        Scalar distCustr = RealScalar.ZERO;
+        list.stream().forEach(vs -> distCustr.add(vs.getLatestRecordings().Get(1)));
+
+        return Tensors.of(distTotal, distCustr);
+
+    }
+
 }

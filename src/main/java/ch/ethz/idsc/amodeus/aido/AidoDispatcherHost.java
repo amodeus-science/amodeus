@@ -20,7 +20,6 @@ import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.FastLinkLookup;
 import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
 import ch.ethz.idsc.amodeus.net.TensorCoords;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -37,6 +36,7 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
     private final FastLinkLookup fastLinkLookup;
     private final StringClientSocket clientSocket;
     private final int dispatchPeriod;
+    private AidoScoreCompiler scoreCompiler;
 
     protected AidoDispatcherHost(Network network, Config config, AVDispatcherConfig avDispatcherConfig, TravelTime travelTime,
             ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, EventsManager eventsManager, //
@@ -58,6 +58,7 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
             if (getRoboTaxis().size() > 0 && idRoboTaxiMap.isEmpty()) {
                 getRoboTaxis().forEach(//
                         s -> idRoboTaxiMap.put(MatsimStaticDatabase.INSTANCE.getVehicleIndex(s), s));
+                scoreCompiler = new AidoScoreCompiler(getRoboTaxis());
             }
 
             try {
@@ -67,7 +68,7 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
                 Tensor status = Tensors.of(RealScalar.of((long) now), //
                         AidoRoboTaxiCompiler.compile(getRoboTaxis()), //
                         AidoRequestCompiler.compile(getAVRequests()), //
-                        AidoScoreCompiler.compile(round_now, getRoboTaxis(), getAVRequests()));
+                        scoreCompiler.compile(round_now, getRoboTaxis(), getAVRequests()));
                 clientSocket.writeln(status);
 
                 String fromClient = null;

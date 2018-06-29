@@ -11,7 +11,9 @@ import ch.ethz.idsc.amodeus.net.VehicleContainer;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
+import ch.ethz.idsc.tensor.alg.Dimensions;
 
 /* package */ class VehicleStatistic {
 
@@ -78,5 +80,18 @@ import ch.ethz.idsc.tensor.alg.Array;
                 ++count;
             }
         }
+    }
+
+    /** @return latest recording of Tensor {distanceTotal, distanceWithCustomer,distancePickup,distanceRebalancd} */
+    public Tensor getLatestRecordings() {
+        Tensor tReturn = null;
+        if ((offset - 1) > 0) {
+            tReturn = Tensors.of(distanceTotal.Get(offset - 1), distanceWithCustomer.Get(offset - 1), //
+                    distancePickup.Get(offset - 1), distanceRebalance.Get(offset - 1));
+        } else {
+            tReturn = Tensors.vector(0, 0, 0, 0);
+        }
+        return tReturn;
+
     }
 }
