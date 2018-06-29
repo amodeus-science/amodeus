@@ -20,12 +20,12 @@ public class FastLinkLookup {
             quadTree.put(link.getCoord().getX(), link.getCoord().getY(), link);
     }
 
-    public int getLinkFromWGS84(Coord gps) {
-        return getLinkFromXY(db.referenceFrame.coords_fromWGS84().transform(gps));
-    }
-
-    public int getLinkFromXY(Coord xy) {
+    public int getLinkIndexFromXY(Coord xy) {
         return db.getLinkIndex(quadTree.getClosest(xy.getX(), xy.getY()));
     }
 
+    public Link getLinkFromWGS84(Coord gps) {
+        Coord xy = db.referenceFrame.coords_fromWGS84().transform(gps);
+        return quadTree.getClosest(xy.getX(), xy.getY());
+    }
 }

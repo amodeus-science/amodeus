@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.analysis.cost;
 
 public enum CostParameterIdentifiersAmodeus implements CostParameterIdentifier {
@@ -7,15 +8,9 @@ public enum CostParameterIdentifiersAmodeus implements CostParameterIdentifier {
     COST_TRIP, //
     ;
 
-    String identifier;
-
-    private CostParameterIdentifiersAmodeus() {
-        identifier = name();
-    }
-
     @Override
     public String getIdentifier() {
-        return identifier;
+        return name();
     }
 
 }
