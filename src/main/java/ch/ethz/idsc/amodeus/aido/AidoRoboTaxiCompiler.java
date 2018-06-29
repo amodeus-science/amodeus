@@ -3,7 +3,7 @@ package ch.ethz.idsc.amodeus.aido;
 
 import java.util.List;
 
-import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.core.UnitCapRoboTaxi;
 import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
 import ch.ethz.idsc.amodeus.net.TensorCoords;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -14,12 +14,12 @@ import ch.ethz.idsc.tensor.io.StringScalar;
 /* package */ enum AidoRoboTaxiCompiler {
     ;
 
-    public static Tensor compile(List<RoboTaxi> roboTaxis) {
+    public static Tensor compile(List<UnitCapRoboTaxi> roboTaxis) {
         return Tensor.of(roboTaxis.stream().map(AidoRoboTaxiCompiler::of));
 
     }
 
-    private static Tensor of(RoboTaxi roboTaxi) {
+    private static Tensor of(UnitCapRoboTaxi roboTaxi) {
         // id
         Tensor info = Tensors.vector(MatsimStaticDatabase.INSTANCE.getVehicleIndex(roboTaxi));
         // divertable location
