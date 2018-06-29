@@ -68,7 +68,6 @@ public class SimpleSharedDispatcher extends SharedUniversalDispatcher {
             for (SharedRoboTaxi sharedRoboTaxi : getDivertableUnassignedRoboTaxis()) {
                 if (getUnassignedAVRequests().size() >= 4) {
 
-
                     AVRequest firstRequest = getUnassignedAVRequests().get(0);
                     AVRequest secondRequest = getUnassignedAVRequests().get(1);
                     AVRequest thirdRequest = getUnassignedAVRequests().get(2);

@@ -54,8 +54,8 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
             // jan: following computation is mandatory for the internal scoring
             // // function
-             final double distance = VrpPathUtils.getDistance(vrpPathWithTravelData);
-             currentRequest.getRoute().setDistance(distance);
+            final double distance = VrpPathUtils.getDistance(vrpPathWithTravelData);
+            currentRequest.getRoute().setDistance(distance);
 
         } else
             reportExecutionBypass(endTaskTime - scheduleEndTime);

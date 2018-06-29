@@ -58,7 +58,8 @@ public abstract class PartitionedDispatcher extends RebalancingDispatcher {
         return virtualNetwork.binToVirtualNode(getRebalancingRoboTaxis(), UnitCapRoboTaxi::getCurrentDriveDestination);
     }
 
-    /** @return {@link java.util.Map} where all roboTaxis with customer {@link UnitCapRoboTaxi} are listed at the {@link VirtualNode} where their {@link Link} current
+    /** @return {@link java.util.Map} where all roboTaxis with customer {@link UnitCapRoboTaxi} are listed at the {@link VirtualNode} where their {@link Link}
+     *         current
      *         driveDestination is. */
     protected Map<VirtualNode<Link>, List<UnitCapRoboTaxi>> getVirtualNodeArrivingWithCustomerRoboTaxis() {
         return virtualNetwork.binToVirtualNode(getRoboTaxiSubset(RoboTaxiStatus.DRIVEWITHCUSTOMER), UnitCapRoboTaxi::getCurrentDriveDestination);

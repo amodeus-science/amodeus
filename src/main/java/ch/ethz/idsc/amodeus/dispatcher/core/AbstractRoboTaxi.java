@@ -46,13 +46,12 @@ public abstract class AbstractRoboTaxi {
         this.directive = null;
         this.status = RoboTaxiStatus.STAY;
     }
-    
-    /**
-     * Constructor for deep Copy
-     * @param abstractRoboTaxi
-     */
-    /* package */AbstractRoboTaxi(AbstractRoboTaxi abstractRoboTaxi) {
-    	this(abstractRoboTaxi.avVehicle, abstractRoboTaxi.divertableLinkTime, abstractRoboTaxi.driveDestination);
+
+    /** Constructor for deep Copy
+     * 
+     * @param abstractRoboTaxi */
+    /* package */ AbstractRoboTaxi(AbstractRoboTaxi abstractRoboTaxi) {
+        this(abstractRoboTaxi.avVehicle, abstractRoboTaxi.divertableLinkTime, abstractRoboTaxi.driveDestination);
     }
 
     // ===================================================================================
@@ -104,14 +103,13 @@ public abstract class AbstractRoboTaxi {
     public RoboTaxiPlan getCurrentPlans(double time) {
         return RoboTaxiPlan.of(getSchedule(), time);
     }
-    
-    /**
-     * Gets the capacity of the avVehicle. Now its an Integer and not a double as in Matsim
-     * @return
-     */
+
+    /** Gets the capacity of the avVehicle. Now its an Integer and not a double as in Matsim
+     * 
+     * @return */
     public int getCapacity() {
-		return (int) avVehicle.getCapacity();
-	}
+        return (int) avVehicle.getCapacity();
+    }
 
     // ===================================================================================
     // methods to be used by Core package
