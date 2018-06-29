@@ -85,7 +85,7 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
                 Tensor rebalances = commands.get(1);
                 for (Tensor rebalance : rebalances) {
                     RoboTaxi roboTaxi = idRoboTaxiMap.get(rebalance.Get(0).number().intValue());
-                    Link link = fastLinkLookup.getLinkCHANGENAME(TensorCoords.toCoord(rebalance.get(1)));
+                    Link link = fastLinkLookup.getLinkFromWGS84(TensorCoords.toCoord(rebalance.get(1)));
                     setRoboTaxiRebalance(roboTaxi, link);
                 }
             } catch (Exception e) {
