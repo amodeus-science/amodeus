@@ -491,6 +491,10 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         // containment check pickupRegister and pendingRequests
         pickupRegister.keySet().forEach(r -> GlobalAssert.that(pendingRequests.contains(r)));
 
+        // TODO Check statement below: menus requests are contained in request register.
+        GlobalAssert.that(!getRoboTaxis().stream().filter(rt -> rt.getMenu().hasStarter())
+                .anyMatch(rtx -> rtx.getMenu().getCourses().stream().anyMatch(c -> !requestRegister.get(rtx).containsKey(c.getRequestId()))));
+
         // Menus do not Contain duplicate requests
         List<AVRequest> menusRequests = new ArrayList<>();
         getRoboTaxis().stream().filter(rt -> rt.getMenu().hasStarter())
@@ -498,8 +502,6 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         Set<AVRequest> uniqueMenusRequests = new HashSet<>(menusRequests);
         // TODO Check
         GlobalAssert.that(menusRequests.size() == uniqueMenusRequests.size() * 2);
-
-        // TODO menus requests match pickup register, request register.
 
     }
 
