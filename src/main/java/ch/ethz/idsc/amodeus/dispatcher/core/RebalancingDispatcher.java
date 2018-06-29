@@ -21,28 +21,28 @@ public abstract class RebalancingDispatcher extends UniversalDispatcher {
         super(config, avDispatcherConfig, travelTime, parallelLeastCostPathCalculator, eventsManager);
     }
 
-    /** Commant do rebalance {@link UnitCapRoboTaxi} to a certain {@link Link} destination. The {@link UnitCapRoboTaxi} appears as
-     * Rebalancing in the visualizer afterwards. Can only be used for {@link UnitCapRoboTaxi} which are without a customer.
+    /** Commant do rebalance {@link RoboTaxi} to a certain {@link Link} destination. The {@link RoboTaxi} appears as
+     * Rebalancing in the visualizer afterwards. Can only be used for {@link RoboTaxi} which are without a customer.
      * Function can only be invoked one time in each iteration of {@link VehicleMainatainer.redispatch}
      * 
      * @param roboTaxi
      * @param destination */
-    protected final void setRoboTaxiRebalance(final UnitCapRoboTaxi roboTaxi, final Link destination) {
+    protected final void setRoboTaxiRebalance(final RoboTaxi roboTaxi, final Link destination) {
         GlobalAssert.that(roboTaxi.isWithoutCustomer());
         setRoboTaxiDiversion(roboTaxi, destination, RoboTaxiStatus.REBALANCEDRIVE);
         eventsManager.processEvent(RebalanceVehicleEvent.create(getTimeNow(), roboTaxi, destination));
     }
 
-    /** @return {@link java.util.List } of all {@link UnitCapRoboTaxi} which are currently rebalancing. */
-    protected List<UnitCapRoboTaxi> getRebalancingRoboTaxis() {
+    /** @return {@link java.util.List } of all {@link RoboTaxi} which are currently rebalancing. */
+    protected List<RoboTaxi> getRebalancingRoboTaxis() {
         return getRoboTaxis().stream()//
                 .filter(rt -> rt.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE))//
                 .collect(Collectors.toList());
     }
 
-    /** @return {@link java.util.List} of all {@link UnitCapRoboTaxi} which are divertable and not in a rebalacing
+    /** @return {@link java.util.List} of all {@link RoboTaxi} which are divertable and not in a rebalacing
      *         task. */
-    protected List<UnitCapRoboTaxi> getDivertableNotRebalancingRoboTaxis() {
+    protected List<RoboTaxi> getDivertableNotRebalancingRoboTaxis() {
         return getDivertableRoboTaxis().stream()//
                 .filter(rt -> !rt.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE))//
                 .collect(Collectors.toList());

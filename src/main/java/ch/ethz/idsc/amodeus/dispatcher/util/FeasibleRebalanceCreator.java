@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.matsim.api.core.v01.network.Link;
 
-import ch.ethz.idsc.amodeus.dispatcher.core.UnitCapRoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNode;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -23,7 +23,7 @@ public enum FeasibleRebalanceCreator {
      * @return returns a scaled rebalanceInput which is feasible considering the available number of
      *         vehicles */
     public static Tensor returnFeasibleRebalance(Tensor rebalanceInput, Map<VirtualNode<Link>, //
-            List<UnitCapRoboTaxi>> availableVehicles) {
+            List<RoboTaxi>> availableVehicles) {
 
         GlobalAssert.that(Dimensions.of(rebalanceInput).get(0) == Dimensions.of(rebalanceInput).get(1));
         GlobalAssert.that(Dimensions.of(rebalanceInput).get(0) == availableVehicles.size());

@@ -17,7 +17,7 @@ import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherUtils;
 import ch.ethz.idsc.amodeus.dispatcher.core.RebalancingDispatcher;
-import ch.ethz.idsc.amodeus.dispatcher.core.UnitCapRoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.util.DrivebyRequestStopper;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
@@ -59,7 +59,7 @@ public class DriveByDispatcher extends RebalancingDispatcher {
         // loitering)
         final long round_now = Math.round(now);
         if (round_now % rebalancingPeriod == 0 && 0 < getAVRequests().size()) {
-            for (UnitCapRoboTaxi roboTaxi : getDivertableRoboTaxis()) {
+            for (RoboTaxi roboTaxi : getDivertableRoboTaxis()) {
                 if (rebPos > randGen.nextDouble()) {
                     setRoboTaxiRebalance(roboTaxi, pollNextDestination());
                 }

@@ -12,9 +12,9 @@ import ch.ethz.matsim.av.data.AVVehicle;
  * MATSim.
  * 
  * @author Claudio Ruch */
-public class UnitCapRoboTaxi extends AbstractRoboTaxi {
+public class RoboTaxi extends AbstractRoboTaxi {
 
-    UnitCapRoboTaxi(AVVehicle avVehicle, LinkTimePair divertableLinkTime, Link driveDestination) {
+    RoboTaxi(AVVehicle avVehicle, LinkTimePair divertableLinkTime, Link driveDestination) {
         super(avVehicle, divertableLinkTime, driveDestination);
         GlobalAssert.that(getCapacity() == 1);
     }

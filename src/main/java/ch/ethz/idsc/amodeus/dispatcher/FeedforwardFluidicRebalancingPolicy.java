@@ -14,7 +14,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.PartitionedDispatcher;
-import ch.ethz.idsc.amodeus.dispatcher.core.UnitCapRoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVehicleDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatchingUtils;
@@ -109,7 +109,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
             rebalanceCount = rebalanceCount.subtract(rebalanceCountInteger);
 
             // ensure that not more vehicles are sent away than available
-            Map<VirtualNode<Link>, List<UnitCapRoboTaxi>> availableVehicles = getVirtualNodeDivertableNotRebalancingRoboTaxis();
+            Map<VirtualNode<Link>, List<RoboTaxi>> availableVehicles = getVirtualNodeDivertableNotRebalancingRoboTaxis();
             Tensor feasibleRebalanceCount = FeasibleRebalanceCreator.returnFeasibleRebalance(rebalanceCountInteger.unmodifiable(), availableVehicles);
             total_rebalanceCount += (Integer) ((Scalar) Total.of(Tensor.of(feasibleRebalanceCount.flatten(-1)))).number();
 
@@ -133,7 +133,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
 
             // send rebalancing vehicles using the setVehicleRebalance command
             for (VirtualNode<Link> virtualNode : destinationLinks.keySet()) {
-                Map<UnitCapRoboTaxi, Link> rebalanceMatching = vehicleDestMatcher.matchLink(availableVehicles.get(virtualNode), destinationLinks.get(virtualNode));
+                Map<RoboTaxi, Link> rebalanceMatching = vehicleDestMatcher.matchLink(availableVehicles.get(virtualNode), destinationLinks.get(virtualNode));
                 rebalanceMatching.keySet().forEach(v -> setRoboTaxiRebalance(v, rebalanceMatching.get(v)));
             }
 

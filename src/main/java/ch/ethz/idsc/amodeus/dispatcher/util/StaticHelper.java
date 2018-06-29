@@ -7,7 +7,7 @@ import java.util.Set;
 
 import org.matsim.api.core.v01.network.Network;
 
-import ch.ethz.idsc.amodeus.dispatcher.core.UnitCapRoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.nd.NdCenterInterface;
 import ch.ethz.idsc.amodeus.util.nd.NdCluster;
 import ch.ethz.idsc.amodeus.util.nd.NdTreeMap;
@@ -17,7 +17,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 /* package */ enum StaticHelper {
     ;
 
-    static Collection<AVRequest> reduceRequests(Collection<AVRequest> requests, Collection<UnitCapRoboTaxi> roboTaxis, Network network) {
+    static Collection<AVRequest> reduceRequests(Collection<AVRequest> requests, Collection<RoboTaxi> roboTaxis, Network network) {
 
         // for less requests than cars, don't do anything
         if (requests.size() < roboTaxis.size() || requests.size() < 10)
@@ -42,7 +42,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         int iter = 1;
         do {
             requestsChosen.clear();
-            for (UnitCapRoboTaxi roboTaxi : roboTaxis) {
+            for (RoboTaxi roboTaxi : roboTaxis) {
                 Tensor center = TensorLocation.of(roboTaxi);
                 NdCluster<AVRequest> nearestCluster = ndTree.buildCluster(NdCenterInterface.euclidean(center), iter);
                 nearestCluster.stream().forEach(ndentry -> requestsChosen.add(ndentry.value()));
@@ -54,7 +54,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
     }
 
-    static Collection<UnitCapRoboTaxi> reduceRoboTaxis(Collection<AVRequest> requests, Collection<UnitCapRoboTaxi> roboTaxis, //
+    static Collection<RoboTaxi> reduceRoboTaxis(Collection<AVRequest> requests, Collection<RoboTaxi> roboTaxis, //
             Network network) {
         // for less requests than cars, don't do anything
         if (roboTaxis.size() < requests.size() || roboTaxis.size() < 10)
@@ -66,22 +66,22 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         Tensor lbounds = bounds.get(0);
         Tensor ubounds = bounds.get(1);
 
-        NdTreeMap<UnitCapRoboTaxi> ndTree = new NdTreeMap<>(lbounds, ubounds, 10, 24);
+        NdTreeMap<RoboTaxi> ndTree = new NdTreeMap<>(lbounds, ubounds, 10, 24);
 
         // add roboTaxis to ND Tree
-        for (UnitCapRoboTaxi robotaxi : roboTaxis) {
+        for (RoboTaxi robotaxi : roboTaxis) {
             ndTree.add(TensorLocation.of(robotaxi), robotaxi);
         }
 
         // for all robotaxis, start nearestNeighborSearch until union is as large as the number of requests
         // start with only one vehicle per request
-        Set<UnitCapRoboTaxi> vehiclesChosen = new HashSet<>(); // note: must be HashSet to avoid duplicate elements.
+        Set<RoboTaxi> vehiclesChosen = new HashSet<>(); // note: must be HashSet to avoid duplicate elements.
         int roboTaxiPerRequest = 1;
         do {
             vehiclesChosen.clear();
             for (AVRequest avRequest : requests) {
                 Tensor center = TensorLocation.of(avRequest);
-                NdCluster<UnitCapRoboTaxi> nearestCluster = ndTree.buildCluster(NdCenterInterface.euclidean(center), roboTaxiPerRequest);
+                NdCluster<RoboTaxi> nearestCluster = ndTree.buildCluster(NdCenterInterface.euclidean(center), roboTaxiPerRequest);
                 nearestCluster.stream().forEach(ndentry -> vehiclesChosen.add(ndentry.value()));
             }
             ++roboTaxiPerRequest;

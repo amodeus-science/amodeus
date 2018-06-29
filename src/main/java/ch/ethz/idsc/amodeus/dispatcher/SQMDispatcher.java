@@ -19,7 +19,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.PartitionedDispatcher;
-import ch.ethz.idsc.amodeus.dispatcher.core.UnitCapRoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.net.FastLinkLookup;
 import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
@@ -48,8 +48,8 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
  * 
  * @author fluric */
 public class SQMDispatcher extends PartitionedDispatcher {
-    private final Map<VirtualNode<Link>, UnitCapRoboTaxi> nodeToTaxi = new HashMap<>();
-    private final Map<UnitCapRoboTaxi, VirtualNode<Link>> taxiToNode = new HashMap<>();
+    private final Map<VirtualNode<Link>, RoboTaxi> nodeToTaxi = new HashMap<>();
+    private final Map<RoboTaxi, VirtualNode<Link>> taxiToNode = new HashMap<>();
     private final Map<VirtualNode<Link>, Link> nodeToLink = new HashMap<>();
     private final List<Link> virtualCenters;
     private final FastLinkLookup fastLinkLookup;
@@ -84,7 +84,7 @@ public class SQMDispatcher extends PartitionedDispatcher {
 
         List<AVRequest> unassigned_requests = getUnassignedAVRequests();
 
-        for (UnitCapRoboTaxi taxi : getRoboTaxiSubset(RoboTaxiStatus.STAY)) {
+        for (RoboTaxi taxi : getRoboTaxiSubset(RoboTaxiStatus.STAY)) {
 
             // move unassigned taxis back to their virtual station
             if (taxi.getDivertableLocation() != nodeToLink.get(taxiToNode.get(taxi))) {
@@ -111,7 +111,7 @@ public class SQMDispatcher extends PartitionedDispatcher {
 
     private void assignVirtualNodes() {
         Collection<VirtualNode<Link>> nodes = virtualNetwork.getVirtualNodes();
-        List<UnitCapRoboTaxi> taxis = getRoboTaxis();
+        List<RoboTaxi> taxis = getRoboTaxis();
         GlobalAssert.that(nodes.size() == taxis.size());
         GlobalAssert.that(nodeToTaxi.isEmpty() && taxiToNode.isEmpty());
 

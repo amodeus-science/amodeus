@@ -9,7 +9,7 @@ import java.util.Map;
 
 import org.matsim.api.core.v01.network.Link;
 
-import ch.ethz.idsc.amodeus.dispatcher.core.UnitCapRoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.hungarian.HungarianAlgorithmWrap;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
@@ -26,7 +26,7 @@ public class HungarBiPartVehicleDestMatcher extends AbstractVehicleDestMatcher {
     }
 
     @Override
-    protected Map<UnitCapRoboTaxi, AVRequest> protected_matchAVRequest(Collection<UnitCapRoboTaxi> roboTaxis, Collection<AVRequest> requests) {
+    protected Map<RoboTaxi, AVRequest> protected_matchAVRequest(Collection<RoboTaxi> roboTaxis, Collection<AVRequest> requests) {
 
         Collection<MatchLinkObject<AVRequest>> linksGen = new ArrayList<>();
         requests.stream().forEach(l -> linksGen.add(new MatchLinkObject<>(l)));
@@ -34,17 +34,17 @@ public class HungarBiPartVehicleDestMatcher extends AbstractVehicleDestMatcher {
     }
 
     @Override
-    protected Map<UnitCapRoboTaxi, Link> protected_matchLink(Collection<UnitCapRoboTaxi> roboTaxis, Collection<Link> links) {
+    protected Map<RoboTaxi, Link> protected_matchLink(Collection<RoboTaxi> roboTaxis, Collection<Link> links) {
 
         Collection<MatchLinkObject<Link>> linksGen = new ArrayList<>();
         links.stream().forEach(l -> linksGen.add(new MatchLinkObject<>(l)));
         return genericMatch(roboTaxis, linksGen);
     }
 
-    private <T> Map<UnitCapRoboTaxi, T> genericMatch(Collection<UnitCapRoboTaxi> roboTaxis, Collection<MatchLinkObject<T>> linkObjects) {
+    private <T> Map<RoboTaxi, T> genericMatch(Collection<RoboTaxi> roboTaxis, Collection<MatchLinkObject<T>> linkObjects) {
 
         // since Collection::iterator does not make guarantees about the order we store the pairs in a list
-        final List<UnitCapRoboTaxi> orderedRoboTaxis = new ArrayList<>(roboTaxis);
+        final List<RoboTaxi> orderedRoboTaxis = new ArrayList<>(roboTaxis);
         final List<MatchLinkObject<T>> ordered_linkObjects = new ArrayList<>(linkObjects);
 
         // cost of assigning vehicle i to dest j, i.e. distance from vehicle i to destination j
@@ -54,7 +54,7 @@ public class HungarBiPartVehicleDestMatcher extends AbstractVehicleDestMatcher {
         final double[][] distancematrix = new double[n][m];
 
         int i = -1;
-        for (UnitCapRoboTaxi roboTaxi : orderedRoboTaxis) {
+        for (RoboTaxi roboTaxi : orderedRoboTaxis) {
             ++i;
             int j = -1;
             for (MatchLinkObject<T> linkObj : ordered_linkObjects) {
@@ -67,9 +67,9 @@ public class HungarBiPartVehicleDestMatcher extends AbstractVehicleDestMatcher {
         int[] matchinghungarianAlgorithm = HungarianAlgorithmWrap.matching(distancematrix);
 
         // do the assignment according to the Hungarian algorithm (only for the matched elements, otherwise keep current drive destination)
-        final Map<UnitCapRoboTaxi, T> map = new HashMap<>();
+        final Map<RoboTaxi, T> map = new HashMap<>();
         i = -1;
-        for (UnitCapRoboTaxi roboTaxi : orderedRoboTaxis) {
+        for (RoboTaxi roboTaxi : orderedRoboTaxis) {
             ++i;
             if (0 <= matchinghungarianAlgorithm[i]) {
                 map.put(roboTaxi, ordered_linkObjects.get(matchinghungarianAlgorithm[i]).getObject());

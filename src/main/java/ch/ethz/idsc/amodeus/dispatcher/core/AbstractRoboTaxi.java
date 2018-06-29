@@ -21,7 +21,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
  * 
  * @author Claudio Ruch */
 public abstract class AbstractRoboTaxi {
-    static private final Logger logger = Logger.getLogger(UnitCapRoboTaxi.class);
+    static private final Logger logger = Logger.getLogger(RoboTaxi.class);
 
     protected final AVVehicle avVehicle;
     private RoboTaxiStatus status;

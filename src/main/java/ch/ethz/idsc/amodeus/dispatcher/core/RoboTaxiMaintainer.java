@@ -35,7 +35,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
  * {@link ParallelLeastCostPathCalculator}. */
 /* package */ abstract class RoboTaxiMaintainer implements AVDispatcher {
     protected final EventsManager eventsManager;
-    private final List<UnitCapRoboTaxi> roboTaxis = new ArrayList<>();
+    private final List<RoboTaxi> roboTaxis = new ArrayList<>();
     private Double private_now = null;
     public InfoLine infoLine = null;
     private final StorageUtils storageUtils;
@@ -57,14 +57,14 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     }
 
     /** @return collection of RoboTaxis */
-    protected final List<UnitCapRoboTaxi> getRoboTaxis() {
+    protected final List<RoboTaxi> getRoboTaxis() {
         if (roboTaxis.isEmpty() || !roboTaxis.get(0).getSchedule().getStatus().equals(Schedule.ScheduleStatus.STARTED))
             return Collections.emptyList();
         return Collections.unmodifiableList(roboTaxis);
     }
 
     private void updateDivertableLocations() {
-        for (UnitCapRoboTaxi robotaxi : getRoboTaxis()) {
+        for (RoboTaxi robotaxi : getRoboTaxis()) {
             GlobalAssert.that(robotaxi.isWithoutDirective());
             Schedule schedule = robotaxi.getSchedule();
             new RoboTaxiTaskAdapter(schedule.getCurrentTask()) {
@@ -109,7 +109,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
     @Override
     public final void addVehicle(AVVehicle vehicle) {
-        roboTaxis.add(new UnitCapRoboTaxi(vehicle, new LinkTimePair(vehicle.getStartLink(), 0.0), vehicle.getStartLink()));
+        roboTaxis.add(new RoboTaxi(vehicle, new LinkTimePair(vehicle.getStartLink(), 0.0), vehicle.getStartLink()));
         eventsManager.processEvent(new AVVehicleAssignmentEvent(vehicle, 0));
     }
 
@@ -167,14 +167,14 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     }
 
     private void executeDirectives() {
-        roboTaxis.stream().filter(rt -> !rt.isWithoutDirective()).forEach(UnitCapRoboTaxi::executeDirective);
+        roboTaxis.stream().filter(rt -> !rt.isWithoutDirective()).forEach(RoboTaxi::executeDirective);
     }
 
     private void updateCurrentLocations() {
         @SuppressWarnings("unused")
         int failed = 0;
         if (!roboTaxis.isEmpty()) {
-            for (UnitCapRoboTaxi robotaxi : roboTaxis) {
+            for (RoboTaxi robotaxi : roboTaxis) {
                 final Link link = RoboTaxiLocation.of(robotaxi);
                 if (link != null) {
                     robotaxi.setLastKnownLocation(link);
@@ -196,7 +196,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
     /* package */ abstract void notifySimulationSubscribers(long round_now, StorageUtils storageUtils);
 
-    /* package */ abstract boolean isInPickupRegister(UnitCapRoboTaxi robotaxi);
+    /* package */ abstract boolean isInPickupRegister(RoboTaxi robotaxi);
 
     @Override
     public final void onNextTaskStarted(AVVehicle task) {

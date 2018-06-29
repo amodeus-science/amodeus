@@ -15,7 +15,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RebalancingDispatcher;
-import ch.ethz.idsc.amodeus.dispatcher.core.UnitCapRoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.FastLinkLookup;
 import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
@@ -31,7 +31,7 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
 public class AidoDispatcherHost extends RebalancingDispatcher {
 
-    private final Map<Integer, UnitCapRoboTaxi> idRoboTaxiMap = new HashMap<>();
+    private final Map<Integer, RoboTaxi> idRoboTaxiMap = new HashMap<>();
     private final Map<Integer, AVRequest> idRequestMap = new HashMap<>();
     private final FastLinkLookup fastLinkLookup;
     private final StringSocket clientSocket;
@@ -77,14 +77,14 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
                 // TODO consistency checks
                 Tensor pickups = commands.get(0);
                 for (Tensor pickup : pickups) {
-                    UnitCapRoboTaxi roboTaxi = idRoboTaxiMap.get(pickup.Get(0).number().intValue());
+                    RoboTaxi roboTaxi = idRoboTaxiMap.get(pickup.Get(0).number().intValue());
                     AVRequest avRequest = idRequestMap.get(pickup.Get(1).number().intValue());
                     setRoboTaxiPickup(roboTaxi, avRequest);
                 }
 
                 Tensor rebalances = commands.get(1);
                 for (Tensor rebalance : rebalances) {
-                    UnitCapRoboTaxi roboTaxi = idRoboTaxiMap.get(rebalance.Get(0).number().intValue());
+                    RoboTaxi roboTaxi = idRoboTaxiMap.get(rebalance.Get(0).number().intValue());
                     Link link = fastLinkLookup.getLinkFromWGS84(TensorCoords.toCoord(rebalance.get(1)));
                     setRoboTaxiRebalance(roboTaxi, link);
                 }
