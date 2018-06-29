@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
+import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifier;
+import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifiersAmodeus;
 import ch.ethz.idsc.amodeus.net.RequestContainer;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -15,7 +18,7 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Join;
 import ch.ethz.idsc.tensor.red.Max;
 
-public class WaitingTimesElement implements AnalysisElement {
+public class WaitingTimesElement implements AnalysisElement, TotalValueAppender {
 
     public static final double QUANTILE1 = 0.1;
     public static final double QUANTILE2 = 0.5;
@@ -32,6 +35,9 @@ public class WaitingTimesElement implements AnalysisElement {
     public double maximumWaitTime;
     public Tensor totalWaitTimeQuantile;
     public Scalar totalWaitTimeMean;
+
+    // total Values for TotalValuesFile
+    private final Map<TotalValueIdentifier, String> totalValues = new HashMap<>();
 
     @Override
     public void register(SimulationObject simulationObject) {
@@ -55,6 +61,16 @@ public class WaitingTimesElement implements AnalysisElement {
         maximumWaitTime = uniqueSubmissionsWaitTimes.flatten(-1).reduce(Max::of).get().Get().number().doubleValue();
         totalWaitTimeQuantile = StaticHelper.quantiles(uniqueSubmissionsWaitTimes, PARAM);
         totalWaitTimeMean = StaticHelper.means(uniqueSubmissionsWaitTimes);
+    }
+
+    @Override
+    public Map<TotalValueIdentifier, String> getTotalValues() {
+        totalValues.put(TotalValueIdentifiersAmodeus.WAITTIMEMAX, String.valueOf(maximumWaitTime));
+        totalValues.put(TotalValueIdentifiersAmodeus.MEANWAITINGTIME, String.valueOf(totalWaitTimeMean));
+        totalValues.put(TotalValueIdentifiersAmodeus.WAITTIMEQUANTILE1, String.valueOf(totalWaitTimeQuantile.Get(0).number().doubleValue()));
+        totalValues.put(TotalValueIdentifiersAmodeus.WAITTIMEQUANTILE2, String.valueOf(totalWaitTimeQuantile.Get(1).number().doubleValue()));
+        totalValues.put(TotalValueIdentifiersAmodeus.WAITTIMEQUANTILE3, String.valueOf(totalWaitTimeQuantile.Get(2).number().doubleValue()));
+        return totalValues;
     }
 
 }

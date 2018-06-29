@@ -98,6 +98,10 @@ public class RoboTaxi {
         return RoboTaxiPlan.of(getSchedule(), time);
     }
 
+    public boolean isDivertable() {
+        return isWithoutDirective() && isWithoutCustomer() && notDrivingOnLastLink();
+    }
+
     // ===================================================================================
     // methods to be used by Core package
 

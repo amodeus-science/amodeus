@@ -7,6 +7,8 @@ import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import org.matsim.api.core.v01.Scenario;
@@ -16,6 +18,9 @@ import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.scenario.ScenarioUtils;
 
+import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
+import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifier;
+import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifiersAmodeus;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
@@ -27,7 +32,7 @@ import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.config.AVGeneratorConfig;
 import ch.ethz.matsim.av.config.AVOperatorConfig;
 
-public class ScenarioParameters implements Serializable {
+public class ScenarioParameters implements TotalValueAppender, Serializable {
     public static final int UNDEFINED_INT = -1;
     public static final String UNDEFINED_STRING = "";
     public static final DateFormat DATEFORMAT = new SimpleDateFormat("yyyy/MM/dd - HH:mm:ss");
@@ -44,6 +49,9 @@ public class ScenarioParameters implements Serializable {
     public final String networkName;
     public final String user;
     public final String date;
+
+    // total Values for TotalValuesFile
+    private final Map<TotalValueIdentifier, String> totalValues = new HashMap<>();
 
     public ScenarioParameters() {
         File workingDirectory = null;
@@ -104,6 +112,20 @@ public class ScenarioParameters implements Serializable {
 
     public String getVirtualNetworkDescription() {
         return virtualNodesCount == UNDEFINED_INT ? "no virtual network found" : virtualNodesCount + " virtual nodes.";
+    }
+
+    @Override
+    public Map<TotalValueIdentifier, String> getTotalValues() {
+        totalValues.put(TotalValueIdentifiersAmodeus.DISPATCHER, dispatcher);
+        totalValues.put(TotalValueIdentifiersAmodeus.DISPATCHINGPERIOD, String.valueOf(redispatchPeriod));
+        totalValues.put(TotalValueIdentifiersAmodeus.REBALANCEPERIOD, String.valueOf(rebalancingPeriod));
+        totalValues.put(TotalValueIdentifiersAmodeus.DISTANCEHEURISTIC, String.valueOf(distanceHeuristic));
+        totalValues.put(TotalValueIdentifiersAmodeus.POPULATIONSIZE, String.valueOf(populationSize));
+        totalValues.put(TotalValueIdentifiersAmodeus.VIRTUALNODES, String.valueOf(virtualNodesCount));
+        totalValues.put(TotalValueIdentifiersAmodeus.VEHICLEGENERATOR, vehicleGenerator);
+        totalValues.put(TotalValueIdentifiersAmodeus.TIMESTAMP, date);
+
+        return totalValues;
     }
 
 }
