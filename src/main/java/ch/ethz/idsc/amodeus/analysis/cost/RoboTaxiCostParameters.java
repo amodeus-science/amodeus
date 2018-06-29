@@ -4,7 +4,7 @@ import java.util.Map;
 
 public interface RoboTaxiCostParameters {
 
-	public Map<CostParameterIdentifier, Double> getCostParameters();
+    public Map<CostParameterIdentifier, Double> getCostParameters();
 
-	public Double getCostParameter(CostParameterIdentifier costParameterIdentifier);
+    public Double getCostParameter(CostParameterIdentifier costParameterIdentifier);
 }
