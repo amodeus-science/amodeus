@@ -17,6 +17,8 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedAVMenu;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.schedule.AVDriveTask;
+import ch.ethz.matsim.av.schedule.AVDropoffTask;
+import ch.ethz.matsim.av.schedule.AVPickupTask;
 import ch.ethz.matsim.av.schedule.AVStayTask;
 
 /** RoboTaxi is central classs to be used in all dispatchers. Dispatchers control
@@ -150,9 +152,10 @@ public class RoboTaxi {
         this.status = Objects.requireNonNull(status);
     }
 
-    /** @return true if customer is without a customer */
+    /** @return true if robotaxi is without a customer */
     /* package */ boolean isWithoutCustomer() {
-        return !status.equals(RoboTaxiStatus.DRIVEWITHCUSTOMER);
+        // For now this works with universal dispatcher i.e. unit cap robotaxis as number of customers is never changed
+        return !status.equals(RoboTaxiStatus.DRIVEWITHCUSTOMER) && onBoardCustomers == 0;
     }
 
     /** @return {@Schedule} of the RoboTaxi, to be used only inside core package,
@@ -194,12 +197,23 @@ public class RoboTaxi {
             return true;
         }
 
-        GlobalAssert.that(avT instanceof AVDriveTask);
-        AVDriveTask avDT = (AVDriveTask) avT;
-        if (avDT.getPath().getLinkCount() == 1) {
-            return false;
+        // Added cases when on pickup and dropoff task For shared taxis
+        if (avT instanceof AVDriveTask) {
+            AVDriveTask avDT = (AVDriveTask) avT;
+            if (avDT.getPath().getLinkCount() == 1) {
+                return false;
+            }
+            return true;
         }
-        return true;
+
+        // TODO If on pickup and dropoff not divertable yet -- or maybe can be diverted,
+        // but directive will occur at the end of current pickup or dropoff
+        else if (avT instanceof AVPickupTask || avT instanceof AVDropoffTask) {
+            return false;
+
+        } else {
+            throw new IllegalArgumentException("Found Unknown type of AVTASK !!");
+        }
     }
 
     /** execute the directive of a RoboTaxi, to be used only inside core package */
