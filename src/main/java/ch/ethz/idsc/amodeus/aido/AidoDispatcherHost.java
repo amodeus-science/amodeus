@@ -65,8 +65,8 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
 
                 Tensor status = Tensors.of(RealScalar.of((long) now), //
                         AidoRoboTaxiCompiler.compile(getRoboTaxis()), //
-                        AidoRequestCompiler.compile(getAVRequests()),//
-                        AidoScoreCompiler.compile(round_now,getRoboTaxis(),getAVRequests()));
+                        AidoRequestCompiler.compile(getAVRequests()), //
+                        AidoScoreCompiler.compile(round_now, getRoboTaxis(), getAVRequests()));
                 clientSocket.writeln(status);
 
                 String fromClient = null;

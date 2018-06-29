@@ -14,7 +14,6 @@ public class StringServerSocket {
     Queue<StringClientSocket> queue = new ConcurrentLinkedQueue<>();
     private volatile boolean isRunning = true;
 
-
     /** [call in MATLAB] to start server listening on port
      * 
      * @param port */

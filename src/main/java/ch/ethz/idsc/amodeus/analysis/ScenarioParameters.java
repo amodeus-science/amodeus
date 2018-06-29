@@ -32,7 +32,7 @@ import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.config.AVGeneratorConfig;
 import ch.ethz.matsim.av.config.AVOperatorConfig;
 
-public class ScenarioParameters implements Serializable, TotalValueAppender{
+public class ScenarioParameters implements Serializable, TotalValueAppender {
     public static final int UNDEFINED_INT = -1;
     public static final String UNDEFINED_STRING = "";
     public static final DateFormat DATEFORMAT = new SimpleDateFormat("yyyy/MM/dd - HH:mm:ss");
@@ -114,18 +114,18 @@ public class ScenarioParameters implements Serializable, TotalValueAppender{
         return virtualNodesCount == UNDEFINED_INT ? "no virtual network found" : virtualNodesCount + " virtual nodes.";
     }
 
-	@Override
-	public Map<TotalValueIdentifier, String> getTotalValues() {
-		totalValues.put(TotalValueIdentifiersAmodeus.DISPATCHER, dispatcher);
-		totalValues.put(TotalValueIdentifiersAmodeus.DISPATCHINGPERIOD, String.valueOf(redispatchPeriod));
-		totalValues.put(TotalValueIdentifiersAmodeus.REBALANCEPERIOD, String.valueOf(rebalancingPeriod));
-		totalValues.put(TotalValueIdentifiersAmodeus.DISTANCEHEURISTIC, String.valueOf(distanceHeuristic));
-		totalValues.put(TotalValueIdentifiersAmodeus.POPULATIONSIZE, String.valueOf(populationSize));
-		totalValues.put(TotalValueIdentifiersAmodeus.VIRTUALNODES, String.valueOf(virtualNodesCount));
-		totalValues.put(TotalValueIdentifiersAmodeus.VEHICLEGENERATOR, vehicleGenerator);
-		totalValues.put(TotalValueIdentifiersAmodeus.TIMESTAMP, date);
+    @Override
+    public Map<TotalValueIdentifier, String> getTotalValues() {
+        totalValues.put(TotalValueIdentifiersAmodeus.DISPATCHER, dispatcher);
+        totalValues.put(TotalValueIdentifiersAmodeus.DISPATCHINGPERIOD, String.valueOf(redispatchPeriod));
+        totalValues.put(TotalValueIdentifiersAmodeus.REBALANCEPERIOD, String.valueOf(rebalancingPeriod));
+        totalValues.put(TotalValueIdentifiersAmodeus.DISTANCEHEURISTIC, String.valueOf(distanceHeuristic));
+        totalValues.put(TotalValueIdentifiersAmodeus.POPULATIONSIZE, String.valueOf(populationSize));
+        totalValues.put(TotalValueIdentifiersAmodeus.VIRTUALNODES, String.valueOf(virtualNodesCount));
+        totalValues.put(TotalValueIdentifiersAmodeus.VEHICLEGENERATOR, vehicleGenerator);
+        totalValues.put(TotalValueIdentifiersAmodeus.TIMESTAMP, date);
 
-		return totalValues;
-	}
+        return totalValues;
+    }
 
 }

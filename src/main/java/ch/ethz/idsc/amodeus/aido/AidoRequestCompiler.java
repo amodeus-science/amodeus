@@ -12,12 +12,12 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
 /* package */ enum AidoRequestCompiler {
     ;
-    
-    public static Tensor compile(Collection<AVRequest> requests){
+
+    public static Tensor compile(Collection<AVRequest> requests) {
         return Tensor.of(requests.stream().map(AidoRequestCompiler::of));
     }
 
-    private static Tensor of(AVRequest request){
+    private static Tensor of(AVRequest request) {
         // id
         Tensor info = Tensors.vector(MatsimStaticDatabase.INSTANCE.getRequestIndex(request));
         // submission time

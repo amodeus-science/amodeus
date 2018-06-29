@@ -47,7 +47,7 @@ public class StringClientSocket {
     }
 
     public synchronized void writeln(Object line) throws Exception {
-        writer.write(line+"\n");
+        writer.write(line + "\n");
         writer.flush();
     }
 
@@ -67,9 +67,9 @@ public class StringClientSocket {
     private void message(String message) {
         System.out.println(getClass().getSimpleName() + ": " + message);
     }
-    
-    public String readLine() throws Exception{
+
+    public String readLine() throws Exception {
         return reader.readLine();
     }
-    
+
 }
