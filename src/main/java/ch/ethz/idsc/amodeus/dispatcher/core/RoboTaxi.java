@@ -2,7 +2,6 @@
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
@@ -98,9 +97,9 @@ public class RoboTaxi {
     public RoboTaxiPlan getCurrentPlans(double time) {
         return RoboTaxiPlan.of(getSchedule(), time);
     }
-    
-    public boolean isDivertable(){
-        return isWithoutDirective() && isWithoutCustomer() && notDrivingOnLastLink();        
+
+    public boolean isDivertable() {
+        return isWithoutDirective() && isWithoutCustomer() && notDrivingOnLastLink();
     }
 
     // ===================================================================================

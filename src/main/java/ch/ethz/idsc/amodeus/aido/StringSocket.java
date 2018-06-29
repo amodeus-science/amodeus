@@ -2,27 +2,22 @@
 package ch.ethz.idsc.amodeus.aido;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class StringClientSocket {
-    final Socket socket;
-    private PrintWriter writer;
-    private BufferedReader reader = null; //
+public class StringSocket {
+    private final Socket socket;
+    private final PrintWriter writer;
+    private final BufferedReader reader; //
     private volatile boolean launched = true;
 
-    public StringClientSocket(final Socket socket) {
+    public StringSocket(final Socket socket) throws Exception {
         this.socket = socket;
-        try {
-            // flush the stream immediately to ensure that constructors for receiving ObjectInputStreams will not block when reading the header
-            writer = new PrintWriter(socket.getOutputStream(), true);
-            writer.flush();
-            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        } catch (Exception myException) {
-            myException.printStackTrace();
-        }
+        // flush the stream immediately to ensure that constructors for receiving ObjectInputStreams will not block when reading the header
+        writer = new PrintWriter(socket.getOutputStream(), true);
+        writer.flush();
+        reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
         Thread myThread = new Thread(new Runnable() {
             @Override
@@ -47,7 +42,7 @@ public class StringClientSocket {
     }
 
     public synchronized void writeln(Object line) throws Exception {
-        writer.write(line+"\n");
+        writer.write(line + "\n");
         writer.flush();
     }
 
@@ -67,9 +62,9 @@ public class StringClientSocket {
     private void message(String message) {
         System.out.println(getClass().getSimpleName() + ": " + message);
     }
-    
-    public String readLine() throws Exception{
+
+    public String readLine() throws Exception {
         return reader.readLine();
     }
-    
+
 }
