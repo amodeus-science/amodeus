@@ -97,9 +97,9 @@ public class RoboTaxi {
     public RoboTaxiPlan getCurrentPlans(double time) {
         return RoboTaxiPlan.of(getSchedule(), time);
     }
-    
-    public boolean isDivertable(){
-        return isWithoutDirective() && isWithoutCustomer() && notDrivingOnLastLink();        
+
+    public boolean isDivertable() {
+        return isWithoutDirective() && isWithoutCustomer() && notDrivingOnLastLink();
     }
 
     // ===================================================================================

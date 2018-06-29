@@ -2,11 +2,16 @@
 package ch.ethz.idsc.amodeus.analysis.element;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.IntStream;
 
+import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
+import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifier;
+import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifiersAmodeus;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.net.VehicleContainer;
@@ -16,10 +21,11 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Join;
 import ch.ethz.idsc.tensor.alg.Transpose;
+import ch.ethz.idsc.tensor.red.Mean;
 import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.InvertUnlessZero;
 
-public class DistanceElement implements AnalysisElement {
+public class DistanceElement implements AnalysisElement, TotalValueAppender {
     /** link distances in the network must be in [m] */
     private static final Scalar km2m = RealScalar.of(0.001);
 
@@ -40,9 +46,14 @@ public class DistanceElement implements AnalysisElement {
     public double totalDistancePicku;
     public double totalDistanceRebal;
     public double totalDistanceRatio;
+    public double avgTripDistance;
+    public double avgOccupancy;
 
     // distRatio;
     public Tensor ratios;
+
+    // total Values for TotalValuesFile
+    private final Map<TotalValueIdentifier, String> totalValues = new HashMap<>();
 
     public DistanceElement(int numVehicles, int size) {
         IntStream.range(0, numVehicles).forEach(i -> list.add(new VehicleStatistic(size)));
@@ -61,6 +72,7 @@ public class DistanceElement implements AnalysisElement {
         Scalar occupancyRatio = numStatus.Get(RoboTaxiStatus.DRIVEWITHCUSTOMER.ordinal()).//
                 divide(RealScalar.of(simulationObject.vehicles.size()));
         occupancyTensor.append(occupancyRatio);
+        avgOccupancy = Mean.of(occupancyTensor).Get().number().doubleValue();
 
         /** register Simulation Object for distance analysis */
         for (VehicleContainer vehicleContainer : simulationObject.vehicles)
@@ -90,6 +102,7 @@ public class DistanceElement implements AnalysisElement {
         totalDistancePicku = distPicku.stream().reduce(Tensor::add).get().Get().number().doubleValue();
         totalDistanceRebal = distRebal.stream().reduce(Tensor::add).get().Get().number().doubleValue();
         totalDistanceRatio = totalDistanceWtCst / totalDistance;
+        avgTripDistance = totalDistanceWtCst / (double) requestIndices.size();
         ratios = Transpose.of(Join.of(Tensors.of(occupancyTensor), Tensors.of(distRatio)));
 
     }
@@ -104,7 +117,18 @@ public class DistanceElement implements AnalysisElement {
         list.stream().forEach(vs -> distCustr.add(vs.getLatestRecordings().Get(1)));
 
         return Tensors.of(distTotal, distCustr);
+    }
 
+    @Override
+    public Map<TotalValueIdentifier, String> getTotalValues() {
+        totalValues.put(TotalValueIdentifiersAmodeus.TOTALROBOTAXIDISTANCE, String.valueOf(totalDistance));
+        totalValues.put(TotalValueIdentifiersAmodeus.TOTALROBOTAXIDISTANCEPICKU, String.valueOf(totalDistancePicku));
+        totalValues.put(TotalValueIdentifiersAmodeus.TOTALROBOTAXIDISTANCEWTCST, String.valueOf(totalDistanceWtCst));
+        totalValues.put(TotalValueIdentifiersAmodeus.TOTALROBOTAXIDISTANCEREB, String.valueOf(totalDistanceRebal));
+        totalValues.put(TotalValueIdentifiersAmodeus.DISTANCERATIO, String.valueOf(totalDistanceRatio));
+        totalValues.put(TotalValueIdentifiersAmodeus.OCCUPANCYRATIO, String.valueOf(avgOccupancy));
+        totalValues.put(TotalValueIdentifiersAmodeus.AVGTRIPDISTANCE, String.valueOf(avgTripDistance));
+        return totalValues;
     }
 
 }

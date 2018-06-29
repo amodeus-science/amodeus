@@ -13,6 +13,9 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 
+import ch.ethz.idsc.amodeus.analysis.cost.FleetCostElement;
+import ch.ethz.idsc.amodeus.analysis.cost.RoboTaxiCostFunction;
+import ch.ethz.idsc.amodeus.analysis.cost.RoboTaxiCostParameters;
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisElement;
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.amodeus.analysis.plot.ChartTheme;
@@ -20,6 +23,8 @@ import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
 import ch.ethz.idsc.amodeus.analysis.report.AnalysisReport;
 import ch.ethz.idsc.amodeus.analysis.report.HtmlReport;
 import ch.ethz.idsc.amodeus.analysis.report.HtmlReportElement;
+import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
+import ch.ethz.idsc.amodeus.analysis.report.TotalValues;
 import ch.ethz.idsc.amodeus.data.ReferenceFrame;
 import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
 import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
@@ -30,7 +35,8 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 
 public class Analysis {
-    /** Use this method to create an standalone Analysis with all the default values stored in the current Working Directory
+    /** Use this method to create an standalone Analysis with all the default values
+     * stored in the current Working Directory
      * 
      * @return
      * @throws Exception */
@@ -51,14 +57,22 @@ public class Analysis {
         return new Analysis(workingDirectory, configFile, outputDirectory, null);
     }
 
-    /** returns an Instance of the Analysis Class can be called with any combination of null and the respective parameter(s).
+    /** returns an Instance of the Analysis Class can be called with any combination
+     * of null and the respective parameter(s).
      * 
-     * @param workingDirectory default: current working directory. Is the file where the config file, AmodeusOptions file and the outputfolder are located
-     * @param configFile default: SimulationConfig file as defined in AmodeusOptions. Stores the data of the corresponding outputdirectory and Network.
-     * @param outputDirectory: default: value stored in the Simulation Config file. Can be changed if for example an other outputfolder from the Sequential
-     *            Server
-     *            has to be analysed.
-     * @param network: default: Network defined in the Config file. Can be used to reduce runtime if the Network was already loaded in a previous step (e.g.
+     * @param workingDirectory
+     *            default: current working directory. Is the file where the config
+     *            file, AmodeusOptions file and the outputfolder are located
+     * @param configFile
+     *            default: SimulationConfig file as defined in AmodeusOptions.
+     *            Stores the data of the corresponding outputdirectory and Network.
+     * @param outputDirectory:
+     *            default: value stored in the Simulation Config file. Can be
+     *            changed if for example an other outputfolder from the Sequential
+     *            Server has to be analysed.
+     * @param network:
+     *            default: Network defined in the Config file. Can be used to reduce
+     *            runtime if the Network was already loaded in a previous step (e.g.
      *            Scenario Server)
      * @throws Exception */
     public static Analysis setup(File workingDirectory, File configFile, File outputDirectory, Network network) throws Exception {
@@ -76,17 +90,26 @@ public class Analysis {
     private final int size;
     private final AnalysisSummary analysisSummary;
     private final HtmlReport htmlReport;
+    private final TotalValues totalValues;
     private final ColorScheme colorScheme;
     private final ChartTheme chartTheme;
 
-    /** Constructor of the Analysis Class can be called with any combination of null and the respective parameter.
+    /** Constructor of the Analysis Class can be called with any combination of null
+     * and the respective parameter.
      * 
-     * @param workingDirectory default: current working directory. Is the file where the config file, AmodeusOptions file and the outputfolder are located
-     * @param configFile default: SimulationConfig file as defined in AmodeusOptions. Stores the data of the corresponding outputdirectory and Network.
-     * @param outputDirectory: default: value stored in the Simulation Config file. Can be changed if for example an other outputfolder from the Sequential
-     *            Server
-     *            has to be analysed.
-     * @param network: default: Network defined in the Config file. Can be used to reduce runtime if the Network was already loaded in a previous step (e.g.
+     * @param workingDirectory
+     *            default: current working directory. Is the file where the config
+     *            file, AmodeusOptions file and the outputfolder are located
+     * @param configFile
+     *            default: SimulationConfig file as defined in AmodeusOptions.
+     *            Stores the data of the corresponding outputdirectory and Network.
+     * @param outputDirectory:
+     *            default: value stored in the Simulation Config file. Can be
+     *            changed if for example an other outputfolder from the Sequential
+     *            Server has to be analysed.
+     * @param network:
+     *            default: Network defined in the Config file. Can be used to reduce
+     *            runtime if the Network was already loaded in a previous step (e.g.
      *            Scenario Server)
      * @throws Exception */
 
@@ -155,6 +178,15 @@ public class Analysis {
         // default list of analysis reports
         htmlReport = new HtmlReport(configFile, outputDirectory, scenOptions);
         analysisReports.add(htmlReport);
+
+        totalValues = new TotalValues(dataDirectory);
+        totalValues.append(analysisSummary.getScenarioParameters());
+        totalValues.append(analysisSummary.getSimulationInformationElement());
+        totalValues.append(analysisSummary.getStatusDistribution());
+        totalValues.append(analysisSummary.getWaitingTimes());
+        totalValues.append(analysisSummary.getDistanceElement());
+        analysisReports.add(totalValues);
+
     }
 
     public void addAnalysisElement(AnalysisElement analysisElement) {
@@ -173,6 +205,16 @@ public class Analysis {
         htmlReport.addHtmlReportElement(htmlReportElement);
     }
 
+    public void addTotalValue(TotalValueAppender totalValueAppender) {
+        totalValues.append(totalValueAppender);
+    }
+
+    public void addCostAnalysis(RoboTaxiCostFunction roboTaxiCostFunction, RoboTaxiCostParameters roboTaxiCostParameters) {
+        FleetCostElement fleetCostElement = new FleetCostElement(roboTaxiCostFunction, roboTaxiCostParameters);
+        analysisExports.add(fleetCostElement);
+        totalValues.append(fleetCostElement);
+    }
+
     public void run() throws Exception {
         // Iteration over all Simulation Objects
         for (int index = 0; index < size; ++index) {
@@ -182,8 +224,10 @@ public class Analysis {
                 System.out.println(simulationObject.now);
         }
 
-        // create plots and carry out other analysis on the data for each Analysis Element
-        // TODO Find more effective way to give the relative Directory to the compile Function --> Jan
+        // create plots and carry out other analysis on the data for each Analysis
+        // Element
+        // TODO Find more effective way to give the relative Directory to the compile
+        // Function --> Jan
         analysisElements.forEach(AnalysisElement::consolidate);
 
         for (AnalysisExport analysisExport : analysisExports)

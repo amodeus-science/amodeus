@@ -34,13 +34,13 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
     private final Map<Integer, RoboTaxi> idRoboTaxiMap = new HashMap<>();
     private final Map<Integer, AVRequest> idRequestMap = new HashMap<>();
     private final FastLinkLookup fastLinkLookup;
-    private final StringClientSocket clientSocket;
+    private final StringSocket clientSocket;
     private final int dispatchPeriod;
     private AidoScoreCompiler scoreCompiler;
 
     protected AidoDispatcherHost(Network network, Config config, AVDispatcherConfig avDispatcherConfig, TravelTime travelTime,
             ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, EventsManager eventsManager, //
-            StringClientSocket clientSocket) {
+            StringSocket clientSocket) {
         super(config, avDispatcherConfig, travelTime, parallelLeastCostPathCalculator, eventsManager);
         this.clientSocket = Objects.requireNonNull(clientSocket);
         this.fastLinkLookup = new FastLinkLookup(network, MatsimStaticDatabase.INSTANCE);
@@ -88,7 +88,7 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
                 Tensor rebalances = commands.get(1);
                 for (Tensor rebalance : rebalances) {
                     RoboTaxi roboTaxi = idRoboTaxiMap.get(rebalance.Get(0).number().intValue());
-                    Link link = fastLinkLookup.getLinkCHANGENAME(TensorCoords.toCoord(rebalance.get(1)));
+                    Link link = fastLinkLookup.getLinkFromWGS84(TensorCoords.toCoord(rebalance.get(1)));
                     setRoboTaxiRebalance(roboTaxi, link);
                 }
             } catch (Exception e) {
@@ -117,7 +117,7 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
         private Config config;
 
         @Inject
-        private StringClientSocket stringSocket;
+        private StringSocket stringSocket;
 
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig) {

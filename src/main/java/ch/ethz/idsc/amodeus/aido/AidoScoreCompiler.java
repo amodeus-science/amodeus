@@ -42,7 +42,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         SimulationObjectCompiler soc = SimulationObjectCompiler.create(time, "inser empty as unused", -1);
         soc.insertVehicles(roboTaxis);
         distElem.register(soc.compile());
-        distElem.consolidate();
+//        distElem.consolidate();
         Scalar distCst = distElem.getNewestDistances().Get(1);
         Scalar distTot = distElem.getNewestDistances().Get(0);
 
