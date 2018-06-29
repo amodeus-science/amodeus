@@ -70,7 +70,7 @@ public class SharedAVMenu {
      * @param sharedAVMenu */
     public void replaceWith(SharedAVMenu sharedAVMenu) {
         GlobalAssert.that(containsSameCourses(sharedAVMenu));
-        roboTaxiMenu.clear();
+        clearWholeMenu();
         GlobalAssert.that(roboTaxiMenu.isEmpty());
         roboTaxiMenu.addAll(sharedAVMenu.getCourses());
     }
@@ -92,6 +92,10 @@ public class SharedAVMenu {
     /* package */ void removeCourse(SharedAVCourse sharedAVCourse) {
         GlobalAssert.that(containsCourse(sharedAVCourse));
         roboTaxiMenu.remove(sharedAVCourse);
+    }
+
+    public void clearWholeMenu() {
+        roboTaxiMenu.clear();
     }
 
     // **************************************************

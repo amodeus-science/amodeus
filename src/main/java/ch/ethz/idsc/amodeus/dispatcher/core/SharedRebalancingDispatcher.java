@@ -20,7 +20,7 @@ public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatc
         super(config, avDispatcherConfig, travelTime, parallelLeastCostPathCalculator, eventsManager);
     }
 
-    /** Commant do rebalance {@link RoboTaxi} to a certain {@link Link} destination. The {@link RoboTaxi} appears as
+    /** Command to rebalance {@link RoboTaxi} to a certain {@link Link} destination. The {@link RoboTaxi} appears as
      * Rebalancing in the visualizer afterwards. Can only be used for {@link RoboTaxi} which are without a customer.
      * Function can only be invoked one time in each iteration of {@link VehicleMainatainer.redispatch}
      * 
@@ -28,6 +28,9 @@ public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatc
      * @param destination */
     protected final void setRoboTaxiRebalance(final RoboTaxi roboTaxi, final Link destination) {
         GlobalAssert.that(roboTaxi.isWithoutCustomer());
+        // Clear menu and put requests back to pending requests taking them out from request and pickup register.
+        cleanRoboTaxiMenuAndAbandonAssignedRequests(roboTaxi);
+        GlobalAssert.that(!roboTaxi.getMenu().hasStarter());
         setRoboTaxiDiversion(roboTaxi, destination, RoboTaxiStatus.REBALANCEDRIVE);
         eventsManager.processEvent(RebalanceVehicleEvent.create(getTimeNow(), roboTaxi, destination));
     }

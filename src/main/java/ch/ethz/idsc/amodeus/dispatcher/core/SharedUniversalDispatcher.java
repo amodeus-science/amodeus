@@ -1,5 +1,6 @@
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -52,8 +53,8 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
     private final Map<AVRequest, RoboTaxi> pickupRegister = new HashMap<>(); // new RequestRegister
     private final Map<RoboTaxi, Map<Id<Request>, AVRequest>> requestRegister = new HashMap<>();
     private final Map<AVRequest, RoboTaxi> periodFulfilledRequests = new HashMap<>(); // new
-                                                                                            // temporaryRequestRegister
-                                                                                            // for fulfilled requests
+                                                                                      // temporaryRequestRegister
+                                                                                      // for fulfilled requests
     private final Map<AVRequest, RequestStatus> reqStatuses = new HashMap<>(); // Storing the Request Statuses for the
                                                                                // SimObjects
     private final double pickupDurationPerStop;
@@ -249,7 +250,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
                     FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer( //
                             sRoboTaxi.getDivertableLocation(), destination, sRoboTaxi.getDivertableTime());
 
-                    sRoboTaxi.assignDirective(new SharedGeneralDriveDiversionDirective(sRoboTaxi, destination, futurePathContainer, getTimeNow()));
+                    sRoboTaxi.assignDirective(new DriveVehicleDiversionDirective(sRoboTaxi, destination, futurePathContainer));
 
                 } else
                     sRoboTaxi.assignDirective(EmptyDirective.INSTANCE);
@@ -462,6 +463,20 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         GlobalAssert.that(pickupRegister.size() <= pendingRequests.size());
     }
 
+    /** Cleans menu for {@link RoboTaxi} and moves all previously assigned {@link AVRequest} back to pending requests taking them out from request- and pickup-
+     * Registers. */
+    /* package */ final void cleanRoboTaxiMenuAndAbandonAssignedRequests(RoboTaxi roboTaxi) {
+        roboTaxi.getMenu().clearWholeMenu();
+        requestRegister.get(roboTaxi).entrySet().stream().forEach(entry -> {
+            pendingRequests.add(entry.getValue());
+            pickupRegister.remove(entry.getValue());
+        });
+        requestRegister.remove(roboTaxi);
+        GlobalAssert.that(!roboTaxi.getMenu().hasStarter());
+        GlobalAssert.that(!requestRegister.containsKey(roboTaxi));
+        GlobalAssert.that(!pickupRegister.values().contains(roboTaxi));
+    }
+
     /** Consistency checks to be called by
      * {@linksRoboTaxiMaintainer.consistencyCheck} in each iteration. */
     @Override
@@ -475,6 +490,16 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 
         // containment check pickupRegister and pendingRequests
         pickupRegister.keySet().forEach(r -> GlobalAssert.that(pendingRequests.contains(r)));
+
+        // Menus do not Contain duplicate requests
+        List<AVRequest> menusRequests = new ArrayList<>();
+        getRoboTaxis().stream().filter(rt -> rt.getMenu().hasStarter())
+                .forEach(rtx -> rtx.getMenu().getCourses().stream().forEach(c -> menusRequests.add(requestRegister.get(rtx).get(c.getRequestId()))));
+        Set<AVRequest> uniqueMenusRequests = new HashSet<>(menusRequests);
+        // TODO Check
+        GlobalAssert.that(menusRequests.size() == uniqueMenusRequests.size() * 2);
+
+        // TODO menus requests match pickup register, request register.
 
     }
 
