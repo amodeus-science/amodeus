@@ -172,8 +172,8 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 		pickupRegister.put(avRequest, sRoboTaxi);
 		requestRegister.get(sRoboTaxi).put(avRequest.getId(), avRequest);
 
-		sRoboTaxi.getMenu().addAVCourseAsaDessert(new SharedAVCourse(avRequest.getId(), SharedAVMealType.PICKUP));
-		sRoboTaxi.getMenu().addAVCourseAsaDessert(new SharedAVCourse(avRequest.getId(), SharedAVMealType.DROPOFF));
+		sRoboTaxi.getMenu().addAVCourseAsDessert(new SharedAVCourse(avRequest.getId(), SharedAVMealType.PICKUP));
+		sRoboTaxi.getMenu().addAVCourseAsDessert(new SharedAVCourse(avRequest.getId(), SharedAVMealType.DROPOFF));
 
 		reqStatuses.put(avRequest, RequestStatus.ASSIGNED);
 
@@ -201,7 +201,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 																			// Time Step
 				RoboTaxiStatus avStatus = null;
 				Link destLink = getStarterLink(sharedRoboTaxi);
-				if (menu.getSharedAVStarter().getPickupOrDropOff().equals(SharedAVMealType.PICKUP)) {
+				if (menu.getStarterCourse().getPickupOrDropOff().equals(SharedAVMealType.PICKUP)) {
 					avStatus = sharedRoboTaxi.getCurrentNumberOfCustomersOnBoard() > 0
 							? RoboTaxiStatus.DRIVEWITHCUSTOMER
 							: RoboTaxiStatus.DRIVETOCUSTOMER;
@@ -228,7 +228,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 	 * @return The Next Link based on the menu and the request Register.
 	 */
 	private Link getStarterLink(SharedRoboTaxi sRoboTaxi) {
-		SharedAVCourse course = sRoboTaxi.getMenu().getSharedAVStarter();
+		SharedAVCourse course = sRoboTaxi.getMenu().getStarterCourse();
 		AVRequest avR = requestRegister.get(sRoboTaxi).get(course.getRequestId());
 		if (course.getPickupOrDropOff().equals(SharedAVMealType.PICKUP)) {
 			return avR.getFromLink();
@@ -385,7 +385,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 
 		sRoboTaxi.dropOffCustomer();
 
-		SharedAVCourse nextCourse = sRoboTaxi.getMenu().getSharedAVStarter();
+		SharedAVCourse nextCourse = sRoboTaxi.getMenu().getStarterCourse();
 		FuturePathContainer futurePathContainer = (nextCourse != null)
 				? futurePathFactory.createFuturePathContainer(avRequest.getToLink(), getStarterLink(sRoboTaxi),
 						endDropOffTime)
@@ -432,7 +432,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 		// way
 		Set<SharedRoboTaxi> uniqueRt = new HashSet<>();
 		pickupRegisterCopy.values().stream()
-				.filter(srt -> srt.getMenu().getSharedAVStarter().getPickupOrDropOff().equals(SharedAVMealType.PICKUP))
+				.filter(srt -> srt.getMenu().getStarterCourse().getPickupOrDropOff().equals(SharedAVMealType.PICKUP))
 				.forEach(rt -> uniqueRt.add(rt));
 		for (SharedRoboTaxi sRt : uniqueRt) {
 			Link pickupVehicleLink = sRt.getDivertableLocation();
@@ -442,7 +442,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 																											// AVDriveTask;
 																											// //
 
-			SharedAVCourse currentCourse = sRt.getMenu().getSharedAVStarter();
+			SharedAVCourse currentCourse = sRt.getMenu().getStarterCourse();
 			AVRequest avR = requestRegister.get(sRt).get(currentCourse.getRequestId());
 
 			GlobalAssert.that(pendingRequests.contains(avR));
@@ -469,7 +469,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 			boolean isOk = dropoffVehicle.getSchedule().getCurrentTask() == Schedules
 					.getLastTask(dropoffVehicle.getSchedule()); // instanceof AVDriveTask;
 
-			SharedAVCourse currentCourse = dropoffVehicle.getMenu().getSharedAVStarter();
+			SharedAVCourse currentCourse = dropoffVehicle.getMenu().getStarterCourse();
 			AVRequest avR = requestRegister.get(dropoffVehicle).get(currentCourse.getRequestId());
 
 			if (currentCourse.getPickupOrDropOff().equals(SharedAVMealType.DROPOFF)

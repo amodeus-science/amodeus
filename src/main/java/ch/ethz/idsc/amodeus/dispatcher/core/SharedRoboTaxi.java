@@ -1,8 +1,5 @@
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 
@@ -31,7 +28,7 @@ public class SharedRoboTaxi extends AbstractRoboTaxi {
 
 	/* package */ void pickupNewCustomerOnBoard() {
 		GlobalAssert.that(canPickupNewCustomer());
-		GlobalAssert.that(menu.getSharedAVStarter().getPickupOrDropOff().equals(SharedAVMealType.PICKUP));
+		GlobalAssert.that(menu.getStarterCourse().getPickupOrDropOff().equals(SharedAVMealType.PICKUP));
 		onBoardCustomers++;
 		menu.removeAVCourse(0);
 	}
@@ -47,7 +44,7 @@ public class SharedRoboTaxi extends AbstractRoboTaxi {
 	/* package */ void dropOffCustomer() {
 		GlobalAssert.that(onBoardCustomers > 0);
 		GlobalAssert.that(onBoardCustomers <= getCapacity());
-		GlobalAssert.that(menu.getSharedAVStarter().getPickupOrDropOff().equals(SharedAVMealType.DROPOFF));
+		GlobalAssert.that(menu.getStarterCourse().getPickupOrDropOff().equals(SharedAVMealType.DROPOFF));
 		onBoardCustomers--;
 		menu.removeAVCourse(0);
 	}
@@ -66,7 +63,7 @@ public class SharedRoboTaxi extends AbstractRoboTaxi {
 
 	public boolean checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity() {
 		int futureNumberCustomers = getCurrentNumberOfCustomersOnBoard();
-		for (SharedAVCourse sharedAVCourse : menu.getCurrentSharedAVMenu()) {
+		for (SharedAVCourse sharedAVCourse : menu.getCourses()) {
 			if (sharedAVCourse.getPickupOrDropOff().equals(SharedAVMealType.PICKUP)) {
 				futureNumberCustomers++;
 			} else if (sharedAVCourse.getPickupOrDropOff().equals(SharedAVMealType.DROPOFF)) {
@@ -111,5 +108,6 @@ public class SharedRoboTaxi extends AbstractRoboTaxi {
 	// public int getNumberOfCustomersOnBoard() {
 	// return onBoardRequests.size();
 	// }
+	
 
 }
