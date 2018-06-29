@@ -110,6 +110,10 @@ public abstract class AbstractRoboTaxi {
     public int getCapacity() {
         return (int) avVehicle.getCapacity();
     }
+    
+    public boolean isDivertable() {
+        return isWithoutDirective() && isWithoutCustomer() && notDrivingOnLastLink();
+    }
 
     // ===================================================================================
     // methods to be used by Core package

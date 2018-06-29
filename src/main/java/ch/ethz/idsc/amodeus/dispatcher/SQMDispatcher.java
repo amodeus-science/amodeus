@@ -144,7 +144,7 @@ public class SQMDispatcher extends PartitionedDispatcher {
             Coord coord = TensorCoords.toCoord(node.getCoord());
 
             // find the closest link
-            int index = fastLinkLookup.getLinkFromXY(coord);
+            int index = fastLinkLookup.getLinkIndexFromXY(coord);
             Link closest = MatsimStaticDatabase.INSTANCE.getOsmLink(index).link;
 
             list.add(closest);

@@ -112,9 +112,7 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
     /** @return {@Collection} of {@RoboTaxi} which can be redirected during iteration */
     protected final Collection<UnitCapRoboTaxi> getDivertableRoboTaxis() {
         return getRoboTaxis().stream() //
-                .filter(UnitCapRoboTaxi::isWithoutDirective) //
-                .filter(UnitCapRoboTaxi::isWithoutCustomer) //
-                .filter(UnitCapRoboTaxi::notDrivingOnLastLink) //
+                .filter(UnitCapRoboTaxi::isDivertable)//
                 .collect(Collectors.toList());
     }
 

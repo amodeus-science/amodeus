@@ -121,8 +121,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
      * @return {@Collection} of {@RoboTaxi} which can be redirected during iteration */
     protected final Collection<SharedRoboTaxi> getDivertableRoboTaxis() {
         return getRoboTaxis().stream() //
-                .filter(SharedRoboTaxi::isWithoutDirective) //
-                .filter(SharedRoboTaxi::notDrivingOnLastLink) //
+                .filter(SharedRoboTaxi::isDivertable) //
                 .collect(Collectors.toList());
     }
 

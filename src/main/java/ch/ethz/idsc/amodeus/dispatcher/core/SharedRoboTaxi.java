@@ -26,6 +26,10 @@ public class SharedRoboTaxi extends AbstractRoboTaxi {
         menu = sharedRoboTaxi.menu;
     }
 
+    @Override
+    public boolean isDivertable() {
+        return isWithoutDirective() && notDrivingOnLastLink();
+    }
     /* package */ void pickupNewCustomerOnBoard() {
         GlobalAssert.that(canPickupNewCustomer());
         GlobalAssert.that(menu.getStarterCourse().getPickupOrDropOff().equals(SharedAVMealType.PICKUP));
