@@ -35,7 +35,7 @@ public class DistanceElementHtml implements HtmlReportElement {
                 "\nAverage Trip Distance:" //
         );
         aRElement.getHTMLGenerator().insertTextLeft("\n" + DECIMAL.format(de.totalDistanceRatio * 100) + "%" + //
-                "\n" + DECIMAL.format(Mean.of(de.occupancyTensor).Get().number().doubleValue() * 100) + " %" + //
+                "\n" + DECIMAL.format(de.avgOccupancy * 100) + " %" + //
                 "\n\n" + //
                 "\n" + DECIMAL.format(de.totalDistance) + " km" + //
                 "\n" + DECIMAL.format(de.totalDistanceRebal) + " km (" + //
