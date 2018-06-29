@@ -40,6 +40,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         if (newEndTime < scheduleEndTime) {
 
             try {
+                onlineDriveTaskTracker.divertPath(vrpPathWithTravelData);
                 GlobalAssert.that(VrpPathUtils.isConsistent(avDriveTask.getPath()));
 
                 final int lengthOfCombination = avDriveTask.getPath().getLinkCount();
