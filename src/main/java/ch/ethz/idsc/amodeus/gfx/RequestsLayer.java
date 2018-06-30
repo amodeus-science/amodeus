@@ -133,14 +133,15 @@ public class RequestsLayer extends ViewerLayer {
                     Long numNotPickedUp = entry.getValue().stream() //
                             .filter(rc -> isWaiting(rc)) //
                             .collect(Collectors.counting());
-                    graphics.drawString("" + numNotPickedUp, x, y); // - numRequests
+                    String printValue = (numNotPickedUp > 0) ? "" + numNotPickedUp : "";
+                    graphics.drawString(printValue, x, y); // - numRequests
                 }
             }
         }
     }
 
     private static boolean isWaiting(RequestContainer requestContainer) {
-        return requestContainer.requestStatus.compareTo(RequestStatus.PICKUP) <= 0;
+        return requestContainer.requestStatus.compareTo(RequestStatus.PICKUP) < 0;
     }
 
     @Override
