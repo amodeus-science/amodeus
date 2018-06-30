@@ -476,15 +476,17 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
     /** Cleans menu for {@link RoboTaxi} and moves all previously assigned {@link AVRequest} back to pending requests taking them out from request- and pickup-
      * Registers. */
     /* package */ final void cleanRoboTaxiMenuAndAbandonAssignedRequests(RoboTaxi roboTaxi) {
+        GlobalAssert.that(roboTaxi.isWithoutCustomer());
         roboTaxi.getMenu().clearWholeMenu();
         requestRegister.get(roboTaxi).entrySet().stream().forEach(entry -> {
-            pendingRequests.add(entry.getValue());
+            pendingRequests.add(entry.getValue());        
+            reqStatuses.put(entry.getValue(),RequestStatus.REQUESTED);
             pickupRegister.remove(entry.getValue());
         });
         requestRegister.remove(roboTaxi);
         GlobalAssert.that(!roboTaxi.getMenu().hasStarter());
         GlobalAssert.that(!requestRegister.containsKey(roboTaxi));
-        GlobalAssert.that(!pickupRegister.values().contains(roboTaxi));
+        GlobalAssert.that(!pickupRegister.containsValue(roboTaxi));
     }
 
     /** Consistency checks to be called by
