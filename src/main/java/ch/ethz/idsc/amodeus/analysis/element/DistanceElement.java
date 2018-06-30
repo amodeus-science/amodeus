@@ -19,6 +19,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.Join;
 import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.red.Mean;
@@ -102,21 +103,18 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
         totalDistancePicku = distPicku.stream().reduce(Tensor::add).get().Get().number().doubleValue();
         totalDistanceRebal = distRebal.stream().reduce(Tensor::add).get().Get().number().doubleValue();
         totalDistanceRatio = totalDistanceWtCst / totalDistance;
-        avgTripDistance = totalDistanceWtCst / (double) requestIndices.size();
+        avgTripDistance = totalDistanceWtCst / requestIndices.size();
         ratios = Transpose.of(Join.of(Tensors.of(occupancyTensor), Tensors.of(distRatio)));
 
     }
 
     /** @return newest distances available {distTotal,distWtCst} */
     public Tensor getNewestDistances() {
-
-        Scalar distTotal = RealScalar.ZERO;
-        list.stream().forEach(vs -> distTotal.add(vs.getLatestRecordings().Get(0)));
-
-        Scalar distCustr = RealScalar.ZERO;
-        list.stream().forEach(vs -> distCustr.add(vs.getLatestRecordings().Get(1)));
-
-        return Tensors.of(distTotal, distCustr);
+        return list.stream() //
+                .map(VehicleStatistic::getLatestRecordings) //
+                .map(tensor -> tensor.extract(0, 2)) //
+                .reduce(Tensor::add) //
+                .orElse(Array.zeros(2));
     }
 
     @Override

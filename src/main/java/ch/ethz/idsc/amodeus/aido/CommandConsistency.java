@@ -2,6 +2,7 @@
 package ch.ethz.idsc.amodeus.aido;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Tensor;
@@ -20,8 +21,8 @@ import ch.ethz.idsc.tensor.Tensor;
 
         /** 1) ensure every RoboTaxi should be in {0,1} of the commands
          ** 2) ensure every request should only be assigned {0,1} times */
-        HashSet<Integer> usdRobTaxis = new HashSet<>();
-        HashSet<Integer> usedPickups = new HashSet<>();
+        Set<Integer> usdRobTaxis = new HashSet<>();
+        Set<Integer> usedPickups = new HashSet<>();
 
         Tensor pickups = commands.get(0);
         for (Tensor pickup : pickups) {
