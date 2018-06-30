@@ -6,7 +6,10 @@ import java.net.Socket;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+// TODO JAN RELEASE upgrade to tensor v056
+// TODO JAN RELEASE move class to generic location
 public class StringServerSocket implements AutoCloseable {
+    // TODO JAN RELEASE remove default port
     public static final int DEFAULT_PORT = 9382;
     // ---
     private final ServerSocket serverSocket;
