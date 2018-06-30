@@ -11,10 +11,9 @@ import java.util.stream.Collectors;
 
 import org.matsim.api.core.v01.network.Link;
 
-import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RequestStatus;
-import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
@@ -46,8 +45,12 @@ public class SharedSimulationObjectCompiler {
         }
     }
 
-    public void insertFulfilledRequests(Collection<AVRequest> requestRegister) {
-        requestRegister.forEach(a -> insertRequest(a, RequestStatus.DROPOFF));
+    public void insertFulfilledRequests(Collection<AVRequest> dropedOffRequests) {
+        dropedOffRequests.forEach(a -> insertRequest(a, RequestStatus.DROPOFF));
+    }
+
+    public void insertPickedUpRequests(Collection<AVRequest> dropedOffRequests) {
+        dropedOffRequests.forEach(a -> insertRequest(a, RequestStatus.PICKUP));
     }
 
     public void insertVehicles(List<RoboTaxi> robotaxis) {

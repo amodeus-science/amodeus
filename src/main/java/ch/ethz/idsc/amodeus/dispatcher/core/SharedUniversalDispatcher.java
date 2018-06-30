@@ -52,7 +52,8 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
     private final Set<AVRequest> pendingRequests = new LinkedHashSet<>();
     private final Map<AVRequest, RoboTaxi> pickupRegister = new HashMap<>(); // new RequestRegister
     private final Map<RoboTaxi, Map<Id<Request>, AVRequest>> requestRegister = new HashMap<>();
-    private final Map<AVRequest, RoboTaxi> periodFulfilledRequests = new HashMap<>(); // new
+    private final Set<AVRequest> periodPickedUpRequests = new HashSet<>(); // new
+    private final Set<AVRequest> periodFulfilledRequests = new HashSet<>(); // new
                                                                                       // temporaryRequestRegister
                                                                                       // for fulfilled requests
     private final Map<AVRequest, RequestStatus> reqStatuses = new HashMap<>(); // Storing the Request Statuses for the
@@ -315,7 +316,8 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
             GlobalAssert.that(sRoboTaxi == former);
         }
         sRoboTaxi.setStatus(RoboTaxiStatus.DRIVEWITHCUSTOMER);
-        reqStatuses.put(avRequest, RequestStatus.PICKUP);
+        reqStatuses.put(avRequest, RequestStatus.DRIVING);
+        periodPickedUpRequests.add(avRequest);
         // TODO Why are we doing this exactely here?
         consistencySubCheck();
 
@@ -349,7 +351,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 
         // save avRequests which are matched for one publishPeriod to ensure no requests
         // are lost in the recording.
-        periodFulfilledRequests.put(avRequest, sRoboTaxi);
+        periodFulfilledRequests.add(avRequest);
 
         final Schedule schedule = sRoboTaxi.getSchedule();
         // check that current task is last task in schedule
@@ -537,8 +539,11 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
                     round_now, getInfoLine(), total_matchedRequests);
 
             simulationObjectCompiler.insertRequests(reqStatuses);
-            simulationObjectCompiler.insertFulfilledRequests(periodFulfilledRequests.keySet());
-
+            simulationObjectCompiler.insertFulfilledRequests(periodFulfilledRequests);
+            periodFulfilledRequests.clear();
+            simulationObjectCompiler.insertPickedUpRequests(periodPickedUpRequests);
+            periodPickedUpRequests.clear();
+            
             simulationObjectCompiler.insertVehicles(getRoboTaxis());
             SimulationObject simulationObject = simulationObjectCompiler.compile();
 
@@ -549,7 +554,6 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
                 SimulationDistribution.of(simulationObject, storageUtils);
             }
 
-            periodFulfilledRequests.clear();
         }
     }
 
