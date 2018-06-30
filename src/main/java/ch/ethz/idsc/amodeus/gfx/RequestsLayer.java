@@ -141,7 +141,7 @@ public class RequestsLayer extends ViewerLayer {
     }
 
     private static boolean isWaiting(RequestContainer requestContainer) {
-        return requestContainer.requestStatus.compareTo(RequestStatus.PICKUP) < 0;
+        return requestContainer.requestStatus.unServiced();
     }
 
     @Override
