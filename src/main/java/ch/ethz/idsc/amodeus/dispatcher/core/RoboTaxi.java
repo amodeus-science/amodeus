@@ -156,7 +156,7 @@ public class RoboTaxi {
 
     /** @return true if robotaxi is without a customer */
     /* package */ boolean isWithoutCustomer() {
-        // For now this works with universal dispatcher i.e. unit cap robotaxis as number of customers is never changed
+        // For now this works with universal dispatcher i.e. single used robotaxis as number of customers is never changed
         return !status.equals(RoboTaxiStatus.DRIVEWITHCUSTOMER) && onBoardCustomers == 0;
     }
 
@@ -223,9 +223,13 @@ public class RoboTaxi {
         directive.execute();
         directive = null;
     }
+    
+    public RoboTaxiUsageType getUsageType() {
+        return usageType;
+    }
 
     // **********************************************
-    // Definition Of Divertable
+    // Definition Of Divertable depends on usage
     // **********************************************
 
     public boolean isDivertable() {
