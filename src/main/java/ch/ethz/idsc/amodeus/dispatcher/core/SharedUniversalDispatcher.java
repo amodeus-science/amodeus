@@ -369,7 +369,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         // robotaxis in map but with no requests assigned.
         if (nextCourse == null)
             requestRegister.remove(sRoboTaxi);
-        
+
         reqStatuses.remove(avRequest);
         total_dropedOffRequests++;
     }
@@ -461,11 +461,12 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
      * this {@link AVRequest} in the meantime */
     @Override
     /* package */ final void stopAbortedPickupRoboTaxis() {
-
+        // FIXME This function has to be checked. might not even be nesscesary anymore...
         // stop vehicles still driving to a request but other taxi serving that request
         // already
         getRoboTaxis().stream()//
-                .filter(rt -> rt.getStatus().equals(RoboTaxiStatus.DRIVETOCUSTOMER))//
+                .filter(rt -> rt.getStatus().equals(RoboTaxiStatus.DRIVETOCUSTOMER))// FIXME this is not nesscesary true for shared taxis It is possible that a robotaxi is on a
+                                                                                    // dropofftrip when the request is canceled..
                 .filter(rt -> !pickupRegister.containsValue(rt))//
                 .filter(RoboTaxi::canPickupNewCustomer)//
                 .filter(RoboTaxi::isWithoutDirective)//
@@ -479,8 +480,8 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         GlobalAssert.that(roboTaxi.isWithoutCustomer());
         roboTaxi.getMenu().clearWholeMenu();
         requestRegister.get(roboTaxi).entrySet().stream().forEach(entry -> {
-            pendingRequests.add(entry.getValue());        
-            reqStatuses.put(entry.getValue(),RequestStatus.REQUESTED);
+            pendingRequests.add(entry.getValue());
+            reqStatuses.put(entry.getValue(), RequestStatus.REQUESTED);
             pickupRegister.remove(entry.getValue());
         });
         requestRegister.remove(roboTaxi);
