@@ -6,7 +6,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class StringSocket {
+// TODO JAN RELEASE move class to generic location
+public class StringSocket implements AutoCloseable {
     private final Socket socket;
     private final PrintWriter writer;
     private final BufferedReader reader; //
@@ -18,31 +19,10 @@ public class StringSocket {
         writer = new PrintWriter(socket.getOutputStream(), true);
         writer.flush();
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-        Thread myThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-
-                    while (launched) {
-                        Thread.sleep(1000);
-                        // String line = reader.readLine();
-                        // handle(line);
-                    }
-                } catch (Exception myException) {
-                    if (launched) {
-                        message("stop read");
-                        // myException.printStackTrace();
-                    }
-                }
-                launched = false;
-            }
-        });
-        myThread.start();
     }
 
-    public synchronized void writeln(Object line) throws Exception {
-        writer.write(line + "\n");
+    public synchronized void writeln(Object object) throws Exception {
+        writer.write(object.toString() + "\n");
         writer.flush();
     }
 
@@ -50,6 +30,7 @@ public class StringSocket {
         return launched;
     }
 
+    @Override
     public void close() {
         launched = false;
         try {
@@ -57,10 +38,6 @@ public class StringSocket {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private void message(String message) {
-        System.out.println(getClass().getSimpleName() + ": " + message);
     }
 
     public String readLine() throws Exception {
