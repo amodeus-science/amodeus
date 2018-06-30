@@ -2,7 +2,9 @@ package ch.ethz.idsc.amodeus.dispatcher.shared;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.matsim.api.core.v01.Id;
 import org.matsim.contrib.dvrp.data.Request;
@@ -148,6 +150,16 @@ public class SharedAVMenu {
         return indeces;
     }
 
+    public Set<Id<Request>> getUniqueAVRequests() {
+        Set<Id<Request>> ids = new HashSet<>();
+        roboTaxiMenu.forEach(savc -> ids.add(savc.getRequestId()));
+        return ids;
+    }
+    
+    public void printMenu() {
+        roboTaxiMenu.forEach(course -> System.out.println(course.getRequestId().toString() + ":\t" + course.getPickupOrDropOff().name()));
+    }
+    
     // **************************************************
     // CHECK FUNCTIONS
     // **************************************************
@@ -227,6 +239,10 @@ public class SharedAVMenu {
         return (roboTaxiMenu.size() != sharedAVMenu.getCourses().size()) ? //
                 false : //
                 sharedAVMenu.getCourses().containsAll(roboTaxiMenu);
+    }
+
+    public boolean checkAllCoursesAppearOnlyOnce() {
+        return (new HashSet<>(roboTaxiMenu)).size() == roboTaxiMenu.size();
     }
 
 }

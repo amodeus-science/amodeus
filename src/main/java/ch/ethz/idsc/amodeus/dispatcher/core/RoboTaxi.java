@@ -172,6 +172,9 @@ public class RoboTaxi {
      *            in the core package, directives will be issued automatically
      *            when setVehiclePickup, setVehicleRebalance are called. */
     /* package */ void assignDirective(AbstractDirective abstractDirective) {
+        if (!isWithoutDirective()) {
+            System.out.println("here");
+        }
         GlobalAssert.that(isWithoutDirective());
         this.directive = abstractDirective;
     }
@@ -276,6 +279,12 @@ public class RoboTaxi {
 
     public SharedAVMenu getMenu() {
         return menu;
+    }
+    
+    public boolean checkMenuConsistency() {
+        return menu.checkAllCoursesAppearOnlyOnce() && //
+                menu.checkNoPickupAfterDropoffOfSameRequest() && //
+                checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity();
     }
 
     public boolean checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity() {

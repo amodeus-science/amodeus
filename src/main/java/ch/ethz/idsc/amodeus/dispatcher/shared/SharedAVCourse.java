@@ -1,5 +1,7 @@
 package ch.ethz.idsc.amodeus.dispatcher.shared;
 
+import java.util.Objects;
+
 import org.matsim.api.core.v01.Id;
 import org.matsim.contrib.dvrp.data.Request;
 
@@ -33,6 +35,12 @@ public class SharedAVCourse {
             return course.getRequestId() == requestId && course.getPickupOrDropOff().equals(pickupOrDropOff);
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        // TODO @ Jan: is this a valid hash code generadtion? such that it fulfills the case that two codes are equal if both the id and pickupordropoff are equal?
+        return Objects.hash(requestId, pickupOrDropOff);
     }
 
     public SharedAVMealType getPickupOrDropOff() {

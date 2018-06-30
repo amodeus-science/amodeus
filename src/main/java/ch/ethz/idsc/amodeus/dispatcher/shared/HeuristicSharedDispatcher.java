@@ -1,15 +1,20 @@
 package ch.ethz.idsc.amodeus.dispatcher.shared;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
+import java.util.Set;
 
+import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.api.core.v01.network.Node;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
+import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.router.util.TravelTime;
 
 import com.google.inject.Inject;
@@ -26,8 +31,8 @@ import ch.ethz.idsc.amodeus.dispatcher.util.HungarBiPartVehicleDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNode;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
@@ -39,6 +44,7 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
 public class HeuristicSharedDispatcher extends SharedPartitionedDispatcher {
 
+    private static final double MAXSHAREDISTANCE = 2000;
     public final int dispatchPeriod;
     public final int rebalancingPeriod;
     final AbstractVirtualNodeDest virtualNodeDest;
@@ -84,102 +90,118 @@ public class HeuristicSharedDispatcher extends SharedPartitionedDispatcher {
         final long round_now = Math.round(now);
 
         if (round_now % dispatchPeriod == 0) {
-            if (getUnassignedAVRequests().size() >= 4) {
+            List<AVRequest> unassignedRequests = getUnassignedAVRequests();
+            Map<Link, Set<AVRequest>> unassignedFromLinks = getFromLinkMap(unassignedRequests);
+            Set<AVRequest> assignements = new HashSet<>();
+            Set<RoboTaxi> assignedRoboTaxis = new HashSet<>();
+            for (AVRequest avRequest : unassignedRequests) {
+                if (!assignements.contains(avRequest)) {
 
-                Map<VirtualNode<Link>, List<RoboTaxi>> availableVehicles = getVirtualNodeDivertableUnassignedRoboTaxi();
-                Map<VirtualNode<Link>, List<AVRequest>> availableRequests = getVirtualNodeRequests();
+                    Set<Link> closeFromLinks = getCloseLinks(avRequest.getFromLink().getCoord(), MAXSHAREDISTANCE, network);
 
-                for (Entry<VirtualNode<Link>, List<AVRequest>> entry : availableRequests.entrySet()) {
-
-                    if (!entry.getValue().isEmpty()) {
-
-                        int fixedCapacity = 4;
-
-                        List<AVRequest> avRequests = entry.getValue();
-                        Map<VirtualNode<Link>, List<AVRequest>> sameDestRequests = virtualNetwork.binToVirtualNode(avRequests, AVRequest::getToLink);
-                        Map<VirtualNode<Link>, List<AVRequest>> shareableRequests = sameDestRequests.entrySet().stream().filter(e -> e.getValue().size() > 1)
-                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-                        // Map<SharedRoboTaxi, List<AVRequest>> sharedAssignments = new HashMap<>();
-
-                        for (List<AVRequest> shReqsList : shareableRequests.values()) {
-                            int size = shReqsList.size();
-
-                            int numberOfTaxis = (int) Math.ceil((double) size / (double) fixedCapacity);
-
-                            availableVehicles = getVirtualNodeDivertableUnassignedRoboTaxi();
-
-                            List<RoboTaxi> taxisToPair = new ArrayList<>();
-                            if (availableVehicles.get(entry.getKey()).size() >= numberOfTaxis) {
-                                taxisToPair = availableVehicles.get(entry.getKey()).subList(0, numberOfTaxis - 1);
-                            } else {
-
-                                if (availableVehicles.get(entry.getKey()).size() > 0) {
-                                    taxisToPair = availableVehicles.get(entry.getKey()).subList(0, availableVehicles.get(entry.getKey()).size() - 1);
+                    Set<AVRequest> potentialMatches = new HashSet<>();
+                    for (Link fromLink : closeFromLinks) {
+                        if (unassignedFromLinks.containsKey(fromLink)) {
+                            for (AVRequest potentialMatch : unassignedFromLinks.get(fromLink)) {
+                                if (!assignements.contains(potentialMatch)) {
+                                    potentialMatches.add(potentialMatch);
                                 }
-
-                                List<RoboTaxi> otherVlTaxis = new ArrayList<>();
-                                availableVehicles.entrySet().stream().filter(e -> !e.getKey().equals(entry.getKey()))
-                                        .forEach(vl -> vl.getValue().stream().forEach(r -> otherVlTaxis.add(r)));
-                                taxisToPair.addAll(otherVlTaxis.subList(0, numberOfTaxis - taxisToPair.size() - 1));
-
                             }
-
-                            for (int i = 0; i < numberOfTaxis; i++) {
-                                List<AVRequest> subList = shReqsList.subList(i * fixedCapacity, Math.min((i + 1) * fixedCapacity, size));
-
-                                RoboTaxi sRt = taxisToPair.get(i);
-                                // Pair taxi to request
-                                subList.stream().forEach(avr -> addSharedRoboTaxiPickup(sRt, avr));
-                                // TODO reorder menu
-                                SharedAVMenu menu = taxisToPair.get(i).getMenu();
-                                List<Integer> pickupIndeces = menu.getPickupOrDropOffCoursesIndeces(SharedAVMealType.PICKUP);
-                                // SharedAVCourse sharedAVCourse = new SharedAVCourse(secondRequest.getId(), SharedAVMealType.PICKUP);
-
-                                // .moveAVCourseToPrev(sharedAVCourse);
-
-                            }
-
                         }
+                    }
 
-                        // TODO GBPM
-                        List<AVRequest> nonShareableOnes = sameDestRequests.values().stream().filter(l -> l.size() <= 1).map(l -> l.get(0)).collect(Collectors.toList());
+                    List<AVRequest> matchesAV = new ArrayList<>();
+                    Set<Link> closeToLinks = getCloseLinks(avRequest.getToLink().getCoord(), MAXSHAREDISTANCE, network);
+                    for (AVRequest potentialMatch : potentialMatches) {
+                        if (closeToLinks.contains(potentialMatch.getToLink())) {
+                            matchesAV.add(potentialMatch);
+                        }
+                    }
+                    if (matchesAV.contains(avRequest)) {
+                        matchesAV.remove(avRequest);
+                    }
 
-                        availableVehicles = getVirtualNodeDivertableUnassignedRoboTaxi();
+                    Collection<RoboTaxi> roboTaxis = getDivertableUnassignedRoboTaxisWithoutCustomer();
+                    if (!roboTaxis.isEmpty()) {
+                        RoboTaxi matchedRoboTaxi = findClostestVehicle(avRequest, roboTaxis);
+                        addSharedRoboTaxiPickup(matchedRoboTaxi, avRequest);
+                        assignements.add(avRequest);
+                        GlobalAssert.that(!assignedRoboTaxis.contains(matchedRoboTaxi));
+                        assignedRoboTaxis.add(matchedRoboTaxi);
+                        if (!matchesAV.isEmpty()) {
+                            List<SharedAVCourse> pickupMenu = new ArrayList<>();
+                            List<SharedAVCourse> dropoffMenu = new ArrayList<>();
+                            int numberAssignements = Math.min(matchedRoboTaxi.getCapacity(), matchesAV.size() + 1);
+
+                            List<AVRequest> sharingAssignments = matchesAV.subList(0, numberAssignements - 1);
+                            for (AVRequest avRequestShared : sharingAssignments) {
+                                addSharedRoboTaxiPickup(matchedRoboTaxi, avRequestShared);
+                                assignements.add(avRequestShared);
+                                pickupMenu.add(new SharedAVCourse(avRequestShared.getId(), SharedAVMealType.PICKUP));
+                                dropoffMenu.add(new SharedAVCourse(avRequestShared.getId(), SharedAVMealType.DROPOFF));
+                            }
+                            SharedAVMenu sharedAVMenu = new SharedAVMenu();
+                            sharedAVMenu.addAVCourseAsStarter(new SharedAVCourse(avRequest.getId(), SharedAVMealType.PICKUP));
+                            pickupMenu.forEach(course -> sharedAVMenu.addAVCourseAsDessert(course));
+                            sharedAVMenu.addAVCourseAsDessert(new SharedAVCourse(avRequest.getId(), SharedAVMealType.DROPOFF));
+                            dropoffMenu.forEach(course -> sharedAVMenu.addAVCourseAsDessert(course));
+                            GlobalAssert.that(sharedAVMenu.checkNoPickupAfterDropoffOfSameRequest());
+                            matchedRoboTaxi.getMenu().replaceWith(sharedAVMenu);
+                        }
 
                     }
                 }
-                //
-                // AVRequest firstRequest = getUnassignedAVRequests().get(0);
-                // AVRequest secondRequest = getUnassignedAVRequests().get(1);
-                // AVRequest thirdRequest = getUnassignedAVRequests().get(2);
-                // AVRequest fourthRequest = getUnassignedAVRequests().get(3);
-                //
-                // addSharedRoboTaxiPickup(sharedRoboTaxi, firstRequest);
-                //
-                // addSharedRoboTaxiPickup(sharedRoboTaxi, secondRequest);
-                // SharedAVCourse sharedAVCourse = new SharedAVCourse(secondRequest.getId(), SharedAVMealType.PICKUP);
-                //
-                // taxisToPair.get(i).getMenu().moveAVCourseToPrev(sharedAVCourse);
-                //
-                // addSharedRoboTaxiPickup(sharedRoboTaxi, thirdRequest);
-                // SharedAVCourse sharedAVCourse3 = new SharedAVCourse(thirdRequest.getId(), SharedAVMealType.PICKUP);
-                // sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse3);
-                // sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse3);
-                //
-                // addSharedRoboTaxiPickup(sharedRoboTaxi, fourthRequest);
-                // SharedAVCourse sharedAVCourse4 = new SharedAVCourse(fourthRequest.getId(), SharedAVMealType.PICKUP);
-                // sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse4);
-                // sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse4);
-                // sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse4);
 
-                // TODO CHECK the menu manipulation
             }
         }
-
     }
 
-    private Map<VirtualNode<Link>, List<RoboTaxi>> getVirtualNodeDivertableUnassignedRoboTaxi() {
-        return virtualNetwork.binToVirtualNode(getDivertableUnassignedRoboTaxis(), RoboTaxi::getDivertableLocation);
+    private static RoboTaxi findClostestVehicle(AVRequest avRequest, Collection<RoboTaxi> roboTaxis) {
+        GlobalAssert.that(roboTaxis != null);
+        RoboTaxi closestRoboTaxi = null;
+        double closestRoboTaxidistance = 10000000000.0;
+        for (RoboTaxi roboTaxi : roboTaxis) {
+            if (closestRoboTaxi == null) {
+                closestRoboTaxi = roboTaxi;
+                closestRoboTaxidistance = distanceRobotaxiRequest(avRequest, roboTaxi);
+            } else {
+                double newDistance = distanceRobotaxiRequest(avRequest, roboTaxi);
+                if (closestRoboTaxidistance > newDistance) {
+                    closestRoboTaxi = roboTaxi;
+                    closestRoboTaxidistance = newDistance;
+                }
+            }
+        }
+        return closestRoboTaxi;
+    }
+
+    private static double distanceRobotaxiRequest(AVRequest avRequest, RoboTaxi roboTaxi) {
+        return NetworkUtils.getEuclideanDistance(avRequest.getFromLink().getCoord(), roboTaxi.getDivertableLocation().getCoord());
+    }
+
+    private static Set<Link> getCloseLinks(Coord coord, double distance, Network network) {
+        Collection<Node> closeNodes = NetworkUtils.getNearestNodes(network, coord, distance);
+        GlobalAssert.that(!closeNodes.isEmpty());
+        Set<Link> closeLinks = new HashSet<>();
+        for (Link link : network.getLinks().values()) {
+            if (closeNodes.contains(link.getFromNode()) && closeNodes.contains(link.getToNode())) {
+                closeLinks.add(link);
+            }
+        }
+        GlobalAssert.that(!closeLinks.isEmpty());
+        return closeLinks;
+    }
+
+    private Map<Link, Set<AVRequest>> getFromLinkMap(Collection<AVRequest> avRequests) {
+        Map<Link, Set<AVRequest>> linkAVRequestMap = new HashMap<>();
+        for (AVRequest avRequest : avRequests) {
+            Link fromLink = avRequest.getFromLink();
+            if (!linkAVRequestMap.containsKey(fromLink)) {
+                linkAVRequestMap.put(fromLink, new HashSet<>());
+            }
+            linkAVRequestMap.get(fromLink).add(avRequest);
+        }
+        return linkAVRequestMap;
     }
 
     public static class Factory implements AVDispatcherFactory {

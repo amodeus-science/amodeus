@@ -107,12 +107,22 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
     }
 
     /** @return divertablesRoboTaxis which currently not on a pickup drive */
+    protected final Collection<RoboTaxi> getDivertableUnassignedRoboTaxisWithoutCustomer() {
+        Collection<RoboTaxi> roboTaxis = getDivertableUnassignedRoboTaxis().stream() //
+                .filter(rt -> rt.isWithoutCustomer()) //
+                .collect(Collectors.toList());
+        GlobalAssert.that(!roboTaxis.stream().anyMatch(pickupRegister::containsValue));
+        GlobalAssert.that(roboTaxis.stream().allMatch(RoboTaxi::isWithoutCustomer));
+        return roboTaxis;
+    }
+    
+    /** @return divertablesRoboTaxis which currently not on a pickup drive */
     protected final Collection<RoboTaxi> getDivertableUnassignedRoboTaxis() {
         Collection<RoboTaxi> divertableUnassignedRoboTaxis = getDivertableRoboTaxis().stream() //
                 .filter(rt -> !pickupRegister.containsValue(rt)) //
                 .collect(Collectors.toList());
         GlobalAssert.that(!divertableUnassignedRoboTaxis.stream().anyMatch(pickupRegister::containsValue));
-        GlobalAssert.that(divertableUnassignedRoboTaxis.stream().allMatch(RoboTaxi::isWithoutCustomer));
+        // GlobalAssert.that(divertableUnassignedRoboTaxis.stream().allMatch(RoboTaxi::isWithoutCustomer));
         return divertableUnassignedRoboTaxis;
     }
 
@@ -491,17 +501,24 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         // containment check pickupRegister and pendingRequests
         pickupRegister.keySet().forEach(r -> GlobalAssert.that(pendingRequests.contains(r)));
 
+        // check Menu consistency of each Robo Taxi
+        getRoboTaxis().stream().filter(rt -> rt.getMenu().hasStarter()).forEach(rtx -> GlobalAssert.that(rtx.checkMenuConsistency()));
+
         // TODO Check statement below: menus requests are contained in request register.
         GlobalAssert.that(!getRoboTaxis().stream().filter(rt -> rt.getMenu().hasStarter())
                 .anyMatch(rtx -> rtx.getMenu().getCourses().stream().anyMatch(c -> !requestRegister.get(rtx).containsKey(c.getRequestId()))));
 
         // Menus do not Contain duplicate requests
-        List<AVRequest> menusRequests = new ArrayList<>();
-        getRoboTaxis().stream().filter(rt -> rt.getMenu().hasStarter())
-                .forEach(rtx -> rtx.getMenu().getCourses().stream().forEach(c -> menusRequests.add(requestRegister.get(rtx).get(c.getRequestId()))));
-        Set<AVRequest> uniqueMenusRequests = new HashSet<>(menusRequests);
-        // TODO Check
-        GlobalAssert.that(menusRequests.size() == uniqueMenusRequests.size() * 2);
+        List<Id<Request>> menusRequests = new ArrayList<>();
+        getRoboTaxis().stream().filter(rt -> rt.getMenu().hasStarter()).forEach(rtx -> rtx.getMenu().getUniqueAVRequests().forEach(id -> menusRequests.add(id)));
+        Set<Id<Request>> uniqueMenuReqests = (new HashSet<>(menusRequests));
+        GlobalAssert.that(uniqueMenuReqests.size() == menusRequests.size());
+
+        // check that the request register equals the requests in the menu of each robo taxi
+        requestRegister.forEach((rt, map) -> rt.getMenu().getUniqueAVRequests().equals(new HashSet<>(map.values())));
+        Set<Id<Request>> uniqueRequestRegisterReqests = new HashSet<>();
+        requestRegister.forEach((rt, map) -> map.keySet().forEach(id -> uniqueRequestRegisterReqests.add(id)));
+        GlobalAssert.that(uniqueRequestRegisterReqests.equals(uniqueMenuReqests));
 
     }
 
