@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.net;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,19 +9,18 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
-import org.matsim.contrib.dvrp.data.Vehicle;
 
+import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RequestStatus;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-public class SimulationObjectCompiler {
+public class SharedSimulationObjectCompiler {
 
-    public static SimulationObjectCompiler create( //
+    public static SharedSimulationObjectCompiler create( //
             long now, String infoLine, int total_matchedRequests) {
         final MatsimStaticDatabase db = MatsimStaticDatabase.INSTANCE;
         SimulationObject simulationObject = new SimulationObject();
@@ -28,34 +28,26 @@ public class SimulationObjectCompiler {
         simulationObject.now = now;
         simulationObject.infoLine = infoLine;
         simulationObject.total_matchedRequests = total_matchedRequests;
-        return new SimulationObjectCompiler(simulationObject);
+        return new SharedSimulationObjectCompiler(simulationObject);
     }
 
     private final SimulationObject simulationObject;
     private final Map<String, VehicleContainer> vehicleMap = new HashMap<>();
     private final MatsimStaticDatabase db = MatsimStaticDatabase.INSTANCE;
 
-    private SimulationObjectCompiler(SimulationObject simulationObject) {
+    private SharedSimulationObjectCompiler(SimulationObject simulationObject) {
         GlobalAssert.that(Objects.nonNull(simulationObject));
         this.simulationObject = simulationObject;
     }
 
-    public void insertRequests(Map<AVRequest, RoboTaxi> requestRegister, Map<Id<Vehicle>, RoboTaxiStatus> oldRoboTaxis) {
-        for (Entry<AVRequest, RoboTaxi> entry : requestRegister.entrySet()) {
-            if (Objects.nonNull(entry.getValue())) {
-                if (oldRoboTaxis.containsKey(entry.getValue().getId())) {
-                    RoboTaxiStatus oldStatus = oldRoboTaxis.get(entry.getValue().getId());
-                    RoboTaxiStatus newStatus = entry.getValue().getStatus();
-                    insertRequest(entry.getKey(), parseRequestStatus(oldStatus, newStatus));
-                } else
-                    insertRequest(entry.getKey(), RequestStatus.ASSIGNED);
-            } else
-                insertRequest(entry.getKey(), RequestStatus.REQUESTED);
+    public void insertRequests(Map<AVRequest, RequestStatus> requestStatuses) {
+        for (Entry<AVRequest, RequestStatus> entry : requestStatuses.entrySet()) {
+            insertRequest(entry.getKey(), entry.getValue());
         }
     }
 
-    public void insertFulfilledRequests(Map<AVRequest, RoboTaxi> requestRegister) {
-        requestRegister.forEach((a, r) -> insertRequest(a, RequestStatus.DROPOFF));
+    public void insertFulfilledRequests(Collection<AVRequest> requestRegister) {
+        requestRegister.forEach(a -> insertRequest(a, RequestStatus.DROPOFF));
     }
 
     public void insertVehicles(List<RoboTaxi> robotaxis) {
