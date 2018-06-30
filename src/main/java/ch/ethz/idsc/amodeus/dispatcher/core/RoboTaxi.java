@@ -30,9 +30,10 @@ public class RoboTaxi {
     // Standard Taxi Fields
     static private final Logger logger = Logger.getLogger(RoboTaxi.class);
 
-    protected final AVVehicle avVehicle;
+    private final AVVehicle avVehicle;
     private RoboTaxiStatus status;
-
+    private final RoboTaxiUsageType usageType; // final might be removed if the usage possibility should be changeable by the dispatcher
+    
     /** last known location of the RoboTaxi */
     private Link lastKnownLocation;
     /** drive destination of the RoboTaxi, null for stay task */
@@ -50,12 +51,13 @@ public class RoboTaxi {
      * @param avVehicle binding association to MATSim AVVehicle object
      * @param linkTimePair
      * @param driveDestination */
-    RoboTaxi(AVVehicle avVehicle, LinkTimePair divertableLinkTime, Link driveDestination) {
+    RoboTaxi(AVVehicle avVehicle, LinkTimePair divertableLinkTime, Link driveDestination, RoboTaxiUsageType usageType) {
         this.avVehicle = avVehicle;
         this.divertableLinkTime = divertableLinkTime;
         this.driveDestination = Objects.requireNonNull(driveDestination);
         this.directive = null;
         this.status = RoboTaxiStatus.STAY;
+        this.usageType = usageType;
     }
 
     // **********************************************
@@ -227,12 +229,12 @@ public class RoboTaxi {
     // **********************************************
 
     public boolean isDivertable() {
-        if (getCapacity() == 1) {
+        if (usageType.equals(RoboTaxiUsageType.SINGLEUSED)) {
             return isWithoutDirective() && isWithoutCustomer() && notDrivingOnLastLink();
-        } else if (getCapacity() > 1) {
+        } else if (usageType.equals(RoboTaxiUsageType.SHARED)) {
             return isWithoutDirective() && notDrivingOnLastLink();
         } else {
-            throw new IllegalArgumentException("Capacity smaller 1 is not allowed");
+            throw new IllegalArgumentException("Robo Taxi Usage Type is not defined");
         }
 
     }
