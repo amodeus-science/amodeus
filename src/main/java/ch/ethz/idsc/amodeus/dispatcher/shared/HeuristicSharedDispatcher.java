@@ -193,7 +193,7 @@ public class HeuristicSharedDispatcher extends SharedPartitionedDispatcher {
         return closeLinks;
     }
 
-    private Map<Link, Set<AVRequest>> getFromLinkMap(Collection<AVRequest> avRequests) {
+    private static Map<Link, Set<AVRequest>> getFromLinkMap(Collection<AVRequest> avRequests) {
         Map<Link, Set<AVRequest>> linkAVRequestMap = new HashMap<>();
         for (AVRequest avRequest : avRequests) {
             Link fromLink = avRequest.getFromLink();

@@ -31,7 +31,7 @@ public class NetworkCreatorUtils {
         // FOR ALL activities find positions, record in list and store in array
         List<double[]> dataList = new ArrayList<>();
 
-        // TODO: Should be provided from outside
+        // TODO MISC Should be provided from outside
         StageActivityTypes stageActivityTypes = new StageActivityTypesImpl(PtConstants.TRANSIT_ACTIVITY_TYPE);
 
         for (Person person : population.getPersons().values()) {

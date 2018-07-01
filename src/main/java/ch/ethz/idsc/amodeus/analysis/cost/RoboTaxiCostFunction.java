@@ -9,6 +9,7 @@ import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifier;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
+// TODO DOC document member functions
 public interface RoboTaxiCostFunction extends TotalValueAppender {
     double annualFleetCosts();
 

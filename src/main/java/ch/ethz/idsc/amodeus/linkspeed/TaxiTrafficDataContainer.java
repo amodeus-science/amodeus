@@ -8,7 +8,7 @@ import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.core.trafficmonitoring.TravelTimeData;
 
-class TaxiTrafficDataContainer {
+/* package */ class TaxiTrafficDataContainer {
     private final int numSlots;
     private final Map<Id<Link>, TravelTimeData> trafficData = new TreeMap<>();
 

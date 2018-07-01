@@ -40,17 +40,17 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
 public class SharedDispatcherExample extends SharedPartitionedDispatcher {
 
-    public final int dispatchPeriod;
-    public final int rebalancingPeriod;
-    final AbstractVirtualNodeDest virtualNodeDest;
-    final AbstractVehicleDestMatcher vehicleDestMatcher;
+    private final int dispatchPeriod;
+    private final int rebalancingPeriod;
+    private final AbstractVirtualNodeDest virtualNodeDest;
+    private final AbstractVehicleDestMatcher vehicleDestMatcher;
     private final int nVNodes;
     private final int nVLinks;
     private final Network network;
     private final DistanceFunction distanceFunction;
     private final DistanceHeuristics distanceHeuristics;
-    Tensor printVals = Tensors.empty();
-    TravelData travelData;
+    private Tensor printVals = Tensors.empty();
+    private TravelData travelData;
 
     protected SharedDispatcherExample(Config config, //
             AVDispatcherConfig avconfig, //
@@ -131,8 +131,9 @@ public class SharedDispatcherExample extends SharedPartitionedDispatcher {
                                 RoboTaxi sRt = taxisToPair.get(i);
                                 // Pair taxi to request
                                 subList.stream().forEach(avr -> addSharedRoboTaxiPickup(sRt, avr));
-                                // TODO reorder menu
+                                // TODO SHARED reorder menu
                                 SharedAVMenu menu = taxisToPair.get(i).getMenu();
+                                @SuppressWarnings("unused")
                                 List<Integer> pickupIndeces = menu.getPickupOrDropOffCoursesIndeces(SharedAVMealType.PICKUP);
                                 // SharedAVCourse sharedAVCourse = new SharedAVCourse(secondRequest.getId(), SharedAVMealType.PICKUP);
 
@@ -142,8 +143,11 @@ public class SharedDispatcherExample extends SharedPartitionedDispatcher {
 
                         }
 
-                        // TODO GBPM
-                        List<AVRequest> nonShareableOnes = sameDestRequests.values().stream().filter(l -> l.size() <= 1).map(l -> l.get(0)).collect(Collectors.toList());
+                        // TODO SHARED GBPM
+                        @SuppressWarnings("unused")
+                        List<AVRequest> nonShareableOnes = sameDestRequests.values().stream() //
+                                .filter(l -> l.size() <= 1).map(l -> l.get(0)) //
+                                .collect(Collectors.toList());
 
                         availableVehicles = getVirtualNodeDivertableUnassignedRoboTaxi();
 
@@ -173,7 +177,7 @@ public class SharedDispatcherExample extends SharedPartitionedDispatcher {
                 // sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse4);
                 // sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse4);
 
-                // TODO CHECK the menu manipulation
+                // TODO SHARED the menu manipulation
             }
         }
 

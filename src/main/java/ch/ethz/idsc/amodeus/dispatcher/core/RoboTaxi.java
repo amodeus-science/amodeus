@@ -197,7 +197,7 @@ public class RoboTaxi {
         Task avT = getSchedule().getCurrentTask();
 
         if (avT instanceof AVStayTask) {
-            // TODO: For now, this works, but probably needs fixing somewhere upfront /sh, apr 2018
+            // TODO For now, this works, but probably needs fixing somewhere upfront /sh, apr 2018
             logger.warn("RoboTaxiStatus != STAY, but Schedule.getCurrentTask() == AVStayTask; probably needs fixing");
             return true;
         }

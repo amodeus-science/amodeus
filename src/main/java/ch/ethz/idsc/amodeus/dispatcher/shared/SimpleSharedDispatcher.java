@@ -84,9 +84,9 @@ public class SimpleSharedDispatcher extends SharedUniversalDispatcher {
                     sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse4);
                     sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse4);
 
-                    // TODO CHECK the menu manipulation
+                    // TODO SHARED CHECK the menu manipulation
                 } else {
-                    // TODO Improve and make function without break
+                    // TODO SHARED Improve and make function without break
                     break;
                 }
             }
@@ -118,9 +118,13 @@ public class SimpleSharedDispatcher extends SharedUniversalDispatcher {
 
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig) {
+            // TODO SHARED unfinished
+            @SuppressWarnings("unused")
             AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
 
+            @SuppressWarnings("unused")
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
+            @SuppressWarnings("unused")
             AbstractVehicleDestMatcher abstractVehicleDestMatcher = new HungarBiPartVehicleDestMatcher(new EuclideanDistanceFunction());
 
             return new SimpleSharedDispatcher(network, config, avconfig, travelTime, router, eventsManager);

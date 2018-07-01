@@ -197,7 +197,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
                 RoboTaxiStatus avStatus = null;
                 if (sharedRoboTaxi.getMenu().getStarterCourse().getPickupOrDropOff().equals(SharedAVMealType.PICKUP)) {
                     avStatus = sharedRoboTaxi.getCurrentNumberOfCustomersOnBoard() > 0 ? RoboTaxiStatus.DRIVEWITHCUSTOMER : RoboTaxiStatus.DRIVETOCUSTOMER;
-                    GlobalAssert.that(sharedRoboTaxi.canPickupNewCustomer()); // TODO Check
+                    GlobalAssert.that(sharedRoboTaxi.canPickupNewCustomer()); // TODO SHARED Check
                 } else {
                     avStatus = RoboTaxiStatus.DRIVEWITHCUSTOMER;
                 }
@@ -319,12 +319,12 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         sRoboTaxi.setStatus(RoboTaxiStatus.DRIVEWITHCUSTOMER);
         reqStatuses.put(avRequest, RequestStatus.DRIVING);
         periodPickedUpRequests.add(avRequest);
-        // TODO Why are we doing this exactely here?
+        // TODO SHARED Why are we doing this exactly here?
         consistencySubCheck();
 
         final Schedule schedule = sRoboTaxi.getSchedule();
         // check that current task is last task in schedule
-        // TODO fix
+        // TODO SHARED fix
         GlobalAssert.that(schedule.getCurrentTask() == Schedules.getLastTask(schedule)); // instanceof AVDriveTask);
 
         final double endPickupTime = getTimeNow() + pickupDurationPerStop;
@@ -497,7 +497,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
      * {@linksRoboTaxiMaintainer.consistencyCheck} in each iteration. */
     @Override
     protected final void consistencySubCheck() {
-        // TODO checked
+        // TODO SHARED checked
         // there cannot be more pickup vehicles than open requests
         GlobalAssert.that(pickupRegister.size() <= pendingRequests.size());
 
@@ -510,7 +510,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         // check Menu consistency of each Robo Taxi
         getRoboTaxis().stream().filter(rt -> rt.getMenu().hasStarter()).forEach(rtx -> GlobalAssert.that(rtx.checkMenuConsistency()));
 
-        // TODO Check statement below: menus requests are contained in request register.
+        // TODO SHARED check statement below: menus requests are contained in request register.
         GlobalAssert.that(!getRoboTaxis().stream().filter(rt -> rt.getMenu().hasStarter())
                 .anyMatch(rtx -> rtx.getMenu().getCourses().stream().anyMatch(c -> !requestRegister.get(rtx).containsKey(c.getRequestId()))));
 

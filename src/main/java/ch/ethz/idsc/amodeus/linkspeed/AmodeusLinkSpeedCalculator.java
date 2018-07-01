@@ -17,7 +17,7 @@ final class AmodeusLinkSpeedCalculator implements LinkSpeedCalculator {
 
     @Override
     public double getMaximumVelocity(QVehicle vehicle, Link link, double time) {
-        // TODO is this math.min necessary? Hard to debug...
+        // TODO MISC is this math.min necessary? Hard to debug...
         double denom = trafficData.getTravelTimeData(link, time);
         GlobalAssert.that(denom > 0.0);
         double trafficSpeed = link.getLength() / denom;

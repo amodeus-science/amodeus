@@ -116,9 +116,9 @@ public class SharedAVMenu {
      * 
      * @return */
     public List<SharedAVCourse> getCourses() {
-        // TODO which version is better??
-        // return Collections.unmodifiableList(roboTaxiMenu);
-        return roboTaxiMenu;
+        // TODO SHARED which version is better??
+        return Collections.unmodifiableList(roboTaxiMenu);
+        // return roboTaxiMenu;
     }
 
     /** Get the position of the course in the menu. 0 is the next course (called
@@ -173,9 +173,9 @@ public class SharedAVMenu {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof SharedAVMenu) {
-            SharedAVMenu sAvMenu = (SharedAVMenu) obj;
+    public boolean equals(Object object) {
+        if (object instanceof SharedAVMenu) {
+            SharedAVMenu sAvMenu = (SharedAVMenu) object;
             List<SharedAVCourse> otherMenu = sAvMenu.getCourses();
             if (otherMenu.size() == roboTaxiMenu.size()) {
                 for (int i = 0; i < roboTaxiMenu.size(); i++) {

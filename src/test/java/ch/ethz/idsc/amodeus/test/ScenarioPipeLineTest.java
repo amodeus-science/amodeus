@@ -50,7 +50,7 @@ public class ScenarioPipeLineTest {
 
     @BeforeClass
     public static void setUpOnce() throws Exception {
-        // TODO: This reset call should eventually be removed. Right now we need this to reset the random number generator for MATSim.
+        // TODO This reset call should eventually be removed. Right now we need this to reset the random number generator for MATSim.
         // In general, this is not necessary, because all MATSim components use MatsimRandom.getLocalInstance(). However,
         // the PopulationDensity strategy in the av package uses MatsimRandom.getRandom(), which is NOT reset between
         // simulations and iterations. Once the av package makes proper use of MatsimRandom generator, this can be removed

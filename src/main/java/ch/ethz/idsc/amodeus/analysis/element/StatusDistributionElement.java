@@ -46,6 +46,7 @@ public class StatusDistributionElement implements AnalysisElement, TotalValueApp
         for (RoboTaxiStatus roboTaxiStatus : RoboTaxiStatus.values()) {
             timeStepsPerStatus.put(roboTaxiStatus, getTimeStepsInStatus(roboTaxiStatus));
         }
+        @SuppressWarnings("unused")
         double totalDriveTime = timeStepsPerStatus.entrySet().stream().filter(e -> e.getKey().isDriving()).mapToDouble(e -> e.getValue()).sum() * timeStep;
         // totalValues.put(TotalValueIdentifiersAmodeus.TOTALROBOTAXIDRIVETIME,
         // String.valueOf(totalDriveTime));

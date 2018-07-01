@@ -66,7 +66,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
     private void updateDivertableLocations() {
         for (RoboTaxi robotaxi : getRoboTaxis()) {
-            // TODO fix
+            // TODO SHARED fix
             // GlobalAssert.that(robotaxi.isWithoutDirective());
             Schedule schedule = robotaxi.getSchedule();
             new RoboTaxiTaskAdapter(schedule.getCurrentTask()) {
@@ -81,13 +81,13 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
                 @Override
                 public void handle(AVPickupTask avPickupTask) {
-                    // TODO
+                    // TODO SHARED
                     GlobalAssert.that(robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
                 }
 
                 @Override
                 public void handle(AVDropoffTask avDropOffTask) {
-                    // TODO
+                    // TODO SHARED
                     GlobalAssert.that(robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
                 }
 

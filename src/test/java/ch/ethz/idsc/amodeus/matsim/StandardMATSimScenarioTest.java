@@ -173,7 +173,7 @@ public class StandardMATSimScenarioTest {
             @Singleton
             @Named(DvrpModule.DVRP_ROUTING)
             public Network provideAVNetwork(Network fullNetwork) {
-                /* TODO: Eventually, this should go directly into the AmodeusModule.
+                /* TODO TEST Eventually, this should go directly into the AmodeusModule.
                  * - For backward compatibility AmodeusModule provides a FULL network, see there.
                  * - However, here we want a "clean" test case where only a sub-network is used,
                  * i.e. in this case all links with the "car" mode. */
