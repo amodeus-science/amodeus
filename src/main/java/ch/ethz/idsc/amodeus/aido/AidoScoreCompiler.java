@@ -20,7 +20,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     private final DistanceElement distElem;
 
     public AidoScoreCompiler(List<RoboTaxi> roboTaxis) {
-        // TODO AIDO so far set a posteriori, replace hardcoded value
+        // TODO AIDO so far set a posteriori, replace hardcoded value if possible
         distElem = new DistanceElement(roboTaxis.size(), 120000 / 10);
 
     }
@@ -34,25 +34,18 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         /** the first scalar entry of the score is the mean waiting time at the time instant */
         Tensor waitingTimes = Tensor.of(requests.stream().map(r -> RealScalar.of(time - r.getSubmissionTime())));
         Scalar score1 = Tensors.isEmpty(waitingTimes) //
-                ? RealScalar.ZERO
-                : (Scalar) Mean.of(waitingTimes);
+                ? RealScalar.ZERO : (Scalar) Mean.of(waitingTimes);
 
         /** the second scalar entry of the score is the current distance ratio, i.e. the share of empty miles driven
          * in the current time step */
         SimulationObjectCompiler soc = SimulationObjectCompiler.create(time, "insert empty as unused", -1);
         soc.insertVehicles(roboTaxis);
-        // TODO AIDO currently returns always zero... :*(
         distElem.register(soc.compile());
-        // distElem.consolidate();
         Scalar distCst = distElem.getNewestDistances().Get(1);
         Scalar distTot = distElem.getNewestDistances().Get(0);
-        
-        System.out.println("distCst: " + distCst);
-        System.out.println("distTot: " + distTot);
 
         Scalar score2 = Scalars.lessThan(RealScalar.ZERO, distTot) //
-                ? (distTot.subtract(distCst)).divide(distTot)
-                : RealScalar.ZERO;
+                ? (distTot.subtract(distCst)).divide(distTot) : RealScalar.ZERO;
 
         /** the third scalar entry of the score is the fleet size */
         Scalar score3 = RealScalar.of(roboTaxis.size());
