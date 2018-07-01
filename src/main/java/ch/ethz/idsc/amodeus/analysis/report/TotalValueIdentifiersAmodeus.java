@@ -1,6 +1,9 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.analysis.report;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public enum TotalValueIdentifiersAmodeus implements TotalValueIdentifier {
 
     // General, Dispatchers, Generators
@@ -51,5 +54,17 @@ public enum TotalValueIdentifiersAmodeus implements TotalValueIdentifier {
     @Override
     public String getIdentifier() {
         return identifier;
+    }
+
+    public static Set<String> getAllIdentifiers() {
+        Set<String> allIdentifiers = new HashSet<>();
+        for (TotalValueIdentifiersAmodeus totalValueIdentifiersAmodeus : values()) {
+            allIdentifiers.add(totalValueIdentifiersAmodeus.identifier);
+        }
+        return allIdentifiers;
+    }
+
+    public static boolean contains(TotalValueIdentifier totalValueIdentifier) {
+        return getAllIdentifiers().contains(totalValueIdentifier.getIdentifier());
     }
 }

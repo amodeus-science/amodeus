@@ -5,6 +5,7 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.renderer.category.BarRenderer;
@@ -24,6 +25,8 @@ import ch.ethz.idsc.amodeus.analysis.report.AnalysisReport;
 import ch.ethz.idsc.amodeus.analysis.report.HtmlReport;
 import ch.ethz.idsc.amodeus.analysis.report.HtmlReportElement;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
+import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifier;
+import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifiersAmodeus;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValues;
 import ch.ethz.idsc.amodeus.data.ReferenceFrame;
 import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
@@ -33,6 +36,7 @@ import ch.ethz.idsc.amodeus.net.StorageSupplier;
 import ch.ethz.idsc.amodeus.net.StorageUtils;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 public class Analysis {
     /** Use this method to create an standalone Analysis with all the default values
@@ -93,6 +97,7 @@ public class Analysis {
     private final TotalValues totalValues;
     private final ColorScheme colorScheme;
     private final ChartTheme chartTheme;
+    private final Set<String> allAmodeusTotalValueIdentifiers = TotalValueIdentifiersAmodeus.getAllIdentifiers();
 
     /** Constructor of the Analysis Class can be called with any combination of null
      * and the respective parameter.
@@ -206,6 +211,11 @@ public class Analysis {
     }
 
     public void addTotalValue(TotalValueAppender totalValueAppender) {
+        for (TotalValueIdentifier totalValueIdentifier : totalValueAppender.getTotalValues().keySet()) {
+            // Check that from outside no AModeus Identifier is used
+            // If it fails here you have to change your String in your total Value Identifier-
+            GlobalAssert.that(!allAmodeusTotalValueIdentifiers.contains(totalValueIdentifier.getIdentifier()));
+        }
         totalValues.append(totalValueAppender);
     }
 
