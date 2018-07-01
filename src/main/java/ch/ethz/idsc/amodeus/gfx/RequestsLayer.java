@@ -16,6 +16,7 @@ import javax.swing.JCheckBox;
 
 import org.matsim.api.core.v01.Coord;
 
+import ch.ethz.idsc.amodeus.dispatcher.core.RequestStatus;
 import ch.ethz.idsc.amodeus.net.OsmLink;
 import ch.ethz.idsc.amodeus.net.RequestContainer;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
@@ -51,7 +52,10 @@ public class RequestsLayer extends ViewerLayer {
                 // all streets have positive indexes
                 GlobalAssert.that(entry.getKey() >= 0);
                 OsmLink osmLink = amodeusComponent.db.getOsmLink(entry.getKey());
-                final int size = entry.getValue().size();
+                // final int size = entry.getValue().size();
+                Long size = entry.getValue().stream() //
+                        .filter(rc -> isWaiting(rc)) //
+                        .collect(Collectors.counting());
                 for (int count = 0; count < size; ++count) {
                     Coord coord = osmLink.getAt(count / (double) size);
                     requestHeatMap.addPoint(coord.getX(), coord.getY());
@@ -108,15 +112,11 @@ public class RequestsLayer extends ViewerLayer {
                     @SuppressWarnings("unused")
                     int index = numRequests;
                     for (RequestContainer rc : entry.getValue()) {
-                        double waitTime = ref.now - rc.submissionTime;
-                        if (waitTime > maxWaitTime)
-                            // System.out.println("Request Nr. " + rc.requestIndex + " waiting Time: " + waitTime);
+                        if (isWaiting(rc)) {
+                            double waitTime = ref.now - rc.submissionTime;
                             maxWaitTime = Math.max(waitTime, maxWaitTime);
-                        // int piy = y - index;
-                        // int wid = (int) waitTime / 10;
-                        // int left = x - wid / 2;
-                        // graphics.drawLine(left, piy, left + wid, piy);
-                        --index;
+                            --index;
+                        }
                     }
                 }
                 if (drawRequestDestinations) {
@@ -130,10 +130,18 @@ public class RequestsLayer extends ViewerLayer {
                 }
                 if (showNumbers) {
                     graphics.setColor(Color.GRAY);
-                    graphics.drawString("" + numRequests, x, y); // - numRequests
+                    Long numNotPickedUp = entry.getValue().stream() //
+                            .filter(rc -> isWaiting(rc)) //
+                            .collect(Collectors.counting());
+                    String printValue = (numNotPickedUp > 0) ? "" + numNotPickedUp : "";
+                    graphics.drawString(printValue, x, y); // - numRequests
                 }
             }
         }
+    }
+
+    private static boolean isWaiting(RequestContainer requestContainer) {
+        return requestContainer.requestStatus.unServiced();
     }
 
     @Override
