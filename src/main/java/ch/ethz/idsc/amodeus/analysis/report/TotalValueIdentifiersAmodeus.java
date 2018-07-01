@@ -63,4 +63,8 @@ public enum TotalValueIdentifiersAmodeus implements TotalValueIdentifier {
         }
         return allIdentifiers;
     }
+    
+    public static boolean contains(TotalValueIdentifier totalValueIdentifier) {
+        return getAllIdentifiers().contains(totalValueIdentifier.getIdentifier());
+    }
 }

@@ -2,11 +2,23 @@
 package ch.ethz.idsc.amodeus.analysis.cost;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
+import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifier;
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
-public enum CostFunctionLinearCombination {
-    ;
+public class CostFunctionLinearCombination implements RoboTaxiCostFunction {
+    private final TotalValueIdentifier totalValueIdentifier;
 
-    public static double annualFleetCosts(AnalysisSummary analysisSummary, RoboTaxiCostParameters cp) {
+    private AnalysisSummary analysisSummary = null;
+    private RoboTaxiCostParameters cp = null;
+
+    public CostFunctionLinearCombination(TotalValueIdentifier totalValueIdentifier) {
+        this.totalValueIdentifier = totalValueIdentifier;
+    }
+
+    @Override
+    public double annualFleetCosts() {
+        GlobalAssert.that(analysisSummary != null);
+        GlobalAssert.that(cp != null);
         double annualDistance = analysisSummary.getDistanceElement().totalDistance * 365;
         int numberVehicles = analysisSummary.getSimulationInformationElement().vehicleSize();
         int numberRequests = analysisSummary.getSimulationInformationElement().reqsize();
@@ -15,6 +27,19 @@ public enum CostFunctionLinearCombination {
         double CVehicle = cp.getCostParameter(CostParameterIdentifiersAmodeus.COST_VEHICLE_ANNUAL);
         double CFix = cp.getCostParameter(CostParameterIdentifiersAmodeus.COST_FIXED_ANNUAL);
         return CFix + Ckm * annualDistance + CTrip * numberRequests + CVehicle * numberVehicles;
+    }
+
+    @Override
+    public TotalValueIdentifier getTotalValueIdentifier() {
+        return totalValueIdentifier;
+    }
+
+    public void setAnalysisSummary(AnalysisSummary analysisSummary) {
+        this.analysisSummary = analysisSummary;
+    }
+
+    public void setCostParameters(RoboTaxiCostParameters cp) {
+        this.cp = cp;
     }
 
 }

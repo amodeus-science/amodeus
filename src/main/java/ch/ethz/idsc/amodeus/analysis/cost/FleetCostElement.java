@@ -4,6 +4,7 @@ package ch.ethz.idsc.amodeus.analysis.cost;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
@@ -11,6 +12,7 @@ import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifier;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifiersAmodeus;
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 public class FleetCostElement implements AnalysisExport, TotalValueAppender {
 
@@ -18,25 +20,31 @@ public class FleetCostElement implements AnalysisExport, TotalValueAppender {
     private final Map<TotalValueIdentifier, String> totalValues = new HashMap<>();
 
     private final RoboTaxiCostFunction roboTaxiCostFunction;
-    private final RoboTaxiCostParameters roboTaxiCostParameters;
-    private double annualFleetCost;
 
     public FleetCostElement(RoboTaxiCostFunction roboTaxiCostFunction, RoboTaxiCostParameters roboTaxiCostParameters) {
         this.roboTaxiCostFunction = roboTaxiCostFunction;
-        this.roboTaxiCostParameters = roboTaxiCostParameters;
+        roboTaxiCostFunction.setCostParameters(roboTaxiCostParameters);
     }
 
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorScheme colorScheme) {
-        annualFleetCost = roboTaxiCostFunction.annualFleetCosts(analysisSummary, roboTaxiCostParameters);
+        roboTaxiCostFunction.setAnalysisSummary(analysisSummary);
     }
 
     @Override
     public Map<TotalValueIdentifier, String> getTotalValues() {
-        totalValues.put(TotalValueIdentifiersAmodeus.ANNUALFLEETCOST, String.valueOf(annualFleetCost));
-
-        if (annualFleetCost == 0.0) {
-            totalValues.put(TotalValueIdentifiersAmodeus.ANNUALFLEETCOST, "Change the Cost Function to get a Value");
+        for (Entry<TotalValueIdentifier, String> entry : roboTaxiCostFunction.getTotalValues().entrySet()) {
+            if (entry.getKey().equals(TotalValueIdentifiersAmodeus.ANNUALFLEETCOST)) {
+                totalValues.put(entry.getKey(), entry.getValue());
+            } else {
+                GlobalAssert.that(!TotalValueIdentifiersAmodeus.contains(entry.getKey()));
+                totalValues.put(entry.getKey(), entry.getValue());
+            }
+        }
+        if (totalValues.containsKey(TotalValueIdentifiersAmodeus.ANNUALFLEETCOST)) {
+            if (Double.valueOf(totalValues.get(TotalValueIdentifiersAmodeus.ANNUALFLEETCOST)).equals(0.0)) {
+                totalValues.put(TotalValueIdentifiersAmodeus.ANNUALFLEETCOST, "Change the Cost Function to get a Value");
+            }
         }
         return totalValues;
     }
