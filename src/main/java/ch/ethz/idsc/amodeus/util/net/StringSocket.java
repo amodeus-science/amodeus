@@ -1,12 +1,11 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.aido;
+package ch.ethz.idsc.amodeus.util.net;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-// TODO JAN RELEASE move class to generic location
 public class StringSocket implements AutoCloseable {
     private final Socket socket;
     private final PrintWriter writer;

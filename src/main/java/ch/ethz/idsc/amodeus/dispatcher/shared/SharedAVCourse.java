@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared;
 
 import java.util.Objects;
@@ -39,7 +40,9 @@ public class SharedAVCourse {
 
     @Override
     public int hashCode() {
-        // TODO @ Jan: is this a valid hash code generadtion? such that it fulfills the case that two codes are equal if both the id and pickupordropoff are equal?
+        // TODO is this a valid hash code generation?
+        // such that it fulfills the case that two codes are equal
+        // if both the id and pickupordropoff are equal?
         return Objects.hash(requestId, pickupOrDropOff);
     }
 

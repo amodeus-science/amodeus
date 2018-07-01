@@ -38,7 +38,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
         /** the second scalar entry of the score is the current distance ratio, i.e. the share of empty miles driven
          * in the current time step */
-        SimulationObjectCompiler soc = SimulationObjectCompiler.create(time, "inser empty as unused", -1);
+        SimulationObjectCompiler soc = SimulationObjectCompiler.create(time, "insert empty as unused", -1);
         soc.insertVehicles(roboTaxis);
         // TODO currently returns always zero... :*(
         distElem.register(soc.compile());

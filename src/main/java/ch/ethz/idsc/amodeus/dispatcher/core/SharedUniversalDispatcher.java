@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.ArrayList;
@@ -466,10 +467,10 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         // FIXME This function has to be checked. might not even be nesscesary anymore...
         // stop vehicles still driving to a request but other taxi serving that request
         // already
+        // FIXME this is not nesscesary true for shared taxis It is possible that a robotaxi is on a
+        // dropofftrip when the request is canceled..
         getRoboTaxis().stream()//
-                .filter(rt -> rt.getStatus().equals(RoboTaxiStatus.DRIVETOCUSTOMER))// FIXME this is not nesscesary true for shared taxis It is possible that a robotaxi is on a
-                                                                                    // dropofftrip when the request is canceled..
-                .filter(rt -> !pickupRegister.containsValue(rt))//
+                .filter(rt -> rt.getStatus().equals(RoboTaxiStatus.DRIVETOCUSTOMER)).filter(rt -> !pickupRegister.containsValue(rt))//
                 .filter(RoboTaxi::canPickupNewCustomer)//
                 .filter(RoboTaxi::isWithoutDirective)//
                 .forEach(rt -> setRoboTaxiDiversion(rt, rt.getDivertableLocation(), RoboTaxiStatus.REBALANCEDRIVE));
