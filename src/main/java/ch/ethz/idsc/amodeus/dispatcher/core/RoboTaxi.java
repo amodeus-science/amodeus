@@ -33,7 +33,7 @@ public class RoboTaxi {
     private final AVVehicle avVehicle;
     private RoboTaxiStatus status;
     private final RoboTaxiUsageType usageType; // final might be removed if the usage possibility should be changeable by the dispatcher
-    
+
     /** last known location of the RoboTaxi */
     private Link lastKnownLocation;
     /** drive destination of the RoboTaxi, null for stay task */
@@ -197,7 +197,7 @@ public class RoboTaxi {
         Task avT = getSchedule().getCurrentTask();
 
         if (avT instanceof AVStayTask) {
-            // TODO: For now, this works, but probably needs fixing somewhere upfront /sh, apr 2018
+            // TODO MISC For now, this works, but probably needs fixing somewhere upfront /sh, apr 2018
             logger.warn("RoboTaxiStatus != STAY, but Schedule.getCurrentTask() == AVStayTask; probably needs fixing");
             return true;
         }
@@ -211,7 +211,7 @@ public class RoboTaxi {
             return true;
         }
 
-        // TODO If on pickup and dropoff not divertable yet -- or maybe can be diverted,
+        // TODO MISC If on pickup and dropoff not divertable yet -- or maybe can be diverted,
         // but directive will occur at the end of current pickup or dropoff
         else if (avT instanceof AVPickupTask || avT instanceof AVDropoffTask) {
             return false;
@@ -226,7 +226,7 @@ public class RoboTaxi {
         directive.execute();
         directive = null;
     }
-    
+
     public RoboTaxiUsageType getUsageType() {
         return usageType;
     }
@@ -280,7 +280,7 @@ public class RoboTaxi {
     public SharedAVMenu getMenu() {
         return menu;
     }
-    
+
     public boolean checkMenuConsistency() {
         return menu.checkAllCoursesAppearOnlyOnce() && //
                 menu.checkNoPickupAfterDropoffOfSameRequest() && //

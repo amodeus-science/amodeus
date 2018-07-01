@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.io.File;
@@ -12,8 +13,6 @@ import org.matsim.contrib.dvrp.util.LinkTimePair;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 
-import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDriveTaskTracker;
 import ch.ethz.idsc.amodeus.net.StorageUtils;
@@ -67,7 +66,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
     private void updateDivertableLocations() {
         for (RoboTaxi robotaxi : getRoboTaxis()) {
-            // TODO fix
+            // TODO SHARED fix
             // GlobalAssert.that(robotaxi.isWithoutDirective());
             Schedule schedule = robotaxi.getSchedule();
             new RoboTaxiTaskAdapter(schedule.getCurrentTask()) {
@@ -82,13 +81,13 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
                 @Override
                 public void handle(AVPickupTask avPickupTask) {
-                    // TODO
+                    // TODO SHARED
                     GlobalAssert.that(robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
                 }
 
                 @Override
                 public void handle(AVDropoffTask avDropOffTask) {
-                    // TODO
+                    // TODO SHARED
                     GlobalAssert.that(robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
                 }
 
@@ -109,7 +108,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
     @Override
     public final void addVehicle(AVVehicle vehicle) {
-        roboTaxis.add(new RoboTaxi(vehicle, new LinkTimePair(vehicle.getStartLink(), 0.0), vehicle.getStartLink(),  RoboTaxiUsageType.SHARED));
+        roboTaxis.add(new RoboTaxi(vehicle, new LinkTimePair(vehicle.getStartLink(), 0.0), vehicle.getStartLink(), RoboTaxiUsageType.SHARED));
         eventsManager.processEvent(new AVVehicleAssignmentEvent(vehicle, 0));
     }
 

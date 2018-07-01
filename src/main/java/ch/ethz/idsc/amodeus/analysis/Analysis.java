@@ -236,8 +236,7 @@ public class Analysis {
 
         // create plots and carry out other analysis on the data for each Analysis
         // Element
-        // TODO Find more effective way to give the relative Directory to the compile
-        // Function --> Jan
+        // TODO MISC Find more effective way to give the relative Directory to the compile Function --> Jan
         analysisElements.forEach(AnalysisElement::consolidate);
 
         for (AnalysisExport analysisExport : analysisExports)

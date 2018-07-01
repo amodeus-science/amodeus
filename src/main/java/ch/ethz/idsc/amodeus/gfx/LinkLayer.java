@@ -172,7 +172,7 @@ public class LinkLayer extends ViewerLayer {
             public void lazyClicked(MouseEvent mouseEvent) {
                 // System.out.println("here lazy");
                 // amodeusComponent.
-                // TODO extract lat-log coordinate and store and visualize in component
+                // TODO MISC extract lat-log coordinate and store and visualize in component
             }
         };
         LazyMouse lazyMouse = new LazyMouse(lazyMouseListener);

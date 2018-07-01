@@ -1,17 +1,12 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.aido;
+package ch.ethz.idsc.amodeus.util.net;
 
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-// TODO JAN RELEASE upgrade to tensor v056
-// TODO JAN RELEASE move class to generic location
 public class StringServerSocket implements AutoCloseable {
-    // TODO JAN RELEASE remove default port
-    public static final int DEFAULT_PORT = 9382;
-    // ---
     private final ServerSocket serverSocket;
     private final Queue<StringSocket> queue = new ConcurrentLinkedQueue<>();
     // ---

@@ -20,7 +20,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     private final DistanceElement distElem;
 
     public AidoScoreCompiler(List<RoboTaxi> roboTaxis) {
-        distElem = new DistanceElement(roboTaxis.size(), 120000 / 10); // TODO so far set a posteriori, replace hardcoded value
+        // TODO AIDO so far set a posteriori, replace hardcoded value
+        distElem = new DistanceElement(roboTaxis.size(), 120000 / 10);
 
     }
 
@@ -38,9 +39,9 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
         /** the second scalar entry of the score is the current distance ratio, i.e. the share of empty miles driven
          * in the current time step */
-        SimulationObjectCompiler soc = SimulationObjectCompiler.create(time, "inser empty as unused", -1);
+        SimulationObjectCompiler soc = SimulationObjectCompiler.create(time, "insert empty as unused", -1);
         soc.insertVehicles(roboTaxis);
-        // TODO currently returns always zero... :*(
+        // TODO AIDO currently returns always zero... :*(
         distElem.register(soc.compile());
         // distElem.consolidate();
         Scalar distCst = distElem.getNewestDistances().Get(1);

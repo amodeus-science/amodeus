@@ -57,7 +57,7 @@ import ch.ethz.matsim.av.generator.AVGenerator;
         LOGGER.info("car placed at link " + linkGen);
 
         Id<Vehicle> id = Id.create("av_" + prefix + String.valueOf(generatedNumberOfVehicles), Vehicle.class);
-        // TODO add capacity attribute here
+        // TODO SHARED add capacity attribute here
         return new AVVehicle(id, linkGen, 1.0, 0.0, 108000.0);
     }
 

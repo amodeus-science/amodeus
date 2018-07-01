@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared;
 
 import java.util.Objects;
@@ -28,19 +29,18 @@ public class SharedAVCourse {
     }
 
     @Override
-    public boolean equals(Object obj) {
-
-        if (obj instanceof SharedAVCourse) {
-            SharedAVCourse course = (SharedAVCourse) obj;
-            return course.getRequestId() == requestId && course.getPickupOrDropOff().equals(pickupOrDropOff);
+    public boolean equals(Object object) {
+        if (object instanceof SharedAVCourse) {
+            SharedAVCourse sharedAVCourse = (SharedAVCourse) object;
+            return sharedAVCourse.getRequestId().equals(requestId) && //
+                    sharedAVCourse.getPickupOrDropOff().equals(pickupOrDropOff);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        // TODO @ Jan: is this a valid hash code generadtion? such that it fulfills the case that two codes are equal if both the id and pickupordropoff are equal?
-        return Objects.hash(requestId, pickupOrDropOff);
+        return Objects.hash(requestId.toString(), pickupOrDropOff);
     }
 
     public SharedAVMealType getPickupOrDropOff() {

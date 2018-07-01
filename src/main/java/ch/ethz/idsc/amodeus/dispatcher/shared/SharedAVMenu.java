@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared;
 
 import java.util.ArrayList;
@@ -115,9 +116,9 @@ public class SharedAVMenu {
      * 
      * @return */
     public List<SharedAVCourse> getCourses() {
-        // TODO which version is better??
-        // return Collections.unmodifiableList(roboTaxiMenu);
-        return roboTaxiMenu;
+        // TODO SHARED which version is better??
+        return Collections.unmodifiableList(roboTaxiMenu);
+        // return roboTaxiMenu;
     }
 
     /** Get the position of the course in the menu. 0 is the next course (called
@@ -155,11 +156,11 @@ public class SharedAVMenu {
         roboTaxiMenu.forEach(savc -> ids.add(savc.getRequestId()));
         return ids;
     }
-    
+
     public void printMenu() {
         roboTaxiMenu.forEach(course -> System.out.println(course.getRequestId().toString() + ":\t" + course.getPickupOrDropOff().name()));
     }
-    
+
     // **************************************************
     // CHECK FUNCTIONS
     // **************************************************
@@ -172,9 +173,9 @@ public class SharedAVMenu {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof SharedAVMenu) {
-            SharedAVMenu sAvMenu = (SharedAVMenu) obj;
+    public boolean equals(Object object) {
+        if (object instanceof SharedAVMenu) {
+            SharedAVMenu sAvMenu = (SharedAVMenu) object;
             List<SharedAVCourse> otherMenu = sAvMenu.getCourses();
             if (otherMenu.size() == roboTaxiMenu.size()) {
                 for (int i = 0; i < roboTaxiMenu.size(); i++) {

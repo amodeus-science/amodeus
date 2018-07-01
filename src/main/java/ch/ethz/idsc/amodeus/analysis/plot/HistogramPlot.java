@@ -71,15 +71,6 @@ public enum HistogramPlot {
 
         chart.getCategoryPlot().setRenderer(renderer);
 
-        // TODO Does not need to be set anymore since the settings are centralized in ChartTheme for all Chart types
-        // chart.getPlot().setBackgroundPaint(DiagramSettings.COLOR_BACKGROUND_PAINT);
-        // chart.getCategoryPlot().setRangeGridlinePaint(DiagramSettings.COLOR_GRIDLINE_PAINT);
-        // chart.getCategoryPlot().getDomainAxis().setTickLabelFont(DiagramSettings.FONT_TICK);
-        // chart.getCategoryPlot().getDomainAxis().setLabelFont(DiagramSettings.FONT_AXIS);
-        // chart.getCategoryPlot().getRangeAxis().setTickLabelFont(DiagramSettings.FONT_TICK);
-        // chart.getCategoryPlot().getRangeAxis().setLabelFont(DiagramSettings.FONT_AXIS);
-        // chart.getTitle().setFont(DiagramSettings.FONT_TITLE);
-
         // Adapt colors & style
         for (int i = 0; i < dim.size(); i++) {
             chart.getCategoryPlot().getRenderer().setSeriesPaint(i, colorScheme.of(i));

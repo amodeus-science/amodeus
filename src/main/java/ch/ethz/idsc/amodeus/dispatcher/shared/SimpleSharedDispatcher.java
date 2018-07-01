@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared;
 
 import org.matsim.api.core.v01.network.Network;
@@ -46,7 +47,7 @@ public class SimpleSharedDispatcher extends SharedUniversalDispatcher {
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
         distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getString("distanceHeuristics", // <- crashes if spelling is wrong
-                DistanceHeuristics.EUCLIDEAN.name()).toUpperCase()); // TODO make EUCLIDEANNONCYCLIC default, also in the other dispatchers
+                DistanceHeuristics.EUCLIDEAN.name()).toUpperCase()); // TODO MISC make EUCLIDEANNONCYCLIC default, also in the other dispatchers
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
         this.network = network;
@@ -83,9 +84,9 @@ public class SimpleSharedDispatcher extends SharedUniversalDispatcher {
                     sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse4);
                     sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse4);
 
-                    // TODO CHECK the menu manipulation
+                    // TODO SHARED CHECK the menu manipulation
                 } else {
-                    // TODO Improve and make function without break
+                    // TODO SHARED Improve and make function without break
                     break;
                 }
             }
@@ -117,9 +118,13 @@ public class SimpleSharedDispatcher extends SharedUniversalDispatcher {
 
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig) {
+            // TODO SHARED unfinished
+            @SuppressWarnings("unused")
             AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
 
+            @SuppressWarnings("unused")
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
+            @SuppressWarnings("unused")
             AbstractVehicleDestMatcher abstractVehicleDestMatcher = new HungarBiPartVehicleDestMatcher(new EuclideanDistanceFunction());
 
             return new SimpleSharedDispatcher(network, config, avconfig, travelTime, router, eventsManager);

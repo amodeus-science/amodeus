@@ -92,7 +92,8 @@ public class TestServer {
         config.planCalcScore().addActivityParams(new PlanCalcScoreConfigGroup.ActivityParams("activity"));
 
         for (ActivityParams activityParams : config.planCalcScore().getActivityParams()) {
-            activityParams.setTypicalDuration(3600.0); // TODO fix this to meaningful values --> Sebastian how should we solve this?
+            // TODO TEST fix this to meaningful values --> Sebastian how should we solve this?
+            activityParams.setTypicalDuration(3600.0);
         }
 
         outputdirectory = config.controler().getOutputDirectory();

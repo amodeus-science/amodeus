@@ -16,7 +16,6 @@ import javax.swing.JCheckBox;
 
 import org.matsim.api.core.v01.Coord;
 
-import ch.ethz.idsc.amodeus.dispatcher.core.RequestStatus;
 import ch.ethz.idsc.amodeus.net.OsmLink;
 import ch.ethz.idsc.amodeus.net.RequestContainer;
 import ch.ethz.idsc.amodeus.net.SimulationObject;

@@ -67,14 +67,6 @@ public enum TimeChart {
             timechart.getXYPlot().getRenderer().setSeriesPaint(i, colorScheme.of(i));
         }
 
-        // TODO Does not need to be set anymore since the settings are centralized in ChartTheme for all Chart types
-        // set text fonts
-        // timechart.getTitle().setFont(DiagramSettings.FONT_TITLE);
-        // timechart.getXYPlot().getDomainAxis().setLabelFont(DiagramSettings.FONT_AXIS);
-        // timechart.getXYPlot().getRangeAxis().setLabelFont(DiagramSettings.FONT_AXIS);
-        // timechart.getXYPlot().getDomainAxis().setTickLabelFont(DiagramSettings.FONT_TICK);
-        // timechart.getXYPlot().getRangeAxis().setTickLabelFont(DiagramSettings.FONT_TICK);
-
         LegendTitle legend = new LegendTitle(timechart.getXYPlot().getRenderer());
         // legend.setItemFont(DiagramSettings.FONT_TICK);
         legend.setPosition(RectangleEdge.TOP);

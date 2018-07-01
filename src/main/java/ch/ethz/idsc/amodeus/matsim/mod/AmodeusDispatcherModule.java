@@ -37,12 +37,12 @@ public class AmodeusDispatcherModule extends AbstractModule {
 
         bind(SQMDispatcher.Factory.class);
         AVUtils.bindDispatcherFactory(binder(), SQMDispatcher.class.getSimpleName()).to(SQMDispatcher.Factory.class);
-    
+
         bind(SimpleSharedDispatcher.Factory.class);
         AVUtils.bindDispatcherFactory(binder(), SimpleSharedDispatcher.class.getSimpleName()).to(SimpleSharedDispatcher.Factory.class);
-  
+
         bind(HeuristicSharedDispatcher.Factory.class);
         AVUtils.bindDispatcherFactory(binder(), HeuristicSharedDispatcher.class.getSimpleName()).to(HeuristicSharedDispatcher.Factory.class);
-  
+
     }
 }
