@@ -55,7 +55,7 @@ public enum TotalValueIdentifiersAmodeus implements TotalValueIdentifier {
     public String getIdentifier() {
         return identifier;
     }
-    
+
     public static Set<String> getAllIdentifiers() {
         Set<String> allIdentifiers = new HashSet<>();
         for (TotalValueIdentifiersAmodeus totalValueIdentifiersAmodeus : values()) {
@@ -63,7 +63,7 @@ public enum TotalValueIdentifiersAmodeus implements TotalValueIdentifier {
         }
         return allIdentifiers;
     }
-    
+
     public static boolean contains(TotalValueIdentifier totalValueIdentifier) {
         return getAllIdentifiers().contains(totalValueIdentifier.getIdentifier());
     }

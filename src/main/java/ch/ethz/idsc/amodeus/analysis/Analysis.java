@@ -99,7 +99,6 @@ public class Analysis {
     private final ChartTheme chartTheme;
     private final Set<String> allAmodeusTotalValueIdentifiers = TotalValueIdentifiersAmodeus.getAllIdentifiers();
 
-
     /** Constructor of the Analysis Class can be called with any combination of null
      * and the respective parameter.
      * 
@@ -219,6 +218,7 @@ public class Analysis {
         }
         totalValues.append(totalValueAppender);
     }
+
     public void addCostFunction(RoboTaxiCostFunction roboTaxiCostFunction, RoboTaxiCostParameters roboTaxiCostParameters) {
         analysisExports.add(new FleetCostElement(roboTaxiCostFunction, roboTaxiCostParameters));
     }
