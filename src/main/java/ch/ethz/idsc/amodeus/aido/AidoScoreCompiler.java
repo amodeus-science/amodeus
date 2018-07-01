@@ -46,9 +46,12 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         // distElem.consolidate();
         Scalar distCst = distElem.getNewestDistances().Get(1);
         Scalar distTot = distElem.getNewestDistances().Get(0);
+        
+        System.out.println("distCst: " + distCst);
+        System.out.println("distTot: " + distTot);
 
         Scalar score2 = Scalars.lessThan(RealScalar.ZERO, distTot) //
-                ? distTot.subtract(distCst).divide(distTot)
+                ? (distTot.subtract(distCst)).divide(distTot)
                 : RealScalar.ZERO;
 
         /** the third scalar entry of the score is the fleet size */
