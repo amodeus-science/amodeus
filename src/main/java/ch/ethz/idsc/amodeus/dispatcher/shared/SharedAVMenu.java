@@ -155,11 +155,11 @@ public class SharedAVMenu {
         roboTaxiMenu.forEach(savc -> ids.add(savc.getRequestId()));
         return ids;
     }
-    
+
     public void printMenu() {
         roboTaxiMenu.forEach(course -> System.out.println(course.getRequestId().toString() + ":\t" + course.getPickupOrDropOff().name()));
     }
-    
+
     // **************************************************
     // CHECK FUNCTIONS
     // **************************************************

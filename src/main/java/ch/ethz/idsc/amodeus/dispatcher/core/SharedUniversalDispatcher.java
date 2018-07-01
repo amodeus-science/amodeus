@@ -54,8 +54,8 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
     private final Map<RoboTaxi, Map<Id<Request>, AVRequest>> requestRegister = new HashMap<>();
     private final Set<AVRequest> periodPickedUpRequests = new HashSet<>(); // new
     private final Set<AVRequest> periodFulfilledRequests = new HashSet<>(); // new
-                                                                                      // temporaryRequestRegister
-                                                                                      // for fulfilled requests
+                                                                            // temporaryRequestRegister
+                                                                            // for fulfilled requests
     private final Map<AVRequest, RequestStatus> reqStatuses = new HashMap<>(); // Storing the Request Statuses for the
                                                                                // SimObjects
     private final double pickupDurationPerStop;
@@ -543,7 +543,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
             periodFulfilledRequests.clear();
             simulationObjectCompiler.insertPickedUpRequests(periodPickedUpRequests);
             periodPickedUpRequests.clear();
-            
+
             simulationObjectCompiler.insertVehicles(getRoboTaxis());
             SimulationObject simulationObject = simulationObjectCompiler.compile();
 

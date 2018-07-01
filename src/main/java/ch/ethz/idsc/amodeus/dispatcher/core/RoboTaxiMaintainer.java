@@ -109,7 +109,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
     @Override
     public final void addVehicle(AVVehicle vehicle) {
-        roboTaxis.add(new RoboTaxi(vehicle, new LinkTimePair(vehicle.getStartLink(), 0.0), vehicle.getStartLink(),  RoboTaxiUsageType.SINGLEUSED));
+        roboTaxis.add(new RoboTaxi(vehicle, new LinkTimePair(vehicle.getStartLink(), 0.0), vehicle.getStartLink(), RoboTaxiUsageType.SINGLEUSED));
         eventsManager.processEvent(new AVVehicleAssignmentEvent(vehicle, 0));
     }
 

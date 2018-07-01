@@ -33,7 +33,7 @@ public class RoboTaxi {
     private final AVVehicle avVehicle;
     private RoboTaxiStatus status;
     private final RoboTaxiUsageType usageType; // final might be removed if the usage possibility should be changeable by the dispatcher
-    
+
     /** last known location of the RoboTaxi */
     private Link lastKnownLocation;
     /** drive destination of the RoboTaxi, null for stay task */
@@ -226,7 +226,7 @@ public class RoboTaxi {
         directive.execute();
         directive = null;
     }
-    
+
     public RoboTaxiUsageType getUsageType() {
         return usageType;
     }
@@ -280,7 +280,7 @@ public class RoboTaxi {
     public SharedAVMenu getMenu() {
         return menu;
     }
-    
+
     public boolean checkMenuConsistency() {
         return menu.checkAllCoursesAppearOnlyOnce() && //
                 menu.checkNoPickupAfterDropoffOfSameRequest() && //

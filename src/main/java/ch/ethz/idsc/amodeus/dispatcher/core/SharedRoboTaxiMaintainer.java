@@ -12,8 +12,6 @@ import org.matsim.contrib.dvrp.util.LinkTimePair;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 
-import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDriveTaskTracker;
 import ch.ethz.idsc.amodeus.net.StorageUtils;
@@ -109,7 +107,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
     @Override
     public final void addVehicle(AVVehicle vehicle) {
-        roboTaxis.add(new RoboTaxi(vehicle, new LinkTimePair(vehicle.getStartLink(), 0.0), vehicle.getStartLink(),  RoboTaxiUsageType.SHARED));
+        roboTaxis.add(new RoboTaxi(vehicle, new LinkTimePair(vehicle.getStartLink(), 0.0), vehicle.getStartLink(), RoboTaxiUsageType.SHARED));
         eventsManager.processEvent(new AVVehicleAssignmentEvent(vehicle, 0));
     }
 
