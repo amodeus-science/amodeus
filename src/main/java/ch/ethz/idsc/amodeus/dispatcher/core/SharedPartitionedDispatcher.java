@@ -1,4 +1,3 @@
-/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.List;
@@ -21,10 +20,10 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
  * 
  * @author Claudio Ruch
  * @param <T> */
-public abstract class PartitionedDispatcher extends RebalancingDispatcher {
+public abstract class SharedPartitionedDispatcher extends SharedRebalancingDispatcher {
     protected final VirtualNetwork<Link> virtualNetwork; //
 
-    protected PartitionedDispatcher( //
+    protected SharedPartitionedDispatcher( //
             Config config, //
             AVDispatcherConfig avconfig, //
             TravelTime travelTime, //
@@ -71,5 +70,4 @@ public abstract class PartitionedDispatcher extends RebalancingDispatcher {
     protected Map<VirtualNode<Link>, List<RoboTaxi>> getVirtualNodeStayVehicles() {
         return virtualNetwork.binToVirtualNode(getRoboTaxiSubset(RoboTaxiStatus.STAY), RoboTaxi::getDivertableLocation);
     }
-
 }

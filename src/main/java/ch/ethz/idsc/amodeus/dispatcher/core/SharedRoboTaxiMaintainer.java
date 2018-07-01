@@ -1,4 +1,3 @@
-/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.io.File;
@@ -13,6 +12,8 @@ import org.matsim.contrib.dvrp.util.LinkTimePair;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 
+import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDriveTaskTracker;
 import ch.ethz.idsc.amodeus.net.StorageUtils;
@@ -27,20 +28,21 @@ import ch.ethz.matsim.av.schedule.AVDropoffTask;
 import ch.ethz.matsim.av.schedule.AVPickupTask;
 import ch.ethz.matsim.av.schedule.AVStayTask;
 
-/** The purpose of RoboTaxiMaintainer is to register {@link AVVehicle} and provide the collection of
- * available vehicles to derived class.
+/** The purpose of RoboTaxiMaintainer is to register {@link AVVehicle} and
+ * provide the collection of available vehicles to derived class.
  * <p>
- * manages assignments of {@link AbstractDirective} to {@link AVVehicle}s. path computations
- * attached to assignments are computed in parallel
+ * manages assignments of {@link AbstractDirective} to {@link AVVehicle}s. path
+ * computations attached to assignments are computed in parallel
  * {@link ParallelLeastCostPathCalculator}. */
-/* package */ abstract class RoboTaxiMaintainer implements AVDispatcher {
+
+/* package */ abstract class SharedRoboTaxiMaintainer implements AVDispatcher {
     protected final EventsManager eventsManager;
     private final List<RoboTaxi> roboTaxis = new ArrayList<>();
     private Double private_now = null;
     public InfoLine infoLine = null;
     private final StorageUtils storageUtils;
 
-    RoboTaxiMaintainer(EventsManager eventsManager, Config config, AVDispatcherConfig avDispatcherConfig) {
+    SharedRoboTaxiMaintainer(EventsManager eventsManager, Config config, AVDispatcherConfig avDispatcherConfig) {
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
         this.eventsManager = eventsManager;
         this.infoLine = new InfoLine(safeConfig.getInteger("infoLinePeriod", 10));
@@ -65,37 +67,35 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
     private void updateDivertableLocations() {
         for (RoboTaxi robotaxi : getRoboTaxis()) {
-            GlobalAssert.that(robotaxi.isWithoutDirective());
+            // TODO fix
+            // GlobalAssert.that(robotaxi.isWithoutDirective());
             Schedule schedule = robotaxi.getSchedule();
             new RoboTaxiTaskAdapter(schedule.getCurrentTask()) {
                 @Override
                 public void handle(AVDriveTask avDriveTask) {
-                    // for empty cars the drive task is second to last task
-                    if (ScheduleUtils.isNextToLastTask(schedule, avDriveTask)) {
-                        TaskTracker taskTracker = avDriveTask.getTaskTracker();
-                        AmodeusDriveTaskTracker onlineDriveTaskTracker = (AmodeusDriveTaskTracker) taskTracker;
-                        LinkTimePair linkTimePair = onlineDriveTaskTracker.getSafeDiversionPoint();
-                        robotaxi.setDivertableLinkTime(linkTimePair); // contains null check
-                        robotaxi.setCurrentDriveDestination(avDriveTask.getPath().getToLink());
-                        GlobalAssert.that(!robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
-                    } else
-                        GlobalAssert.that(robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
+                    TaskTracker taskTracker = avDriveTask.getTaskTracker();
+                    AmodeusDriveTaskTracker onlineDriveTaskTracker = (AmodeusDriveTaskTracker) taskTracker;
+                    LinkTimePair linkTimePair = onlineDriveTaskTracker.getSafeDiversionPoint();
+                    robotaxi.setDivertableLinkTime(linkTimePair); // contains null check
+                    robotaxi.setCurrentDriveDestination(avDriveTask.getPath().getToLink());
                 }
 
                 @Override
                 public void handle(AVPickupTask avPickupTask) {
+                    // TODO
                     GlobalAssert.that(robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
                 }
 
                 @Override
                 public void handle(AVDropoffTask avDropOffTask) {
+                    // TODO
                     GlobalAssert.that(robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
                 }
 
                 @Override
                 public void handle(AVStayTask avStayTask) {
                     // for empty vehicles the current task has to be the last task
-                    if (ScheduleUtils.isLastTask(schedule, avStayTask) && !isInPickupRegister(robotaxi)) {
+                    if (ScheduleUtils.isLastTask(schedule, avStayTask) && !isInPickupRegister(robotaxi) && !isInRequestRegister(robotaxi)) {
                         GlobalAssert.that(avStayTask.getBeginTime() <= getTimeNow());
                         GlobalAssert.that(avStayTask.getLink() != null);
                         robotaxi.setDivertableLinkTime(new LinkTimePair(avStayTask.getLink(), getTimeNow()));
@@ -109,7 +109,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
     @Override
     public final void addVehicle(AVVehicle vehicle) {
-        roboTaxis.add(new RoboTaxi(vehicle, new LinkTimePair(vehicle.getStartLink(), 0.0), vehicle.getStartLink(),  RoboTaxiUsageType.SINGLEUSED));
+        roboTaxis.add(new RoboTaxi(vehicle, new LinkTimePair(vehicle.getStartLink(), 0.0), vehicle.getStartLink(),  RoboTaxiUsageType.SHARED));
         eventsManager.processEvent(new AVVehicleAssignmentEvent(vehicle, 0));
     }
 
@@ -119,13 +119,15 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         updateInfoLine();
         notifySimulationSubscribers(Math.round(now), storageUtils);
         consistencyCheck();
-        beforeStepTasks(); // <- if problems with RoboTaxi Status to Completed consider to set "simEndtimeInterpretation" to "null"
+        beforeStepTasks(); // <- if problems with RoboTaxi Status to Completed consider to set
+                           // "simEndtimeInterpretation" to "null"
         executePickups();
         executeDropoffs();
-        redispatch(now);
+        redispatchInternal(now);
         afterStepTasks();
         executeDirectives();
         consistencyCheck();
+
     }
 
     protected void updateInfoLine() {
@@ -186,6 +188,8 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         }
     }
 
+    /* package */ abstract void redispatchInternal(double now);
+
     /* package */ abstract void executePickups();
 
     /* package */ abstract void executeDropoffs();
@@ -197,6 +201,8 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     /* package */ abstract void notifySimulationSubscribers(long round_now, StorageUtils storageUtils);
 
     /* package */ abstract boolean isInPickupRegister(RoboTaxi robotaxi);
+
+    /* package */ abstract boolean isInRequestRegister(RoboTaxi robotaxi);
 
     @Override
     public final void onNextTaskStarted(AVVehicle task) {
