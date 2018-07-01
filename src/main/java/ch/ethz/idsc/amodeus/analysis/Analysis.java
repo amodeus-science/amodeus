@@ -219,10 +219,6 @@ public class Analysis {
         totalValues.append(totalValueAppender);
     }
 
-    public void addCostFunction(RoboTaxiCostFunction roboTaxiCostFunction, RoboTaxiCostParameters roboTaxiCostParameters) {
-        analysisExports.add(new FleetCostElement(roboTaxiCostFunction, roboTaxiCostParameters));
-    }
-
     public void addCostAnalysis(RoboTaxiCostFunction roboTaxiCostFunction, RoboTaxiCostParameters roboTaxiCostParameters) {
         FleetCostElement fleetCostElement = new FleetCostElement(roboTaxiCostFunction, roboTaxiCostParameters);
         analysisExports.add(fleetCostElement);
