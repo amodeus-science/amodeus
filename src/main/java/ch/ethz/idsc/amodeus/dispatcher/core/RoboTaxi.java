@@ -197,7 +197,7 @@ public class RoboTaxi {
         Task avT = getSchedule().getCurrentTask();
 
         if (avT instanceof AVStayTask) {
-            // TODO For now, this works, but probably needs fixing somewhere upfront /sh, apr 2018
+            // TODO MISC For now, this works, but probably needs fixing somewhere upfront /sh, apr 2018
             logger.warn("RoboTaxiStatus != STAY, but Schedule.getCurrentTask() == AVStayTask; probably needs fixing");
             return true;
         }
@@ -211,7 +211,7 @@ public class RoboTaxi {
             return true;
         }
 
-        // TODO If on pickup and dropoff not divertable yet -- or maybe can be diverted,
+        // TODO MISC If on pickup and dropoff not divertable yet -- or maybe can be diverted,
         // but directive will occur at the end of current pickup or dropoff
         else if (avT instanceof AVPickupTask || avT instanceof AVDropoffTask) {
             return false;

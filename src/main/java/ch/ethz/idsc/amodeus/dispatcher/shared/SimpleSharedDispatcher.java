@@ -47,7 +47,7 @@ public class SimpleSharedDispatcher extends SharedUniversalDispatcher {
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
         distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getString("distanceHeuristics", // <- crashes if spelling is wrong
-                DistanceHeuristics.EUCLIDEAN.name()).toUpperCase()); // TODO make EUCLIDEANNONCYCLIC default, also in the other dispatchers
+                DistanceHeuristics.EUCLIDEAN.name()).toUpperCase()); // TODO MISC make EUCLIDEANNONCYCLIC default, also in the other dispatchers
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
         this.network = network;

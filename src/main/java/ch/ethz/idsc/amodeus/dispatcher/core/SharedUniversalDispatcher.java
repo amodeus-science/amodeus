@@ -285,7 +285,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
                 handlePickupAndDropoff(sRoboTaxi, task);
             }
 
-            // FIXME This is probably not yet Good
+            // FIXME SHARED This is probably not yet Good
             private void handlePickupAndDropoff(RoboTaxi sRoboTaxi, Task task) {
                 Link nextLink = getStarterLink(sRoboTaxi); // We are already at next course in the menu although in
                 // matsim the pickup or dropoff is still happening
@@ -368,7 +368,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
                 : futurePathFactory.createFuturePathContainer(avRequest.getToLink(), avRequest.getToLink(), endDropOffTime);
         sRoboTaxi.assignDirective(new SharedGeneralDriveDirectiveDropoff(sRoboTaxi, avRequest, futurePathContainer, getTimeNow(), dropoffDurationPerStop));
 
-        // FIXME temporary fix.. else it fails in execute dropoffs since there are
+        // FIXME SHARED temporary fix.. else it fails in execute dropoffs since there are
         // robotaxis in map but with no requests assigned.
         if (nextCourse == null)
             requestRegister.remove(sRoboTaxi);
@@ -401,13 +401,13 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
     @Override
     void executePickups() {
         Map<AVRequest, RoboTaxi> pickupRegisterCopy = new HashMap<>(pickupRegister);
-        // TODO Ian is there any way of getting unique map values in a more efficient
-        // way
-        Set<RoboTaxi> uniqueRt = new HashSet<>();
-        pickupRegisterCopy.values().stream().filter(srt -> srt.getMenu().getStarterCourse().getPickupOrDropOff().equals(SharedAVMealType.PICKUP)).forEach(rt -> uniqueRt.add(rt));
+        List<RoboTaxi> uniqueRt = pickupRegisterCopy.values().stream() //
+                .filter(srt -> srt.getMenu().getStarterCourse().getPickupOrDropOff().equals(SharedAVMealType.PICKUP)) //
+                .distinct() //
+                .collect(Collectors.toList());
         for (RoboTaxi sRt : uniqueRt) {
             Link pickupVehicleLink = sRt.getDivertableLocation();
-            // TODO note that waiting for last staytask adds a one second staytask before
+            // TODO SHARED note that waiting for last staytask adds a one second staytask before
             // switching to pickuptask
             boolean isOk = sRt.getSchedule().getCurrentTask() == Schedules.getLastTask(sRt.getSchedule()); // instanceof
                                                                                                            // AVDriveTask;
@@ -433,7 +433,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         Map<RoboTaxi, Map<Id<Request>, AVRequest>> requestRegisterCopy = new HashMap<>(requestRegister);
         for (RoboTaxi dropoffVehicle : requestRegisterCopy.keySet()) {
             Link dropoffVehicleLink = dropoffVehicle.getDivertableLocation();
-            // TODO note that waiting for last staytask adds a one second staytask before
+            // TODO SHARED note that waiting for last staytask adds a one second staytask before
             // switching to dropoffTask
             boolean isOk = dropoffVehicle.getSchedule().getCurrentTask() == Schedules.getLastTask(dropoffVehicle.getSchedule()); // instanceof AVDriveTask;
 
@@ -464,10 +464,10 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
      * this {@link AVRequest} in the meantime */
     @Override
     /* package */ final void stopAbortedPickupRoboTaxis() {
-        // FIXME This function has to be checked. might not even be nesscesary anymore...
+        // FIXME SHARED This function has to be checked. might not even be necessary anymore...
         // stop vehicles still driving to a request but other taxi serving that request
         // already
-        // FIXME this is not nesscesary true for shared taxis It is possible that a robotaxi is on a
+        // FIXME SHARED this is not nesscesary true for shared taxis It is possible that a robotaxi is on a
         // dropofftrip when the request is canceled..
         getRoboTaxis().stream()//
                 .filter(rt -> rt.getStatus().equals(RoboTaxiStatus.DRIVETOCUSTOMER)).filter(rt -> !pickupRegister.containsValue(rt))//

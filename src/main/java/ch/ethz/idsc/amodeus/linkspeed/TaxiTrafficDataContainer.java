@@ -26,7 +26,7 @@ import org.matsim.core.trafficmonitoring.TravelTimeData;
         trafficData.put(linkID, ttData);
     }
 
-    // TODO fix this function to something more nice.
+    // TODO MISC fix this function to something more nice.
     public int getTimeSlot(double time) {
         if (time > 0.0) {
             int slot = (int) (((time / StaticHelper.DAYLENGTH) * numSlots) - 1);

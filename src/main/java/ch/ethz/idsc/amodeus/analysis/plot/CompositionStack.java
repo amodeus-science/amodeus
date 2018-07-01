@@ -56,16 +56,6 @@ public enum CompositionStack {
         legend.setPosition(RectangleEdge.TOP);
         chart.addLegend(legend);
 
-        // TODO Does not need to be set anymore since the settings are centralized in ChartTheme for all Chart types
-        // LegendItemCollection legend = new LegendItemCollection();
-        // legend.add(new LegendItem(labels[0], Color.red));
-        // legend.add(new LegendItem(labels[1], Color.blue));
-        // legend.add(new LegendItem(labels[2], Color.green));
-        // chart.getCategoryPlot().setFixedLegendItems(legend);
-        // chart.getLegend().setPosition(RectangleEdge.TOP);
-        // chart.getLegend().setItemFont(DiagramSettings.FONT_TICK);
-        // chart.getLegend().setSortOrder(SortOrder.DESCENDING);
-
         StaticHelper.savePlot(directory, fileTitle, chart, WIDTH, HEIGHT);
     }
 
