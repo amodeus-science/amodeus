@@ -24,17 +24,17 @@ public enum ScenarioOptionsBase {
     static final String COLORSCHEMEIDENTIFIER = "colorScheme";
     static final String CHARTTHEMEIDENTIFIER = "chartTheme";
     static final String DTTRAVELDATAIDENTIFIER = "dtTravelData";
-    static final String NUMVNODESIDENTIFIER = "numVirtualNodes";
     static final String COMPLETEGRAPHIDENTIFIER = "completeGraph";
     static final String NETWORKUPDATEDNAMEIDENTIFIER = "NetworkUpdateName";
     static final String POPULATIONUPDATEDNAMEIDENTIFIER = "PopulationUpdateName";
     static final String LOCATIONSPECIDENTIFIER = "LocationSpec";
-    static final String MAXPOPULATIONSIZEIDENTIFIER = "maxPopulationSize";
     static final String SHAPEFILEIDENTIFIER = "shapeFile";
     // ---
     public static final String POPULATIONCUTTERIDENTIFIER = "populationCutter";
     public static final String VIRTUALNETWORKCREATORIDENTIFIER = "virtualNetworkCreator";
     public static final String WAITFORCLIENTSIDENTIFIER = "waitForClients";
+    public static final String NUMVNODESIDENTIFIER = "numVirtualNodes";
+    public static final String MAXPOPULATIONSIZEIDENTIFIER = "maxPopulationSize";
 
     public static Properties getDefault() {
         Properties properties = new Properties();
