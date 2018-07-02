@@ -35,6 +35,7 @@ import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
+/** @author Lukas Sieber */
 public class HeuristicSharedDispatcher extends SharedUniversalDispatcher {
 
     private static final double MAXSHAREDISTANCE = 2000;

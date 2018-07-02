@@ -36,7 +36,6 @@ import ch.ethz.idsc.amodeus.net.SimulationObjects;
 import ch.ethz.idsc.amodeus.net.StorageUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
-import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 import ch.ethz.matsim.av.schedule.AVDriveTask;
@@ -47,6 +46,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 /** purpose of {@link SharedUniversalDispatcher} is to collect and manage
  * {@link AVRequest}s alternative implementation of {@link AVDispatcher};
  * supersedes {@link AbstractDispatcher}. */
+/** @author Nicolo Ormezzano, Lukas Sieber */
 public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer {
 
     private final FuturePathFactory futurePathFactory;

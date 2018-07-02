@@ -12,8 +12,9 @@ import org.matsim.contrib.dvrp.data.Request;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
-/** @author onicoloLsieber Object containing list of pickup and dropoff planned
+/**  Object containing list of pickup and dropoff planned
  *         for an AV. */
+/** @author Nicolo Ormezzano, Lukas Sieber */
 public class SharedAVMenu {
 
     private final List<SharedAVCourse> roboTaxiMenu = new ArrayList<>();

@@ -21,7 +21,6 @@ import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.dispatcher.AVVehicleAssignmentEvent;
-import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 import ch.ethz.matsim.av.schedule.AVDriveTask;
 import ch.ethz.matsim.av.schedule.AVDropoffTask;
 import ch.ethz.matsim.av.schedule.AVPickupTask;
@@ -33,7 +32,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
  * manages assignments of {@link AbstractDirective} to {@link AVVehicle}s. path
  * computations attached to assignments are computed in parallel
  * {@link ParallelLeastCostPathCalculator}. */
-
+/** @author Nicolo Ormezzano, Lukas Sieber */
 /* package */ abstract class SharedRoboTaxiMaintainer implements AVDispatcher {
     protected final EventsManager eventsManager;
     private final List<RoboTaxi> roboTaxis = new ArrayList<>();

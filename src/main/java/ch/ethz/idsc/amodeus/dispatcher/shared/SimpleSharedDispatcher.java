@@ -27,6 +27,7 @@ import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
+/** @author Nicolo Ormezzano, Lukas Sieber */
 public class SimpleSharedDispatcher extends SharedUniversalDispatcher {
 
     private final int dispatchPeriod;

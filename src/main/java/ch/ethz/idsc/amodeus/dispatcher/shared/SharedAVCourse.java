@@ -6,6 +6,7 @@ import java.util.Objects;
 import org.matsim.api.core.v01.Id;
 import org.matsim.contrib.dvrp.data.Request;
 
+/** @author Nicolo Ormezzano, Lukas Sieber */
 public class SharedAVCourse {
 
     private final Id<Request> requestId;
