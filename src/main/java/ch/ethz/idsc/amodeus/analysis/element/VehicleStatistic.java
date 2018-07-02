@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.matsim.api.core.v01.network.Link;
 
+import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
 import ch.ethz.idsc.amodeus.net.VehicleContainer;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -35,7 +36,8 @@ import ch.ethz.idsc.tensor.alg.Array;
     }
 
     public void register(int simObjIndex, VehicleContainer vehicleContainer) {
-        if (vehicleContainer.linkIndex != lastLinkIndex) {
+        if (vehicleContainer.linkIndex != lastLinkIndex || //
+                vehicleContainer.roboTaxiStatus.equals(RoboTaxiStatus.STAY)) {
             consolidate();
             list.clear();
             simObjIndLastLinkChange = simObjIndex;
