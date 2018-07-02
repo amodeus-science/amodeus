@@ -476,18 +476,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
      * this {@link AVRequest} in the meantime */
     @Override
     /* package */ final void stopAbortedPickupRoboTaxis() {
-        // FIXME SHARED This function has to be checked. might not even be necessary anymore...
-        // stop vehicles still driving to a request but other taxi serving that request
-        // already
-        // SHARED this is not nesscesary true for shared taxis It is possible that a robotaxi is on a
-        // dropofftrip when the request is canceled..
-        // getRoboTaxis().stream()//
-        // .filter(rt -> rt.getStatus().equals(RoboTaxiStatus.DRIVETOCUSTOMER)).filter(rt -> !pickupRegister.containsValue(rt))//
-        // .filter(RoboTaxi::canPickupNewCustomer)//
-        // .filter(RoboTaxi::isWithoutDirective)//
-        // .forEach(rt -> setRoboTaxiDiversion(rt, rt.getDivertableLocation(), RoboTaxiStatus.REBALANCEDRIVE));
-
-        GlobalAssert.that(pickupRegister.size() <= pendingRequests.size());
+        // Copied from Uviversal Dispatcher and is left empty for now
     }
 
     /** Cleans menu for {@link RoboTaxi} and moves all previously assigned {@link AVRequest} back to pending requests taking them out from request- and pickup-

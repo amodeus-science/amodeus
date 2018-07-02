@@ -66,8 +66,6 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
     private void updateDivertableLocations() {
         for (RoboTaxi robotaxi : getRoboTaxis()) {
-            // TODO SHARED fix
-            // GlobalAssert.that(robotaxi.isWithoutDirective());
             Schedule schedule = robotaxi.getSchedule();
             new RoboTaxiTaskAdapter(schedule.getCurrentTask()) {
                 @Override
