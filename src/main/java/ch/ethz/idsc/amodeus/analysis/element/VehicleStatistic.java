@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.matsim.api.core.v01.network.Link;
 
+import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
 import ch.ethz.idsc.amodeus.net.VehicleContainer;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -22,7 +23,8 @@ import ch.ethz.idsc.tensor.alg.Array;
     public final Tensor distanceRebalance;
 
     private int lastLinkIndex = -1;
-    private int offset = -1;
+    private int simObjIndLastLinkChange = -1;
+    private int lastUpdatedDist = 0;
     // this is used as a buffer and is periodically emptied
     private final List<VehicleContainer> list = new LinkedList<>();
 
@@ -33,44 +35,48 @@ import ch.ethz.idsc.tensor.alg.Array;
         distanceRebalance = Array.zeros(tics_max);
     }
 
-    public void register(int tics, VehicleContainer vehicleContainer) {
+    public void register(int simObjIndex, VehicleContainer vehicleContainer) {
         if (vehicleContainer.linkIndex != lastLinkIndex) {
             consolidate();
             list.clear();
-            offset = tics;
+            simObjIndLastLinkChange = simObjIndex;
             lastLinkIndex = vehicleContainer.linkIndex;
         }
         list.add(vehicleContainer);
     }
 
+    /** this function is called when the {@link RoboTaxi} has changed the link, then we can
+     * register the distance covered by the vehicle on the previous link and associate it to
+     * timesteps. The logic is that the distance is added evenly to the time steps. */
     public void consolidate() {
         if (!list.isEmpty()) {
-            // here we are if the AV left the link. now we want to register the
-            // distance covered by this vehicle
             final int linkId = list.get(0).linkIndex;
-            Link currentLink = MatsimStaticDatabase.INSTANCE.getOsmLink(linkId).link;
-            double distance = currentLink.getLength();
+            Link distanceLink = MatsimStaticDatabase.INSTANCE.getOsmLink(linkId).link;
+            /** this total distance on the link was travelled on during all simulationObjects stored
+             * in the list. */
+            double distance = distanceLink.getLength();
 
             int part = Math.toIntExact(list.stream().filter(vc -> vc.roboTaxiStatus.isDriving()).count());
 
             // Distance covered by one Vehiclecontainer
-            Scalar contrib = RealScalar.of(distance / part);
+            Scalar stepDistcontrib = RealScalar.of(distance / part);
             int count = 0;
             for (VehicleContainer vehicleContainer : list) {
-                final int index = offset + count;
+                final int index = simObjIndLastLinkChange + count;
+                lastUpdatedDist = index;
                 if (index < distanceTotal.length()) {
                     switch (vehicleContainer.roboTaxiStatus) {
                     case DRIVEWITHCUSTOMER:
-                        distanceWithCustomer.set(contrib, index);
-                        distanceTotal.set(contrib, index); // applies to all three
+                        distanceWithCustomer.set(stepDistcontrib, index);
+                        distanceTotal.set(stepDistcontrib, index); // applies to all three
                         break;
                     case DRIVETOCUSTOMER:
-                        distancePickup.set(contrib, index);
-                        distanceTotal.set(contrib, index); // applies to all three
+                        distancePickup.set(stepDistcontrib, index);
+                        distanceTotal.set(stepDistcontrib, index); // applies to all three
                         break;
                     case REBALANCEDRIVE:
-                        distanceRebalance.set(contrib, index);
-                        distanceTotal.set(contrib, index); // applies to all three
+                        distanceRebalance.set(stepDistcontrib, index);
+                        distanceTotal.set(stepDistcontrib, index); // applies to all three
                         break;
                     default:
                         break;
@@ -83,13 +89,11 @@ import ch.ethz.idsc.tensor.alg.Array;
 
     /** @return latest recording of Tensor {distanceTotal, distanceWithCustomer,distancePickup,distanceRebalancd} */
     public Tensor getLatestRecordings() {
-        if (offset - 1 > 0)
-            return Tensors.of( //
-                    distanceTotal.Get(offset - 1), //
-                    distanceWithCustomer.Get(offset - 1), //
-                    distancePickup.Get(offset - 1), //
-                    distanceRebalance.Get(offset - 1));
-        return Array.zeros(4);
-
+        return Tensors.of( //
+                distanceTotal.Get(lastUpdatedDist), //
+                distanceWithCustomer.Get(lastUpdatedDist), //
+                distancePickup.Get(lastUpdatedDist), //
+                distanceRebalance.Get(lastUpdatedDist));
     }
+
 }

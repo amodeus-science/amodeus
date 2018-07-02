@@ -20,7 +20,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     private final DistanceElement distElem;
 
     public AidoScoreCompiler(List<RoboTaxi> roboTaxis) {
-        // TODO AIDO so far set a posteriori, replace hardcoded value
+        // TODO AIDO so far set a posteriori, replace hardcoded value if possible
         distElem = new DistanceElement(roboTaxis.size(), 120000 / 10);
 
     }
@@ -41,14 +41,12 @@ import ch.ethz.matsim.av.passenger.AVRequest;
          * in the current time step */
         SimulationObjectCompiler soc = SimulationObjectCompiler.create(time, "insert empty as unused", -1);
         soc.insertVehicles(roboTaxis);
-        // TODO AIDO currently returns always zero... :*(
         distElem.register(soc.compile());
-        // distElem.consolidate();
         Scalar distCst = distElem.getNewestDistances().Get(1);
         Scalar distTot = distElem.getNewestDistances().Get(0);
 
         Scalar score2 = Scalars.lessThan(RealScalar.ZERO, distTot) //
-                ? distTot.subtract(distCst).divide(distTot)
+                ? (distTot.subtract(distCst)).divide(distTot)
                 : RealScalar.ZERO;
 
         /** the third scalar entry of the score is the fleet size */
