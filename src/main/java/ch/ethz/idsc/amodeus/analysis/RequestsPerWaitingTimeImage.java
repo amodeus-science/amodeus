@@ -26,7 +26,6 @@ public class RequestsPerWaitingTimeImage implements AnalysisExport {
         Scalar waitBinNumberScaling = RealScalar.of(1.0 / waitBinNumber);
         Scalar waitBinSize = Round.of(RealScalar.of(wt.maximumWaitTime).multiply(waitBinNumberScaling));
 
-        RealScalar.of(10.0);
         Tensor waitTimes = Tensors.empty();
         wt.requestWaitTimes.values().stream().forEach(v -> waitTimes.append(RealScalar.of(v)));
         Tensor waitBinCounter = BinCounts.of(//

@@ -30,7 +30,7 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
     /** link distances in the network must be in [m] */
     private static final Scalar km2m = RealScalar.of(0.001);
 
-    private int index = 0; // Index for the Simulation Object which is loaded
+    private int simObjIndex = 0; // Index for the Simulation Object which is loaded
     private List<VehicleStatistic> list = new ArrayList<>();
     /** vector for instance {10, 20, ...} */
     public final Tensor time = Tensors.empty();
@@ -77,9 +77,9 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
 
         /** register Simulation Object for distance analysis */
         for (VehicleContainer vehicleContainer : simulationObject.vehicles)
-            list.get(vehicleContainer.vehicleIndex).register(index, vehicleContainer);
+            list.get(vehicleContainer.vehicleIndex).register(simObjIndex, vehicleContainer);
 
-        ++index;
+        ++simObjIndex;
     }
 
     @Override
