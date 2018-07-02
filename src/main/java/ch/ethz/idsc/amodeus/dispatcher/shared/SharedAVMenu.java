@@ -92,7 +92,7 @@ public class SharedAVMenu {
         roboTaxiMenu.remove(courseIndex);
     }
 
-    /* package */ void removeCourse(SharedAVCourse sharedAVCourse) {
+    public void removeAVCourse(SharedAVCourse sharedAVCourse) {
         GlobalAssert.that(containsCourse(sharedAVCourse));
         roboTaxiMenu.remove(sharedAVCourse);
     }

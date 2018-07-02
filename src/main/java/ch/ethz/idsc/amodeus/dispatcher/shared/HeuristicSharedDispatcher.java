@@ -96,7 +96,7 @@ public class HeuristicSharedDispatcher extends SharedUniversalDispatcher {
                         matchesAV.remove(avRequest);
                     }
 
-                    Collection<RoboTaxi> roboTaxis = getDivertableUnassignedRoboTaxisWithoutCustomer();
+                    Collection<RoboTaxi> roboTaxis = getDivertableUnassignedRoboTaxis();
                     if (!roboTaxis.isEmpty()) {
                         RoboTaxi matchedRoboTaxi = findClostestVehicle(avRequest, roboTaxis);
                         addSharedRoboTaxiPickup(matchedRoboTaxi, avRequest);
