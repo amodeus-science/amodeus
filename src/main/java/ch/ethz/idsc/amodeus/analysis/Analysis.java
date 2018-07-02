@@ -219,7 +219,7 @@ public class Analysis {
         totalValues.append(totalValueAppender);
     }
 
-    //TODO @Lukas either remove this or make a proper example in CustomAnalysis
+    // TODO @Lukas either remove this or make a proper example in CustomAnalysis
     public void addCostAnalysis(RoboTaxiCostFunction roboTaxiCostFunction, RoboTaxiCostParameters roboTaxiCostParameters) {
         FleetCostElement fleetCostElement = new FleetCostElement(roboTaxiCostFunction, roboTaxiCostParameters);
         analysisExports.add(fleetCostElement);

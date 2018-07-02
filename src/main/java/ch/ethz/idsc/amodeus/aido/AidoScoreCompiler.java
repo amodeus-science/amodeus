@@ -34,7 +34,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         /** the first scalar entry of the score is the mean waiting time at the time instant */
         Tensor waitingTimes = Tensor.of(requests.stream().map(r -> RealScalar.of(time - r.getSubmissionTime())));
         Scalar score1 = Tensors.isEmpty(waitingTimes) //
-                ? RealScalar.ZERO : (Scalar) Mean.of(waitingTimes);
+                ? RealScalar.ZERO
+                : (Scalar) Mean.of(waitingTimes);
 
         /** the second scalar entry of the score is the current distance ratio, i.e. the share of empty miles driven
          * in the current time step */
@@ -45,7 +46,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         Scalar distTot = distElem.getNewestDistances().Get(0);
 
         Scalar score2 = Scalars.lessThan(RealScalar.ZERO, distTot) //
-                ? (distTot.subtract(distCst)).divide(distTot) : RealScalar.ZERO;
+                ? (distTot.subtract(distCst)).divide(distTot)
+                : RealScalar.ZERO;
 
         /** the third scalar entry of the score is the fleet size */
         Scalar score3 = RealScalar.of(roboTaxis.size());
