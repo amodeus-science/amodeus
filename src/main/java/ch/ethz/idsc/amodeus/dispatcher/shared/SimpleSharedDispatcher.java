@@ -13,8 +13,6 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedUniversalDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVehicleDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
-import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
-import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
 import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.HungarBiPartVehicleDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
@@ -32,10 +30,7 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 public class SimpleSharedDispatcher extends SharedUniversalDispatcher {
 
     private final int dispatchPeriod;
-    private final DistanceHeuristics distanceHeuristics;
     private Tensor printVals = Tensors.empty();
-    private final DistanceFunction distanceFunction;
-    private final Network network;
 
     protected SimpleSharedDispatcher(Network network, //
             Config config, //
@@ -46,12 +41,6 @@ public class SimpleSharedDispatcher extends SharedUniversalDispatcher {
         super(config, avDispatcherConfig, travelTime, parallelLeastCostPathCalculator, eventsManager);
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
-        distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getString("distanceHeuristics", // <- crashes if spelling is wrong
-                DistanceHeuristics.EUCLIDEAN.name()).toUpperCase()); // TODO MISC make EUCLIDEANNONCYCLIC default, also in the other dispatchers
-        System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
-        this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
-        this.network = network;
-
     }
 
     @Override
@@ -84,9 +73,8 @@ public class SimpleSharedDispatcher extends SharedUniversalDispatcher {
                     sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse4);
                     sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse4);
 
-                    // TODO SHARED CHECK the menu manipulation
+                    sharedRoboTaxi.checkMenuConsistency();
                 } else {
-                    // TODO SHARED Improve and make function without break
                     break;
                 }
             }
@@ -118,7 +106,6 @@ public class SimpleSharedDispatcher extends SharedUniversalDispatcher {
 
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig) {
-            // TODO SHARED unfinished
             @SuppressWarnings("unused")
             AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
 

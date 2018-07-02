@@ -81,13 +81,11 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
                 @Override
                 public void handle(AVPickupTask avPickupTask) {
-                    // TODO SHARED
                     GlobalAssert.that(robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
                 }
 
                 @Override
                 public void handle(AVDropoffTask avDropOffTask) {
-                    // TODO SHARED
                     GlobalAssert.that(robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
                 }
 

@@ -219,8 +219,8 @@ public class Analysis {
         totalValues.append(totalValueAppender);
     }
 
-    public void addCostAnalysis(RoboTaxiCostFunction roboTaxiCostFunction, RoboTaxiCostParameters roboTaxiCostParameters) {
-        FleetCostElement fleetCostElement = new FleetCostElement(roboTaxiCostFunction, roboTaxiCostParameters);
+    public void addCostAnalysis(RoboTaxiCostFunction roboTaxiCostFunction) {
+        FleetCostElement fleetCostElement = new FleetCostElement(roboTaxiCostFunction);
         analysisExports.add(fleetCostElement);
         totalValues.append(fleetCostElement);
     }
@@ -236,7 +236,6 @@ public class Analysis {
 
         // create plots and carry out other analysis on the data for each Analysis
         // Element
-        // TODO MISC Find more effective way to give the relative Directory to the compile Function --> Jan
         analysisElements.forEach(AnalysisElement::consolidate);
 
         for (AnalysisExport analysisExport : analysisExports)

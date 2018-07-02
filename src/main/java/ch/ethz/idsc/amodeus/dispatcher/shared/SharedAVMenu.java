@@ -116,7 +116,6 @@ public class SharedAVMenu {
      * 
      * @return */
     public List<SharedAVCourse> getCourses() {
-        // TODO SHARED which version is better??
         return Collections.unmodifiableList(roboTaxiMenu);
         // return roboTaxiMenu;
     }

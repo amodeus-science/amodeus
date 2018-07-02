@@ -211,8 +211,6 @@ public class RoboTaxi {
             return true;
         }
 
-        // TODO MISC If on pickup and dropoff not divertable yet -- or maybe can be diverted,
-        // but directive will occur at the end of current pickup or dropoff
         else if (avT instanceof AVPickupTask || avT instanceof AVDropoffTask) {
             return false;
 
