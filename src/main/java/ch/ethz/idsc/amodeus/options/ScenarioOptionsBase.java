@@ -23,7 +23,6 @@ public enum ScenarioOptionsBase {
     static final String LINKSPEEDDATAFILENAME = "linkSpeedDataFileName";
     static final String COLORSCHEMEIDENTIFIER = "colorScheme";
     static final String CHARTTHEMEIDENTIFIER = "chartTheme";
-    static final String DTTRAVELDATAIDENTIFIER = "dtTravelData";
     static final String COMPLETEGRAPHIDENTIFIER = "completeGraph";
     static final String NETWORKUPDATEDNAMEIDENTIFIER = "NetworkUpdateName";
     static final String POPULATIONUPDATEDNAMEIDENTIFIER = "PopulationUpdateName";
@@ -35,6 +34,7 @@ public enum ScenarioOptionsBase {
     public static final String WAITFORCLIENTSIDENTIFIER = "waitForClients";
     public static final String NUMVNODESIDENTIFIER = "numVirtualNodes";
     public static final String MAXPOPULATIONSIZEIDENTIFIER = "maxPopulationSize";
+    public static final String DTTRAVELDATAIDENTIFIER = "dtTravelData";
 
     public static Properties getDefault() {
         Properties properties = new Properties();
