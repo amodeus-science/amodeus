@@ -219,11 +219,11 @@ public class Analysis {
         totalValues.append(totalValueAppender);
     }
 
-    public void addCostAnalysis(RoboTaxiCostFunction roboTaxiCostFunction) {
-        FleetCostElement fleetCostElement = new FleetCostElement(roboTaxiCostFunction);
-        analysisExports.add(fleetCostElement);
-        totalValues.append(fleetCostElement);
-    }
+    // public void addCostAnalysis(RoboTaxiCostFunction roboTaxiCostFunction) {
+    // FleetCostElement fleetCostElement = new FleetCostElement(roboTaxiCostFunction);
+    // analysisExports.add(fleetCostElement);
+    // totalValues.append(fleetCostElement);
+    // }
 
     public void run() throws Exception {
         // Iteration over all Simulation Objects
