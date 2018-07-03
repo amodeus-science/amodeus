@@ -21,9 +21,8 @@ public class FleetCostElement implements AnalysisExport, TotalValueAppender {
 
     private final RoboTaxiCostFunction roboTaxiCostFunction;
 
-    public FleetCostElement(RoboTaxiCostFunction roboTaxiCostFunction, RoboTaxiCostParameters roboTaxiCostParameters) {
+    public FleetCostElement(RoboTaxiCostFunction roboTaxiCostFunction) {
         this.roboTaxiCostFunction = roboTaxiCostFunction;
-        roboTaxiCostFunction.setCostParameters(roboTaxiCostParameters);
     }
 
     @Override

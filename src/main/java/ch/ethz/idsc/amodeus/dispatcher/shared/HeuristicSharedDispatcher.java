@@ -22,18 +22,10 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.dispatcher.core.SharedPartitionedDispatcher;
-import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVehicleDestMatcher;
-import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
-import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
-import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
-import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
-import ch.ethz.idsc.amodeus.dispatcher.util.HungarBiPartVehicleDestMatcher;
-import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
+import ch.ethz.idsc.amodeus.dispatcher.core.SharedUniversalDispatcher;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
@@ -43,18 +35,13 @@ import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
-public class HeuristicSharedDispatcher extends SharedPartitionedDispatcher {
+/** @author Lukas Sieber */
+public class HeuristicSharedDispatcher extends SharedUniversalDispatcher {
 
     private static final double MAXSHAREDISTANCE = 2000;
     public final int dispatchPeriod;
     public final int rebalancingPeriod;
-    final AbstractVirtualNodeDest virtualNodeDest;
-    final AbstractVehicleDestMatcher vehicleDestMatcher;
-    private final int nVNodes;
-    private final int nVLinks;
     private final Network network;
-    private final DistanceFunction distanceFunction;
-    private final DistanceHeuristics distanceHeuristics;
     Tensor printVals = Tensors.empty();
     TravelData travelData;
 
@@ -65,25 +52,13 @@ public class HeuristicSharedDispatcher extends SharedPartitionedDispatcher {
             ParallelLeastCostPathCalculator router, //
             EventsManager eventsManager, //
             Network network, //
-            VirtualNetwork<Link> virtualNetwork, //
-            AbstractVirtualNodeDest abstractVirtualNodeDest, //
-            AbstractVehicleDestMatcher abstractVehicleDestMatcher, //
             TravelData travelData) {
-        super(config, avconfig, travelTime, router, eventsManager, virtualNetwork);
-        virtualNodeDest = abstractVirtualNodeDest;
-        vehicleDestMatcher = abstractVehicleDestMatcher;
+        super(config, avconfig, travelTime, router, eventsManager);
         this.travelData = travelData;
         this.network = network;
-        nVNodes = virtualNetwork.getvNodesCount();
-        nVLinks = virtualNetwork.getvLinksCount();
         SafeConfig safeConfig = SafeConfig.wrap(avconfig);
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 600);
         rebalancingPeriod = safeConfig.getInteger("rebalancingPeriod", 30);
-        distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getString("distanceHeuristics", //
-                DistanceHeuristics.EUCLIDEAN.name()).toUpperCase());
-        System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
-        this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
-
     }
 
     @Override
@@ -122,7 +97,7 @@ public class HeuristicSharedDispatcher extends SharedPartitionedDispatcher {
                         matchesAV.remove(avRequest);
                     }
 
-                    Collection<RoboTaxi> roboTaxis = getDivertableUnassignedRoboTaxisWithoutCustomer();
+                    Collection<RoboTaxi> roboTaxis = getDivertableUnassignedRoboTaxis();
                     if (!roboTaxis.isEmpty()) {
                         RoboTaxi matchedRoboTaxi = findClostestVehicle(avRequest, roboTaxis);
                         addSharedRoboTaxiPickup(matchedRoboTaxi, avRequest);
@@ -224,9 +199,6 @@ public class HeuristicSharedDispatcher extends SharedPartitionedDispatcher {
         @Named(AVModule.AV_MODE)
         private Network network;
 
-        @Inject(optional = true)
-        private VirtualNetwork<Link> virtualNetwork;
-
         @Inject
         private Config config;
 
@@ -234,11 +206,7 @@ public class HeuristicSharedDispatcher extends SharedPartitionedDispatcher {
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig) {
             AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
 
-            AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
-            AbstractVehicleDestMatcher abstractVehicleDestMatcher = new HungarBiPartVehicleDestMatcher(new EuclideanDistanceFunction());
-
-            return new HeuristicSharedDispatcher(config, avconfig, generatorConfig, travelTime, router, eventsManager, network, virtualNetwork, abstractVirtualNodeDest,
-                    abstractVehicleDestMatcher, travelData);
+            return new HeuristicSharedDispatcher(config, avconfig, generatorConfig, travelTime, router, eventsManager, network, travelData);
         }
     }
 
