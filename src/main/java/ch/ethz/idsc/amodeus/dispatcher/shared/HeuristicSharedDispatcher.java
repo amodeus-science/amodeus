@@ -3,19 +3,15 @@ package ch.ethz.idsc.amodeus.dispatcher.shared;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
-import org.matsim.api.core.v01.network.Node;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
-import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.router.util.TravelTime;
 
 import com.google.inject.Inject;
@@ -67,13 +63,13 @@ public class HeuristicSharedDispatcher extends SharedUniversalDispatcher {
 
         if (round_now % dispatchPeriod == 0) {
             List<AVRequest> unassignedRequests = getUnassignedAVRequests();
-            Map<Link, Set<AVRequest>> unassignedFromLinks = getFromLinkMap(unassignedRequests);
+            Map<Link, Set<AVRequest>> unassignedFromLinks = StaticHelper.getFromLinkMap(unassignedRequests);
             Set<AVRequest> assignements = new HashSet<>();
             Set<RoboTaxi> assignedRoboTaxis = new HashSet<>();
             for (AVRequest avRequest : unassignedRequests) {
                 if (!assignements.contains(avRequest)) {
 
-                    Set<Link> closeFromLinks = getCloseLinks(avRequest.getFromLink().getCoord(), MAXSHAREDISTANCE, network);
+                    Set<Link> closeFromLinks = StaticHelper.getCloseLinks(avRequest.getFromLink().getCoord(), MAXSHAREDISTANCE, network);
 
                     Set<AVRequest> potentialMatches = new HashSet<>();
                     for (Link fromLink : closeFromLinks) {
@@ -87,7 +83,7 @@ public class HeuristicSharedDispatcher extends SharedUniversalDispatcher {
                     }
 
                     List<AVRequest> matchesAV = new ArrayList<>();
-                    Set<Link> closeToLinks = getCloseLinks(avRequest.getToLink().getCoord(), MAXSHAREDISTANCE, network);
+                    Set<Link> closeToLinks = StaticHelper.getCloseLinks(avRequest.getToLink().getCoord(), MAXSHAREDISTANCE, network);
                     for (AVRequest potentialMatch : potentialMatches) {
                         if (closeToLinks.contains(potentialMatch.getToLink())) {
                             matchesAV.add(potentialMatch);
@@ -99,7 +95,7 @@ public class HeuristicSharedDispatcher extends SharedUniversalDispatcher {
 
                     Collection<RoboTaxi> roboTaxis = getDivertableUnassignedRoboTaxis();
                     if (!roboTaxis.isEmpty()) {
-                        RoboTaxi matchedRoboTaxi = findClostestVehicle(avRequest, roboTaxis);
+                        RoboTaxi matchedRoboTaxi = StaticHelper.findClostestVehicle(avRequest, roboTaxis);
                         addSharedRoboTaxiPickup(matchedRoboTaxi, avRequest);
                         assignements.add(avRequest);
                         GlobalAssert.that(!assignedRoboTaxis.contains(matchedRoboTaxi));
@@ -130,54 +126,6 @@ public class HeuristicSharedDispatcher extends SharedUniversalDispatcher {
 
             }
         }
-    }
-
-    private static RoboTaxi findClostestVehicle(AVRequest avRequest, Collection<RoboTaxi> roboTaxis) {
-        GlobalAssert.that(roboTaxis != null);
-        RoboTaxi closestRoboTaxi = null;
-        double closestRoboTaxidistance = 10000000000.0;
-        for (RoboTaxi roboTaxi : roboTaxis) {
-            if (closestRoboTaxi == null) {
-                closestRoboTaxi = roboTaxi;
-                closestRoboTaxidistance = distanceRobotaxiRequest(avRequest, roboTaxi);
-            } else {
-                double newDistance = distanceRobotaxiRequest(avRequest, roboTaxi);
-                if (closestRoboTaxidistance > newDistance) {
-                    closestRoboTaxi = roboTaxi;
-                    closestRoboTaxidistance = newDistance;
-                }
-            }
-        }
-        return closestRoboTaxi;
-    }
-
-    private static double distanceRobotaxiRequest(AVRequest avRequest, RoboTaxi roboTaxi) {
-        return NetworkUtils.getEuclideanDistance(avRequest.getFromLink().getCoord(), roboTaxi.getDivertableLocation().getCoord());
-    }
-
-    private static Set<Link> getCloseLinks(Coord coord, double distance, Network network) {
-        Collection<Node> closeNodes = NetworkUtils.getNearestNodes(network, coord, distance);
-        GlobalAssert.that(!closeNodes.isEmpty());
-        Set<Link> closeLinks = new HashSet<>();
-        for (Link link : network.getLinks().values()) {
-            if (closeNodes.contains(link.getFromNode()) && closeNodes.contains(link.getToNode())) {
-                closeLinks.add(link);
-            }
-        }
-        GlobalAssert.that(!closeLinks.isEmpty());
-        return closeLinks;
-    }
-
-    private static Map<Link, Set<AVRequest>> getFromLinkMap(Collection<AVRequest> avRequests) {
-        Map<Link, Set<AVRequest>> linkAVRequestMap = new HashMap<>();
-        for (AVRequest avRequest : avRequests) {
-            Link fromLink = avRequest.getFromLink();
-            if (!linkAVRequestMap.containsKey(fromLink)) {
-                linkAVRequestMap.put(fromLink, new HashSet<>());
-            }
-            linkAVRequestMap.get(fromLink).add(avRequest);
-        }
-        return linkAVRequestMap;
     }
 
     public static class Factory implements AVDispatcherFactory {

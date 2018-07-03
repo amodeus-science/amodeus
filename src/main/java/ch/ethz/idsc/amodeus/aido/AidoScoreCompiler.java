@@ -17,33 +17,32 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
 /* package */ class AidoScoreCompiler {
 
-    private final DistanceElement distElem;
+    private final DistanceElement distanceElement;
 
     public AidoScoreCompiler(List<RoboTaxi> roboTaxis) {
         // TODO AIDO so far set a posteriori, replace hardcoded value if possible
-        distElem = new DistanceElement(roboTaxis.size(), 120000 / 10);
-
+        distanceElement = new DistanceElement(roboTaxis.size(), 120000 / 10);
     }
 
     /** @param roboTaxis
      * @param requests
      * @return current score {mean waiting time, share of full distance, number of taxis} */
-    public Tensor compile(long time, List<RoboTaxi> roboTaxis, //
-            Collection<AVRequest> requests) {
+    public Tensor compile(long time, List<RoboTaxi> roboTaxis, Collection<AVRequest> requests) {
 
         /** the first scalar entry of the score is the mean waiting time at the time instant */
-        Tensor waitingTimes = Tensor.of(requests.stream().map(r -> RealScalar.of(time - r.getSubmissionTime())));
+        Tensor waitingTimes = Tensor.of(requests.stream() //
+                .map(r -> RealScalar.of(time - r.getSubmissionTime())));
         Scalar score1 = Tensors.isEmpty(waitingTimes) //
                 ? RealScalar.ZERO
                 : (Scalar) Mean.of(waitingTimes);
 
-        /** the second scalar entry of the score is the current distance ratio, i.e. the share of empty miles driven
-         * in the current time step */
+        /** the second scalar entry of the score is the current distance ratio,
+         * i.e. the share of empty miles driven in the current time step */
         SimulationObjectCompiler soc = SimulationObjectCompiler.create(time, "insert empty as unused", -1);
         soc.insertVehicles(roboTaxis);
-        distElem.register(soc.compile());
-        Scalar distCst = distElem.getNewestDistances().Get(1);
-        Scalar distTot = distElem.getNewestDistances().Get(0);
+        distanceElement.register(soc.compile());
+        Scalar distCst = distanceElement.getNewestDistances().Get(1);
+        Scalar distTot = distanceElement.getNewestDistances().Get(0);
 
         Scalar score2 = Scalars.lessThan(RealScalar.ZERO, distTot) //
                 ? (distTot.subtract(distCst)).divide(distTot)
@@ -53,7 +52,6 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         Scalar score3 = RealScalar.of(roboTaxis.size());
 
         return Tensors.of(score1, score2, score3);
-
     }
 
 }

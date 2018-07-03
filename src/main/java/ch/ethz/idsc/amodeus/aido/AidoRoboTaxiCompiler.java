@@ -15,11 +15,11 @@ import ch.ethz.idsc.tensor.io.StringScalar;
     ;
 
     public static Tensor compile(List<RoboTaxi> roboTaxis) {
-        return Tensor.of(roboTaxis.stream().map(AidoRoboTaxiCompiler::of));
+        return Tensor.of(roboTaxis.stream().map(AidoRoboTaxiCompiler::ofTaxi));
 
     }
 
-    private static Tensor of(RoboTaxi roboTaxi) {
+    private static Tensor ofTaxi(RoboTaxi roboTaxi) {
         // id
         Tensor info = Tensors.vector(MatsimStaticDatabase.INSTANCE.getVehicleIndex(roboTaxi));
         // divertable location
