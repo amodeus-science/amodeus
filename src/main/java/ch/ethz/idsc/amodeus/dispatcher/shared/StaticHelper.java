@@ -50,7 +50,7 @@ enum StaticHelper {
             if (closestRoboTaxi == null || newDistance < min) {
                 min = newDistance;
                 closestRoboTaxi = roboTaxi;
-            } 
+            }
         }
         return closestRoboTaxi;
     }

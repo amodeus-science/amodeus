@@ -37,7 +37,7 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
     private final FastLinkLookup fastLinkLookup;
     private final StringSocket clientSocket;
     private final int dispatchPeriod;
-    private AidoScoreCompiler scoreCompiler;
+    private AidoScoreCompiler aidoScoreCompiler;
 
     protected AidoDispatcherHost(Network network, Config config, AVDispatcherConfig avDispatcherConfig, TravelTime travelTime,
             ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, EventsManager eventsManager, //
@@ -59,7 +59,7 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
             if (getRoboTaxis().size() > 0 && idRoboTaxiMap.isEmpty()) {
                 getRoboTaxis().forEach(//
                         s -> idRoboTaxiMap.put(MatsimStaticDatabase.INSTANCE.getVehicleIndex(s), s));
-                scoreCompiler = new AidoScoreCompiler(getRoboTaxis());
+                aidoScoreCompiler = new AidoScoreCompiler(getRoboTaxis());
             }
 
             try {
@@ -69,7 +69,7 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
                 Tensor status = Tensors.of(RealScalar.of((long) now), //
                         AidoRoboTaxiCompiler.compile(getRoboTaxis()), //
                         AidoRequestCompiler.compile(getAVRequests()), //
-                        scoreCompiler.compile(round_now, getRoboTaxis(), getAVRequests()));
+                        aidoScoreCompiler.compile(round_now, getRoboTaxis(), getAVRequests()));
                 clientSocket.writeln(status);
 
                 String fromClient = null;
