@@ -54,7 +54,7 @@ public class TestPreparer {
 
         // 2) adapt the population to new network
         populationPrepared = scenario.getPopulation();
-        PopulationPreparer.run(networkPrepared, populationPrepared, scenarioOptions, config);
+        PopulationPreparer.run(networkPrepared, populationPrepared, scenarioOptions, config, 10);
 
         // 3) create virtual Network
         VirtualNetworkPreparer.run(networkPrepared, populationPrepared, scenarioOptions);

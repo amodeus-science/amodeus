@@ -21,7 +21,8 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 public enum PopulationPreparer {
     ;
-    public static void run(Network network, Population population, ScenarioOptions scenOptions, Config config) throws Exception {
+    public static void run(Network network, Population population, ScenarioOptions scenOptions, Config config,// 
+            long apoSeed) throws Exception {
         System.out.println("++++++++++++++++++++++++ POPULATION PREPARER ++++++++++++++++++++++++++++++++");
         System.out.println("Original population size: " + population.getPersons().values().size());
 
@@ -30,6 +31,7 @@ public enum PopulationPreparer {
         System.out.println("Population size after cutting: " + population.getPersons().values().size());
 
         TheApocalypse.reducesThe(population).toNoMoreThan(scenOptions.getMaxPopulationSize()).people();
+        TheApocalypse.reducesThe(population).toNoMoreThan(scenOptions.getMaxPopulationSize(),apoSeed);
         System.out.println("Population after decimation:" + population.getPersons().values().size());
         GlobalAssert.that(0 < population.getPersons().size());
 
@@ -51,6 +53,7 @@ public enum PopulationPreparer {
         System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     }
 
+    // TODO can this be deleted? No functionality in my opinion... 
     public static void checkRouteType(Population population) {
         Iterator<? extends Person> itPerson = population.getPersons().values().iterator();
         Person person = null;

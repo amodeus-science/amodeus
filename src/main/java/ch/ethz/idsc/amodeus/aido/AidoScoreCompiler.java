@@ -25,6 +25,15 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
     }
 
+    // TODO
+    // Wait time Score not mean but number of people waiting times 10 s (time interval)
+    // Distance score make two (dist tot, dist cust) which are discontinous and send distance at link change, i.e.,
+    // {...,0,0,0,linkLength1,0,0,0,...}
+    // property: summierbarkeit
+    // Score 3 anpassen. 
+     
+    
+    
     /** @param roboTaxis
      * @param requests
      * @return current score {mean waiting time, share of full distance, number of taxis} */

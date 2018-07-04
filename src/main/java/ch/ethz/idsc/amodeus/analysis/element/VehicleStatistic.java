@@ -37,8 +37,7 @@ import ch.ethz.idsc.tensor.alg.Array;
     }
 
     public void register(int simObjIndex, VehicleContainer vehicleContainer) {
-        if (vehicleContainer.linkIndex != lastLinkIndex || //
-                vehicleContainer.roboTaxiStatus.equals(RoboTaxiStatus.STAY)) {
+        if (vehicleContainer.linkIndex != lastLinkIndex){
             consolidate();
             list.clear();
             simObjIndLastLinkChange = simObjIndex;
