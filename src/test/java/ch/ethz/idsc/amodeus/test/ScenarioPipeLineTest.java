@@ -179,7 +179,6 @@ public class ScenarioPipeLineTest {
         assertTrue(occupancyRatio.equals(RationalScalar.of(35729, 432000)));
         assertEquals(0.6757250816100977, distanceRatio.number().doubleValue(), 0.0);
 
-
         /** fleet distances */
         assertTrue(ate.getDistancElement().totalDistance >= 0.0);
         assertEquals(34754.7000511536, ate.getDistancElement().totalDistance, 0.0);

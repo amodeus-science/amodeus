@@ -48,8 +48,9 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
     private final FuturePathFactory futurePathFactory;
     private final Set<AVRequest> pendingRequests = new LinkedHashSet<>();
-    protected final Map<AVRequest, RoboTaxi> pickupRegister = new HashMap<>(); // new RequestRegister
-    protected final Map<AVRequest, RoboTaxi> requestRegister = new HashMap<>();
+    /* package */ final Map<AVRequest, RoboTaxi> pickupRegister = new HashMap<>();
+    /** new RequestRegister */
+    /* package */ final Map<AVRequest, RoboTaxi> requestRegister = new HashMap<>();
     private final Map<AVRequest, RoboTaxi> periodFulfilledRequests = new HashMap<>(); // new temporaryRequestRegister for fulfilled requests
     private final Map<Id<Vehicle>, RoboTaxiStatus> oldRoboTaxis = new HashMap<>();
     private final double pickupDurationPerStop;
@@ -341,6 +342,7 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
             SimulationObjectCompiler simulationObjectCompiler = SimulationObjectCompiler.create( //
                     round_now, getInfoLine(), total_matchedRequests);
 
+            // TODO duplicating reference is unnecessary
             Map<AVRequest, RoboTaxi> newRegister = requestRegister;
             List<RoboTaxi> newRoboTaxis = getRoboTaxis();
 
