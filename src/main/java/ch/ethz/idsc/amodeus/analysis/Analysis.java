@@ -22,12 +22,17 @@ import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.amodeus.analysis.plot.ChartTheme;
 import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
 import ch.ethz.idsc.amodeus.analysis.report.AnalysisReport;
+import ch.ethz.idsc.amodeus.analysis.report.DistanceElementHtml;
+import ch.ethz.idsc.amodeus.analysis.report.FleetEfficiencyHtml;
 import ch.ethz.idsc.amodeus.analysis.report.HtmlReport;
 import ch.ethz.idsc.amodeus.analysis.report.HtmlReportElement;
+import ch.ethz.idsc.amodeus.analysis.report.ScenarioParametersHtml;
+import ch.ethz.idsc.amodeus.analysis.report.SimulationInformationHtml;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifier;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifiersAmodeus;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValues;
+import ch.ethz.idsc.amodeus.analysis.report.WaitingTimesHtml;
 import ch.ethz.idsc.amodeus.data.ReferenceFrame;
 import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
 import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
@@ -182,6 +187,12 @@ public class Analysis {
 
         // default list of analysis reports
         htmlReport = new HtmlReport(configFile, outputDirectory, scenOptions);
+        htmlReport.addHtmlReportElement(new ScenarioParametersHtml());
+        htmlReport.addHtmlReportElement(new SimulationInformationHtml());
+        htmlReport.addHtmlReportElement(new DistanceElementHtml());
+        htmlReport.addHtmlReportElement(new WaitingTimesHtml());
+        htmlReport.addHtmlReportElement(new FleetEfficiencyHtml());
+
         analysisReports.add(htmlReport);
 
         totalValues = new TotalValues(dataDirectory);

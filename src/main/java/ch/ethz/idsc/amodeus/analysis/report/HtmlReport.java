@@ -42,11 +42,6 @@ public class HtmlReport implements AnalysisReport {
 
         htmlGenerator = new HtmlGenerator();
 
-        htmlReportElements.add(new ScenarioParametersHtml());
-        htmlReportElements.add(new SimulationInformationHtml());
-        htmlReportElements.add(new DistanceElementHtml());
-        htmlReportElements.add(new WaitingTimesHtml());
-        htmlReportElements.add(new FleetEfficiencyHtml());
     }
 
     public void addHtmlReportElement(HtmlReportElement htmlReportElement) {

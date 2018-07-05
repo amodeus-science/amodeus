@@ -39,7 +39,8 @@ public class MultiPolygonsVirtualNetworkCreator<T, U> {
             Collection<T> elements, Function<T, Tensor> locationOf, Function<T, String> nameOf, //
             Map<U, HashSet<T>> uElements, Tensor lbounds, Tensor ubounds, boolean completeGraph) {
 
-        Set<MultiPolygon> multipolygonsSet = multipolygons.getPolygons();
+        System.out.println("creating a virtual network with " + multipolygons.getPolygons().size() //
+                + " multipolygons");
 
         /** initialize new {@link VirtualNetwork} */
         VirtualNetwork<T> virtualNetwork = new VirtualNetworkImpl<>();
@@ -55,8 +56,7 @@ public class MultiPolygonsVirtualNetworkCreator<T, U> {
                     "number of points in your geometry.");
             System.out.println("Current polygon has " + polygon.getNumPoints() + " points.");
             final Set<T> set = new LinkedHashSet<>();
-            // associate links to the node in which they are contained
-            System.out.println("before for loop" + polygon.getNumPoints());
+            /** associate links to the node in which they are contained */
             for (T t : elements) {
                 Tensor tPos = locationOf.apply(t);
                 Coordinate coordinate = new Coordinate(tPos.Get(0).number().doubleValue(), //
@@ -65,7 +65,6 @@ public class MultiPolygonsVirtualNetworkCreator<T, U> {
                     set.add(t);
             }
 
-            System.out.println("before if statement" + polygon.getNumPoints());
             if (!set.isEmpty()) {
 
                 String indexStr = VirtualNodes.getIdString(vNodeIndex);
