@@ -17,8 +17,8 @@ import javax.swing.JCheckBox;
 import org.matsim.api.core.v01.Coord;
 
 import ch.ethz.idsc.amodeus.net.OsmLink;
-import ch.ethz.idsc.amodeus.net.RequestContainer;
-import ch.ethz.idsc.amodeus.net.SimulationObject;
+import ch.ethz.idsc.amodeus.net.simobj.RequestContainer;
+import ch.ethz.idsc.amodeus.net.simobj.SimulationObject;
 import ch.ethz.idsc.amodeus.util.gui.RowPanel;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.view.gheat.gui.ColorSchemes;

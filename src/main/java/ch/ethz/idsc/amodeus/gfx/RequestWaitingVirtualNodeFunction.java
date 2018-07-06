@@ -6,8 +6,8 @@ import java.util.function.Function;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
-import ch.ethz.idsc.amodeus.net.RequestContainer;
-import ch.ethz.idsc.amodeus.net.SimulationObject;
+import ch.ethz.idsc.amodeus.net.simobj.RequestContainer;
+import ch.ethz.idsc.amodeus.net.simobj.SimulationObject;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNode;
 import ch.ethz.idsc.tensor.DoubleScalar;

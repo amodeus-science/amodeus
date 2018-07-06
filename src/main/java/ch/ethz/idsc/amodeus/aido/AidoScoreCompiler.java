@@ -6,7 +6,7 @@ import java.util.List;
 
 import ch.ethz.idsc.amodeus.analysis.element.DistanceElement;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.net.SimulationObjectCompiler;
+import ch.ethz.idsc.amodeus.net.simobj.SimulationObjectCompiler;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;

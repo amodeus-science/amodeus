@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.NavigableMap;
 import java.util.stream.Collectors;
 
+import ch.ethz.idsc.amodeus.net.simobj.SimulationObject;
 import ch.ethz.idsc.tensor.io.Import;
 
 public class StorageSupplier {

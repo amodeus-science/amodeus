@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.net;
 
+import ch.ethz.idsc.amodeus.net.simobj.SimulationObject;
 import ch.ethz.idsc.amodeus.util.net.ObjectHandler;
 
 public enum SimulationDistribution {

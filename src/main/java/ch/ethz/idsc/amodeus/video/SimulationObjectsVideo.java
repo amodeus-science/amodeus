@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
 import java.util.Objects;
 
 import ch.ethz.idsc.amodeus.gfx.AmodeusComponent;
-import ch.ethz.idsc.amodeus.net.SimulationObject;
+import ch.ethz.idsc.amodeus.net.simobj.SimulationObject;
 
 /** @author onicolo 06-2018
  *         Runnable script for making video renderers of Amod simulation directly from simulation objects. */

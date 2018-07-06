@@ -3,8 +3,8 @@ package ch.ethz.idsc.amodeus.gfx;
 
 import javax.swing.JToggleButton;
 
-import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.net.SimulationServer;
+import ch.ethz.idsc.amodeus.net.simobj.SimulationObject;
 import ch.ethz.idsc.amodeus.util.net.ObjectClient;
 import ch.ethz.idsc.amodeus.util.net.ObjectHandler;
 

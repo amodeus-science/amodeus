@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -27,10 +28,10 @@ import org.matsim.core.router.util.TravelTime;
 
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.SimulationDistribution;
-import ch.ethz.idsc.amodeus.net.SimulationObject;
-import ch.ethz.idsc.amodeus.net.SimulationObjectCompiler;
 import ch.ethz.idsc.amodeus.net.SimulationObjects;
 import ch.ethz.idsc.amodeus.net.StorageUtils;
+import ch.ethz.idsc.amodeus.net.simobj.SimulationObject;
+import ch.ethz.idsc.amodeus.net.simobj.SimulationObjectCompiler;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
@@ -48,9 +49,11 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
     private final FuturePathFactory futurePathFactory;
     private final Set<AVRequest> pendingRequests = new LinkedHashSet<>();
-    protected final Map<AVRequest, RoboTaxi> pickupRegister = new HashMap<>(); // new RequestRegister
-    protected final Map<AVRequest, RoboTaxi> requestRegister = new HashMap<>();
+    private final Map<AVRequest, RoboTaxi> pickupRegister = new HashMap<>(); // new RequestRegister
+    private final Map<AVRequest, RoboTaxi> rqstDrvRegister = new HashMap<>();
     private final Map<AVRequest, RoboTaxi> periodFulfilledRequests = new HashMap<>(); // new temporaryRequestRegister for fulfilled requests
+    private final Set<AVRequest> periodAssignedRequests = new HashSet<>();
+    private final Set<AVRequest> periodPickedUpRequests = new HashSet<>();
     private final Map<Id<Vehicle>, RoboTaxiStatus> oldRoboTaxis = new HashMap<>();
     private final double pickupDurationPerStop;
     private final double dropoffDurationPerStop;
@@ -133,21 +136,22 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
     public void setRoboTaxiPickup(RoboTaxi roboTaxi, AVRequest avRequest) {
         GlobalAssert.that(roboTaxi.isWithoutCustomer());
         GlobalAssert.that(pendingRequests.contains(avRequest));
+        periodAssignedRequests.add(avRequest);
 
         // 1) enter information into pickup table
         // 2) also do everything for the full-time requestRegister
         if (!pickupRegister.containsValue(roboTaxi)) { // roboTaxi was not picking up
             pickupRegister.put(avRequest, roboTaxi);
-            requestRegister.put(avRequest, roboTaxi);
+            // rqstDrvRegister.put(avRequest, roboTaxi);
         } else {
             AVRequest toRemove = pickupRegister.entrySet().stream()//
                     .filter(e -> e.getValue().equals(roboTaxi)).findAny().get().getKey();
             pickupRegister.remove(toRemove); // remove AVRequest/RoboTaxi pair served before by roboTaxi
             pickupRegister.remove(avRequest); // remove AVRequest/RoboTaxi pair corresponding to avRequest
-            requestRegister.remove(toRemove);
-            requestRegister.remove(avRequest);
+            // rqstDrvRegister.remove(toRemove);
+            // rqstDrvRegister.remove(avRequest);
             pickupRegister.put(avRequest, roboTaxi); // add new pair
-            requestRegister.put(avRequest, roboTaxi);
+            // rqstDrvRegister.put(avRequest, roboTaxi);
         }
         GlobalAssert.that(pickupRegister.size() == pickupRegister.values().stream().distinct().count());
 
@@ -216,7 +220,12 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
             RoboTaxi former = pickupRegister.remove(avRequest);
             GlobalAssert.that(roboTaxi == former);
         }
+        {
+            RoboTaxi former = rqstDrvRegister.put(avRequest, roboTaxi);
+            GlobalAssert.that(Objects.isNull(former));
+        }
 
+        periodPickedUpRequests.add(avRequest);
         consistencySubCheck();
 
         final Schedule schedule = roboTaxi.getSchedule();
@@ -237,7 +246,7 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
      * @param roboTaxi
      * @param avRequest */
     private synchronized final void setPassengerDropoff(RoboTaxi roboTaxi, AVRequest avRequest) {
-        RoboTaxi former = requestRegister.remove(avRequest);
+        RoboTaxi former = rqstDrvRegister.remove(avRequest);
         GlobalAssert.that(roboTaxi == former);
 
         // save avRequests which are matched for one publishPeriod to ensure no requests are lost in the recording.
@@ -251,6 +260,12 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
     @Override
     /* package */ final boolean isInPickupRegister(RoboTaxi robotaxi) {
         return pickupRegister.containsValue(robotaxi);
+    }
+
+    /* package */ final boolean removeFromPickupRegisters(AVRequest avRequest) {
+        RoboTaxi rt1 = pickupRegister.remove(avRequest);
+        // RoboTaxi rt2 = rqstDrvRegister.remove(avRequest);
+        return Objects.isNull(rt1);
     }
 
     /** @param avRequest
@@ -279,7 +294,7 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
     /** complete all matchings if a {@link RoboTaxi} has arrived at the toLink of an {@link AVRequest} */
     @Override
     void executeDropoffs() {
-        Map<AVRequest, RoboTaxi> requestRegisterCopy = new HashMap<>(requestRegister);
+        Map<AVRequest, RoboTaxi> requestRegisterCopy = new HashMap<>(rqstDrvRegister);
         for (Entry<AVRequest, RoboTaxi> entry : requestRegisterCopy.entrySet()) {
             if (Objects.nonNull(entry.getValue())) {
                 AVRequest avRequest = entry.getKey();
@@ -298,7 +313,7 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
     @Override
     public final void onRequestSubmitted(AVRequest request) {
         boolean added = pendingRequests.add(request); // <- store request
-        requestRegister.put(request, null);
+        // rqstDrvRegister.put(request, null);
         GlobalAssert.that(added);
     }
 
@@ -323,8 +338,8 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
         // there cannot be more pickup vehicles than open requests
         GlobalAssert.that(pickupRegister.size() <= pendingRequests.size());
 
-        // pickupRegister needs to be a subset of requestRegister
-        pickupRegister.keySet().forEach(a -> GlobalAssert.that(requestRegister.containsKey(a)));
+        // // pickupRegister needs to be a subset of requestRegister
+        // pickupRegister.keySet().forEach(a -> GlobalAssert.that(rqstDrvRegister.containsKey(a)));
 
         // containment check pickupRegister and pendingRequests
         pickupRegister.keySet().forEach(r -> GlobalAssert.that(pendingRequests.contains(r)));
@@ -341,13 +356,21 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
             SimulationObjectCompiler simulationObjectCompiler = SimulationObjectCompiler.create( //
                     round_now, getInfoLine(), total_matchedRequests);
 
-            Map<AVRequest, RoboTaxi> newRegister = requestRegister;
-            List<RoboTaxi> newRoboTaxis = getRoboTaxis();
+            /** insertion of requests, the order matters */
+            simulationObjectCompiler.insertRequests(periodFulfilledRequests.keySet(), RequestStatus.DROPOFF);
+            simulationObjectCompiler.insertRequests(pendingRequests, RequestStatus.REQUESTED);
+            simulationObjectCompiler.insertRequests(pickupRegister.keySet(), RequestStatus.PICKUPDRIVE);
+            simulationObjectCompiler.insertRequests(periodAssignedRequests, RequestStatus.ASSIGNED);
+            simulationObjectCompiler.insertRequests(rqstDrvRegister.keySet(), RequestStatus.DRIVING);
+            simulationObjectCompiler.insertRequests(periodPickedUpRequests, RequestStatus.PICKUP);
+            periodFulfilledRequests.clear();
+            periodAssignedRequests.clear();
+            periodPickedUpRequests.clear();
 
-            simulationObjectCompiler.insertFulfilledRequests(periodFulfilledRequests);
-            simulationObjectCompiler.insertRequests(newRegister, oldRoboTaxis);
+            // List<RoboTaxi> newRoboTaxis = getRoboTaxis();
+            // simulationObjectCompiler.insertRequests(rqstDrvRegister, oldRoboTaxis);
 
-            simulationObjectCompiler.insertVehicles(newRoboTaxis);
+            simulationObjectCompiler.insertVehicles(getRoboTaxis());
             SimulationObject simulationObject = simulationObjectCompiler.compile();
 
             // in the first pass, the vehicles is typically empty
@@ -358,9 +381,8 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
             }
 
             oldRoboTaxis.clear();
-            newRoboTaxis.forEach(r -> oldRoboTaxis.put(r.getId(), r.getStatus()));
+            getRoboTaxis().forEach(r -> oldRoboTaxis.put(r.getId(), r.getStatus()));
 
-            periodFulfilledRequests.clear();
         }
     }
 

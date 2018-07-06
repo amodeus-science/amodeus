@@ -22,21 +22,18 @@ public abstract class RebalancingDispatcher extends UniversalDispatcher {
         super(config, avDispatcherConfig, travelTime, parallelLeastCostPathCalculator, eventsManager);
     }
 
-    /** Commant do rebalance {@link RoboTaxi} to a certain {@link Link} destination. The {@link RoboTaxi} appears as
-     * Rebalancing in the visualizer afterwards. Can only be used for {@link RoboTaxi} which are without a customer.
+    /** Command to rebalance {@link RoboTaxi} to a certain {@link Link} destination. The {@link RoboTaxi} will appear as
+     * Rebalancing in the visualizer. Can only be used for {@link RoboTaxi} which are without a customer and divertible.
      * Function can only be invoked one time in each iteration of {@link VehicleMainatainer.redispatch}
      * 
      * @param roboTaxi
      * @param destination */
     protected final void setRoboTaxiRebalance(final RoboTaxi roboTaxi, final Link destination) {
         GlobalAssert.that(roboTaxi.isWithoutCustomer());
-        /** remove from pickup register */
-        if (getPickupRoboTaxis().containsKey(roboTaxi)) {
-
-            AVRequest toRemove = pickupRegister.entrySet().stream()//
-                    .filter(e -> e.getValue().equals(roboTaxi)).findAny().get().getKey();
-            pickupRegister.remove(toRemove);
-            requestRegister.remove(toRemove);
+        /** if {@link RoboTaxi} is during pickup, remove from pickup register */
+        if (isInPickupRegister(roboTaxi)) {
+            AVRequest toRemove = getPickupRoboTaxis().get(roboTaxi);
+            removeFromPickupRegisters(toRemove);
         }
         setRoboTaxiDiversion(roboTaxi, destination, RoboTaxiStatus.REBALANCEDRIVE);
         eventsManager.processEvent(RebalanceVehicleEvent.create(getTimeNow(), roboTaxi, destination));

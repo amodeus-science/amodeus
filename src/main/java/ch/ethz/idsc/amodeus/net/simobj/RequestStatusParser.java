@@ -1,11 +1,18 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.net;
+package ch.ethz.idsc.amodeus.net.simobj;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RequestStatus;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 
 /* package */ enum RequestStatusParser {
     ;
+
+    public static RequestStatus parseRequestStatusSimobj(RoboTaxiStatus oldStatus, RoboTaxiStatus newStatus) {
+        RequestStatus requestStatus = RequestStatusParser.parseRequestStatus(newStatus, oldStatus);
+        if (requestStatus == RequestStatus.REQUESTED)
+            requestStatus = RequestStatus.ASSIGNED;
+        return requestStatus;
+    }
 
     // 2nd constructor that can be called when both AVStatus are known for logging reasons
     public static RequestStatus parseRequestStatus(RoboTaxiStatus nowState, RoboTaxiStatus lastState) {

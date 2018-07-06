@@ -7,7 +7,7 @@ import java.awt.Point;
 
 import javax.swing.JCheckBox;
 
-import ch.ethz.idsc.amodeus.net.SimulationObject;
+import ch.ethz.idsc.amodeus.net.simobj.SimulationObject;
 import ch.ethz.idsc.amodeus.util.gui.GraphicsUtil;
 import ch.ethz.idsc.amodeus.util.gui.RowPanel;
 

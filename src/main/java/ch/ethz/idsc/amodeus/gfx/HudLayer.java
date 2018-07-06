@@ -4,7 +4,7 @@ package ch.ethz.idsc.amodeus.gfx;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 
-import ch.ethz.idsc.amodeus.net.SimulationObject;
+import ch.ethz.idsc.amodeus.net.simobj.SimulationObject;
 import ch.ethz.idsc.amodeus.util.gui.RowPanel;
 import ch.ethz.idsc.amodeus.util.gui.SpinnerLabel;
 

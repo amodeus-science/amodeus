@@ -4,8 +4,8 @@ package ch.ethz.idsc.amodeus.gfx;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
-import ch.ethz.idsc.amodeus.net.SimulationObject;
-import ch.ethz.idsc.amodeus.net.VehicleContainer;
+import ch.ethz.idsc.amodeus.net.simobj.SimulationObject;
+import ch.ethz.idsc.amodeus.net.simobj.VehicleContainer;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNode;
 import ch.ethz.idsc.tensor.Tensor;
