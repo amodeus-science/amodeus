@@ -33,7 +33,7 @@ import ch.ethz.matsim.av.config.AVGeneratorConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.passenger.AVRequest;
-import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
+import ch.ethz.matsim.av.router.AVRouter;
 
 /** Implementation of the SQM algorithm (pp. 5625) of "Fundamental Performance
  * Limits and Efficient Polices for Transportation-On-Demand Systems" presented
@@ -59,7 +59,7 @@ public class SQMDispatcher extends PartitionedDispatcher {
             AVDispatcherConfig avconfig, //
             TravelTime travelTime, //
             AVGeneratorConfig generatorConfig, //
-            ParallelLeastCostPathCalculator router, //
+            AVRouter router, //
             EventsManager eventsManager, //
             Network network, //
             VirtualNetwork<Link> virtualNetwork) {
@@ -156,10 +156,6 @@ public class SQMDispatcher extends PartitionedDispatcher {
     public static class Factory implements AVDispatcherFactory {
         @Inject
         @Named(AVModule.AV_MODE)
-        private ParallelLeastCostPathCalculator router;
-
-        @Inject
-        @Named(AVModule.AV_MODE)
         private TravelTime travelTime;
 
         @Inject
@@ -173,7 +169,7 @@ public class SQMDispatcher extends PartitionedDispatcher {
         private Config config;
 
         @Override
-        public AVDispatcher createDispatcher(AVDispatcherConfig avconfig) {
+        public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
             AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
 
             try {

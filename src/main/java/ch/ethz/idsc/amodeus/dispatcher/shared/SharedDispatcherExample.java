@@ -36,7 +36,7 @@ import ch.ethz.matsim.av.config.AVGeneratorConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.passenger.AVRequest;
-import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
+import ch.ethz.matsim.av.router.AVRouter;
 
 public class SharedDispatcherExample extends SharedPartitionedDispatcher {
 
@@ -56,7 +56,7 @@ public class SharedDispatcherExample extends SharedPartitionedDispatcher {
             AVDispatcherConfig avconfig, //
             AVGeneratorConfig generatorConfig, //
             TravelTime travelTime, //
-            ParallelLeastCostPathCalculator router, //
+            AVRouter router, //
             EventsManager eventsManager, //
             Network network, //
             VirtualNetwork<Link> virtualNetwork, //
@@ -190,10 +190,6 @@ public class SharedDispatcherExample extends SharedPartitionedDispatcher {
     public static class Factory implements AVDispatcherFactory {
         @Inject
         @Named(AVModule.AV_MODE)
-        private ParallelLeastCostPathCalculator router;
-
-        @Inject
-        @Named(AVModule.AV_MODE)
         private TravelTime travelTime;
 
         @Inject
@@ -213,7 +209,7 @@ public class SharedDispatcherExample extends SharedPartitionedDispatcher {
         private Config config;
 
         @Override
-        public AVDispatcher createDispatcher(AVDispatcherConfig avconfig) {
+        public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
             AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
 
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();

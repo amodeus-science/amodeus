@@ -17,7 +17,7 @@
 		<dependency>
 			<groupId>ch.ethz.matsim</groupId>
 			<artifactId>av</artifactId>
-			<version>0.1.4</version>
+			<version>0.1.6-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.ethz.matsim</groupId>

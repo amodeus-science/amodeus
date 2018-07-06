@@ -46,6 +46,7 @@ import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
+import ch.ethz.matsim.av.router.AVRouter;
 
 /** Implementation of the "Adaptive Real-Time Rebalancing Policy" presented in
  * Pavone, M., Smith, S.L., Frazzoli, E. and Rus, D., 2012.
@@ -68,7 +69,7 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
             Config config, AVDispatcherConfig avconfig, //
             AVGeneratorConfig generatorConfig, //
             TravelTime travelTime, //
-            ParallelLeastCostPathCalculator router, //
+            AVRouter router, //
             EventsManager eventsManager, //
             Network network, //
             VirtualNetwork<Link> virtualNetwork, //
@@ -199,10 +200,6 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
     public static class Factory implements AVDispatcherFactory {
         @Inject
         @Named(AVModule.AV_MODE)
-        private ParallelLeastCostPathCalculator router;
-
-        @Inject
-        @Named(AVModule.AV_MODE)
         private TravelTime travelTime;
 
         @Inject
@@ -219,7 +216,7 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
         private Config config;
 
         @Override
-        public AVDispatcher createDispatcher(AVDispatcherConfig avconfig) {
+        public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
             AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
 
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();

@@ -8,13 +8,21 @@ import org.matsim.contrib.dvrp.run.DvrpModule;
 import org.matsim.core.config.Config;
 import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.mobsim.qsim.AbstractQSimPlugin;
+import org.matsim.core.router.DijkstraFactory;
+import org.matsim.core.router.costcalculators.OnlyTimeDependentTravelDisutility;
+import org.matsim.core.router.util.LeastCostPathCalculatorFactory;
+import org.matsim.core.router.util.TravelTime;
 
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 
+import ch.ethz.matsim.av.config.AVConfig;
+import ch.ethz.matsim.av.framework.AVConfigGroup;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.framework.AVQSimPlugin;
+import ch.ethz.matsim.av.plcpc.DefaultParallelLeastCostPathCalculator;
+import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
 public class AmodeusModule extends AbstractModule {
     @Override
@@ -46,4 +54,7 @@ public class AmodeusModule extends AbstractModule {
 
         return fullNetwork;
     }
+    
 }
+
+

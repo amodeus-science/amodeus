@@ -23,7 +23,7 @@ import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.framework.AVModule;
-import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
+import ch.ethz.matsim.av.router.AVRouter;
 
 /** Dispatcher sends vehicles to all links in the network and lets them pickup
  * any customers which are waiting along the road. */
@@ -39,7 +39,7 @@ public class DemoDispatcher extends RebalancingDispatcher {
             Config config, //
             AVDispatcherConfig avconfig, //
             TravelTime travelTime, //
-            ParallelLeastCostPathCalculator router, //
+            AVRouter router, //
             EventsManager eventsManager, //
             Network network) {
         super(config, avconfig, travelTime, router, eventsManager);
@@ -85,10 +85,6 @@ public class DemoDispatcher extends RebalancingDispatcher {
     public static class Factory implements AVDispatcherFactory {
         @Inject
         @Named(AVModule.AV_MODE)
-        private ParallelLeastCostPathCalculator router;
-
-        @Inject
-        @Named(AVModule.AV_MODE)
         private TravelTime travelTime;
 
         @Inject
@@ -101,7 +97,7 @@ public class DemoDispatcher extends RebalancingDispatcher {
         private Config config;
 
         @Override
-        public AVDispatcher createDispatcher(AVDispatcherConfig avconfig) {
+        public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
             return new DemoDispatcher(config, avconfig, travelTime, router, eventsManager, network);
         }
     }
