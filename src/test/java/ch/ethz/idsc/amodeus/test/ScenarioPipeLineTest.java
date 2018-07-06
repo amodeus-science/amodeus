@@ -177,6 +177,7 @@ public class ScenarioPipeLineTest {
         Scalar occupancyRatio = Mean.of(ate.getDistancElement().ratios).Get(0);
         Scalar distanceRatio = Mean.of(ate.getDistancElement().ratios).Get(1);
         // TODO see why fails 
+        //assertEquals(35729.0/432000, occupancyRatio.number().doubleValue(),0.0);
         //assertTrue(occupancyRatio.equals(RationalScalar.of(35729, 432000)));
         
         // TODO check all numerical tests again and uncomment
