@@ -183,7 +183,6 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
                 } else {
                     ++failed;
                 }
-
             }
         }
     }

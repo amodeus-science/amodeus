@@ -50,7 +50,7 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
     private final FuturePathFactory futurePathFactory;
     private final Set<AVRequest> pendingRequests = new LinkedHashSet<>();
     private final Map<AVRequest, RoboTaxi> pickupRegister = new HashMap<>(); // new RequestRegister
-    private final Map<AVRequest, RoboTaxi> rqstDrvRegister = new HashMap<>();
+    private final Map<AVRequest, RoboTaxi> rqstDrvRegister = new HashMap<>(); // TODO necessarily map or can be set?
     private final Map<AVRequest, RoboTaxi> periodFulfilledRequests = new HashMap<>(); // new temporaryRequestRegister for fulfilled requests
     private final Set<AVRequest> periodAssignedRequests = new HashSet<>();
     private final Set<AVRequest> periodPickedUpRequests = new HashSet<>();
@@ -380,7 +380,7 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
                 SimulationDistribution.of(simulationObject, storageUtils);
             }
 
-            oldRoboTaxis.clear();
+            oldRoboTaxis.clear(); //TODO oldRoboTaxis still needed? 
             getRoboTaxis().forEach(r -> oldRoboTaxis.put(r.getId(), r.getStatus()));
 
         }
