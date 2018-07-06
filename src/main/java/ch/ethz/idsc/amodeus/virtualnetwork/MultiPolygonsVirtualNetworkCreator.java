@@ -18,6 +18,8 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
+/** @param <T> the class on which the {@link VirtualNetwork} is defined, e.g., {@link Link}
+ * @param <U> */
 public class MultiPolygonsVirtualNetworkCreator<T, U> {
 
     private final VirtualNetwork<T> virtualNetwork;
@@ -37,22 +39,24 @@ public class MultiPolygonsVirtualNetworkCreator<T, U> {
             Collection<T> elements, Function<T, Tensor> locationOf, Function<T, String> nameOf, //
             Map<U, HashSet<T>> uElements, Tensor lbounds, Tensor ubounds, boolean completeGraph) {
 
-        Set<MultiPolygon> multipolygonsSet = multipolygons.getPolygons();
-        System.out.println("creating a virtual network with " + multipolygonsSet.size() //
+        System.out.println("creating a virtual network with " + multipolygons.getPolygons().size() //
                 + " multipolygons");
 
-        // initialize new virtual network
+        /** initialize new {@link VirtualNetwork} */
         VirtualNetwork<T> virtualNetwork = new VirtualNetworkImpl<>();
 
-        // for every polygon, create a virtualNode in its centroid and add all links in the polygon
-        // to the virtualNode
+        /** for every polygon, create virtualNode in centroid,add all links in the polygon
+         * to the virtualNode */
         GeometryFactory factory = new GeometryFactory();
         Map<VirtualNode<T>, Set<T>> vNodeTMap = new LinkedHashMap<>();
         int vNodeIndex = 0;
         for (MultiPolygon polygon : multipolygons.getPolygons()) {
-
+            System.out.println("MultiPolygonsVirtualNetworkCreator creates a Virtual Network \n" + //
+                    "based on your .shp file. This operation may take long for large \n" + //
+                    "number of points in your geometry.");
+            System.out.println("Current polygon has " + polygon.getNumPoints() + " points.");
             final Set<T> set = new LinkedHashSet<>();
-            // associate links to the node in which they are contained
+            /** associate links to the node in which they are contained */
             for (T t : elements) {
                 Tensor tPos = locationOf.apply(t);
                 Coordinate coordinate = new Coordinate(tPos.Get(0).number().doubleValue(), //
@@ -73,13 +77,6 @@ public class MultiPolygonsVirtualNetworkCreator<T, U> {
                 vNodeTMap.put(virtualNode, set);
                 ++vNodeIndex;
             }
-
-            // // ignore polygons that do not contain any link
-            // if (vNodeTMap.get(virtualNode).isEmpty()) {
-            // System.err.println("removing virtual node");
-            // vNodeTMap.remove(virtualNode);
-            // vNodeIndex--;
-            // }
         }
 
         CreatorUtils.addToVNodes(vNodeTMap, nameOf, virtualNetwork);

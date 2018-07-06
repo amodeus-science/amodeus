@@ -16,10 +16,13 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
  *
  * TheApocalypse.reducesThe(population).toNoMoreThan(1000).people(); */
 public final class TheApocalypse {
+    static final long DEFAULT_SEED = 7582456789l;
+
     public static TheApocalypse reducesThe(Population population) {
         return new TheApocalypse(population);
     }
 
+    // ---
     private final Population population;
 
     private TheApocalypse(Population population) {
@@ -28,12 +31,12 @@ public final class TheApocalypse {
 
     /** version with seed used so far **/
     public TheApocalypse toNoMoreThan(int capacityOfArk) {
-        return toNoMoreThan(capacityOfArk, 7582456789l);
+        return toNoMoreThan(capacityOfArk, DEFAULT_SEED);
     }
 
     public TheApocalypse toNoMoreThan(int capacityOfArk, long seed) {
         List<Id<Person>> list = new ArrayList<>(population.getPersons().keySet());
-        Collections.shuffle(list, new Random(7582456789l));
+        Collections.shuffle(list, new Random(seed));
         final int sizeAnte = list.size();
         list.stream() //
                 .limit(Math.max(0, sizeAnte - capacityOfArk)) //

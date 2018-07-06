@@ -11,13 +11,14 @@ import org.matsim.core.router.util.TravelTime;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
+import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
 /** class for wich all Dispatchers performing rebalancing, i.e., replacement of empty vehicles should be derived */
 public abstract class RebalancingDispatcher extends UniversalDispatcher {
 
-    protected RebalancingDispatcher(Config config, AVDispatcherConfig avDispatcherConfig, TravelTime travelTime, ParallelLeastCostPathCalculator parallelLeastCostPathCalculator,
-            EventsManager eventsManager) {
+    protected RebalancingDispatcher(Config config, AVDispatcherConfig avDispatcherConfig, TravelTime travelTime, //
+            ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, EventsManager eventsManager) {
         super(config, avDispatcherConfig, travelTime, parallelLeastCostPathCalculator, eventsManager);
     }
 
@@ -29,6 +30,14 @@ public abstract class RebalancingDispatcher extends UniversalDispatcher {
      * @param destination */
     protected final void setRoboTaxiRebalance(final RoboTaxi roboTaxi, final Link destination) {
         GlobalAssert.that(roboTaxi.isWithoutCustomer());
+        /** remove from pickup register */
+        if (getPickupRoboTaxis().containsKey(roboTaxi)) {
+
+            AVRequest toRemove = pickupRegister.entrySet().stream()//
+                    .filter(e -> e.getValue().equals(roboTaxi)).findAny().get().getKey();
+            pickupRegister.remove(toRemove);
+            requestRegister.remove(toRemove);
+        }
         setRoboTaxiDiversion(roboTaxi, destination, RoboTaxiStatus.REBALANCEDRIVE);
         eventsManager.processEvent(RebalanceVehicleEvent.create(getTimeNow(), roboTaxi, destination));
     }

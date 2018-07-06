@@ -86,7 +86,17 @@ public class TravelData implements Serializable {
                         Leg leg = (Leg) planElMidl;
                         if (leg.getMode().equals("av")) {
                             // get time and vNode index
+
+                            /** if the departure time is not defined for some leg, then
+                             * MATSim's LegImpl class returns Double.NEGATIVE_INFINITY, in
+                             * that case the end time of the previous activity is used
+                             * as the departure time. * */
                             double depTime = leg.getDepartureTime();
+                            if (depTime == Double.NEGATIVE_INFINITY) {
+                                Activity actBefore = (Activity) planElMins;
+                                depTime = actBefore.getEndTime();
+                            }
+                            GlobalAssert.that(depTime >= 0);
 
                             int timeIndex = (int) Math.floor((depTime / dt));
                             Link linkFrom = network.getLinks().get(((Activity) planElMins).getLinkId());

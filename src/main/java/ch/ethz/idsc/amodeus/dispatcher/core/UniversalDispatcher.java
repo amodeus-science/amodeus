@@ -48,8 +48,9 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
     private final FuturePathFactory futurePathFactory;
     private final Set<AVRequest> pendingRequests = new LinkedHashSet<>();
-    private final Map<AVRequest, RoboTaxi> pickupRegister = new HashMap<>(); // new RequestRegister
-    private final Map<AVRequest, RoboTaxi> requestRegister = new HashMap<>();
+    /* package */ final Map<AVRequest, RoboTaxi> pickupRegister = new HashMap<>();
+    /** new RequestRegister */
+    /* package */ final Map<AVRequest, RoboTaxi> requestRegister = new HashMap<>();
     private final Map<AVRequest, RoboTaxi> periodFulfilledRequests = new HashMap<>(); // new temporaryRequestRegister for fulfilled requests
     private final Map<Id<Vehicle>, RoboTaxiStatus> oldRoboTaxis = new HashMap<>();
     private final double pickupDurationPerStop;
@@ -120,6 +121,7 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
     protected final Map<RoboTaxi, AVRequest> getPickupRoboTaxis() {
         Map<RoboTaxi, AVRequest> pickupPairs = pickupRegister.entrySet().stream()//
                 .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+
         GlobalAssert.that(pickupPairs.keySet().stream().allMatch(rt -> rt.getStatus().equals(RoboTaxiStatus.DRIVETOCUSTOMER)));
         return pickupPairs;
     }
@@ -340,6 +342,7 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
             SimulationObjectCompiler simulationObjectCompiler = SimulationObjectCompiler.create( //
                     round_now, getInfoLine(), total_matchedRequests);
 
+            // TODO duplicating reference is unnecessary
             Map<AVRequest, RoboTaxi> newRegister = requestRegister;
             List<RoboTaxi> newRoboTaxis = getRoboTaxis();
 

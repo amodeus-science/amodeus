@@ -177,11 +177,12 @@ public class ScenarioPipeLineTest {
         Scalar occupancyRatio = Mean.of(ate.getDistancElement().ratios).Get(0);
         Scalar distanceRatio = Mean.of(ate.getDistancElement().ratios).Get(1);
         assertTrue(occupancyRatio.equals(RationalScalar.of(35729, 432000)));
-        assertTrue(distanceRatio.equals(RealScalar.of(0.6757250816100977)));
+        assertEquals(0.6757250816100977, distanceRatio.number().doubleValue(), 0.0);
 
         /** fleet distances */
         assertTrue(ate.getDistancElement().totalDistance >= 0.0);
         assertEquals(34754.7000511536, ate.getDistancElement().totalDistance, 0.0);
+
         assertTrue(ate.getDistancElement().totalDistanceWtCst >= 0.0);
         assertEquals(28974.040196898222, ate.getDistancElement().totalDistanceWtCst, 0.0);
         assertTrue(ate.getDistancElement().totalDistancePicku > 0.0);
