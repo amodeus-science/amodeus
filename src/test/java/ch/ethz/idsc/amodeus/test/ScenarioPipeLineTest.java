@@ -31,7 +31,6 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkGet;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkIO;
-import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
@@ -176,26 +175,25 @@ public class ScenarioPipeLineTest {
         /** distance and occupancy ratios */
         Scalar occupancyRatio = Mean.of(ate.getDistancElement().ratios).Get(0);
         Scalar distanceRatio = Mean.of(ate.getDistancElement().ratios).Get(1);
-        // TODO see why fails 
-        //assertEquals(35729.0/432000, occupancyRatio.number().doubleValue(),0.0);
-        //assertTrue(occupancyRatio.equals(RationalScalar.of(35729, 432000)));
-        
-        // TODO check all numerical tests again and uncomment
-//        assertEquals(0.6757250816100977, distanceRatio.number().doubleValue(), 0.0);
+        // TODO see why fails
+        // assertEquals(35729.0/432000, occupancyRatio.number().doubleValue(),0.0);
+        // assertTrue(occupancyRatio.equals(RationalScalar.of(35729, 432000)));
 
+        // TODO check all numerical tests again and uncomment
+        // assertEquals(0.6757250816100977, distanceRatio.number().doubleValue(), 0.0);
 
         /** fleet distances */
         assertTrue(ate.getDistancElement().totalDistance >= 0.0);
-//        assertEquals(34754.7000511536, ate.getDistancElement().totalDistance, 0.0);
+        // assertEquals(34754.7000511536, ate.getDistancElement().totalDistance, 0.0); // TODO changed
 
         assertTrue(ate.getDistancElement().totalDistanceWtCst >= 0.0);
-//        assertEquals(28974.040196898222, ate.getDistancElement().totalDistanceWtCst, 0.0);
+        // assertEquals(28974.040196898222, ate.getDistancElement().totalDistanceWtCst, 0.0); // TODO changed
         assertTrue(ate.getDistancElement().totalDistancePicku > 0.0);
-//        assertEquals(5780.659854255442, ate.getDistancElement().totalDistancePicku, 0.0);
+        // assertEquals(5780.659854255442, ate.getDistancElement().totalDistancePicku, 0.0); //TODO changed
         assertTrue(ate.getDistancElement().totalDistanceRebal >= 0.0);
         assertEquals(0.0, ate.getDistancElement().totalDistanceRebal, 0.0);
         assertTrue(ate.getDistancElement().totalDistanceRatio >= 0.0);
-//        assertEquals(0.8336725724651016, ate.getDistancElement().totalDistanceRatio, 0.0);
+        // assertEquals(0.8336725724651016, ate.getDistancElement().totalDistanceRatio, 0.0); // TODO changed
         ate.getDistancElement().totalDistancesPerVehicle.flatten(-1).forEach(s -> //
         assertTrue(Scalars.lessEquals(RealScalar.ZERO, (Scalar) s)));
         assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).number().doubleValue() //
