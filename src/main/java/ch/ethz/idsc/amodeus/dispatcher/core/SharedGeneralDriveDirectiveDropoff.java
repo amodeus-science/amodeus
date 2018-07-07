@@ -17,6 +17,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 /** for vehicles that are in stay task and should pickup a customer at the link:
  * 1) finish stay task 2) append pickup task 3) append drive task 4) append
  * dropoff task 5) append new stay task */
+/** @author Nicolo Ormezzano, Lukas Sieber */
 /* package */ final class SharedGeneralDriveDirectiveDropoff extends FuturePathDirective {
     final RoboTaxi robotaxi;
     final AVRequest currentRequest;

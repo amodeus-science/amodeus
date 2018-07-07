@@ -11,8 +11,9 @@ public class CostFunctionLinearCombination implements RoboTaxiCostFunction {
     private AnalysisSummary analysisSummary = null;
     private RoboTaxiCostParameters cp = null;
 
-    public CostFunctionLinearCombination(TotalValueIdentifier totalValueIdentifier) {
+    public CostFunctionLinearCombination(TotalValueIdentifier totalValueIdentifier, RoboTaxiCostParameters cp) {
         this.totalValueIdentifier = totalValueIdentifier;
+        this.cp = cp;
     }
 
     @Override
@@ -37,11 +38,6 @@ public class CostFunctionLinearCombination implements RoboTaxiCostFunction {
     @Override
     public void setAnalysisSummary(AnalysisSummary analysisSummary) {
         this.analysisSummary = analysisSummary;
-    }
-
-    @Override
-    public void setCostParameters(RoboTaxiCostParameters cp) {
-        this.cp = cp;
     }
 
 }

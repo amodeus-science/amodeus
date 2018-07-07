@@ -6,20 +6,11 @@ import java.util.Objects;
 import org.matsim.api.core.v01.Id;
 import org.matsim.contrib.dvrp.data.Request;
 
+/** class is immutable that means there is no need to make a copy of
+ * an instance, but instead the instance can be shared and reused.
+ * 
+ * @author Nicolo Ormezzano, Lukas Sieber */
 public class SharedAVCourse {
-
-    private final Id<Request> requestId;
-    private final SharedAVMealType pickupOrDropOff;
-
-    public SharedAVCourse(Id<Request> requestId, SharedAVMealType pickupOrDropOff) {
-        this.requestId = requestId;
-        this.pickupOrDropOff = pickupOrDropOff;
-    }
-
-    public SharedAVCourse(SharedAVCourse sharedAVCourse) {
-        this(sharedAVCourse.requestId, sharedAVCourse.pickupOrDropOff);
-    }
-
     public static SharedAVCourse pickupCourse(Id<Request> requestId) {
         return new SharedAVCourse(requestId, SharedAVMealType.PICKUP);
     }
@@ -28,31 +19,35 @@ public class SharedAVCourse {
         return new SharedAVCourse(requestId, SharedAVMealType.DROPOFF);
     }
 
-    @Override
-    public boolean equals(Object object) {
-        if (object instanceof SharedAVCourse) {
-            SharedAVCourse sharedAVCourse = (SharedAVCourse) object;
-            return sharedAVCourse.getRequestId().equals(requestId) && //
-                    sharedAVCourse.getPickupOrDropOff().equals(pickupOrDropOff);
-        }
-        return false;
-    }
+    // ---
+    private final Id<Request> requestId;
+    private final SharedAVMealType sharedAVMealType;
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(requestId.toString(), pickupOrDropOff);
+    public SharedAVCourse(Id<Request> requestId, SharedAVMealType sharedAVMealType) {
+        this.requestId = requestId;
+        this.sharedAVMealType = sharedAVMealType;
     }
 
     public SharedAVMealType getPickupOrDropOff() {
-        return pickupOrDropOff;
+        return sharedAVMealType;
     }
 
     public Id<Request> getRequestId() {
         return requestId;
     }
 
-    public SharedAVCourse copy() {
-        return new SharedAVCourse(this);
+    @Override
+    public boolean equals(Object object) {
+        if (object instanceof SharedAVCourse) {
+            SharedAVCourse sharedAVCourse = (SharedAVCourse) object;
+            return sharedAVCourse.getRequestId().equals(requestId) && //
+                    sharedAVCourse.getPickupOrDropOff().equals(sharedAVMealType);
+        }
+        return false;
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(requestId.toString(), sharedAVMealType);
+    }
 }

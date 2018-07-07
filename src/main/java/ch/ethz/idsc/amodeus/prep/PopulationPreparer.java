@@ -3,15 +3,9 @@ package ch.ethz.idsc.amodeus.prep;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 
 import org.matsim.api.core.v01.network.Network;
-import org.matsim.api.core.v01.population.Leg;
-import org.matsim.api.core.v01.population.Person;
-import org.matsim.api.core.v01.population.Plan;
-import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
-import org.matsim.api.core.v01.population.Route;
 import org.matsim.core.config.Config;
 import org.matsim.core.population.io.PopulationWriter;
 
@@ -21,8 +15,14 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 public enum PopulationPreparer {
     ;
-    public static void run(Network network, Population population, ScenarioOptions scenOptions, Config config,// 
-            long apoSeed) throws Exception {
+    /** @param network
+     * @param population
+     * @param scenOptions
+     * @param config
+     * @param seed for random number generator that influences the population filtering
+     * @throws Exception */
+    public static void run( //
+            Network network, Population population, ScenarioOptions scenOptions, Config config, long seed) throws Exception {
         System.out.println("++++++++++++++++++++++++ POPULATION PREPARER ++++++++++++++++++++++++++++++++");
         System.out.println("Original population size: " + population.getPersons().values().size());
 
@@ -31,7 +31,7 @@ public enum PopulationPreparer {
         System.out.println("Population size after cutting: " + population.getPersons().values().size());
 
         TheApocalypse.reducesThe(population).toNoMoreThan(scenOptions.getMaxPopulationSize()).people();
-        TheApocalypse.reducesThe(population).toNoMoreThan(scenOptions.getMaxPopulationSize(),apoSeed);
+        TheApocalypse.reducesThe(population).toNoMoreThan(scenOptions.getMaxPopulationSize(), seed);
         System.out.println("Population after decimation:" + population.getPersons().values().size());
         GlobalAssert.that(0 < population.getPersons().size());
 
@@ -53,21 +53,9 @@ public enum PopulationPreparer {
         System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     }
 
-    // TODO can this be deleted? No functionality in my opinion... 
-    public static void checkRouteType(Population population) {
-        Iterator<? extends Person> itPerson = population.getPersons().values().iterator();
-        Person person = null;
-        while (itPerson.hasNext()) {
-            person = itPerson.next();
-        }
-        for (Plan plan : person.getPlans()) {
-            for (PlanElement pE1 : plan.getPlanElements()) {
-                if (pE1 instanceof Leg) {
-                    Leg leg = (Leg) pE1;
-                    Route route = leg.getRoute();
-                    System.out.println("RouteType of last person: " + route.getRouteType());
-                }
-            }
-        }
+    // TODO jan re-introduced this function for now, to maintain backwards compatibility
+    // ... otherwise errors in amod and amodidsc
+    public static void run(Network network, Population population, ScenarioOptions scenOptions, Config config) throws Exception {
+        run(network, population, scenOptions, config, TheApocalypse.DEFAULT_SEED);
     }
 }

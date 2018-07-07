@@ -12,17 +12,19 @@ import org.matsim.contrib.dvrp.data.Request;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
-/** @author onicoloLsieber Object containing list of pickup and dropoff planned
- *         for an AV. */
+/** Object containing list of pickup and dropoff planned
+ * for an AV.
+ * 
+ * @author Nicolo Ormezzano, Lukas Sieber */
 public class SharedAVMenu {
-
     private final List<SharedAVCourse> roboTaxiMenu = new ArrayList<>();
 
     public SharedAVMenu() {
     }
 
     private SharedAVMenu(SharedAVMenu sharedAVMenu) {
-        sharedAVMenu.roboTaxiMenu.forEach(course -> roboTaxiMenu.add(course.copy()));
+        sharedAVMenu.roboTaxiMenu.stream() // SharedAVCourse is immutable
+                .forEach(roboTaxiMenu::add);
     }
 
     // **************************************************
@@ -30,7 +32,7 @@ public class SharedAVMenu {
     // **************************************************
 
     public void addAVCourseAtIndex(SharedAVCourse avCourse, int courseIndex) {
-        GlobalAssert.that(courseIndex >= 0 && courseIndex <= roboTaxiMenu.size());
+        GlobalAssert.that(0 <= courseIndex && courseIndex <= roboTaxiMenu.size());
         roboTaxiMenu.add(courseIndex, avCourse);
     }
 
@@ -49,21 +51,19 @@ public class SharedAVMenu {
     public boolean moveAVCourseToPrev(SharedAVCourse sharedAVCourse) {
         GlobalAssert.that(containsCourse(sharedAVCourse));
         int i = getIndexOf(sharedAVCourse);
-        if (i > 0 && i < roboTaxiMenu.size()) {
+        boolean swap = 0 < i && i < roboTaxiMenu.size();
+        if (swap)
             Collections.swap(roboTaxiMenu, i, i - 1);
-            return true;
-        }
-        return false;
+        return swap;
     }
 
     public boolean moveAVCourseToNext(SharedAVCourse sharedAVCourse) {
         GlobalAssert.that(containsCourse(sharedAVCourse));
         int i = getIndexOf(sharedAVCourse);
-        if (i >= 0 && i < roboTaxiMenu.size() - 1) {
+        boolean swap = 0 <= i && i < roboTaxiMenu.size() - 1;
+        if (swap)
             Collections.swap(roboTaxiMenu, i, i + 1);
-            return true;
-        }
-        return false;
+        return swap;
     }
 
     /** Replaces the all the courses of this menu with the course order of the new
@@ -92,7 +92,7 @@ public class SharedAVMenu {
         roboTaxiMenu.remove(courseIndex);
     }
 
-    /* package */ void removeCourse(SharedAVCourse sharedAVCourse) {
+    public void removeAVCourse(SharedAVCourse sharedAVCourse) {
         GlobalAssert.that(containsCourse(sharedAVCourse));
         roboTaxiMenu.remove(sharedAVCourse);
     }
@@ -116,7 +116,6 @@ public class SharedAVMenu {
      * 
      * @return */
     public List<SharedAVCourse> getCourses() {
-        // TODO SHARED which version is better??
         return Collections.unmodifiableList(roboTaxiMenu);
         // return roboTaxiMenu;
     }
@@ -165,28 +164,9 @@ public class SharedAVMenu {
     // CHECK FUNCTIONS
     // **************************************************
 
-    /** Checks if the menu has entries.
-     * 
-     * @return */
+    /** @return true if the menu has entries */
     public boolean hasStarter() {
         return !roboTaxiMenu.isEmpty();
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (object instanceof SharedAVMenu) {
-            SharedAVMenu sAvMenu = (SharedAVMenu) object;
-            List<SharedAVCourse> otherMenu = sAvMenu.getCourses();
-            if (otherMenu.size() == roboTaxiMenu.size()) {
-                for (int i = 0; i < roboTaxiMenu.size(); i++) {
-                    if (!roboTaxiMenu.get(i).equals(sAvMenu.getCourses().get(i))) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-        }
-        return false;
     }
 
     /** Checks if the given sharedAvCourse is contained in the menu
@@ -217,18 +197,16 @@ public class SharedAVMenu {
      * 
      * @return */
     public boolean checkNoPickupAfterDropoffOfSameRequest() {
-        for (SharedAVCourse sharedAVCourse : roboTaxiMenu) {
+        for (SharedAVCourse sharedAVCourse : roboTaxiMenu)
             if (sharedAVCourse.getPickupOrDropOff().equals(SharedAVMealType.DROPOFF)) {
                 int dropofIndex = getIndexOf(sharedAVCourse);
                 SharedAVCourse sharedAVCoursePickup = new SharedAVCourse(sharedAVCourse.getRequestId(), SharedAVMealType.PICKUP);
                 if (containsCourse(sharedAVCoursePickup)) {
                     int pickupIndex = getIndexOf(sharedAVCoursePickup);
-                    if (pickupIndex > dropofIndex) {
+                    if (pickupIndex > dropofIndex)
                         return false;
-                    }
                 }
             }
-        }
         return true;
     }
 
@@ -237,13 +215,34 @@ public class SharedAVMenu {
      * @param sharedAVMenu
      * @return true if the the two menus contain the same courses */
     public boolean containsSameCourses(SharedAVMenu sharedAVMenu) {
-        return (roboTaxiMenu.size() != sharedAVMenu.getCourses().size()) ? //
-                false : //
+        return roboTaxiMenu.size() == sharedAVMenu.getCourses().size() && //
                 sharedAVMenu.getCourses().containsAll(roboTaxiMenu);
     }
 
     public boolean checkAllCoursesAppearOnlyOnce() {
-        return (new HashSet<>(roboTaxiMenu)).size() == roboTaxiMenu.size();
+        return new HashSet<>(roboTaxiMenu).size() == roboTaxiMenu.size();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object instanceof SharedAVMenu) {
+            SharedAVMenu sharedAVMenu = (SharedAVMenu) object;
+            List<SharedAVCourse> otherMenu = sharedAVMenu.getCourses();
+            // TODO LUXURY there is an easier way to check for equality
+            if (otherMenu.size() == roboTaxiMenu.size()) {
+                for (int i = 0; i < roboTaxiMenu.size(); i++)
+                    if (!roboTaxiMenu.get(i).equals(sharedAVMenu.getCourses().get(i)))
+                        return false;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        // TODO SHARED not yet implemented
+        throw new RuntimeException();
     }
 
 }

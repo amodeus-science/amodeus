@@ -14,9 +14,6 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 
-import ch.ethz.idsc.amodeus.analysis.cost.FleetCostElement;
-import ch.ethz.idsc.amodeus.analysis.cost.RoboTaxiCostFunction;
-import ch.ethz.idsc.amodeus.analysis.cost.RoboTaxiCostParameters;
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisElement;
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.amodeus.analysis.plot.ChartTheme;
@@ -230,12 +227,11 @@ public class Analysis {
         totalValues.append(totalValueAppender);
     }
 
-    // TODO @Lukas either remove this or make a proper example in CustomAnalysis
-    public void addCostAnalysis(RoboTaxiCostFunction roboTaxiCostFunction, RoboTaxiCostParameters roboTaxiCostParameters) {
-        FleetCostElement fleetCostElement = new FleetCostElement(roboTaxiCostFunction, roboTaxiCostParameters);
-        analysisExports.add(fleetCostElement);
-        totalValues.append(fleetCostElement);
-    }
+    // public void addCostAnalysis(RoboTaxiCostFunction roboTaxiCostFunction) {
+    // FleetCostElement fleetCostElement = new FleetCostElement(roboTaxiCostFunction);
+    // analysisExports.add(fleetCostElement);
+    // totalValues.append(fleetCostElement);
+    // }
 
     public void run() throws Exception {
         // Iteration over all Simulation Objects
@@ -248,7 +244,6 @@ public class Analysis {
 
         // create plots and carry out other analysis on the data for each Analysis
         // Element
-        // TODO MISC Find more effective way to give the relative Directory to the compile Function --> Jan
         analysisElements.forEach(AnalysisElement::consolidate);
 
         for (AnalysisExport analysisExport : analysisExports)

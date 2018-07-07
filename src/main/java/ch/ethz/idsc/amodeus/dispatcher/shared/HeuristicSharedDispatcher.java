@@ -3,37 +3,25 @@ package ch.ethz.idsc.amodeus.dispatcher.shared;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
-import org.matsim.api.core.v01.network.Node;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
-import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.router.util.TravelTime;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.dispatcher.core.SharedPartitionedDispatcher;
-import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVehicleDestMatcher;
-import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
-import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
-import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
-import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
-import ch.ethz.idsc.amodeus.dispatcher.util.HungarBiPartVehicleDestMatcher;
-import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
+import ch.ethz.idsc.amodeus.dispatcher.core.SharedUniversalDispatcher;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
@@ -43,18 +31,13 @@ import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.router.AVRouter;
 
-public class HeuristicSharedDispatcher extends SharedPartitionedDispatcher {
+/** @author Lukas Sieber */
+public class HeuristicSharedDispatcher extends SharedUniversalDispatcher {
 
     private static final double MAXSHAREDISTANCE = 2000;
     public final int dispatchPeriod;
     public final int rebalancingPeriod;
-    final AbstractVirtualNodeDest virtualNodeDest;
-    final AbstractVehicleDestMatcher vehicleDestMatcher;
-    private final int nVNodes;
-    private final int nVLinks;
     private final Network network;
-    private final DistanceFunction distanceFunction;
-    private final DistanceHeuristics distanceHeuristics;
     Tensor printVals = Tensors.empty();
     TravelData travelData;
 
@@ -65,25 +48,13 @@ public class HeuristicSharedDispatcher extends SharedPartitionedDispatcher {
             AVRouter router, //
             EventsManager eventsManager, //
             Network network, //
-            VirtualNetwork<Link> virtualNetwork, //
-            AbstractVirtualNodeDest abstractVirtualNodeDest, //
-            AbstractVehicleDestMatcher abstractVehicleDestMatcher, //
             TravelData travelData) {
-        super(config, avconfig, travelTime, router, eventsManager, virtualNetwork);
-        virtualNodeDest = abstractVirtualNodeDest;
-        vehicleDestMatcher = abstractVehicleDestMatcher;
+        super(config, avconfig, travelTime, router, eventsManager);
         this.travelData = travelData;
         this.network = network;
-        nVNodes = virtualNetwork.getvNodesCount();
-        nVLinks = virtualNetwork.getvLinksCount();
         SafeConfig safeConfig = SafeConfig.wrap(avconfig);
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 600);
         rebalancingPeriod = safeConfig.getInteger("rebalancingPeriod", 30);
-        distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getString("distanceHeuristics", //
-                DistanceHeuristics.EUCLIDEAN.name()).toUpperCase());
-        System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
-        this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
-
     }
 
     @Override
@@ -92,13 +63,13 @@ public class HeuristicSharedDispatcher extends SharedPartitionedDispatcher {
 
         if (round_now % dispatchPeriod == 0) {
             List<AVRequest> unassignedRequests = getUnassignedAVRequests();
-            Map<Link, Set<AVRequest>> unassignedFromLinks = getFromLinkMap(unassignedRequests);
+            Map<Link, Set<AVRequest>> unassignedFromLinks = StaticHelper.getFromLinkMap(unassignedRequests);
             Set<AVRequest> assignements = new HashSet<>();
             Set<RoboTaxi> assignedRoboTaxis = new HashSet<>();
             for (AVRequest avRequest : unassignedRequests) {
                 if (!assignements.contains(avRequest)) {
 
-                    Set<Link> closeFromLinks = getCloseLinks(avRequest.getFromLink().getCoord(), MAXSHAREDISTANCE, network);
+                    Set<Link> closeFromLinks = StaticHelper.getCloseLinks(avRequest.getFromLink().getCoord(), MAXSHAREDISTANCE, network);
 
                     Set<AVRequest> potentialMatches = new HashSet<>();
                     for (Link fromLink : closeFromLinks) {
@@ -112,7 +83,7 @@ public class HeuristicSharedDispatcher extends SharedPartitionedDispatcher {
                     }
 
                     List<AVRequest> matchesAV = new ArrayList<>();
-                    Set<Link> closeToLinks = getCloseLinks(avRequest.getToLink().getCoord(), MAXSHAREDISTANCE, network);
+                    Set<Link> closeToLinks = StaticHelper.getCloseLinks(avRequest.getToLink().getCoord(), MAXSHAREDISTANCE, network);
                     for (AVRequest potentialMatch : potentialMatches) {
                         if (closeToLinks.contains(potentialMatch.getToLink())) {
                             matchesAV.add(potentialMatch);
@@ -122,9 +93,9 @@ public class HeuristicSharedDispatcher extends SharedPartitionedDispatcher {
                         matchesAV.remove(avRequest);
                     }
 
-                    Collection<RoboTaxi> roboTaxis = getDivertableUnassignedRoboTaxisWithoutCustomer();
+                    Collection<RoboTaxi> roboTaxis = getDivertableUnassignedRoboTaxis();
                     if (!roboTaxis.isEmpty()) {
-                        RoboTaxi matchedRoboTaxi = findClostestVehicle(avRequest, roboTaxis);
+                        RoboTaxi matchedRoboTaxi = StaticHelper.findClostestVehicle(avRequest, roboTaxis);
                         addSharedRoboTaxiPickup(matchedRoboTaxi, avRequest);
                         assignements.add(avRequest);
                         GlobalAssert.that(!assignedRoboTaxis.contains(matchedRoboTaxi));
@@ -157,54 +128,6 @@ public class HeuristicSharedDispatcher extends SharedPartitionedDispatcher {
         }
     }
 
-    private static RoboTaxi findClostestVehicle(AVRequest avRequest, Collection<RoboTaxi> roboTaxis) {
-        GlobalAssert.that(roboTaxis != null);
-        RoboTaxi closestRoboTaxi = null;
-        double closestRoboTaxidistance = 10000000000.0;
-        for (RoboTaxi roboTaxi : roboTaxis) {
-            if (closestRoboTaxi == null) {
-                closestRoboTaxi = roboTaxi;
-                closestRoboTaxidistance = distanceRobotaxiRequest(avRequest, roboTaxi);
-            } else {
-                double newDistance = distanceRobotaxiRequest(avRequest, roboTaxi);
-                if (closestRoboTaxidistance > newDistance) {
-                    closestRoboTaxi = roboTaxi;
-                    closestRoboTaxidistance = newDistance;
-                }
-            }
-        }
-        return closestRoboTaxi;
-    }
-
-    private static double distanceRobotaxiRequest(AVRequest avRequest, RoboTaxi roboTaxi) {
-        return NetworkUtils.getEuclideanDistance(avRequest.getFromLink().getCoord(), roboTaxi.getDivertableLocation().getCoord());
-    }
-
-    private static Set<Link> getCloseLinks(Coord coord, double distance, Network network) {
-        Collection<Node> closeNodes = NetworkUtils.getNearestNodes(network, coord, distance);
-        GlobalAssert.that(!closeNodes.isEmpty());
-        Set<Link> closeLinks = new HashSet<>();
-        for (Link link : network.getLinks().values()) {
-            if (closeNodes.contains(link.getFromNode()) && closeNodes.contains(link.getToNode())) {
-                closeLinks.add(link);
-            }
-        }
-        GlobalAssert.that(!closeLinks.isEmpty());
-        return closeLinks;
-    }
-
-    private static Map<Link, Set<AVRequest>> getFromLinkMap(Collection<AVRequest> avRequests) {
-        Map<Link, Set<AVRequest>> linkAVRequestMap = new HashMap<>();
-        for (AVRequest avRequest : avRequests) {
-            Link fromLink = avRequest.getFromLink();
-            if (!linkAVRequestMap.containsKey(fromLink)) {
-                linkAVRequestMap.put(fromLink, new HashSet<>());
-            }
-            linkAVRequestMap.get(fromLink).add(avRequest);
-        }
-        return linkAVRequestMap;
-    }
-
     public static class Factory implements AVDispatcherFactory {
         @Inject
         @Named(AVModule.AV_MODE)
@@ -220,9 +143,6 @@ public class HeuristicSharedDispatcher extends SharedPartitionedDispatcher {
         @Named(AVModule.AV_MODE)
         private Network network;
 
-        @Inject(optional = true)
-        private VirtualNetwork<Link> virtualNetwork;
-
         @Inject
         private Config config;
 
@@ -230,11 +150,7 @@ public class HeuristicSharedDispatcher extends SharedPartitionedDispatcher {
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
             AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
 
-            AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
-            AbstractVehicleDestMatcher abstractVehicleDestMatcher = new HungarBiPartVehicleDestMatcher(new EuclideanDistanceFunction());
-
-            return new HeuristicSharedDispatcher(config, avconfig, generatorConfig, travelTime, router, eventsManager, network, virtualNetwork, abstractVirtualNodeDest,
-                    abstractVehicleDestMatcher, travelData);
+            return new HeuristicSharedDispatcher(config, avconfig, generatorConfig, travelTime, router, eventsManager, network, travelData);
         }
     }
 

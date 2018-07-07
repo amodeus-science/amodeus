@@ -45,7 +45,6 @@ import ch.ethz.matsim.av.config.AVGeneratorConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.passenger.AVRequest;
-import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 import ch.ethz.matsim.av.router.AVRouter;
 
 /** Implementation of the "Adaptive Real-Time Rebalancing Policy" presented in

@@ -23,7 +23,6 @@ import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.framework.AVModule;
-import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 import ch.ethz.matsim.av.router.AVRouter;
 
 /** Dispatcher sends vehicles to random links in the network and lets them pickup

@@ -17,7 +17,6 @@ public enum VehicleContainerCompiler {
      *         in {@link SimulationObject} */
     public static VehicleContainer compile(RoboTaxi robotaxi, MatsimStaticDatabase db) {
         VehicleContainer vehicleContainer = new VehicleContainer();
-        final String key = robotaxi.getId().toString();
         vehicleContainer.vehicleIndex = db.getVehicleIndex(robotaxi);
         final Link fromLink = robotaxi.getLastKnownLocation();
         GlobalAssert.that(Objects.nonNull(fromLink));

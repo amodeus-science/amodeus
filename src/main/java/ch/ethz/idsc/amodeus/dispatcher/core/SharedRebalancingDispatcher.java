@@ -14,6 +14,7 @@ import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
 /** class for wich all Dispatchers performing rebalancing, i.e., replacement of empty vehicles should be derived */
+/** @author Nicolo Ormezzano, Lukas Sieber */
 public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatcher {
 
     protected SharedRebalancingDispatcher(Config config, AVDispatcherConfig avDispatcherConfig, TravelTime travelTime,

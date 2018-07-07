@@ -28,7 +28,8 @@ import ch.ethz.idsc.tensor.sca.InvertUnlessZero;
 
 public class DistanceElement implements AnalysisElement, TotalValueAppender {
     /** link distances in the network must be in [m] */
-    private static final Scalar km2m = RealScalar.of(0.001);
+    private static final Scalar KM2M = RealScalar.of(0.001);
+    // ---
 
     private int simObjIndex = 0; // Index for the Simulation Object which is loaded
     private List<VehicleStatistic> list = new ArrayList<>();
@@ -39,7 +40,7 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
     public final Set<Integer> requestIndices = new HashSet<>();
 
     // fields assigned in compile
-    Tensor distRatio;
+    // TODO MISC some public fields are only used in tests
     public Tensor totalDistancesPerVehicle;
     public Tensor distancesOverDay;
     public double totalDistance;
@@ -86,16 +87,16 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
     public void consolidate() {
         list.forEach(VehicleStatistic::consolidate);
 
-        Tensor distTotal = list.stream().map(vs -> vs.distanceTotal).reduce(Tensor::add).get().multiply(km2m);
-        Tensor distWtCst = list.stream().map(vs -> vs.distanceWithCustomer).reduce(Tensor::add).get().multiply(km2m);
-        Tensor distPicku = list.stream().map(vs -> vs.distancePickup).reduce(Tensor::add).get().multiply(km2m);
-        Tensor distRebal = list.stream().map(vs -> vs.distanceRebalance).reduce(Tensor::add).get().multiply(km2m);
-        distRatio = distTotal.map(InvertUnlessZero.FUNCTION).pmul(distWtCst);
+        Tensor distTotal = list.stream().map(vs -> vs.distanceTotal).reduce(Tensor::add).get().multiply(KM2M);
+        Tensor distWtCst = list.stream().map(vs -> vs.distanceWithCustomer).reduce(Tensor::add).get().multiply(KM2M);
+        Tensor distPicku = list.stream().map(vs -> vs.distancePickup).reduce(Tensor::add).get().multiply(KM2M);
+        Tensor distRebal = list.stream().map(vs -> vs.distanceRebalance).reduce(Tensor::add).get().multiply(KM2M);
+        Tensor distRatio = distTotal.map(InvertUnlessZero.FUNCTION).pmul(distWtCst);
         // ---
         distancesOverDay = Transpose.of(Tensors.of(distTotal, distWtCst, distPicku, distRebal, distRatio));
 
         // total distances driven per vehicle
-        totalDistancesPerVehicle = Tensor.of(list.stream().map(vs -> Total.of(vs.distanceTotal))).multiply(km2m);
+        totalDistancesPerVehicle = Tensor.of(list.stream().map(vs -> Total.of(vs.distanceTotal))).multiply(KM2M);
 
         // Total Values For one Day
         totalDistance = totalDistancesPerVehicle.stream().reduce(Tensor::add).get().Get().number().doubleValue();
@@ -105,7 +106,6 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
         totalDistanceRatio = totalDistanceWtCst / totalDistance;
         avgTripDistance = totalDistanceWtCst / requestIndices.size();
         ratios = Transpose.of(Join.of(Tensors.of(occupancyTensor), Tensors.of(distRatio)));
-
     }
 
     /** @return newest distances available {distTotal,distWtCst} */
