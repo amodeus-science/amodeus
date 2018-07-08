@@ -42,7 +42,7 @@ public enum HeatMap {
             int zoom, int x, int y) throws Exception {
         if (dataManager == null)
             throw new Exception("No DataManager specified");
-        return Tile.generate( //
+        return TileHelper.generate( //
                 colorScheme, //
                 DotImages.get(zoom), //
                 zoom, //

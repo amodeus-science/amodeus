@@ -10,11 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JComponent;
-import javax.swing.event.EventListenerList;
 
 import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.ICoordinate;
 import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.TileCache;
-import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.TileLoader;
 import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.TileLoaderListener;
 import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.TileSource;
 import ch.ethz.idsc.amodeus.view.jmapviewer.tilesources.MapnikTileSource;
@@ -38,13 +36,13 @@ public class JMapViewer extends JComponent implements TileLoaderListener {
 
     /** option to reverse zoom direction with mouse wheel */
     public static boolean ZOOMREVERSEWHEEL;
-
+    // ---
     protected boolean tileGridVisible = false; // <- for debug purposes
     protected boolean scrollWrapEnabled;
 
     private transient TileController tileController;
 
-    protected List<AmodeusHeatMap> matsimHeatmaps = new ArrayList<>();
+    protected final List<AmodeusHeatMap> matsimHeatmaps = new ArrayList<>();
 
     /** x- and y-position of the center of this map-panel on the world map
      * denoted in screen pixel regarding the current zoom level. */
@@ -58,9 +56,7 @@ public class JMapViewer extends JComponent implements TileLoaderListener {
 
     private transient TileSource tileSource;
 
-    protected transient AttributionSupport attribution = new AttributionSupport();
-
-    protected EventListenerList evtListenerList = new EventListenerList();
+    private transient AttributionSupport attribution = new AttributionSupport();
 
     /** Creates a standard {@link JMapViewer} instance that can be controlled via
      * mouse: hold right mouse button for moving, double click left mouse button
@@ -92,7 +88,7 @@ public class JMapViewer extends JComponent implements TileLoaderListener {
      *            specified coordinate
      * @param zoom
      *            {@link #MIN_ZOOM} &lt;= zoom level &lt;= {@link #MAX_ZOOM} */
-    void setDisplayPosition(ICoordinate to, int zoom) {
+    private void setDisplayPosition(ICoordinate to, int zoom) {
         setDisplayPosition(new Point(getWidth() / 2, getHeight() / 2), to, zoom);
     }
 
@@ -148,22 +144,11 @@ public class JMapViewer extends JComponent implements TileLoaderListener {
         repaint();
     }
 
-    /** @return the center */
-    Point getCenter() {
-        return center;
-    }
-
-    /** @param center
-     *            the center to set */
-    void setCenter(Point center) {
-        this.center = center;
-    }
-
     /** Calculates the latitude/longitude coordinate of the center of the
      * currently displayed map area.
      *
      * @return latitude / longitude */
-    ICoordinate getPosition() {
+    private ICoordinate getPosition() {
         return tileSource.xyToLatLon(center, zoom);
     }
 
@@ -186,7 +171,7 @@ public class JMapViewer extends JComponent implements TileLoaderListener {
      * @param mapPointY
      *            Y coordinate
      * @return latitude / longitude */
-    ICoordinate getPosition(int mapPointX, int mapPointY) {
+    private ICoordinate getPosition(int mapPointX, int mapPointY) {
         int x = center.x + mapPointX - getWidth() / 2;
         int y = center.y + mapPointY - getHeight() / 2;
         return tileSource.xyToLatLon(x, y, zoom);
@@ -221,51 +206,6 @@ public class JMapViewer extends JComponent implements TileLoaderListener {
      * @return point on the map or <code>null</code> if the point is not visible */
     public Point getMapPosition(double lat, double lon) {
         return getMapPosition(lat, lon, true);
-    }
-
-    /** Calculates the position on the map of a given coordinate
-     *
-     * @param lat
-     *            Latitude
-     * @param lon
-     *            longitude
-     * @param offset
-     *            Offset respect Latitude
-     * @param checkOutside
-     *            check if the point is outside the displayed area
-     * @return Integer the radius in pixels */
-    Integer getLatOffset(double lat, double lon, double offset, boolean checkOutside) {
-        Point p = tileSource.latLonToXY(lat + offset, lon, zoom);
-        int y = p.y - (center.y - getHeight() / 2);
-        if (checkOutside && (y < 0 || y > getHeight())) {
-            return null;
-        }
-        return y;
-    }
-
-    /** Calculates the position on the map of a given coordinate
-     *
-     * @param coord
-     *            coordinate
-     * @return point on the map or <code>null</code> if the point is not visible */
-    Point getMapPosition(Coordinate coord) {
-        if (coord != null)
-            return getMapPosition(coord.getLat(), coord.getLon());
-        return null;
-    }
-
-    /** Calculates the position on the map of a given coordinate
-     *
-     * @param coord
-     *            coordinate
-     * @param checkOutside
-     *            check if the point is outside the displayed area
-     * @return point on the map or <code>null</code> if the point is not visible
-     *         and checkOutside set to <code>true</code> */
-    Point getMapPosition(ICoordinate coord, boolean checkOutside) {
-        if (coord != null)
-            return getMapPosition(coord.getLat(), coord.getLon(), checkOutside);
-        return null;
     }
 
     /** Gets the meter per pixel.
@@ -527,29 +467,6 @@ public class JMapViewer extends JComponent implements TileLoaderListener {
     public void setScrollWrapEnabled(boolean scrollWrapEnabled) {
         this.scrollWrapEnabled = scrollWrapEnabled;
         repaint();
-    }
-
-    /** Returns the tile controller.
-     * 
-     * @return the tile controller */
-    public TileController getTileController() {
-        return tileController;
-    }
-
-    /** Return tile information caching class
-     * 
-     * @return tile cache
-     * @see TileController#getTileCache() */
-    public TileCache getTileCache() {
-        return tileController.getTileCache();
-    }
-
-    /** Sets the tile loader.
-     * 
-     * @param loader
-     *            tile loader */
-    public void setTileLoader(TileLoader loader) {
-        tileController.setTileLoader(loader);
     }
 
     /** Returns attribution.
