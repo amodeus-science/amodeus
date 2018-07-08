@@ -57,6 +57,7 @@ public class SharedSimulationObjectCompiler {
         robotaxis.forEach(this::insertVehicle);
     }
 
+    // TODO can this be removed and handled in SharedUniversalDispatcher?
     public RequestStatus parseRequestStatus(RoboTaxiStatus oldStatus, RoboTaxiStatus newStatus) {
         RequestStatus requestStatus = RequestStatusParser.parseRequestStatus(newStatus, oldStatus);
         if (requestStatus == RequestStatus.REQUESTED)

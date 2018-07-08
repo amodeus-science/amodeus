@@ -29,6 +29,7 @@ import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
+import ch.ethz.matsim.av.router.AVRouter;
 
 public class AidoDispatcherHost extends RebalancingDispatcher {
 
@@ -101,10 +102,6 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
     public static class Factory implements AVDispatcherFactory {
         @Inject
         @Named(AVModule.AV_MODE)
-        private ParallelLeastCostPathCalculator router;
-
-        @Inject
-        @Named(AVModule.AV_MODE)
         private TravelTime travelTime;
 
         @Inject
@@ -121,7 +118,7 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
         private StringSocket stringSocket;
 
         @Override
-        public AVDispatcher createDispatcher(AVDispatcherConfig avconfig) {
+        public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
             return new AidoDispatcherHost( //
                     network, config, avconfig, travelTime, router, eventsManager, stringSocket);
         }

@@ -23,11 +23,11 @@ import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.TileSource;
 public class Tile {
 
     /** Hourglass image that is displayed until a map tile has been loaded, except for overlay sources */
-    private static final BufferedImage LOADING_IMAGE = loadImage("images/hourglass.png");
+    private static final BufferedImage LOADING_IMAGE = StaticHelper.loadImage("images/hourglass.png");
 
     /** Red cross image that is displayed after a loading error, except for overlay sources */
-    private static final BufferedImage ERROR_IMAGE = loadImage("images/error.png");
-
+    private static final BufferedImage ERROR_IMAGE = StaticHelper.loadImage("images/error.png");
+    // ---
     protected TileSource source;
     protected int xtile;
     protected int ytile;
@@ -65,16 +65,7 @@ public class Tile {
         this.ytile = ytile;
         this.zoom = zoom;
         this.image = image;
-        this.key = getTileKey(source, xtile, ytile, zoom);
-    }
-
-    private static BufferedImage loadImage(String path) {
-        try {
-            return ImageIO.read(JMapViewer.class.getResourceAsStream(path));
-        } catch (IOException | IllegalArgumentException ex) {
-            System.err.println("cannot load " + path);
-            return null;
-        }
+        this.key = StaticHelper.getTileKey(source, xtile, ytile, zoom);
     }
 
     private static class CachedCallable<V> implements Callable<V> {
@@ -315,10 +306,6 @@ public class Tile {
         return true;
     }
 
-    public static String getTileKey(TileSource source, int xtile, int ytile, int zoom) {
-        return zoom + "/" + xtile + "/" + ytile + "@" + source.getName();
-    }
-
     public String getStatus() {
         if (this.error)
             return "error";
@@ -374,14 +361,6 @@ public class Tile {
         if (metadata == null)
             return null;
         return metadata.get(key);
-    }
-
-    /** @return metadata of the tile */
-    public Map<String, String> getMetadata() {
-        if (metadata == null) {
-            metadata = new HashMap<>();
-        }
-        return metadata;
     }
 
     /** indicate that loading process for this tile has started */

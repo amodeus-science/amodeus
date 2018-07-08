@@ -31,12 +31,12 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 
 /* package */ final class BlendingContext implements CompositeContext {
-    private final Blender blender;
+    private final BlendInterface blender;
     private final BlendComposite composite;
 
     BlendingContext(BlendComposite composite) {
         this.composite = composite;
-        this.blender = Blender.getBlenderFor(composite);
+        this.blender = Blender.of(composite);
     }
 
     @Override

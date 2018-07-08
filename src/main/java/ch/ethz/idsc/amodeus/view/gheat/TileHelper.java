@@ -34,7 +34,8 @@ import java.awt.image.BufferedImage;
 import ch.ethz.idsc.amodeus.view.gheat.gui.BlendComposite;
 import ch.ethz.idsc.amodeus.view.gheat.gui.ColorScheme;
 
-/* package */ enum Tile {
+/** class was originally named "Tile" */
+/* package */ enum TileHelper {
     ;
 
     public static BufferedImage generate(ColorScheme colorScheme, DotImage dot, //

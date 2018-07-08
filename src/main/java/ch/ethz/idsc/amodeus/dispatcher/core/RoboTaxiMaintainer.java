@@ -21,6 +21,7 @@ import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.dispatcher.AVVehicleAssignmentEvent;
+import ch.ethz.matsim.av.generator.AVGenerator;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 import ch.ethz.matsim.av.schedule.AVDriveTask;
 import ch.ethz.matsim.av.schedule.AVDropoffTask;
@@ -56,13 +57,15 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         return private_now;
     }
 
-    /** @return collection of RoboTaxis */
+    /** @return collection of {@link RoboTaxi} */
     protected final List<RoboTaxi> getRoboTaxis() {
         if (roboTaxis.isEmpty() || !roboTaxis.get(0).getSchedule().getStatus().equals(Schedule.ScheduleStatus.STARTED))
             return Collections.emptyList();
         return Collections.unmodifiableList(roboTaxis);
     }
 
+    /** updates the divertable locations, i.e., locations from which a {@link RoboTaxi} can deviate
+     * its path according to the current Tasks in the MATSim engine */
     private void updateDivertableLocations() {
         for (RoboTaxi robotaxi : getRoboTaxis()) {
             GlobalAssert.that(robotaxi.isWithoutDirective());
@@ -107,12 +110,14 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         }
     }
 
+    /** adding a vehicle during setup of simulation, handeled by {@link AVGenerator} */
     @Override
     public final void addVehicle(AVVehicle vehicle) {
         roboTaxis.add(new RoboTaxi(vehicle, new LinkTimePair(vehicle.getStartLink(), 0.0), vehicle.getStartLink(), RoboTaxiUsageType.SINGLEUSED));
         eventsManager.processEvent(new AVVehicleAssignmentEvent(vehicle, 0));
     }
 
+    /** functions called at every MATSim timestep, dispatching action happens in <b> redispatch <b> */
     @Override
     public final void onNextTimestep(double now) {
         private_now = now; // <- time available to derived class via getTimeNow()
@@ -128,6 +133,8 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         consistencyCheck();
     }
 
+    /** the info line is displayed in the console at every dispatching timestep and in the
+     * AMoDeus viewer */
     protected void updateInfoLine() {
         String infoLine = getInfoLine();
         this.infoLine.updateInfoLine(infoLine, getTimeNow());
@@ -146,24 +153,20 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     }
 
     private void beforeStepTasks() {
-
-        // update divertable locations of RoboTaxis
         updateDivertableLocations();
-
-        // update current locations of RoboTaxis
         if (private_now > 0) { // at time 0, tasks are not started.
             updateCurrentLocations();
         }
-
     }
 
+    /** {@link RoboTaxi} on a pickup ride which are sent to another location are
+     * stopped, also taxis which have lost their pickup assignment */
     private void afterStepTasks() {
         stopAbortedPickupRoboTaxis();
     }
 
     private void consistencyCheck() {
         consistencySubCheck();
-
     }
 
     private void executeDirectives() {
@@ -181,7 +184,6 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
                 } else {
                     ++failed;
                 }
-
             }
         }
     }

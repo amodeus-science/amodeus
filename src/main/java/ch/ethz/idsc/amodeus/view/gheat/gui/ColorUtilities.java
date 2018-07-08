@@ -1,40 +1,5 @@
 package ch.ethz.idsc.amodeus.view.gheat.gui;
 
-/*
-  * $Id: ColorUtilities.java,v 1.1 2006/12/15 13:53:13 gfx Exp $
-  *
-  * Dual-licensed under LGPL (Sun and Romain Guy) and BSD (Romain Guy).
-  *
-  * Copyright 2006 Sun Microsystems, Inc., 4150 Network Circle,
-  * Santa Clara, California 95054, U.S.A. All rights reserved.
-  *
-  * Copyright (c) 2006 Romain Guy <romain.guy@mac.com>
-  * All rights reserved.
-  *
-  * Redistribution and use in source and binary forms, with or without
-  * modification, are permitted provided that the following conditions
-  * are met:
-  * 1. Redistributions of source code must retain the above copyright
-  *    notice, this list of conditions and the following disclaimer.
-  * 2. Redistributions in binary form must reproduce the above copyright
-  *    notice, this list of conditions and the following disclaimer in the
-  *    documentation and/or other materials provided with the distribution.
-  * 3. The name of the author may not be used to endorse or promote products
-  *    derived from this software without specific prior written permission.
-  *
-  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
-  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
-  * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-  * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
-  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-  * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-  * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-  */
-import java.awt.Color;
-
 /**
  * <p>
  * <code>ColorUtilities</code> contains a set of tools to perform
@@ -44,54 +9,6 @@ import java.awt.Color;
  * @author Romain Guy <romain.guy@mac.com> */
 /* package */ enum ColorUtilities {
     ;
-
-    /**
-     * <p>
-     * Returns the HSL (Hue/Saturation/Luminance) equivalent of a given
-     * RGB color. All three HSL components are between 0.0 and 1.0.
-     * </p>
-     *
-     * @param color
-     *            the RGB color to convert
-     * @return a new array of 3 floats corresponding to the HSL components */
-    public static float[] RGBtoHSL(Color color) {
-        return RGBtoHSL(color.getRed(), color.getGreen(), color.getBlue(), null);
-    }
-
-    /**
-     * <p>
-     * Returns the HSL (Hue/Saturation/Luminance) equivalent of a given
-     * RGB color. All three HSL components are between 0.0 and 1.0.
-     * </p>
-     *
-     * @param color
-     *            the RGB color to convert
-     * @param hsl
-     *            a pre-allocated array of floats; can be null
-     * @return <code>hsl</code> if non-null, a new array of 3 floats otherwise
-     * @throws IllegalArgumentException
-     *             if <code>hsl</code> has a length lower
-     *             than 3 */
-    public static float[] RGBtoHSL(Color color, float[] hsl) {
-        return RGBtoHSL(color.getRed(), color.getGreen(), color.getBlue(), hsl);
-    }
-
-    /**
-     * <p>
-     * Returns the HSL (Hue/Saturation/Luminance) equivalent of a given
-     * RGB color. All three HSL components are between 0.0 and 1.0.
-     * </p>
-     *
-     * @param r
-     *            the red component, between 0 and 255
-     * @param g
-     *            the green component, between 0 and 255
-     * @param b
-     *            the blue component, between 0 and 255
-     * @return a new array of 3 floats corresponding to the HSL components */
-    public static float[] RGBtoHSL(int r, int g, int b) {
-        return RGBtoHSL(r, g, b, null);
-    }
 
     /**
      * <p>
@@ -181,24 +98,6 @@ import java.awt.Color;
         hsl[1] = S;
         hsl[2] = L;
         return hsl;
-    }
-
-    /**
-     * <p>
-     * Returns the RGB equivalent of a given HSL (Hue/Saturation/Luminance)
-     * color.
-     * </p>
-     *
-     * @param h
-     *            the hue component, between 0.0 and 1.0
-     * @param s
-     *            the saturation component, between 0.0 and 1.0
-     * @param l
-     *            the luminance component, between 0.0 and 1.0
-     * @return a new <code>Color</code> object equivalent to the HSL components */
-    public static Color HSLtoRGB(float h, float s, float l) {
-        int[] rgb = HSLtoRGB(h, s, l, null);
-        return new Color(rgb[0], rgb[1], rgb[2]);
     }
 
     /**

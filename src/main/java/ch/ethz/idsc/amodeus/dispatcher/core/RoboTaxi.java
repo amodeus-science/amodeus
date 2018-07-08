@@ -182,18 +182,16 @@ public class RoboTaxi {
     /** @return true if RoboTaxi is without an unexecuted directive, to be used
      *         only inside core package */
     /* package */ boolean isWithoutDirective() {
-        if (directive == null)
-            return true;
-        return false;
+        return directive == null;
     }
 
     /** @return true if robotaxi is not driving on the last link of its drive task,
      *         used for filtering purposes as currently the roboTaxis cannot be rerouted
      *         when driving on the last link of their route */
     /* package */ boolean notDrivingOnLastLink() {
-        if (status.equals(RoboTaxiStatus.STAY)) {
+        if (status.equals(RoboTaxiStatus.STAY))
             return true;
-        }
+
         Task avT = getSchedule().getCurrentTask();
 
         if (avT instanceof AVStayTask) {
@@ -205,18 +203,11 @@ public class RoboTaxi {
         // Added cases when on pickup and dropoff task For shared taxis
         if (avT instanceof AVDriveTask) {
             AVDriveTask avDT = (AVDriveTask) avT;
-            if (avDT.getPath().getLinkCount() == 1) {
-                return false;
-            }
-            return true;
+            return avDT.getPath().getLinkCount() != 1;
         }
-
-        else if (avT instanceof AVPickupTask || avT instanceof AVDropoffTask) {
+        if (avT instanceof AVPickupTask || avT instanceof AVDropoffTask)
             return false;
-
-        } else {
-            throw new IllegalArgumentException("Found Unknown type of AVTASK !!");
-        }
+        throw new IllegalArgumentException("Found Unknown type of AVTASK !!");
     }
 
     /** execute the directive of a RoboTaxi, to be used only inside core package */
@@ -234,14 +225,11 @@ public class RoboTaxi {
     // **********************************************
 
     public boolean isDivertable() {
-        if (usageType.equals(RoboTaxiUsageType.SINGLEUSED)) {
+        if (usageType.equals(RoboTaxiUsageType.SINGLEUSED))
             return isWithoutDirective() && isWithoutCustomer() && notDrivingOnLastLink();
-        } else if (usageType.equals(RoboTaxiUsageType.SHARED)) {
+        if (usageType.equals(RoboTaxiUsageType.SHARED))
             return isWithoutDirective() && notDrivingOnLastLink();
-        } else {
-            throw new IllegalArgumentException("Robo Taxi Usage Type is not defined");
-        }
-
+        throw new IllegalArgumentException("Robo Taxi Usage Type is not defined");
     }
 
     // **********************************************

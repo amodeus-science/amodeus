@@ -53,7 +53,7 @@ public class MemoryTileCache implements TileCache {
 
     @Override
     public synchronized Tile getTile(TileSource source, int x, int y, int z) {
-        CacheEntry entry = hash.get(Tile.getTileKey(source, x, y, z));
+        CacheEntry entry = hash.get(StaticHelper.getTileKey(source, x, y, z));
         if (entry == null)
             return null;
         lruTiles.moveElementToFirstPos(entry);

@@ -115,7 +115,7 @@ public class MatsimStaticDatabase {
         this.iteration = iteration;
     }
 
-    int getIteration() {
+    public int getIteration() {
         return iteration;
     }
 }

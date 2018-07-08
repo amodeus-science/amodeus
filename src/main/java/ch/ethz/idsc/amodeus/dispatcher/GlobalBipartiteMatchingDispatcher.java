@@ -19,7 +19,7 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.framework.AVModule;
-import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
+import ch.ethz.matsim.av.router.AVRouter;
 
 /** Dispatcher repeatedly solves a bipartite matching problem to match available vehicles and open requests.
  * The problem can either be solved using networkdistance or Euclidean distance. Currently network
@@ -37,9 +37,9 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
             Config config, //
             AVDispatcherConfig avDispatcherConfig, //
             TravelTime travelTime, //
-            ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, //
+            AVRouter router, //
             EventsManager eventsManager) {
-        super(config, avDispatcherConfig, travelTime, parallelLeastCostPathCalculator, eventsManager);
+        super(config, avDispatcherConfig, travelTime, router, eventsManager);
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
         distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getString("distanceHeuristics", // <- crashes if spelling is wrong
@@ -75,10 +75,6 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
     public static class Factory implements AVDispatcherFactory {
         @Inject
         @Named(AVModule.AV_MODE)
-        private ParallelLeastCostPathCalculator router;
-
-        @Inject
-        @Named(AVModule.AV_MODE)
         private TravelTime travelTime;
 
         @Inject
@@ -92,7 +88,7 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
         private Config config;
 
         @Override
-        public AVDispatcher createDispatcher(AVDispatcherConfig avconfig) {
+        public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
             return new GlobalBipartiteMatchingDispatcher( //
                     network, config, avconfig, travelTime, router, eventsManager);
         }

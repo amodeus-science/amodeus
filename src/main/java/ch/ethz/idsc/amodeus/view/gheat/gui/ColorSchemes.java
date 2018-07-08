@@ -6,15 +6,15 @@ import ch.ethz.idsc.tensor.img.ColorDataGradients;
 public enum ColorSchemes {
     Jet(StaticHelper.reverse(ColorDataGradients.JET)), //
     Classic(StaticHelper.reverse(ColorDataGradients.CLASSIC)), //
-    Fire(GheatPalettes.createFire()), //
+    Fire(GheatPalettes.FIRE.colorScheme), //
     Sunset(StaticHelper.reverse(ColorDataGradients.SUNSET)), //
     Solar(StaticHelper.reverse(ColorDataGradients.SOLAR)), //
-    Pbj(GheatPalettes.createPbj()), //
+    Pbj(GheatPalettes.PBJ.colorScheme), //
     Parula(StaticHelper.reverse(ColorDataGradients.PARULA)), //
     ParulaDark(StaticHelper.forward(ColorDataGradients.PARULA)), //
     Density(StaticHelper.reverse(ColorDataGradients.DENSITY)), //
-    Pgaitch(GheatPalettes.createPgaitch()), //
-    Omg(GheatPalettes.createOmg()), //
+    Pgaitch(GheatPalettes.PGAITCH.colorScheme), //
+    Omg(GheatPalettes.OMG.colorScheme), //
     Orange(CustomPalettes.createOrange()), //
     OrangeContour(CustomPalettes.createOrangeContour()), //
     Green(CustomPalettes.createGreen()), //
