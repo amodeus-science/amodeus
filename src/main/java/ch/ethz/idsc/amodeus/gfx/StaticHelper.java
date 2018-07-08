@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.gfx;
 
+import ch.ethz.idsc.amodeus.net.RequestContainer;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -37,5 +38,9 @@ import ch.ethz.idsc.tensor.red.Norm;
         if (Tensors.isEmpty(vector))
             return Tensors.empty();
         return Normalize.unlessZero(vector, Norm._1).multiply(RealScalar.of(224));
+    }
+
+    static boolean isWaiting(RequestContainer requestContainer) {
+        return requestContainer.requestStatus.unServiced();
     }
 }

@@ -53,7 +53,7 @@ public class RequestsLayer extends ViewerLayer {
                 OsmLink osmLink = amodeusComponent.db.getOsmLink(entry.getKey());
                 // final int size = entry.getValue().size();
                 Long size = entry.getValue().stream() //
-                        .filter(rc -> isWaiting(rc)) //
+                        .filter(StaticHelper::isWaiting) //
                         .collect(Collectors.counting());
                 for (int count = 0; count < size; ++count) {
                     Coord coord = osmLink.getAt(count / (double) size);
@@ -111,7 +111,7 @@ public class RequestsLayer extends ViewerLayer {
                     @SuppressWarnings("unused")
                     int index = numRequests;
                     for (RequestContainer rc : entry.getValue()) {
-                        if (isWaiting(rc)) {
+                        if (StaticHelper.isWaiting(rc)) {
                             double waitTime = ref.now - rc.submissionTime;
                             maxWaitTime = Math.max(waitTime, maxWaitTime);
                             --index;
@@ -130,17 +130,13 @@ public class RequestsLayer extends ViewerLayer {
                 if (showNumbers) {
                     graphics.setColor(Color.GRAY);
                     Long numNotPickedUp = entry.getValue().stream() //
-                            .filter(rc -> isWaiting(rc)) //
+                            .filter(StaticHelper::isWaiting) //
                             .collect(Collectors.counting());
                     String printValue = (numNotPickedUp > 0) ? "" + numNotPickedUp : "";
                     graphics.drawString(printValue, x, y); // - numRequests
                 }
             }
         }
-    }
-
-    private static boolean isWaiting(RequestContainer requestContainer) {
-        return requestContainer.requestStatus.unServiced();
     }
 
     @Override
