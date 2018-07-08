@@ -16,7 +16,6 @@ import ch.ethz.idsc.tensor.io.StringScalar;
 
     public static Tensor compile(List<RoboTaxi> roboTaxis) {
         return Tensor.of(roboTaxis.stream().map(AidoRoboTaxiCompiler::ofTaxi));
-
     }
 
     private static Tensor ofTaxi(RoboTaxi roboTaxi) {
