@@ -1,5 +1,5 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.net.simobj;
+package ch.ethz.idsc.amodeus.net;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -14,7 +14,6 @@ import org.matsim.api.core.v01.network.Link;
 import ch.ethz.idsc.amodeus.dispatcher.core.RequestStatus;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
@@ -58,7 +57,7 @@ public class SharedSimulationObjectCompiler {
         robotaxis.forEach(this::insertVehicle);
     }
 
-    // TODO can this be removed and handled in SharedUniversalDispatcher? 
+    // TODO can this be removed and handled in SharedUniversalDispatcher?
     public RequestStatus parseRequestStatus(RoboTaxiStatus oldStatus, RoboTaxiStatus newStatus) {
         RequestStatus requestStatus = RequestStatusParser.parseRequestStatus(newStatus, oldStatus);
         if (requestStatus == RequestStatus.REQUESTED)

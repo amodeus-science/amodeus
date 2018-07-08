@@ -15,8 +15,8 @@ import javax.swing.JCheckBox;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.net.OsmLink;
-import ch.ethz.idsc.amodeus.net.simobj.SimulationObject;
-import ch.ethz.idsc.amodeus.net.simobj.VehicleContainer;
+import ch.ethz.idsc.amodeus.net.SimulationObject;
+import ch.ethz.idsc.amodeus.net.VehicleContainer;
 import ch.ethz.idsc.amodeus.util.gui.RowPanel;
 import ch.ethz.idsc.amodeus.util.gui.SpinnerLabel;
 

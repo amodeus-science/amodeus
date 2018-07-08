@@ -46,7 +46,5 @@ public class AmodeusModule extends AbstractModule {
 
         return fullNetwork;
     }
-    
+
 }
-
-

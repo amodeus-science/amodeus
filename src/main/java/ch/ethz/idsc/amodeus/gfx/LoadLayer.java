@@ -17,7 +17,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
 import ch.ethz.idsc.amodeus.net.OsmLink;
-import ch.ethz.idsc.amodeus.net.simobj.SimulationObject;
+import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.util.gui.GraphicsUtil;
 import ch.ethz.idsc.amodeus.util.gui.RowPanel;
 import ch.ethz.idsc.amodeus.util.gui.SpinnerLabel;

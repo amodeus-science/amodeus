@@ -4,7 +4,6 @@ package ch.ethz.idsc.amodeus.net;
 import java.io.File;
 import java.util.Objects;
 
-import ch.ethz.idsc.amodeus.net.simobj.SimulationObject;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.util.net.ObjectHandler;
 import ch.ethz.idsc.tensor.io.Export;

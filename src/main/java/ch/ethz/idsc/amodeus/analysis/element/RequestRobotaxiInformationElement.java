@@ -9,7 +9,7 @@ import java.util.Set;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifier;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifiersAmodeus;
-import ch.ethz.idsc.amodeus.net.simobj.SimulationObject;
+import ch.ethz.idsc.amodeus.net.SimulationObject;
 
 public class RequestRobotaxiInformationElement implements AnalysisElement, TotalValueAppender {
     private final Set<Integer> requestIndices = new HashSet<>();

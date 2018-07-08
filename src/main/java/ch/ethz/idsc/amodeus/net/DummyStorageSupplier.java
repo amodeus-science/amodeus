@@ -3,8 +3,6 @@ package ch.ethz.idsc.amodeus.net;
 
 import java.util.Collections;
 
-import ch.ethz.idsc.amodeus.net.simobj.SimulationObject;
-
 public class DummyStorageSupplier extends StorageSupplier {
 
     public DummyStorageSupplier() {

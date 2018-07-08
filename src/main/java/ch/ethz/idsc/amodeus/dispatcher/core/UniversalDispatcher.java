@@ -26,10 +26,10 @@ import org.matsim.core.router.util.TravelTime;
 
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.SimulationDistribution;
+import ch.ethz.idsc.amodeus.net.SimulationObject;
+import ch.ethz.idsc.amodeus.net.SimulationObjectCompiler;
 import ch.ethz.idsc.amodeus.net.SimulationObjects;
 import ch.ethz.idsc.amodeus.net.StorageUtils;
-import ch.ethz.idsc.amodeus.net.simobj.SimulationObject;
-import ch.ethz.idsc.amodeus.net.simobj.SimulationObjectCompiler;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;

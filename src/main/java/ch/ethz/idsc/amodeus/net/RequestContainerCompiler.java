@@ -1,9 +1,8 @@
-package ch.ethz.idsc.amodeus.net.simobj;
+package ch.ethz.idsc.amodeus.net;
 
 import java.util.Objects;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RequestStatus;
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 

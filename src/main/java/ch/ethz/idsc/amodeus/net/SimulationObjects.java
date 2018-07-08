@@ -4,9 +4,6 @@ package ch.ethz.idsc.amodeus.net;
 import java.util.Collections;
 import java.util.Comparator;
 
-import ch.ethz.idsc.amodeus.net.simobj.SimulationObject;
-import ch.ethz.idsc.amodeus.net.simobj.VehicleContainer;
-
 /** while {@link SimulationObject} does not have any helper/member functions,
  * 
  * {@link SimulationObjects} has utility functions */
