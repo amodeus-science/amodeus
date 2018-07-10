@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.tensor.ExactScalarQ;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
@@ -21,7 +20,7 @@ import ch.ethz.idsc.tensor.Tensor;
      * @param commands */
     public static void check(Tensor commands) {
 
-        GlobalAssert.that(ExactScalarQ.all(commands));
+        // GlobalAssert.that(ExactScalarQ.all(commands));
 
         /** 1) ensure every RoboTaxi should be in {0,1} of the commands
          ** 2) ensure every request should only be assigned {0,1} times */

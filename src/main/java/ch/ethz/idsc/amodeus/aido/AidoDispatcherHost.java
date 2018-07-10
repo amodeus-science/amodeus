@@ -63,39 +63,40 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
                 aidoScoreCompiler = new AidoScoreCompiler(getRoboTaxis());
             }
 
-            try {
-                getAVRequests().forEach(//
-                        r -> idRequestMap.put(MatsimStaticDatabase.INSTANCE.getRequestIndex(r), r));
+            if (Objects.nonNull(aidoScoreCompiler))
+                try {
+                    getAVRequests().forEach(//
+                            r -> idRequestMap.put(MatsimStaticDatabase.INSTANCE.getRequestIndex(r), r));
 
-                Tensor status = Tensors.of(RealScalar.of((long) now), //
-                        AidoRoboTaxiCompiler.compile(getRoboTaxis()), //
-                        AidoRequestCompiler.compile(getAVRequests()), //
-                        aidoScoreCompiler.compile(round_now, getRoboTaxis(), getAVRequests()));
-                clientSocket.writeln(status);
+                    Tensor status = Tensors.of(RealScalar.of((long) now), //
+                            AidoRoboTaxiCompiler.compile(getRoboTaxis()), //
+                            AidoRequestCompiler.compile(getAVRequests()), //
+                            aidoScoreCompiler.compile(round_now, getRoboTaxis(), getAVRequests()));
+                    clientSocket.writeln(status);
 
-                String fromClient = null;
+                    String fromClient = null;
 
-                fromClient = clientSocket.readLine();
+                    fromClient = clientSocket.readLine();
 
-                Tensor commands = Tensors.fromString(fromClient);
-                CommandConsistency.check(commands);
+                    Tensor commands = Tensors.fromString(fromClient);
+                    CommandConsistency.check(commands);
 
-                Tensor pickups = commands.get(0);
-                for (Tensor pickup : pickups) {
-                    RoboTaxi roboTaxi = idRoboTaxiMap.get(pickup.Get(0).number().intValue());
-                    AVRequest avRequest = idRequestMap.get(pickup.Get(1).number().intValue());
-                    setRoboTaxiPickup(roboTaxi, avRequest);
+                    Tensor pickups = commands.get(0);
+                    for (Tensor pickup : pickups) {
+                        RoboTaxi roboTaxi = idRoboTaxiMap.get(pickup.Get(0).number().intValue());
+                        AVRequest avRequest = idRequestMap.get(pickup.Get(1).number().intValue());
+                        setRoboTaxiPickup(roboTaxi, avRequest);
+                    }
+
+                    Tensor rebalances = commands.get(1);
+                    for (Tensor rebalance : rebalances) {
+                        RoboTaxi roboTaxi = idRoboTaxiMap.get(rebalance.Get(0).number().intValue());
+                        Link link = fastLinkLookup.getLinkFromWGS84(TensorCoords.toCoord(rebalance.get(1)));
+                        setRoboTaxiRebalance(roboTaxi, link);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-
-                Tensor rebalances = commands.get(1);
-                for (Tensor rebalance : rebalances) {
-                    RoboTaxi roboTaxi = idRoboTaxiMap.get(rebalance.Get(0).number().intValue());
-                    Link link = fastLinkLookup.getLinkFromWGS84(TensorCoords.toCoord(rebalance.get(1)));
-                    setRoboTaxiRebalance(roboTaxi, link);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
     }
 
