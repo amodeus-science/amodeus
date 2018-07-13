@@ -120,7 +120,7 @@ public class Analysis {
      *            Scenario Server)
      * @throws Exception */
 
-    private Analysis(File workingDirectory, File configFile, File outputDirectory, Network network) throws Exception {
+    protected Analysis(File workingDirectory, File configFile, File outputDirectory, Network network) throws Exception {
         if (Objects.isNull(workingDirectory) || !workingDirectory.isDirectory())
             workingDirectory = new File("").getCanonicalFile();
         System.out.println("workingDirectory in Analysis: " + workingDirectory.getAbsolutePath());
