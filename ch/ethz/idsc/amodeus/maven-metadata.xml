@@ -3,7 +3,7 @@
   <groupId>ch.ethz.idsc</groupId>
   <artifactId>amodeus</artifactId>
   <versioning>
-    <release>1.2.7</release>
+    <release>1.2.8</release>
     <versions>
       <version>1.2.2</version>
       <version>1.2.3</version>
@@ -11,7 +11,8 @@
       <version>1.2.5</version>
       <version>1.2.6</version>
       <version>1.2.7</version>
+      <version>1.2.8</version>
     </versions>
-    <lastUpdated>20180714201509</lastUpdated>
+    <lastUpdated>20180714222629</lastUpdated>
   </versioning>
 </metadata>
