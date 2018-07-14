@@ -135,7 +135,7 @@ public class Analysis {
         }
 
         if (Objects.isNull(network)) {
-            network = NetworkLoader.loadNetwork(configFile);
+            network = NetworkLoader.fromConfigFile(configFile);
         }
 
         // load colorScheme & theme

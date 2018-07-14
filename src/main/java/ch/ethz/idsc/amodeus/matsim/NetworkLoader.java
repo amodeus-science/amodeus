@@ -12,11 +12,19 @@ import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigGroup;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.NetworkConfigGroup;
+import org.matsim.core.network.NetworkUtils;
+import org.matsim.core.network.io.NetworkReaderMatsimV2;
 import org.matsim.core.scenario.ScenarioUtils;
 
 public enum NetworkLoader {
     ;
-    public static Network loadNetwork(File configFile) {
+    public static Network fromNetworkFile(File networkFile) {
+        Network network = NetworkUtils.createNetwork();
+        new NetworkReaderMatsimV2(network).readFile(networkFile.getAbsolutePath());
+        return network;
+    }
+
+    public static Network fromConfigFile(File configFile) {
         Config config = ConfigUtils.loadConfig(configFile.toString());
         Set<Entry<String, ConfigGroup>> toDelete = new HashSet<>();
         for (Entry<String, ConfigGroup> entry : config.getModules().entrySet()) {
@@ -30,4 +38,5 @@ public enum NetworkLoader {
         Scenario scenario = ScenarioUtils.loadScenario(config);
         return scenario.getNetwork();
     }
+
 }

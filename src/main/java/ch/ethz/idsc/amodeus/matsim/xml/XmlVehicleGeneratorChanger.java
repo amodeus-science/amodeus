@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.matsim.xml;
 
 import java.io.File;
@@ -8,7 +9,7 @@ import org.jdom.Element;
 public enum XmlVehicleGeneratorChanger {
     ;
 
-    public static void changeVehicleGeneratorTo(File simFolder, String generatorName) throws Exception {
+    public static void of(File simFolder, String generatorName) throws Exception {
         System.out.println("changing vehicle generator to " + generatorName);
 
         File xmlFile = new File(simFolder, "av.xml");
