@@ -2,7 +2,9 @@
 package ch.ethz.idsc.amodeus.linkspeed;
 
 import java.io.File;
+import java.io.IOException;
 
+import ch.ethz.idsc.tensor.io.Export;
 import ch.ethz.idsc.tensor.io.Import;
 
 public enum LinkSpeedUtils {
@@ -21,4 +23,14 @@ public enum LinkSpeedUtils {
         System.err.println("INFO LinkSpeedData not available");
         return null;
     }
+
+    public static void writeLinkSpeedData(File file, LinkSpeedDataContainer lsData) {
+        try {
+            Export.object(file, lsData);
+            System.out.println("Wrote LinkSpeedData to: " + file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

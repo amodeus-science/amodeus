@@ -5,6 +5,11 @@ import org.matsim.api.core.v01.network.Link;
 
 public interface TaxiTrafficData {
 
+    /** Create a TravelTimeDataArray using the linkSpeedData.bin file
+     * Loads the linkSpeedData.bin file and creates TravelTimeDataArray file for use
+     * in MATSims TravelTimeCalculator */
+    // void createTravelTimeData(); // so far no need to have this public
+
     /** Reads out velocity of given link at given time
      * 
      * @param link
@@ -12,8 +17,4 @@ public interface TaxiTrafficData {
      * @return velocity on {@link Link} at time now */
     double getTravelTimeData(Link link, double now);
 
-    /** Create a TravelTimeDataArray using the linkSpeedData.bin file
-     * Loads the linkSpeedData.bin file and creates TravelTimeDataArray file for use
-     * in MATSims TravelTimeCalculator */
-    void createTravelTimeData();
 }
