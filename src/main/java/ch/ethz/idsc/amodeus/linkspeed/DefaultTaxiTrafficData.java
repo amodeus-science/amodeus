@@ -18,37 +18,33 @@ import ch.ethz.idsc.tensor.Tensor;
 @Singleton
 public class DefaultTaxiTrafficData implements TaxiTrafficData {
 
-    private TaxiTrafficDataContainer trafficData;
-    private LinkSpeedDataContainer lsData = new LinkSpeedDataContainer();
+    private final LinkSpeedDataContainer lsData;
     private final int timeBinSize;
     private final int numSlots;
     private final Network network;
+    private final TaxiTrafficDataContainer trafficData;
 
+    /** @param lsData non-null
+     * @param timeBinSize
+     * @param network */
     public DefaultTaxiTrafficData(LinkSpeedDataContainer lsData, int timeBinSize, Network network) {
         System.out.println("Loading LinkSpeedData into Simulation");
-        GlobalAssert.that(Objects.nonNull(lsData));
-        this.lsData = lsData;
+        this.lsData = Objects.requireNonNull(lsData);
         this.timeBinSize = timeBinSize;
         this.numSlots = StaticHelper.DAYLENGTH / timeBinSize;
         this.network = network;
-        this.createTravelTimeData();
+        trafficData = createTravelTimeData();
     }
 
-    @Override
-    public double getTravelTimeData(Link link, double now) {
-        return this.trafficData.getLinkTravelTime(link, now);
-    }
-
-    @Override
-    public void createTravelTimeData() {
+    private TaxiTrafficDataContainer createTravelTimeData() {
         // DEBUG Message
         System.out.println("Creating TravelTimeDataArray from LinkSpeedData:");
-        System.out.println("\tNumSlots:\t" + this.numSlots);
-        System.out.println("\tTimeBinSize:\t" + this.timeBinSize);
+        System.out.println("\tNumSlots:\t" + numSlots);
+        System.out.println("\tTimeBinSize:\t" + timeBinSize);
 
         // Instantiate new TTDF to create new TTDA objects
-        TravelTimeDataArrayFactory factory = new TravelTimeDataArrayFactory(this.network, this.numSlots);
-        this.trafficData = new TaxiTrafficDataContainer(this.numSlots);
+        TravelTimeDataArrayFactory factory = new TravelTimeDataArrayFactory(network, numSlots);
+        TaxiTrafficDataContainer trafficData = new TaxiTrafficDataContainer(numSlots);
 
         for (Entry<Integer, LinkSpeedTimeSeries> entry : lsData.getLinkSet().entrySet()) {
             Id<Link> linkID = Id.createLinkId(entry.getKey());
@@ -70,5 +66,12 @@ public class DefaultTaxiTrafficData implements TaxiTrafficData {
             trafficData.addData(linkID, ttData);
         }
         System.out.println("LinkSpeedData loaded into TravelTimeDataArray [lsData size: " + lsData.getLinkSet().size() + " links]");
+        return trafficData;
     }
+
+    @Override
+    public double getTravelTimeData(Link link, double now) {
+        return trafficData.getLinkTravelTime(link, now);
+    }
+
 }
