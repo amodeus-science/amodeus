@@ -134,4 +134,8 @@ public class ScenarioOptions {
         return Integer.valueOf(properties.getProperty(key));
     }
 
+    public final double getDouble(String key) {
+        return Double.valueOf(properties.getProperty(key));
+    }
+
 }

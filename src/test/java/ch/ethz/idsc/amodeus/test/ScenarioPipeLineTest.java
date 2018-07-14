@@ -98,7 +98,7 @@ public class ScenarioPipeLineTest {
         assertTrue(config.exists());
 
         // consistency of network (here no cutting)
-        Network originalNetwork = NetworkLoader.loadNetwork(testServer.getConfigFile());
+        Network originalNetwork = NetworkLoader.fromConfigFile(testServer.getConfigFile());
         Network preparedNetwork = testPreparer.getPreparedNetwork();
         GlobalAssert.that(Objects.nonNull(originalNetwork));
         GlobalAssert.that(Objects.nonNull(preparedNetwork));
