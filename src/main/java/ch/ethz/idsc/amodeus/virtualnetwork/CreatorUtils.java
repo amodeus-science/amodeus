@@ -9,6 +9,7 @@ import java.util.function.Function;
 
 import ch.ethz.idsc.amodeus.util.nd.NdCenterInterface;
 import ch.ethz.idsc.amodeus.util.nd.NdCluster;
+import ch.ethz.idsc.amodeus.util.nd.NdMap;
 import ch.ethz.idsc.amodeus.util.nd.NdTreeMap;
 import ch.ethz.idsc.tensor.Tensor;
 
@@ -36,7 +37,7 @@ public enum CreatorUtils {
 
     public static <T> void addByProximity(Map<VirtualNode<T>, Set<T>> vNMap, //
             Tensor lbounds, Tensor ubounds, Collection<T> elements, Function<T, Tensor> locationOf) {
-        NdTreeMap<VirtualNode<T>> ndTree = new NdTreeMap<>(lbounds, ubounds, 10, 24);
+        NdMap<VirtualNode<T>> ndTree = new NdTreeMap<>(lbounds, ubounds, 10, 24);
 
         for (VirtualNode<T> virtualNode : vNMap.keySet()) {
             ndTree.add(virtualNode.getCoord(), virtualNode);

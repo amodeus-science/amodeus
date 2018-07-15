@@ -13,7 +13,8 @@ import java.util.Locale;
  * mouse button and zooming by double click or by mouse wheel.
  *
  * @author Jan Peter Stotz */
-public class DefaultMapController extends JMapController implements MouseListener, MouseMotionListener, MouseWheelListener {
+class DefaultMapController extends JMapController implements //
+        MouseListener, MouseMotionListener, MouseWheelListener {
 
     private static final int MOUSE_BUTTONS_MASK = MouseEvent.BUTTON3_DOWN_MASK | MouseEvent.BUTTON1_DOWN_MASK | MouseEvent.BUTTON2_DOWN_MASK;
 

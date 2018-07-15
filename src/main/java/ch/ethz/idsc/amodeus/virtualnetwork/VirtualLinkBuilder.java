@@ -9,7 +9,7 @@ import java.util.Map;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.red.Norm;
 
-public enum VirtualLinkBuilder {
+enum VirtualLinkBuilder {
     ;
 
     public static <T, U> void build(VirtualNetwork<T> virtualNetwork, boolean completeGraph, //

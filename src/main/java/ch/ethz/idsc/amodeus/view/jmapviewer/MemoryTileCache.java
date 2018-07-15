@@ -13,9 +13,9 @@ import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.TileSource;
  * exceeded the least recently used {@link Tile} objects will be deleted.
  *
  * @author Jan Peter Stotz */
-public class MemoryTileCache implements TileCache {
+class MemoryTileCache implements TileCache {
 
-    protected static final Logger log = Logger.getLogger(MemoryTileCache.class.getName());
+    protected static final Logger LOG = Logger.getLogger(MemoryTileCache.class.getName());
 
     /** Default cache size */
     protected int cacheSize;
@@ -67,7 +67,7 @@ public class MemoryTileCache implements TileCache {
                 removeEntry(lruTiles.getLastElement());
             }
         } catch (NullPointerException e) {
-            log.warning(e.getMessage());
+            LOG.warning(e.getMessage());
         }
     }
 
