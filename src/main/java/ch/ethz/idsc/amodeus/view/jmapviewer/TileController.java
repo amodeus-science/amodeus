@@ -6,7 +6,7 @@ import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.TileLoader;
 import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.TileLoaderListener;
 import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.TileSource;
 
-public class TileController {
+class TileController {
     protected TileLoader tileLoader;
     protected TileCache tileCache;
     protected TileSource tileSource;

@@ -10,6 +10,7 @@ import org.matsim.api.core.v01.network.Network;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.nd.NdCenterInterface;
 import ch.ethz.idsc.amodeus.util.nd.NdCluster;
+import ch.ethz.idsc.amodeus.util.nd.NdMap;
 import ch.ethz.idsc.amodeus.util.nd.NdTreeMap;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.matsim.av.passenger.AVRequest;
@@ -29,7 +30,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         Tensor lbounds = bounds.get(0);
         Tensor ubounds = bounds.get(1);
 
-        NdTreeMap<AVRequest> ndTree = new NdTreeMap<>(lbounds, ubounds, 10, 24);
+        NdMap<AVRequest> ndTree = new NdTreeMap<>(lbounds, ubounds, 10, 24);
 
         // add uniquely identifiable requests to KD tree
         for (AVRequest avRequest : requests) {
@@ -66,7 +67,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         Tensor lbounds = bounds.get(0);
         Tensor ubounds = bounds.get(1);
 
-        NdTreeMap<RoboTaxi> ndTree = new NdTreeMap<>(lbounds, ubounds, 10, 24);
+        NdMap<RoboTaxi> ndTree = new NdTreeMap<>(lbounds, ubounds, 10, 24);
 
         // add roboTaxis to ND Tree
         for (RoboTaxi robotaxi : roboTaxis) {

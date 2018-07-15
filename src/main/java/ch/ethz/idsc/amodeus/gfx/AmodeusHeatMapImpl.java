@@ -14,7 +14,7 @@ import ch.ethz.idsc.amodeus.view.gheat.gui.ColorSchemes;
 import ch.ethz.idsc.amodeus.view.jmapviewer.AmodeusHeatMap;
 import ch.ethz.idsc.amodeus.view.jmapviewer.Tile;
 
-public class AmodeusHeatMapImpl implements AmodeusHeatMap {
+class AmodeusHeatMapImpl implements AmodeusHeatMap {
     private final AmodeusDataSource matsimDataSource = new AmodeusDataSource();
     private final DataManager dataManager = new DataManager(matsimDataSource);
     private final ImageObserver imageObserver = new JLabel();

@@ -19,8 +19,9 @@ import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.TileLoaderListener;
 /** A {@link TileLoader} implementation that loads tiles from OSM.
  *
  * @author Jan Peter Stotz */
-public class OsmTileLoader implements TileLoader {
-    private static final ThreadPoolExecutor jobDispatcher = (ThreadPoolExecutor) Executors.newFixedThreadPool(3);
+class OsmTileLoader implements TileLoader {
+    private static final ThreadPoolExecutor THREAD_POOL_EXECUTOR = //
+            (ThreadPoolExecutor) Executors.newFixedThreadPool(3);
 
     private final class OsmTileJob implements TileJob {
         private final Tile tile;
@@ -88,7 +89,7 @@ public class OsmTileLoader implements TileLoader {
         @Override
         public void submit(boolean force) {
             this.force = force;
-            jobDispatcher.execute(this);
+            THREAD_POOL_EXECUTOR.execute(this);
         }
     }
 
@@ -177,13 +178,13 @@ public class OsmTileLoader implements TileLoader {
 
     @Override
     public void cancelOutstandingTasks() {
-        jobDispatcher.getQueue().clear();
+        THREAD_POOL_EXECUTOR.getQueue().clear();
     }
 
     /** Sets the maximum number of concurrent connections the tile loader will do
      * 
      * @param num number of conncurent connections */
     public static void setConcurrentConnections(int num) {
-        jobDispatcher.setMaximumPoolSize(num);
+        THREAD_POOL_EXECUTOR.setMaximumPoolSize(num);
     }
 }
