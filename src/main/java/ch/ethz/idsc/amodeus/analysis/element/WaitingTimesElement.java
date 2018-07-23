@@ -27,6 +27,7 @@ public class WaitingTimesElement implements AnalysisElement, TotalValueAppender 
     public static final String[] WAITTIMES_LABELS = new String[] { "10% quantile", "50% quantile", "95% quantile", "Mean" };
 
     public final Tensor time = Tensors.empty();
+    /** map contains the final waiting time for every request */
     public final Map<Integer, Double> requestWaitTimes = new HashMap<>();
 
     public final Tensor waitTimePlotValues = Tensors.empty();

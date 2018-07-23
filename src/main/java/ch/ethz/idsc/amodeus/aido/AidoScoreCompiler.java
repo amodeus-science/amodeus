@@ -4,61 +4,50 @@ package ch.ethz.idsc.amodeus.aido;
 import java.util.Collection;
 import java.util.List;
 
-import ch.ethz.idsc.amodeus.analysis.element.DistanceElement;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.net.SimulationObjectCompiler;
-import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.red.Mean;
+import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 /* package */ class AidoScoreCompiler {
 
-    private final DistanceElement distanceElement;
+    private final AidoDistanceRecorder recorder;
+    private Scalar timeBefore = Quantity.of(0, "s");
+    private Tensor scoreInt = Tensors.of(Quantity.of(0, "s"), Quantity.of(0, "m"), Quantity.of(0, "m"));
 
     public AidoScoreCompiler(List<RoboTaxi> roboTaxis) {
-        // TODO AIDO so far set a posteriori, replace hardcoded value if possible
-        distanceElement = new DistanceElement(roboTaxis.size(), 120000 / 10);
+        recorder = new AidoDistanceRecorder(roboTaxis.size());
     }
 
-    // TODO
-    // Wait time Score not mean but number of people waiting times 10 s (time interval)
-    // Distance score make two (dist tot, dist cust) which are discontinous and send distance at link change, i.e.,
-    // {...,0,0,0,linkLength1,0,0,0,...}
-    // property: summierbarkeit
-    // Score 3 anpassen.
+    public Tensor compile(long timeMatsim, List<RoboTaxi> roboTaxis, Collection<AVRequest> requests) {
+        Scalar time = Quantity.of(timeMatsim, "s");
 
-    /** @param roboTaxis
-     * @param requests
-     * @return current score {mean waiting time, share of full distance, number of taxis} */
-    public Tensor compile(long time, List<RoboTaxi> roboTaxis, Collection<AVRequest> requests) {
+        /** the first scalar entry of the score is time spent waiting in the current time step */
+        Scalar dt = time.subtract(timeBefore);
+        GlobalAssert.that(Scalars.lessEquals(Quantity.of(0, "s"), time));
+        Scalar currWaitTime = RationalScalar.of(requests.size(), 1).multiply(dt);
 
-        /** the first scalar entry of the score is the mean waiting time at the time instant */
-        Tensor waitingTimes = Tensor.of(requests.stream() //
-                .map(r -> RealScalar.of(time - r.getSubmissionTime())));
-        Scalar score1 = Tensors.isEmpty(waitingTimes) //
-                ? RealScalar.ZERO
-                : (Scalar) Mean.of(waitingTimes);
-
-        /** the second scalar entry of the score is the current distance ratio,
-         * i.e. the share of empty miles driven in the current time step */
-        SimulationObjectCompiler soc = SimulationObjectCompiler.create(time, "insert empty as unused", -1);
+        /** the second scalar entry of the score is the distance driven with full vehicles (with customer)
+         * and the third scalar entry of the score is the distance driven with empty vehicles (without customer)
+         * 
+         * This distance is always accounted when a vehicle leaves a link, so for an individual vehicle
+         * it produced a sequence {...,0,0,d1,0,0,d2,0,...} */
+        SimulationObjectCompiler soc = SimulationObjectCompiler.create(timeMatsim, "insert empty as unused", -1);
         soc.insertVehicles(roboTaxis);
-        distanceElement.register(soc.compile());
-        Scalar distCst = distanceElement.getNewestDistances().Get(1);
-        Scalar distTot = distanceElement.getNewestDistances().Get(0);
+        Tensor currDistance = recorder.register(soc.compile());
+        Scalar distCusto = currDistance.Get(0);
+        Scalar distEmpty = currDistance.Get(1);
 
-        Scalar score2 = Scalars.lessThan(RealScalar.ZERO, distTot) //
-                ? (distTot.subtract(distCst)).divide(distTot)
-                : RealScalar.ZERO;
-
-        /** the third scalar entry of the score is the fleet size */
-        Scalar score3 = RealScalar.of(roboTaxis.size());
-
-        return Tensors.of(score1, score2, score3);
+        timeBefore = time;
+        Tensor scoreAdd = Tensors.of(currWaitTime, distCusto, distEmpty);
+        scoreInt = scoreInt.add(scoreAdd);
+        return scoreInt;
     }
 
 }
