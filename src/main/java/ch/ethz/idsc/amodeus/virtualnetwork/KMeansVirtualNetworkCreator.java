@@ -68,7 +68,7 @@ public class KMeansVirtualNetworkCreator<T, U> {
         long initSeed = 1;
         int iterations = 0;
         while (iterations < tryIterations) {
-            System.out.println("trying to crate K-means virtual network, attempt: " + iterations + 1);
+            System.out.println("trying to create K-means virtual network, attempt: " + iterations);
             VirtualNetwork<T> virtualNetwork = createVirtualNetwork(data, elements, uElements, locationOf, nameOf, //
                     lbounds, ubounds, numVNodes, completeGraph, initSeed);
             if (virtualNetwork.getVirtualNodes().size() == numVNodes) {
