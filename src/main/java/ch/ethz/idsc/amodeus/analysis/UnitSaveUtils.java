@@ -36,7 +36,7 @@ public enum UnitSaveUtils {
             SaveFormats... formats) throws Exception {
 
         GlobalAssert.that(saveToFolder.isDirectory());
-        GlobalAssert.that(Dimensions.of(quantityMatrix).size() == 2);
+//        GlobalAssert.that(Dimensions.of(quantityMatrix).size() == 2);
         File folder = createFileDir(name, saveToFolder);
         Set<SaveFormats> saveFormats = EnumSet.copyOf(Arrays.asList(formats));
 
