@@ -54,6 +54,7 @@ public class KMeansVirtualNetworkCreator<T, U> {
     }
 
     public VirtualNetwork<T> getVirtualNetwork() {
+        virtualNetwork.getVirtualNodes().stream().forEach(node -> System.out.println(node.getIndex()));
         return virtualNetwork;
     }
 
