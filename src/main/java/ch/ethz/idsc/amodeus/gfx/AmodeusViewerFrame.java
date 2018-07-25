@@ -123,7 +123,7 @@ public class AmodeusViewerFrame implements Runnable {
         {
             JButton jButton = new JButton("reindex");
             jButton.setToolTipText("reindex available simulation objects");
-            jButton.addActionListener(event -> reindex(storageUtils, defaultDirectory));
+            jButton.addActionListener(event -> reindex(storageUtils));
             panelControls.add(jButton);
         }
 
@@ -202,12 +202,7 @@ public class AmodeusViewerFrame implements Runnable {
         thread.start();
     }
 
-    void reindex(StorageUtils storageUtils, File selectedDirectory) {
-        try {
-            amodeusComponent.virtualNetworkLayer.setVirtualNetwork(VirtualNetworkGet.readFromOutputDirectory(network, selectedDirectory));
-        } catch (IOException e) {
-            GlobalAssert.that(false);
-        }
+    void reindex(StorageUtils storageUtils) {
         // System.out.println("reindex");
         // storageUtils.printStorageProperties();
         List<IterationFolder> list = storageUtils.getAvailableIterations();
@@ -228,6 +223,15 @@ public class AmodeusViewerFrame implements Runnable {
             spinnerLabelIter.setValueSafe(last);
             jSlider.setMaximum(storageSupplier.size() - 1);
         }
+    }
+
+    void reindexAndSetVirtualNetwork(StorageUtils storageUtils, File selectedDirectory) {
+        try {
+            amodeusComponent.virtualNetworkLayer.setVirtualNetwork(VirtualNetworkGet.readFromOutputDirectory(network, selectedDirectory));
+        } catch (IOException e) {
+            GlobalAssert.that(false);
+        }
+        reindex(storageUtils);
     }
 
     private void updateSubsequentSpinnerLabels(File rootDirectory, File defaultDirectory, int listIndex) {
@@ -271,7 +275,7 @@ public class AmodeusViewerFrame implements Runnable {
     private void setSpinnerLabel(File selectedFolder, File defaultDirectory, int index) {
         if (MultiFileTools.containsFolderName(selectedFolder, SIMOBJ)) {
             this.storageUtils = new StorageUtils(selectedFolder);
-            reindex(storageUtils, selectedFolder);
+            reindexAndSetVirtualNetwork(storageUtils, selectedFolder);
             removeSubsequentSpinnerLabels(index + 1);
         } else {
             updateSubsequentSpinnerLabels(selectedFolder, defaultDirectory, index + 1);
