@@ -53,9 +53,6 @@ import ch.ethz.matsim.av.passenger.AVRequest;
             return reductibleCol;
 
         /** building the nd Tree */
-        // Tensor bounds = NetworkBounds.of(network);
-        // Tensor lbounds = bounds.get(0);
-        // Tensor ubounds = bounds.get(1);
         NdMap<T1> ndTree = new NdTreeMap<>(lbounds, ubounds, 10, 24);
 
         /** add elements of reductible collection to nd-tree */
