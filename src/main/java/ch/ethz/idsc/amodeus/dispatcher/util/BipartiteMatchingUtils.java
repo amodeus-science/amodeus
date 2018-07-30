@@ -31,7 +31,13 @@ public enum BipartiteMatchingUtils {
             boolean reducewithKDTree) {
 
         Tensor infoLine = Tensors.empty();
-        Map<RoboTaxi, AVRequest> gbpMatch = GlobalBipartiteMatching.of(roboTaxis, requests, distanceFunction, network, infoLine, reducewithKDTree);
+        Map<RoboTaxi, AVRequest> gbpMatch;
+        if (reducewithKDTree) {
+            KdTreeReducer reducer = new KdTreeReducer(roboTaxis, requests, distanceFunction, network, infoLine);
+            gbpMatch = GlobalBipartiteMatching.of(reducer.getReducedRoboTaxis(), reducer.getReducedRequests(), distanceFunction);
+        } else {
+            gbpMatch = GlobalBipartiteMatching.of(roboTaxis, requests, distanceFunction);
+        }
 
         if (distanceFunction instanceof NonCyclicDistanceFunction) {
             DistanceFunction accDistanceFunction = ((NonCyclicDistanceFunction) distanceFunction).cyclicSolutionPreventer;
@@ -47,13 +53,18 @@ public enum BipartiteMatchingUtils {
     public static Tensor executeRebalance(BiConsumer<RoboTaxi, Link> setFunction, Collection<RoboTaxi> roboTaxis, Collection<AVRequest> requests, //
             DistanceFunction distanceFunction, Network network, boolean reducewithKDTree) {
         Tensor infoLine = Tensors.empty();
-        Map<RoboTaxi, AVRequest> gbpMatch = GlobalBipartiteMatching.of(roboTaxis, requests, distanceFunction, network, infoLine, reducewithKDTree);
+        Map<RoboTaxi, AVRequest> gbpMatch;
+        if (reducewithKDTree) {
+            KdTreeReducer reducer = new KdTreeReducer(roboTaxis, requests, distanceFunction, network, infoLine);
+            gbpMatch = GlobalBipartiteMatching.of(reducer.getReducedRoboTaxis(), reducer.getReducedRequests(), distanceFunction);
+        } else {
+            gbpMatch = GlobalBipartiteMatching.of(roboTaxis, requests, distanceFunction);
+        }
         for (Entry<RoboTaxi, AVRequest> entry : gbpMatch.entrySet()) {
             setFunction.accept(entry.getKey(), entry.getValue().getFromLink());
         }
         return infoLine;
     }
-
 
     /** margin accounts for numeric inaccuracy, since in the computer (a+b)+c != a+(b+c) */
     private static final double MARGIN_EPS = 1e-8;
@@ -73,7 +84,8 @@ public enum BipartiteMatchingUtils {
                     if (distNew + MARGIN_EPS >= distOld) {
                         // prevent new assignment when the new taxi is not closer in network distance AND
                         // (the old taxi is either assigned to a request further away or to none anymore)
-                        // if (copyTaxiToAV.get(oldTaxi) == null || accDistanceFunction.getDistance(oldTaxi, copyTaxiToAV.get(oldTaxi)) + MARGIN_EPS > distOld) {
+                        // if (copyTaxiToAV.get(oldTaxi) == null || accDistanceFunction.getDistance(oldTaxi, copyTaxiToAV.get(oldTaxi)) + MARGIN_EPS > distOld)
+                        // {
                         taxiToAV.remove(newTaxi);
                         // }
                     }
