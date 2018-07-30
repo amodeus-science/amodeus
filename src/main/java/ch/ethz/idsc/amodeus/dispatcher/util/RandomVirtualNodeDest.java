@@ -16,20 +16,18 @@ public class RandomVirtualNodeDest implements AbstractVirtualNodeDest {
 
     @Override
     public List<Link> selectLinkSet(VirtualNode<Link> virtualNode, int size) {
-
-        // if no vehicles to be sent to node, return empty list
+        /** no selection */
         if (size < 1)
             return Collections.emptyList();
 
-        List<Link> ret = new ArrayList<>();
+        List<Link> selected = new ArrayList<>();
         List<Link> links = virtualNode.getLinks().stream().collect(Collectors.toList());
-        while (ret.size() != size) {
+        while (selected.size() < size) {
             int elemRand = MatsimRandom.getRandom().nextInt(links.size());
             Link randLink = links.stream().skip(elemRand).findFirst().get();
-            ret.add(randLink);
+            selected.add(randLink);
         }
-
-        GlobalAssert.that(ret.size() == size);
-        return ret;
+        GlobalAssert.that(selected.size() == size);
+        return selected;
     }
 }
