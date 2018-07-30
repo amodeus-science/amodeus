@@ -35,9 +35,9 @@ public enum BipartiteMatchingUtils {
         if (reducewithKDTree) {
             KdTreeReducer reducer = new KdTreeReducer(roboTaxis, requests, distanceFunction, network, infoLine);
             gbpMatch = ((new GlobalBipartiteMatchingMatcher(//
-                    distanceFunction)).matchAVRequest(reducer.getReducedRoboTaxis(), reducer.getReducedRequests()));
+                    distanceFunction)).match(reducer.getReducedRoboTaxis(), reducer.getReducedRequests()));
         } else {
-            gbpMatch = ((new GlobalBipartiteMatchingMatcher(distanceFunction)).matchAVRequest(roboTaxis, requests));
+            gbpMatch = ((new GlobalBipartiteMatchingMatcher(distanceFunction)).match(roboTaxis, requests));
         }
 
         if (distanceFunction instanceof NonCyclicDistanceFunction) {
@@ -58,9 +58,9 @@ public enum BipartiteMatchingUtils {
         if (reducewithKDTree) {
             KdTreeReducer reducer = new KdTreeReducer(roboTaxis, requests, distanceFunction, network, infoLine);
             gbpMatch = ((new GlobalBipartiteMatchingMatcher(//
-                    distanceFunction)).matchAVRequest(reducer.getReducedRoboTaxis(), reducer.getReducedRequests()));
+                    distanceFunction)).match(reducer.getReducedRoboTaxis(), reducer.getReducedRequests()));
         } else {
-            gbpMatch = ((new GlobalBipartiteMatchingMatcher(distanceFunction)).matchAVRequest(roboTaxis, requests));
+            gbpMatch = ((new GlobalBipartiteMatchingMatcher(distanceFunction)).match(roboTaxis, requests));
         }
         for (Entry<RoboTaxi, AVRequest> entry : gbpMatch.entrySet()) {
             setFunction.accept(entry.getKey(), entry.getValue().getFromLink());

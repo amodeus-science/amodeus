@@ -18,7 +18,7 @@ import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedPartitionedDispatcher;
-import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVehicleDestMatcher;
+import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
@@ -43,7 +43,7 @@ public class SharedDispatcherExample extends SharedPartitionedDispatcher {
     private final int dispatchPeriod;
     private final int rebalancingPeriod;
     private final AbstractVirtualNodeDest virtualNodeDest;
-    private final AbstractVehicleDestMatcher vehicleDestMatcher;
+    private final AbstractRoboTaxiDestMatcher vehicleDestMatcher;
     private final int nVNodes;
     private final int nVLinks;
     private final Network network;
@@ -61,7 +61,7 @@ public class SharedDispatcherExample extends SharedPartitionedDispatcher {
             Network network, //
             VirtualNetwork<Link> virtualNetwork, //
             AbstractVirtualNodeDest abstractVirtualNodeDest, //
-            AbstractVehicleDestMatcher abstractVehicleDestMatcher, //
+            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher, //
             TravelData travelData) {
         super(config, avconfig, travelTime, router, eventsManager, virtualNetwork);
         virtualNodeDest = abstractVirtualNodeDest;
@@ -213,7 +213,7 @@ public class SharedDispatcherExample extends SharedPartitionedDispatcher {
             AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
 
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
-            AbstractVehicleDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatchingMatcher(new EuclideanDistanceFunction());
+            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatchingMatcher(new EuclideanDistanceFunction());
 
             return new SharedDispatcherExample(config, avconfig, generatorConfig, travelTime, router, eventsManager, network, virtualNetwork, abstractVirtualNodeDest,
                     abstractVehicleDestMatcher, travelData);

@@ -16,7 +16,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** array matching with Euclidean distance as criteria */
 
-public class GlobalBipartiteMatchingMatcher extends AbstractVehicleDestMatcher {
+public class GlobalBipartiteMatchingMatcher extends AbstractRoboTaxiDestMatcher {
 
     private final DistanceFunction distancer;
 
@@ -26,7 +26,7 @@ public class GlobalBipartiteMatchingMatcher extends AbstractVehicleDestMatcher {
     }
 
     @Override
-    protected Map<RoboTaxi, AVRequest> protected_matchAVRequest(Collection<RoboTaxi> roboTaxis, Collection<AVRequest> requests) {
+    protected Map<RoboTaxi, AVRequest> protected_match(Collection<RoboTaxi> roboTaxis, Collection<AVRequest> requests) {
 
         Collection<MatchLinkObject<AVRequest>> linksGen = new ArrayList<>();
         requests.stream().forEach(l -> linksGen.add(new MatchLinkObject<>(l)));
