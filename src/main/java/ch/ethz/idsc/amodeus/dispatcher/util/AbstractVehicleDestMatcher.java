@@ -12,30 +12,26 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
 public abstract class AbstractVehicleDestMatcher {
 
-    public final Map<RoboTaxi, AVRequest> matchAVRequest( //
-            Collection<RoboTaxi> vehicleLinkPairs, //
-            Collection<AVRequest> avRequests) {
-        if (vehicleLinkPairs.isEmpty() || avRequests.isEmpty())
-            return Collections.emptyMap();
-        return protected_matchAVRequest(vehicleLinkPairs, avRequests);
-    }
-
     protected abstract Map<RoboTaxi, AVRequest> protected_matchAVRequest( //
             Collection<RoboTaxi> vehicleLinkPairs, //
             Collection<AVRequest> links //
     );
 
-    public final Map<RoboTaxi, Link> matchLink( //
-            Collection<RoboTaxi> vehicleLinkPairs, //
-            Collection<Link> destinations) {
-        if (vehicleLinkPairs.isEmpty() || destinations.isEmpty())
-            return Collections.emptyMap();
-        return protected_matchLink(vehicleLinkPairs, destinations);
-    }
-
     protected abstract Map<RoboTaxi, Link> protected_matchLink( //
             Collection<RoboTaxi> vehicleLinkPairs, //
             Collection<Link> links //
     );
+
+    public final Map<RoboTaxi, AVRequest> matchAVRequest(Collection<RoboTaxi> roboTaxis, Collection<AVRequest> avRequests) {
+        if (roboTaxis.isEmpty() || avRequests.isEmpty())
+            return Collections.emptyMap();
+        return protected_matchAVRequest(roboTaxis, avRequests);
+    }
+
+    public final Map<RoboTaxi, Link> matchLink(Collection<RoboTaxi> roboTaxis, Collection<Link> destinations) {
+        if (roboTaxis.isEmpty() || destinations.isEmpty())
+            return Collections.emptyMap();
+        return protected_matchLink(roboTaxis, destinations);
+    }
 
 }
