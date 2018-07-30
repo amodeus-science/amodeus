@@ -18,9 +18,7 @@ public enum NetworkBounds {
      * @return {{lower}, {upper}} */
     public static Tensor of(Network network) {
         double[] bounds = NetworkUtils.getBoundingBox(network.getNodes().values());
-        return Tensors.of( //
-                Tensors.vectorDouble(bounds[0], bounds[1]), //
-                upper(bounds));
+        return Tensors.of(Tensors.vectorDouble(bounds[0], bounds[1]), upper(bounds));
     }
 
     public static Tensor lowerBoundsOf(Network network) {
@@ -52,5 +50,4 @@ public enum NetworkBounds {
         double dmax = Math.max(dx, dy);
         return (lbounds.add(Tensors.vectorDouble(dmax, dmax)));
     }
-
 }

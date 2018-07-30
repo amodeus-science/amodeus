@@ -16,32 +16,25 @@ import org.matsim.vehicles.Vehicle;
 
 public enum SimpleDijkstra {
     ;
-
     public static LeastCostPathCalculator prepDijkstra(Network network) {
         PreProcessDijkstra preProcessData = new PreProcessDijkstra();
         preProcessData.run(network);
-
         TravelDisutility travelMinCost = new TravelDisutility() {
-
             @Override
             public double getLinkTravelDisutility(Link link, double time, Person person, Vehicle vehicle) {
                 return getLinkMinimumTravelDisutility(link);
             }
-
             @Override
             public double getLinkMinimumTravelDisutility(Link link) {
                 return link.getLength() / link.getFreespeed();
             }
         };
-
         TravelTime travelTime = new TravelTime() {
             @Override
             public double getLinkTravelTime(Link link, double time, Person person, Vehicle vehicle) {
                 return link.getLength() / link.getFreespeed();
             }
         };
-
-        // return new FastDijkstraFactory(preProcessData).createPathCalculator(network, travelMinCost, travelTime);
         return new FastDijkstraFactory(true).createPathCalculator(network, travelMinCost, travelTime);
     }
 
@@ -52,5 +45,4 @@ public enum SimpleDijkstra {
                 Objects.requireNonNull(to), //
                 0.0, null, null);
     }
-
 }
