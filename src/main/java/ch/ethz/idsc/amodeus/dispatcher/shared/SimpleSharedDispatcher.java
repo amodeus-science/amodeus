@@ -14,7 +14,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.SharedUniversalDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVehicleDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
-import ch.ethz.idsc.amodeus.dispatcher.util.HungarBiPartVehicleDestMatcher;
+import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatchingMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
@@ -108,7 +108,7 @@ public class SimpleSharedDispatcher extends SharedUniversalDispatcher {
             @SuppressWarnings("unused")
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
             @SuppressWarnings("unused")
-            AbstractVehicleDestMatcher abstractVehicleDestMatcher = new HungarBiPartVehicleDestMatcher(new EuclideanDistanceFunction());
+            AbstractVehicleDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatchingMatcher(new EuclideanDistanceFunction());
 
             return new SimpleSharedDispatcher(network, config, avconfig, travelTime, router, eventsManager);
         }

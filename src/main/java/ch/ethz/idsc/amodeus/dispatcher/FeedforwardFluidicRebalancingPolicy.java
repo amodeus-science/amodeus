@@ -22,7 +22,7 @@ import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
 import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.FeasibleRebalanceCreator;
-import ch.ethz.idsc.amodeus.dispatcher.util.HungarBiPartVehicleDestMatcher;
+import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatchingMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
@@ -188,7 +188,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
             AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
 
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
-            AbstractVehicleDestMatcher abstractVehicleDestMatcher = new HungarBiPartVehicleDestMatcher(new EuclideanDistanceFunction());
+            AbstractVehicleDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatchingMatcher(new EuclideanDistanceFunction());
 
             return new FeedforwardFluidicRebalancingPolicy(config, avconfig, generatorConfig, travelTime, router, eventsManager, network, virtualNetwork, abstractVirtualNodeDest,
                     abstractVehicleDestMatcher, travelData);

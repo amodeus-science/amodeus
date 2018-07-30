@@ -16,11 +16,11 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** array matching with Euclidean distance as criteria */
 
-public class HungarBiPartVehicleDestMatcher extends AbstractVehicleDestMatcher {
+public class GlobalBipartiteMatchingMatcher extends AbstractVehicleDestMatcher {
 
     private final DistanceFunction distancer;
 
-    public HungarBiPartVehicleDestMatcher(DistanceFunction distancer) {
+    public GlobalBipartiteMatchingMatcher(DistanceFunction distancer) {
         this.distancer = distancer;
 
     }
