@@ -39,17 +39,16 @@ public class KdTreeReducer {
     }
 
     private void reduce() {
-
-        // save initial problem size
+        /** append initial problem size to infoLine */
         infoLine.append(Tensors.vectorInt(roboTaxiFull.size(), requestsFull.size()));
 
-        // 1) In case roboTaxis >> requests reduce search space using kd-trees
-        roboTaxisReduced = StaticHelper.reduceRoboTaxis(requestsFull, roboTaxiFull, network);
+        /** reduce the number of roboTaxis */
+        roboTaxisReduced = KdTreeReducerHelper.reduceRoboTaxis(requestsFull, roboTaxiFull, network);
 
-        // 2) In case requests >> roboTaxis reduce the search space using kd-trees
-        requestsReduced = StaticHelper.reduceRequests(requestsFull, roboTaxiFull, network);
+        /** reduce the number of requests */
+        requestsReduced = KdTreeReducerHelper.reduceRequests(requestsFull, roboTaxiFull, network);
 
-        // 3) compute Euclidean bipartite matching for all vehicles using the Hungarian method and set new pickup commands
+        /** append reduced problem size*/
         infoLine.append(Tensors.vectorInt(roboTaxisReduced.size(), requestsReduced.size()));
     }
 
