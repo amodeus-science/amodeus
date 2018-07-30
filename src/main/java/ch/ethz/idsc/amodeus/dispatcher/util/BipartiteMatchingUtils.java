@@ -7,9 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 
-import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
@@ -39,32 +37,12 @@ public enum BipartiteMatchingUtils {
         } else {
             gbpMatch = ((new GlobalBipartiteMatching(distanceFunction)).match(roboTaxis, requests));
         }
-
         if (distanceFunction instanceof NonCyclicDistanceFunction) {
             DistanceFunction accDistanceFunction = ((NonCyclicDistanceFunction) distanceFunction).cyclicSolutionPreventer;
             removeCyclicSolutions(universalDispatcher, accDistanceFunction, gbpMatch);
         }
-
         for (Entry<RoboTaxi, AVRequest> entry : gbpMatch.entrySet())
             universalDispatcher.setRoboTaxiPickup(entry.getKey(), entry.getValue());
-
-        return infoLine;
-    }
-
-    public static Tensor executeRebalance(BiConsumer<RoboTaxi, Link> setFunction, Collection<RoboTaxi> roboTaxis, Collection<AVRequest> requests, //
-            DistanceFunction distanceFunction, Network network, boolean reducewithKDTree) {
-        Tensor infoLine = Tensors.empty();
-        Map<RoboTaxi, AVRequest> gbpMatch;
-        if (reducewithKDTree) {
-            KdTreeReducer reducer = new KdTreeReducer(roboTaxis, requests, distanceFunction, network, infoLine);
-            gbpMatch = ((new GlobalBipartiteMatching(//
-                    distanceFunction)).match(reducer.getReducedRoboTaxis(), reducer.getReducedRequests()));
-        } else {
-            gbpMatch = ((new GlobalBipartiteMatching(distanceFunction)).match(roboTaxis, requests));
-        }
-        for (Entry<RoboTaxi, AVRequest> entry : gbpMatch.entrySet()) {
-            setFunction.accept(entry.getKey(), entry.getValue().getFromLink());
-        }
         return infoLine;
     }
 
@@ -95,5 +73,4 @@ public enum BipartiteMatchingUtils {
             }
         }
     }
-
 }

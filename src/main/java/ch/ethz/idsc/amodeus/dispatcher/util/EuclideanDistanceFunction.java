@@ -16,7 +16,6 @@ public class EuclideanDistanceFunction implements DistanceFunction {
     @Override
     public final double getDistance(RoboTaxi robotaxi, Link link) {
         return CoordUtils.calcEuclideanDistance(robotaxi.getDivertableLocation().getCoord(), link.getCoord());
-
     }
 
     @Override
