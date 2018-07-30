@@ -31,7 +31,7 @@ public enum BipartiteMatchingUtils {
             boolean reducewithKDTree) {
 
         Tensor infoLine = Tensors.empty();
-        Map<RoboTaxi, AVRequest> gbpMatch = globalBipartiteMatching(roboTaxis, requests, distanceFunction, network, infoLine, reducewithKDTree);
+        Map<RoboTaxi, AVRequest> gbpMatch = GlobalBipartiteMatching.of(roboTaxis, requests, distanceFunction, network, infoLine, reducewithKDTree);
 
         if (distanceFunction instanceof NonCyclicDistanceFunction) {
             DistanceFunction accDistanceFunction = ((NonCyclicDistanceFunction) distanceFunction).cyclicSolutionPreventer;
@@ -47,40 +47,13 @@ public enum BipartiteMatchingUtils {
     public static Tensor executeRebalance(BiConsumer<RoboTaxi, Link> setFunction, Collection<RoboTaxi> roboTaxis, Collection<AVRequest> requests, //
             DistanceFunction distanceFunction, Network network, boolean reducewithKDTree) {
         Tensor infoLine = Tensors.empty();
-        Map<RoboTaxi, AVRequest> gbpMatch = globalBipartiteMatching(roboTaxis, requests, distanceFunction, network, infoLine, reducewithKDTree);
+        Map<RoboTaxi, AVRequest> gbpMatch = GlobalBipartiteMatching.of(roboTaxis, requests, distanceFunction, network, infoLine, reducewithKDTree);
         for (Entry<RoboTaxi, AVRequest> entry : gbpMatch.entrySet()) {
             setFunction.accept(entry.getKey(), entry.getValue().getFromLink());
         }
         return infoLine;
     }
 
-    private static Map<RoboTaxi, AVRequest> globalBipartiteMatching(Collection<RoboTaxi> roboTaxis, Collection<AVRequest> requests, //
-            DistanceFunction distanceFunction, Network network, Tensor infoLine, boolean reducewithKDTree) {
-
-        if (reducewithKDTree == true && !(distanceFunction instanceof EuclideanDistanceFunction)) {
-            System.err.println("cannot use requestReducing technique with other distance function than Euclidean.");
-            GlobalAssert.that(false);
-        }
-
-        // save initial problem size
-        infoLine.append(Tensors.vectorInt(roboTaxis.size(), requests.size()));
-
-        if (reducewithKDTree) {
-            // 1) In case roboTaxis >> requests reduce search space using kd-trees
-            Collection<RoboTaxi> roboTaxisReduced = StaticHelper.reduceRoboTaxis(requests, roboTaxis, network);
-
-            // 2) In case requests >> roboTaxis reduce the search space using kd-trees
-            Collection<AVRequest> requestsReduced = StaticHelper.reduceRequests(requests, roboTaxis, network);
-
-            // 3) compute Euclidean bipartite matching for all vehicles using the Hungarian method and set new pickup commands
-            infoLine.append(Tensors.vectorInt(roboTaxisReduced.size(), requestsReduced.size()));
-
-            return ((new HungarBiPartVehicleDestMatcher(//
-                    distanceFunction)).matchAVRequest(roboTaxisReduced, requestsReduced));
-        }
-        return ((new HungarBiPartVehicleDestMatcher(//
-                distanceFunction)).matchAVRequest(roboTaxis, requests));
-    }
 
     /** margin accounts for numeric inaccuracy, since in the computer (a+b)+c != a+(b+c) */
     private static final double MARGIN_EPS = 1e-8;
