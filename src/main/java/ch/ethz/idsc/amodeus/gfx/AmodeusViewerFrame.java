@@ -225,13 +225,12 @@ public class AmodeusViewerFrame implements Runnable {
         }
     }
 
-    void reindexAndSetVirtualNetwork(StorageUtils storageUtils, File selectedDirectory) {
+    void setVirtualNetwork(File selectedDirectory) {
         try {
             amodeusComponent.virtualNetworkLayer.setVirtualNetwork(VirtualNetworkGet.readFromOutputDirectory(network, selectedDirectory));
         } catch (IOException e) {
             GlobalAssert.that(false);
         }
-        reindex(storageUtils);
     }
 
     private void updateSubsequentSpinnerLabels(File rootDirectory, File defaultDirectory, int listIndex) {
@@ -275,7 +274,8 @@ public class AmodeusViewerFrame implements Runnable {
     private void setSpinnerLabel(File selectedFolder, File defaultDirectory, int index) {
         if (MultiFileTools.containsFolderName(selectedFolder, SIMOBJ)) {
             this.storageUtils = new StorageUtils(selectedFolder);
-            reindexAndSetVirtualNetwork(storageUtils, selectedFolder);
+            setVirtualNetwork(selectedFolder);
+            reindex(storageUtils);
             removeSubsequentSpinnerLabels(index + 1);
         } else {
             updateSubsequentSpinnerLabels(selectedFolder, defaultDirectory, index + 1);

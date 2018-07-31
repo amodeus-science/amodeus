@@ -15,7 +15,7 @@ import java.util.function.Function;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
-public class VirtualNetworkImpl<T> implements VirtualNetwork<T>, Serializable {
+class VirtualNetworkImpl<T> implements VirtualNetwork<T>, Serializable {
 
     private final long virtualNetworkID; // to ensure that other objects dependant on virtualNetwork are derived of that particular network
     private final Map<Integer, VirtualNode<T>> virtualNodes = new LinkedHashMap<>();
@@ -26,7 +26,7 @@ public class VirtualNetworkImpl<T> implements VirtualNetwork<T>, Serializable {
     private final Map<String, VirtualNode<T>> networkElementsSerializable = new LinkedHashMap<>();
     private final Map<Point, VirtualLink<T>> virtualLinkPairs = new LinkedHashMap<>();
 
-    public VirtualNetworkImpl() {
+    VirtualNetworkImpl() {
         virtualNetworkID = System.currentTimeMillis();
     }
 

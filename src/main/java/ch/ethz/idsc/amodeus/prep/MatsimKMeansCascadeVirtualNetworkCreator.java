@@ -1,32 +1,35 @@
-/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.prep;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
 import org.matsim.api.core.v01.population.Population;
 
-import ch.ethz.idsc.amodeus.dispatcher.util.NetworkBounds;
 import ch.ethz.idsc.amodeus.dispatcher.util.TensorLocation;
-import ch.ethz.idsc.amodeus.virtualnetwork.KMeansVirtualNetworkCreator;
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.amodeus.virtualnetwork.KMeansCascadeVirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
-import ch.ethz.idsc.tensor.Tensor;
 
-public enum MatsimKMEANSVirtualNetworkCreator {
+public enum MatsimKMeansCascadeVirtualNetworkCreator {
     ;
 
     public static VirtualNetwork<Link> createVirtualNetwork(Population population, Network network, int numVNodes, boolean completeGraph) {
-        double data[][] = NetworkCreatorUtils.fromPopulation(population, network);
+        // make sure numVNodes is power of 2
+        for (int i = numVNodes; i > 1;) {
+            GlobalAssert.that(i % 2 == 0);
+            i /= 2;
+        }
+
+        Set<Request> requests = PopulationUtils.getAVRequests(population, network);
+
         @SuppressWarnings("unchecked")
         Collection<Link> elements = (Collection<Link>) network.getLinks().values();
-        Tensor bounds = NetworkBounds.of(network);
-        Tensor lbounds = bounds.get(0);
-        Tensor ubounds = bounds.get(1);
 
         Map<Node, HashSet<Link>> uElements = new HashMap<>();
 
@@ -36,11 +39,12 @@ public enum MatsimKMEANSVirtualNetworkCreator {
         network.getLinks().values().forEach(l -> uElements.get(l.getToNode()).add(l));
 
         int tryIterations = 100;
-        KMeansVirtualNetworkCreator<Link, Node> vnc = new KMeansVirtualNetworkCreator<>( //
-                data, elements, uElements, TensorLocation::of, //
-                NetworkCreatorUtils::linkToID, lbounds, ubounds, numVNodes, completeGraph, tryIterations);
+        KMeansCascadeVirtualNetworkCreator vnc = new KMeansCascadeVirtualNetworkCreator( //
+                requests, elements, uElements, TensorLocation::of, //
+                NetworkCreatorUtils::linkToID, numVNodes, completeGraph, tryIterations);
 
-        return vnc.getVirtualNetwork();
+        VirtualNetwork<Link> virtualNetwork = vnc.getVirtualNetwork();
+        return virtualNetwork;
 
     }
 }
