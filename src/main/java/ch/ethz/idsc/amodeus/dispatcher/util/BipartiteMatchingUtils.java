@@ -2,75 +2,53 @@
 package ch.ethz.idsc.amodeus.dispatcher.util;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Optional;
 
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.core.router.FastAStarLandmarksFactory;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-public enum BipartiteMatchingUtils {
-    ;
+public class BipartiteMatchingUtils {
 
-    public static Tensor executePickup( //
+    /** network distance function used to prevent cycling solutions */
+    private final DistanceFunction accDstFctn;
+
+    public BipartiteMatchingUtils(Network network) {
+        accDstFctn = new NetworkDistanceFunction(network, new FastAStarLandmarksFactory());
+    }
+
+    public Tensor executePickup( //
             UniversalDispatcher universalDispatcher, //
-            Collection<RoboTaxi> roboTaxis, // <- typically universalDispatcher.getDivertableRoboTaxis()
-            Collection<AVRequest> requests, //
-            DistanceFunction distanceFunction, //
-            Network network, //
-            boolean reducewithKDTree) {
+            Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
+            Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
+            DistanceFunction distanceFunction, Network network, boolean reduceWkdTree) {
 
         Tensor infoLine = Tensors.empty();
         Map<RoboTaxi, AVRequest> gbpMatch;
-        if (reducewithKDTree) {
+
+        /** reduction of problem size with kd-tree, helps to downsize problems where n << m or m>> n
+         * for n number of available taxis and m number of available requests */
+        if (reduceWkdTree) {
             KdTreeReducer reducer = new KdTreeReducer(roboTaxis, requests, distanceFunction, network, infoLine);
-            gbpMatch = ((new GlobalBipartiteMatching(//
-                    distanceFunction)).match(reducer.getReducedRoboTaxis(), reducer.getReducedRequests()));
+            gbpMatch = ((new GlobalBipartiteMatching(distanceFunction)).match(reducer.getReducedRoboTaxis(), reducer.getReducedRequests()));
         } else {
             gbpMatch = ((new GlobalBipartiteMatching(distanceFunction)).match(roboTaxis, requests));
         }
-        if (distanceFunction instanceof NonCyclicDistanceFunction) {
-            DistanceFunction accDistanceFunction = ((NonCyclicDistanceFunction) distanceFunction).cyclicSolutionPreventer;
-            removeCyclicSolutions(universalDispatcher, accDistanceFunction, gbpMatch);
-        }
-        for (Entry<RoboTaxi, AVRequest> entry : gbpMatch.entrySet())
+
+        /** prevent cycling an assignment is only updated if the new distance is smaller than the
+         * old distance */
+        Map<RoboTaxi, AVRequest> gbpMatchCleaned = CyclicSolutionPreventer.apply(gbpMatch, universalDispatcher, accDstFctn);
+
+        /** perform dispatching */
+        for (Entry<RoboTaxi, AVRequest> entry : gbpMatchCleaned.entrySet())
             universalDispatcher.setRoboTaxiPickup(entry.getKey(), entry.getValue());
         return infoLine;
     }
 
-    /** margin accounts for numeric inaccuracy, since in the computer (a+b)+c != a+(b+c) */
-    private static final double MARGIN_EPS = 1e-8;
-
-    private static void removeCyclicSolutions(UniversalDispatcher universalDispatcher, DistanceFunction accDistanceFunction, Map<RoboTaxi, AVRequest> taxiToAV) {
-        Map<RoboTaxi, AVRequest> copyTaxiToAV = new HashMap<>(taxiToAV);
-
-        for (Entry<RoboTaxi, AVRequest> entry : copyTaxiToAV.entrySet()) {
-            Optional<RoboTaxi> optional = universalDispatcher.getPickupTaxi(entry.getValue()); // previously assigned taxi
-            if (optional.isPresent()) { // only do comparison if request has taxi assigned
-                final RoboTaxi oldTaxi = optional.get(); // current pickup taxi of request
-                final RoboTaxi newTaxi = entry.getKey(); // candidate
-                GlobalAssert.that(Objects.nonNull(newTaxi));
-                if (newTaxi != oldTaxi) { // only consider changed taxi assignments
-                    double distNew = accDistanceFunction.getDistance(newTaxi, entry.getValue());
-                    double distOld = accDistanceFunction.getDistance(oldTaxi, entry.getValue());
-                    if (distNew + MARGIN_EPS >= distOld) {
-                        // prevent new assignment when the new taxi is not closer in network distance AND
-                        // (the old taxi is either assigned to a request further away or to none anymore)
-                        // if (copyTaxiToAV.get(oldTaxi) == null || accDistanceFunction.getDistance(oldTaxi, copyTaxiToAV.get(oldTaxi)) + MARGIN_EPS > distOld)
-                        // {
-                        taxiToAV.remove(newTaxi);
-                        // }
-                    }
-                }
-            }
-        }
-    }
 }

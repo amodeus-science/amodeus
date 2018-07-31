@@ -63,15 +63,12 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
     private final DistanceFunction distanceFunction;
     private final DistanceHeuristics distanceHeuristics;
     private final Network network;
+    private final BipartiteMatchingUtils bipartiteMatchingEngine;
 
-    public AdaptiveRealTimeRebalancingPolicy( //
-            Config config, AVDispatcherConfig avconfig, //
-            AVGeneratorConfig generatorConfig, //
-            TravelTime travelTime, //
-            AVRouter router, //
-            EventsManager eventsManager, //
-            Network network, //
-            VirtualNetwork<Link> virtualNetwork, //
+    public AdaptiveRealTimeRebalancingPolicy(Config config, AVDispatcherConfig avconfig, //
+            AVGeneratorConfig generatorConfig, TravelTime travelTime, //
+            AVRouter router, EventsManager eventsManager, //
+            Network network, VirtualNetwork<Link> virtualNetwork, //
             AbstractVirtualNodeDest abstractVirtualNodeDest, //
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher) {
         super(config, avconfig, travelTime, router, eventsManager, virtualNetwork);
@@ -85,25 +82,22 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
         this.network = network;
         distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getString("distanceHeuristics", //
                 DistanceHeuristics.EUCLIDEAN.name()).toUpperCase());
+        this.bipartiteMatchingEngine = new BipartiteMatchingUtils(network);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
-
     }
 
     @Override
     public void redispatch(double now) {
 
-        // PART I: rebalance all vehicles periodically
+        /** PART I: rebalance all vehicles periodically */
         final long round_now = Math.round(now);
 
-        // System.out.println("TALLY
-        // BEG="+Tally.sorted(Tensors.vectorInt(getRoboTaxis().stream().mapToInt(rt ->
-        // rt.getAVStatus().ordinal()).toArray())));
-        if (round_now % rebalancingPeriod == 0 && round_now > 10) { // needed because of problems with robotaxi
-                                                                    // inititalization.
+        /** necessary because robotaxis not presence at time zero */
+        if (round_now % rebalancingPeriod == 0 && round_now > 10) {
 
             Map<VirtualNode<Link>, List<AVRequest>> requests = getVirtualNodeRequests();
-            // II.i compute rebalancing vehicles and send to virtualNodes
+            /** compute rebalancing vehicles and send to virtualNodes */
             {
                 Map<VirtualNode<Link>, List<RoboTaxi>> availableVehicles = getVirtualNodeDivertableNotRebalancingRoboTaxis();
                 int totalAvailable = 0;
@@ -111,15 +105,14 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
                     totalAvailable += robotaxiList.size();
                 }
 
-                // calculate desired vehicles per vNode
+                /** calculate desired vehicles per vNode */
                 int num_requests = requests.values().stream().mapToInt(List::size).sum();
                 double vi_desired_num = ((numRobotaxi - num_requests) / (double) virtualNetwork.getvNodesCount());
                 int vi_desired_numint = (int) Math.floor(vi_desired_num);
                 Tensor vi_desiredT = Tensors.vector(i -> RationalScalar.of(vi_desired_numint, 1), virtualNetwork.getvNodesCount());
 
-                // calculate excess vehicles per virtual Node i, where v_i excess = vi_own - c_i
-                // =
-                // v_i + sum_j (v_ji) - c_i
+                /** calculate excess vehicles per virtual Node i, where
+                 * v_i excess = vi_own - c_i = v_i + sum_j (v_ji) - c_i */
                 Map<VirtualNode<Link>, List<RoboTaxi>> v_ij_reb = getVirtualNodeRebalancingToRoboTaxis();
                 Map<VirtualNode<Link>, List<RoboTaxi>> v_ij_cust = getVirtualNodeArrivingWithCustomerRoboTaxis();
                 Tensor vi_excessT = Array.zeros(virtualNetwork.getvNodesCount());
@@ -129,7 +122,7 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
                     vi_excessT.set(RealScalar.of(viExcessVal), virtualNode.getIndex());
                 }
 
-                // solve the linear program with updated right-hand side
+                /** solve the linear program with updated right-hand side */
                 Tensor rhs = vi_desiredT.subtract(vi_excessT);
                 Tensor rebalanceCount2 = Tensors.empty();
                 if (totalAvailable > 0) {
@@ -138,18 +131,18 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
                     rebalanceCount2 = Array.zeros(virtualNetwork.getvNodesCount(), virtualNetwork.getvNodesCount());
                 }
                 Tensor rebalanceCount = Round.of(rebalanceCount2);
-                // assert that solution is integer and does not contain negative values
 
+                /** assert that solution is integer and does not contain negative values */
                 GlobalAssert.that(rebalanceCount.flatten(-1).map(Scalar.class::cast).allMatch(Sign::isPositiveOrZero));
 
-                // ensure that not more vehicles are sent away than available
+                /** ensure that not more vehicles are sent away than available */
                 Tensor feasibleRebalanceCount = FeasibleRebalanceCreator.returnFeasibleRebalance(rebalanceCount.unmodifiable(), availableVehicles);
                 total_rebalanceCount += (Integer) ((Scalar) Total.of(Tensor.of(feasibleRebalanceCount.flatten(-1)))).number();
 
-                // generate routing instructions for rebalancing vehicles
+                /** generate routing instructions for rebalancing vehicles */
                 Map<VirtualNode<Link>, List<Link>> rebalanceDestinations = virtualNetwork.createVNodeTypeMap();
 
-                // fill rebalancing destinations
+                /** fill rebalancing destinations */
                 for (int i = 0; i < virtualNetwork.getvLinksCount(); ++i) {
                     VirtualLink<Link> virtualLink = this.virtualNetwork.getVirtualLink(i);
                     VirtualNode<Link> toNode = virtualLink.getTo();
@@ -159,31 +152,22 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
                     rebalanceDestinations.get(fromNode).addAll(rebalanceTargets);
                 }
 
-                // consistency check: rebalancing destination links must not exceed available
-                // vehicles in virtual node
+                /** consistency check: rebalancing destination links must not exceed available vehicles in virtual node */
                 Map<VirtualNode<Link>, List<RoboTaxi>> finalAvailableVehicles = availableVehicles;
                 GlobalAssert.that(virtualNetwork.getVirtualNodes().stream().allMatch(v -> finalAvailableVehicles.get(v).size() >= rebalanceDestinations.get(v).size()));
 
-                // send rebalancing vehicles using the setVehicleRebalance command
+                /** send rebalancing vehicles using the setVehicleRebalance command */
                 for (VirtualNode<Link> virtualNode : rebalanceDestinations.keySet()) {
                     Map<RoboTaxi, Link> rebalanceMatching = vehicleDestMatcher.matchLink(availableVehicles.get(virtualNode), rebalanceDestinations.get(virtualNode));
                     rebalanceMatching.keySet().forEach(v -> setRoboTaxiRebalance(v, rebalanceMatching.get(v)));
                 }
-
             }
         }
 
-        // Part II: outside rebalancing periods, permanently assign destinations to
-        // vehicles using
-        // bipartite matching
+        /** Part II: outside rebalancing periods, permanently assign destinations to vehicles using bipartite matching */
         if (round_now % dispatchPeriod == 0) {
-            // printVals = BipartiteMatchingUtils.executePickup(this::setRoboTaxiPickup, getDivertableRoboTaxis(), getAVRequests(), new
-            // EuclideanDistanceFunction(), network, false);
-            printVals = BipartiteMatchingUtils.executePickup( //
-                    this, //
-                    getDivertableRoboTaxis(), //
-                    getAVRequests(), //
-                    distanceFunction, network, false);
+            printVals = bipartiteMatchingEngine.executePickup(this, getDivertableRoboTaxis(), //
+                    getAVRequests(), distanceFunction, network, false);
         }
     }
 
