@@ -7,6 +7,7 @@ import java.util.Properties;
 
 import ch.ethz.idsc.amodeus.data.LocationSpec;
 import ch.ethz.idsc.amodeus.data.LocationSpecDatabase;
+import ch.ethz.idsc.amodeus.lp.LPCreator;
 import ch.ethz.idsc.amodeus.prep.PopulationCutter;
 import ch.ethz.idsc.amodeus.prep.PopulationCutters;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;
@@ -64,6 +65,10 @@ public class ScenarioOptions {
         return getString(ScenarioOptionsBase.TRAVELDATAFILENAME);
     }
 
+    public String getRebalanceDataName() {
+        return getString(ScenarioOptionsBase.REBALANCEDATAFILENAME);
+    }
+
     public String getLinkSpeedDataName() {
         return getString(ScenarioOptionsBase.LINKSPEEDDATAFILENAME);
     }
@@ -113,6 +118,18 @@ public class ScenarioOptions {
 
     public void setMaxPopulationSize(int maxNumberPeople) {
         properties.setProperty(ScenarioOptionsBase.MAXPOPULATIONSIZEIDENTIFIER, String.valueOf(maxNumberPeople));
+    }
+
+    public double getLPWeightQ() {
+        return getDouble(ScenarioOptionsBase.LPWEIGHTQ);
+    }
+
+    public double getLPWeightR() {
+        return getDouble(ScenarioOptionsBase.LPWEIGHTR);
+    }
+
+    public LPCreator getLPSolver() {
+        return LPCreator.valueOf(getString(ScenarioOptionsBase.LPSOLVER).toUpperCase());
     }
 
     public File getShapeFile() {

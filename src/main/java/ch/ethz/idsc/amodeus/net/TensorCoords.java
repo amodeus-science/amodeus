@@ -2,7 +2,9 @@
 package ch.ethz.idsc.amodeus.net;
 
 import org.matsim.api.core.v01.Coord;
+import org.matsim.api.core.v01.network.Link;
 
+import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNode;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.VectorQ;
@@ -11,6 +13,10 @@ public enum TensorCoords {
     ;
     public static Tensor toTensor(Coord coord) {
         return Tensors.vectorDouble(coord.getX(), coord.getY());
+    }
+
+    public static Coord vNodeToCoord(VirtualNode<Link> node) {
+        return TensorCoords.toCoord(node.getCoord());
     }
 
     /** @param vector of length 2

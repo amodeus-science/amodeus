@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.prep;
 
 import java.util.Collection;
@@ -26,7 +27,7 @@ public enum MatsimKMeansCascadeVirtualNetworkCreator {
             i /= 2;
         }
 
-        Set<Request> requests = PopulationUtils.getAVRequests(population, network);
+        Set<Request> requests = PopulationTools.getAVRequests(population, network);
 
         @SuppressWarnings("unchecked")
         Collection<Link> elements = (Collection<Link>) network.getLinks().values();

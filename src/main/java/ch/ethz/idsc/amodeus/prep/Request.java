@@ -12,10 +12,12 @@ public class Request {
 
     private final double startTime;
     private final Link startLink;
+    private final Link endLink;
 
-    /* package */ Request(double startTime, Link startLink) {
+    /* package */ Request(double startTime, Link startLink, Link endLink) {
         this.startTime = startTime;
         this.startLink = startLink;
+        this.endLink = endLink;
     }
 
     public double startTime() {
@@ -24,5 +26,9 @@ public class Request {
 
     public Link startLink() {
         return startLink;
+    }
+
+    public Link endLink() {
+        return endLink;
     }
 }

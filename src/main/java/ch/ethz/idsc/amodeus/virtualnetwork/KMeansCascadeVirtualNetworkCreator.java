@@ -36,6 +36,7 @@ import de.lmu.ifi.dbs.elki.datasource.DatabaseConnection;
 import de.lmu.ifi.dbs.elki.distance.distancefunction.minkowski.SquaredEuclideanDistanceFunction;
 import de.lmu.ifi.dbs.elki.math.random.RandomFactory;
 
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 public class KMeansCascadeVirtualNetworkCreator {
 
     private DatabaseConnection dbc;
@@ -102,8 +103,8 @@ public class KMeansCascadeVirtualNetworkCreator {
             Tensor coord1 = linksList.get(1).getKey().getCoord();
             Set<Request> requests0 = Request.filterLinks(requests, links0);
             Set<Request> requests1 = Request.filterLinks(requests, links1);
-            createSubVirtualNetwork(requests0, links0, numVNodes / 2, tryIterations, coord0, level+1, subIndex);
-            createSubVirtualNetwork(requests1, links1, numVNodes / 2, tryIterations, coord1, level+1, subIndex + numVNodes / 2);
+            createSubVirtualNetwork(requests0, links0, numVNodes / 2, tryIterations, coord0, level + 1, subIndex);
+            createSubVirtualNetwork(requests1, links1, numVNodes / 2, tryIterations, coord1, level + 1, subIndex + numVNodes / 2);
         }
     }
 

@@ -20,6 +20,7 @@ public enum ScenarioOptionsBase {
     static final String SIMUCONFIGIDENTIFIER = "simuConfig";
     static final String VIRTUALNETWORKNAMEIDENTIFIER = "virtualNetwork";
     static final String TRAVELDATAFILENAME = "travelDataFileName";
+    static final String REBALANCEDATAFILENAME = "rebalanceDataFileName";
     static final String LINKSPEEDDATAFILENAME = "linkSpeedDataFileName";
     static final String COLORSCHEMEIDENTIFIER = "colorScheme";
     static final String CHARTTHEMEIDENTIFIER = "chartTheme";
@@ -35,6 +36,9 @@ public enum ScenarioOptionsBase {
     public static final String NUMVNODESIDENTIFIER = "numVirtualNodes";
     public static final String MAXPOPULATIONSIZEIDENTIFIER = "maxPopulationSize";
     public static final String DTTRAVELDATAIDENTIFIER = "dtTravelData";
+    public static final String LPSOLVER = "LPSolver";
+    public static final String LPWEIGHTQ = "LPWeightQ";
+    public static final String LPWEIGHTR = "LPWeightR";
 
     public static Properties getDefault() {
         Properties properties = new Properties();
@@ -47,6 +51,7 @@ public enum ScenarioOptionsBase {
         properties.setProperty(WAITFORCLIENTSIDENTIFIER, "false");
         properties.setProperty(VIRTUALNETWORKNAMEIDENTIFIER, "virtualNetwork");
         properties.setProperty(TRAVELDATAFILENAME, "travelData");
+        properties.setProperty(REBALANCEDATAFILENAME, "rebalanceData");
         properties.setProperty(LINKSPEEDDATAFILENAME, "linkSpeedData");
         properties.setProperty(COLORSCHEMEIDENTIFIER, "NONE");
         properties.setProperty(CHARTTHEMEIDENTIFIER, "STANDARD");
@@ -55,6 +60,9 @@ public enum ScenarioOptionsBase {
         properties.setProperty(VIRTUALNETWORKCREATORIDENTIFIER, VirtualNetworkCreators.KMEANS.name());
         properties.setProperty(POPULATIONCUTTERIDENTIFIER, PopulationCutters.NETWORKBASED.name());
         properties.setProperty(SHAPEFILEIDENTIFIER, "AbsoluteShapeFileName");
+        properties.setProperty(LPSOLVER, "none");
+        properties.setProperty(LPWEIGHTQ, "0.99");
+        properties.setProperty(LPWEIGHTR, "0.01");
         return properties;
     }
 

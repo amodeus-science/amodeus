@@ -16,6 +16,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.gbl.MatsimRandom;
 
 import ch.ethz.idsc.amodeus.analysis.ScenarioParametersExport;
@@ -106,7 +107,8 @@ public class ScenarioPipeLineTest {
         assertEquals(preparedNetwork.getLinks().size(), originalNetwork.getLinks().size());
 
         // consistency of population
-        assertEquals(2000, testPreparer.getPreparedPopulation().getPersons().size());
+        Population population = testPreparer.getPreparedPopulation();
+        assertEquals(2000, population.getPersons().size());
 
         // consistency of virtualNetwork
         assertEquals(testServer.getScenarioOptions().getNumVirtualNodes(), vNCreated.getVirtualNodes().size());
@@ -121,15 +123,16 @@ public class ScenarioPipeLineTest {
         assertEquals(vNSaved.getVirtualNode(3).getLinks().size(), vNCreated.getVirtualNode(3).getLinks().size());
 
         // consistency of travelData
-        assertTrue(travelDataTestHelper.tDCheck());
+        assertTrue(travelDataTestHelper.timeIntervalCheck());
         assertTrue(travelDataTestHelper.timeStepsCheck());
-
-        assertTrue(travelDataTestHelper.lambdaCheck());
-        assertTrue(travelDataTestHelper.lambdaijPSFCheck());
-        assertTrue(travelDataTestHelper.pijCheck());
-        assertTrue(travelDataTestHelper.pijPSFCheck());
-        assertTrue(travelDataTestHelper.alphaPSFCheck());
-
+        assertTrue(travelDataTestHelper.lambdaAbsoluteCheck());
+        assertTrue(travelDataTestHelper.lambdaAbsoluteAtTimeCheck());
+        assertTrue(travelDataTestHelper.lambdaInvalidAbsoluteAtTimeCheck());
+        assertTrue(travelDataTestHelper.lambdaRateCheck());
+        assertTrue(travelDataTestHelper.lambdaRateAtTimeCheck());
+        assertTrue(travelDataTestHelper.lambdaInvalidRateAtTimeCheck());
+        assertTrue(travelDataTestHelper.checkInvalidTimeInterval(population, preparedNetwork));
+        assertTrue(travelDataTestHelper.checkValidTimeInterval(population, preparedNetwork));
     }
 
     @Test
