@@ -14,7 +14,6 @@ import org.gnu.glpk.SWIGTYPE_p_int;
 import org.gnu.glpk.glp_prob;
 import org.gnu.glpk.glp_smcp;
 import org.matsim.api.core.v01.network.Link;
-import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
@@ -23,8 +22,6 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.Dimensions;
-import ch.ethz.idsc.tensor.sca.Chop;
-import ch.ethz.idsc.tensor.sca.Round;
 
 class LPTimeInvariant implements LPSolver {
     private final static int DURATION = 24 * 60 * 60;
@@ -50,7 +47,7 @@ class LPTimeInvariant implements LPSolver {
     private int columnId;
     private int rowId;
 
-    /** @param virtualNetworkIn
+    /** @param virtualNetwork
      *            the virtual network (complete directed graph) on which the optimization is computed. */
     public LPTimeInvariant(VirtualNetwork<Link> virtualNetwork, Tensor lambdaAbsolute_ij) {
         numberVehicles = LPUtils.getNumberOfVehicles();
@@ -85,8 +82,6 @@ class LPTimeInvariant implements LPSolver {
             initiateSubLP(k);
             solveSubLP(mute, k);
         }
-
-        closeLP();
     }
 
     private void initiateSubLP(int timeIndex) {
@@ -208,7 +203,7 @@ class LPTimeInvariant implements LPSolver {
                 GLPK.doubleArray_setitem(val, indexSource, 1);
                 int indexSink = alphaIDvarID.get(Arrays.asList(j, i));
                 GLPK.intArray_setitem(ind, indexSink, indexSink);
-                GLPK.doubleArray_setitem(val, indexSink, 1);
+                GLPK.doubleArray_setitem(val, indexSink, -1);
             }
 
             // turn over the entries to GLPK
@@ -230,17 +225,14 @@ class LPTimeInvariant implements LPSolver {
 
     private void readAlpha_ij(int timeIndex) {
         Tensor alphaAbsolute = Array.zeros(nvNodes, nvNodes);
-        for (int t = 0; t < timeSteps; t++) {
-            for (int i = 0; i < nvNodes; i++) {
-                for (int j = 0; j < nvNodes; j++) {
-                    if (i == j)
-                        continue;
-                    alphaAbsolute.set(RealScalar.of(GLPK.glp_get_col_prim(lp, alphaIDvarID.get(Arrays.asList(i, j)))), i, j);
-                }
+        for (int i = 0; i < nvNodes; i++) {
+            for (int j = 0; j < nvNodes; j++) {
+                if (i == j)
+                    continue;
+                alphaAbsolute.set(RealScalar.of(GLPK.glp_get_col_prim(lp, alphaIDvarID.get(Arrays.asList(i, j)))), i, j);
             }
         }
-        GlobalAssert.that(Chop._04.close(alphaAbsolute, Round.of(alphaAbsolute)));
-        final Tensor alphaAbsoluteRounded = LPUtils.getRoundedRequireNonNegative(alphaAbsolute);
+        Tensor alphaAbsoluteRounded = LPUtils.getRoundedRequireNonNegative(alphaAbsolute);
         alphaAbsolute_ij.set(v -> alphaAbsoluteRounded, timeIndex);
         alphaRate_ij = alphaAbsolute_ij.divide(RealScalar.of(timeInterval));
     }

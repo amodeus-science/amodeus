@@ -39,7 +39,7 @@ class LPTimeVariant extends LPTimeVariantBase {
     private final double weightQ;
     private final double weightR;
 
-    /** @param virtualNetworkIn
+    /** @param virtualNetwork
      *            the virtual network (complete directed graph) on which the optimization is computed. */
     public LPTimeVariant(VirtualNetwork<Link> virtualNetwork, Network network, ScenarioOptions scenOptions, Tensor lambda) {
         super(virtualNetwork, network, lambda);
