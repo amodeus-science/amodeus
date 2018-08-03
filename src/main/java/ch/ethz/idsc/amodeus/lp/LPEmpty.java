@@ -12,7 +12,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.Dimensions;
 
-class LPEmpty implements LPSolver {
+public class LPEmpty implements LPSolver {
     private static final int DURATION = 24 * 60 * 60;
     // ---
     protected final int timeSteps;

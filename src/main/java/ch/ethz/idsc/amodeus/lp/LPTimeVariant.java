@@ -31,7 +31,7 @@ import ch.ethz.idsc.tensor.alg.Array;
  * One improvement was done so that the problem remains feasible:
  * For the equation V_i(T_P) all rebalancing and customer-carrying vehicles to virtual station i are considered, even if
  * they are still on the way. Therefore the integration with w_{ji}(\tau,\sigma) is ignored in this case. */
-class LPTimeVariant extends LPTimeVariantBase {
+public class LPTimeVariant extends LPTimeVariantBase {
     private final static double AVERAGE_VEL = 30.0;
     // ---
     // map with variableIDs in problem set up and linkIDs of virtualNetwork
@@ -46,8 +46,15 @@ class LPTimeVariant extends LPTimeVariantBase {
         System.out.println("Creating time-variant LP with QueuingWeight " + scenarioOptions.getLPWeightQ() + " and RebalancingWeight " + scenarioOptions.getLPWeightR());
         weightQ = scenarioOptions.getLPWeightQ();
         weightR = scenarioOptions.getLPWeightR();
-
         GlobalAssert.that(weightQ + weightR == 1.0);
+
+        timeVS_ij = getTimeVS_ij();
+        gamma_ij = getGamma_ij();
+        wAlpha_ij = getwAlpha_ij();
+        wLambda_ij = getwLambda_ij();
+        Vmin_i = getVmin_i();
+        rowTotal = getRowTotal();
+        columnTotal = getColumnTotal();
     }
 
     @Override

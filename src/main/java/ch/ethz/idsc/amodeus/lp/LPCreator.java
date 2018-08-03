@@ -18,7 +18,7 @@ public enum LPCreator {
     TIMEINVARIANT {
         @Override
         public LPSolver create(VirtualNetwork<Link> virtualNetwork, Network network, ScenarioOptions scenarioOptions, TravelData travelData) {
-            return new LPTimeInvariant(virtualNetwork, travelData.getLambdaRate());
+            return new LPTimeInvariant(virtualNetwork, travelData.getLambdaAbsolute());
         }
     },
     TIMEVARIANT {

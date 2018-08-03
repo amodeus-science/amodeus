@@ -23,7 +23,7 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.Dimensions;
 
-class LPTimeInvariant implements LPSolver {
+public class LPTimeInvariant implements LPSolver {
     private final static int DURATION = 24 * 60 * 60;
     private final static double AVERAGE_VEL = 30.0;
     // ---

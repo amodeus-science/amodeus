@@ -23,7 +23,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.Dimensions;
 
-abstract class LPTimeVariantBase implements LPSolver {
+public abstract class LPTimeVariantBase implements LPSolver {
     protected static final int DURATION = 24 * 60 * 60;
     // ---
     // map with variableIDs in problem set up and linkIDs of virtualNetwork
@@ -35,14 +35,15 @@ abstract class LPTimeVariantBase implements LPSolver {
     protected final int timeSteps;
     protected final int timeInterval;
     protected final int numberVehicles;
-    protected final int rowTotal;
-    protected final int columnTotal;
-    protected final Tensor lambdaAbsolute_ij;
-    protected final Tensor gamma_ij;
-    protected final Tensor timeVS_ij;
-    protected final Tensor wAlpha_ij;
-    protected final Tensor wLambda_ij;
-    protected final Tensor Vmin_i;
+    // ---
+    protected int rowTotal;
+    protected int columnTotal;
+    protected Tensor lambdaAbsolute_ij;
+    protected Tensor gamma_ij;
+    protected Tensor wAlpha_ij;
+    protected Tensor Vmin_i;
+    protected Tensor timeVS_ij;
+    protected Tensor wLambda_ij;
     // ---
     protected glp_prob lp;
     protected Tensor alphaAbsolute_ij;
@@ -63,14 +64,6 @@ abstract class LPTimeVariantBase implements LPSolver {
         timeSteps = Dimensions.of(lambdaAbsolute_ij).get(0);
         timeInterval = DURATION / timeSteps;
         numberVehicles = LPUtils.getNumberOfVehicles();
-
-        timeVS_ij = getTimeVS_ij();
-        gamma_ij = getGamma_ij();
-        wAlpha_ij = getwAlpha_ij();
-        wLambda_ij = getwLambda_ij();
-        Vmin_i = getVmin_i();
-        rowTotal = getRowTotal();
-        columnTotal = getColumnTotal();
 
         if (virtualNetwork.getvLinksCount() != (nvNodes * nvNodes - nvNodes)) {
             System.err.println("These computations are only valid for a complete graph. Aborting.");

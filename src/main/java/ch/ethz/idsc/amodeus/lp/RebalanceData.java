@@ -89,6 +89,10 @@ public class RebalanceData implements Serializable {
         return timeInterval;
     }
 
+    public int getTimeSteps() {
+        return DURATION / timeInterval;
+    }
+
     public void export(ScenarioOptions scenarioOptions) throws IOException {
         RebalanceDataIO.write(new File(scenarioOptions.getVirtualNetworkName(), scenarioOptions.getRebalanceDataName()), this);
     }
