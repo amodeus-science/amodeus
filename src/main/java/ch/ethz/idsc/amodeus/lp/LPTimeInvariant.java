@@ -153,7 +153,7 @@ class LPTimeInvariant implements LPSolver {
     }
 
     /** closing the LP in order to release allocated memory */
-    public void closeLP() {
+    private void closeLP() {
         // release storage allocated for LP
         GLPK.glp_delete_prob(lp);
     }
@@ -169,7 +169,7 @@ class LPTimeInvariant implements LPSolver {
                 String varName = ("alpha" + "_" + i + "," + j);
                 GLPK.glp_set_col_name(lp, columnId, varName);
                 GLPK.glp_set_col_kind(lp, columnId, GLPKConstants.GLP_CV);
-                GLPK.glp_set_col_bnds(lp, columnId, GLPKConstants.GLP_FX, 0.0, 0.0);
+                GLPK.glp_set_col_bnds(lp, columnId, GLPKConstants.GLP_LO, 0.0, 0.0);
                 alphaIDvarID.put(Arrays.asList(i, j), columnId);
             }
         }
@@ -198,6 +198,8 @@ class LPTimeInvariant implements LPSolver {
                 GLPK.doubleArray_setitem(val, var, 0.0);
             }
             for (int j = 0; j < nvNodes; j++) {
+                if (j == i)
+                    continue;
                 int indexSource = alphaIDvarID.get(Arrays.asList(i, j));
                 GLPK.intArray_setitem(ind, indexSource, indexSource);
                 GLPK.doubleArray_setitem(val, indexSource, 1);

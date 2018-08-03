@@ -74,4 +74,11 @@ public enum LPUtils {
         return rounded;
     }
 
+    /** @param tensor
+     * @return the rounded vector where almost integer elements are required, else an exception is thrown */
+    public static Tensor getRounded(Tensor tensor) {
+        Tensor rounded = Round.of(tensor);
+        GlobalAssert.that(Chop._04.close(tensor, rounded));
+        return rounded;
+    }
 }

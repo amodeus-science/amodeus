@@ -41,10 +41,11 @@ class LPTimeVariant extends LPTimeVariantBase {
 
     /** @param virtualNetwork
      *            the virtual network (complete directed graph) on which the optimization is computed. */
-    public LPTimeVariant(VirtualNetwork<Link> virtualNetwork, Network network, ScenarioOptions scenOptions, Tensor lambda) {
-        super(virtualNetwork, network, lambda);
-        weightQ = scenOptions.getLPWeightQ();
-        weightR = scenOptions.getLPWeightR();
+    public LPTimeVariant(VirtualNetwork<Link> virtualNetwork, Network network, ScenarioOptions scenarioOptions, Tensor lambdaAbsolute_ij) {
+        super(virtualNetwork, network, lambdaAbsolute_ij);
+        System.out.println("Creating time-variant LP with QueuingWeight " + scenarioOptions.getLPWeightQ() + " and RebalancingWeight " + scenarioOptions.getLPWeightR());
+        weightQ = scenarioOptions.getLPWeightQ();
+        weightR = scenarioOptions.getLPWeightR();
 
         GlobalAssert.that(weightQ + weightR == 1.0);
     }

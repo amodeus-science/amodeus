@@ -21,13 +21,14 @@ import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Array;
+import ch.ethz.idsc.tensor.red.Total;
+import ch.ethz.idsc.tensor.sca.Sign;
 
 class LPMinFlow {
     private final static double AVERAGE_VEL = 30.0;
     // ---
     // map with variableIDs in problem set up and linkIDs of virtualNetwork
     private final Map<List<Integer>, Integer> alphaIDvarID = new HashMap<>();
-    protected final Map<List<Integer>, Integer> vIDvarID = new HashMap<>();
     private final glp_smcp parm = new glp_smcp();
     private final VirtualNetwork<Link> virtualNetwork;
     private final int nvNodes;
@@ -100,7 +101,9 @@ class LPMinFlow {
     public void solveLP(boolean mute, Tensor minFlow) {
         // use minFlow as lower bound
         GlobalAssert.that(minFlow.length() == nvNodes);
-        minFlow = LPUtils.getRoundedRequireNonNegative(minFlow);
+        minFlow = LPUtils.getRounded(minFlow);
+        // the problem is only feasible when the sum of minFlow is less or equal zero
+        GlobalAssert.that(Sign.isNegativeOrZero(Total.of(minFlow).Get()));
         for (int i = 0; i < nvNodes; ++i) {
             GLPK.glp_set_row_bnds(lp, i + 1, GLPK.GLP_LO, minFlow.Get(i).number().doubleValue(), 0.0); // Lower bound: second number irrelevant
         }
@@ -124,8 +127,6 @@ class LPMinFlow {
             GlobalAssert.that(false);
         }
         readAlpha_ij();
-
-        closeLP();
     }
 
     /** closing the LP in order to release allocated memory */

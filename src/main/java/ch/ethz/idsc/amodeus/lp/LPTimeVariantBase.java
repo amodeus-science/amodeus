@@ -22,8 +22,6 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.Dimensions;
-import ch.ethz.idsc.tensor.sca.Chop;
-import ch.ethz.idsc.tensor.sca.Round;
 
 abstract class LPTimeVariantBase implements LPSolver {
     protected static final int DURATION = 24 * 60 * 60;
@@ -61,8 +59,7 @@ abstract class LPTimeVariantBase implements LPSolver {
     protected LPTimeVariantBase(VirtualNetwork<Link> virtualNetwork, Network network, Tensor lambdaAbsolute_ij) {
         this.virtualNetwork = virtualNetwork;
         nvNodes = virtualNetwork.getvNodesCount();
-        GlobalAssert.that(Chop._04.close(lambdaAbsolute_ij, Round.of(lambdaAbsolute_ij)));
-        this.lambdaAbsolute_ij = Round.of(lambdaAbsolute_ij);
+        this.lambdaAbsolute_ij = LPUtils.getRoundedRequireNonNegative(lambdaAbsolute_ij);
         timeSteps = Dimensions.of(lambdaAbsolute_ij).get(0);
         timeInterval = DURATION / timeSteps;
         numberVehicles = LPUtils.getNumberOfVehicles();
