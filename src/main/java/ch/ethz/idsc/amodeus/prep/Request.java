@@ -14,7 +14,7 @@ public class Request {
     private final Link startLink;
     private final Link endLink;
 
-    /* package */ Request(double startTime, Link startLink, Link endLink) {
+    public Request(double startTime, Link startLink, Link endLink) {
         this.startTime = startTime;
         this.startLink = startLink;
         this.endLink = endLink;

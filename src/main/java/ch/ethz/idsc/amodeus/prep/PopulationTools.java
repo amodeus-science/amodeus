@@ -105,14 +105,16 @@ public enum PopulationTools {
 
     /** @param requests
      * @param virtualNetwork
-     * @param intervals
+     * @param timeInterval
      * @return {@link Tensor} with indices i,j,k where the elements are the number of requests from virtual station i to j at time interval k. E.g. (2,1,5)=10 means
      *         that 10 requests appear in virtual station i with destination in virtual station j at time interval 5. */
-    public static Tensor getLambdaInVirtualNodesAndTimeIntervals(Set<Request> requests, VirtualNetwork<Link> virtualNetwork, int intervals) {
-        Tensor lambda = Array.zeros(virtualNetwork.getvNodesCount(), virtualNetwork.getvNodesCount(), intervals);
+    public static Tensor getLambdaInVirtualNodesAndTimeIntervals(Set<Request> requests, VirtualNetwork<Link> virtualNetwork, int timeInterval) {
+        GlobalAssert.that(DAYDURATION % timeInterval == 0);
+
+        Tensor lambda = Array.zeros(DAYDURATION / timeInterval, virtualNetwork.getvNodesCount(), virtualNetwork.getvNodesCount());
 
         for (Request request : requests) {
-            int timeIndex = (int) Math.floor((request.startTime() / DAYDURATION));
+            int timeIndex = (int) Math.floor(request.startTime() / timeInterval);
             int vNodeIndexFrom = virtualNetwork.getVirtualNode(request.startLink()).getIndex();
             int vNodeIndexTo = virtualNetwork.getVirtualNode(request.endLink()).getIndex();
 
