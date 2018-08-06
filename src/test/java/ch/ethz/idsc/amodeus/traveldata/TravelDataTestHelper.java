@@ -8,6 +8,7 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
 
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
+import ch.ethz.idsc.tensor.alg.Dimensions;
 import ch.ethz.idsc.tensor.sca.Chop;
 
 public class TravelDataTestHelper {
@@ -34,6 +35,8 @@ public class TravelDataTestHelper {
     }
 
     public boolean lambdaAbsoluteCheck() {
+        System.out.println(Dimensions.of(tDSaved.getLambdaAbsolute()));
+        System.out.println(Dimensions.of(tDCreated.getLambdaAbsolute()));
         return Chop._06.close(tDSaved.getLambdaAbsolute(), tDCreated.getLambdaAbsolute());
     }
 
