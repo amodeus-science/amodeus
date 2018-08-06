@@ -24,7 +24,7 @@ import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.Sign;
 
-class LPMinFlow {
+public class LPMinFlow {
     private final static double AVERAGE_VEL = 30.0;
     // ---
     // map with variableIDs in problem set up and linkIDs of virtualNetwork

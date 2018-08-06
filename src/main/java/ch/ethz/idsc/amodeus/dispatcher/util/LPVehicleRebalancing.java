@@ -26,6 +26,7 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.red.Total;
 
 /** Created by Claudio on 3/17/2017. Updated by Claudio on 5/7/2017. */
+@Deprecated // use LPMinFlow and LPTimeInvariant instead
 public class LPVehicleRebalancing {
     private final VirtualNetwork<Link> virtualNetwork;
     private final glp_smcp parm = new glp_smcp();
