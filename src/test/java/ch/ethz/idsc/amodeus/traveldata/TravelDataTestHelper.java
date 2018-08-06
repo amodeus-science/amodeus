@@ -4,8 +4,11 @@ package ch.ethz.idsc.amodeus.traveldata;
 import java.io.File;
 
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.api.core.v01.network.Network;
+import org.matsim.api.core.v01.population.Population;
 
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
+import ch.ethz.idsc.tensor.alg.Dimensions;
 import ch.ethz.idsc.tensor.sca.Chop;
 
 public class TravelDataTestHelper {
@@ -16,38 +19,72 @@ public class TravelDataTestHelper {
 
     private TravelData tDCreated;
     private TravelData tDSaved;
+    private VirtualNetwork<Link> virtualNetworkCreated;
 
     private TravelDataTestHelper(VirtualNetwork<Link> vNCreated, VirtualNetwork<Link> vNSaved) throws Exception {
         tDCreated = TravelDataGet.readDefault(vNCreated);
         tDSaved = TravelDataIO.read(new File("resources/testComparisonFiles/travelData"), vNSaved);
     }
 
-    public boolean tDCheck() {
-        return (tDSaved.getdt() == tDCreated.getdt());
+    public boolean timeIntervalCheck() {
+        return (tDSaved.getTimeInterval() == tDCreated.getTimeInterval());
     }
 
     public boolean timeStepsCheck() {
-        return (tDSaved.getNumbertimeSteps() == tDCreated.getNumbertimeSteps());
+        return (tDSaved.getTimeSteps() == tDCreated.getTimeSteps());
     }
 
-    public boolean lambdaCheck() {
-        return Chop._06.close(tDSaved.getLambdaforTime(2500), tDCreated.getLambdaforTime(2500));
+    public boolean lambdaAbsoluteCheck() {
+        System.out.println(Dimensions.of(tDSaved.getLambdaAbsolute()));
+        System.out.println(Dimensions.of(tDCreated.getLambdaAbsolute()));
+        return Chop._06.close(tDSaved.getLambdaAbsolute(), tDCreated.getLambdaAbsolute());
     }
 
-    public boolean lambdaijPSFCheck() {
-        return Chop._06.close(tDSaved.getlambdaijPSFforTime(2500), tDCreated.getlambdaijPSFforTime(2500));
+    public boolean lambdaAbsoluteAtTimeCheck() {
+        return Chop._06.close(tDSaved.getLambdaAbsoluteAtTime(1000), tDCreated.getLambdaAbsoluteAtTime(1000));
     }
 
-    public boolean pijCheck() {
-        return Chop._06.close(tDSaved.getpijforTime(2500, 4, 2), tDCreated.getpijforTime(2500, 4, 2));
+    public boolean lambdaInvalidAbsoluteAtTimeCheck() {
+        try {
+            tDCreated.getLambdaRateAtTime(24 * 3600 + 1);
+        } catch (Exception e) {
+            return true;
+        }
+        return false;
     }
 
-    public boolean pijPSFCheck() {
-        return Chop._06.close(tDSaved.getpijPSFforTime(2500), tDCreated.getpijPSFforTime(2500));
+    public boolean lambdaRateCheck() {
+        return Chop._06.close(tDSaved.getLambdaRate(), tDCreated.getLambdaRate());
     }
 
-    public boolean alphaPSFCheck() {
-        return Chop._06.close(tDSaved.getAlphaijPSFforTime(1580), tDCreated.getAlphaijPSFforTime(1580));
+    public boolean lambdaRateAtTimeCheck() {
+        return Chop._06.close(tDSaved.getLambdaRateAtTime(1000), tDCreated.getLambdaRateAtTime(1000));
     }
 
+    public boolean lambdaInvalidRateAtTimeCheck() {
+        try {
+            tDCreated.getLambdaRateAtTime(-1);
+        } catch (Exception e) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean checkInvalidTimeInterval(Population population, Network network) {
+        try {
+            new TravelData(virtualNetworkCreated, network, population, 24 * 3600 - 1);
+        } catch (Exception e) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean checkValidTimeInterval(Population population, Network network) {
+        try {
+            new TravelData(virtualNetworkCreated, network, population, 1);
+        } catch (Exception e) {
+            return true;
+        }
+        return false;
+    }
 }

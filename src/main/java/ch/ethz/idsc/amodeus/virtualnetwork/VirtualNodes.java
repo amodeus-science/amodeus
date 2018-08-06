@@ -2,7 +2,7 @@
 package ch.ethz.idsc.amodeus.virtualnetwork;
 
 /** contains helper functions */
-enum VirtualNodes {
+public enum VirtualNodes {
     ;
     private static final String ID_PREFIX = "vNode_";
 

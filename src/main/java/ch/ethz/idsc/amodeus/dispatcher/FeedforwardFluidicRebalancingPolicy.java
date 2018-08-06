@@ -24,6 +24,7 @@ import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.FeasibleRebalanceCreator;
 import ch.ethz.idsc.amodeus.dispatcher.util.HungarBiPartVehicleDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
+import ch.ethz.idsc.amodeus.lp.RebalanceData;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
@@ -60,6 +61,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
     private final DistanceHeuristics distanceHeuristics;
     Tensor printVals = Tensors.empty();
     TravelData travelData;
+    RebalanceData rebalanceData;
     Tensor rebalancingRate;
     Tensor rebalanceCount;
     Tensor rebalanceCountInteger;
@@ -75,11 +77,13 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
             VirtualNetwork<Link> virtualNetwork, //
             AbstractVirtualNodeDest abstractVirtualNodeDest, //
             AbstractVehicleDestMatcher abstractVehicleDestMatcher, //
-            TravelData travelData) {
+            TravelData travelData, //
+            RebalanceData rebalanceData) {
         super(config, avconfig, travelTime, router, eventsManager, virtualNetwork);
         virtualNodeDest = abstractVirtualNodeDest;
         vehicleDestMatcher = abstractVehicleDestMatcher;
         this.travelData = travelData;
+        this.rebalanceData = rebalanceData;
         this.network = network;
         nVNodes = virtualNetwork.getvNodesCount();
         nVLinks = virtualNetwork.getvLinksCount();
@@ -101,7 +105,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
         // Part I: permanently rebalance vehicles according to the rates output
         // by the LP
         if (round_now % rebalancingPeriod == 0) {
-            rebalancingRate = travelData.getAlphaijPSFforTime((int) round_now);
+            rebalancingRate = rebalanceData.getAlphaRateAtTime((int) round_now);
 
             // update rebalance count using current rate
             rebalanceCount = rebalanceCount.add(rebalancingRate.multiply(RealScalar.of(rebalancingPeriod)));
@@ -181,6 +185,9 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
         private TravelData travelData;
 
         @Inject
+        private RebalanceData rebalanceData;
+
+        @Inject
         private Config config;
 
         @Override
@@ -191,7 +198,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
             AbstractVehicleDestMatcher abstractVehicleDestMatcher = new HungarBiPartVehicleDestMatcher(new EuclideanDistanceFunction());
 
             return new FeedforwardFluidicRebalancingPolicy(config, avconfig, generatorConfig, travelTime, router, eventsManager, network, virtualNetwork, abstractVirtualNodeDest,
-                    abstractVehicleDestMatcher, travelData);
+                    abstractVehicleDestMatcher, travelData, rebalanceData);
         }
     }
 }

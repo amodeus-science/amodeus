@@ -5,18 +5,23 @@ import java.io.File;
 import java.util.Objects;
 
 import org.matsim.api.core.v01.Scenario;
+import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.scenario.ScenarioUtils;
 
+import ch.ethz.idsc.amodeus.lp.LPPreparer;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.prep.ConfigCreator;
 import ch.ethz.idsc.amodeus.prep.NetworkPreparer;
 import ch.ethz.idsc.amodeus.prep.PopulationPreparer;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkPreparer;
+import ch.ethz.idsc.amodeus.traveldata.TravelData;
+import ch.ethz.idsc.amodeus.traveldata.TravelDataIO;
+import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 
 public class TestPreparer {
 
@@ -58,11 +63,21 @@ public class TestPreparer {
 
         // 3) create virtual Network
         VirtualNetworkPreparer.run(networkPrepared, populationPrepared, scenarioOptions);
+        VirtualNetwork<Link> virtualNetwork = VirtualNetworkPreparer.getVirtualNetwork();
 
-        // 4) save a simulation config file
+        // 4) create TravelData
+        /** reading the customer requests */
+        TravelData travelData = new TravelData(virtualNetwork, networkPrepared, populationPrepared, scenarioOptions.getdtTravelData());
+        File travelDataFile = new File(scenarioOptions.getVirtualNetworkName(), scenarioOptions.getTravelDataName());
+        TravelDataIO.write(travelDataFile, travelData);
+
+        // 5) create RebalancingData with LP
+        /** prepare LP solver */
+        LPPreparer.run(virtualNetwork, networkPrepared, travelData, scenarioOptions);
+
+        // 6) save a simulation config file
         // IncludeActTypeOf.BaselineCH(config); // Only needed in Some Scenarios
         ConfigCreator.createSimulationConfigFile(config, scenarioOptions);
-
     }
 
     public Population getPreparedPopulation() {

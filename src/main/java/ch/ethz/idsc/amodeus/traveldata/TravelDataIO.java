@@ -38,8 +38,8 @@ public enum TravelDataIO {
             throws ClassNotFoundException, DataFormatException, IOException {
         GlobalAssert.that(Objects.nonNull(virtualNetwork));
         TravelData travelData = Import.object(file);
-        travelData.fillSerializationInfo(virtualNetwork);
         travelData.checkConsistency();
+        travelData.checkIdenticalVirtualNetworkID(virtualNetwork.getvNetworkID());
         return travelData;
     }
 }

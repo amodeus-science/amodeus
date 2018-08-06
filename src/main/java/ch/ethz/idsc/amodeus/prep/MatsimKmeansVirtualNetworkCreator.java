@@ -17,7 +17,7 @@ import ch.ethz.idsc.amodeus.virtualnetwork.KMeansVirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.tensor.Tensor;
 
-public enum MatsimKMEANSVirtualNetworkCreator {
+public enum MatsimKmeansVirtualNetworkCreator {
     ;
 
     public static VirtualNetwork<Link> createVirtualNetwork(Population population, Network network, int numVNodes, boolean completeGraph) {

@@ -25,6 +25,7 @@ import ch.ethz.idsc.amodeus.data.ReferenceFrame;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDispatcherModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusGeneratorModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusModule;
+import ch.ethz.idsc.amodeus.matsim.mod.AmodeusVirtualNetworkModule;
 import ch.ethz.idsc.amodeus.net.DatabaseModule;
 import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationServer;
@@ -113,6 +114,7 @@ public class TestServer {
         controler.addOverridingModule(new DatabaseModule());
         controler.addOverridingModule(new AmodeusGeneratorModule());
         controler.addOverridingModule(new AmodeusDispatcherModule());
+        controler.addOverridingModule(new AmodeusVirtualNetworkModule());
         controler.addOverridingModule(new AbstractModule() {
             @Override
             public void install() {
