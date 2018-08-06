@@ -11,6 +11,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,6 +26,7 @@ import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
 import org.matsim.api.core.v01.Coord;
+import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.net.DummyStorageSupplier;
 import ch.ethz.idsc.amodeus.net.IterationFolder;
@@ -37,6 +39,7 @@ import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.view.jmapviewer.Coordinate;
 import ch.ethz.idsc.amodeus.view.jmapviewer.JMapViewer;
+import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkGet;
 import ch.ethz.idsc.tensor.RealScalar;
 
 /** Demonstrates the usage of {@link JMapViewer} */
@@ -62,14 +65,16 @@ public class AmodeusViewerFrame implements Runnable {
     private final JButton jButtonIncr = new JButton(">");
     private final SpinnerLabel<Integer> spinnerLabelSpeed = new SpinnerLabel<>();
     private final JSlider jSlider = new JSlider(0, 1, 0);
+    private final Network network;
 
     /** the new constructor is public AmodeusViewerFrame(AmodeusComponent amodeusComponent, File workingDirectory, File defaultDirectory) */
-    public AmodeusViewerFrame(AmodeusComponent amodeusComponent, File outputDirectory) {
-        this(amodeusComponent, outputDirectory, outputDirectory);
+    public AmodeusViewerFrame(AmodeusComponent amodeusComponent, File outputDirectory, Network network) {
+        this(amodeusComponent, outputDirectory, outputDirectory, network);
     }
 
     /** Constructs the {@code Demo}. */
-    public AmodeusViewerFrame(AmodeusComponent amodeusComponent, File workingDirectory, File defaultDirectory) {
+    public AmodeusViewerFrame(AmodeusComponent amodeusComponent, File workingDirectory, File defaultDirectory, Network network) {
+        this.network = network;
         this.amodeusComponent = amodeusComponent;
         // ---
         jFrame.setTitle(TITLE);
@@ -220,6 +225,14 @@ public class AmodeusViewerFrame implements Runnable {
         }
     }
 
+    void setVirtualNetwork(File selectedDirectory) {
+        try {
+            amodeusComponent.virtualNetworkLayer.setVirtualNetwork(VirtualNetworkGet.readFromOutputDirectory(network, selectedDirectory));
+        } catch (IOException e) {
+            GlobalAssert.that(false);
+        }
+    }
+
     private void updateSubsequentSpinnerLabels(File rootDirectory, File defaultDirectory, int listIndex) {
         if (listIndex >= currentMaxDepth)
             return;
@@ -261,6 +274,7 @@ public class AmodeusViewerFrame implements Runnable {
     private void setSpinnerLabel(File selectedFolder, File defaultDirectory, int index) {
         if (MultiFileTools.containsFolderName(selectedFolder, SIMOBJ)) {
             this.storageUtils = new StorageUtils(selectedFolder);
+            setVirtualNetwork(selectedFolder);
             reindex(storageUtils);
             removeSubsequentSpinnerLabels(index + 1);
         } else {

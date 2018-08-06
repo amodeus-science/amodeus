@@ -7,6 +7,7 @@ import java.util.stream.IntStream;
 
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.net.VehicleContainer;
+import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.qty.Quantity;
@@ -25,7 +26,7 @@ public class AidoDistanceRecorder {
 
     public Tensor register(SimulationObject simulationObject) {
         /** register Simulation Object for distance analysis */
-        Tensor distance = Tensors.of(Quantity.of(0, "m"), Quantity.of(0, "m"));
+        Tensor distance = Tensors.of(Quantity.of(0, SI.METER), Quantity.of(0, SI.METER));
         for (VehicleContainer vehicleContainer : simulationObject.vehicles) {
             distance = distance.add(list.get(vehicleContainer.vehicleIndex).register(simObjIndex, vehicleContainer));
         }

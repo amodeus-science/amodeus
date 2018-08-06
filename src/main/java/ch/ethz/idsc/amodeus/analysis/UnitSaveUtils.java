@@ -10,7 +10,6 @@ import ch.ethz.idsc.amodeus.util.io.SaveFormats;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.alg.Dimensions;
 import ch.ethz.idsc.tensor.qty.Quantity;
 
 public enum UnitSaveUtils {
@@ -36,7 +35,7 @@ public enum UnitSaveUtils {
             SaveFormats... formats) throws Exception {
 
         GlobalAssert.that(saveToFolder.isDirectory());
-//        GlobalAssert.that(Dimensions.of(quantityMatrix).size() == 2);
+        // GlobalAssert.that(Dimensions.of(quantityMatrix).size() == 2);
         File folder = createFileDir(name, saveToFolder);
         Set<SaveFormats> saveFormats = EnumSet.copyOf(Arrays.asList(formats));
 

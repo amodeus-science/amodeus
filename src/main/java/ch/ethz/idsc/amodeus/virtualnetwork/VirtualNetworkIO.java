@@ -32,7 +32,6 @@ public enum VirtualNetworkIO {
             throws ClassNotFoundException, DataFormatException, IOException {
         VirtualNetwork<T> virtualNetwork = Import.object(file);
         GlobalAssert.that(Objects.nonNull(virtualNetwork));
-
         virtualNetwork.fillSerializationInfo(map);
         virtualNetwork.checkConsistency();
         return virtualNetwork;

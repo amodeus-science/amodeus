@@ -14,6 +14,7 @@ public enum TotalValueIdentifiersAmodeus implements TotalValueIdentifier {
     REBALANCEPERIOD("rebalancePeriod"), //
     DISPATCHINGPERIOD("dispatchingPeriod"), //
     VIRTUALNODES("virtualNodes"), //
+    VIRTUALNETWORKCREATOR("virtualNetworkCreator"), //
     TOTALVEHICLES("totalVehicles"), //
     TOTALREQUESTS("totalRequests"), //
     POPULATIONSIZE("populationSize"), //

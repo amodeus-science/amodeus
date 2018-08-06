@@ -9,6 +9,7 @@ import org.matsim.api.core.v01.network.Link;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
 import ch.ethz.idsc.amodeus.net.VehicleContainer;
+import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -25,7 +26,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
     }
 
     public Tensor register(int simObjIndex, VehicleContainer vehicleContainer) {
-        Tensor distance = Tensors.of(Quantity.of(0, "m"), Quantity.of(0, "m"));
+        Tensor distance = Tensors.of(Quantity.of(0, SI.METER), Quantity.of(0, SI.METER));
         if (vehicleContainer.linkIndex != lastLinkIndex) {
             distance = consolidate();
             list.clear();
@@ -39,14 +40,14 @@ import ch.ethz.idsc.tensor.qty.Quantity;
      * register the distance covered by the vehicle on the previous link and associate it to
      * timesteps. The logic is that the distance is added evenly to the time steps. */
     public Tensor consolidate() {
-        Scalar distDrive = Quantity.of(0, "m");
-        Scalar distEmpty = Quantity.of(0, "m");
+        Scalar distDrive = Quantity.of(0, SI.METER);
+        Scalar distEmpty = Quantity.of(0, SI.METER);
         if (!list.isEmpty()) {
             final int linkId = list.get(0).linkIndex;
             Link distanceLink = MatsimStaticDatabase.INSTANCE.getOsmLink(linkId).link;
             /** this total distance on the link was travelled on during all simulationObjects stored
              * in the list. */
-            Scalar distance = Quantity.of(distanceLink.getLength(), "m");
+            Scalar distance = Quantity.of(distanceLink.getLength(), SI.METER);
 
             int part = Math.toIntExact(list.stream().filter(vc -> vc.roboTaxiStatus.isDriving()).count());
             Scalar stepDistcontrib = distance.divide(RationalScalar.of(part, 1));

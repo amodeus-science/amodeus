@@ -48,7 +48,7 @@ public class KdTreeReducer {
         /** reduce the number of requests */
         requestsReduced = KdTreeReducerHelper.reduceRequests(requestsFull, roboTaxiFull, network);
 
-        /** append reduced problem size*/
+        /** append reduced problem size */
         infoLine.append(Tensors.vectorInt(roboTaxisReduced.size(), requestsReduced.size()));
     }
 

@@ -24,6 +24,7 @@ public enum SimpleDijkstra {
             public double getLinkTravelDisutility(Link link, double time, Person person, Vehicle vehicle) {
                 return getLinkMinimumTravelDisutility(link);
             }
+
             @Override
             public double getLinkMinimumTravelDisutility(Link link) {
                 return link.getLength() / link.getFreespeed();

@@ -19,7 +19,7 @@ import org.matsim.pt.PtConstants;
 public class NetworkCreatorUtils {
     private static final Logger logger = Logger.getLogger(NetworkCreatorUtils.class);
 
-    /* package */ static String linkToID(Link link) {
+    public static String linkToID(Link link) {
         return link.getId().toString();
     }
 
@@ -62,7 +62,6 @@ public class NetworkCreatorUtils {
             data[i][0] = dataList.get(i)[0];
             data[i][1] = dataList.get(i)[1];
         }
-
         return data;
 
     }

@@ -45,6 +45,7 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
 
     public final String dispatcher;
     public final String distanceHeuristic;
+    public final String virtualNetworkCreator;
     public final String vehicleGenerator;
     public final String networkName;
     public final String user;
@@ -86,6 +87,7 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
 
         distanceHeuristic = safeConfig.getString("distanceHeuristics", UNDEFINED_STRING);
         populationSize = scenario.getPopulation().getPersons().values().size();
+        virtualNetworkCreator = scenOptions.getString(ScenarioOptionsBase.VIRTUALNETWORKCREATORIDENTIFIER);
 
         Network network = scenario.getNetwork();
         if (Objects.isNull(network.getName()))

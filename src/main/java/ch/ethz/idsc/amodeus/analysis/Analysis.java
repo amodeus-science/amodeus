@@ -181,6 +181,7 @@ public class Analysis {
         analysisExports.add(new DistancesRatiosTable());
         analysisExports.add(new WaitingTimesTable());
         analysisExports.add(new StatusDistributionTable());
+        analysisExports.add(new VirtualNetworkExport());
 
         // default list of analysis reports
         htmlReport = new HtmlReport(configFile, outputDirectory, scenOptions);
