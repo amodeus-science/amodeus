@@ -8,7 +8,7 @@ import java.util.zip.DataFormatException;
 import ch.ethz.idsc.tensor.io.Export;
 import ch.ethz.idsc.tensor.io.Import;
 
-enum RebalanceDataIO {
+/* package */ enum RebalanceDataIO {
     ;
 
     /** Saves rebalanceData as a bitmap file
@@ -29,7 +29,6 @@ enum RebalanceDataIO {
      * @throws IOException */
     /* package */ static RebalanceData read(File file) //
             throws ClassNotFoundException, DataFormatException, IOException {
-        RebalanceData rebalanceData = Import.object(file);
-        return rebalanceData;
+        return Import.object(file);
     }
 }

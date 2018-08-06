@@ -18,6 +18,7 @@ import org.matsim.api.core.v01.network.Link;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
@@ -278,7 +279,8 @@ public class LPTimeInvariant implements LPSolver {
 
     @Override
     public Tensor getV0_i() {
-        return Tensors.vector(v -> RealScalar.of(numberVehicles / nvNodes), nvNodes);
+        Scalar floor = RealScalar.of(numberVehicles / nvNodes); // floor(nV / nvNodes)
+        return Tensors.vector(v -> floor, nvNodes);
     }
 
     @Override

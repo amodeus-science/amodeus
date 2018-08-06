@@ -36,7 +36,6 @@ import de.lmu.ifi.dbs.elki.datasource.DatabaseConnection;
 import de.lmu.ifi.dbs.elki.distance.distancefunction.minkowski.SquaredEuclideanDistanceFunction;
 import de.lmu.ifi.dbs.elki.math.random.RandomFactory;
 
-/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 public class KMeansCascadeVirtualNetworkCreator {
 
     private DatabaseConnection dbc;

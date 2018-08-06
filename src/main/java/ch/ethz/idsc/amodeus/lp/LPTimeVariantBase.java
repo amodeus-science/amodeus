@@ -130,7 +130,7 @@ public abstract class LPTimeVariantBase implements LPSolver {
     }
 
     @Override
-    public void solveLP(boolean mute) {
+    public final void solveLP(boolean mute) {
         System.out.println("solving time-varying LP");
         GLPK.glp_term_out(mute ? GLPK.GLP_OFF : GLPK.GLP_ON);
 
@@ -159,7 +159,7 @@ public abstract class LPTimeVariantBase implements LPSolver {
     }
 
     /** closing the LP in order to release allocated memory */
-    protected void closeLP() {
+    protected final void closeLP() {
         GLPK.glp_delete_prob(lp);
         System.out.println("LP instance is getting destroyed");
     }
@@ -180,7 +180,7 @@ public abstract class LPTimeVariantBase implements LPSolver {
 
     protected abstract int getColumnTotal();
 
-    protected void initColumnAlpha_ij() {
+    protected final void initColumnAlpha_ij() {
         // optimization variable alpha_ij[k]
         for (int t = 0; t < timeSteps; t++) {
             for (int i = 0; i < nvNodes; ++i) {
@@ -257,7 +257,7 @@ public abstract class LPTimeVariantBase implements LPSolver {
 
     protected abstract void initObjCq();
 
-    protected void readAlpha_ij() {
+    protected final void readAlpha_ij() {
         for (int t = 0; t < timeSteps; t++) {
             for (int i = 0; i < nvNodes; i++) {
                 for (int j = 0; j < nvNodes; j++) {
@@ -273,7 +273,7 @@ public abstract class LPTimeVariantBase implements LPSolver {
 
     protected abstract void readF_ij();
 
-    protected void readV0_i() {
+    protected final void readV0_i() {
         for (int i = 0; i < nvNodes; i++) {
             v0_i.set(RealScalar.of(GLPK.glp_get_col_prim(lp, vIDvarID.get(Arrays.asList(i)))), i);
         }
@@ -281,33 +281,33 @@ public abstract class LPTimeVariantBase implements LPSolver {
     }
 
     @Override
-    public Tensor getAlphaAbsolute_ij() {
+    public final Tensor getAlphaAbsolute_ij() {
         return alphaAbsolute_ij;
     }
 
     @Override
-    public Tensor getAlphaRate_ij() {
+    public final Tensor getAlphaRate_ij() {
         return alphaRate_ij;
     }
 
     @Override
-    public Tensor getFAbsolute_ij() {
+    public final Tensor getFAbsolute_ij() {
         return fAbsolute_ij;
     }
 
     @Override
-    public Tensor getFRate_ij() {
+    public final Tensor getFRate_ij() {
         return fRate_ij;
     }
 
     @Override
-    public Tensor getV0_i() {
+    public final Tensor getV0_i() {
         return v0_i;
     }
 
     /** writes the solution of the LP on the consoles */
     @Override
-    public void writeLPSolution() {
+    public final void writeLPSolution() {
         System.out.println("The LP solution is:");
         System.out.println("The absolute Rebalancing: " + alphaAbsolute_ij);
         System.out.println("The absolute Customer drives: " + fAbsolute_ij);
@@ -315,7 +315,7 @@ public abstract class LPTimeVariantBase implements LPSolver {
     }
 
     @Override
-    public int getTimeInterval() {
+    public final int getTimeInterval() {
         return timeInterval;
     }
 

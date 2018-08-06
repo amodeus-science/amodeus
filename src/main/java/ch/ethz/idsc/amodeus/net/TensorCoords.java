@@ -16,7 +16,7 @@ public enum TensorCoords {
     }
 
     public static Coord vNodeToCoord(VirtualNode<Link> node) {
-        return TensorCoords.toCoord(node.getCoord());
+        return toCoord(node.getCoord());
     }
 
     /** @param vector of length 2
