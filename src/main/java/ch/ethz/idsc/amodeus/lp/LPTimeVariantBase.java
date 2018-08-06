@@ -130,7 +130,7 @@ public abstract class LPTimeVariantBase implements LPSolver {
     }
 
     @Override
-    public final void solveLP(boolean mute) {
+    public void solveLP(boolean mute) {
         System.out.println("solving time-varying LP");
         GLPK.glp_term_out(mute ? GLPK.GLP_OFF : GLPK.GLP_ON);
 
@@ -257,7 +257,7 @@ public abstract class LPTimeVariantBase implements LPSolver {
 
     protected abstract void initObjCq();
 
-    protected final void readAlpha_ij() {
+    protected void readAlpha_ij() {
         for (int t = 0; t < timeSteps; t++) {
             for (int i = 0; i < nvNodes; i++) {
                 for (int j = 0; j < nvNodes; j++) {
@@ -273,7 +273,7 @@ public abstract class LPTimeVariantBase implements LPSolver {
 
     protected abstract void readF_ij();
 
-    protected final void readV0_i() {
+    protected void readV0_i() {
         for (int i = 0; i < nvNodes; i++) {
             v0_i.set(RealScalar.of(GLPK.glp_get_col_prim(lp, vIDvarID.get(Arrays.asList(i)))), i);
         }
@@ -307,7 +307,7 @@ public abstract class LPTimeVariantBase implements LPSolver {
 
     /** writes the solution of the LP on the consoles */
     @Override
-    public final void writeLPSolution() {
+    public void writeLPSolution() {
         System.out.println("The LP solution is:");
         System.out.println("The absolute Rebalancing: " + alphaAbsolute_ij);
         System.out.println("The absolute Customer drives: " + fAbsolute_ij);
