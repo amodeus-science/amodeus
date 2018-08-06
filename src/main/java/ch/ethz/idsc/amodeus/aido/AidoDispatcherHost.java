@@ -55,13 +55,13 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
     protected void redispatch(double now) {
         final long round_now = Math.round(now);
 
-        if (round_now % dispatchPeriod == 0) {
+        if (getRoboTaxis().size() > 0 && idRoboTaxiMap.isEmpty()) {
+            getRoboTaxis().forEach(//
+                    s -> idRoboTaxiMap.put(MatsimStaticDatabase.INSTANCE.getVehicleIndex(s), s));
+            aidoScoreCompiler = new AidoScoreCompiler(getRoboTaxis());
+        }
 
-            if (getRoboTaxis().size() > 0 && idRoboTaxiMap.isEmpty()) {
-                getRoboTaxis().forEach(//
-                        s -> idRoboTaxiMap.put(MatsimStaticDatabase.INSTANCE.getVehicleIndex(s), s));
-                aidoScoreCompiler = new AidoScoreCompiler(getRoboTaxis());
-            }
+        if (round_now % dispatchPeriod == 0) {
 
             if (Objects.nonNull(aidoScoreCompiler))
                 try {

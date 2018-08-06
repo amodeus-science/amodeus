@@ -9,6 +9,7 @@ public class AmodeusGeneratorModule extends AbstractModule {
     @Override
     public void install() {
         bind(RandomDensityGenerator.Factory.class);
-        AVUtils.bindGeneratorFactory(binder(), "RandomDensity").to(RandomDensityGenerator.Factory.class);
+        AVUtils.bindGeneratorFactory(binder(), RandomDensityGenerator.class.getSimpleName()).//
+                to(RandomDensityGenerator.Factory.class);
     }
 }

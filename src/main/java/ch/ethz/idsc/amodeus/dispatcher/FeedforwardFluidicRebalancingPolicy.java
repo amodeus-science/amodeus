@@ -22,7 +22,7 @@ import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
 import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.FeasibleRebalanceCreator;
-import ch.ethz.idsc.amodeus.dispatcher.util.HungarBiPartVehicleDestMatcher;
+import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.lp.RebalanceData;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
@@ -59,6 +59,8 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
     private final Network network;
     private final DistanceFunction distanceFunction;
     private final DistanceHeuristics distanceHeuristics;
+    private final BipartiteMatchingUtils bipartiteMatchingEngine;
+
     Tensor printVals = Tensors.empty();
     TravelData travelData;
     RebalanceData rebalanceData;
@@ -94,6 +96,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
         rebalancingPeriod = safeConfig.getInteger("rebalancingPeriod", 30);
         distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getString("distanceHeuristics", //
                 DistanceHeuristics.EUCLIDEAN.name()).toUpperCase());
+        this.bipartiteMatchingEngine = new BipartiteMatchingUtils(network);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
     }
@@ -102,25 +105,24 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
     public void redispatch(double now) {
         final long round_now = Math.round(now);
 
-        // Part I: permanently rebalance vehicles according to the rates output
-        // by the LP
+        /** Part I: permanently rebalance vehicles according to the rates output by the LP */
         if (round_now % rebalancingPeriod == 0) {
             rebalancingRate = rebalanceData.getAlphaRateAtTime((int) round_now);
 
-            // update rebalance count using current rate
+            /** update rebalance count using current rate */
             rebalanceCount = rebalanceCount.add(rebalancingRate.multiply(RealScalar.of(rebalancingPeriod)));
             rebalanceCountInteger = Floor.of(rebalanceCount);
             rebalanceCount = rebalanceCount.subtract(rebalanceCountInteger);
 
-            // ensure that not more vehicles are sent away than available
+            /** ensure that not more vehicles are sent away than available */
             Map<VirtualNode<Link>, List<RoboTaxi>> availableVehicles = getVirtualNodeDivertableNotRebalancingRoboTaxis();
             Tensor feasibleRebalanceCount = FeasibleRebalanceCreator.returnFeasibleRebalance(rebalanceCountInteger.unmodifiable(), availableVehicles);
             total_rebalanceCount += (Integer) ((Scalar) Total.of(Tensor.of(feasibleRebalanceCount.flatten(-1)))).number();
 
-            // generate routing instructions for rebalancing vehicles
+            /** generate routing instructions for rebalancing vehicles */
             Map<VirtualNode<Link>, List<Link>> destinationLinks = virtualNetwork.createVNodeTypeMap();
 
-            // fill rebalancing destinations
+            /** fill rebalancing destinations */
             for (int i = 0; i < nVLinks; ++i) {
                 VirtualLink<Link> virtualLink = this.virtualNetwork.getVirtualLink(i);
                 VirtualNode<Link> toNode = virtualLink.getTo();
@@ -130,30 +132,23 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
                 destinationLinks.get(fromNode).addAll(rebalanceTargets);
             }
 
-            // consistency check: rebalancing destination links must not exceed
-            // available vehicles
-            // in virtual node
+            /** consistency check: rebalancing destination links must not exceed available vehicles in virtual node */
             GlobalAssert.that(!virtualNetwork.getVirtualNodes().stream().filter(v -> availableVehicles.get(v).size() < destinationLinks.get(v).size()).findAny().isPresent());
 
-            // send rebalancing vehicles using the setVehicleRebalance command
+            /** send rebalancing vehicles using the setVehicleRebalance command */
             for (VirtualNode<Link> virtualNode : destinationLinks.keySet()) {
                 Map<RoboTaxi, Link> rebalanceMatching = vehicleDestMatcher.matchLink(availableVehicles.get(virtualNode), destinationLinks.get(virtualNode));
                 rebalanceMatching.keySet().forEach(v -> setRoboTaxiRebalance(v, rebalanceMatching.get(v)));
             }
 
-            // reset vector
             rebalanceCountInteger = Array.zeros(nVNodes, nVNodes);
         }
 
-        // Part II: outside rebalancing periods, permanently assign destinations
-        // to vehicles using
-        // bipartite matching
+        /** Part II: outside rebalancing periods, permanently assign destinations to vehicles using
+         * bipartite matching */
         if (round_now % dispatchPeriod == 0) {
-            printVals = BipartiteMatchingUtils.executePickup( //
-                    this, //
-                    getDivertableRoboTaxis(), //
-                    getAVRequests(), //
-                    distanceFunction, network, false);
+            printVals = bipartiteMatchingEngine.executePickup(this, getDivertableRoboTaxis(), //
+                    getAVRequests(), distanceFunction, network, false);
         }
     }
 
@@ -195,7 +190,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
             AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
 
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
-            AbstractVehicleDestMatcher abstractVehicleDestMatcher = new HungarBiPartVehicleDestMatcher(new EuclideanDistanceFunction());
+            AbstractVehicleDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(new EuclideanDistanceFunction());
 
             return new FeedforwardFluidicRebalancingPolicy(config, avconfig, generatorConfig, travelTime, router, eventsManager, network, virtualNetwork, abstractVirtualNodeDest,
                     abstractVehicleDestMatcher, travelData, rebalanceData);

@@ -10,32 +10,29 @@ import org.matsim.api.core.v01.network.Link;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
+/** abstract base class for all implementations that match {@link Collection}s of {@link RoboTaxi}s
+ * and {@link Collection} of {@link AVRequest}s or of {@link Link}s */
+// TODO JAN will rename class to AbstractRoboTaxiDestMatcher when repos are in sync
 public abstract class AbstractVehicleDestMatcher {
 
-    public final Map<RoboTaxi, AVRequest> matchAVRequest( //
-            Collection<RoboTaxi> vehicleLinkPairs, //
-            Collection<AVRequest> avRequests) {
-        if (vehicleLinkPairs.isEmpty() || avRequests.isEmpty())
+    /** @return {@link Map} containing matching between {@link RoboTaxi}s in {@link Collection} @param roboTaxis
+     *         and {@link AVRequest}s in @param avRequests or empty colletion if either is empty */
+    public final Map<RoboTaxi, AVRequest> match(Collection<RoboTaxi> roboTaxis, Collection<AVRequest> avRequests) {
+        if (roboTaxis.isEmpty() || avRequests.isEmpty())
             return Collections.emptyMap();
-        return protected_matchAVRequest(vehicleLinkPairs, avRequests);
+        return protected_match(roboTaxis, avRequests);
     }
 
-    protected abstract Map<RoboTaxi, AVRequest> protected_matchAVRequest( //
-            Collection<RoboTaxi> vehicleLinkPairs, //
-            Collection<AVRequest> links //
-    );
-
-    public final Map<RoboTaxi, Link> matchLink( //
-            Collection<RoboTaxi> vehicleLinkPairs, //
-            Collection<Link> destinations) {
-        if (vehicleLinkPairs.isEmpty() || destinations.isEmpty())
+    /** @return {@link Map} containing matching between {@link RoboTaxi}s in {@link Collection} @param roboTaxis
+     *         and {@link Link}s in @param links or empty colletion if either is empty */
+    public final Map<RoboTaxi, Link> matchLink(Collection<RoboTaxi> roboTaxis, Collection<Link> links) {
+        if (roboTaxis.isEmpty() || links.isEmpty())
             return Collections.emptyMap();
-        return protected_matchLink(vehicleLinkPairs, destinations);
+        return protected_matchLink(roboTaxis, links);
     }
 
-    protected abstract Map<RoboTaxi, Link> protected_matchLink( //
-            Collection<RoboTaxi> vehicleLinkPairs, //
-            Collection<Link> links //
-    );
+    protected abstract Map<RoboTaxi, AVRequest> protected_match(Collection<RoboTaxi> roboTaxis, Collection<AVRequest> avRequests);
+
+    protected abstract Map<RoboTaxi, Link> protected_matchLink(Collection<RoboTaxi> roboTaxis, Collection<Link> links);
 
 }

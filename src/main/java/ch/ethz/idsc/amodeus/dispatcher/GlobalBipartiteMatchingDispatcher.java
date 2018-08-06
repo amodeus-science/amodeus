@@ -31,19 +31,18 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
     private Tensor printVals = Tensors.empty();
     private final DistanceFunction distanceFunction;
     private final Network network;
+    private final BipartiteMatchingUtils bipartiteMatchingEngine;
 
-    private GlobalBipartiteMatchingDispatcher( //
-            Network network, //
-            Config config, //
-            AVDispatcherConfig avDispatcherConfig, //
-            TravelTime travelTime, //
-            AVRouter router, //
-            EventsManager eventsManager) {
+    private GlobalBipartiteMatchingDispatcher(Network network, Config config, //
+            AVDispatcherConfig avDispatcherConfig, TravelTime travelTime, //
+            AVRouter router, EventsManager eventsManager) {
         super(config, avDispatcherConfig, travelTime, router, eventsManager);
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
-        distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getString("distanceHeuristics", // <- crashes if spelling is wrong
-                DistanceHeuristics.EUCLIDEAN.name()).toUpperCase()); // TODO MISC make EUCLIDEANNONCYCLIC default, also in the other dispatchers
+        /** crashes if spelling is wrong */
+        distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getString("distanceHeuristics", //
+                DistanceHeuristics.EUCLIDEAN.name()).toUpperCase());
+        this.bipartiteMatchingEngine = new BipartiteMatchingUtils(network);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
         this.network = network;
@@ -54,21 +53,16 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
         final long round_now = Math.round(now);
 
         if (round_now % dispatchPeriod == 0) {
-            printVals = BipartiteMatchingUtils.executePickup( //
-                    this, //
-                    getDivertableRoboTaxis(), //
-                    getAVRequests(), //
-                    // new EuclideanDistanceFunction(), network, false);
-                    distanceFunction, network, false);
+            printVals = bipartiteMatchingEngine.executePickup(this, getDivertableRoboTaxis(), //
+                    getAVRequests(), distanceFunction, network, false);
         }
-
     }
 
     @Override
     protected String getInfoLine() {
         return String.format("%s H=%s", //
                 super.getInfoLine(), //
-                printVals.toString() // This is where Dispatcher@ V... R... MR.. H is printed on console
+                printVals.toString() /** This is where Dispatcher@ V... R... MR.. H is printed on console */
         );
     }
 

@@ -17,9 +17,7 @@ public enum EasyPathCalculator {
     ;
 
     public static LeastCostPathCalculator prepPathCalculator(Network network, LeastCostPathCalculatorFactory calcFactory) {
-
         TravelDisutility travelMinCost = new TravelDisutility() {
-
             @Override
             public double getLinkTravelDisutility(Link link, double time, Person person, Vehicle vehicle) {
                 return getLinkMinimumTravelDisutility(link);
@@ -30,14 +28,12 @@ public enum EasyPathCalculator {
                 return link.getLength() / link.getFreespeed();
             }
         };
-
         TravelTime travelTime = new TravelTime() {
             @Override
             public double getLinkTravelTime(Link link, double time, Person person, Vehicle vehicle) {
                 return link.getLength() / link.getFreespeed();
             }
         };
-
         return calcFactory.createPathCalculator(network, travelMinCost, travelTime);
     }
 
@@ -49,5 +45,4 @@ public enum EasyPathCalculator {
         GlobalAssert.that(to != null);
         return pathCalc.calcLeastCostPath(from, to, 0.0, null, null);
     }
-
 }

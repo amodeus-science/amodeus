@@ -58,7 +58,8 @@ import ch.ethz.matsim.av.generator.AVGenerator;
 
         Id<Vehicle> id = Id.create("av_" + prefix + String.valueOf(generatedNumberOfVehicles), Vehicle.class);
         // In the future increase flexibility by adding capacity parameter as parameter in av.xml
-        return new AVVehicle(id, linkGen, 4.0, 0.0, 108000.0);
+        AVVehicle vehicle = new AVVehicle(id, linkGen, 4.0, 0.0, Double.POSITIVE_INFINITY);
+        return vehicle;
     }
 
     static public class Factory implements AVGenerator.AVGeneratorFactory {

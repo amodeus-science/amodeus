@@ -6,8 +6,8 @@ import org.matsim.api.core.v01.network.Link;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
+// TODO JAN will move class to amodidsc when repos are in sync
 /* package */ class MatchLinkObject<T> {
-
     private T t;
     private Link link;
 
@@ -15,14 +15,12 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         GlobalAssert.that(t instanceof Link || t instanceof AVRequest);
         if (t instanceof Link) {
             this.link = (Link) t;
-
         }
         if (t instanceof AVRequest) {
             AVRequest avR = (AVRequest) t;
             this.link = avR.getFromLink();
         }
         this.t = t;
-
     }
 
     /* package */ Link getLink() {
@@ -31,7 +29,5 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
     /* package */ T getObject() {
         return t;
-
     }
-
 }

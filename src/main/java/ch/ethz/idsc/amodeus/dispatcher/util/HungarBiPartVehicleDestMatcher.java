@@ -15,44 +15,36 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** array matching with Euclidean distance as criteria */
-
+// TODO JAN will move class to amodidsc when repos are in sync
 public class HungarBiPartVehicleDestMatcher extends AbstractVehicleDestMatcher {
-
     private final DistanceFunction distancer;
 
     public HungarBiPartVehicleDestMatcher(DistanceFunction distancer) {
         this.distancer = distancer;
-
     }
 
     @Override
-    protected Map<RoboTaxi, AVRequest> protected_matchAVRequest(Collection<RoboTaxi> roboTaxis, Collection<AVRequest> requests) {
-
+    public Map<RoboTaxi, AVRequest> protected_match(Collection<RoboTaxi> roboTaxis, Collection<AVRequest> requests) {
         Collection<MatchLinkObject<AVRequest>> linksGen = new ArrayList<>();
         requests.stream().forEach(l -> linksGen.add(new MatchLinkObject<>(l)));
         return genericMatch(roboTaxis, linksGen);
     }
 
     @Override
-    protected Map<RoboTaxi, Link> protected_matchLink(Collection<RoboTaxi> roboTaxis, Collection<Link> links) {
-
+    public Map<RoboTaxi, Link> protected_matchLink(Collection<RoboTaxi> roboTaxis, Collection<Link> links) {
         Collection<MatchLinkObject<Link>> linksGen = new ArrayList<>();
         links.stream().forEach(l -> linksGen.add(new MatchLinkObject<>(l)));
         return genericMatch(roboTaxis, linksGen);
     }
 
     private <T> Map<RoboTaxi, T> genericMatch(Collection<RoboTaxi> roboTaxis, Collection<MatchLinkObject<T>> linkObjects) {
-
         // since Collection::iterator does not make guarantees about the order we store the pairs in a list
         final List<RoboTaxi> orderedRoboTaxis = new ArrayList<>(roboTaxis);
         final List<MatchLinkObject<T>> ordered_linkObjects = new ArrayList<>(linkObjects);
-
         // cost of assigning vehicle i to dest j, i.e. distance from vehicle i to destination j
         final int n = orderedRoboTaxis.size(); // workers
         final int m = ordered_linkObjects.size(); // jobs
-
         final double[][] distancematrix = new double[n][m];
-
         int i = -1;
         for (RoboTaxi roboTaxi : orderedRoboTaxis) {
             ++i;
@@ -61,11 +53,9 @@ public class HungarBiPartVehicleDestMatcher extends AbstractVehicleDestMatcher {
                 distancematrix[i][++j] = distancer.getDistance(roboTaxi, linkObj.getLink());
             }
         }
-
         // vehicle at position i is assigned to destination matchinghungarianAlgorithm[j]
         // int[] matchinghungarianAlgorithm = new HungarianAlgorithm(distancematrix).execute(); // O(n^3)
         int[] matchinghungarianAlgorithm = HungarianAlgorithmWrap.matching(distancematrix);
-
         // do the assignment according to the Hungarian algorithm (only for the matched elements, otherwise keep current drive destination)
         final Map<RoboTaxi, T> map = new HashMap<>();
         i = -1;
@@ -75,10 +65,7 @@ public class HungarBiPartVehicleDestMatcher extends AbstractVehicleDestMatcher {
                 map.put(roboTaxi, ordered_linkObjects.get(matchinghungarianAlgorithm[i]).getObject());
             }
         }
-
         GlobalAssert.that(map.size() == Math.min(n, m));
         return map;
-
     }
-
 }
