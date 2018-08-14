@@ -88,13 +88,15 @@ public class LPTimeVariantTester {
         try {
             lp = new LPTimeVariant(virtualNetwork2, network, scenarioOptions, Tensors.of(Tensors.of(Tensors.vector(0, -1), Tensors.vector(0, 0))));
             assertTrue(false);
-        } catch (Exception e) {
+        } catch (Exception exception) {
+            // ---
         }
 
         try {
             lp = new LPTimeVariant(virtualNetwork2, network, scenarioOptions, Tensors.of(Tensors.of(Tensors.vector(0, 0.01), Tensors.vector(0, 0))));
             assertTrue(false);
-        } catch (Exception e) {
+        } catch (Exception exception) {
+            // ---
         }
 
         // test simple rounding case
@@ -174,13 +176,15 @@ public class LPTimeVariantTester {
         try {
             lp = new LPTimeVariant(virtualNetwork3, network, scenarioOptions, Tensors.of(Tensors.of(Tensors.vector(0, -1, 0), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))));
             assertTrue(false);
-        } catch (Exception e) {
+        } catch (Exception exception) {
+            // ---
         }
 
         try {
             lp = new LPTimeVariant(virtualNetwork3, network, scenarioOptions, Tensors.of(Tensors.of(Tensors.vector(0, 0.01, 0), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))));
             assertTrue(false);
-        } catch (Exception e) {
+        } catch (Exception exception) {
+            // ---
         }
 
         // test simple rounding case

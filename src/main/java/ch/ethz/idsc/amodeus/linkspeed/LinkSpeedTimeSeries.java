@@ -14,7 +14,7 @@ import ch.ethz.idsc.tensor.Tensors;
 /** DO NOT MODIFY CLASS
  * 
  * INSTANCES OF LinkSpeedTimeSeries
- * ARE USED IN MANY SCENARIO'S */
+ * ARE USED IN MANY SCENARIOS */
 public class LinkSpeedTimeSeries implements Serializable {
 
     /** keyMap contains times and Tensor a list of recorded speeds at the time */

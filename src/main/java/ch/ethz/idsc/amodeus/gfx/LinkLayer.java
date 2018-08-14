@@ -31,7 +31,7 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.sca.ArcTan;
 
-class Street {
+/* package */ class Street {
     final OsmLink osmLink;
     Point p1;
     Point p2;

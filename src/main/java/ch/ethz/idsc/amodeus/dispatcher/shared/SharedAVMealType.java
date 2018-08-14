@@ -3,8 +3,7 @@ package ch.ethz.idsc.amodeus.dispatcher.shared;
 
 /** @author Nicolo Ormezzano, Lukas Sieber */
 public enum SharedAVMealType {
-
     PICKUP, //
-    DROPOFF;
-
+    DROPOFF, //
+    ;
 }

@@ -32,7 +32,7 @@ public class GlobalBipartiteMatching extends AbstractVehicleDestMatcher {
 
     @Override
     protected Map<RoboTaxi, Link> protected_matchLink(Collection<RoboTaxi> roboTaxis, Collection<Link> links) {
-        return genericMatch(roboTaxis, links, StaticHelper::linkIdentity);
+        return genericMatch(roboTaxis, links, link -> link);
     }
 
     private <T> Map<RoboTaxi, T> genericMatch(Collection<RoboTaxi> roboTaxis, Collection<T> linkObjects, //
