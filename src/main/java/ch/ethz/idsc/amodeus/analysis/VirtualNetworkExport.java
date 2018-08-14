@@ -13,7 +13,9 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
-public class VirtualNetworkExport implements AnalysisExport {
+public enum VirtualNetworkExport implements AnalysisExport {
+    INSTANCE;
+
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorScheme colorScheme) {
         File workingDirectory = null;
@@ -28,19 +30,21 @@ public class VirtualNetworkExport implements AnalysisExport {
         } catch (IOException e) {
             GlobalAssert.that(false);
         }
-        File virtualNetworkFolder = new File(workingDirectory, scenOptions.getVirtualNetworkName());
-        GlobalAssert.that(virtualNetworkFolder.exists());
-        File virtualNetworkFile = new File(virtualNetworkFolder, scenOptions.getVirtualNetworkName());
-        File copyTo = new File(relativeDirectory, scenOptions.getVirtualNetworkName());
-        GlobalAssert.that(virtualNetworkFile.exists());
-        GlobalAssert.that(copyTo.getParentFile().exists());
-        try {
-            System.out.println(virtualNetworkFile);
-            System.out.println(copyTo);
-            Files.copy(virtualNetworkFile, copyTo);
-        } catch (IOException e) {
-            GlobalAssert.that(false);
-        }
+        final File virtualNetworkFolder = new File(workingDirectory, scenOptions.getVirtualNetworkName());
+        if (virtualNetworkFolder.isDirectory()) {
+            File virtualNetworkFile = new File(virtualNetworkFolder, scenOptions.getVirtualNetworkName());
+            File copyTo = new File(relativeDirectory, scenOptions.getVirtualNetworkName());
+            GlobalAssert.that(virtualNetworkFile.exists());
+            GlobalAssert.that(copyTo.getParentFile().exists());
+            try {
+                System.out.println(virtualNetworkFile);
+                System.out.println(copyTo);
+                Files.copy(virtualNetworkFile, copyTo);
+            } catch (IOException e) {
+                GlobalAssert.that(false);
+            }
+        } else
+            System.err.println("virtual directory not found");
     }
 
 }

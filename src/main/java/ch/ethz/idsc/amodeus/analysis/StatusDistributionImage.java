@@ -9,7 +9,9 @@ import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionElement;
 import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
 import ch.ethz.idsc.amodeus.analysis.plot.StackedTimeChart;
 
-public class StatusDistributionImage implements AnalysisExport {
+public enum StatusDistributionImage implements AnalysisExport {
+    INSTANCE;
+
     public static final String FILENAME = "statusDistribution";
 
     @Override

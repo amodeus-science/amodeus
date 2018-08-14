@@ -169,27 +169,27 @@ public class Analysis {
         analysisElements.add(analysisSummary.getWaitingTimes());
         analysisElements.add(analysisSummary.getDistanceElement());
 
-        analysisExports.add(new BinnedWaitingTimesImage());
-        analysisExports.add(new DistanceDistributionOverDayImage());
-        analysisExports.add(new OccupancyDistanceRatiosImage());
-        analysisExports.add(new RequestsPerWaitingTimeImage());
-        analysisExports.add(new StackedDistanceChartImage());
-        analysisExports.add(new StatusDistributionImage());
-        analysisExports.add(new ScenarioParametersExport());
+        analysisExports.add(BinnedWaitingTimesImage.INSTANCE);
+        analysisExports.add(DistanceDistributionOverDayImage.INSTANCE);
+        analysisExports.add(OccupancyDistanceRatiosImage.INSTANCE);
+        analysisExports.add(RequestsPerWaitingTimeImage.INSTANCE);
+        analysisExports.add(StackedDistanceChartImage.INSTANCE);
+        analysisExports.add(StatusDistributionImage.INSTANCE);
+        analysisExports.add(ScenarioParametersExport.INSTANCE);
 
-        analysisExports.add(new DistancesOverDayTable());
-        analysisExports.add(new DistancesRatiosTable());
-        analysisExports.add(new WaitingTimesTable());
-        analysisExports.add(new StatusDistributionTable());
-        analysisExports.add(new VirtualNetworkExport());
+        analysisExports.add(DistancesOverDayTable.INSTANCE);
+        analysisExports.add(DistancesRatiosTable.INSTANCE);
+        analysisExports.add(WaitingTimesTable.INSTANCE);
+        analysisExports.add(StatusDistributionTable.INSTANCE);
+        analysisExports.add(VirtualNetworkExport.INSTANCE);
 
         // default list of analysis reports
         htmlReport = new HtmlReport(configFile, outputDirectory, scenOptions);
-        htmlReport.addHtmlReportElement(new ScenarioParametersHtml());
-        htmlReport.addHtmlReportElement(new SimulationInformationHtml());
-        htmlReport.addHtmlReportElement(new DistanceElementHtml());
-        htmlReport.addHtmlReportElement(new WaitingTimesHtml());
-        htmlReport.addHtmlReportElement(new FleetEfficiencyHtml());
+        htmlReport.addHtmlReportElement(ScenarioParametersHtml.INSTANCE);
+        htmlReport.addHtmlReportElement(SimulationInformationHtml.INSTANCE);
+        htmlReport.addHtmlReportElement(DistanceElementHtml.INSTANCE);
+        htmlReport.addHtmlReportElement(WaitingTimesHtml.INSTANCE);
+        htmlReport.addHtmlReportElement(FleetEfficiencyHtml.INSTANCE);
 
         analysisReports.add(htmlReport);
 

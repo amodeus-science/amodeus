@@ -8,7 +8,9 @@ import ch.ethz.idsc.amodeus.analysis.element.DistanceElement;
 import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
 import ch.ethz.idsc.amodeus.analysis.plot.TimeChart;
 
-public class OccupancyDistanceRatiosImage implements AnalysisExport {
+public enum OccupancyDistanceRatiosImage implements AnalysisExport {
+    INSTANCE;
+
     public static final String FILENAME = "occAndDistRatios";
     private static final String[] RATIOS_LABELS = new String[] { "occupancy ratio", "distance ratio" };
 

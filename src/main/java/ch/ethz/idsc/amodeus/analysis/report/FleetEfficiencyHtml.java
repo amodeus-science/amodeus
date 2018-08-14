@@ -9,7 +9,9 @@ import ch.ethz.idsc.amodeus.analysis.DistanceDistributionOverDayImage;
 import ch.ethz.idsc.amodeus.analysis.OccupancyDistanceRatiosImage;
 import ch.ethz.idsc.amodeus.analysis.StatusDistributionImage;
 
-public class FleetEfficiencyHtml implements HtmlReportElement {
+public enum FleetEfficiencyHtml implements HtmlReportElement {
+    INSTANCE;
+
     private static final String IMAGE_FOLDER = "../data"; // relative to report folder
 
     @Override

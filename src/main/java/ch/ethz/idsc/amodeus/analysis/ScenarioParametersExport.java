@@ -7,7 +7,9 @@ import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
 import ch.ethz.idsc.tensor.io.Export;
 
-public class ScenarioParametersExport implements AnalysisExport {
+public enum ScenarioParametersExport implements AnalysisExport {
+    INSTANCE;
+
     public static final String FILENAME = "scenarioParameters.obj";
 
     @Override
