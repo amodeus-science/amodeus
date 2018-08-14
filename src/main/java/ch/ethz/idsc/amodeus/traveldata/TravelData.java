@@ -36,8 +36,9 @@ public class TravelData implements Serializable {
      * @param virtualNetworkIn
      * @param network
      * @param population
-     * @param timeInterval has to be a divider of the DURATION (i.e. 24*3600) */
-    public TravelData(VirtualNetwork<Link> virtualNetwork, Network network, Population population, int timeInterval) {
+     * @param timeInterval has to be a divider of the DURATION (i.e. 24*3600)
+     * @param ratio is the scaling factor, e.g. ratio = 0.1 if lambda is created with 10'000 trips but only 1'000 are actually simulated */
+    public TravelData(VirtualNetwork<Link> virtualNetwork, Network network, Population population, int timeInterval, Scalar ratio) {
         System.out.println("reading travel data for population of size " + population.getPersons().size());
         virtualNetworkID = virtualNetwork.getvNetworkID();
         System.out.println("the ID of the virtualNetwork used for travel data construction is: " + virtualNetworkID);
@@ -49,9 +50,15 @@ public class TravelData implements Serializable {
 
         // create the lambda Tensors
         Set<Request> avRequests = PopulationTools.getAVRequests(population, network);
-        lambdaAbsolute = PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(avRequests, virtualNetwork, timeInterval);
 
+        Tensor lambdaTotal = PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(avRequests, virtualNetwork, timeInterval);
+
+        lambdaAbsolute = Round.of(lambdaTotal.multiply(ratio));
         checkConsistency();
+    }
+
+    public TravelData(VirtualNetwork<Link> virtualNetwork, Network network, Population population, int timeInterval) {
+        this(virtualNetwork, network, population, timeInterval, RealScalar.ONE);
     }
 
     public Tensor getLambdaAbsoluteAtTime(int time) {
