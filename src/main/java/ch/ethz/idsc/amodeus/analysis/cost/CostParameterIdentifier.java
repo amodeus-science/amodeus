@@ -2,5 +2,6 @@
 package ch.ethz.idsc.amodeus.analysis.cost;
 
 public interface CostParameterIdentifier {
+    // TODO comment
     String getIdentifier();
 }

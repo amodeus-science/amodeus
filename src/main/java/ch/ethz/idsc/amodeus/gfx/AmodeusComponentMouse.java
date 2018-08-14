@@ -7,7 +7,7 @@ import java.awt.event.MouseEvent;
 
 import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.ICoordinate;
 
-class AmodeusComponentMouse extends MouseAdapter {
+/* package */ class AmodeusComponentMouse extends MouseAdapter {
     private ICoordinate iCoordinate;
     private Point point;
     private final AmodeusComponent amodeusComponent;

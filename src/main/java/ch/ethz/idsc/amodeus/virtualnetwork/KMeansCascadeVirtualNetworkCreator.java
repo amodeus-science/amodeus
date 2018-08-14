@@ -175,7 +175,7 @@ public class KMeansCascadeVirtualNetworkCreator {
         vNMapGlobal.put(new VirtualNode<Link>(index, indexStr, new HashMap<>(), coord), new LinkedHashSet<Link>());
     }
 
-    private Tensor getBounds(Collection<Link> elements) {
+    private static Tensor getBounds(Collection<Link> elements) {
         Set<Node> nodes = new HashSet<>();
         elements.stream().forEach(link -> nodes.add(link.getFromNode()));
         elements.stream().forEach(link -> nodes.add(link.getToNode()));
@@ -184,7 +184,7 @@ public class KMeansCascadeVirtualNetworkCreator {
         return Tensors.of(Tensors.vector(bounds[0], bounds[1]), Tensors.vector(bounds[2], bounds[3]));
     }
 
-    private double[][] getData(Set<Request> requests) {
+    private static double[][] getData(Set<Request> requests) {
         List<Coord> coords = new ArrayList<>();
         requests.stream().forEach(request -> coords.add(request.startLink().getCoord()));
 
