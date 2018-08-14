@@ -11,7 +11,9 @@ import ch.ethz.idsc.amodeus.analysis.plot.StackedTimeChart;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Transpose;
 
-public class DistanceDistributionOverDayImage implements AnalysisExport {
+public enum DistanceDistributionOverDayImage implements AnalysisExport {
+    INSTANCE;
+
     public static final String FILENAME = "distanceDistribution";
 
     @Override

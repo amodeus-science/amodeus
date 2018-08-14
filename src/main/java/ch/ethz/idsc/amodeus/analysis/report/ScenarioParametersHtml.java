@@ -9,7 +9,8 @@ import org.matsim.core.utils.misc.Time;
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.ScenarioParameters;
 
-public class ScenarioParametersHtml implements HtmlReportElement {
+public enum ScenarioParametersHtml implements HtmlReportElement {
+    INSTANCE;
 
     @Override
     public Map<String, HtmlBodyElement> process(AnalysisSummary analysisSummary) {

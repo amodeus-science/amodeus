@@ -15,7 +15,9 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.pdf.BinCounts;
 import ch.ethz.idsc.tensor.sca.Round;
 
-public class RequestsPerWaitingTimeImage implements AnalysisExport {
+public enum RequestsPerWaitingTimeImage implements AnalysisExport {
+    INSTANCE;
+
     public static final String FILENAME = "requestsPerWaitTime";
 
     @Override

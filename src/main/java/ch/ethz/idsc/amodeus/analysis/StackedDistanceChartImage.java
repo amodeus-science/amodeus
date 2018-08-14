@@ -8,7 +8,9 @@ import ch.ethz.idsc.amodeus.analysis.element.DistanceElement;
 import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
 import ch.ethz.idsc.amodeus.analysis.plot.CompositionStack;
 
-public class StackedDistanceChartImage implements AnalysisExport {
+public enum StackedDistanceChartImage implements AnalysisExport {
+    INSTANCE;
+
     public static final String FILENAME = "stackedDistance";
 
     @Override
