@@ -5,7 +5,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import ch.ethz.idsc.amodeus.util.net.ObjectHandler;
 
-class SimulationClientSet extends CopyOnWriteArraySet<ObjectHandler> {
+/* package */ class SimulationClientSet extends CopyOnWriteArraySet<ObjectHandler> {
     public static final SimulationClientSet INSTANCE = new SimulationClientSet();
 
     private SimulationClientSet() {

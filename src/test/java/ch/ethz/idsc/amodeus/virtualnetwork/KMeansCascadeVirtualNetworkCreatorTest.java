@@ -75,7 +75,7 @@ public class KMeansCascadeVirtualNetworkCreatorTest {
     }
 
     @Test
-    public void testOrderedIndices() throws IOException {
+    public void testOrderedIndices() {
         // ensure that the received virtualNetworks contain a ordered list of the virtual nodes in terms of indices
         for (VirtualNetwork<Link> virtualNetwork : virtualNetworks) {
             int index = 0;
@@ -88,7 +88,7 @@ public class KMeansCascadeVirtualNetworkCreatorTest {
     }
 
     @Test
-    public void testDifferentVirtualNodeNumbers() throws IOException {
+    public void testDifferentVirtualNodeNumbers() {
         VirtualNetworkCreator virtualNetworkCreator;
 
         scenarioOptions.setProperty(ScenarioOptionsBase.NUMVNODESIDENTIFIER, "2");
@@ -106,7 +106,8 @@ public class KMeansCascadeVirtualNetworkCreatorTest {
         try {
             virtualNetworksInvalid.add(virtualNetworkCreator.create(network, population));
             assertTrue(false);
-        } catch (Exception e) {
+        } catch (Exception exception) {
+            // ---
         }
 
         scenarioOptions.setProperty(ScenarioOptionsBase.NUMVNODESIDENTIFIER, "10");
@@ -114,7 +115,8 @@ public class KMeansCascadeVirtualNetworkCreatorTest {
         try {
             virtualNetworksInvalid.add(virtualNetworkCreator.create(network, population));
             assertTrue(false);
-        } catch (Exception e) {
+        } catch (Exception exception) {
+            // ---
         }
     }
 

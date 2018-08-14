@@ -87,13 +87,15 @@ public class LPTimeInvariantTester {
         try {
             lp = new LPTimeInvariant(virtualNetwork2, Tensors.of(Tensors.of(Tensors.vector(0, -1), Tensors.vector(0, 0))));
             assertTrue(false);
-        } catch (Exception e) {
+        } catch (Exception exception) {
+            // ---
         }
 
         try {
             lp = new LPTimeInvariant(virtualNetwork2, Tensors.of(Tensors.of(Tensors.vector(0, 0.01), Tensors.vector(0, 0))));
             assertTrue(false);
-        } catch (Exception e) {
+        } catch (Exception exception) {
+            // ---
         }
 
         // test simple rounding case
@@ -175,13 +177,15 @@ public class LPTimeInvariantTester {
         try {
             lp = new LPTimeInvariant(virtualNetwork3, Tensors.of(Tensors.of(Tensors.vector(0, -1, 0), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))));
             assertTrue(false);
-        } catch (Exception e) {
+        } catch (Exception exception) {
+            // ---
         }
 
         try {
             lp = new LPTimeInvariant(virtualNetwork3, Tensors.of(Tensors.of(Tensors.vector(0, 0.01, 0), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))));
             assertTrue(false);
-        } catch (Exception e) {
+        } catch (Exception exception) {
+            // ---
         }
 
         // test simple rounding case

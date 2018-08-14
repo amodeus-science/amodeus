@@ -4,6 +4,6 @@ package ch.ethz.idsc.amodeus.gfx;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.tensor.Tensor;
 
-public interface VirtualNodeFunction {
+/* package */ interface VirtualNodeFunction {
     Tensor evaluate(SimulationObject ref);
 }

@@ -90,14 +90,16 @@ public class LPMinFlowTester {
         try {
             lpMinFlow.solveLP(false, Tensors.vector(1, 0));
             assertTrue(false);
-        } catch (Exception e) {
+        } catch (Exception exception) {
+            // ---
         }
 
         // test infeasible case, the input variable has to be almost integer
         try {
             lpMinFlow.solveLP(false, Tensors.vector(-0.1, 0));
             assertTrue(false);
-        } catch (Exception e) {
+        } catch (Exception exception) {
+            // ---
         }
 
         // test simple case without any action
@@ -138,14 +140,16 @@ public class LPMinFlowTester {
         try {
             lpMinFlow.solveLP(false, Tensors.vector(1, 0, 0));
             assertTrue(false);
-        } catch (Exception e) {
+        } catch (Exception exception) {
+            // ---
         }
 
         // test infeasible case, the input variable has to be almost integer
         try {
             lpMinFlow.solveLP(false, Tensors.vector(-0.1, 0, 0));
             assertTrue(false);
-        } catch (Exception e) {
+        } catch (Exception exception) {
+            // ---
         }
 
         // test simple case without any action
@@ -206,14 +210,16 @@ public class LPMinFlowTester {
         try {
             lpMinFlow.solveLP(false, Tensors.vector(1, 0, 0));
             assertTrue(false);
-        } catch (Exception e) {
+        } catch (Exception exception) {
+            // ---
         }
 
         // test infeasible case, the input variable has to be almost integer
         try {
             lpMinFlow.solveLP(false, Tensors.vector(-0.1, 0, 0));
             assertTrue(false);
-        } catch (Exception e) {
+        } catch (Exception exception) {
+            // ---
         }
 
         // test simple case without any action

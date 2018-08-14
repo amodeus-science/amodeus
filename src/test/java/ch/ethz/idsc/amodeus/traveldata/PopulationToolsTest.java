@@ -80,13 +80,15 @@ public class PopulationToolsTest {
         try {
             PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(requestsSingle, virtualNetwork2, 3601);
             assertTrue(false);
-        } catch (Exception e) {
+        } catch (Exception exception) {
+            // ---
         }
 
         try {
             PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(requestsInvalid, virtualNetwork2, 3600);
             assertTrue(false);
-        } catch (Exception e) {
+        } catch (Exception exception) {
+            // ---
         }
     }
 
