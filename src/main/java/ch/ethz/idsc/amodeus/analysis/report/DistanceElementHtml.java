@@ -10,7 +10,8 @@ import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.StackedDistanceChartImage;
 import ch.ethz.idsc.amodeus.analysis.element.DistanceElement;
 
-public class DistanceElementHtml implements HtmlReportElement {
+public enum DistanceElementHtml implements HtmlReportElement {
+    INSTANCE;
 
     private static final String IMAGE_FOLDER = "../data"; // relative to report folder
     private static final DecimalFormat DECIMAL = new DecimalFormat("#0.00");

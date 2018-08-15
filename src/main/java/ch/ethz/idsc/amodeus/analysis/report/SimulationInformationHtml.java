@@ -6,7 +6,8 @@ import java.util.Map;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 
-public class SimulationInformationHtml implements HtmlReportElement {
+public enum SimulationInformationHtml implements HtmlReportElement {
+    INSTANCE;
 
     @Override
     public Map<String, HtmlBodyElement> process(AnalysisSummary analysisSummary) {

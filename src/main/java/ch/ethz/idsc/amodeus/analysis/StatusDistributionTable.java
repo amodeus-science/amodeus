@@ -8,7 +8,8 @@ import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionElement;
 import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
 import ch.ethz.idsc.tensor.io.TableBuilder;
 
-public class StatusDistributionTable implements AnalysisExport {
+public enum StatusDistributionTable implements AnalysisExport {
+    INSTANCE;
 
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorScheme colorScheme) {

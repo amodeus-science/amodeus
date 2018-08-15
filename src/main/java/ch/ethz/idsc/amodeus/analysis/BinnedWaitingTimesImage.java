@@ -8,7 +8,9 @@ import ch.ethz.idsc.amodeus.analysis.element.WaitingTimesElement;
 import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
 import ch.ethz.idsc.amodeus.analysis.plot.TimeChart;
 
-public class BinnedWaitingTimesImage implements AnalysisExport {
+public enum BinnedWaitingTimesImage implements AnalysisExport {
+    INSTANCE;
+
     public static final String FILENAME = "binnedWaitingTimes";
 
     @Override

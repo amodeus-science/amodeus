@@ -11,7 +11,9 @@ import ch.ethz.idsc.amodeus.analysis.BinnedWaitingTimesImage;
 import ch.ethz.idsc.amodeus.analysis.RequestsPerWaitingTimeImage;
 import ch.ethz.idsc.amodeus.analysis.element.WaitingTimesElement;
 
-public class WaitingTimesHtml implements HtmlReportElement {
+public enum WaitingTimesHtml implements HtmlReportElement {
+    INSTANCE;
+
     private static final String IMAGE_FOLDER = "../data"; // relative to report folder
 
     @Override
