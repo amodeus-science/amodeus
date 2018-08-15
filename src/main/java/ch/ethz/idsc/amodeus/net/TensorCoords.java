@@ -11,10 +11,12 @@ import ch.ethz.idsc.tensor.alg.VectorQ;
 
 public enum TensorCoords {
     ;
+    /** returns the {@link Coord} as Tensor with Tensors.vectorDouble(coord.getX,coord.getY) */
     public static Tensor toTensor(Coord coord) {
         return Tensors.vectorDouble(coord.getX(), coord.getY());
     }
 
+    /** returns the center of the VirtualNode as {@link Coord} */
     public static Coord vNodeToCoord(VirtualNode<Link> node) {
         return toCoord(node.getCoord());
     }

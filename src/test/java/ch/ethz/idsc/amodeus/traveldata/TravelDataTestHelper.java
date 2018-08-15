@@ -4,8 +4,6 @@ package ch.ethz.idsc.amodeus.traveldata;
 import java.io.File;
 
 import org.matsim.api.core.v01.network.Link;
-import org.matsim.api.core.v01.network.Network;
-import org.matsim.api.core.v01.population.Population;
 
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.tensor.sca.Chop;
@@ -26,7 +24,7 @@ public class TravelDataTestHelper {
     }
 
     public boolean timeIntervalCheck() {
-        return (tDSaved.getTimeInterval() == tDCreated.getTimeInterval());
+        return (tDSaved.getTimeIntervalLength() == tDCreated.getTimeIntervalLength());
     }
 
     public boolean timeStepsCheck() {

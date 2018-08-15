@@ -21,7 +21,7 @@ public enum TravelDataCreator {
     public static TravelData create(VirtualNetwork<Link> virtualNetwork, Network network, Population population, ScenarioOptions scenarioOptions) throws Exception {
         Tensor lambdaAbsolute = getLambdaAbsolute(network, virtualNetwork, population, scenarioOptions.getdtTravelData());
 
-        LPSolver lp = solveLP(network, virtualNetwork, lambdaAbsolute, scenarioOptions);
+        LPSolver lp = LPPreparer.run(virtualNetwork, network, lambdaAbsolute, scenarioOptions);
 
         Tensor alphaAbsolute = lp.getAlphaAbsolute_ij();
         Tensor v0_i = lp.getV0_i();
@@ -35,9 +35,5 @@ public enum TravelDataCreator {
     private static Tensor getLambdaAbsolute(Network network, VirtualNetwork<Link> virtualNetwork, Population population, int timeInterval) {
         Set<Request> avRequests = PopulationTools.getAVRequests(population, network);
         return PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(avRequests, virtualNetwork, timeInterval);
-    }
-
-    public static LPSolver solveLP(Network network, VirtualNetwork<Link> virtualNetwork, Tensor lambdaAbsolute, ScenarioOptions scenarioOptions) throws Exception {
-        return LPPreparer.run(virtualNetwork, network, lambdaAbsolute, scenarioOptions);
     }
 }
