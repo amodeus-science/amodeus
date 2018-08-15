@@ -65,10 +65,6 @@ public class ScenarioOptions {
         return getString(ScenarioOptionsBase.TRAVELDATAFILENAME);
     }
 
-    public String getRebalanceDataName() {
-        return getString(ScenarioOptionsBase.REBALANCEDATAFILENAME);
-    }
-
     public String getLinkSpeedDataName() {
         return getString(ScenarioOptionsBase.LINKSPEEDDATAFILENAME);
     }
@@ -81,7 +77,6 @@ public class ScenarioOptions {
         return getString(ScenarioOptionsBase.CHARTTHEMEIDENTIFIER);
     }
 
-    /** @return non-negative number, careful: may also return 0 */
     public int getdtTravelData() {
         return getInt(ScenarioOptionsBase.DTTRAVELDATAIDENTIFIER);
     }

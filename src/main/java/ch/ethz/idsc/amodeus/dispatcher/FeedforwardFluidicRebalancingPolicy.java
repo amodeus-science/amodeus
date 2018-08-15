@@ -48,21 +48,22 @@ import ch.ethz.matsim.av.router.AVRouter;
  * Robotic load balancing for mobility-on-demand systems.
  * The International Journal of Robotics Research, 31(7), pp.839-854. */
 public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
-    public final int dispatchPeriod;
-    public final int rebalancingPeriod;
-    final AbstractVirtualNodeDest virtualNodeDest;
-    final AbstractVehicleDestMatcher vehicleDestMatcher;
-    private int total_rebalanceCount = 0;
-    private final int nVNodes;
-    private final int nVLinks;
+    private final AbstractVirtualNodeDest virtualNodeDest;
+    private final AbstractVehicleDestMatcher vehicleDestMatcher;
     private final Network network;
     private final DistanceFunction distanceFunction;
     private final DistanceHeuristics distanceHeuristics;
     private final BipartiteMatchingUtils bipartiteMatchingEngine;
+    private final int dispatchPeriod;
+    private final int rebalancingPeriod;
+    private final int nVNodes;
+    private final int nVLinks;
+    // ---
+    private int total_rebalanceCount = 0;
+    private boolean started = false;
 
     Tensor printVals = Tensors.empty();
     TravelData travelData;
-    // RebalanceData rebalanceData;
     Tensor rebalancingRate;
     Tensor rebalanceCount;
     Tensor rebalanceCountInteger;
@@ -104,12 +105,17 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
     public void redispatch(double now) {
         final long round_now = Math.round(now);
 
+        if (!started) {
+            if (getRoboTaxis().size() == 0) // return if the roboTaxis are not ready yet
+                return;
+            // as soon as the roboTaxis are ready, make sure to execute rebalancing and dispatching for now=0
+            now = 0;
+            started = true;
+        }
+
         /** Part I: permanently rebalance vehicles according to the rates output by the LP */
         if (round_now % rebalancingPeriod == 0) {
-            // rebalancingRate = rebalanceData.getAlphaRateAtTime((int) round_now);
-            // TODO jan wasn't sure what to do here...
-            rebalancingRate = travelData.getLambdaRateAtTime((int) round_now);
-            // A.getAlphaijPSFforTime((int) round_now);
+            rebalancingRate = travelData.getAlphaRateAtTime((int) round_now);
 
             /** update rebalance count using current rate */
             rebalanceCount = rebalanceCount.add(rebalancingRate.multiply(RealScalar.of(rebalancingPeriod)));
@@ -180,10 +186,6 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
 
         @Inject(optional = true)
         private TravelData travelData;
-
-        // doesn't work, not sure why this was introduced
-        // @Inject
-        // private RebalanceData rebalanceData;
 
         @Inject
         private Config config;

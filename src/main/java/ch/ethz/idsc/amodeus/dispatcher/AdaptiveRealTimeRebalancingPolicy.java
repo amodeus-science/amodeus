@@ -4,7 +4,6 @@ package ch.ethz.idsc.amodeus.dispatcher;
 import java.util.List;
 import java.util.Map;
 
-import org.gnu.glpk.GLPKConstants;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -24,8 +23,8 @@ import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
 import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.FeasibleRebalanceCreator;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
-import ch.ethz.idsc.amodeus.dispatcher.util.LPVehicleRebalancing;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
+import ch.ethz.idsc.amodeus.lp.LPMinFlow;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualLink;
@@ -52,18 +51,20 @@ import ch.ethz.matsim.av.router.AVRouter;
  * Robotic load balancing for mobility-on-demand systems.
  * The International Journal of Robotics Research, 31(7), pp.839-854. */
 public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
-    private final int rebalancingPeriod;
-    private final int dispatchPeriod;
     private final AbstractVirtualNodeDest virtualNodeDest;
     private final AbstractVehicleDestMatcher vehicleDestMatcher;
-    private final int numRobotaxi;
-    private int total_rebalanceCount = 0;
-    private Tensor printVals = Tensors.empty();
-    private final LPVehicleRebalancing lpVehicleRebalancing;
+    private final LPMinFlow lpMinFlow;
     private final DistanceFunction distanceFunction;
     private final DistanceHeuristics distanceHeuristics;
     private final Network network;
     private final BipartiteMatchingUtils bipartiteMatchingEngine;
+    private final int rebalancingPeriod;
+    private final int dispatchPeriod;
+    private final int numRobotaxi;
+    // ---
+    private Tensor printVals = Tensors.empty();
+    private int total_rebalanceCount = 0;
+    private boolean started = false;
 
     public AdaptiveRealTimeRebalancingPolicy(Config config, AVDispatcherConfig avconfig, //
             AVGeneratorConfig generatorConfig, TravelTime travelTime, //
@@ -75,7 +76,8 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
         virtualNodeDest = abstractVirtualNodeDest;
         vehicleDestMatcher = abstractVehicleDestMatcher;
         numRobotaxi = (int) generatorConfig.getNumberOfVehicles();
-        lpVehicleRebalancing = new LPVehicleRebalancing(virtualNetwork);
+        lpMinFlow = new LPMinFlow(virtualNetwork);
+        lpMinFlow.initiateLP();
         SafeConfig safeConfig = SafeConfig.wrap(avconfig);
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
         rebalancingPeriod = safeConfig.getInteger("rebalancingPeriod", 300);
@@ -89,12 +91,19 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
 
     @Override
     public void redispatch(double now) {
-
         /** PART I: rebalance all vehicles periodically */
         final long round_now = Math.round(now);
 
+        if (!started) {
+            if (getRoboTaxis().size() == 0) // return if the roboTaxis are not ready yet
+                return;
+            // as soon as the roboTaxis are ready, make sure to execute rebalancing and dispatching for now=0
+            now = 0;
+            started = true;
+        }
+
         /** necessary because robotaxis not presence at time zero */
-        if (round_now % rebalancingPeriod == 0 && round_now > 10) {
+        if (round_now % rebalancingPeriod == 0) {
 
             Map<VirtualNode<Link>, List<AVRequest>> requests = getVirtualNodeRequests();
             /** compute rebalancing vehicles and send to virtualNodes */
@@ -126,7 +135,8 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
                 Tensor rhs = vi_desiredT.subtract(vi_excessT);
                 Tensor rebalanceCount2 = Tensors.empty();
                 if (totalAvailable > 0) {
-                    rebalanceCount2 = lpVehicleRebalancing.solveUpdatedLP(rhs, GLPKConstants.GLP_LO);
+                    lpMinFlow.solveLP(false, rhs);
+                    rebalanceCount2 = lpMinFlow.getAlphaAbsolute_ij();
                 } else {
                     rebalanceCount2 = Array.zeros(virtualNetwork.getvNodesCount(), virtualNetwork.getvNodesCount());
                 }

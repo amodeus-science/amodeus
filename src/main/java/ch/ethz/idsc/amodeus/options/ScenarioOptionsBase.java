@@ -20,7 +20,6 @@ public enum ScenarioOptionsBase {
     static final String SIMUCONFIGIDENTIFIER = "simuConfig";
     static final String VIRTUALNETWORKNAMEIDENTIFIER = "virtualNetwork";
     static final String TRAVELDATAFILENAME = "travelDataFileName";
-    static final String REBALANCEDATAFILENAME = "rebalanceDataFileName";
     static final String LINKSPEEDDATAFILENAME = "linkSpeedDataFileName";
     static final String COLORSCHEMEIDENTIFIER = "colorScheme";
     static final String CHARTTHEMEIDENTIFIER = "chartTheme";
@@ -51,7 +50,6 @@ public enum ScenarioOptionsBase {
         properties.setProperty(WAITFORCLIENTSIDENTIFIER, "false");
         properties.setProperty(VIRTUALNETWORKNAMEIDENTIFIER, "virtualNetwork");
         properties.setProperty(TRAVELDATAFILENAME, "travelData");
-        properties.setProperty(REBALANCEDATAFILENAME, "rebalanceData");
         properties.setProperty(LINKSPEEDDATAFILENAME, "linkSpeedData");
         properties.setProperty(COLORSCHEMEIDENTIFIER, "NONE");
         properties.setProperty(CHARTTHEMEIDENTIFIER, "STANDARD");

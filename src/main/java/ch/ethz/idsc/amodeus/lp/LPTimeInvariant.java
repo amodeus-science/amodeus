@@ -174,7 +174,6 @@ public class LPTimeInvariant implements LPSolver {
                 alphaIDvarID.put(Arrays.asList(i, j), columnId);
             }
         }
-        // System.out.println("alpha_ij done");
     }
 
     private void initRowDeltaV_i(SWIGTYPE_p_int ind, SWIGTYPE_p_double val, int timeIndex) {
@@ -212,7 +211,6 @@ public class LPTimeInvariant implements LPSolver {
             // turn over the entries to GLPK
             GLPK.glp_set_mat_row(lp, rowId, columnTotal, ind, val);
         }
-        // System.out.println("deltaV_i done");
     }
 
     private void initObj() {
