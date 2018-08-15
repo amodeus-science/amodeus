@@ -46,19 +46,19 @@ public class KMeansCascadeVirtualNetworkCreator {
     private KMeansLloyd<NumberVector> km;
     private Clustering<KMeansModel> c;
     private VirtualNetwork<Link> virtualNetwork;
-    private Map<VirtualNode<Link>, Set<Link>> vNMapGlobal = new LinkedHashMap<>();
+    private Map<VirtualNode<Link>, Set<Link>> virtualNodeToLinks = new LinkedHashMap<>();
     private Function<Link, Tensor> locationOf;
 
-    /** @param requests
+    /** The area is split into two parts by k-Means and then the sub-parts are again split until there are numVNodes many areas
+     * 
+     * @param requests
      * @param elements
      * @param uElements
      * @param locationOf
      * @param nameOf
      * @param numVNodes required to be a number of two potency
      * @param completeGraph
-     * @param tryIterations
-     * 
-     *            The area is split into two parts by k-Means and then the sub-parts are again split until there are numVNodes many areas */
+     * @param tryIterations */
     public KMeansCascadeVirtualNetworkCreator(Set<Request> requests, Collection<Link> elements, Map<Node, HashSet<Link>> uElements, Function<Link, Tensor> locationOf, //
             Function<Link, String> nameOf, int numVNodes, boolean completeGraph, //
             int tryIterations) {
@@ -70,16 +70,16 @@ public class KMeansCascadeVirtualNetworkCreator {
 
         this.locationOf = locationOf;
 
-        createSubVirtualNetwork(requests, elements, numVNodes, tryIterations, null, 1, 0);
+        assignLinksToVirtualNodes(requests, elements, numVNodes, tryIterations, null, 1, 0);
 
         Tensor bounds = getBounds(elements);
         // ASSIGN network links to closest nodes with a quadtree structure
-        CreatorUtils.addByProximity(vNMapGlobal, bounds.get(0), bounds.get(1), elements, locationOf);
+        CreatorUtils.addByProximity(virtualNodeToLinks, bounds.get(0), bounds.get(1), elements, locationOf);
 
         // initialize new virtual network
         virtualNetwork = new VirtualNetworkImpl<>();
 
-        CreatorUtils.addToVNodes(vNMapGlobal, nameOf, virtualNetwork);
+        CreatorUtils.addToVNodes(virtualNodeToLinks, nameOf, virtualNetwork);
 
         // create virtualLinks for complete or neighboring graph
         VirtualLinkBuilder.build(virtualNetwork, completeGraph, uElements);
@@ -89,12 +89,23 @@ public class KMeansCascadeVirtualNetworkCreator {
         CreatorUtils.fillSerializationInfo(elements, virtualNetwork, nameOf);
     }
 
-    private void createSubVirtualNetwork(Set<Request> requests, Collection<Link> elements, int numVNodes, int tryIterations, Tensor coord, int level, int subIndex) {
+    /** This function recursively splits the area (consisting of a set of links) into smaller parts. E.g. the whole network can be split into 4 virtualNodes by
+     * first giving all the network links as argument. On the first level (level=1, index=0) these links are split into two parts and the function is executed again
+     * in the second level (level=2, indices={0,1}) with the two subsets to get 4 subsets. The upper most level is defined as 1 and then increasing.
+     * 
+     * @param requests that occur in this area
+     * @param areaLinks subset of all the links in the network, defines the area
+     * @param numVNodes the number of virtualNodes that this area is split into
+     * @param tryIterations the number of trials for the kMeans split algorithm
+     * @param coord the center of the area
+     * @param level the current depth in the cascade
+     * @param subIndex the index of the area in the current depth */
+    private void assignLinksToVirtualNodes(Set<Request> requests, Collection<Link> areaLinks, int numVNodes, int tryIterations, Tensor coord, int level, int subIndex) {
         if (numVNodes == 1) {
-            fillGlobalMap(subIndex, coord);
+            fillVirtualNodeMap(subIndex, coord);
         } else {
             System.out.println("Creating split on level " + level + " and index " + subIndex);
-            Map<VirtualNode<Link>, Set<Link>> vNMapSplit = getKmeanSplit(requests, elements, tryIterations);
+            Map<VirtualNode<Link>, Set<Link>> vNMapSplit = getKmeanSplit(requests, areaLinks, tryIterations);
             List<Entry<VirtualNode<Link>, Set<Link>>> linksList = new ArrayList<>(vNMapSplit.entrySet());
             Set<Link> links0 = linksList.get(0).getValue();
             Set<Link> links1 = linksList.get(1).getValue();
@@ -102,11 +113,12 @@ public class KMeansCascadeVirtualNetworkCreator {
             Tensor coord1 = linksList.get(1).getKey().getCoord();
             Set<Request> requests0 = Request.filterLinks(requests, links0);
             Set<Request> requests1 = Request.filterLinks(requests, links1);
-            createSubVirtualNetwork(requests0, links0, numVNodes / 2, tryIterations, coord0, level + 1, subIndex);
-            createSubVirtualNetwork(requests1, links1, numVNodes / 2, tryIterations, coord1, level + 1, subIndex + numVNodes / 2);
+            assignLinksToVirtualNodes(requests0, links0, numVNodes / 2, tryIterations, coord0, level + 1, subIndex);
+            assignLinksToVirtualNodes(requests1, links1, numVNodes / 2, tryIterations, coord1, level + 1, subIndex + numVNodes / 2);
         }
     }
 
+    /** Creates a split with KMeans, given the area consisting of the collection of {@link Link}'s and the request set */
     private Map<VirtualNode<Link>, Set<Link>> getKmeanSplit(Set<Request> requests, Collection<Link> elements, int tryIterations) {
         long initSeed = 1;
         int iterations = 0;
@@ -169,12 +181,16 @@ public class KMeansCascadeVirtualNetworkCreator {
         return vNMap;
     }
 
-    private void fillGlobalMap(int index, Tensor coord) {
+    private void fillVirtualNodeMap(int index, Tensor coord) {
         System.out.println("Creating virtual node " + index);
         String indexStr = VirtualNodes.getIdString(index);
-        vNMapGlobal.put(new VirtualNode<Link>(index, indexStr, new HashMap<>(), coord), new LinkedHashSet<Link>());
+        virtualNodeToLinks.put(new VirtualNode<Link>(index, indexStr, new HashMap<>(), coord), new LinkedHashSet<Link>());
     }
 
+    /** Finds the x- and y-bounds of all the link coordinates.
+     * 
+     * @param elements
+     * @return */
     private static Tensor getBounds(Collection<Link> elements) {
         Set<Node> nodes = new HashSet<>();
         elements.stream().forEach(link -> nodes.add(link.getFromNode()));

@@ -20,6 +20,14 @@ import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 public enum MatsimKMeansCascadeVirtualNetworkCreator {
     ;
 
+    /** The network is split into two halfs and then each half is recursively split again until there are numVNodes parts. This sort of partitioning is useful when
+     * a cascade of the virtual network is needed. It approximates a normal KMeans algorithm in a faster way.
+     * 
+     * @param population
+     * @param network
+     * @param numVNodes required to be a number of two potency
+     * @param completeGraph
+     * @return {@link VirtualNetwork} with numVNodes many nodes */
     public static VirtualNetwork<Link> createVirtualNetwork(Population population, Network network, int numVNodes, boolean completeGraph) {
         // make sure numVNodes is power of 2
         for (int i = numVNodes; i > 1;) {

@@ -51,7 +51,7 @@ import ch.ethz.idsc.amodeus.matsim.mod.AmodeusModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusVirtualNetworkModule;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
-import ch.ethz.idsc.amodeus.prep.MatsimKmeansVirtualNetworkCreator;
+import ch.ethz.idsc.amodeus.prep.MatsimKMeansVirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
@@ -214,7 +214,7 @@ public class StandardMATSimScenarioTest {
                 // Since we have no virtual netowrk saved in the working directory for our test
                 // sceanario, we need to provide a custom one for the LPFB dispatcher
 
-                return MatsimKmeansVirtualNetworkCreator.createVirtualNetwork(scenario.getPopulation(), network, 2, true);
+                return MatsimKMeansVirtualNetworkCreator.createVirtualNetwork(scenario.getPopulation(), network, 2, true);
             }
 
             @Provides

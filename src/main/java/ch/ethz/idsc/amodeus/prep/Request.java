@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.matsim.api.core.v01.network.Link;
 
+/** This class represents a trip request where the departureTime, the departureLink and the destinationLink are stored */
 public class Request {
     public static Set<Request> filterLinks(Set<Request> requests, Set<Link> links) {
         return requests.stream().filter(request -> links.contains(request.startLink)).collect(Collectors.toSet());

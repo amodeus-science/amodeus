@@ -64,7 +64,7 @@ public enum PopulationTools {
 
     /** @param population
      * @param network
-     * @return the set of all AV requests */
+     * @return the set of all AV requests in the population */
     public static Set<Request> getAVRequests(Population population, Network network) {
         Set<Request> requests = new HashSet<>();
         // fill based on population file
