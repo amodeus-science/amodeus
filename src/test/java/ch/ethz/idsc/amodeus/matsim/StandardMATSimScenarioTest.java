@@ -1,7 +1,6 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.matsim;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,9 +42,6 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 
-import ch.ethz.idsc.amodeus.lp.LPCreator;
-import ch.ethz.idsc.amodeus.lp.LPSolver;
-import ch.ethz.idsc.amodeus.lp.RebalanceData;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDispatcherModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusVirtualNetworkModule;
@@ -53,6 +49,7 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.prep.MatsimKMeansVirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
+import ch.ethz.idsc.amodeus.traveldata.TravelDataCreator;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.matsim.av.config.AVConfig;
@@ -219,26 +216,13 @@ public class StandardMATSimScenarioTest {
 
             @Provides
             @Singleton
-            public TravelData provideTravelData(VirtualNetwork<Link> virtualNetwork, @Named(AVModule.AV_MODE) Network network, Population population) {
+            public TravelData provideTravelData(VirtualNetwork<Link> virtualNetwork, @Named(AVModule.AV_MODE) Network network, Population population) throws Exception {
                 // Same as for the virtual network: For the LPFF dispatcher we need travel
                 // data, which we generate on the fly here.
+                ScenarioOptions scenarioOptions = new ScenarioOptions(MultiFileTools.getWorkingDirectory(), ScenarioOptionsBase.getDefault());
 
-                TravelData travelData = new TravelData(virtualNetwork, network, population, 300);
+                TravelData travelData = TravelDataCreator.create(virtualNetwork, network, population, scenarioOptions);
                 return travelData;
-            }
-
-            @Provides
-            @Singleton
-            public RebalanceData provideRebalanceData(VirtualNetwork<Link> virtualNetwork, TravelData travelData) {
-                ScenarioOptions scenarioOptions = null;
-                try {
-                    scenarioOptions = new ScenarioOptions(MultiFileTools.getWorkingDirectory(), ScenarioOptionsBase.getDefault());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                LPSolver solver = LPCreator.NONE.create(virtualNetwork, null, null, travelData);
-                return new RebalanceData(solver, scenarioOptions);
             }
         });
 

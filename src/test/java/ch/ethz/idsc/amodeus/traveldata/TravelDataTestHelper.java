@@ -66,22 +66,4 @@ public class TravelDataTestHelper {
         }
         return false;
     }
-
-    public boolean checkInvalidTimeInterval(Population population, Network network) {
-        try {
-            new TravelData(virtualNetworkCreated, network, population, 24 * 3600 - 1);
-        } catch (Exception e) {
-            return true;
-        }
-        return false;
-    }
-
-    public boolean checkValidTimeInterval(Population population, Network network) {
-        try {
-            new TravelData(virtualNetworkCreated, network, population, 1);
-        } catch (Exception e) {
-            return true;
-        }
-        return false;
-    }
 }

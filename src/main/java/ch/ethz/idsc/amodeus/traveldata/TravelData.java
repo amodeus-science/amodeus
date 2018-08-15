@@ -2,19 +2,12 @@
 package ch.ethz.idsc.amodeus.traveldata;
 
 import java.io.Serializable;
-import java.util.Set;
 
-import org.matsim.api.core.v01.network.Link;
-import org.matsim.api.core.v01.network.Network;
-import org.matsim.api.core.v01.population.Population;
-
-import ch.ethz.idsc.amodeus.prep.PopulationTools;
-import ch.ethz.idsc.amodeus.prep.Request;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.alg.Dimensions;
 import ch.ethz.idsc.tensor.sca.Chop;
 import ch.ethz.idsc.tensor.sca.Clip;
 import ch.ethz.idsc.tensor.sca.Round;
@@ -24,41 +17,26 @@ public class TravelData implements Serializable {
     private static final int DURATION = 24 * 60 * 60; // for now equal to one day
     private static final Clip TIME_CLIP = Clip.function(0, DURATION);
     // ---
-    /** tensor (i,j,k) of dimension (numberofTimeSteps, numberVirtualNodes, numberVirtualNodes) that contains
+    /** tensor (k,i,j) of dimension (numberofTimeSteps, numberVirtualNodes, numberVirtualNodes) that contains
      * the number of requests that come up in timeStep k from VS i to j */
     private final Tensor lambdaAbsolute;
+    private final Tensor alphaAbsolute;
+    private final Tensor v0;
+    private final Tensor fAbsolute;
     private final int timeSteps;
     private final int timeInterval; // used as lookup
     private final long virtualNetworkID; // used for consistency check
 
-    /** Constructor for TravelData object creating historic travel information based on virtualNetwork and population
-     * 
-     * @param virtualNetworkIn
-     * @param network
-     * @param population
-     * @param timeInterval has to be a divider of the DURATION (i.e. 24*3600)
-     * @param ratio is the scaling factor, e.g. ratio = 0.1 if lambda is created with 10'000 trips but only 1'000 are actually simulated */
-    public TravelData(VirtualNetwork<Link> virtualNetwork, Network network, Population population, int timeInterval, Scalar ratio) {
-        System.out.println("reading travel data for population of size " + population.getPersons().size());
-        virtualNetworkID = virtualNetwork.getvNetworkID();
-        System.out.println("the ID of the virtualNetwork used for travel data construction is: " + virtualNetworkID);
+    public TravelData(long virtualNetworkID, Tensor lambdaAbsolute, Tensor alphaAbsolute, Tensor fAbsolute, Tensor v0) {
+        this.virtualNetworkID = virtualNetworkID;
+        this.lambdaAbsolute = lambdaAbsolute;
+        this.alphaAbsolute = alphaAbsolute;
+        this.fAbsolute = fAbsolute;
+        this.v0 = v0;
+        this.timeSteps = lambdaAbsolute.length();
+        this.timeInterval = DURATION / timeSteps;
 
-        this.timeInterval = timeInterval;
-        GlobalAssert.that(DURATION % timeInterval == 0);
-        timeSteps = DURATION / timeInterval;
-        System.out.println("Number of time steps = " + timeSteps);
-
-        // create the lambda Tensors
-        Set<Request> avRequests = PopulationTools.getAVRequests(population, network);
-
-        Tensor lambdaTotal = PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(avRequests, virtualNetwork, timeInterval);
-
-        lambdaAbsolute = Round.of(lambdaTotal.multiply(ratio));
         checkConsistency();
-    }
-
-    public TravelData(VirtualNetwork<Link> virtualNetwork, Network network, Population population, int timeInterval) {
-        this(virtualNetwork, network, population, timeInterval, RealScalar.ONE);
     }
 
     public Tensor getLambdaAbsoluteAtTime(int time) {
@@ -72,11 +50,11 @@ public class TravelData implements Serializable {
 
     public Tensor getLambdaRateAtTime(int time) {
         GlobalAssert.that(TIME_CLIP.isInside(RealScalar.of(time)));
-        return lambdaAbsolute.get(time / timeInterval).multiply(RealScalar.of(timeInterval).reciprocal());
+        return lambdaAbsolute.get(time / timeInterval).divide(RealScalar.of(timeInterval));
     }
 
     public Tensor getLambdaRate() {
-        return lambdaAbsolute.multiply(RealScalar.of(timeInterval).reciprocal());
+        return lambdaAbsolute.divide(RealScalar.of(timeInterval));
     }
 
     public long getVirtualNetworkID() {
@@ -91,6 +69,46 @@ public class TravelData implements Serializable {
         return timeInterval;
     }
 
+    public Tensor getAlphaAbsolute() {
+        return alphaAbsolute.copy();
+    }
+
+    public Tensor getAlphaAbsoluteAtTime(int time) {
+        TIME_CLIP.requireInside(RealScalar.of(time));
+        return alphaAbsolute.get(time / timeInterval).copy();
+    }
+
+    public Tensor getAlphaRate() {
+        return alphaAbsolute.divide(RealScalar.of(timeInterval));
+    }
+
+    public Tensor getAlphaRateAtTime(int time) {
+        TIME_CLIP.requireInside(RealScalar.of(time));
+        return alphaAbsolute.get(time / timeInterval).divide(RealScalar.of(timeInterval));
+    }
+
+    public Tensor getFAbsolute() {
+        return fAbsolute.copy();
+    }
+
+    public Tensor getFAbsoluteAtTime(int time) {
+        TIME_CLIP.requireInside(RealScalar.of(time));
+        return fAbsolute.get(time / timeInterval).copy();
+    }
+
+    public Tensor getFRate() {
+        return fAbsolute.divide(RealScalar.of(timeInterval));
+    }
+
+    public Tensor getFRateAtTime(int time) {
+        TIME_CLIP.requireInside(RealScalar.of(time));
+        return fAbsolute.get(time / timeInterval).divide(RealScalar.of(timeInterval));
+    }
+
+    public Tensor getV0() {
+        return v0;
+    }
+
     /** Perform consistency checks after completion of constructor operations. */
     public void checkConsistency() {
         GlobalAssert.that(lambdaAbsolute.flatten(-1).map(Scalar.class::cast).allMatch(Sign::isPositiveOrZero));
@@ -101,6 +119,11 @@ public class TravelData implements Serializable {
      * 
      * @param virtualNetworkID */
     public void checkIdenticalVirtualNetworkID(long virtualNetworkID) {
+        GlobalAssert.that(DURATION % timeInterval == 0);
+        GlobalAssert.that(Dimensions.of(lambdaAbsolute).equals(Dimensions.of(alphaAbsolute)));
+        GlobalAssert.that(Dimensions.of(lambdaAbsolute).equals(Dimensions.of(fAbsolute)));
+        GlobalAssert.that(Dimensions.of(lambdaAbsolute).get(1).equals(Dimensions.of(lambdaAbsolute).get(2)));
+        GlobalAssert.that(Dimensions.of(lambdaAbsolute).get(1).equals(Dimensions.of(v0).get(0)));
         GlobalAssert.that(virtualNetworkID == this.virtualNetworkID);
     }
 }
