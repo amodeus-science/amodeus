@@ -23,10 +23,11 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.Dimensions;
 
+/** This abstract class is used for {@link LPTimeVariant} and can be used for similar implementations */
 public abstract class LPTimeVariantBase implements LPSolver {
     protected static final int DURATION = 24 * 60 * 60;
     // ---
-    // map with variableIDs in problem set up and linkIDs of virtualNetwork
+    /** map with variableIDs in problem setup and linkIDs of virtualNetwork */
     protected final Map<List<Integer>, Integer> alphaIDvarID = new HashMap<>();
     protected final Map<List<Integer>, Integer> vIDvarID = new HashMap<>();
     private final glp_smcp parm = new glp_smcp();
@@ -135,7 +136,7 @@ public abstract class LPTimeVariantBase implements LPSolver {
         GLPK.glp_term_out(mute ? GLPK.GLP_OFF : GLPK.GLP_ON);
 
         GLPK.glp_init_smcp(parm);
-        int ret = GLPK.glp_simplex(lp, parm); // ret==0 indicates of the algorithm ran correctly
+        int ret = GLPK.glp_simplex(lp, parm); // ret==0 indicates that the algorithm ran correctly
         GlobalAssert.that(ret == 0);
         int stat = GLPK.glp_get_status(lp);
 
@@ -197,7 +198,6 @@ public abstract class LPTimeVariantBase implements LPSolver {
                 }
             }
         }
-        // System.out.println("alpha_ij[k] done");
     }
 
     protected abstract void initColumnF_ij();
@@ -213,7 +213,6 @@ public abstract class LPTimeVariantBase implements LPSolver {
             GLPK.glp_set_col_bnds(lp, columnId, GLPKConstants.GLP_LO, 0.0, 0.0); // Lower bound: second number irrelevant
             vIDvarID.put(Arrays.asList(i), columnId);
         }
-        // System.out.println("V_i[0] done");
     }
 
     protected abstract void initRowV_i_k(SWIGTYPE_p_int ind, SWIGTYPE_p_double val);
@@ -249,8 +248,6 @@ public abstract class LPTimeVariantBase implements LPSolver {
 
         // turn over the entries to GLPK
         GLPK.glp_set_mat_row(lp, rowId, columnTotal, ind, val);
-
-        // System.out.println("N done");
     }
 
     protected abstract void initObjCr();

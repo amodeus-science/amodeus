@@ -12,6 +12,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.Dimensions;
 
+/** This solver is called when no LP has to be solved. alpha, f and v0_i are set to 0 matrices with the proper dimensions. */
 public class LPEmpty implements LPSolver {
     private static final int DURATION = 24 * 60 * 60;
     // ---

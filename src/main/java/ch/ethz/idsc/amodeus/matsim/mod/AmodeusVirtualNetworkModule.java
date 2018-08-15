@@ -10,8 +10,6 @@ import org.matsim.core.controler.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 
-import ch.ethz.idsc.amodeus.lp.RebalanceData;
-import ch.ethz.idsc.amodeus.lp.RebalanceDataGet;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.traveldata.TravelDataGet;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
@@ -38,16 +36,6 @@ public class AmodeusVirtualNetworkModule extends AbstractModule {
     public TravelData provideTravelData(VirtualNetwork<Link> virtualNetwork) {
         try {
             return TravelDataGet.readDefault(virtualNetwork);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Provides
-    @Singleton
-    public RebalanceData provideRebalanceData() {
-        try {
-            return RebalanceDataGet.readDefault();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

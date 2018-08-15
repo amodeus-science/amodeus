@@ -12,7 +12,6 @@ import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.scenario.ScenarioUtils;
 
-import ch.ethz.idsc.amodeus.lp.LPPreparer;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.prep.ConfigCreator;
@@ -20,6 +19,7 @@ import ch.ethz.idsc.amodeus.prep.NetworkPreparer;
 import ch.ethz.idsc.amodeus.prep.PopulationPreparer;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkPreparer;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
+import ch.ethz.idsc.amodeus.traveldata.TravelDataCreator;
 import ch.ethz.idsc.amodeus.traveldata.TravelDataIO;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 
@@ -67,15 +67,11 @@ public class TestPreparer {
 
         // 4) create TravelData
         /** reading the customer requests */
-        TravelData travelData = new TravelData(virtualNetwork, networkPrepared, populationPrepared, scenarioOptions.getdtTravelData());
+        TravelData travelData = TravelDataCreator.create(virtualNetwork, networkPrepared, populationPrepared, scenarioOptions);
         File travelDataFile = new File(scenarioOptions.getVirtualNetworkName(), scenarioOptions.getTravelDataName());
         TravelDataIO.write(travelDataFile, travelData);
 
-        // 5) create RebalancingData with LP
-        /** prepare LP solver */
-        LPPreparer.run(virtualNetwork, networkPrepared, travelData, scenarioOptions);
-
-        // 6) save a simulation config file
+        // 5) save a simulation config file
         // IncludeActTypeOf.BaselineCH(config); // Only needed in Some Scenarios
         ConfigCreator.createSimulationConfigFile(config, scenarioOptions);
     }

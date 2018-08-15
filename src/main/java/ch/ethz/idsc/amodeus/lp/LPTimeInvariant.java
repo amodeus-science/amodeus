@@ -24,11 +24,20 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.Dimensions;
 
+/** Implementation of the LPTimeInvariant solver of
+ * "Feedforward Fluidic Optimal Rebalancing Policy" presented in
+ * Pavone, M., Smith, S.L., Frazzoli, E. and Rus, D., 2012.
+ * Robotic load balancing for mobility-on-demand systems.
+ * The International Journal of Robotics Research, 31(7), pp.839-854.
+ * 
+ * On page 845 on the right side is the implemented algorithm shown.
+ * 
+ * https://github.com/idsc-frazzoli/amodeus/files/2290529/lptimeinvariant-impl.pdf */
 public class LPTimeInvariant implements LPSolver {
     private final static int DURATION = 24 * 60 * 60;
     private final static double AVERAGE_VEL = 30.0;
     // ---
-    // map with variableIDs in problem set up and linkIDs of virtualNetwork
+    /** map with variableIDs in problem set up and linkIDs of virtualNetwork */
     private final Map<List<Integer>, Integer> alphaIDvarID = new HashMap<>();
     protected final Map<List<Integer>, Integer> vIDvarID = new HashMap<>();
     private final glp_smcp parm = new glp_smcp();
@@ -174,7 +183,6 @@ public class LPTimeInvariant implements LPSolver {
                 alphaIDvarID.put(Arrays.asList(i, j), columnId);
             }
         }
-        // System.out.println("alpha_ij done");
     }
 
     private void initRowDeltaV_i(SWIGTYPE_p_int ind, SWIGTYPE_p_double val, int timeIndex) {
@@ -212,7 +220,6 @@ public class LPTimeInvariant implements LPSolver {
             // turn over the entries to GLPK
             GLPK.glp_set_mat_row(lp, rowId, columnTotal, ind, val);
         }
-        // System.out.println("deltaV_i done");
     }
 
     private void initObj() {

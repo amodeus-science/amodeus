@@ -21,7 +21,7 @@ public enum VirtualNetworkCreators implements VirtualNetworkCreator {
         @Override
         public VirtualNetwork<Link> create(Network network, Population population) {
             GlobalAssert.that(scenarioOptions != null);
-            return MatsimKmeansVirtualNetworkCreator.createVirtualNetwork( //
+            return MatsimKMeansVirtualNetworkCreator.createVirtualNetwork( //
                     population, network, scenarioOptions.getNumVirtualNodes(), scenarioOptions.isCompleteGraph());
         }
     },

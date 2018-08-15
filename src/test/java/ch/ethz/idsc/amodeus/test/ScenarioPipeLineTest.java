@@ -131,8 +131,6 @@ public class ScenarioPipeLineTest {
         assertTrue(travelDataTestHelper.lambdaRateCheck());
         assertTrue(travelDataTestHelper.lambdaRateAtTimeCheck());
         assertTrue(travelDataTestHelper.lambdaInvalidRateAtTimeCheck());
-        assertTrue(travelDataTestHelper.checkInvalidTimeInterval(population, preparedNetwork));
-        assertTrue(travelDataTestHelper.checkValidTimeInterval(population, preparedNetwork));
     }
 
     @Test

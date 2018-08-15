@@ -30,11 +30,14 @@ import ch.ethz.idsc.tensor.alg.Array;
  * 
  * One improvement was done so that the problem remains feasible:
  * For the equation V_i(T_P) all rebalancing and customer-carrying vehicles to virtual station i are considered, even if
- * they are still on the way. Therefore the integration with w_{ji}(\tau,\sigma) is ignored in this case. */
+ * they are still on the way. Therefore the integration with w_{ji}(\tau,\sigma) is ignored in this case. 
+ * 
+ * A more detailed derivation: https://github.com/idsc-frazzoli/amodeus/files/2290772/lptimevariant-impl.pdf
+ * */
 public class LPTimeVariant extends LPTimeVariantBase {
     private final static double AVERAGE_VEL = 30.0;
     // ---
-    // map with variableIDs in problem set up and linkIDs of virtualNetwork
+    /** map with variableIDs in problem set up and linkIDs of virtualNetwork */
     private final Map<List<Integer>, Integer> fIDvarID = new HashMap<>();
     private final double weightQ;
     private final double weightR;
@@ -150,7 +153,6 @@ public class LPTimeVariant extends LPTimeVariantBase {
                 }
             }
         }
-        System.out.println("F_ij[k] done");
     }
 
     @Override
@@ -187,7 +189,6 @@ public class LPTimeVariant extends LPTimeVariantBase {
                 GLPK.glp_set_mat_row(lp, rowId, columnTotal, ind, val);
             }
         }
-        System.out.println("F_ij[K] done");
     }
 
     @Override
@@ -250,7 +251,6 @@ public class LPTimeVariant extends LPTimeVariantBase {
                 GLPK.glp_set_mat_row(lp, rowId, columnTotal, ind, val);
             }
         }
-        System.out.println("V_i[k] done");
     }
 
     @Override
@@ -302,7 +302,6 @@ public class LPTimeVariant extends LPTimeVariantBase {
             // turn over the entries to GLPK
             GLPK.glp_set_mat_row(lp, rowId, columnTotal, ind, val);
         }
-        System.out.println("V_i[K] done");
     }
 
     @Override

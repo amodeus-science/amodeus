@@ -64,7 +64,7 @@ public enum PopulationTools {
 
     /** @param population
      * @param network
-     * @return the set of all AV requests */
+     * @return the set of all AV requests in the population */
     public static Set<Request> getAVRequests(Population population, Network network) {
         Set<Request> requests = new HashSet<>();
         // fill based on population file
@@ -106,7 +106,7 @@ public enum PopulationTools {
     /** @param requests
      * @param virtualNetwork
      * @param timeInterval
-     * @return {@link Tensor} with indices i,j,k where the elements are the number of requests from virtual station i to j at time interval k. E.g. (2,1,5)=10 means
+     * @return {@link Tensor} with indices k,i,j where the elements are the number of requests from virtual station i to j at time interval k. E.g. (5,1,2)=10 means
      *         that 10 requests appear in virtual station i with destination in virtual station j at time interval 5. */
     public static Tensor getLambdaInVirtualNodesAndTimeIntervals(Set<Request> requests, VirtualNetwork<Link> virtualNetwork, int timeInterval) {
         GlobalAssert.that(DAYDURATION % timeInterval == 0);

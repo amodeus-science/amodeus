@@ -5,31 +5,24 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
-import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
+import ch.ethz.idsc.tensor.Tensor;
 
 public enum LPPreparer {
     ;
-    private static LPCreator lpCreator;
-    private static LPSolver solver;
 
-    public static void run(VirtualNetwork<Link> virtualNetwork, //
-            Network network, TravelData travelData, //
+    /** Solves the LP by the given solver and returns the solver where the LP solution can be taken out if it */
+    public static LPSolver run(VirtualNetwork<Link> virtualNetwork, //
+            Network network, Tensor lambdaAbsolute, //
             ScenarioOptions scenarioOptions) throws Exception {
 
-        lpCreator = scenarioOptions.getLPSolver();
-        solver = lpCreator.create(virtualNetwork, network, scenarioOptions, travelData);
+        LPCreator lpCreator = scenarioOptions.getLPSolver();
+        LPSolver solver = lpCreator.create(virtualNetwork, network, scenarioOptions, lambdaAbsolute);
 
         solver.initiateLP();
         solver.solveLP(false);
         // solver.writeLPSolution();
 
-        /** creating rebalancing data with LP */
-        RebalanceData rebalanceData = new RebalanceData(solver, scenarioOptions);
-        rebalanceData.export(scenarioOptions);
-    }
-
-    public static LPSolver getLPSolver() {
         return solver;
     }
 }

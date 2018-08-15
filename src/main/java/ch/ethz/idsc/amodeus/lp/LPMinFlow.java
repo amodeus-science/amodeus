@@ -24,10 +24,13 @@ import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.Sign;
 
+/** This LP solver is used for the AdaptiveRealTimeRebalancingPolicy
+ * 
+ * https://github.com/idsc-frazzoli/amodeus/files/2290644/lpminflow-impl.pdf */
 public class LPMinFlow {
     private final static double AVERAGE_VEL = 30.0;
     // ---
-    // map with variableIDs in problem set up and linkIDs of virtualNetwork
+    /** map with variableIDs in problem set up and linkIDs of virtualNetwork */
     private final Map<List<Integer>, Integer> alphaIDvarID = new HashMap<>();
     private final glp_smcp parm = new glp_smcp();
     private final VirtualNetwork<Link> virtualNetwork;
@@ -98,6 +101,7 @@ public class LPMinFlow {
         }
     }
 
+    /** solves the LPMinFlow problem, given the right-hand side of the equations and stores the solution alpha */
     public void solveLP(boolean mute, Tensor minFlow) {
         // use minFlow as lower bound
         GlobalAssert.that(minFlow.length() == nvNodes);
@@ -210,6 +214,7 @@ public class LPMinFlow {
         System.out.println("The absolute Rebalancing: " + alphaAbsolute_ij);
     }
 
+    /** Returns the last solution of the LPMinFlow as Tensor. E.g. alpha(i,j)=n means that n objects have to be sent from i to j */
     public Tensor getAlphaAbsolute_ij() {
         return alphaAbsolute_ij;
     }
