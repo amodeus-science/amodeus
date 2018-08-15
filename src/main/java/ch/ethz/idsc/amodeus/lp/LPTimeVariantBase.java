@@ -23,6 +23,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.Dimensions;
 
+/** This abstract class is used for {@link LPTimeVariant} and can be used for similar implementations */
 public abstract class LPTimeVariantBase implements LPSolver {
     protected static final int DURATION = 24 * 60 * 60;
     // ---
