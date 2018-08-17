@@ -51,4 +51,29 @@ public class BipartiteMatchingUtils {
         return infoLine;
     }
 
+    public Map<RoboTaxi, AVRequest> getGBPMatch( //
+            UniversalDispatcher universalDispatcher, //
+            Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
+            Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
+            DistanceFunction distanceFunction, Network network, boolean reduceWkdTree) {
+
+        Tensor infoLine = Tensors.empty();
+        Map<RoboTaxi, AVRequest> gbpMatch;
+
+        /** reduction of problem size with kd-tree, helps to downsize problems where n << m or m>> n
+         * for n number of available taxis and m number of available requests */
+        if (reduceWkdTree) {
+            KdTreeReducer reducer = new KdTreeReducer(roboTaxis, requests, distanceFunction, network, infoLine);
+            gbpMatch = ((new GlobalBipartiteMatching(distanceFunction)).match(reducer.getReducedRoboTaxis(), reducer.getReducedRequests()));
+        } else {
+            gbpMatch = ((new GlobalBipartiteMatching(distanceFunction)).match(roboTaxis, requests));
+        }
+
+        /** prevent cycling an assignment is only updated if the new distance is smaller than the
+         * old distance */
+        Map<RoboTaxi, AVRequest> gbpMatchCleaned = CyclicSolutionPreventer.apply(gbpMatch, universalDispatcher, accDstFctn);
+
+        return gbpMatchCleaned;
+    }
+
 }
