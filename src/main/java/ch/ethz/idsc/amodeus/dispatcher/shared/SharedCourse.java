@@ -5,18 +5,39 @@ import java.util.Objects;
 
 import org.matsim.api.core.v01.network.Link;
 
+import ch.ethz.matsim.av.passenger.AVRequest;
+
 /** Middle level class in SharedRoboTaxi functionality, a {@link SharedMenu} is
  * composed of {@link SharedCourse}s which internally have a {@link SharedMealType}s */
 public class SharedCourse {
 
-    private final String requestId;
+    /** fast access functions */
+    public static SharedCourse pickupCourse(AVRequest avRequest) {
+        return new SharedCourse(avRequest.getId().toString(), avRequest.getFromLink(), SharedMealType.PICKUP);
+    }
+    
+    public static SharedCourse dropoffCourse(AVRequest avRequest) {
+        return new SharedCourse(avRequest.getId().toString(), avRequest.getToLink(), SharedMealType.DROPOFF);
+    }
+    
+    public static SharedCourse redirectCourse(Link link, String id) {
+        return new SharedCourse(id, link, SharedMealType.REDIRECT);
+    }
+
+    /** class implementation */
+    private final String requestID;
     private final Link link;
     private final SharedMealType sharedRoboTaxiMealType;
 
-    // TODO after implementing tests, carefully check if requestID and link can be replaced with AVRequest
-    public SharedCourse(String requestId, Link link, SharedMealType sharedAVMealType) {
+    // TODO after implementing tests, carefully check if requestID and link can be replaced with AVRequest ?
+    /** @param for {@link SharedMealType} PICKUP and DROPOFF the requestID must be the
+     *            id of the {@link AVRequest}, otherwise a self-chosen id to distinguish different
+     *            {@link SharedMealType} tasks of type REDIRECT
+     * @param link
+     * @param sharedAVMealType */
+    private SharedCourse(String requestID, Link link, SharedMealType sharedAVMealType) {
         this.link = link;
-        this.requestId = requestId;
+        this.requestID = requestID;
         this.sharedRoboTaxiMealType = sharedAVMealType;
     }
 
@@ -25,7 +46,7 @@ public class SharedCourse {
     }
 
     public String getRequestId() {
-        return requestId;
+        return requestID;
     }
 
     public Link getLink() {
@@ -36,7 +57,7 @@ public class SharedCourse {
     public boolean equals(Object object) {
         if (object instanceof SharedCourse) {
             SharedCourse sharedAVCourse = (SharedCourse) object;
-            return sharedAVCourse.getRequestId().equals(requestId) && //
+            return sharedAVCourse.getRequestId().equals(requestID) && //
                     sharedAVCourse.getLink().equals(link) && //
                     sharedAVCourse.getMealType().equals(sharedRoboTaxiMealType);
         }
@@ -45,6 +66,6 @@ public class SharedCourse {
 
     @Override
     public int hashCode() {
-        return Objects.hash(requestId.toString(), sharedRoboTaxiMealType);
+        return Objects.hash(requestID.toString(), sharedRoboTaxiMealType);
     }
 }

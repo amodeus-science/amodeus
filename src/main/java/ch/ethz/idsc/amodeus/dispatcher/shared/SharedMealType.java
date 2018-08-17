@@ -6,6 +6,6 @@ package ch.ethz.idsc.amodeus.dispatcher.shared;
 public enum SharedMealType {
     PICKUP, //
     DROPOFF, //
-    REBALANCE, //
+    REDIRECT, //
     ;
 }

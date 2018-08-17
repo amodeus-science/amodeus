@@ -280,7 +280,7 @@ public class RoboTaxi {
                 futureNumberCustomers++;
             } else if (sharedAVCourse.getMealType().equals(SharedMealType.DROPOFF)) {
                 futureNumberCustomers--;
-            } else if (sharedAVCourse.getMealType().equals(SharedMealType.REBALANCE)) {
+            } else if (sharedAVCourse.getMealType().equals(SharedMealType.REDIRECT)) {
                 // --
             } else {
                 throw new IllegalArgumentException("Unknown SharedAVMealType -- please specify it !!!--");
