@@ -102,13 +102,13 @@ public class SharedHeuristicDispatcher extends SharedUniversalDispatcher {
                             for (AVRequest avReqShrd : sharingAssignments) {
                                 addSharedRoboTaxiPickup(matchedRoboTaxi, avReqShrd);
                                 assignements.add(avReqShrd);
-                                pickupMenu.add(new SharedCourse(avReqShrd.getId(), avReqShrd.getFromLink(), SharedMealType.PICKUP));
-                                dropoffMenu.add(new SharedCourse(avReqShrd.getId(), avReqShrd.getToLink(), SharedMealType.DROPOFF));
+                                pickupMenu.add(new SharedCourse(avReqShrd.getId().toString(), avReqShrd.getFromLink(), SharedMealType.PICKUP));
+                                dropoffMenu.add(new SharedCourse(avReqShrd.getId().toString(), avReqShrd.getToLink(), SharedMealType.DROPOFF));
                             }
                             SharedMenu sharedAVMenu = new SharedMenu();
-                            sharedAVMenu.addAVCourseAsStarter(new SharedCourse(avRequest.getId(), avRequest.getFromLink(), SharedMealType.PICKUP));
+                            sharedAVMenu.addAVCourseAsStarter(new SharedCourse(avRequest.getId().toString(), avRequest.getFromLink(), SharedMealType.PICKUP));
                             pickupMenu.forEach(course -> sharedAVMenu.addAVCourseAsDessert(course));
-                            sharedAVMenu.addAVCourseAsDessert(new SharedCourse(avRequest.getId(), avRequest.getToLink(), SharedMealType.DROPOFF));
+                            sharedAVMenu.addAVCourseAsDessert(new SharedCourse(avRequest.getId().toString(), avRequest.getToLink(), SharedMealType.DROPOFF));
                             dropoffMenu.forEach(course -> sharedAVMenu.addAVCourseAsDessert(course));
                             GlobalAssert.that(sharedAVMenu.checkNoPickupAfterDropoffOfSameRequest());
                             matchedRoboTaxi.getMenu().replaceWith(sharedAVMenu);

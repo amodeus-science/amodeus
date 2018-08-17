@@ -151,8 +151,8 @@ public class SharedMenu {
         return indices;
     }
 
-    public Set<Id<Request>> getUniqueAVRequests() {
-        Set<Id<Request>> ids = new HashSet<>();
+    public Set<String> getUniqueAVRequests() {
+        Set<String> ids = new HashSet<>();
         roboTaxiMenu.forEach(savc -> ids.add(savc.getRequestId()));
         return ids;
     }

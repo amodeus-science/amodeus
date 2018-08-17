@@ -172,8 +172,8 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         if (pickupRegister.containsKey(avRequest)) {
             requestRegister.get(pickupRegister.get(avRequest)).remove(avRequest.getId());
             RoboTaxi oldRoboTaxi = pickupRegister.get(avRequest);
-            SharedCourse sharedAVCoursePickUp = new SharedCourse(avRequest.getId(), avRequest.getFromLink(), SharedMealType.PICKUP);
-            SharedCourse sharedAVCourseDropoff = new SharedCourse(avRequest.getId(), avRequest.getToLink(), SharedMealType.DROPOFF);
+            SharedCourse sharedAVCoursePickUp = new SharedCourse(avRequest.getId().toString(), avRequest.getFromLink(), SharedMealType.PICKUP);
+            SharedCourse sharedAVCourseDropoff = new SharedCourse(avRequest.getId().toString(), avRequest.getToLink(), SharedMealType.DROPOFF);
             GlobalAssert.that(oldRoboTaxi.getMenu().containsCourse(sharedAVCoursePickUp) && oldRoboTaxi.getMenu().containsCourse(sharedAVCoursePickUp));
             oldRoboTaxi.getMenu().removeAVCourse(sharedAVCoursePickUp);
             oldRoboTaxi.getMenu().removeAVCourse(sharedAVCourseDropoff);
@@ -183,8 +183,8 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         pickupRegister.put(avRequest, sRoboTaxi);
         requestRegister.get(sRoboTaxi).put(avRequest.getId(), avRequest);
 
-        sRoboTaxi.getMenu().addAVCourseAsDessert(new SharedCourse(avRequest.getId(), avRequest.getFromLink(), SharedMealType.PICKUP));
-        sRoboTaxi.getMenu().addAVCourseAsDessert(new SharedCourse(avRequest.getId(), avRequest.getToLink(), SharedMealType.DROPOFF));
+        sRoboTaxi.getMenu().addAVCourseAsDessert(new SharedCourse(avRequest.getId().toString(), avRequest.getFromLink(), SharedMealType.PICKUP));
+        sRoboTaxi.getMenu().addAVCourseAsDessert(new SharedCourse(avRequest.getId().toString(), avRequest.getToLink(), SharedMealType.DROPOFF));
 
         reqStatuses.put(avRequest, RequestStatus.ASSIGNED);
 
@@ -508,9 +508,10 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
                 .anyMatch(rtx -> rtx.getMenu().getCourses().stream().anyMatch(c -> !requestRegister.get(rtx).containsKey(c.getRequestId()))));
 
         // Menus do not Contain duplicate requests
-        List<Id<Request>> menusRequests = new ArrayList<>();
-        getRoboTaxis().stream().filter(rt -> rt.getMenu().hasStarter()).forEach(rtx -> rtx.getMenu().getUniqueAVRequests().forEach(id -> menusRequests.add(id)));
-        Set<Id<Request>> uniqueMenuReqests = (new HashSet<>(menusRequests));
+        List<String> menusRequests = new ArrayList<>();
+        getRoboTaxis().stream().filter(rt -> rt.getMenu().hasStarter()).forEach(//
+                rtx -> rtx.getMenu().getUniqueAVRequests().forEach(id -> menusRequests.add(id)));
+        Set<String> uniqueMenuReqests = (new HashSet<>(menusRequests));
         GlobalAssert.that(uniqueMenuReqests.size() == menusRequests.size());
 
         // check that the request register equals the requests in the menu of each robo taxi
