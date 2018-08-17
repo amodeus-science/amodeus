@@ -11,9 +11,9 @@ import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedAVCourse;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedAVMealType;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedAVMenu;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.schedule.AVDriveTask;
@@ -23,11 +23,9 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
 /** RoboTaxi is central classs to be used in all dispatchers. Dispatchers control
  * a fleet of RoboTaxis, each is uniquely associated to an AVVehicle object in
- * MATSim.
- * 
- * @author Claudio Ruch */
+ * MATSim. */
 public class RoboTaxi {
-    // Standard Taxi Fields
+    /** unit capacity fields */
     static private final Logger logger = Logger.getLogger(RoboTaxi.class);
 
     private final AVVehicle avVehicle;
@@ -42,9 +40,9 @@ public class RoboTaxi {
     private LinkTimePair divertableLinkTime;
     private AbstractDirective directive;
 
-    // Shared Taxi Fields
+    /** capacity > 1 fields */
     private int onBoardCustomers = 0;
-    private final SharedAVMenu menu = new SharedAVMenu();
+    private final SharedMenu menu = new SharedMenu();
 
     /** Standard constructor
      * 
@@ -108,12 +106,6 @@ public class RoboTaxi {
         return status;
     }
 
-    /** @return RoboTaxiPlan with RoboTaxiPlan.plans() Navigable Map containing all RoboTaxiPlanEntry
-     *         elements sorted according to begin time */
-    public RoboTaxiPlan getCurrentPlans(double time) {
-        return RoboTaxiPlan.of(getSchedule(), time);
-    }
-
     /** Gets the capacity of the avVehicle. Now its an Integer and not a double as in Matsim
      * 
      * @return */
@@ -131,6 +123,12 @@ public class RoboTaxi {
         this.divertableLinkTime = Objects.requireNonNull(divertableLinkTime);
     }
 
+    /** @return RoboTaxiPlan with RoboTaxiPlan.plans() Navigable Map containing all RoboTaxiPlanEntry
+     *         elements sorted according to begin time */
+    /* package */ RoboTaxiPlan getCurrentPlans(double time) {
+        return RoboTaxiPlan.of(getSchedule(), time);
+    }
+    
     /** function only used from VehicleMaintainer in update steps
      * 
      * @param currentLocation last known link of RoboTaxi location */
@@ -238,7 +236,7 @@ public class RoboTaxi {
 
     /* package */ void pickupNewCustomerOnBoard() {
         GlobalAssert.that(canPickupNewCustomer());
-        GlobalAssert.that(menu.getStarterCourse().getPickupOrDropOff().equals(SharedAVMealType.PICKUP));
+        GlobalAssert.that(menu.getStarterCourse().getMealType().equals(SharedMealType.PICKUP));
         onBoardCustomers++;
         menu.removeAVCourse(0);
     }
@@ -250,7 +248,7 @@ public class RoboTaxi {
     /* package */ void dropOffCustomer() {
         GlobalAssert.that(onBoardCustomers > 0);
         GlobalAssert.that(onBoardCustomers <= getCapacity());
-        GlobalAssert.that(menu.getStarterCourse().getPickupOrDropOff().equals(SharedAVMealType.DROPOFF));
+        GlobalAssert.that(menu.getStarterCourse().getMealType().equals(SharedMealType.DROPOFF));
         onBoardCustomers--;
         menu.removeAVCourse(0);
     }
@@ -263,7 +261,7 @@ public class RoboTaxi {
         return getCapacity() - onBoardCustomers >= x;
     }
 
-    public SharedAVMenu getMenu() {
+    public SharedMenu getMenu() {
         return menu;
     }
 
@@ -275,11 +273,13 @@ public class RoboTaxi {
 
     public boolean checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity() {
         int futureNumberCustomers = getCurrentNumberOfCustomersOnBoard();
-        for (SharedAVCourse sharedAVCourse : menu.getCourses()) {
-            if (sharedAVCourse.getPickupOrDropOff().equals(SharedAVMealType.PICKUP)) {
+        for (SharedCourse sharedAVCourse : menu.getCourses()) {
+            if (sharedAVCourse.getMealType().equals(SharedMealType.PICKUP)) {
                 futureNumberCustomers++;
-            } else if (sharedAVCourse.getPickupOrDropOff().equals(SharedAVMealType.DROPOFF)) {
+            } else if (sharedAVCourse.getMealType().equals(SharedMealType.DROPOFF)) {
                 futureNumberCustomers--;
+            } else if (sharedAVCourse.getMealType().equals(SharedMealType.REDIRECT)) {
+                // --
             } else {
                 throw new IllegalArgumentException("Unknown SharedAVMealType -- please specify it !!!--");
             }

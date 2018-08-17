@@ -9,12 +9,16 @@ import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
 
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
-/** class for wich all Dispatchers performing rebalancing, i.e., replacement of empty vehicles should be derived */
-/** @author Nicolo Ormezzano, Lukas Sieber */
+/** abstract base class for dispatchers that perform relocation of empty
+ * vehicles (rebalancing) or redirect vehicles during customer journeys
+ * to links which are not a dropoff or pickup location */
 public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatcher {
 
     protected SharedRebalancingDispatcher(Config config, AVDispatcherConfig avDispatcherConfig, TravelTime travelTime,
@@ -22,30 +26,32 @@ public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatc
         super(config, avDispatcherConfig, travelTime, parallelLeastCostPathCalculator, eventsManager);
     }
 
-    /** Command to rebalance {@link RoboTaxi} to a certain {@link Link} destination. The {@link RoboTaxi} appears as
-     * Rebalancing in the visualizer afterwards. Can only be used for {@link RoboTaxi} which are without a customer.
-     * Function can only be invoked one time in each iteration of {@link VehicleMainatainer.redispatch}
-     * 
-     * @param roboTaxi
-     * @param destination */
+    /** @param roboTaxi is rebalanced to
+     * @param destination and all the oustanding pickup and dropoff tasks are deleted */
     protected final void setRoboTaxiRebalance(final RoboTaxi roboTaxi, final Link destination) {
         GlobalAssert.that(roboTaxi.isWithoutCustomer());
-        // Clear menu and put requests back to pending requests taking them out from request and pickup register.
+        /** clear menu and put requests back to pending requests */
         cleanRoboTaxiMenuAndAbandonAssignedRequests(roboTaxi);
         GlobalAssert.that(!roboTaxi.getMenu().hasStarter());
         setRoboTaxiDiversion(roboTaxi, destination, RoboTaxiStatus.REBALANCEDRIVE);
         eventsManager.processEvent(RebalanceVehicleEvent.create(getTimeNow(), roboTaxi, destination));
     }
 
-    /** @return {@link java.util.List } of all {@link RoboTaxi} which are currently rebalancing. */
+    /** {@link RoboTaxi} @param roboTaxi is redirected to the {@link Link} of the {@link SharedCourse}
+     * the course can be moved to another position in the {@link SharedMenu} of the {@link} RoboTaxi */
+    protected final void addSharedRoboTaxiRedirect(final RoboTaxi roboTaxi, SharedCourse redirectCourse) {
+        GlobalAssert.that(redirectCourse.getMealType().equals(SharedMealType.REDIRECT));
+        roboTaxi.getMenu().addAVCourseAsDessert(redirectCourse);
+    };
+
+    /** @return {@link List } of all {@link RoboTaxi} which are currently rebalancing. */
     protected List<RoboTaxi> getRebalancingRoboTaxis() {
         return getRoboTaxis().stream()//
                 .filter(rt -> rt.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE))//
                 .collect(Collectors.toList());
     }
 
-    /** @return {@link java.util.List} of all {@link RoboTaxi} which are divertable and not in a rebalacing
-     *         task. */
+    /** @return {@link List} of all {@link RoboTaxi} which are divertable and not in a rebalacing task. */
     protected List<RoboTaxi> getDivertableNotRebalancingRoboTaxis() {
         return getDivertableRoboTaxis().stream()//
                 .filter(rt -> !rt.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE))//
