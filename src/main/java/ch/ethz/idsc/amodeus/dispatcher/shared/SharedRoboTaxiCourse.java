@@ -4,34 +4,34 @@ package ch.ethz.idsc.amodeus.dispatcher.shared;
 import java.util.Objects;
 
 import org.matsim.api.core.v01.Id;
+import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.data.Request;
 
 /** Middle level class in SharedRoboTaxi functionality, a {@link SharedRoboTaxiMenu} is
  * composed of {@link SharedRoboTaxiCourse}s which internally have a {@link SharedRoboTaxiMealType}s */
 public class SharedRoboTaxiCourse {
-    public static SharedRoboTaxiCourse pickupCourse(Id<Request> requestId) {
-        return new SharedRoboTaxiCourse(requestId, SharedRoboTaxiMealType.PICKUP);
-    }
 
-    public static SharedRoboTaxiCourse dropoffCourse(Id<Request> requestId) {
-        return new SharedRoboTaxiCourse(requestId, SharedRoboTaxiMealType.DROPOFF);
-    }
-
-    // ---
     private final Id<Request> requestId;
-    private final SharedRoboTaxiMealType sharedAVMealType;
+    private final Link link;
+    private final SharedRoboTaxiMealType sharedRoboTaxiMealType;
 
-    public SharedRoboTaxiCourse(Id<Request> requestId, SharedRoboTaxiMealType sharedAVMealType) {
+    //TODO after implementing tests, carefully check if requestID and link can be replaced with AVRequest
+    public SharedRoboTaxiCourse(Id<Request> requestId, Link link, SharedRoboTaxiMealType sharedAVMealType) {
+        this.link = link;
         this.requestId = requestId;
-        this.sharedAVMealType = sharedAVMealType;
+        this.sharedRoboTaxiMealType = sharedAVMealType;
     }
 
-    public SharedRoboTaxiMealType getPickupOrDropOff() {
-        return sharedAVMealType;
+    public SharedRoboTaxiMealType getMealType() {
+        return sharedRoboTaxiMealType;
     }
 
     public Id<Request> getRequestId() {
         return requestId;
+    }
+
+    public Link getLink() {
+        return link;
     }
 
     @Override
@@ -39,13 +39,14 @@ public class SharedRoboTaxiCourse {
         if (object instanceof SharedRoboTaxiCourse) {
             SharedRoboTaxiCourse sharedAVCourse = (SharedRoboTaxiCourse) object;
             return sharedAVCourse.getRequestId().equals(requestId) && //
-                    sharedAVCourse.getPickupOrDropOff().equals(sharedAVMealType);
+                    sharedAVCourse.getLink().equals(link) && //
+                    sharedAVCourse.getMealType().equals(sharedRoboTaxiMealType);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(requestId.toString(), sharedAVMealType);
+        return Objects.hash(requestId.toString(), sharedRoboTaxiMealType);
     }
 }

@@ -238,7 +238,7 @@ public class RoboTaxi {
 
     /* package */ void pickupNewCustomerOnBoard() {
         GlobalAssert.that(canPickupNewCustomer());
-        GlobalAssert.that(menu.getStarterCourse().getPickupOrDropOff().equals(SharedRoboTaxiMealType.PICKUP));
+        GlobalAssert.that(menu.getStarterCourse().getMealType().equals(SharedRoboTaxiMealType.PICKUP));
         onBoardCustomers++;
         menu.removeAVCourse(0);
     }
@@ -250,7 +250,7 @@ public class RoboTaxi {
     /* package */ void dropOffCustomer() {
         GlobalAssert.that(onBoardCustomers > 0);
         GlobalAssert.that(onBoardCustomers <= getCapacity());
-        GlobalAssert.that(menu.getStarterCourse().getPickupOrDropOff().equals(SharedRoboTaxiMealType.DROPOFF));
+        GlobalAssert.that(menu.getStarterCourse().getMealType().equals(SharedRoboTaxiMealType.DROPOFF));
         onBoardCustomers--;
         menu.removeAVCourse(0);
     }
@@ -276,10 +276,12 @@ public class RoboTaxi {
     public boolean checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity() {
         int futureNumberCustomers = getCurrentNumberOfCustomersOnBoard();
         for (SharedRoboTaxiCourse sharedAVCourse : menu.getCourses()) {
-            if (sharedAVCourse.getPickupOrDropOff().equals(SharedRoboTaxiMealType.PICKUP)) {
+            if (sharedAVCourse.getMealType().equals(SharedRoboTaxiMealType.PICKUP)) {
                 futureNumberCustomers++;
-            } else if (sharedAVCourse.getPickupOrDropOff().equals(SharedRoboTaxiMealType.DROPOFF)) {
+            } else if (sharedAVCourse.getMealType().equals(SharedRoboTaxiMealType.DROPOFF)) {
                 futureNumberCustomers--;
+            } else if (sharedAVCourse.getMealType().equals(SharedRoboTaxiMealType.REBALANCE)) {
+                // --
             } else {
                 throw new IllegalArgumentException("Unknown SharedAVMealType -- please specify it !!!--");
             }

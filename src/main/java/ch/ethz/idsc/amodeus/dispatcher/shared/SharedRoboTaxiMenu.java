@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.matsim.api.core.v01.Id;
@@ -138,16 +139,16 @@ public class SharedRoboTaxiMenu {
 
     /** Gets the indices of the give SharedAVMealType.
      * 
-     * @param pickupOrDropoff
+     * @param sharedRoboTaxiMealType
      * @return */
-    public List<Integer> getPickupOrDropOffCoursesIndeces(SharedRoboTaxiMealType pickupOrDropoff) {
-        List<Integer> indeces = new ArrayList<>();
+    public List<Integer> getPickupOrDropOffCoursesIndeces(SharedRoboTaxiMealType sharedRoboTaxiMealType) {
+        List<Integer> indices = new ArrayList<>();
         for (int i = 0; i < roboTaxiMenu.size(); i++) {
-            if (roboTaxiMenu.get(i).getPickupOrDropOff().equals(pickupOrDropoff)) {
-                indeces.add(i);
+            if (roboTaxiMenu.get(i).getMealType().equals(sharedRoboTaxiMealType)) {
+                indices.add(i);
             }
         }
-        return indeces;
+        return indices;
     }
 
     public Set<Id<Request>> getUniqueAVRequests() {
@@ -157,7 +158,7 @@ public class SharedRoboTaxiMenu {
     }
 
     public void printMenu() {
-        roboTaxiMenu.forEach(course -> System.out.println(course.getRequestId().toString() + ":\t" + course.getPickupOrDropOff().name()));
+        roboTaxiMenu.forEach(course -> System.out.println(course.getRequestId().toString() + ":\t" + course.getMealType().name()));
     }
 
     // **************************************************
@@ -177,37 +178,37 @@ public class SharedRoboTaxiMenu {
         return roboTaxiMenu.contains(sharedAVCourse);
     }
 
-    /** Checks if a Pickup course of the given request is in the current menu
-     * 
-     * @param requestId
-     * @return */
-    public boolean containsPickupCourse(Id<Request> requestId) {
-        return containsCourse(SharedRoboTaxiCourse.pickupCourse(requestId));
-    }
-
-    /** Checks if a Dropoff course of the given request is in the current menu
-     * 
-     * @param requestId
-     * @return */
-    public boolean containsDropoffCourse(Id<Request> requestId) {
-        return containsCourse(SharedRoboTaxiCourse.dropoffCourse(requestId));
-    }
-
-    /** checks that no Dropoff of a request is in the menu before its Pickup.
-     * 
-     * @return */
+    /** @return false if any dropoff occurs after pickup in the menu */
     public boolean checkNoPickupAfterDropoffOfSameRequest() {
-        for (SharedRoboTaxiCourse sharedAVCourse : roboTaxiMenu)
-            if (sharedAVCourse.getPickupOrDropOff().equals(SharedRoboTaxiMealType.DROPOFF)) {
-                int dropofIndex = getIndexOf(sharedAVCourse);
-                SharedRoboTaxiCourse sharedAVCoursePickup = new SharedRoboTaxiCourse(sharedAVCourse.getRequestId(), SharedRoboTaxiMealType.PICKUP);
-                if (containsCourse(sharedAVCoursePickup)) {
-                    int pickupIndex = getIndexOf(sharedAVCoursePickup);
-                    if (pickupIndex > dropofIndex)
+        for (SharedRoboTaxiCourse course : roboTaxiMenu) {
+            if (course.getMealType().equals(SharedRoboTaxiMealType.PICKUP)) {
+                int pickupIndex = getIndexOf(course);
+                SharedRoboTaxiCourse dropoffCourse = getCorrespDropoff(course);
+                if (Objects.nonNull(dropoffCourse)) {
+                    int dropofIndex = getIndexOf(dropoffCourse);
+                    if (pickupIndex > dropofIndex) {
+                        System.err.println("The SharedRoboTaxiMenu contains a pickup after its dropoff. Stopping Execution.");
                         return false;
+                    }
                 }
             }
+        }
         return true;
+    }
+
+    /** @param pickupCourse
+     * @return corresponding {@link SharedRoboTaxiCourse} where dropoff takes place or
+     *         null if not found */
+    public SharedRoboTaxiCourse getCorrespDropoff(SharedRoboTaxiCourse pickupCourse) {
+        GlobalAssert.that(pickupCourse.getMealType().equals(SharedRoboTaxiMealType.PICKUP));
+        for (SharedRoboTaxiCourse course : roboTaxiMenu) {
+            if (course.getRequestId().equals(pickupCourse.getRequestId())) {
+                if (course.getMealType().equals(SharedRoboTaxiMealType.DROPOFF)) {
+                    return course;
+                }
+            }
+        }
+        return null;
     }
 
     /** Checks if the menu contains exactly the same courses as the inputed menu.
