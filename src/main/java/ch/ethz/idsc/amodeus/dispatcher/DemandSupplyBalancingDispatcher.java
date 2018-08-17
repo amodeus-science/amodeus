@@ -35,10 +35,9 @@ public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
     private final int dispatchPeriod;
     private final double[] networkBounds;
     private final QuadTree<AVRequest> pendingRequestsTree;
-    // two data structures are used to enable fast "contains" searching
+    /** data structures are used to enable fast "contains" searching */
     private final Set<AVRequest> openRequests = new HashSet<>();
     private final QuadTree<RoboTaxi> unassignedVehiclesTree;
-    // two data structures are used to enable fast "contains" searching
     private final Set<RoboTaxi> unassignedVehicles = new HashSet<>();
 
     private DemandSupplyBalancingDispatcher( //

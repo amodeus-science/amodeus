@@ -13,24 +13,17 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
 import org.matsim.core.network.NetworkUtils;
+import org.matsim.core.utils.collections.QuadTree;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-/** helper functions predominantly used in HeuristicSharedDispatcher
- * 
- * @author Lukas Sieber */
-enum StaticHelper {
+/** helper functions predominantly used in HeuristicSharedDispatcher */
+/* package */ enum StaticHelper {
     ;
 
-    static double distanceRobotaxiRequest(AVRequest avRequest, RoboTaxi roboTaxi) {
-        return NetworkUtils.getEuclideanDistance( //
-                avRequest.getFromLink().getCoord(), //
-                roboTaxi.getDivertableLocation().getCoord());
-    }
-
-    static Set<Link> getCloseLinks(Coord coord, double distance, Network network) {
+    public static Set<Link> getCloseLinks(Coord coord, double distance, Network network) {
         Collection<Node> closeNodes = NetworkUtils.getNearestNodes(network, coord, distance);
         GlobalAssert.that(!closeNodes.isEmpty());
         Set<Link> closeLinks = network.getLinks().values().stream() //
@@ -41,21 +34,20 @@ enum StaticHelper {
         return closeLinks;
     }
 
-    static RoboTaxi findClostestVehicle(AVRequest avRequest, Collection<RoboTaxi> roboTaxis) {
-        GlobalAssert.that(roboTaxis != null);
-        RoboTaxi closestRoboTaxi = null;
-        double min = Double.POSITIVE_INFINITY;
-        for (RoboTaxi roboTaxi : roboTaxis) {
-            double newDistance = distanceRobotaxiRequest(avRequest, roboTaxi);
-            if (closestRoboTaxi == null || newDistance < min) {
-                min = newDistance;
-                closestRoboTaxi = roboTaxi;
-            }
-        }
+    /** @param networkBounds
+     * @return closest {@link AVRequest} @param avRequest to the {@link Collection} of available {@link RoboTaxi}s @param roboTaxis */
+    public static RoboTaxi findClostestVehicle(AVRequest avRequest, Collection<RoboTaxi> roboTaxis, double networkBounds[]) {
+        QuadTree<RoboTaxi> unassignedVehiclesTree = new QuadTree<>(networkBounds[0], networkBounds[1], networkBounds[2], networkBounds[3]);
+        roboTaxis.stream().forEach(rt -> {
+            Coord loc = rt.getDivertableLocation().getCoord();
+            unassignedVehiclesTree.put(loc.getX(), loc.getY(), rt);
+        });
+        Coord loc = avRequest.getFromLink().getCoord();
+        RoboTaxi closestRoboTaxi = unassignedVehiclesTree.getClosest(loc.getX(), loc.getY());
         return closestRoboTaxi;
     }
 
-    static Map<Link, Set<AVRequest>> getFromLinkMap(Collection<AVRequest> avRequests) {
+    public static Map<Link, Set<AVRequest>> getFromLinkMap(Collection<AVRequest> avRequests) {
         Map<Link, Set<AVRequest>> linkAVRequestMap = new HashMap<>();
         for (AVRequest avRequest : avRequests) {
             Link fromLink = avRequest.getFromLink();
