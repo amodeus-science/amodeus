@@ -132,9 +132,9 @@ public class SharedDispatcherExample extends SharedPartitionedDispatcher {
                                 // Pair taxi to request
                                 subList.stream().forEach(avr -> addSharedRoboTaxiPickup(sRt, avr));
                                 // TODO SHARED reorder menu
-                                SharedRoboTaxiMenu menu = taxisToPair.get(i).getMenu();
+                                SharedMenu menu = taxisToPair.get(i).getMenu();
                                 @SuppressWarnings("unused")
-                                List<Integer> pickupIndeces = menu.getPickupOrDropOffCoursesIndeces(SharedRoboTaxiMealType.PICKUP);
+                                List<Integer> pickupIndeces = menu.getPickupOrDropOffCoursesIndeces(SharedMealType.PICKUP);
                                 // SharedAVCourse sharedAVCourse = new SharedAVCourse(secondRequest.getId(), SharedAVMealType.PICKUP);
 
                                 // .moveAVCourseToPrev(sharedAVCourse);

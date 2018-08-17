@@ -7,22 +7,22 @@ import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.data.Request;
 
-/** Middle level class in SharedRoboTaxi functionality, a {@link SharedRoboTaxiMenu} is
- * composed of {@link SharedRoboTaxiCourse}s which internally have a {@link SharedRoboTaxiMealType}s */
-public class SharedRoboTaxiCourse {
+/** Middle level class in SharedRoboTaxi functionality, a {@link SharedMenu} is
+ * composed of {@link SharedCourse}s which internally have a {@link SharedMealType}s */
+public class SharedCourse {
 
     private final Id<Request> requestId;
     private final Link link;
-    private final SharedRoboTaxiMealType sharedRoboTaxiMealType;
+    private final SharedMealType sharedRoboTaxiMealType;
 
     //TODO after implementing tests, carefully check if requestID and link can be replaced with AVRequest
-    public SharedRoboTaxiCourse(Id<Request> requestId, Link link, SharedRoboTaxiMealType sharedAVMealType) {
+    public SharedCourse(Id<Request> requestId, Link link, SharedMealType sharedAVMealType) {
         this.link = link;
         this.requestId = requestId;
         this.sharedRoboTaxiMealType = sharedAVMealType;
     }
 
-    public SharedRoboTaxiMealType getMealType() {
+    public SharedMealType getMealType() {
         return sharedRoboTaxiMealType;
     }
 
@@ -36,8 +36,8 @@ public class SharedRoboTaxiCourse {
 
     @Override
     public boolean equals(Object object) {
-        if (object instanceof SharedRoboTaxiCourse) {
-            SharedRoboTaxiCourse sharedAVCourse = (SharedRoboTaxiCourse) object;
+        if (object instanceof SharedCourse) {
+            SharedCourse sharedAVCourse = (SharedCourse) object;
             return sharedAVCourse.getRequestId().equals(requestId) && //
                     sharedAVCourse.getLink().equals(link) && //
                     sharedAVCourse.getMealType().equals(sharedRoboTaxiMealType);
