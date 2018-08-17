@@ -16,13 +16,13 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
  * for an AV.
  * 
  * @author Nicolo Ormezzano, Lukas Sieber */
-public class SharedAVMenu {
-    private final List<SharedAVCourse> roboTaxiMenu = new ArrayList<>();
+public class SharedRoboTaxiMenu {
+    private final List<SharedRoboTaxiCourse> roboTaxiMenu = new ArrayList<>();
 
-    public SharedAVMenu() {
+    public SharedRoboTaxiMenu() {
     }
 
-    private SharedAVMenu(SharedAVMenu sharedAVMenu) {
+    private SharedRoboTaxiMenu(SharedRoboTaxiMenu sharedAVMenu) {
         sharedAVMenu.roboTaxiMenu.stream() // SharedAVCourse is immutable
                 .forEach(roboTaxiMenu::add);
     }
@@ -31,16 +31,16 @@ public class SharedAVMenu {
     // ADDING COURSES
     // **************************************************
 
-    public void addAVCourseAtIndex(SharedAVCourse avCourse, int courseIndex) {
+    public void addAVCourseAtIndex(SharedRoboTaxiCourse avCourse, int courseIndex) {
         GlobalAssert.that(0 <= courseIndex && courseIndex <= roboTaxiMenu.size());
         roboTaxiMenu.add(courseIndex, avCourse);
     }
 
-    public void addAVCourseAsStarter(SharedAVCourse avCourse) {
+    public void addAVCourseAsStarter(SharedRoboTaxiCourse avCourse) {
         roboTaxiMenu.add(0, avCourse);
     }
 
-    public void addAVCourseAsDessert(SharedAVCourse avCourse) {
+    public void addAVCourseAsDessert(SharedRoboTaxiCourse avCourse) {
         roboTaxiMenu.add(roboTaxiMenu.size(), avCourse);
     }
 
@@ -48,7 +48,7 @@ public class SharedAVMenu {
     // MOVING COURSES
     // **************************************************
 
-    public boolean moveAVCourseToPrev(SharedAVCourse sharedAVCourse) {
+    public boolean moveAVCourseToPrev(SharedRoboTaxiCourse sharedAVCourse) {
         GlobalAssert.that(containsCourse(sharedAVCourse));
         int i = getIndexOf(sharedAVCourse);
         boolean swap = 0 < i && i < roboTaxiMenu.size();
@@ -57,7 +57,7 @@ public class SharedAVMenu {
         return swap;
     }
 
-    public boolean moveAVCourseToNext(SharedAVCourse sharedAVCourse) {
+    public boolean moveAVCourseToNext(SharedRoboTaxiCourse sharedAVCourse) {
         GlobalAssert.that(containsCourse(sharedAVCourse));
         int i = getIndexOf(sharedAVCourse);
         boolean swap = 0 <= i && i < roboTaxiMenu.size() - 1;
@@ -71,7 +71,7 @@ public class SharedAVMenu {
      * the old one.
      * 
      * @param sharedAVMenu */
-    public void replaceWith(SharedAVMenu sharedAVMenu) {
+    public void replaceWith(SharedRoboTaxiMenu sharedAVMenu) {
         GlobalAssert.that(containsSameCourses(sharedAVMenu));
         clearWholeMenu();
         GlobalAssert.that(roboTaxiMenu.isEmpty());
@@ -92,7 +92,7 @@ public class SharedAVMenu {
         roboTaxiMenu.remove(courseIndex);
     }
 
-    public void removeAVCourse(SharedAVCourse sharedAVCourse) {
+    public void removeAVCourse(SharedRoboTaxiCourse sharedAVCourse) {
         GlobalAssert.that(containsCourse(sharedAVCourse));
         roboTaxiMenu.remove(sharedAVCourse);
     }
@@ -108,14 +108,14 @@ public class SharedAVMenu {
     /** Gets the next course of the menu.
      * 
      * @return */
-    public SharedAVCourse getStarterCourse() {
+    public SharedRoboTaxiCourse getStarterCourse() {
         return roboTaxiMenu.isEmpty() ? null : roboTaxiMenu.get(0);
     }
 
     /** Gets the complete List of Courses in this Menu
      * 
      * @return */
-    public List<SharedAVCourse> getCourses() {
+    public List<SharedRoboTaxiCourse> getCourses() {
         return Collections.unmodifiableList(roboTaxiMenu);
         // return roboTaxiMenu;
     }
@@ -125,22 +125,22 @@ public class SharedAVMenu {
      * 
      * @param course
      * @return */
-    public int getIndexOf(SharedAVCourse course) {
+    public int getIndexOf(SharedRoboTaxiCourse course) {
         return roboTaxiMenu.indexOf(course);
     }
 
     /** Gets A deep Copy of this Menu
      * 
      * @return */
-    public SharedAVMenu copy() {
-        return new SharedAVMenu(this);
+    public SharedRoboTaxiMenu copy() {
+        return new SharedRoboTaxiMenu(this);
     }
 
     /** Gets the indices of the give SharedAVMealType.
      * 
      * @param pickupOrDropoff
      * @return */
-    public List<Integer> getPickupOrDropOffCoursesIndeces(SharedAVMealType pickupOrDropoff) {
+    public List<Integer> getPickupOrDropOffCoursesIndeces(SharedRoboTaxiMealType pickupOrDropoff) {
         List<Integer> indeces = new ArrayList<>();
         for (int i = 0; i < roboTaxiMenu.size(); i++) {
             if (roboTaxiMenu.get(i).getPickupOrDropOff().equals(pickupOrDropoff)) {
@@ -173,7 +173,7 @@ public class SharedAVMenu {
      * 
      * @param sharedAVCourse
      * @return */
-    public boolean containsCourse(SharedAVCourse sharedAVCourse) {
+    public boolean containsCourse(SharedRoboTaxiCourse sharedAVCourse) {
         return roboTaxiMenu.contains(sharedAVCourse);
     }
 
@@ -182,7 +182,7 @@ public class SharedAVMenu {
      * @param requestId
      * @return */
     public boolean containsPickupCourse(Id<Request> requestId) {
-        return containsCourse(SharedAVCourse.pickupCourse(requestId));
+        return containsCourse(SharedRoboTaxiCourse.pickupCourse(requestId));
     }
 
     /** Checks if a Dropoff course of the given request is in the current menu
@@ -190,17 +190,17 @@ public class SharedAVMenu {
      * @param requestId
      * @return */
     public boolean containsDropoffCourse(Id<Request> requestId) {
-        return containsCourse(SharedAVCourse.dropoffCourse(requestId));
+        return containsCourse(SharedRoboTaxiCourse.dropoffCourse(requestId));
     }
 
     /** checks that no Dropoff of a request is in the menu before its Pickup.
      * 
      * @return */
     public boolean checkNoPickupAfterDropoffOfSameRequest() {
-        for (SharedAVCourse sharedAVCourse : roboTaxiMenu)
-            if (sharedAVCourse.getPickupOrDropOff().equals(SharedAVMealType.DROPOFF)) {
+        for (SharedRoboTaxiCourse sharedAVCourse : roboTaxiMenu)
+            if (sharedAVCourse.getPickupOrDropOff().equals(SharedRoboTaxiMealType.DROPOFF)) {
                 int dropofIndex = getIndexOf(sharedAVCourse);
-                SharedAVCourse sharedAVCoursePickup = new SharedAVCourse(sharedAVCourse.getRequestId(), SharedAVMealType.PICKUP);
+                SharedRoboTaxiCourse sharedAVCoursePickup = new SharedRoboTaxiCourse(sharedAVCourse.getRequestId(), SharedRoboTaxiMealType.PICKUP);
                 if (containsCourse(sharedAVCoursePickup)) {
                     int pickupIndex = getIndexOf(sharedAVCoursePickup);
                     if (pickupIndex > dropofIndex)
@@ -214,7 +214,7 @@ public class SharedAVMenu {
      * 
      * @param sharedAVMenu
      * @return true if the the two menus contain the same courses */
-    public boolean containsSameCourses(SharedAVMenu sharedAVMenu) {
+    public boolean containsSameCourses(SharedRoboTaxiMenu sharedAVMenu) {
         return roboTaxiMenu.size() == sharedAVMenu.getCourses().size() && //
                 sharedAVMenu.getCourses().containsAll(roboTaxiMenu);
     }
@@ -225,9 +225,9 @@ public class SharedAVMenu {
 
     @Override
     public boolean equals(Object object) {
-        if (object instanceof SharedAVMenu) {
-            SharedAVMenu sharedAVMenu = (SharedAVMenu) object;
-            List<SharedAVCourse> otherMenu = sharedAVMenu.getCourses();
+        if (object instanceof SharedRoboTaxiMenu) {
+            SharedRoboTaxiMenu sharedAVMenu = (SharedRoboTaxiMenu) object;
+            List<SharedRoboTaxiCourse> otherMenu = sharedAVMenu.getCourses();
             // TODO LUXURY there is an easier way to check for equality
             if (otherMenu.size() == roboTaxiMenu.size()) {
                 for (int i = 0; i < roboTaxiMenu.size(); i++)

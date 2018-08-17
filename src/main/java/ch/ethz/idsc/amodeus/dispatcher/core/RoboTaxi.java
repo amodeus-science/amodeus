@@ -11,9 +11,9 @@ import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedAVCourse;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedAVMealType;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedAVMenu;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedRoboTaxiCourse;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedRoboTaxiMealType;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedRoboTaxiMenu;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.schedule.AVDriveTask;
@@ -44,7 +44,7 @@ public class RoboTaxi {
 
     // Shared Taxi Fields
     private int onBoardCustomers = 0;
-    private final SharedAVMenu menu = new SharedAVMenu();
+    private final SharedRoboTaxiMenu menu = new SharedRoboTaxiMenu();
 
     /** Standard constructor
      * 
@@ -238,7 +238,7 @@ public class RoboTaxi {
 
     /* package */ void pickupNewCustomerOnBoard() {
         GlobalAssert.that(canPickupNewCustomer());
-        GlobalAssert.that(menu.getStarterCourse().getPickupOrDropOff().equals(SharedAVMealType.PICKUP));
+        GlobalAssert.that(menu.getStarterCourse().getPickupOrDropOff().equals(SharedRoboTaxiMealType.PICKUP));
         onBoardCustomers++;
         menu.removeAVCourse(0);
     }
@@ -250,7 +250,7 @@ public class RoboTaxi {
     /* package */ void dropOffCustomer() {
         GlobalAssert.that(onBoardCustomers > 0);
         GlobalAssert.that(onBoardCustomers <= getCapacity());
-        GlobalAssert.that(menu.getStarterCourse().getPickupOrDropOff().equals(SharedAVMealType.DROPOFF));
+        GlobalAssert.that(menu.getStarterCourse().getPickupOrDropOff().equals(SharedRoboTaxiMealType.DROPOFF));
         onBoardCustomers--;
         menu.removeAVCourse(0);
     }
@@ -263,7 +263,7 @@ public class RoboTaxi {
         return getCapacity() - onBoardCustomers >= x;
     }
 
-    public SharedAVMenu getMenu() {
+    public SharedRoboTaxiMenu getMenu() {
         return menu;
     }
 
@@ -275,10 +275,10 @@ public class RoboTaxi {
 
     public boolean checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity() {
         int futureNumberCustomers = getCurrentNumberOfCustomersOnBoard();
-        for (SharedAVCourse sharedAVCourse : menu.getCourses()) {
-            if (sharedAVCourse.getPickupOrDropOff().equals(SharedAVMealType.PICKUP)) {
+        for (SharedRoboTaxiCourse sharedAVCourse : menu.getCourses()) {
+            if (sharedAVCourse.getPickupOrDropOff().equals(SharedRoboTaxiMealType.PICKUP)) {
                 futureNumberCustomers++;
-            } else if (sharedAVCourse.getPickupOrDropOff().equals(SharedAVMealType.DROPOFF)) {
+            } else if (sharedAVCourse.getPickupOrDropOff().equals(SharedRoboTaxiMealType.DROPOFF)) {
                 futureNumberCustomers--;
             } else {
                 throw new IllegalArgumentException("Unknown SharedAVMealType -- please specify it !!!--");

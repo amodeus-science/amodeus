@@ -57,16 +57,16 @@ public class SimpleSharedDispatcher extends SharedUniversalDispatcher {
                     addSharedRoboTaxiPickup(sharedRoboTaxi, firstRequest);
 
                     addSharedRoboTaxiPickup(sharedRoboTaxi, secondRequest);
-                    SharedAVCourse sharedAVCourse = new SharedAVCourse(secondRequest.getId(), SharedAVMealType.PICKUP);
+                    SharedRoboTaxiCourse sharedAVCourse = new SharedRoboTaxiCourse(secondRequest.getId(), SharedRoboTaxiMealType.PICKUP);
                     sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse);
 
                     addSharedRoboTaxiPickup(sharedRoboTaxi, thirdRequest);
-                    SharedAVCourse sharedAVCourse3 = new SharedAVCourse(thirdRequest.getId(), SharedAVMealType.PICKUP);
+                    SharedRoboTaxiCourse sharedAVCourse3 = new SharedRoboTaxiCourse(thirdRequest.getId(), SharedRoboTaxiMealType.PICKUP);
                     sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse3);
                     sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse3);
 
                     addSharedRoboTaxiPickup(sharedRoboTaxi, fourthRequest);
-                    SharedAVCourse sharedAVCourse4 = new SharedAVCourse(fourthRequest.getId(), SharedAVMealType.PICKUP);
+                    SharedRoboTaxiCourse sharedAVCourse4 = new SharedRoboTaxiCourse(fourthRequest.getId(), SharedRoboTaxiMealType.PICKUP);
                     sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse4);
                     sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse4);
                     sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse4);
