@@ -15,7 +15,7 @@ public class SharedCourse {
     private final Link link;
     private final SharedMealType sharedRoboTaxiMealType;
 
-    //TODO after implementing tests, carefully check if requestID and link can be replaced with AVRequest
+    // TODO after implementing tests, carefully check if requestID and link can be replaced with AVRequest
     public SharedCourse(Id<Request> requestId, Link link, SharedMealType sharedAVMealType) {
         this.link = link;
         this.requestId = requestId;
