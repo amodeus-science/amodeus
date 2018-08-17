@@ -102,13 +102,13 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
 
     @Override
     public void redispatch(double now) {
-        final long round_now = Math.round(now);
+        long round_now = Math.round(now);
 
         if (!started) {
             if (getRoboTaxis().size() == 0) /** return if the roboTaxis are not ready yet */
                 return;
             /** as soon as the roboTaxis are ready, make sure to execute rebalancing and dispatching for now=0 */
-            now = 0;
+            round_now = 0;
             started = true;
         }
 
