@@ -8,9 +8,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import org.matsim.api.core.v01.Id;
-import org.matsim.contrib.dvrp.data.Request;
-
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 /** Object containing list of pickup and dropoff planned

@@ -23,11 +23,9 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
 /** RoboTaxi is central classs to be used in all dispatchers. Dispatchers control
  * a fleet of RoboTaxis, each is uniquely associated to an AVVehicle object in
- * MATSim.
- * 
- * @author Claudio Ruch */
+ * MATSim. */
 public class RoboTaxi {
-    // Standard Taxi Fields
+    /** unit capacity fields */
     static private final Logger logger = Logger.getLogger(RoboTaxi.class);
 
     private final AVVehicle avVehicle;
@@ -42,7 +40,7 @@ public class RoboTaxi {
     private LinkTimePair divertableLinkTime;
     private AbstractDirective directive;
 
-    // Shared Taxi Fields
+    /** capacity > 1 fields */
     private int onBoardCustomers = 0;
     private final SharedMenu menu = new SharedMenu();
 
@@ -108,12 +106,6 @@ public class RoboTaxi {
         return status;
     }
 
-    /** @return RoboTaxiPlan with RoboTaxiPlan.plans() Navigable Map containing all RoboTaxiPlanEntry
-     *         elements sorted according to begin time */
-    public RoboTaxiPlan getCurrentPlans(double time) {
-        return RoboTaxiPlan.of(getSchedule(), time);
-    }
-
     /** Gets the capacity of the avVehicle. Now its an Integer and not a double as in Matsim
      * 
      * @return */
@@ -131,6 +123,12 @@ public class RoboTaxi {
         this.divertableLinkTime = Objects.requireNonNull(divertableLinkTime);
     }
 
+    /** @return RoboTaxiPlan with RoboTaxiPlan.plans() Navigable Map containing all RoboTaxiPlanEntry
+     *         elements sorted according to begin time */
+    /* package */ RoboTaxiPlan getCurrentPlans(double time) {
+        return RoboTaxiPlan.of(getSchedule(), time);
+    }
+    
     /** function only used from VehicleMaintainer in update steps
      * 
      * @param currentLocation last known link of RoboTaxi location */

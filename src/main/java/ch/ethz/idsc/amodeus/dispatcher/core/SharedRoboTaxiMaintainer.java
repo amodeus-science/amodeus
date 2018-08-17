@@ -117,6 +117,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
                            // "simEndtimeInterpretation" to "null"
         executePickups();
         executeDropoffs();
+        executeRedirects();
         redispatchInternal(now);
         afterStepTasks();
         executeDirectives();
@@ -187,6 +188,8 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     /* package */ abstract void executePickups();
 
     /* package */ abstract void executeDropoffs();
+    
+    /* package */ abstract void executeRedirects();
 
     /* package */ abstract void stopAbortedPickupRoboTaxis();
 
