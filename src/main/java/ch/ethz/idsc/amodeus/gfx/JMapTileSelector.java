@@ -25,9 +25,9 @@ import ch.ethz.idsc.amodeus.view.jmapviewer.tilesources.WikimediaTileSource;
     ;
     public static SpinnerLabel<TileSource> create(JMapViewer jMapViewer) {
         TileSource[] tileSource = new TileSource[] { //
-                new MapnikTileSource(), //
-                new GrayMapnikTileSource(), //
-                new WikimediaTileSource(), //
+                MapnikTileSource.INSTANCE, //
+                GrayMapnikTileSource.INSTANCE, //
+                WikimediaTileSource.INSTANCE, //
                 new LightCartoTileSource(), //
                 new DarkCartoTileSource(), //
                 new FrenchTileSource(), //

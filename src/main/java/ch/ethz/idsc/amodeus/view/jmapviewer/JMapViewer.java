@@ -73,7 +73,7 @@ public class JMapViewer extends JComponent implements TileLoaderListener {
      * @param tileCache
      *            The cache where to store tiles */
     JMapViewer(TileCache tileCache) {
-        tileSource = new MapnikTileSource();
+        tileSource = MapnikTileSource.INSTANCE;
         tileController = new TileController(tileSource, tileCache, this);
         setLayout(null);
         setMinimumSize(new Dimension(tileSource.getTileSize(), tileSource.getTileSize()));

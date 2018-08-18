@@ -12,8 +12,8 @@ import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.ICoordinate;
 class TMSTileSource extends AbstractTMSTileSource {
 
     protected int maxZoom;
-    protected int minZoom;
-    protected OsmMercator osmMercator;
+    protected final int minZoom;
+    protected final OsmMercator osmMercator;
 
     /** Constructs a new {@code TMSTileSource}.
      * 
@@ -23,17 +23,17 @@ class TMSTileSource extends AbstractTMSTileSource {
         super(info);
         minZoom = info.getMinZoom();
         maxZoom = info.getMaxZoom();
-        this.osmMercator = new OsmMercator(this.getTileSize());
+        osmMercator = new OsmMercator(getTileSize());
     }
 
     @Override
     public int getMinZoom() {
-        return (minZoom == 0) ? super.getMinZoom() : minZoom;
+        return minZoom == 0 ? super.getMinZoom() : minZoom;
     }
 
     @Override
     public int getMaxZoom() {
-        return (maxZoom == 0) ? super.getMaxZoom() : maxZoom;
+        return maxZoom == 0 ? super.getMaxZoom() : maxZoom;
     }
 
     @Override
@@ -43,21 +43,29 @@ class TMSTileSource extends AbstractTMSTileSource {
 
     @Override
     public Point latLonToXY(double lat, double lon, int zoom) {
-        return new Point((int) osmMercator.lonToX(lon, zoom), (int) osmMercator.latToY(lat, zoom));
+        return new Point( //
+                (int) osmMercator.lonToX(lon, zoom), //
+                (int) osmMercator.latToY(lat, zoom));
     }
 
     @Override
     public ICoordinate xyToLatLon(int x, int y, int zoom) {
-        return new Coordinate(osmMercator.yToLat(y, zoom), osmMercator.xToLon(x, zoom));
+        return new Coordinate( //
+                osmMercator.yToLat(y, zoom), //
+                osmMercator.xToLon(x, zoom));
     }
 
     @Override
     public TileXY latLonToTileXY(double lat, double lon, int zoom) {
-        return new TileXY(osmMercator.lonToX(lon, zoom) / getTileSize(), osmMercator.latToY(lat, zoom) / getTileSize());
+        return new TileXY( //
+                osmMercator.lonToX(lon, zoom) / getTileSize(), //
+                osmMercator.latToY(lat, zoom) / getTileSize());
     }
 
     @Override
     public ICoordinate tileXYToLatLon(int x, int y, int zoom) {
-        return new Coordinate(osmMercator.yToLat(y * getTileSize(), zoom), osmMercator.xToLon(x * getTileSize(), zoom));
+        return new Coordinate( //
+                osmMercator.yToLat(y * getTileSize(), zoom), //
+                osmMercator.xToLon(x * getTileSize(), zoom));
     }
 }

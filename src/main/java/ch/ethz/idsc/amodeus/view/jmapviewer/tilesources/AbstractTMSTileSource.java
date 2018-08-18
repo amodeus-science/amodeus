@@ -21,9 +21,9 @@ import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.ICoordinate;
  * @author Wiktor Niesiobędzki */
 abstract class AbstractTMSTileSource extends AbstractTileSource {
 
-    protected String name;
+    protected final String name;
     protected String baseUrl;
-    protected String id;
+    protected final String id;
     private final Map<String, Set<String>> noTileHeaders;
     private final Map<String, Set<String>> noTileChecksums;
     private final Map<String, String> metadataHeaders;

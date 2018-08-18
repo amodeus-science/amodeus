@@ -11,7 +11,7 @@ import ch.ethz.idsc.amodeus.util.gui.SpinnerLabel;
 /** Head Up Display */
 public class HudLayer extends ViewerLayer {
 
-    boolean show = true;
+    public boolean show = true;
 
     @Override
     protected void paint(Graphics2D graphics, SimulationObject ref) {

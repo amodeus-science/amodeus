@@ -31,8 +31,8 @@ public class VirtualNetworkLayer extends ViewerLayer {
     public static final Color COLOR = new Color(128, 153 / 2, 0, 128);
     // ---
     private VirtualNetwork<Link> virtualNetwork = null;
-    private boolean drawVNodes = true;
-    private boolean drawVLinks = false;
+    public boolean drawVNodes = true;
+    public boolean drawVLinks = false;
     private VirtualNodeGeometry virtualNodeGeometry = null;
     private VirtualNodeShader virtualNodeShader = VirtualNodeShader.None;
     private ColorSchemes colorSchemes = ColorSchemes.Jet;

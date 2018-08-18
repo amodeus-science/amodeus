@@ -8,6 +8,7 @@ import java.awt.geom.Path2D;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Link;
@@ -25,7 +26,7 @@ import ch.ethz.idsc.tensor.opt.ConvexHull;
     private final Map<VirtualNode<Link>, Tensor> convexHulls = new LinkedHashMap<>(); // ordering matters
 
     VirtualNodeGeometry(MatsimStaticDatabase db, VirtualNetwork<Link> virtualNetwork) {
-        if (virtualNetwork == null)
+        if (Objects.isNull(virtualNetwork))
             return;
         for (VirtualNode<Link> virtualNode : virtualNetwork.getVirtualNodes()) {
             Tensor coords = Tensors.empty();
