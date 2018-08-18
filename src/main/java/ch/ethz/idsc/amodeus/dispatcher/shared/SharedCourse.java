@@ -15,11 +15,11 @@ public class SharedCourse {
     public static SharedCourse pickupCourse(AVRequest avRequest) {
         return new SharedCourse(avRequest.getId().toString(), avRequest.getFromLink(), SharedMealType.PICKUP);
     }
-    
+
     public static SharedCourse dropoffCourse(AVRequest avRequest) {
         return new SharedCourse(avRequest.getId().toString(), avRequest.getToLink(), SharedMealType.DROPOFF);
     }
-    
+
     public static SharedCourse redirectCourse(Link link, String id) {
         return new SharedCourse(id, link, SharedMealType.REDIRECT);
     }

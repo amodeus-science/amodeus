@@ -128,7 +128,7 @@ public class RoboTaxi {
     /* package */ RoboTaxiPlan getCurrentPlans(double time) {
         return RoboTaxiPlan.of(getSchedule(), time);
     }
-    
+
     /** function only used from VehicleMaintainer in update steps
      * 
      * @param currentLocation last known link of RoboTaxi location */

@@ -53,9 +53,4 @@ public enum PopulationPreparer {
         System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     }
 
-    // TODO JAN re-introduced this function for now, to maintain backwards compatibility
-    // ... otherwise errors in amod and amodidsc
-    public static void run(Network network, Population population, ScenarioOptions scenOptions, Config config) throws Exception {
-        run(network, population, scenOptions, config, TheApocalypse.DEFAULT_SEED);
-    }
 }

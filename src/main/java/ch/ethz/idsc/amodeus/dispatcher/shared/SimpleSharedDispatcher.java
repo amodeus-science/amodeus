@@ -17,7 +17,7 @@ import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedRebalancingDispatcher;
-import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVehicleDestMatcher;
+import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
@@ -94,7 +94,7 @@ public class SimpleSharedDispatcher extends SharedRebalancingDispatcher {
                     Link redirectLink = pollNextDestination();
                     SharedCourse redirectCourse = SharedCourse.redirectCourse(redirectLink, //
                             Double.toString(now) + sharedRoboTaxi.getId().toString());
-                    addSharedRoboTaxiRedirect(sharedRoboTaxi,redirectCourse);
+                    addSharedRoboTaxiRedirect(sharedRoboTaxi, redirectCourse);
                     sharedRoboTaxi.getMenu().moveAVCourseToPrev(redirectCourse);
 
                     /** check consistency and end */
@@ -137,7 +137,7 @@ public class SimpleSharedDispatcher extends SharedRebalancingDispatcher {
             @SuppressWarnings("unused")
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
             @SuppressWarnings("unused")
-            AbstractVehicleDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(new EuclideanDistanceFunction());
+            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(new EuclideanDistanceFunction());
 
             return new SimpleSharedDispatcher(network, config, avconfig, travelTime, router, eventsManager);
         }
