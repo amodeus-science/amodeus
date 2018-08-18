@@ -13,6 +13,7 @@ import ch.ethz.idsc.tensor.sca.Clip;
 public class Request {
     private static final Clip TIME_CLIP = Clip.function(0, 24 * 3600 - 1);
 
+    /** returns the requests that have their startLink in the given set of links */
     public static Set<Request> filterLinks(Set<Request> requests, Set<Link> links) {
         return requests.stream().filter(request -> links.contains(request.startLink)).collect(Collectors.toSet());
     }
