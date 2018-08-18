@@ -12,8 +12,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** abstract base class for all implementations that match {@link Collection}s of {@link RoboTaxi}s
  * and {@link Collection} of {@link AVRequest}s or of {@link Link}s */
-// TODO JAN will rename class to AbstractRoboTaxiDestMatcher when repos are in sync
-public abstract class AbstractVehicleDestMatcher {
+public abstract class AbstractRoboTaxiDestMatcher {
 
     /** @return {@link Map} containing matching between {@link RoboTaxi}s in {@link Collection} @param roboTaxis
      *         and {@link AVRequest}s in @param avRequests or empty colletion if either is empty */

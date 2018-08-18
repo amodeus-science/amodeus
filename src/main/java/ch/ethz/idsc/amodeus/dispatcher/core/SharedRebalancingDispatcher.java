@@ -28,7 +28,7 @@ public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatc
 
     /** @param roboTaxi is rebalanced to
      * @param destination and all the oustanding pickup and dropoff tasks are deleted */
-    protected final void setRoboTaxiRebalance(final RoboTaxi roboTaxi, final Link destination) {
+    protected final void setRoboTaxiRebalance(RoboTaxi roboTaxi, final Link destination) {
         GlobalAssert.that(roboTaxi.isWithoutCustomer());
         /** clear menu and put requests back to pending requests */
         cleanRoboTaxiMenuAndAbandonAssignedRequests(roboTaxi);
@@ -39,10 +39,10 @@ public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatc
 
     /** {@link RoboTaxi} @param roboTaxi is redirected to the {@link Link} of the {@link SharedCourse}
      * the course can be moved to another position in the {@link SharedMenu} of the {@link} RoboTaxi */
-    protected final void addSharedRoboTaxiRedirect(final RoboTaxi roboTaxi, SharedCourse redirectCourse) {
+    protected static void addSharedRoboTaxiRedirect(RoboTaxi roboTaxi, SharedCourse redirectCourse) {
         GlobalAssert.that(redirectCourse.getMealType().equals(SharedMealType.REDIRECT));
         roboTaxi.getMenu().addAVCourseAsDessert(redirectCourse);
-    };
+    }
 
     /** @return {@link List } of all {@link RoboTaxi} which are currently rebalancing. */
     protected List<RoboTaxi> getRebalancingRoboTaxis() {

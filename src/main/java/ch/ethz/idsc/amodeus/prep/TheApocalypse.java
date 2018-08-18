@@ -16,7 +16,8 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
  *
  * TheApocalypse.reducesThe(population).toNoMoreThan(1000).people(); */
 public final class TheApocalypse {
-    static final long DEFAULT_SEED = 7582456789l;
+    /** the seed is deliberately public */
+    public static final long DEFAULT_SEED = 7582456789l;
 
     public static TheApocalypse reducesThe(Population population) {
         return new TheApocalypse(population);

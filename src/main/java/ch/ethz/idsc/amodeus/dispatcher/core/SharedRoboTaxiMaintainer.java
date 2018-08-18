@@ -188,7 +188,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     /* package */ abstract void executePickups();
 
     /* package */ abstract void executeDropoffs();
-    
+
     /* package */ abstract void executeRedirects();
 
     /* package */ abstract void stopAbortedPickupRoboTaxis();

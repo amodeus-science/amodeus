@@ -28,7 +28,7 @@ public abstract class RebalancingDispatcher extends UniversalDispatcher {
      * 
      * @param roboTaxi
      * @param destination */
-    protected final void setRoboTaxiRebalance(final RoboTaxi roboTaxi, final Link destination) {
+    public final void setRoboTaxiRebalance(final RoboTaxi roboTaxi, final Link destination) {
         GlobalAssert.that(roboTaxi.isWithoutCustomer());
         /** if {@link RoboTaxi} is during pickup, remove from pickup register */
         if (isInPickupRegister(roboTaxi)) {

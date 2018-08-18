@@ -15,7 +15,7 @@ import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.PartitionedDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVehicleDestMatcher;
+import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatchingUtils;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
@@ -49,7 +49,7 @@ import ch.ethz.matsim.av.router.AVRouter;
  * The International Journal of Robotics Research, 31(7), pp.839-854. */
 public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
     private final AbstractVirtualNodeDest virtualNodeDest;
-    private final AbstractVehicleDestMatcher vehicleDestMatcher;
+    private final AbstractRoboTaxiDestMatcher vehicleDestMatcher;
     private final Network network;
     private final DistanceFunction distanceFunction;
     private final DistanceHeuristics distanceHeuristics;
@@ -78,7 +78,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
             Network network, //
             VirtualNetwork<Link> virtualNetwork, //
             AbstractVirtualNodeDest abstractVirtualNodeDest, //
-            AbstractVehicleDestMatcher abstractVehicleDestMatcher, //
+            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher, //
             TravelData travelData) {
         super(config, avconfig, travelTime, router, eventsManager, virtualNetwork);
         virtualNodeDest = abstractVirtualNodeDest;
@@ -194,7 +194,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
             AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
 
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
-            AbstractVehicleDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(new EuclideanDistanceFunction());
+            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(new EuclideanDistanceFunction());
 
             return new FeedforwardFluidicRebalancingPolicy(config, avconfig, generatorConfig, travelTime, router, eventsManager, network, virtualNetwork, abstractVirtualNodeDest,
                     abstractVehicleDestMatcher, travelData);
