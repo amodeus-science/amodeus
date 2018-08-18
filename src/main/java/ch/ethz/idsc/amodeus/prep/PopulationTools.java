@@ -21,14 +21,15 @@ import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Array;
+import ch.ethz.idsc.tensor.sca.Clip;
 
 public enum PopulationTools {
     ;
     private static final int DAYDURATION = 24 * 60 * 60;
+    private static final Clip TIME_CLIP = Clip.function(0, DAYDURATION - 1);
     private static final Logger log = Logger.getLogger(PopulationTools.class);
 
     public static void removeOutsideNetwork(Population population, Network network) {
-
         log.info("All people in population  which have activities outside network are removed.");
 
         Iterator<? extends Person> itPerson = population.getPersons().values().iterator();
@@ -62,6 +63,47 @@ public enum PopulationTools {
         }
     }
 
+    /** Removes all persons that have legs with departure time or the end time of its predecessor activity outside the first 24 hours */
+    public static void removeOutsideDayTime(Population population) {
+
+        log.info("All people in population  which have activities outside the first 24 hours are removed.");
+
+        Iterator<? extends Person> itPerson = population.getPersons().values().iterator();
+
+        int counter = 0;
+        int nextMsg = 1;
+
+        while (itPerson.hasNext()) {
+            counter++;
+            if (counter % nextMsg == 0) {
+                nextMsg *= 2;
+                System.out.println("we are at person # " + counter + ". ");
+            }
+            Person person = itPerson.next();
+            boolean removePerson = false;
+
+            for (Plan plan : person.getPlans()) {
+
+                for (int i = 1; i < plan.getPlanElements().size() - 1; ++i) {
+                    PlanElement planBefore = plan.getPlanElements().get(i - 1);
+                    PlanElement planCurrent = plan.getPlanElements().get(i);
+
+                    if (planCurrent instanceof Leg) {
+                        Leg leg = (Leg) planCurrent;
+                        Activity actBefore = (Activity) planBefore;
+                        if (TIME_CLIP.isOutside(RealScalar.of(leg.getDepartureTime())))
+                            removePerson = true;
+                        if (TIME_CLIP.isOutside(RealScalar.of(actBefore.getEndTime())))
+                            removePerson = true;
+                    }
+                }
+            }
+            if (removePerson) {
+                itPerson.remove();
+            }
+        }
+    }
+
     /** @param population
      * @param network
      * @return the set of all AV requests in the population */
@@ -90,7 +132,7 @@ public enum PopulationTools {
                                 Activity actBefore = (Activity) planElMins;
                                 startTime = actBefore.getEndTime();
                             }
-                            GlobalAssert.that(startTime >= 0);
+                            TIME_CLIP.requireInside(RealScalar.of(startTime));
 
                             Link startLink = network.getLinks().get(((Activity) planElMins).getLinkId());
                             Link endLink = network.getLinks().get(((Activity) planElPlus).getLinkId());

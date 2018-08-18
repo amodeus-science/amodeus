@@ -36,7 +36,6 @@ public class PopulationToolsTest {
     private static Population population;
     private static Network network;
     private static Set<Request> requestsSingle = new HashSet<>();
-    private static Set<Request> requestsInvalid = new HashSet<>();
     private static Set<Request> requestsEmpty = new HashSet<>();
     private static Set<Request> requests = new HashSet<>();
 
@@ -67,7 +66,6 @@ public class PopulationToolsTest {
         Link node2 = (Link) virtualNetwork3.getVirtualNode(2).getLinks().toArray()[0]; // in virtualNetwork2 in virtual node 1
 
         requestsSingle.add(new Request(10, node0, node2));
-        requestsInvalid.add(new Request(-1, node0, node2));
         requests.add(new Request(0, node0, node2));
         requests.add(new Request(3600, node1, node2));
         requests.add(new Request(24 * 3600 - 1, node1, node0));
@@ -85,7 +83,7 @@ public class PopulationToolsTest {
         }
 
         try {
-            PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(requestsInvalid, virtualNetwork2, 3600);
+            PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(requestsSingle, virtualNetwork2, -1);
             assertTrue(false);
         } catch (Exception exception) {
             // ---

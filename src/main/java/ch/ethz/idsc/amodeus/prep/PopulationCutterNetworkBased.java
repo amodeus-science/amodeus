@@ -15,6 +15,7 @@ public class PopulationCutterNetworkBased implements PopulationCutterFunction {
     @Override
     public void process(Population population) {
         PopulationTools.removeOutsideNetwork(population, network);
+        PopulationTools.removeOutsideDayTime(population);
     }
 
     @Override
