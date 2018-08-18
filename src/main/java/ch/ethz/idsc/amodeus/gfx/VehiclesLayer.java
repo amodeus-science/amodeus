@@ -25,7 +25,7 @@ public class VehiclesLayer extends ViewerLayer {
     private final BitSet bits = new BitSet();
 
     // during development standard colors are a better default
-    public StatusColors statusColors = StatusColors.Pop;
+    public RoboTaxiStatusColors statusColors = RoboTaxiStatusColors.Pop;
     public boolean showLocation = true;
 
     public VehiclesLayer() {
@@ -103,9 +103,9 @@ public class VehiclesLayer extends ViewerLayer {
             rowPanel.add(jCheckBox);
         }
         {
-            SpinnerLabel<StatusColors> spinner = new SpinnerLabel<>();
+            SpinnerLabel<RoboTaxiStatusColors> spinner = new SpinnerLabel<>();
             spinner.setToolTipText("color scheme for vehicle rectangles");
-            spinner.setArray(StatusColors.values());
+            spinner.setArray(RoboTaxiStatusColors.values());
             spinner.setValue(statusColors);
             spinner.addSpinnerListener(cs -> {
                 statusColors = cs;

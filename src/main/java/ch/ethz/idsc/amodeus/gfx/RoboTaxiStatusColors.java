@@ -6,7 +6,7 @@ import java.awt.Color;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 
 /** color schemes for RoboTaxiStatus */
-/* package */ enum StatusColors {
+public enum RoboTaxiStatusColors {
     Standard( //
             new Color(128, 0, 128), // with customer
             new Color(255, 51, 0), // to customer
@@ -31,7 +31,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
     private final Color[] colors;
     private final Color[] dest;
 
-    private StatusColors(Color... colors) {
+    private RoboTaxiStatusColors(Color... colors) {
         this.colors = colors;
         dest = new Color[colors.length];
         for (int index = 0; index < colors.length; ++index)
