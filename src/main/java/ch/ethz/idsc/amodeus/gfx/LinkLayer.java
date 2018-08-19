@@ -55,10 +55,10 @@ import ch.ethz.idsc.tensor.sca.ArcTan;
 }
 
 public class LinkLayer extends ViewerLayer {
-    private static final int MAX_COUNT = 16384 / 2;
     // ---
     private static final Color LINKCOLOR = new Color(153, 153, 102, 64);
     private boolean drawLinks = true; // false;
+    public int linkLimit = 8192;
     private boolean drawLabel = true; // false;
     private final JTextArea jTextArea = new JTextArea(2, 10);
     private int count = 0;
@@ -78,7 +78,7 @@ public class LinkLayer extends ViewerLayer {
                     street.p1 = p1;
                     street.p2 = p2;
                     list.add(street);
-                    if (MAX_COUNT < list.size()) {
+                    if (linkLimit < list.size()) {
                         list.clear();
                         break;
                     }

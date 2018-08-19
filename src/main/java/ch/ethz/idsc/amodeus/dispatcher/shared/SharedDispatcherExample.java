@@ -38,6 +38,7 @@ import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.router.AVRouter;
 
+// TODO class should be moved to amod
 public class SharedDispatcherExample extends SharedPartitionedDispatcher {
 
     private final int dispatchPeriod;
