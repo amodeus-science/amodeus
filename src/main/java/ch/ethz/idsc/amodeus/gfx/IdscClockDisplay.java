@@ -28,7 +28,7 @@ import java.awt.geom.Line2D;
         SecondsToHMS hms = new SecondsToHMS(now);
         // code to draw the clock was stolen from https://processing.org/examples/clock.html
         // code adapted by jph
-        graphics.setColor(new Color(192, 192, 192, 192));
+        graphics.setColor(new Color(192, 192, 192, 128)); // TODO config alpha from outside
         graphics.fillArc(c.x - wid, c.y - wid, 2 * wid, 2 * wid, 0, 360);
 
         final double h = ((hms.h + hms.m / 60.0) / 12.0) * 2 * Math.PI;

@@ -422,7 +422,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
             // //
 
             SharedCourse currentCourse = roboTaxi.getMenu().getStarterCourse();
-            // TODO Claudio get(string vs. Id)
+            @SuppressWarnings("unlikely-arg-type")
             AVRequest avR = requestRegister.get(roboTaxi).get(currentCourse.getRequestId());
 
             GlobalAssert.that(pendingRequests.contains(avR));
@@ -447,7 +447,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
             boolean isOk = dropoffVehicle.getSchedule().getCurrentTask() == Schedules.getLastTask(dropoffVehicle.getSchedule()); // instanceof AVDriveTask;
 
             SharedCourse currentCourse = dropoffVehicle.getMenu().getStarterCourse();
-            // TODO Claudio get(string vs. Id)
+            @SuppressWarnings("unlikely-arg-type")
             AVRequest avR = requestRegister.get(dropoffVehicle).get(currentCourse.getRequestId());
 
             if (currentCourse.getMealType().equals(SharedMealType.DROPOFF) && //
@@ -510,6 +510,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 
     /** Consistency checks to be called by
      * {@linksRoboTaxiMaintainer.consistencyCheck} in each iteration. */
+    @SuppressWarnings("unlikely-arg-type")
     @Override
     protected final void consistencySubCheck() {
         // there cannot be more pickup vehicles than open requests
@@ -525,7 +526,6 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         getRoboTaxis().stream().filter(rt -> rt.getMenu().hasStarter()).forEach(rtx -> GlobalAssert.that(rtx.checkMenuConsistency()));
 
         // SHARED check statement below: menus requests are contained in request register.
-        // TODO Claudio get(string vs. Id)
         GlobalAssert.that(!getRoboTaxis().stream().filter(rt -> rt.getMenu().hasStarter())
                 .anyMatch(rtx -> rtx.getMenu().getCourses().stream().anyMatch(c -> !requestRegister.get(rtx).containsKey(c.getRequestId()))));
 
