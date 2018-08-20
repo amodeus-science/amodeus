@@ -40,7 +40,6 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
     public final Set<Integer> requestIndices = new HashSet<>();
 
     // fields assigned in compile
-    // TODO MISC some public fields are only used in tests
     public Tensor totalDistancesPerVehicle;
     public Tensor distancesOverDay;
     public double totalDistance;
@@ -48,7 +47,7 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
     public double totalDistancePicku;
     public double totalDistanceRebal;
     public double totalDistanceRatio;
-    public double avgTripDistance;
+    private double avgTripDistance;
     public double avgOccupancy;
 
     // distRatio;
