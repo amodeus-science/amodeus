@@ -15,6 +15,8 @@ import org.matsim.core.mobsim.qsim.qnetsimengine.linkspeedcalculator.LinkSpeedCa
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+
 public class TrafficDataModule extends AbstractModule {
     private final LinkSpeedDataContainer lsData;
 
@@ -34,6 +36,9 @@ public class TrafficDataModule extends AbstractModule {
     @Provides
     @Singleton
     public DefaultTaxiTrafficData provideTaxiTrafficData(Network network, TravelTimeCalculatorConfigGroup config) {
+        Objects.requireNonNull(lsData);
+        Objects.requireNonNull(network);
+        Objects.requireNonNull(config);
         return new DefaultTaxiTrafficData(lsData, config.getTraveltimeBinSize(), network);
     }
 
