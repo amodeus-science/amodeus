@@ -188,25 +188,25 @@ public class ScenarioPipeLineTest {
         assertTrue(ate.getDistancElement().totalDistance >= 0.0);
         // INFO with change to av-package 0.1.6-amodeus there was a minor change
         // in this test, old value: 34754.7000511536
-        assertEquals(34551.22501867892, ate.getDistancElement().totalDistance, 0.0); // TODO changed
+        assertEquals(34551.22501867892, ate.getDistancElement().totalDistance, 0.0);
 
         assertTrue(ate.getDistancElement().totalDistanceWtCst >= 0.0);
 
         // INFO with change to av-package 0.1.6-amodeus there was a minor change
         // in this test, old value: 28974.040196898222
-        assertEquals(28985.51649729462, ate.getDistancElement().totalDistanceWtCst, 0.0); // TODO changed
+        assertEquals(28985.51649729462, ate.getDistancElement().totalDistanceWtCst, 0.0);
         assertTrue(ate.getDistancElement().totalDistancePicku > 0.0);
 
         // INFO with change to av-package 0.1.6-amodeus there was a minor change
         // in this test, old value: 5780.659854255442
-        assertEquals(5565.708521384286, ate.getDistancElement().totalDistancePicku, 0.0); // TODO changed
+        assertEquals(5565.708521384286, ate.getDistancElement().totalDistancePicku, 0.0);
         assertTrue(ate.getDistancElement().totalDistanceRebal >= 0.0);
         assertEquals(0.0, ate.getDistancElement().totalDistanceRebal, 0.0);
         assertTrue(ate.getDistancElement().totalDistanceRatio >= 0.0);
 
         // INFO with change to av-package 0.1.6-amodeus there was a minor change
         // in this test, old value: 0.8336725724651016
-        assertEquals(0.8389142926661677, ate.getDistancElement().totalDistanceRatio, 0.0); // TODO changed
+        assertEquals(0.8389142926661677, ate.getDistancElement().totalDistanceRatio, 0.0);
         ate.getDistancElement().totalDistancesPerVehicle.flatten(-1).forEach(s -> //
         assertTrue(Scalars.lessEquals(RealScalar.ZERO, (Scalar) s)));
         assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).number().doubleValue() //

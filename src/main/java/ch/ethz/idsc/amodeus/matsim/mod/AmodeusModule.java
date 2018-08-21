@@ -38,11 +38,11 @@ public class AmodeusModule extends AbstractModule {
     @Singleton
     @Named(DvrpModule.DVRP_ROUTING)
     public Network provideAVNetwork(Network fullNetwork) {
-        /* TODO MISC Here we provide the FULL network with public transit links etc., because this is how Amodeus has been set up initially. This was not a problem,
-         * since
-         * the av package also provides this network by default. However, this will change so in order to keep backward compatibility, we explicitly provide the
-         * full
-         * network here. Eventually Amodeus should be able to cope with what is defined by default. */
+        /* TODO MISC Here we provide the FULL network with public transit links etc.,
+         * because this is how Amodeus has been set up initially. This was not a problem,
+         * since the av package also provides this network by default. However,
+         * this will change so in order to keep backward compatibility, we explicitly provide the
+         * full network here. Eventually Amodeus should be able to cope with what is defined by default. */
 
         return fullNetwork;
     }
