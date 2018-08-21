@@ -206,7 +206,7 @@ public class ScenarioPipeLineTest {
 
         // INFO with change to av-package 0.1.6-amodeus there was a minor change
         // in this test, old value: 0.8336725724651016
-        assertEquals(0.8389142926661677, ate.getDistancElement().totalDistanceRatio, 0.0); 
+        assertEquals(0.8389142926661677, ate.getDistancElement().totalDistanceRatio, 0.0);
         ate.getDistancElement().totalDistancesPerVehicle.flatten(-1).forEach(s -> //
         assertTrue(Scalars.lessEquals(RealScalar.ZERO, (Scalar) s)));
         assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).number().doubleValue() //

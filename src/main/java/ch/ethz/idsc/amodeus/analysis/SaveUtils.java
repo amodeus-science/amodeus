@@ -7,8 +7,11 @@ import ch.ethz.idsc.amodeus.util.io.SaveFormats;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Tensor;
 
-
-public enum SaveUtils {
+/** SaveUtils is not part of the public amodeus api
+ * 
+ * IMPORTANT:
+ * if the functionality is required in amod or elsewhere, make a copy in the external repo */
+/* package */ enum SaveUtils {
     ;
 
     /** Saves tensor in all available file formats ({@link SaveFormats} to @param saveToFolder.
@@ -17,7 +20,7 @@ public enum SaveUtils {
      * @param name
      * @param saveToFolder
      * @throws Exception */
-    public static void saveFile(Tensor tensor, String name, File saveToFolder) throws Exception {
+    static void saveFile(Tensor tensor, String name, File saveToFolder) throws Exception {
         saveFile(tensor, name, saveToFolder, SaveFormats.values());
     }
 
@@ -28,7 +31,7 @@ public enum SaveUtils {
      * @param saveToFolder
      * @param formats
      * @throws Exception */
-    public static void saveFile(Tensor tensor, String name, File saveToFolder, SaveFormats... formats) throws Exception {
+    static void saveFile(Tensor tensor, String name, File saveToFolder, SaveFormats... formats) throws Exception {
         GlobalAssert.that(saveToFolder.isDirectory());
         File folder = createFileDir(name, saveToFolder, false);
         String formatsString = "";
@@ -39,7 +42,7 @@ public enum SaveUtils {
         System.out.println("Saved " + name + " in formats " + formatsString + "to " + folder);
     }
 
-    public static File createFileDir(String name, File saveToFolder, boolean copy) {
+    static File createFileDir(String name, File saveToFolder, boolean copy) {
         File folder = new File(saveToFolder, name);
         int i = 0;
         while (copy && folder.isDirectory()) {

@@ -26,13 +26,14 @@ public class DefaultTaxiTrafficData implements TaxiTrafficData {
 
     /** @param lsData non-null
      * @param timeBinSize
-     * @param network */
+     * @param network non-null
+     * @throws Exception if any of the input parameters is null */
     public DefaultTaxiTrafficData(LinkSpeedDataContainer lsData, int timeBinSize, Network network) {
         System.out.println("Loading LinkSpeedData into Simulation");
         this.lsData = Objects.requireNonNull(lsData);
         this.timeBinSize = timeBinSize;
         this.numSlots = StaticHelper.DAYLENGTH / timeBinSize;
-        this.network = network;
+        this.network = Objects.requireNonNull(network);
         trafficData = createTravelTimeData();
     }
 
@@ -51,8 +52,7 @@ public class DefaultTaxiTrafficData implements TaxiTrafficData {
             Link link = network.getLinks().get(linkID);
             if (Objects.isNull(link)) {
                 System.err.println("link with id " + linkID.toString() + " not found.");
-                System.err.println("you are possibly using a linkSpeedData file which is not\n "
-                        + "made for your scenario");
+                System.err.println("you are possibly using a linkSpeedData file which is not\n " + "made for your scenario");
                 System.err.println("stopping execution.");
                 GlobalAssert.that(false);
             }
