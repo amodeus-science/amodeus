@@ -150,7 +150,8 @@ public class SharedMenu {
 
     public Set<String> getUniqueAVRequests() {
         Set<String> ids = new HashSet<>();
-        roboTaxiMenu.forEach(savc -> ids.add(savc.getRequestId()));
+        roboTaxiMenu.stream().filter(sc -> !sc.getMealType().equals(SharedMealType.REDIRECT)).//
+                forEach(sc -> ids.add(sc.getRequestId().toString()));
         return ids;
     }
 

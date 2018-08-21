@@ -24,7 +24,7 @@ public enum VirtualLinkBuilder {
      * connected to every other {@link VirtualNode}
      * 
      * @param virtualNetwork */
-    private static <T> void buildComplete(VirtualNetwork<T> _virtualNetwork) {
+    public static <T> void buildComplete(VirtualNetwork<T> _virtualNetwork) {
         VirtualNetworkImpl<T> virtualNetwork = (VirtualNetworkImpl<T>) _virtualNetwork;
         GlobalAssert.that(virtualNetwork.getVirtualLinks().isEmpty());
         int index = 0;

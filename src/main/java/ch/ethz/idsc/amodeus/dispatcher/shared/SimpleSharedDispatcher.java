@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -41,6 +42,7 @@ public class SimpleSharedDispatcher extends SharedRebalancingDispatcher {
     private final int dispatchPeriod;
     private final List<Link> links;
     private final Random randGen = new Random(1234);
+    private final Network network;
 
     protected SimpleSharedDispatcher(Network network, //
             Config config, //
@@ -49,6 +51,7 @@ public class SimpleSharedDispatcher extends SharedRebalancingDispatcher {
             AVRouter router, //
             EventsManager eventsManager) {
         super(config, avDispatcherConfig, travelTime, router, eventsManager);
+        this.network = network;
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
         links = new ArrayList<>(network.getLinks().values());
@@ -107,10 +110,16 @@ public class SimpleSharedDispatcher extends SharedRebalancingDispatcher {
 
     }
 
+    // private Link pollNextDestination() {
+    // int index = randGen.nextInt(links.size());
+    // Link link = links.get(index);
+    // return link;
+    // }
+
     private Link pollNextDestination() {
-        int index = randGen.nextInt(links.size());
-        Link link = links.get(index);
-        return link;
+        int index = 19481;
+        Id<Link> id = Id.createLinkId(Id.create(index, Link.class));
+        return network.getLinks().get(id);
     }
 
     public static class Factory implements AVDispatcherFactory {
