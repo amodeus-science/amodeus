@@ -16,17 +16,18 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.qty.Quantity;
 
+// TODO small rounding errors compared to VehicleStatistic
+// ... find out where the differences come from and adapt
 /* package */ class AidoVehicleStatistic {
 
-    private int lastLinkIndex = -1;
-    // this is used as a buffer and is periodically emptied
+    /** list is used as a buffer and is periodically emptied */
     private final List<VehicleContainer> list = new LinkedList<>();
+    private int lastLinkIndex = -1;
 
-    public AidoVehicleStatistic() {
-    }
-
-    public Tensor register(int simObjIndex, VehicleContainer vehicleContainer) {
-        Tensor distance = Tensors.of(Quantity.of(0, SI.METER), Quantity.of(0, SI.METER));
+    /** @param vehicleContainer
+     * @return vector of length 2, entries have unit "m" */
+    Tensor distance(VehicleContainer vehicleContainer) {
+        Tensor distance = StaticHelper.ZEROS.copy();
         if (vehicleContainer.linkIndex != lastLinkIndex) {
             distance = consolidate();
             list.clear();
@@ -38,7 +39,9 @@ import ch.ethz.idsc.tensor.qty.Quantity;
 
     /** this function is called when the {@link RoboTaxi} has changed the link, then we can
      * register the distance covered by the vehicle on the previous link and associate it to
-     * timesteps. The logic is that the distance is added evenly to the time steps. */
+     * timesteps. The logic is that the distance is added evenly to the time steps.
+     * 
+     * @return vector of length 2, entries have unit "m" */
     public Tensor consolidate() {
         Scalar distDrive = Quantity.of(0, SI.METER);
         Scalar distEmpty = Quantity.of(0, SI.METER);
