@@ -184,39 +184,33 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 
     }
 
-    /** carries out the redispatching defined in the redispatch and executes the
+    /** carries out the redispatching defined in the {@link SharedMenu} and executes the
      * directives after a check of the menus. */
     @Override
     final void redispatchInternal(double now) {
 
-        Map<RoboTaxi, SharedMenu> sharedAvMenuLastStep = new HashMap<>();
-        getRoboTaxis().forEach(rt -> sharedAvMenuLastStep.put(rt, rt.getMenu().copy()));
-
         /** to be implemented externally in the dispatchers */
         redispatch(now);
 
+        /** {@link RoboTaxi} are diverted which:
+         * - have a starter
+         * - are not on the link of the starter
+         * - are divertable */
         for (RoboTaxi roboTaxi : getRoboTaxis()) {
             GlobalAssert.that(roboTaxi.checkMenuConsistency());
-            /** if menu has changed compared to previous time step */
-            if (!roboTaxi.getMenu().equals(sharedAvMenuLastStep.get(roboTaxi))) {
-                /** if the menu has next {@link SharedCourse}s in it */
-                if (roboTaxi.getMenu().hasStarter()) {
-                    /** divert the {@link RoboTaxi} according to the next {@link SharedCourse} */
-                    RoboTaxiStatus status = null;
-                    if (roboTaxi.getMenu().getStarterCourse().getMealType().equals(SharedMealType.PICKUP)) {
-                        status = roboTaxi.getCurrentNumberOfCustomersOnBoard() > 0 ? RoboTaxiStatus.DRIVEWITHCUSTOMER : //
-                                RoboTaxiStatus.DRIVETOCUSTOMER;
-                        GlobalAssert.that(roboTaxi.canPickupNewCustomer());
-                    } else if (roboTaxi.getMenu().getStarterCourse().getMealType().equals(SharedMealType.DROPOFF)) {
-                        status = RoboTaxiStatus.DRIVEWITHCUSTOMER;
-                    } else {
-                        status = RoboTaxiStatus.REBALANCEDRIVE;
+            if (roboTaxi.getMenu().hasStarter()) {
+                SharedCourse starter = roboTaxi.getMenu().getStarterCourse();
+                if (!roboTaxi.getDivertableLocation().equals(starter.getLink())) {
+                    if (roboTaxi.isDivertable()) {
+                        Link destLink = getStarterLink(roboTaxi);
+                        RoboTaxiStatus status = RoboTaxiStatus.REBALANCEDRIVE;
+                        if (roboTaxi.getCurrentNumberOfCustomersOnBoard() > 0) {
+                            status = RoboTaxiStatus.DRIVEWITHCUSTOMER;
+                        } else if (starter.getMealType().equals(SharedMealType.PICKUP)) {
+                            status = RoboTaxiStatus.DRIVETOCUSTOMER;
+                        }
+                        setRoboTaxiDiversion(roboTaxi, destLink, status);
                     }
-                    Link destLink = getStarterLink(roboTaxi);
-                    setRoboTaxiDiversion(roboTaxi, destLink, status);
-                } else {
-                    GlobalAssert.that(roboTaxi.isWithoutCustomer());
-                    setRoboTaxiDiversion(roboTaxi, roboTaxi.getDivertableLocation(), RoboTaxiStatus.REBALANCEDRIVE);
                 }
             }
         }
@@ -244,13 +238,13 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
      *                 {@link this.getDivertableRoboTaxis}
      * @param destination
      *            {@link Link} the {@link RoboTaxi} should be diverted to
-     * @param avstatus
+     * @param status
      *            {@link} the {@link AVStatus} the {@link RoboTaxi} has after
      *            the diversion, depends if used from {@link setRoboTaxiPickup} or
      *            {@link setRoboTaxiRebalance} */
-    /* package */ final void setRoboTaxiDiversion(RoboTaxi sRoboTaxi, Link destination, RoboTaxiStatus avstatus) {
+    /* package */ final void setRoboTaxiDiversion(RoboTaxi sRoboTaxi, Link destination, RoboTaxiStatus status) {
         // update Status Of Robo Taxi
-        sRoboTaxi.setStatus(avstatus);
+        sRoboTaxi.setStatus(status);
 
         // update schedule ofsRoboTaxi
         final Schedule schedule = sRoboTaxi.getSchedule();
