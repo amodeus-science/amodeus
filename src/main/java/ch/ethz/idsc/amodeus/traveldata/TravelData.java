@@ -141,6 +141,10 @@ public class TravelData implements Serializable {
     public void checkConsistency() {
         GlobalAssert.that(lambdaAbsolute.flatten(-1).map(Scalar.class::cast).allMatch(Sign::isPositiveOrZero));
         Chop._06.close(lambdaAbsolute, Round.of(lambdaAbsolute)); // make sure lambdaAbsolute is integer valued
+        GlobalAssert.that(Dimensions.of(lambdaAbsolute).equals(Dimensions.of(alphaAbsolute)));
+        GlobalAssert.that(Dimensions.of(lambdaAbsolute).equals(Dimensions.of(fAbsolute)));
+        GlobalAssert.that(Dimensions.of(lambdaAbsolute).get(1).equals(Dimensions.of(lambdaAbsolute).get(2)));
+        GlobalAssert.that(Dimensions.of(lambdaAbsolute).get(1).equals(Dimensions.of(v0).get(0)));
     }
 
     /** Checking if the virtualNetworkID's are identical
@@ -148,10 +152,6 @@ public class TravelData implements Serializable {
      * @param virtualNetworkID */
     public void checkIdenticalVirtualNetworkID(long virtualNetworkID) {
         GlobalAssert.that(DURATION % timeIntervalLength == 0);
-        GlobalAssert.that(Dimensions.of(lambdaAbsolute).equals(Dimensions.of(alphaAbsolute)));
-        GlobalAssert.that(Dimensions.of(lambdaAbsolute).equals(Dimensions.of(fAbsolute)));
-        GlobalAssert.that(Dimensions.of(lambdaAbsolute).get(1).equals(Dimensions.of(lambdaAbsolute).get(2)));
-        GlobalAssert.that(Dimensions.of(lambdaAbsolute).get(1).equals(Dimensions.of(v0).get(0)));
         GlobalAssert.that(virtualNetworkID == this.virtualNetworkID);
     }
 }

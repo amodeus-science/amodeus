@@ -5,11 +5,14 @@ import org.matsim.core.controler.AbstractModule;
 
 import ch.ethz.matsim.av.framework.AVUtils;
 
-public class AmodeusGeneratorModule extends AbstractModule {
+public class AmodeusVehicleGeneratorModule extends AbstractModule {
     @Override
     public void install() {
         bind(RandomDensityGenerator.Factory.class);
         AVUtils.bindGeneratorFactory(binder(), RandomDensityGenerator.class.getSimpleName()).//
                 to(RandomDensityGenerator.Factory.class);
+        bind(VehicleToVSGenerator.Factory.class);
+        AVUtils.bindGeneratorFactory(binder(), VehicleToVSGenerator.class.getSimpleName()).//
+                to(VehicleToVSGenerator.Factory.class);
     }
 }
