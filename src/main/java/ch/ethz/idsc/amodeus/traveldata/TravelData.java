@@ -25,11 +25,12 @@ public class TravelData implements Serializable {
     private final Tensor alphaAbsolute;
     private final Tensor v0;
     private final Tensor fAbsolute;
+    private final String lpName;
     private final int timeSteps;
     private final int timeIntervalLength; // used as lookup
     private final long virtualNetworkID; // used for consistency check
 
-    public TravelData(long virtualNetworkID, Tensor lambdaAbsolute, Tensor alphaAbsolute, Tensor fAbsolute, Tensor v0) {
+    public TravelData(long virtualNetworkID, Tensor lambdaAbsolute, Tensor alphaAbsolute, Tensor fAbsolute, Tensor v0, String lpName) {
         this.virtualNetworkID = virtualNetworkID;
         this.lambdaAbsolute = lambdaAbsolute;
         this.alphaAbsolute = alphaAbsolute;
@@ -37,6 +38,7 @@ public class TravelData implements Serializable {
         this.v0 = v0;
         this.timeSteps = lambdaAbsolute.length();
         this.timeIntervalLength = DURATION / timeSteps;
+        this.lpName = lpName;
 
         checkConsistency();
     }
@@ -135,6 +137,11 @@ public class TravelData implements Serializable {
 
     public int getTimeIntervalLength() {
         return timeIntervalLength;
+    }
+
+    /** returns the name of the solver that was used to create travelData */
+    public String getLPName() {
+        return lpName;
     }
 
     /** Perform consistency checks after completion of constructor operations. */
