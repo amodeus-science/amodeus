@@ -18,17 +18,17 @@ import ch.ethz.idsc.tensor.red.Mean;
         return Mean.of(col);
     }
 
-//    public static void main(String[] args){
-//        Collection<Coord> col =  new ArrayList<>();
-//        col.add(new Coord(1,0));
-//        col.add(new Coord(1,1));
-//        col.add(new Coord(0,1));
-//        col.add(new Coord(0,0));
-//        
-//        System.out.println(meanOf(col, StaticHelper::ofCoord));
-//    }
-//
-//    public static Tensor ofCoord(Coord c) {
-//        return Tensors.vector(c.getX(), c.getY());
-//    }
+    // public static void main(String[] args){
+    // Collection<Coord> col = new ArrayList<>();
+    // col.add(new Coord(1,0));
+    // col.add(new Coord(1,1));
+    // col.add(new Coord(0,1));
+    // col.add(new Coord(0,0));
+    //
+    // System.out.println(meanOf(col, StaticHelper::ofCoord));
+    // }
+    //
+    // public static Tensor ofCoord(Coord c) {
+    // return Tensors.vector(c.getX(), c.getY());
+    // }
 }

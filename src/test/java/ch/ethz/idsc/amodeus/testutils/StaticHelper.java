@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.testutils;
 
 import java.io.File;
@@ -12,9 +13,12 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
+import ch.ethz.idsc.amodeus.data.LocationSpec;
+import ch.ethz.idsc.amodeus.data.LocationSpecDatabase;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
-/* package */ class StaticHelper {
+/* package */ enum StaticHelper {
+    ;
 
     public static void changeDispatcherTo(String newDispatcher, File simFolder) //
             throws JDOMException, IOException {
@@ -45,6 +49,11 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         xmlOutput.setFormat(Format.getPrettyFormat());
         xmlOutput.output(doc, new FileWriter(xmlFile));
 
+    }
+
+    public static void setup() {
+        for (LocationSpec locationSpec : TestLocationSpecs.values())
+            LocationSpecDatabase.INSTANCE.put(locationSpec);
     }
 
 }

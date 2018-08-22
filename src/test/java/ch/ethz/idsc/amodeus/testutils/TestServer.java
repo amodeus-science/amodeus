@@ -23,8 +23,8 @@ import ch.ethz.idsc.amodeus.analysis.Analysis;
 import ch.ethz.idsc.amodeus.data.LocationSpec;
 import ch.ethz.idsc.amodeus.data.ReferenceFrame;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDispatcherModule;
-import ch.ethz.idsc.amodeus.matsim.mod.AmodeusVehicleGeneratorModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusModule;
+import ch.ethz.idsc.amodeus.matsim.mod.AmodeusVehicleGeneratorModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusVirtualNetworkModule;
 import ch.ethz.idsc.amodeus.net.DatabaseModule;
 import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
@@ -71,7 +71,7 @@ public class TestServer {
     private void simulate() throws Exception {
         boolean waitForClients = scenarioOptions.getBoolean("waitForClients");
         configFile = new File(workingDirectory, scenarioOptions.getSimulationConfigName());
-        Static.setup();
+        StaticHelper.setup();
 
         LocationSpec locationSpec = scenarioOptions.getLocationSpec();
 

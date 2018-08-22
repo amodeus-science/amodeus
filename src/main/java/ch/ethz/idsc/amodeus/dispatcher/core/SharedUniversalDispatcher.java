@@ -153,6 +153,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
      * 
      * @param roboTaxi
      * @param avRequest */
+    @SuppressWarnings("unlikely-arg-type")
     public void addSharedRoboTaxiPickup(RoboTaxi roboTaxi, AVRequest avRequest) {
         GlobalAssert.that(roboTaxi.canPickupNewCustomer());
         GlobalAssert.that(pendingRequests.contains(avRequest));
@@ -163,6 +164,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 
         // If the request was already assigned remove it from this vehicle in the request register and update its menu;
         if (pickupRegister.containsKey(avRequest)) {
+            // warning: unlikely-arg-type
             requestRegister.get(pickupRegister.get(avRequest)).remove(avRequest.getId());
             RoboTaxi oldRoboTaxi = pickupRegister.get(avRequest);
             SharedCourse sharedAVCoursePickUp = SharedCourse.pickupCourse(avRequest);
@@ -419,7 +421,6 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
             // //
 
             SharedCourse currentCourse = roboTaxi.getMenu().getStarterCourse();
-            @SuppressWarnings("unlikely-arg-type")
             AVRequest avR = requestRegister.get(roboTaxi).get(currentCourse.getRequestId());
 
             GlobalAssert.that(pendingRequests.contains(avR));
@@ -444,7 +445,6 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
             boolean isOk = dropoffVehicle.getSchedule().getCurrentTask() == Schedules.getLastTask(dropoffVehicle.getSchedule()); // instanceof AVDriveTask;
 
             SharedCourse currentCourse = dropoffVehicle.getMenu().getStarterCourse();
-            @SuppressWarnings("unlikely-arg-type")
             AVRequest avR = requestRegister.get(dropoffVehicle).get(currentCourse.getRequestId());
 
             if (currentCourse.getMealType().equals(SharedMealType.DROPOFF) && //
