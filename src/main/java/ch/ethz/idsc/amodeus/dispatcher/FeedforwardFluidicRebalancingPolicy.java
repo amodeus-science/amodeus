@@ -113,7 +113,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
         }
 
         /** Part I: permanently rebalance vehicles according to the rates output by the LP */
-        if (round_now % rebalancingPeriod == 0) {
+        if (round_now % rebalancingPeriod == 0 && round_now < 24 * 3600) {
             rebalancingRate = travelData.getAlphaRateAtTime((int) round_now);
 
             /** update rebalance count using current rate */

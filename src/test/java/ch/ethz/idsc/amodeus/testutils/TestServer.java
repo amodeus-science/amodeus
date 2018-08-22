@@ -23,7 +23,7 @@ import ch.ethz.idsc.amodeus.analysis.Analysis;
 import ch.ethz.idsc.amodeus.data.LocationSpec;
 import ch.ethz.idsc.amodeus.data.ReferenceFrame;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDispatcherModule;
-import ch.ethz.idsc.amodeus.matsim.mod.AmodeusGeneratorModule;
+import ch.ethz.idsc.amodeus.matsim.mod.AmodeusVehicleGeneratorModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusVirtualNetworkModule;
 import ch.ethz.idsc.amodeus.net.DatabaseModule;
@@ -112,7 +112,7 @@ public class TestServer {
         controler.addOverridingModule(new DvrpTravelTimeModule());
         controler.addOverridingModule(new AVModule());
         controler.addOverridingModule(new DatabaseModule());
-        controler.addOverridingModule(new AmodeusGeneratorModule());
+        controler.addOverridingModule(new AmodeusVehicleGeneratorModule());
         controler.addOverridingModule(new AmodeusDispatcherModule());
         controler.addOverridingModule(new AmodeusVirtualNetworkModule());
         controler.addOverridingModule(new AbstractModule() {
