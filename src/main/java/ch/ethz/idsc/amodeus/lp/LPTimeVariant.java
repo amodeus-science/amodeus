@@ -13,6 +13,8 @@ import org.gnu.glpk.SWIGTYPE_p_int;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
+import ch.ethz.idsc.amodeus.dispatcher.FeedforwardFluidicRebalancingPolicy;
+import ch.ethz.idsc.amodeus.matsim.mod.VehicleToVSGenerator;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
@@ -33,7 +35,10 @@ import ch.ethz.idsc.tensor.alg.Array;
  * they are still on the way. Therefore the integration with w_{ji}(\tau,\sigma) is ignored in this case.
  * 
  * A more detailed derivation:
- * https://github.com/idsc-frazzoli/amodeus/files/2290772/lptimevariant-impl.pdf */
+ * https://github.com/idsc-frazzoli/amodeus/files/2290772/lptimevariant-impl.pdf
+ * 
+ * Should be used together with the {@link FeedforwardFluidicRebalancingPolicy} and {@link VehicleToVSGenerator} which uses the initial vehicles distribution
+ * from here */
 public class LPTimeVariant extends LPTimeVariantBase {
     private final static double AVERAGE_VEL = 30.0;
     // ---
