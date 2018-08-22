@@ -10,6 +10,12 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 
 public enum VirtualNetworkCreators implements VirtualNetworkCreator {
+    NONE {
+        @Override
+        public VirtualNetwork<Link> create(Network network, Population population) {
+            return TrivialMatsimVirtualNetwork.creatVirtualNetwork(network);
+        }
+    },
     SHAPEFILENETWORK {
         @Override
         public VirtualNetwork<Link> create(Network network, Population population) {

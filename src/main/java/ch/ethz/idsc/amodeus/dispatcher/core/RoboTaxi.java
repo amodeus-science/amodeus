@@ -27,10 +27,9 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 public class RoboTaxi {
     /** unit capacity fields */
     static private final Logger logger = Logger.getLogger(RoboTaxi.class);
-
     private final AVVehicle avVehicle;
     private RoboTaxiStatus status;
-    private final RoboTaxiUsageType usageType; // final might be removed if the usage possibility should be changeable by the dispatcher
+    private final RoboTaxiUsageType usageType; // final might be removed if dispatchers can modify usage
 
     /** last known location of the RoboTaxi */
     private Link lastKnownLocation;
@@ -192,9 +191,11 @@ public class RoboTaxi {
 
         Task avT = getSchedule().getCurrentTask();
 
+        // TODO check why this appears often
         if (avT instanceof AVStayTask) {
             // TODO MISC For now, this works, but probably needs fixing somewhere upfront /sh, apr 2018
             logger.warn("RoboTaxiStatus != STAY, but Schedule.getCurrentTask() == AVStayTask; probably needs fixing");
+            System.out.println("status: " + status);
             return true;
         }
 

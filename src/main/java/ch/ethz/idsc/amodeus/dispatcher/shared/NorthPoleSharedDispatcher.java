@@ -4,7 +4,9 @@ package ch.ethz.idsc.amodeus.dispatcher.shared;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.NavigableMap;
 import java.util.Random;
+import java.util.TreeMap;
 
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
@@ -30,25 +32,27 @@ import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.router.AVRouter;
 
-/** demo of functionality for the shared dispatchers (> 1 person in {@link RoboTaxi}
+/** this is a demo of functionality for the shared dispatchers (> 1 person in {@link RoboTaxi}
  * 
- * at the dispatch period, the dispatcher iterates on all empty
- * {@link RoboTaxi}s and assigns the first 4 unassigned {@link AVRequest}s to them,
- * these requests are at arbitrary locations in the city, between the third and
- * the fourth request a random redirect location is chosen */
-public class SimpleSharedDispatcher extends SharedRebalancingDispatcher {
+ * whenever 4 {@link AVRequest}s are open, a {@link RoboTaxi} is assigned to pickup all of them,
+ * it first picks up passengers 1,2,3,4 and then starts to bring passengers 1,2,3 to their destinations.
+ * Passenger 4 is less lucky as the {@link RoboTaxi} first visits the city's North pole (northern most link)
+ * before passenger 4 is finally dropped of and the procedure starts from beginning. */
+public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
 
     private final int dispatchPeriod;
     private final List<Link> links;
     private final Random randGen = new Random(1234);
+    private final Link cityNorthPole;
 
-    protected SimpleSharedDispatcher(Network network, //
+    protected NorthPoleSharedDispatcher(Network network, //
             Config config, //
             AVDispatcherConfig avDispatcherConfig, //
             TravelTime travelTime, //
             AVRouter router, //
             EventsManager eventsManager) {
         super(config, avDispatcherConfig, travelTime, router, eventsManager);
+        this.cityNorthPole = getNorthPole(network);
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
         links = new ArrayList<>(network.getLinks().values());
@@ -90,8 +94,8 @@ public class SimpleSharedDispatcher extends SharedRebalancingDispatcher {
                     sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse4);
                     sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse4);
 
-                    /** add a redirect task and move to prev */
-                    Link redirectLink = pollNextDestination();
+                    /** add a redirect task (to the north pole) and move to prev */
+                    Link redirectLink = cityNorthPole;
                     SharedCourse redirectCourse = SharedCourse.redirectCourse(redirectLink, //
                             Double.toString(now) + sharedRoboTaxi.getId().toString());
                     addSharedRoboTaxiRedirect(sharedRoboTaxi, redirectCourse);
@@ -107,10 +111,14 @@ public class SimpleSharedDispatcher extends SharedRebalancingDispatcher {
 
     }
 
-    private Link pollNextDestination() {
-        int index = randGen.nextInt(links.size());
-        Link link = links.get(index);
-        return link;
+    /** @param network
+     * @return northern most {@link Link} in the {@link Network} */
+    private static Link getNorthPole(Network network) {
+        NavigableMap<Double, Link> links = new TreeMap<>();
+        network.getLinks().values().stream().forEach(l -> {
+            links.put(l.getCoord().getY(), l);
+        });
+        return links.lastEntry().getValue();
     }
 
     public static class Factory implements AVDispatcherFactory {
@@ -139,7 +147,7 @@ public class SimpleSharedDispatcher extends SharedRebalancingDispatcher {
             @SuppressWarnings("unused")
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(new EuclideanDistanceFunction());
 
-            return new SimpleSharedDispatcher(network, config, avconfig, travelTime, router, eventsManager);
+            return new NorthPoleSharedDispatcher(network, config, avconfig, travelTime, router, eventsManager);
         }
     }
 

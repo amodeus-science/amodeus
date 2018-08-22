@@ -49,7 +49,5 @@ public enum CreatorUtils {
             VirtualNode<T> closestNode = closestNodeC.stream().findAny().get().value();
             vNMap.get(closestNode).add(t);
         }
-
     }
-
 }

@@ -37,10 +37,10 @@ import ch.ethz.matsim.av.framework.AVConfigGroup;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.framework.AVUtils;
 
-public class TestServer {
+public class SharedTestServer {
 
-    public static TestServer run() {
-        return new TestServer();
+    public static SharedTestServer run() {
+        return new SharedTestServer();
     }
 
     private File workingDirectory;
@@ -55,15 +55,16 @@ public class TestServer {
     private Controler controler;
     private AnalysisTestExport ate;
 
-    private TestServer() {
+    private SharedTestServer() {
 
     }
 
-    public TestServer on(File workingDirectory) throws Exception {
+    public SharedTestServer on(File workingDirectory) throws Exception {
         this.workingDirectory = workingDirectory;
         System.out.println(workingDirectory);
         GlobalAssert.that(workingDirectory.isDirectory());
         scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
+        StaticHelper.changeDispatcherTo("NorthPoleSharedDispatcher", workingDirectory);
         simulate();
         return this;
     }
