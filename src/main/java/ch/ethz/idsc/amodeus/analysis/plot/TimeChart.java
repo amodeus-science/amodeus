@@ -25,7 +25,8 @@ public enum TimeChart {
 
     public static void of(File directory, String fileTitle, String diagramTitle, //
             boolean filter, int filterSize, double[] scale, //
-            String[] labels, String xAxisLabel, String yAxisLabel, Tensor time, Tensor values, double maxRange, ColorScheme colorScheme) throws Exception {
+            String[] labels, String xAxisLabel, String yAxisLabel, Tensor time, Tensor values, //
+            double maxRange, ColorScheme colorScheme) throws Exception {
 
         // keep
         GlobalAssert.that(time.length() == values.length());

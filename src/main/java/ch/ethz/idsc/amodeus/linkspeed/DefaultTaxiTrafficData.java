@@ -26,13 +26,14 @@ public class DefaultTaxiTrafficData implements TaxiTrafficData {
 
     /** @param lsData non-null
      * @param timeBinSize
-     * @param network */
+     * @param network non-null
+     * @throws Exception if any of the input parameters is null */
     public DefaultTaxiTrafficData(LinkSpeedDataContainer lsData, int timeBinSize, Network network) {
         System.out.println("Loading LinkSpeedData into Simulation");
         this.lsData = Objects.requireNonNull(lsData);
         this.timeBinSize = timeBinSize;
         this.numSlots = StaticHelper.DAYLENGTH / timeBinSize;
-        this.network = network;
+        this.network = Objects.requireNonNull(network);
         trafficData = createTravelTimeData();
     }
 
@@ -49,20 +50,23 @@ public class DefaultTaxiTrafficData implements TaxiTrafficData {
         for (Entry<Integer, LinkSpeedTimeSeries> entry : lsData.getLinkSet().entrySet()) {
             Id<Link> linkID = Id.createLinkId(entry.getKey());
             Link link = network.getLinks().get(linkID);
+            if (Objects.isNull(link)) {
+                System.err.println("link with id " + linkID.toString() + " not found.");
+                System.err.println("you are possibly using a linkSpeedData file which is not\n " + "made for your scenario");
+                System.err.println("stopping execution.");
+                GlobalAssert.that(false);
+            }
 
             TravelTimeData ttData = factory.createTravelTimeData(linkID);
 
             LinkSpeedTimeSeries lsData = entry.getValue();
             for (Integer time : lsData.getRecordedTimes()) {
-
                 Tensor speedRecordings = lsData.getSpeedsAt(time);
                 double speedRecorded = speedRecordings.Get(0).number().doubleValue();
                 GlobalAssert.that(speedRecorded > 0.0);
                 double travelTime = link.getLength() / speedRecorded;
                 ttData.setTravelTime(trafficData.getTimeSlot(time), travelTime);
-
             }
-
             trafficData.addData(linkID, ttData);
         }
         System.out.println("LinkSpeedData loaded into TravelTimeDataArray [lsData size: " + lsData.getLinkSet().size() + " links]");

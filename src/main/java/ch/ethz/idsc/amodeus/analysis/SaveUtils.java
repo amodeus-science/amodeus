@@ -7,7 +7,10 @@ import ch.ethz.idsc.amodeus.util.io.SaveFormats;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Tensor;
 
-// SaveUtils is not part of the public amodeus api
+/** SaveUtils is not part of the public amodeus api
+ * 
+ * IMPORTANT:
+ * if the functionality is required in amod or elsewhere, make a copy in the external repo */
 /* package */ enum SaveUtils {
     ;
 
