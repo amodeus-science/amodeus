@@ -114,7 +114,7 @@ public class VehicleToVSGeneratorTester {
                 vehicleToVSGenerator.next();
             counter = counter.add(vehicleToVSGenerator.getPlacedVehicles());
         }
-        assertTrue(Chop.below(0.1).close(counter.divide(RealScalar.of((double) TRIALS)), distribution));
+        assertTrue(Chop.below(0.1).close(counter.divide(RealScalar.of(TRIALS)), distribution));
     }
 
     @Test
@@ -131,9 +131,7 @@ public class VehicleToVSGeneratorTester {
                 vehicleToVSGenerator.next();
             counter = counter.add(vehicleToVSGenerator.getPlacedVehicles());
         }
-        System.out.println(distribution);
-        System.out.println(counter.divide(RealScalar.of((double) TRIALS)));
-        assertTrue(Chop.below(0.1).close(counter.divide(RealScalar.of((double) TRIALS)), distribution));
+        assertTrue(Chop.below(0.1).close(counter.divide(RealScalar.of(TRIALS)), distribution));
     }
 
     @Test
