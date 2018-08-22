@@ -9,8 +9,8 @@ import ch.ethz.idsc.amodeus.dispatcher.DriveByDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.FeedforwardFluidicRebalancingPolicy;
 import ch.ethz.idsc.amodeus.dispatcher.GlobalBipartiteMatchingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.SQMDispatcher;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedHeuristicDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.NorthPoleSharedDispatcher;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedHeuristicDispatcher;
 import ch.ethz.matsim.av.framework.AVUtils;
 
 public class AmodeusDispatcherModule extends AbstractModule {

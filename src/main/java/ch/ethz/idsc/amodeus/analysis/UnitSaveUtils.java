@@ -10,7 +10,6 @@ import ch.ethz.idsc.amodeus.util.io.SaveFormats;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.qty.Quantity;
 
 public enum UnitSaveUtils {
     ;
@@ -40,20 +39,9 @@ public enum UnitSaveUtils {
         Set<SaveFormats> saveFormats = EnumSet.copyOf(Arrays.asList(formats));
 
         /** create new matrix where quantities are removed */
-        Tensor columUnits = quantityMatrix.get(0)//
-                .map(scalar -> Tensors.fromString((((Quantity) scalar).unit().toString())));
-        Tensor bareMatrix = null;
-        try {
-            bareMatrix = quantityMatrix.map(scalar -> ((Quantity) scalar).value());
-        } catch (Exception ex) {
-            // quantityMatrix.flatten(-1).forEach(t->{
-            // System.out.println("t: " + t);
-            // Scalar value = ((Quantity) t).value();
-            // System.out.println("value: " + value);
-            // });
-            System.err.println("likely one of your entries does not have a unit \n" //
-                    + "uncomment above to check.");
-        }
+        Tensor columUnits = quantityMatrix.get(0).map(UnitStringScalar.FUNCTION);
+
+        Tensor bareMatrix = quantityMatrix.map(RemoveUnit.FUNCTION);
 
         for (SaveFormats format : saveFormats) {
             format.save(bareMatrix, folder, name);
