@@ -44,7 +44,6 @@ public class SharedRoboTaxiTest {
     private static SharedTestServer testServer;
     private static VirtualNetwork<Link> vNCreated;
     private static VirtualNetwork<Link> vNSaved;
-    private static TravelDataTestHelper travelDataTestHelper;
 
     @BeforeClass
     public static void setUpOnce() throws Exception {
@@ -68,7 +67,6 @@ public class SharedRoboTaxiTest {
         Map<String, Link> map = new HashMap<>();
         testPreparer.getPreparedNetwork().getLinks().entrySet().forEach(e -> map.put(e.getKey().toString(), e.getValue()));
         vNSaved = VirtualNetworkIO.fromByte(map, new File("resources/testComparisonFiles/virtualNetwork"));
-        travelDataTestHelper = TravelDataTestHelper.prepare(vNCreated, vNSaved);
     }
 
     @Test
@@ -100,14 +98,14 @@ public class SharedRoboTaxiTest {
 
         System.out.print("Server Test:\t");
 
-        // scenario options
+        /** scenario options */
         File workingDirectory = MultiFileTools.getWorkingDirectory();
         ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
         assertEquals("config.xml", scenarioOptions.getSimulationConfigName());
         assertEquals("preparedNetwork", scenarioOptions.getPreparedNetworkName());
         assertEquals("preparedPopulation", scenarioOptions.getPreparedPopulationName());
 
-        // simulation objects should exist after simulation (simulation data)
+        /** simulation objects should exist after simulation (simulation data) */
         File simobj = new File("output/001/simobj/it.00");
         assertTrue(simobj.exists());
         assertEquals(109, simobj.listFiles().length);
@@ -116,103 +114,83 @@ public class SharedRoboTaxiTest {
 
     }
 
+    // TODO add more tests for shared functionality
     @Test
     public void testAnalysis() throws Exception {
         System.out.print("Analysis Test:\t");
 
         // TODO add tests for shared
-        
-//        AnalysisTestExport ate = testServer.getAnalysisTestExport();
-//
-//        /** number of processed requests */
-//        assertEquals(2000, ate.getSimulationInformationElement().reqsize());
-//
-//        /** fleet size */
-//        assertEquals(200, ate.getSimulationInformationElement().vehicleSize());
-//
-//        /** status distribution, every row must equal the total of vehicles */
-//        Tensor distributionSum = Total.of(Transpose.of(ate.getStatusDistribution().statusTensor));
-//        distributionSum.flatten(-1).forEach(e -> //
-//        assertTrue(e.equals(RealScalar.of(ate.getSimulationInformationElement().vehicleSize()))));
-//
-//        /** distance and occupancy ratios */
-//        Scalar occupancyRatio = Mean.of(ate.getDistancElement().ratios).Get(0);
-//        Scalar distanceRatio = Mean.of(ate.getDistancElement().ratios).Get(1);
-//        // INFO with change to av-package 0.1.6-amodeus there was a minor change
-//        // in this test, old value: 0.08270601851851851
-//        assertEquals(0.08269814814814815, occupancyRatio.number().doubleValue(), 0.0);
-//
-//        // INFO with change to av-package 0.1.6-amodeus there was a minor change
-//        // in this test, old value: 0.6757250816100977
-//        assertEquals(0.6771498509323725, distanceRatio.number().doubleValue(), 0.0);
-//
-//        /** fleet distances */
-//        assertTrue(ate.getDistancElement().totalDistance >= 0.0);
-//        // INFO with change to av-package 0.1.6-amodeus there was a minor change
-//        // in this test, old value: 34754.7000511536
-//        assertEquals(34551.22501867892, ate.getDistancElement().totalDistance, 0.0); // TODO changed
-//
-//        assertTrue(ate.getDistancElement().totalDistanceWtCst >= 0.0);
-//
-//        // INFO with change to av-package 0.1.6-amodeus there was a minor change
-//        // in this test, old value: 28974.040196898222
-//        assertEquals(28985.51649729462, ate.getDistancElement().totalDistanceWtCst, 0.0); // TODO changed
-//        assertTrue(ate.getDistancElement().totalDistancePicku > 0.0);
-//
-//        // INFO with change to av-package 0.1.6-amodeus there was a minor change
-//        // in this test, old value: 5780.659854255442
-//        assertEquals(5565.708521384286, ate.getDistancElement().totalDistancePicku, 0.0); // TODO changed
-//        assertTrue(ate.getDistancElement().totalDistanceRebal >= 0.0);
-//        assertEquals(0.0, ate.getDistancElement().totalDistanceRebal, 0.0);
-//        assertTrue(ate.getDistancElement().totalDistanceRatio >= 0.0);
-//
-//        // INFO with change to av-package 0.1.6-amodeus there was a minor change
-//        // in this test, old value: 0.8336725724651016
-//        assertEquals(0.8389142926661677, ate.getDistancElement().totalDistanceRatio, 0.0); // TODO changed
-//        ate.getDistancElement().totalDistancesPerVehicle.flatten(-1).forEach(s -> //
-//        assertTrue(Scalars.lessEquals(RealScalar.ZERO, (Scalar) s)));
-//        assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).number().doubleValue() //
-//        == ate.getDistancElement().totalDistance);
-//        assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).number().doubleValue() //
-//        == ate.getDistancElement().totalDistance);
-//
-//        /** waiting Times */
-//        assertTrue(ate.getWaitingTimes().maximumWaitTime >= 0.0);
-//        ate.getWaitingTimes().requestWaitTimes.values().stream().forEach(d -> //
-//        {
-//            assertTrue(d >= 0.0);//
-//            assertTrue(d <= ate.getWaitingTimes().maximumWaitTime);
-//        });
-//        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getWaitingTimes().totalWaitTimeQuantile.Get(0)));
-//        assertTrue(Scalars.lessEquals(ate.getWaitingTimes().totalWaitTimeQuantile.Get(0), ate.getWaitingTimes().totalWaitTimeQuantile.Get(1)));
-//        assertTrue(Scalars.lessEquals(ate.getWaitingTimes().totalWaitTimeQuantile.Get(1), ate.getWaitingTimes().totalWaitTimeQuantile.Get(2)));
-//        assertTrue(Scalars.lessEquals(ate.getWaitingTimes().totalWaitTimeMean, ate.getWaitingTimes().totalWaitTimeQuantile.Get(2)));
-//        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getWaitingTimes().totalWaitTimeMean));
-//
-//        /** presence of plot files */
-//        assertTrue((new File("output/001/data/binnedWaitingTimes.png")).exists());
-//        assertTrue((new File("output/001/data/distanceDistribution.png")).exists());
-//        assertTrue((new File("output/001/data/occAndDistRatios.png")).exists());
-//        assertTrue((new File("output/001/data/stackedDistance.png")).exists());
-//        assertTrue((new File("output/001/data/statusDistribution.png")).exists());
-//
-//        assertTrue((new File("output/001/data", ScenarioParametersExport.FILENAME)).exists());
-//
-//        assertTrue((new File("output/001/data/WaitingTimes")).isDirectory());
-//        assertTrue((new File("output/001/data/WaitingTimes/WaitingTimes.mathematica")).exists());
-//
-//        assertTrue((new File("output/001/data/StatusDistribution")).isDirectory());
-//        assertTrue((new File("output/001/data/StatusDistribution/StatusDistribution.mathematica")).exists());
-//
-//        assertTrue((new File("output/001/data/DistancesOverDay")).isDirectory());
-//        assertTrue((new File("output/001/data/DistancesOverDay/DistancesOverDay.mathematica")).exists());
-//
-//        assertTrue((new File("output/001/data/DistanceRatios")).isDirectory());
-//        assertTrue((new File("output/001/data/DistanceRatios/DistanceRatios.mathematica")).exists());
-//
-//        assertTrue(new File("output/001/report/report.html").exists());
-//        assertTrue(new File("output/001/report/av.xml").exists());
-//        assertTrue(new File("output/001/report/config.xml").exists());
+
+        AnalysisTestExport ate = testServer.getAnalysisTestExport();
+
+        /** number of processed requests */
+        assertEquals(2000, ate.getSimulationInformationElement().reqsize());
+
+        /** fleet size */
+        assertEquals(200, ate.getSimulationInformationElement().vehicleSize());
+
+        /** status distribution, every row must equal the total of vehicles */
+        Tensor distributionSum = Total.of(Transpose.of(ate.getStatusDistribution().statusTensor));
+        distributionSum.flatten(-1).forEach(e -> //
+        assertTrue(e.equals(RealScalar.of(ate.getSimulationInformationElement().vehicleSize()))));
+
+        /** distance and occupancy ratios */
+        Scalar occupancyRatio = Mean.of(ate.getDistancElement().ratios).Get(0);
+        Scalar distanceRatio = Mean.of(ate.getDistancElement().ratios).Get(1);
+
+        assertEquals(0.2048175925925926, occupancyRatio.number().doubleValue(), 0.0);
+
+        assertEquals(0.8072881014416966, distanceRatio.number().doubleValue(), 0.0);
+
+        /** fleet distances */
+        assertTrue(ate.getDistancElement().totalDistance >= 0.0);
+        assertEquals(91404.89496291742, ate.getDistancElement().totalDistance, 0.0);
+        assertTrue(ate.getDistancElement().totalDistanceWtCst >= 0.0);
+        assertEquals(83248.82545402774, ate.getDistancElement().totalDistanceWtCst, 0.0);
+        assertTrue(ate.getDistancElement().totalDistancePicku > 0.0);
+        assertEquals(8156.069508889132, ate.getDistancElement().totalDistancePicku, 0.0);
+        assertTrue(ate.getDistancElement().totalDistanceRebal >= 0.0);
+        assertEquals(0.0, ate.getDistancElement().totalDistanceRebal, 0.0);
+        assertTrue(ate.getDistancElement().totalDistanceRatio >= 0.0);
+        assertEquals(0.910769882595472, ate.getDistancElement().totalDistanceRatio, 0.0);
+        ate.getDistancElement().totalDistancesPerVehicle.flatten(-1).forEach(s -> //
+        assertTrue(Scalars.lessEquals(RealScalar.ZERO, (Scalar) s)));
+        assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).number().doubleValue() //
+        == ate.getDistancElement().totalDistance);
+        assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).number().doubleValue() //
+        == ate.getDistancElement().totalDistance);
+
+        /** waiting Times */
+        assertTrue(ate.getWaitingTimes().maximumWaitTime >= 0.0);
+        ate.getWaitingTimes().requestWaitTimes.values().stream().forEach(d -> //
+        {
+            assertTrue(d >= 0.0);//
+            assertTrue(d <= ate.getWaitingTimes().maximumWaitTime);
+        });
+        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getWaitingTimes().totalWaitTimeQuantile.Get(0)));
+        assertTrue(Scalars.lessEquals(ate.getWaitingTimes().totalWaitTimeQuantile.Get(0), ate.getWaitingTimes().totalWaitTimeQuantile.Get(1)));
+        assertTrue(Scalars.lessEquals(ate.getWaitingTimes().totalWaitTimeQuantile.Get(1), ate.getWaitingTimes().totalWaitTimeQuantile.Get(2)));
+        assertTrue(Scalars.lessEquals(ate.getWaitingTimes().totalWaitTimeMean, ate.getWaitingTimes().totalWaitTimeQuantile.Get(2)));
+        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getWaitingTimes().totalWaitTimeMean));
+
+        /** presence of plot files */
+        assertTrue((new File("output/001/data/binnedWaitingTimes.png")).exists());
+        assertTrue((new File("output/001/data/distanceDistribution.png")).exists());
+        assertTrue((new File("output/001/data/occAndDistRatios.png")).exists());
+        assertTrue((new File("output/001/data/stackedDistance.png")).exists());
+        assertTrue((new File("output/001/data/statusDistribution.png")).exists());
+        assertTrue((new File("output/001/data", ScenarioParametersExport.FILENAME)).exists());
+        assertTrue((new File("output/001/data/WaitingTimes")).isDirectory());
+        assertTrue((new File("output/001/data/WaitingTimes/WaitingTimes.mathematica")).exists());
+        assertTrue((new File("output/001/data/StatusDistribution")).isDirectory());
+        assertTrue((new File("output/001/data/StatusDistribution/StatusDistribution.mathematica")).exists());
+        assertTrue((new File("output/001/data/DistancesOverDay")).isDirectory());
+        assertTrue((new File("output/001/data/DistancesOverDay/DistancesOverDay.mathematica")).exists());
+        assertTrue((new File("output/001/data/DistanceRatios")).isDirectory());
+        assertTrue((new File("output/001/data/DistanceRatios/DistanceRatios.mathematica")).exists());
+        assertTrue((new File("output/001/report/report.html")).exists());
+        assertTrue((new File("output/001/report/av.xml")).exists());
+        assertTrue((new File("output/001/report/config.xml")).exists());
     }
 
     @AfterClass
