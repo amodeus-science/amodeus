@@ -17,33 +17,44 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkIO;
 
-public enum VirtualNetworkPreparer {
-    ;
-    private static VirtualNetwork<Link> virtualNetwork;
+public class VirtualNetworkPreparer implements VirtualNetworkCreator {
 
-    public static void run(Network network, Population population, ScenarioOptions scenarioOptions) throws Exception {
+    private final ScenarioOptions scenarioOptions;
+    private final VirtualNetworkCreator virtualNetworkCreators;
 
-        VirtualNetworkCreator virtualNetworkCreators = scenarioOptions.getVirtualNetworkCreator();
-        virtualNetwork = virtualNetworkCreators.create(network, population);
+    public VirtualNetworkPreparer(ScenarioOptions scenarioOptions) {
+        this.scenarioOptions = scenarioOptions;
+        virtualNetworkCreators = scenarioOptions.getVirtualNetworkCreator();
+    }
+
+    @Override
+    public VirtualNetwork<Link> create(Network network, Population population) {
+        VirtualNetwork<Link> virtualNetwork = virtualNetworkCreators.create(network, population);
 
         final File vnDir = new File(scenarioOptions.getVirtualNetworkName());
         System.out.println("vnDir = " + vnDir.getAbsolutePath());
         vnDir.mkdir(); // create folder if necessary
         GlobalAssert.that(Objects.nonNull(virtualNetwork));
-        VirtualNetworkIO.toByte(new File(vnDir, scenarioOptions.getVirtualNetworkName()), virtualNetwork);
-        System.out.println("saved virtual network byte format to : " + new File(vnDir, scenarioOptions.getVirtualNetworkName()));
 
-        virtualNetwork.printVirtualNetworkInfo();
-        System.out.println("successfully converted simulation data files from in " + MultiFileTools.getWorkingDirectory());
+        try {
+            VirtualNetworkIO.toByte(new File(vnDir, scenarioOptions.getVirtualNetworkName()), virtualNetwork);
+            System.out.println("saved virtual network byte format to : " + new File(vnDir, scenarioOptions.getVirtualNetworkName()));
 
-        /** reading the whole travel data */
-        TravelData travelData = TravelDataCreator.create(virtualNetwork, network, population, scenarioOptions);
+            virtualNetwork.printVirtualNetworkInfo();
+            System.out.println("successfully converted simulation data files from in " + MultiFileTools.getWorkingDirectory());
 
-        File travelDataFile = new File(scenarioOptions.getVirtualNetworkName(), scenarioOptions.getTravelDataName());
-        TravelDataIO.write(travelDataFile, travelData);
-    }
+            /** reading the whole travel data */
+            TravelData travelData = TravelDataCreator.create(virtualNetwork, network, population, scenarioOptions);
 
-    public static VirtualNetwork<Link> getVirtualNetwork() {
+            File travelDataFile = new File(scenarioOptions.getVirtualNetworkName(), scenarioOptions.getTravelDataName());
+            TravelDataIO.write(travelDataFile, travelData);
+
+        } catch (Exception exception) {
+            exception.printStackTrace();
+
+            throw new RuntimeException();
+        }
+
         return virtualNetwork;
     }
 }

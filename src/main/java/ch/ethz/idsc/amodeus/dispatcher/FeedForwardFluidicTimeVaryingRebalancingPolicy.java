@@ -43,11 +43,11 @@ import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.router.AVRouter;
 
-/** Implementation of the "Feedforward Fluidic Optimal Rebalancing Policy" presented in
- * Pavone, M., Smith, S.L., Frazzoli, E. and Rus, D., 2012.
- * Robotic load balancing for mobility-on-demand systems.
- * The International Journal of Robotics Research, 31(7), pp.839-854. */
-public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
+/** Implementation of the feedforward time-varying rebalancing policy presented in
+ * Spieser, Kevin, Samitha Samaranayake, and Emilio Frazzoli.
+ * "Vehicle routing for shared-mobility systems with time-varying demand."
+ * American Control Conference (ACC), 2016. IEEE, 2016. */
+public class FeedForwardFluidicTimeVaryingRebalancingPolicy extends PartitionedDispatcher {
     private final AbstractVirtualNodeDest virtualNodeDest;
     private final AbstractRoboTaxiDestMatcher vehicleDestMatcher;
     private final Network network;
@@ -68,18 +68,11 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
     Tensor rebalanceCount;
     Tensor rebalanceCountInteger;
 
-    public FeedforwardFluidicRebalancingPolicy( //
-            Config config, //
-            AVDispatcherConfig avconfig, //
-            AVGeneratorConfig generatorConfig, //
-            TravelTime travelTime, //
-            AVRouter router, //
-            EventsManager eventsManager, //
-            Network network, //
-            VirtualNetwork<Link> virtualNetwork, //
+    public FeedForwardFluidicTimeVaryingRebalancingPolicy(Config config, AVDispatcherConfig avconfig, //
+            AVGeneratorConfig generatorConfig, TravelTime travelTime, AVRouter router, //
+            EventsManager eventsManager, Network network, VirtualNetwork<Link> virtualNetwork, //
             AbstractVirtualNodeDest abstractVirtualNodeDest, //
-            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher, //
-            TravelData travelData) {
+            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher, TravelData travelData) {
         super(config, avconfig, travelTime, router, eventsManager, virtualNetwork);
         virtualNodeDest = abstractVirtualNodeDest;
         vehicleDestMatcher = abstractVehicleDestMatcher;
@@ -95,6 +88,10 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
         rebalancingPeriod = safeConfig.getInteger("rebalancingPeriod", 30);
         distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getString("distanceHeuristics", //
                 DistanceHeuristics.EUCLIDEAN.name()).toUpperCase());
+        // TODO add test if correct lp solver was used, otherwise stop execution and print error.
+        // TODO still waiting for String description in TravelData
+        GlobalAssert.that(false);
+
         this.bipartiteMatchingEngine = new BipartiteMatchingUtils(network);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
@@ -113,7 +110,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
         }
 
         /** Part I: permanently rebalance vehicles according to the rates output by the LP */
-        if (round_now % rebalancingPeriod == 0 && round_now < 24 * 3600) {
+        if (round_now % rebalancingPeriod == 0) {
             rebalancingRate = travelData.getAlphaRateAtTime((int) round_now);
 
             /** update rebalance count using current rate */
@@ -196,8 +193,8 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(new EuclideanDistanceFunction());
 
-            return new FeedforwardFluidicRebalancingPolicy(config, avconfig, generatorConfig, travelTime, router, eventsManager, network, virtualNetwork, abstractVirtualNodeDest,
-                    abstractVehicleDestMatcher, travelData);
+            return new FeedForwardFluidicTimeVaryingRebalancingPolicy(config, avconfig, generatorConfig, travelTime, router, eventsManager, network, virtualNetwork,
+                    abstractVirtualNodeDest, abstractVehicleDestMatcher, travelData);
         }
     }
 }
