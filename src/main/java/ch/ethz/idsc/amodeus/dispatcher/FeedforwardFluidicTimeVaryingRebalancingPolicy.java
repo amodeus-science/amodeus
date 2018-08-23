@@ -47,7 +47,7 @@ import ch.ethz.matsim.av.router.AVRouter;
  * Spieser, Kevin, Samitha Samaranayake, and Emilio Frazzoli.
  * "Vehicle routing for shared-mobility systems with time-varying demand."
  * American Control Conference (ACC), 2016. IEEE, 2016. */
-public class FeedForwardFluidicTimeVaryingRebalancingPolicy extends PartitionedDispatcher {
+public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedDispatcher {
     private final AbstractVirtualNodeDest virtualNodeDest;
     private final AbstractRoboTaxiDestMatcher vehicleDestMatcher;
     private final Network network;
@@ -68,7 +68,7 @@ public class FeedForwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
     Tensor rebalanceCount;
     Tensor rebalanceCountInteger;
 
-    public FeedForwardFluidicTimeVaryingRebalancingPolicy(Config config, AVDispatcherConfig avconfig, //
+    public FeedforwardFluidicTimeVaryingRebalancingPolicy(Config config, AVDispatcherConfig avconfig, //
             AVGeneratorConfig generatorConfig, TravelTime travelTime, AVRouter router, //
             EventsManager eventsManager, Network network, VirtualNetwork<Link> virtualNetwork, //
             AbstractVirtualNodeDest abstractVirtualNodeDest, //
@@ -88,13 +88,12 @@ public class FeedForwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
         rebalancingPeriod = safeConfig.getInteger("rebalancingPeriod", 30);
         distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getString("distanceHeuristics", //
                 DistanceHeuristics.EUCLIDEAN.name()).toUpperCase());
-        // TODO add test if correct lp solver was used, otherwise stop execution and print error.
-        // TODO still waiting for String description in TravelData
-        GlobalAssert.that(false);
-
         this.bipartiteMatchingEngine = new BipartiteMatchingUtils(network);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
+
+        GlobalAssert.that(travelData.getLPName().equals("LPTimeVariant"));
+        GlobalAssert.that(StaticHelper.getVehicleGenerator().equals("VehicleToVSGenerator"));
     }
 
     @Override
@@ -110,7 +109,7 @@ public class FeedForwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
         }
 
         /** Part I: permanently rebalance vehicles according to the rates output by the LP */
-        if (round_now % rebalancingPeriod == 0) {
+        if (round_now % rebalancingPeriod == 0 && round_now < 24 * 3600) {
             rebalancingRate = travelData.getAlphaRateAtTime((int) round_now);
 
             /** update rebalance count using current rate */
@@ -193,7 +192,7 @@ public class FeedForwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(new EuclideanDistanceFunction());
 
-            return new FeedForwardFluidicTimeVaryingRebalancingPolicy(config, avconfig, generatorConfig, travelTime, router, eventsManager, network, virtualNetwork,
+            return new FeedforwardFluidicTimeVaryingRebalancingPolicy(config, avconfig, generatorConfig, travelTime, router, eventsManager, network, virtualNetwork,
                     abstractVirtualNodeDest, abstractVehicleDestMatcher, travelData);
         }
     }
