@@ -1,4 +1,4 @@
-// code by jph
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.net;
 
 import org.matsim.api.core.v01.Coord;
