@@ -23,11 +23,12 @@ public enum TravelDataCreator {
 
         LPSolver lp = LPPreparer.run(virtualNetwork, network, lambdaAbsolute, scenarioOptions);
 
+        String lpName = lp.getClass().getSimpleName();
         Tensor alphaAbsolute = lp.getAlphaAbsolute_ij();
         Tensor v0_i = lp.getV0_i();
         Tensor fAbsolute = lp.getFAbsolute_ij();
 
-        return new TravelData(virtualNetwork.getvNetworkID(), lambdaAbsolute, alphaAbsolute, fAbsolute, v0_i);
+        return new TravelData(virtualNetwork.getvNetworkID(), lambdaAbsolute, alphaAbsolute, fAbsolute, v0_i, lpName);
     }
 
     /** returns the lambdaAbsolute {@link Tensor} that represents all requests in the population. E.g. lambdaAbsolute(k,i,j)=n means that n requests appear at
