@@ -25,6 +25,7 @@ import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.FeasibleRebalanceCreator;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
+import ch.ethz.idsc.amodeus.lp.LPTimeInvariant;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualLink;
@@ -51,6 +52,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
     private final AbstractVirtualNodeDest virtualNodeDest;
     private final AbstractRoboTaxiDestMatcher vehicleDestMatcher;
     private final Network network;
+    private final TravelData travelData;
     private final DistanceFunction distanceFunction;
     private final DistanceHeuristics distanceHeuristics;
     private final BipartiteMatchingUtils bipartiteMatchingEngine;
@@ -61,12 +63,10 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
     // ---
     private int total_rebalanceCount = 0;
     private boolean started = false;
-
-    Tensor printVals = Tensors.empty();
-    TravelData travelData;
-    Tensor rebalancingRate;
-    Tensor rebalanceCount;
-    Tensor rebalanceCountInteger;
+    private Tensor printVals = Tensors.empty();
+    private Tensor rebalancingRate;
+    private Tensor rebalanceCount;
+    private Tensor rebalanceCountInteger;
 
     public FeedforwardFluidicRebalancingPolicy( //
             Config config, //
@@ -97,8 +97,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
         this.bipartiteMatchingEngine = new BipartiteMatchingUtils(network);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
-
-        GlobalAssert.that(travelData.getLPName().equals("LPTimeInvariant"));
+        GlobalAssert.that(travelData.getLPName().equals(LPTimeInvariant.class.getSimpleName()));
     }
 
     @Override
@@ -114,8 +113,8 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
         }
 
         /** Part I: permanently rebalance vehicles according to the rates output by the LP */
-        // TODO magic const
-        if (round_now % rebalancingPeriod == 0 && round_now < 24 * 3600) {
+        // TODO CF better to solve via a member function e.g. travelData.coversTime((int) round_now);
+        if (round_now % rebalancingPeriod == 0 && round_now < TravelData.DURATION) {
             rebalancingRate = travelData.getAlphaRateAtTime((int) round_now);
 
             /** update rebalance count using current rate */

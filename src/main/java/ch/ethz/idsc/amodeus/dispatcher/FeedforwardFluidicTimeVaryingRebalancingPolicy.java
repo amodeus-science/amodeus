@@ -25,6 +25,8 @@ import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.FeasibleRebalanceCreator;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
+import ch.ethz.idsc.amodeus.lp.LPTimeVariant;
+import ch.ethz.idsc.amodeus.matsim.mod.VehicleToVSGenerator;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualLink;
@@ -51,6 +53,7 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
     private final AbstractVirtualNodeDest virtualNodeDest;
     private final AbstractRoboTaxiDestMatcher vehicleDestMatcher;
     private final Network network;
+    private final TravelData travelData;
     private final DistanceFunction distanceFunction;
     private final DistanceHeuristics distanceHeuristics;
     private final BipartiteMatchingUtils bipartiteMatchingEngine;
@@ -61,12 +64,10 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
     // ---
     private int total_rebalanceCount = 0;
     private boolean started = false;
-
-    Tensor printVals = Tensors.empty();
-    TravelData travelData;
-    Tensor rebalancingRate;
-    Tensor rebalanceCount;
-    Tensor rebalanceCountInteger;
+    private Tensor printVals = Tensors.empty();
+    private Tensor rebalancingRate;
+    private Tensor rebalanceCount;
+    private Tensor rebalanceCountInteger;
 
     public FeedforwardFluidicTimeVaryingRebalancingPolicy( //
             Config config, AVDispatcherConfig avDispatcherConfig, //
@@ -77,9 +78,8 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
         super(config, avDispatcherConfig, travelTime, router, eventsManager, virtualNetwork);
         virtualNodeDest = abstractVirtualNodeDest;
         vehicleDestMatcher = abstractVehicleDestMatcher;
-        this.travelData = travelData;
-
         this.network = network;
+        this.travelData = travelData;
         nVNodes = virtualNetwork.getvNodesCount();
         nVLinks = virtualNetwork.getvLinksCount();
         rebalanceCount = Array.zeros(nVNodes, nVNodes);
@@ -92,8 +92,8 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
 
-        GlobalAssert.that(travelData.getLPName().equals("LPTimeVariant"));
-        GlobalAssert.that(StaticHelper.getVehicleGenerator().equals("VehicleToVSGenerator"));
+        GlobalAssert.that(travelData.getLPName().equals(LPTimeVariant.class.getSimpleName()));
+        GlobalAssert.that(StaticHelper.getVehicleGenerator().equals(VehicleToVSGenerator.class.getSimpleName()));
     }
 
     @Override
@@ -109,7 +109,7 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
         }
 
         /** Part I: permanently rebalance vehicles according to the rates output by the LP */
-        if (round_now % rebalancingPeriod == 0 && round_now < 24 * 3600) {
+        if (round_now % rebalancingPeriod == 0 && round_now < TravelData.DURATION) {
             rebalancingRate = travelData.getAlphaRateAtTime((int) round_now);
 
             /** update rebalance count using current rate */

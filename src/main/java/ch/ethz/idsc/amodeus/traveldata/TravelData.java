@@ -15,10 +15,13 @@ import ch.ethz.idsc.tensor.sca.Clip;
 import ch.ethz.idsc.tensor.sca.Round;
 import ch.ethz.idsc.tensor.sca.Sign;
 
-/** Contains the request informations, the rebalancing information from an LPsolver, the initial vehicle distribution requirements and the number of customer
- * drives.
- * In order to use TravelData, it has to be created in the Preparer by {@link VirtualNetworkPreparer}, then it can be injected in the Server by
- * {@link AmodeusVirtualNetworkModule}. TravelData is also used in tests. */
+/** Contains the request informations, the rebalancing information from an LPsolver,
+ * the initial vehicle distribution requirements and the number of customer drives.
+ * 
+ * In order to use TravelData, it has to be created in the Preparer by {@link VirtualNetworkPreparer},
+ * then it can be injected in the Server by {@link AmodeusVirtualNetworkModule}.
+ * 
+ * TravelData is also used in tests. */
 public class TravelData implements Serializable {
     public static final int DURATION = 24 * 60 * 60; // for now equal to one day
     private static final Clip TIME_CLIP = Clip.function(0, DURATION);
