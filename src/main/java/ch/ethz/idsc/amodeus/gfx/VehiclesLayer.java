@@ -125,7 +125,7 @@ public class VehiclesLayer extends ViewerLayer {
             }
     }
 
-    private void setDrawDestinations(RoboTaxiStatus status, boolean selected) {
+    public void setDrawDestinations(RoboTaxiStatus status, boolean selected) {
         bits.set(status.ordinal(), selected);
         amodeusComponent.repaint();
     }
