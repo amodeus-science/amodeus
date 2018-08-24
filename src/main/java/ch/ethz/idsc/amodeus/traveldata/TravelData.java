@@ -23,7 +23,7 @@ import ch.ethz.idsc.tensor.sca.Sign;
  * 
  * TravelData is also used in tests. */
 public class TravelData implements Serializable {
-    public static final int DURATION = 24 * 60 * 60; // for now equal to one day
+    private static final int DURATION = 24 * 60 * 60; // for now equal to one day
     private static final Clip TIME_CLIP = Clip.function(0, DURATION);
     // ---
     /** tensor (k,i,j) of dimension (numberofTimeSteps, numberVirtualNodes, numberVirtualNodes) that contains
