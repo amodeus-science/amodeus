@@ -12,26 +12,34 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.amodeus.util.math.Magnitude;
+import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualLink;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Array;
+import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.sca.Chop;
 import ch.ethz.idsc.tensor.sca.Round;
 import ch.ethz.idsc.tensor.sca.Sign;
 
+// TODO CF can we narrow the visibility of class?
 public enum LPUtils {
     ;
-    /** Takes the euclidean distance between the centers of the virtual stations
+    public static final Scalar DURATION = Quantity.of(24 * 60 * 60, SI.SECOND);
+    public static final Scalar AVERAGE_VEL = Quantity.of(30, "km*h^-1");
+
+    /** Takes the Euclidean distance between the centers of the virtual stations
      * and derives the travel time for a given constant velocity.
      *
      * 
      * @param velocity in [km/h]
      * @return tensor with travel time between the virtual stations in [s], e.g. output.get(i,j) is the travel
      *         time from virtual station i to j */
-    public static Tensor getEuclideanTravelTimeBetweenVSCenters(VirtualNetwork<Link> virtualNetwork, double velocity) {
-        double velocityMperS = velocity / 3.6; // in m/s
+    public static Tensor getEuclideanTravelTimeBetweenVSCenters(VirtualNetwork<Link> virtualNetwork, Scalar velocity) {
+        double velocityMperS = Magnitude.VELOCITY.toDouble(velocity); // in m/s
         int nVNodes = virtualNetwork.getvNodesCount();
         Tensor travelTime = Array.zeros(nVNodes, nVNodes);
         for (VirtualLink<Link> link : virtualNetwork.getVirtualLinks()) {

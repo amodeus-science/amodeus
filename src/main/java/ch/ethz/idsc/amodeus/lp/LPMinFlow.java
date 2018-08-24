@@ -28,8 +28,6 @@ import ch.ethz.idsc.tensor.sca.Sign;
  * 
  * https://github.com/idsc-frazzoli/amodeus/files/2290644/lpminflow-impl.pdf */
 public class LPMinFlow {
-    private final static double AVERAGE_VEL = 30.0;
-    // ---
     /** map with variableIDs in problem set up and linkIDs of virtualNetwork */
     private final Map<List<Integer>, Integer> alphaIDvarID = new HashMap<>();
     private final glp_smcp parm = new glp_smcp();
@@ -52,7 +50,7 @@ public class LPMinFlow {
         columnTotal = virtualNetwork.getvLinksCount();
         rowTotal = virtualNetwork.getvNodesCount();
 
-        gamma_ij = LPUtils.getEuclideanTravelTimeBetweenVSCenters(virtualNetwork, AVERAGE_VEL);
+        gamma_ij = LPUtils.getEuclideanTravelTimeBetweenVSCenters(virtualNetwork, LPUtils.AVERAGE_VEL);
         alphaAbsolute_ij = Array.zeros(nvNodes, nvNodes);
 
         System.out.println("creating min flow LP for system with " + rowTotal + " virtualNodes and " + columnTotal + " virtualLinks");

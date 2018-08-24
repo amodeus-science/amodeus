@@ -16,6 +16,7 @@ import org.matsim.api.core.v01.network.Network;
 import ch.ethz.idsc.amodeus.dispatcher.FeedforwardFluidicTimeVaryingRebalancingPolicy;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.amodeus.util.math.Magnitude;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -38,8 +39,6 @@ import ch.ethz.idsc.tensor.alg.Array;
  * 
  * Should be used together with {@link FeedforwardFluidicTimeVaryingRebalancingPolicy} */
 public class LPTimeVariant extends LPTimeVariantBase {
-    private final static double AVERAGE_VEL = 30.0;
-    // ---
     /** map with variableIDs in problem set up and linkIDs of virtualNetwork */
     private final Map<List<Integer>, Integer> fIDvarID = new HashMap<>();
     private final double weightQ;
@@ -66,7 +65,7 @@ public class LPTimeVariant extends LPTimeVariantBase {
     @Override
     public Tensor getTimeVS_ij() {
         // identify the travel times between the virtual stations (based on the paper with direct euclidean distance between virtual stations and velocity 30km/h)
-        return LPUtils.getEuclideanTravelTimeBetweenVSCenters(virtualNetwork, AVERAGE_VEL);
+        return LPUtils.getEuclideanTravelTimeBetweenVSCenters(virtualNetwork, LPUtils.AVERAGE_VEL);
     }
 
     @Override
@@ -310,13 +309,14 @@ public class LPTimeVariant extends LPTimeVariantBase {
     @Override
     public void initObjCr() {
         // set C_r
+        double duration = Magnitude.SECOND.toDouble(LPUtils.DURATION);
         for (int t = 0; t < timeSteps; t++) {
             for (int i = 0; i < nvNodes; i++) {
                 for (int j = 0; j < nvNodes; j++) {
                     if (i == j)
                         continue;
                     int index = alphaIDvarID.get(Arrays.asList(t, i, j));
-                    GLPK.glp_set_obj_coef(lp, index, weightR / DURATION * gamma_ij.Get(i, j).number().doubleValue());
+                    GLPK.glp_set_obj_coef(lp, index, weightR / duration * gamma_ij.Get(i, j).number().doubleValue());
                 }
             }
         }
@@ -324,6 +324,7 @@ public class LPTimeVariant extends LPTimeVariantBase {
 
     @Override
     public void initObjCq() {
+        double duration = Magnitude.SECOND.toDouble(LPUtils.DURATION);
         // set C_q (the lambdaij term can be ignored)
         for (int t = 0; t < timeSteps - 1; t++) {
             for (int i = 0; i < nvNodes; i++) {
@@ -331,7 +332,7 @@ public class LPTimeVariant extends LPTimeVariantBase {
                     if (i == j)
                         continue;
                     int index = fIDvarID.get(Arrays.asList(t, i, j));
-                    GLPK.glp_set_obj_coef(lp, index, -weightQ * timeInterval / DURATION * (timeSteps - t - 1));
+                    GLPK.glp_set_obj_coef(lp, index, -weightQ * timeInterval / duration * (timeSteps - t - 1));
                 }
             }
         }

@@ -17,6 +17,7 @@ import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.FeedforwardFluidicRebalancingPolicy;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.amodeus.util.math.Magnitude;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -37,9 +38,6 @@ import ch.ethz.idsc.tensor.alg.Dimensions;
  * 
  * Should be used together with {@link FeedforwardFluidicRebalancingPolicy} */
 public class LPTimeInvariant implements LPSolver {
-    private final static int DURATION = 24 * 60 * 60;
-    private final static double AVERAGE_VEL = 30.0;
-    // ---
     /** map with variableIDs in problem set up and linkIDs of virtualNetwork */
     private final Map<List<Integer>, Integer> alphaIDvarID = new HashMap<>();
     protected final Map<List<Integer>, Integer> vIDvarID = new HashMap<>();
@@ -65,9 +63,9 @@ public class LPTimeInvariant implements LPSolver {
     public LPTimeInvariant(VirtualNetwork<Link> virtualNetwork, Tensor lambdaAbsolute_ij) {
         numberVehicles = LPUtils.getNumberOfVehicles();
         nvNodes = virtualNetwork.getvNodesCount();
-        gamma_ij = LPUtils.getEuclideanTravelTimeBetweenVSCenters(virtualNetwork, AVERAGE_VEL);
+        gamma_ij = LPUtils.getEuclideanTravelTimeBetweenVSCenters(virtualNetwork, LPUtils.AVERAGE_VEL);
         timeSteps = Dimensions.of(lambdaAbsolute_ij).get(0);
-        timeInterval = DURATION / timeSteps;
+        timeInterval = Magnitude.SECOND.toInt(LPUtils.DURATION) / timeSteps;
         this.lambdaAbsolute_ij = LPUtils.getRoundedRequireNonNegative(lambdaAbsolute_ij);
         lambdaRate_ij = lambdaAbsolute_ij.divide(RealScalar.of(timeInterval));
         columnTotal = getColumnTotal();
