@@ -15,6 +15,7 @@ import ch.ethz.idsc.amodeus.traveldata.TravelDataGet;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkGet;
 
+/** provides the {@link VirtualNetwork} and {@link TravelData} and therefore {@link VirtualNetworkPreparer} has to be run in the Preparer */
 public class AmodeusVirtualNetworkModule extends AbstractModule {
     @Override
     public void install() {

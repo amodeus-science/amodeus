@@ -44,7 +44,7 @@ import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDispatcherModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusModule;
-import ch.ethz.idsc.amodeus.matsim.mod.AmodeusVirtualNetworkModule;
+import ch.ethz.idsc.amodeus.matsim.mod.AmodeusVehicleGeneratorModule;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.prep.MatsimKMeansVirtualNetworkCreator;
@@ -167,7 +167,7 @@ public class StandardMATSimScenarioTest {
         controler.addOverridingModule(new AVModule());
         controler.addOverridingModule(new AmodeusModule());
         controler.addOverridingModule(new AmodeusDispatcherModule());
-        controler.addOverridingModule(new AmodeusVirtualNetworkModule());
+        controler.addOverridingModule(new AmodeusVehicleGeneratorModule());
 
         controler.addOverridingModule(new AbstractModule() {
             @Override
@@ -220,7 +220,7 @@ public class StandardMATSimScenarioTest {
                 // Same as for the virtual network: For the LPFF dispatcher we need travel
                 // data, which we generate on the fly here.
                 ScenarioOptions scenarioOptions = new ScenarioOptions(MultiFileTools.getWorkingDirectory(), ScenarioOptionsBase.getDefault());
-
+                scenarioOptions.setProperty(ScenarioOptionsBase.LPSOLVER, "TIMEINVARIANT");
                 TravelData travelData = TravelDataCreator.create(virtualNetwork, network, population, scenarioOptions);
                 return travelData;
             }
@@ -230,7 +230,7 @@ public class StandardMATSimScenarioTest {
 
         AVConfig avConfig = new AVConfig();
         AVOperatorConfig operatorConfig = avConfig.createOperatorConfig("test");
-        AVGeneratorConfig generatorConfig = operatorConfig.createGeneratorConfig("PopulationDensity");
+        AVGeneratorConfig generatorConfig = operatorConfig.createGeneratorConfig("VehicleToVSGenerator");
         generatorConfig.setNumberOfVehicles(100);
 
         // Choose a dispatcher

@@ -15,6 +15,7 @@ import org.gnu.glpk.glp_prob;
 import org.gnu.glpk.glp_smcp;
 import org.matsim.api.core.v01.network.Link;
 
+import ch.ethz.idsc.amodeus.dispatcher.FeedforwardFluidicRebalancingPolicy;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -32,7 +33,9 @@ import ch.ethz.idsc.tensor.alg.Dimensions;
  * 
  * On page 845 on the right side is the implemented algorithm shown.
  * 
- * https://github.com/idsc-frazzoli/amodeus/files/2290529/lptimeinvariant-impl.pdf */
+ * https://github.com/idsc-frazzoli/amodeus/files/2290529/lptimeinvariant-impl.pdf
+ * 
+ * Should be used together with {@link FeedforwardFluidicRebalancingPolicy} */
 public class LPTimeInvariant implements LPSolver {
     private final static int DURATION = 24 * 60 * 60;
     private final static double AVERAGE_VEL = 30.0;
