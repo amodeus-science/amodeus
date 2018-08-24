@@ -56,14 +56,14 @@ public class SQMDispatcher extends PartitionedDispatcher {
 
     protected SQMDispatcher(//
             Config config, //
-            AVDispatcherConfig avconfig, //
+            AVDispatcherConfig avDispatcherConfig, //
             TravelTime travelTime, //
             AVGeneratorConfig generatorConfig, //
             AVRouter router, //
             EventsManager eventsManager, //
             Network network, //
             VirtualNetwork<Link> virtualNetwork) {
-        super(config, avconfig, travelTime, router, eventsManager, virtualNetwork);
+        super(config, avDispatcherConfig, travelTime, router, eventsManager, virtualNetwork);
         GlobalAssert.that(virtualNetwork != null);
         GlobalAssert.that((int) generatorConfig.getNumberOfVehicles() == virtualNetwork.getvNodesCount());
         this.fastLinkLookup = new FastLinkLookup(network, MatsimStaticDatabase.INSTANCE);

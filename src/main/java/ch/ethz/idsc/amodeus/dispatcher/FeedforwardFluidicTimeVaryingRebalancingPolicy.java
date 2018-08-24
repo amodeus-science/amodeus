@@ -25,7 +25,6 @@ import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.FeasibleRebalanceCreator;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
-import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualLink;
@@ -69,12 +68,13 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
     Tensor rebalanceCount;
     Tensor rebalanceCountInteger;
 
-    public FeedforwardFluidicTimeVaryingRebalancingPolicy(Config config, AVDispatcherConfig avconfig, //
+    public FeedforwardFluidicTimeVaryingRebalancingPolicy( //
+            Config config, AVDispatcherConfig avDispatcherConfig, //
             AVGeneratorConfig generatorConfig, TravelTime travelTime, AVRouter router, //
             EventsManager eventsManager, Network network, VirtualNetwork<Link> virtualNetwork, //
             AbstractVirtualNodeDest abstractVirtualNodeDest, //
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher, TravelData travelData) {
-        super(config, avconfig, travelTime, router, eventsManager, virtualNetwork);
+        super(config, avDispatcherConfig, travelTime, router, eventsManager, virtualNetwork);
         virtualNodeDest = abstractVirtualNodeDest;
         vehicleDestMatcher = abstractVehicleDestMatcher;
         this.travelData = travelData;
@@ -84,11 +84,10 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
         nVLinks = virtualNetwork.getvLinksCount();
         rebalanceCount = Array.zeros(nVNodes, nVNodes);
         rebalanceCountInteger = Array.zeros(nVNodes, nVNodes);
-        SafeConfig safeConfig = SafeConfig.wrap(avconfig);
-        dispatchPeriod = safeConfig.getInteger(DispatcherConfig.DISPATCH_PERIOD, 30);
-        rebalancingPeriod = safeConfig.getInteger(DispatcherConfig.REBALANCING_PERIOD, 30);
-        distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getString(DispatcherConfig.DISTANCE_HEURISTICS, //
-                DistanceHeuristics.EUCLIDEAN.name()).toUpperCase());
+        DispatcherConfig dispatcherConfig = DispatcherConfig.wrap(avDispatcherConfig);
+        dispatchPeriod = dispatcherConfig.getDispatchPeriod(30);
+        rebalancingPeriod = dispatcherConfig.getRebalancingPeriod(30);
+        distanceHeuristics = dispatcherConfig.getDistanceHeuristics(DistanceHeuristics.EUCLIDEAN);
         this.bipartiteMatchingEngine = new BipartiteMatchingUtils(network);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         this.distanceFunction = distanceHeuristics.getDistanceFunction(network);

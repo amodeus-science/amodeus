@@ -14,7 +14,6 @@ import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatchingUtils;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
-import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
@@ -38,11 +37,9 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
             AVDispatcherConfig avDispatcherConfig, TravelTime travelTime, //
             AVRouter router, EventsManager eventsManager) {
         super(config, avDispatcherConfig, travelTime, router, eventsManager);
-        SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
-        dispatchPeriod = safeConfig.getInteger(DispatcherConfig.DISPATCH_PERIOD, 30);
-        /** crashes if spelling is wrong */
-        distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getString(DispatcherConfig.DISTANCE_HEURISTICS, //
-                DistanceHeuristics.EUCLIDEAN.name()).toUpperCase());
+        DispatcherConfig dispatcherConfig = DispatcherConfig.wrap(avDispatcherConfig);
+        dispatchPeriod = dispatcherConfig.getDispatchPeriod(30);
+        distanceHeuristics = dispatcherConfig.getDistanceHeuristics(DistanceHeuristics.EUCLIDEAN);
         this.bipartiteMatchingEngine = new BipartiteMatchingUtils(network);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         this.distanceFunction = distanceHeuristics.getDistanceFunction(network);

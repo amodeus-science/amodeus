@@ -26,12 +26,12 @@ public abstract class PartitionedDispatcher extends RebalancingDispatcher {
 
     protected PartitionedDispatcher( //
             Config config, //
-            AVDispatcherConfig avconfig, //
+            AVDispatcherConfig avDispatcherConfig, //
             TravelTime travelTime, //
             ParallelLeastCostPathCalculator router, //
             EventsManager eventsManager, //
             VirtualNetwork<Link> virtualNetwork) {
-        super(config, avconfig, travelTime, router, eventsManager);
+        super(config, avDispatcherConfig, travelTime, router, eventsManager);
 
         if (virtualNetwork == null) {
             throw new IllegalStateException(

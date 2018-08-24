@@ -20,7 +20,6 @@ import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherUtils;
 import ch.ethz.idsc.amodeus.dispatcher.core.RebalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.util.DrivebyRequestStopper;
-import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.framework.AVModule;
@@ -37,16 +36,16 @@ public class DriveByDispatcher extends RebalancingDispatcher {
 
     private DriveByDispatcher(//
             Config config, //
-            AVDispatcherConfig avconfig, //
+            AVDispatcherConfig avDispatcherConfig, //
             TravelTime travelTime, //
             AVRouter router, //
             EventsManager eventsManager, //
             Network network) {
-        super(config, avconfig, travelTime, router, eventsManager);
+        super(config, avDispatcherConfig, travelTime, router, eventsManager);
         links = new ArrayList<>(network.getLinks().values());
         Collections.shuffle(links, randGen);
-        SafeConfig safeConfig = SafeConfig.wrap(avconfig);
-        rebalancingPeriod = safeConfig.getInteger(DispatcherConfig.REBALANCING_PERIOD, 120);
+        DispatcherConfig dispatcherConfig = DispatcherConfig.wrap(avDispatcherConfig);
+        rebalancingPeriod = dispatcherConfig.getRebalancingPeriod(120);
     }
 
     @Override
