@@ -118,8 +118,6 @@ public class SharedRoboTaxiTest {
     public void testAnalysis() throws Exception {
         System.out.print("Analysis Test:\t");
 
-        // TODO add tests for shared
-
         AnalysisTestExport ate = testServer.getAnalysisTestExport();
 
         /** number of processed requests */
