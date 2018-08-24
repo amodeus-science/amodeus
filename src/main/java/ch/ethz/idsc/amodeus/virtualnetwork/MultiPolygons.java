@@ -32,21 +32,19 @@ public class MultiPolygons {
     }
 
     private static Set<MultiPolygon> initializeFrom(File shapeFile) throws IOException {
-
         URL shapeFileURL = shapeFile.toURI().toURL();
         Map<String, URL> inputMap = new HashMap<>();
         inputMap.put("url", shapeFileURL);
-        DataStore dataStore = DataStoreFinder.getDataStore(inputMap);
 
+        DataStore dataStore = DataStoreFinder.getDataStore(inputMap);
         SimpleFeatureSource featureSource = dataStore.getFeatureSource(dataStore.getTypeNames()[0]);
         SimpleFeatureCollection collection = DataUtilities.collection(featureSource.getFeatures());
         dataStore.dispose();
 
-        HashSet<MultiPolygon> polygons = new HashSet<>();
+        Set<MultiPolygon> polygons = new HashSet<>();
         SimpleFeatureIterator iterator = collection.features();
-        while (iterator.hasNext()) {
+        while (iterator.hasNext())
             polygons.add((MultiPolygon) iterator.next().getDefaultGeometry());
-        }
         return polygons;
     }
 
@@ -55,23 +53,20 @@ public class MultiPolygons {
         return true;
     }
 
-    private static boolean isConsistent(File shapeFile) {
-        GlobalAssert.that(getExtensionOf(shapeFile).equals("shp"));
-        return true;
-
-    }
-
-    private static String getExtensionOf(File file) {
-        String extension = "";
-        int i = file.toString().lastIndexOf('.');
-        if (i > 0) {
-            extension = file.toString().substring(i + 1);
-        }
-        return extension;
-    }
-
     public Set<MultiPolygon> getPolygons() {
         return polygons;
     }
 
+    private static boolean isConsistent(File shapeFile) {
+        GlobalAssert.that(getExtensionOf(shapeFile).equals("shp"));
+        return true;
+    }
+
+    private static String getExtensionOf(File file) {
+        String title = file.getName();
+        int index = title.lastIndexOf('.');
+        return index > 0 //
+                ? title.substring(index + 1)
+                : "";
+    }
 }

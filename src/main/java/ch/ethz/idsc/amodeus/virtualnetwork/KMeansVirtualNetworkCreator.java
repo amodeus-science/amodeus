@@ -2,13 +2,14 @@
 package ch.ethz.idsc.amodeus.virtualnetwork;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.function.Function;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
@@ -28,15 +29,13 @@ import de.lmu.ifi.dbs.elki.distance.distancefunction.minkowski.SquaredEuclideanD
 import de.lmu.ifi.dbs.elki.math.random.RandomFactory;
 
 public class KMeansVirtualNetworkCreator<T, U> {
+    private static final SquaredEuclideanDistanceFunction DISTANCE_FUNCTION = SquaredEuclideanDistanceFunction.STATIC;
 
-    private DatabaseConnection dbc;
-    private Database db;
-    private SquaredEuclideanDistanceFunction dist = SquaredEuclideanDistanceFunction.STATIC;
+    private final VirtualNetwork<T> virtualNetwork;
+    // ---
     // private RandomlyGeneratedInitialMeans init = new RandomlyGeneratedInitialMeans(RandomFactory.DEFAULT);
 
-    private KMeansLloyd<NumberVector> km;
-    private Clustering<KMeansModel> c;
-    private final VirtualNetwork<T> virtualNetwork;
+    private Clustering<KMeansModel> clustering;
 
     /** @param datapoints of any kind with coordinates that should be used for k-Means generation of the network
      * @param elements elements that should be grouped in {@link VirtualNode} clusters
@@ -47,21 +46,15 @@ public class KMeansVirtualNetworkCreator<T, U> {
      * @param ubounds
      * @param numVNodes
      * @param completeGraph */
-    public KMeansVirtualNetworkCreator(double data[][], Collection<T> elements, Map<U, HashSet<T>> uElements, Function<T, Tensor> locationOf, //
+    public KMeansVirtualNetworkCreator( //
+            double data[][], Collection<T> elements, Map<U, HashSet<T>> uElements, Function<T, Tensor> locationOf, //
             Function<T, String> nameOf, Tensor lbounds, Tensor ubounds, int numVNodes, boolean completeGraph, //
             int tryIterations) {
         virtualNetwork = createVirtualNetwork(data, elements, uElements, locationOf, nameOf, lbounds, ubounds, numVNodes, completeGraph, tryIterations);
     }
 
-    public VirtualNetwork<T> getVirtualNetwork() {
-        return virtualNetwork;
-    }
-
-    public Clustering<KMeansModel> getClustering() {
-        return c;
-    }
-
-    private VirtualNetwork<T> createVirtualNetwork(double data[][], Collection<T> elements, Map<U, HashSet<T>> uElements, Function<T, Tensor> locationOf, //
+    private VirtualNetwork<T> createVirtualNetwork( //
+            double data[][], Collection<T> elements, Map<U, HashSet<T>> uElements, Function<T, Tensor> locationOf, //
             Function<T, String> nameOf, Tensor lbounds, Tensor ubounds, int numVNodes, boolean completeGraph, //
             int tryIterations) {
 
@@ -82,7 +75,8 @@ public class KMeansVirtualNetworkCreator<T, U> {
 
     }
 
-    private VirtualNetwork<T> createVirtualNetwork(double data[][], Collection<T> elements, Map<U, HashSet<T>> uElements, Function<T, Tensor> locationOf, //
+    private VirtualNetwork<T> createVirtualNetwork( //
+            double data[][], Collection<T> elements, Map<U, HashSet<T>> uElements, Function<T, Tensor> locationOf, //
             Function<T, String> nameOf, Tensor lbounds, Tensor ubounds, int numVNodes, boolean completeGraph, long initSeed) {
 
         RandomlyGeneratedInitialMeans init = new RandomlyGeneratedInitialMeans(RandomFactory.get(initSeed));
@@ -92,17 +86,17 @@ public class KMeansVirtualNetworkCreator<T, U> {
 
         // 1) COMPUTE CLUSTERING with k-means method based on the supplied data -> every node with same amount of datapoints
         // adapter to load data from an existing array.
-        dbc = new ArrayAdapterDatabaseConnection(data);
+        DatabaseConnection databaseConnection = new ArrayAdapterDatabaseConnection(data);
         // Create a database (which may contain multiple relations!)
-        db = new StaticArrayDatabase(dbc, null);
+        Database database = new StaticArrayDatabase(databaseConnection, null);
         // Load the data into the database (do NOT forget to initialize...)
-        db.initialize();
+        database.initialize();
 
         // Setup textbook k-means clustering:
-        km = new KMeansLloyd<>(dist, numVNodes, 1000, init);
+        KMeansLloyd<NumberVector> km = new KMeansLloyd<>(DISTANCE_FUNCTION, numVNodes, 1000, init);
 
         // Run the algorithm:
-        c = km.run(db);
+        clustering = km.run(database);
 
         // CREATE MAP with all VirtualNodes
         // the datastructure HAS TO BE a linked hash map ! do not change to hash map
@@ -110,17 +104,17 @@ public class KMeansVirtualNetworkCreator<T, U> {
         Map<VirtualNode<T>, Set<T>> vNMap = new LinkedHashMap<>();
 
         {
-
-            Map<Double, Cluster<KMeansModel>> sortedMap = new TreeMap<>();
-            c.getAllClusters().stream().forEach(c -> //
-            sortedMap.put(c.getModel().getPrototype().get(0), c));
+            List<Cluster<KMeansModel>> allClusters = clustering.getAllClusters();
+            Collections.sort(allClusters, ClusterKMeansModelComparator.INSTANCE);
 
             int index = 0;
-            for (Cluster<KMeansModel> clu : sortedMap.values()) {
-                Tensor coord = Tensors.vectorDouble(clu.getModel().getPrototype().get(0), clu.getModel().getPrototype().get(1));
+            for (Cluster<KMeansModel> cluster : allClusters) {
+                Tensor coord = Tensors.vectorDouble( //
+                        cluster.getModel().getPrototype().get(0), //
+                        cluster.getModel().getPrototype().get(1));
                 String indexStr = VirtualNodes.getIdString(index);
                 vNMap.put(new VirtualNode<T>(index, indexStr, new HashMap<>(), coord), new LinkedHashSet<T>());
-                index++;
+                ++index;
             }
         }
 
@@ -137,7 +131,14 @@ public class KMeansVirtualNetworkCreator<T, U> {
         CreatorUtils.fillSerializationInfo(elements, virtualNetwork, nameOf);
 
         return virtualNetwork;
+    }
 
+    public VirtualNetwork<T> getVirtualNetwork() {
+        return virtualNetwork;
+    }
+
+    public Clustering<KMeansModel> getClustering() {
+        return clustering;
     }
 
 }
