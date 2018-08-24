@@ -66,10 +66,8 @@ public enum VirtualNetworkGet {
         final File virtualnetworkFile = new File(virtualnetworkFolder, scenarioOptions.getVirtualNetworkName());
         System.out.println("reading virtual network from" + virtualnetworkFile.getAbsoluteFile());
         try {
-
             Map<String, Link> map = new HashMap<>();
             network.getLinks().entrySet().forEach(e -> map.put(e.getKey().toString(), e.getValue()));
-
             return VirtualNetworkIO.fromByte(map, virtualnetworkFile);
         } catch (Exception e) {
             System.out.println("cannot load default " + virtualnetworkFile);
