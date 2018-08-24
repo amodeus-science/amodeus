@@ -15,6 +15,7 @@ import org.matsim.core.router.util.TravelTime;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
 import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherUtils;
 import ch.ethz.idsc.amodeus.dispatcher.core.RebalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
@@ -45,7 +46,7 @@ public class DriveByDispatcher extends RebalancingDispatcher {
         links = new ArrayList<>(network.getLinks().values());
         Collections.shuffle(links, randGen);
         SafeConfig safeConfig = SafeConfig.wrap(avconfig);
-        rebalancingPeriod = safeConfig.getInteger("rebalancingPeriod", 120);
+        rebalancingPeriod = safeConfig.getInteger(DispatcherConfig.REBALANCING_PERIOD, 120);
     }
 
     @Override

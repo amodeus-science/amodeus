@@ -13,6 +13,7 @@ import org.matsim.core.router.util.TravelTime;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
 import ch.ethz.idsc.amodeus.dispatcher.core.PartitionedDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
@@ -79,10 +80,10 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
         lpMinFlow = new LPMinFlow(virtualNetwork);
         lpMinFlow.initiateLP();
         SafeConfig safeConfig = SafeConfig.wrap(avconfig);
-        dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
-        rebalancingPeriod = safeConfig.getInteger("rebalancingPeriod", 300);
+        dispatchPeriod = safeConfig.getInteger(DispatcherConfig.DISPATCH_PERIOD, 30);
+        rebalancingPeriod = safeConfig.getInteger(DispatcherConfig.REBALANCING_PERIOD, 300);
         this.network = network;
-        distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getString("distanceHeuristics", //
+        distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getString(DispatcherConfig.DISTANCE_HEURISTICS, //
                 DistanceHeuristics.EUCLIDEAN.name()).toUpperCase());
         this.bipartiteMatchingEngine = new BipartiteMatchingUtils(network);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
@@ -215,8 +216,10 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(new EuclideanDistanceFunction());
 
-            return new AdaptiveRealTimeRebalancingPolicy(config, avconfig, generatorConfig, travelTime, router, eventsManager, network, virtualNetwork, abstractVirtualNodeDest,
-                    abstractVehicleDestMatcher);
+            return new AdaptiveRealTimeRebalancingPolicy( //
+                    config, avconfig, generatorConfig, travelTime, //
+                    router, eventsManager, network, virtualNetwork, //
+                    abstractVirtualNodeDest, abstractVehicleDestMatcher);
         }
     }
 }

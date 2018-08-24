@@ -10,7 +10,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-public enum StaticHelper {
+/* package */ enum StaticHelper {
     ;
 
     /** @return returns the parameter of the av.xml file for the vehicle generator */

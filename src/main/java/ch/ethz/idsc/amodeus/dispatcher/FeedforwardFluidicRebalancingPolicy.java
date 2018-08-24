@@ -13,6 +13,7 @@ import org.matsim.core.router.util.TravelTime;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
 import ch.ethz.idsc.amodeus.dispatcher.core.PartitionedDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
@@ -91,9 +92,9 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
         rebalanceCount = Array.zeros(nVNodes, nVNodes);
         rebalanceCountInteger = Array.zeros(nVNodes, nVNodes);
         SafeConfig safeConfig = SafeConfig.wrap(avconfig);
-        dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
-        rebalancingPeriod = safeConfig.getInteger("rebalancingPeriod", 30);
-        distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getString("distanceHeuristics", //
+        dispatchPeriod = safeConfig.getInteger(DispatcherConfig.DISPATCH_PERIOD, 30);
+        rebalancingPeriod = safeConfig.getInteger(DispatcherConfig.REBALANCING_PERIOD, 30);
+        distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getString(DispatcherConfig.DISTANCE_HEURISTICS, //
                 DistanceHeuristics.EUCLIDEAN.name()).toUpperCase());
         this.bipartiteMatchingEngine = new BipartiteMatchingUtils(network);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
@@ -115,6 +116,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
         }
 
         /** Part I: permanently rebalance vehicles according to the rates output by the LP */
+        // TODO magic const
         if (round_now % rebalancingPeriod == 0 && round_now < 24 * 3600) {
             rebalancingRate = travelData.getAlphaRateAtTime((int) round_now);
 

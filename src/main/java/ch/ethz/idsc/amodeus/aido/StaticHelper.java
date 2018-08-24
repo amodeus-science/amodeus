@@ -9,7 +9,7 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.VectorQ;
 import ch.ethz.idsc.tensor.qty.Quantity;
 
-enum StaticHelper {
+/* package */ enum StaticHelper {
     ;
     /** distances zero */
     static final Tensor ZEROS = Tensors.of(Quantity.of(0, SI.METER), Quantity.of(0, SI.METER)).unmodifiable();

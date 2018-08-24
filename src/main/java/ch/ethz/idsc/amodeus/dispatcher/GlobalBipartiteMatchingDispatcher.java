@@ -9,6 +9,7 @@ import org.matsim.core.router.util.TravelTime;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
 import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatchingUtils;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
@@ -38,9 +39,9 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
             AVRouter router, EventsManager eventsManager) {
         super(config, avDispatcherConfig, travelTime, router, eventsManager);
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
-        dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
+        dispatchPeriod = safeConfig.getInteger(DispatcherConfig.DISPATCH_PERIOD, 30);
         /** crashes if spelling is wrong */
-        distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getString("distanceHeuristics", //
+        distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getString(DispatcherConfig.DISTANCE_HEURISTICS, //
                 DistanceHeuristics.EUCLIDEAN.name()).toUpperCase());
         this.bipartiteMatchingEngine = new BipartiteMatchingUtils(network);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
