@@ -17,19 +17,14 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkIO;
 
-public class VirtualNetworkPreparer implements VirtualNetworkCreator {
-
-    private final ScenarioOptions scenarioOptions;
-    private final VirtualNetworkCreator virtualNetworkCreators;
-
-    public VirtualNetworkPreparer(ScenarioOptions scenarioOptions) {
-        this.scenarioOptions = scenarioOptions;
-        virtualNetworkCreators = scenarioOptions.getVirtualNetworkCreator();
-    }
+public enum VirtualNetworkPreparer implements VirtualNetworkCreator {
+    INSTANCE;
+    // ---
 
     @Override
-    public VirtualNetwork<Link> create(Network network, Population population) {
-        VirtualNetwork<Link> virtualNetwork = virtualNetworkCreators.create(network, population);
+    public VirtualNetwork<Link> create(Network network, Population population, ScenarioOptions scenarioOptions) {
+        VirtualNetworkCreator virtualNetworkCreators = scenarioOptions.getVirtualNetworkCreator();
+        VirtualNetwork<Link> virtualNetwork = virtualNetworkCreators.create(network, population, scenarioOptions);
 
         final File vnDir = new File(scenarioOptions.getVirtualNetworkName());
         System.out.println("vnDir = " + vnDir.getAbsolutePath());

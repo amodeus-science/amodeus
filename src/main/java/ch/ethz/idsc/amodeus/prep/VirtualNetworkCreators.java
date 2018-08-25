@@ -12,29 +12,23 @@ import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 public enum VirtualNetworkCreators implements VirtualNetworkCreator {
     NONE {
         @Override
-        public VirtualNetwork<Link> create(Network network, Population population) {
-            return TrivialMatsimVirtualNetwork.creatVirtualNetwork(network);
+        public VirtualNetwork<Link> create(Network network, Population population, ScenarioOptions scenarioOptions) {
+            return TrivialMatsimVirtualNetwork.createVirtualNetwork(network);
         }
     },
     SHAPEFILENETWORK {
         @Override
-        public VirtualNetwork<Link> create(Network network, Population population) {
+        public VirtualNetwork<Link> create(Network network, Population population, ScenarioOptions scenarioOptions) {
             GlobalAssert.that(scenarioOptions != null);
-            return MatsimShapeFileVirtualNetworkCreator.creatVirtualNetwork(network, scenarioOptions);
+            return MatsimShapeFileVirtualNetworkCreator.createVirtualNetwork(network, scenarioOptions);
         }
     },
     KMEANS {
         @Override
-        public VirtualNetwork<Link> create(Network network, Population population) {
+        public VirtualNetwork<Link> create(Network network, Population population, ScenarioOptions scenarioOptions) {
             GlobalAssert.that(scenarioOptions != null);
             return MatsimKMeansVirtualNetworkCreator.createVirtualNetwork( //
                     population, network, scenarioOptions.getNumVirtualNodes(), scenarioOptions.isCompleteGraph());
         }
     };
-    protected ScenarioOptions scenarioOptions = null;
-
-    public void setScenarioOptions(ScenarioOptions scenarioOptions) {
-        this.scenarioOptions = scenarioOptions;
-    }
-
 }

@@ -102,9 +102,7 @@ public class ScenarioOptions {
     }
 
     public VirtualNetworkCreator getVirtualNetworkCreator() {
-        VirtualNetworkCreators virtualNetworkCreators = VirtualNetworkCreators.valueOf(getString(ScenarioOptionsBase.VIRTUALNETWORKCREATORIDENTIFIER));
-        virtualNetworkCreators.setScenarioOptions(this);
-        return virtualNetworkCreators;
+        return VirtualNetworkCreators.valueOf(getString(ScenarioOptionsBase.VIRTUALNETWORKCREATORIDENTIFIER));
     }
 
     public int getMaxPopulationSize() {

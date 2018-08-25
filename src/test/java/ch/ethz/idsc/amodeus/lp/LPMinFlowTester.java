@@ -49,17 +49,17 @@ public class LPMinFlowTester {
         // create 2 node virtual network
         scenarioOptions.setProperty(ScenarioOptionsBase.NUMVNODESIDENTIFIER, "2");
         VirtualNetworkCreator virtualNetworkCreator = scenarioOptions.getVirtualNetworkCreator();
-        virtualNetwork2 = virtualNetworkCreator.create(network, population);
+        virtualNetwork2 = virtualNetworkCreator.create(network, population, scenarioOptions);
 
         // create 3 node virtual network
         scenarioOptions.setProperty(ScenarioOptionsBase.NUMVNODESIDENTIFIER, "3");
         virtualNetworkCreator = scenarioOptions.getVirtualNetworkCreator();
-        virtualNetwork3 = virtualNetworkCreator.create(network, population);
+        virtualNetwork3 = virtualNetworkCreator.create(network, population, scenarioOptions);
 
         // create 3 node virtual network incomplete
         scenarioOptions.setProperty(ScenarioOptionsBase.COMPLETEGRAPHIDENTIFIER, "false");
         virtualNetworkCreator = scenarioOptions.getVirtualNetworkCreator();
-        virtualNetwork3incomplete = virtualNetworkCreator.create(network, population);
+        virtualNetwork3incomplete = virtualNetworkCreator.create(network, population, scenarioOptions);
     }
 
     @Test

@@ -24,7 +24,7 @@ import ch.ethz.idsc.tensor.sca.Sign;
  * TravelData is also used in tests. */
 public class TravelData implements Serializable {
     private static final int DURATION = 24 * 60 * 60; // for now equal to one day
-    private static final Clip TIME_CLIP = Clip.function(0, DURATION);
+    private static final Clip TIME_CLIP = Clip.function(0, DURATION - 1);
     // ---
     /** tensor (k,i,j) of dimension (numberofTimeSteps, numberVirtualNodes, numberVirtualNodes) that contains
      * the number of requests that come up in timeStep k from VS i to j */
@@ -149,6 +149,11 @@ public class TravelData implements Serializable {
     /** returns the name of the solver that was used to create travelData */
     public String getLPName() {
         return lpName;
+    }
+
+    /** returns true if {@link TravelData} covers this time */
+    public boolean coversTime(long round_now) {
+        return TIME_CLIP.isInside(RealScalar.of(round_now));
     }
 
     /** Perform consistency checks after completion of constructor operations. */

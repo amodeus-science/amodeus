@@ -10,7 +10,7 @@ public enum DistanceHeuristics {
     EUCLIDEAN {
         @Override
         public DistanceFunction getDistanceFunction(Network network) {
-            return new EuclideanDistanceFunction();
+            return EuclideanDistanceFunction.INSTANCE;
         }
     },
     DIJKSTRA {

@@ -46,7 +46,7 @@ public class KMeansVirtualNetworkCreatorTest {
 
         /* generate nCreations networks */
         for (int i = 0; i < nCreations; ++i) {
-            virtualNetworks.add(virtualNetworkCreator.create(network, population));
+            virtualNetworks.add(virtualNetworkCreator.create(network, population, scenarioOptions));
         }
 
     }
