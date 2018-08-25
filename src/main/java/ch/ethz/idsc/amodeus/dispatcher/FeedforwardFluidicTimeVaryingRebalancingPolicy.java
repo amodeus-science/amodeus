@@ -191,7 +191,7 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
             AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
 
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
-            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(new EuclideanDistanceFunction());
+            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceFunction.INSTANCE);
 
             return new FeedforwardFluidicTimeVaryingRebalancingPolicy(config, avconfig, generatorConfig, travelTime, router, eventsManager, network, virtualNetwork,
                     abstractVirtualNodeDest, abstractVehicleDestMatcher, travelData);

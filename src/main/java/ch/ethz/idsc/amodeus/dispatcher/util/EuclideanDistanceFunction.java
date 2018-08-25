@@ -7,20 +7,21 @@ import org.matsim.core.utils.geometry.CoordUtils;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-// TODO JPH release v137 make enum singleton INSTANCE
-public class EuclideanDistanceFunction implements DistanceFunction {
+public enum EuclideanDistanceFunction implements DistanceFunction {
+    INSTANCE;
+
     @Override
-    public final double getDistance(RoboTaxi robotaxi, AVRequest avrequest) {
+    public double getDistance(RoboTaxi robotaxi, AVRequest avrequest) {
         return CoordUtils.calcEuclideanDistance(robotaxi.getDivertableLocation().getCoord(), avrequest.getFromLink().getCoord());
     }
 
     @Override
-    public final double getDistance(RoboTaxi robotaxi, Link link) {
+    public double getDistance(RoboTaxi robotaxi, Link link) {
         return CoordUtils.calcEuclideanDistance(robotaxi.getDivertableLocation().getCoord(), link.getCoord());
     }
 
     @Override
-    public final double getDistance(Link from, Link to) {
+    public double getDistance(Link from, Link to) {
         return CoordUtils.calcEuclideanDistance(from.getCoord(), to.getCoord());
     }
 

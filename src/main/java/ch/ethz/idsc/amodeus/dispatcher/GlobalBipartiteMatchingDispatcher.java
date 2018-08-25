@@ -14,6 +14,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatchingUtils;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
+import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
@@ -27,11 +28,10 @@ import ch.ethz.matsim.av.router.AVRouter;
 public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
 
     private final int dispatchPeriod;
-    private final DistanceHeuristics distanceHeuristics;
     private Tensor printVals = Tensors.empty();
     private final DistanceFunction distanceFunction;
     private final Network network;
-    private final BipartiteMatchingUtils bipartiteMatchingEngine;
+    private final BipartiteMatchingUtils bipartiteMatchingUtils;
 
     private GlobalBipartiteMatchingDispatcher(Network network, Config config, //
             AVDispatcherConfig avDispatcherConfig, TravelTime travelTime, //
@@ -39,10 +39,11 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
         super(config, avDispatcherConfig, travelTime, router, eventsManager);
         DispatcherConfig dispatcherConfig = DispatcherConfig.wrap(avDispatcherConfig);
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(30);
-        distanceHeuristics = dispatcherConfig.getDistanceHeuristics(DistanceHeuristics.EUCLIDEAN);
-        this.bipartiteMatchingEngine = new BipartiteMatchingUtils(network);
+        DistanceHeuristics distanceHeuristics = //
+                dispatcherConfig.getDistanceHeuristics(DistanceHeuristics.EUCLIDEAN);
+        bipartiteMatchingUtils = new BipartiteMatchingUtils(network);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
-        this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
+        distanceFunction = distanceHeuristics.getDistanceFunction(network);
         this.network = network;
     }
 
@@ -51,8 +52,14 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
         final long round_now = Math.round(now);
 
         if (round_now % dispatchPeriod == 0) {
-            printVals = bipartiteMatchingEngine.executePickup(this, getDivertableRoboTaxis(), //
-                    getAVRequests(), distanceFunction, network, false);
+            printVals = bipartiteMatchingUtils.executePickup( //
+                    this, //
+                    getDivertableRoboTaxis(), //
+                    getAVRequests(), //
+                    distanceFunction, network, //
+                    /* whenever the distance function is Euclidean the kdTree reduction
+                     * should be used to enhance performance */
+                    distanceFunction.equals(EuclideanDistanceFunction.INSTANCE));
         }
     }
 

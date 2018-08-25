@@ -18,6 +18,7 @@ public enum HungarianAlgorithmWrap {
             return fastHungarianAlgorithm.execute();
         } catch (Exception exception) {
             try {
+                System.out.println("cost matrix of hungarian algorithm dumpted to user home folder");
                 Put.of( //
                         UserHome.file("hungarian_fail_costs.mathematica"), //
                         Tensors.matrixDouble(distancematrix));
