@@ -55,7 +55,7 @@ public class PopulationToolsTestVN2 {
         // create 2 node virtual network
         scenarioOptions.setProperty(ScenarioOptionsBase.NUMVNODESIDENTIFIER, "2");
         VirtualNetworkCreator virtualNetworkCreator = scenarioOptions.getVirtualNetworkCreator();
-        virtualNetwork2 = virtualNetworkCreator.create(network, population);
+        virtualNetwork2 = virtualNetworkCreator.create(network, population, scenarioOptions);
 
         Link node0 = (Link) virtualNetwork2.getVirtualNode(0).getLinks().toArray()[0];
         Link node1 = (Link) virtualNetwork2.getVirtualNode(1).getLinks().toArray()[0];
