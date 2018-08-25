@@ -60,7 +60,7 @@ public class VehicleToVSGeneratorTester {
         population = scenario.getPopulation();
         scenarioOptions.setProperty(ScenarioOptionsBase.NUMVNODESIDENTIFIER, "3");
         VirtualNetworkCreator virtualNetworkCreator = scenarioOptions.getVirtualNetworkCreator();
-        virtualNetwork = virtualNetworkCreator.create(network, population);
+        virtualNetwork = virtualNetworkCreator.create(network, population, scenarioOptions);
 
         /** creating dummy config with 10 vehicles */
         avGeneratorConfig = new AVGeneratorConfig(new AVOperatorConfig("id", new AVConfig()), "strategy");

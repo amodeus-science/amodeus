@@ -11,13 +11,13 @@ import ch.ethz.idsc.amodeus.virtualnetwork.TrivialVirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNode;
 
-public enum TrivialMatsimVirtualNetwork {
+/* package */ enum TrivialMatsimVirtualNetwork {
     ;
 
     /** @param network
      * @return trivial {@link VirtualNetwork} in which all {@link Link} in the
      *         {@link Network} belong to one central {@link VirtualNode} */
-    public static VirtualNetwork<Link> creatVirtualNetwork(Network network) {
+    public static VirtualNetwork<Link> createVirtualNetwork(Network network) {
         @SuppressWarnings("unchecked")
         Collection<Link> elements = (Collection<Link>) network.getLinks().values();
         TrivialVirtualNetworkCreator<Link> tvnc = new TrivialVirtualNetworkCreator<>(//
