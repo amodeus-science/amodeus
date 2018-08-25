@@ -28,7 +28,6 @@ import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.lp.LPTimeVariant;
 import ch.ethz.idsc.amodeus.matsim.mod.VehicleToVSGenerator;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
-import ch.ethz.idsc.amodeus.traveldata.TravelDatas;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualLink;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
@@ -110,7 +109,7 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
         }
 
         /** Part I: permanently rebalance vehicles according to the rates output by the LP */
-        if (round_now % rebalancingPeriod == 0 && round_now < TravelDatas.DURATION) {
+        if (round_now % rebalancingPeriod == 0 && travelData.coversTime(round_now)) {
             rebalancingRate = travelData.getAlphaRateAtTime((int) round_now);
 
             /** update rebalance count using current rate */

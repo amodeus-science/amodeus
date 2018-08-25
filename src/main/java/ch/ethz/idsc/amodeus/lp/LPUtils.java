@@ -25,11 +25,10 @@ import ch.ethz.idsc.tensor.sca.Chop;
 import ch.ethz.idsc.tensor.sca.Round;
 import ch.ethz.idsc.tensor.sca.Sign;
 
-// TODO CF can we narrow the visibility of class?
-public enum LPUtils {
+/* package */ enum LPUtils {
     ;
-    public static final Scalar DURATION = Quantity.of(24 * 60 * 60, SI.SECOND);
-    public static final Scalar AVERAGE_VEL = Quantity.of(30, "km*h^-1");
+    /* package */ static final Scalar DURATION = Quantity.of(24 * 60 * 60, SI.SECOND);
+    /* package */ static final Scalar AVERAGE_VEL = Quantity.of(30, "km*h^-1");
 
     /** Takes the Euclidean distance between the centers of the virtual stations
      * and derives the travel time for a given constant velocity.
@@ -38,7 +37,7 @@ public enum LPUtils {
      * @param velocity in [km/h]
      * @return tensor with travel time between the virtual stations in [s], e.g. output.get(i,j) is the travel
      *         time from virtual station i to j */
-    public static Tensor getEuclideanTravelTimeBetweenVSCenters(VirtualNetwork<Link> virtualNetwork, Scalar velocity) {
+    /* package */ static Tensor getEuclideanTravelTimeBetweenVSCenters(VirtualNetwork<Link> virtualNetwork, Scalar velocity) {
         double velocityMperS = Magnitude.VELOCITY.toDouble(velocity); // in m/s
         int nVNodes = virtualNetwork.getvNodesCount();
         Tensor travelTime = Array.zeros(nVNodes, nVNodes);
@@ -53,7 +52,7 @@ public enum LPUtils {
     }
 
     /** @return returns the parameter of the av.xml file for the number of vehicles */
-    public static int getNumberOfVehicles() {
+    /* package */ static int getNumberOfVehicles() {
         int numberVehicles = 0;
         /** reading the number of vehicles out of the av.xml file */
         try {
@@ -76,7 +75,7 @@ public enum LPUtils {
 
     /** @param tensor
      * @return the rounded vector where non-negativity and almost integer elements are required, else an exception is thrown */
-    public static Tensor getRoundedRequireNonNegative(Tensor tensor) {
+    /* package */ static Tensor getRoundedRequireNonNegative(Tensor tensor) {
         Tensor rounded = Round.of(tensor);
         GlobalAssert.that(Chop._04.close(tensor, rounded));
         rounded.flatten(-1).forEach(element -> Sign.requirePositiveOrZero(element.Get()));
@@ -85,7 +84,7 @@ public enum LPUtils {
 
     /** @param tensor
      * @return the rounded vector where almost integer elements are required, else an exception is thrown */
-    public static Tensor getRounded(Tensor tensor) {
+    /* package */ static Tensor getRounded(Tensor tensor) {
         Tensor rounded = Round.of(tensor);
         GlobalAssert.that(Chop._04.close(tensor, rounded));
         return rounded;
