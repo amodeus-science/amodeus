@@ -13,6 +13,7 @@ import org.matsim.core.router.util.TravelTime;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
 import ch.ethz.idsc.amodeus.dispatcher.core.PartitionedDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
@@ -25,7 +26,6 @@ import ch.ethz.idsc.amodeus.dispatcher.util.FeasibleRebalanceCreator;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.lp.LPMinFlow;
-import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualLink;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
@@ -66,24 +66,24 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
     private int total_rebalanceCount = 0;
     private boolean started = false;
 
-    public AdaptiveRealTimeRebalancingPolicy(Config config, AVDispatcherConfig avconfig, //
+    public AdaptiveRealTimeRebalancingPolicy( //
+            Config config, AVDispatcherConfig avDispatcherConfig, //
             AVGeneratorConfig generatorConfig, TravelTime travelTime, //
             AVRouter router, EventsManager eventsManager, //
             Network network, VirtualNetwork<Link> virtualNetwork, //
             AbstractVirtualNodeDest abstractVirtualNodeDest, //
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher) {
-        super(config, avconfig, travelTime, router, eventsManager, virtualNetwork);
+        super(config, avDispatcherConfig, travelTime, router, eventsManager, virtualNetwork);
         virtualNodeDest = abstractVirtualNodeDest;
         vehicleDestMatcher = abstractVehicleDestMatcher;
         numRobotaxi = (int) generatorConfig.getNumberOfVehicles();
         lpMinFlow = new LPMinFlow(virtualNetwork);
         lpMinFlow.initiateLP();
-        SafeConfig safeConfig = SafeConfig.wrap(avconfig);
-        dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
-        rebalancingPeriod = safeConfig.getInteger("rebalancingPeriod", 300);
+        DispatcherConfig dispatcherConfig = DispatcherConfig.wrap(avDispatcherConfig);
+        dispatchPeriod = dispatcherConfig.getDispatchPeriod(30);
+        rebalancingPeriod = dispatcherConfig.getRebalancingPeriod(300);
         this.network = network;
-        distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getString("distanceHeuristics", //
-                DistanceHeuristics.EUCLIDEAN.name()).toUpperCase());
+        distanceHeuristics = dispatcherConfig.getDistanceHeuristics(DistanceHeuristics.EUCLIDEAN);
         this.bipartiteMatchingEngine = new BipartiteMatchingUtils(network);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
@@ -215,8 +215,10 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(new EuclideanDistanceFunction());
 
-            return new AdaptiveRealTimeRebalancingPolicy(config, avconfig, generatorConfig, travelTime, router, eventsManager, network, virtualNetwork, abstractVirtualNodeDest,
-                    abstractVehicleDestMatcher);
+            return new AdaptiveRealTimeRebalancingPolicy( //
+                    config, avconfig, generatorConfig, travelTime, //
+                    router, eventsManager, network, virtualNetwork, //
+                    abstractVirtualNodeDest, abstractVehicleDestMatcher);
         }
     }
 }

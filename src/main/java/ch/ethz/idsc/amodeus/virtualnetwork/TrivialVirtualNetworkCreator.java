@@ -18,22 +18,16 @@ import ch.ethz.idsc.tensor.Tensor;
  * @param <T> */
 public class TrivialVirtualNetworkCreator<T> {
 
-    private VirtualNetwork<T> virtualNetwork;
-
-    public TrivialVirtualNetworkCreator(//
-            Collection<T> elements, Function<T, Tensor> locationOf, Function<T, String> nameOf) {
-        this.virtualNetwork = createVirtualNetwork(elements, locationOf, nameOf);
-    }
-
-    public VirtualNetwork<T> getVirtualNetwork() {
-        return virtualNetwork;
-    }
+    private final VirtualNetwork<T> virtualNetwork;
 
     /** @param elements to form the {@link VirtualNetwork}
      * @param locationOf
-     * @param nameOf
-     * @return {@link VirtualNetwork} with all @param elements associated to one central
-     *         {@link VirtualNode} */
+     * @param nameOf */
+    public TrivialVirtualNetworkCreator(//
+            Collection<T> elements, Function<T, Tensor> locationOf, Function<T, String> nameOf) {
+        virtualNetwork = createVirtualNetwork(elements, locationOf, nameOf);
+    }
+
     private VirtualNetwork<T> createVirtualNetwork(//
             Collection<T> elements, Function<T, Tensor> locationOf, Function<T, String> nameOf) {
 
@@ -67,5 +61,9 @@ public class TrivialVirtualNetworkCreator<T> {
 
         return virtualNetwork;
 
+    }
+
+    public VirtualNetwork<T> getVirtualNetwork() {
+        return virtualNetwork;
     }
 }

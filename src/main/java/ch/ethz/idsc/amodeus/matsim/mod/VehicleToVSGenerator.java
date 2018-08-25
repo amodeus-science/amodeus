@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.matsim.mod;
 
 import java.util.Collection;
@@ -29,9 +30,12 @@ import ch.ethz.matsim.av.generator.AVGenerator;
 
 /** class generates {@link AVVehicle}s. It takes the required minimal initial vehicle numbers from {@link TravelData}.
  * To each virtual station it places the required number of vehicles.
- * Within the virtual station a random link is chosen as initial destination. If the minimal required vehicle numbers are reached,
+ * Within the virtual station a random link is chosen as initial destination.
+ * If the minimal required vehicle numbers are reached,
  * the rest of the vehicles is distributed randomly among the virtual stations.
- * If no distribution is given, an equal distribution is chosen. */
+ * If no distribution is given, an equal distribution is chosen.
+ * 
+ * CLASS NAME IS USED AS IDENTIFIER - DO NOT RENAME CLASS */
 public class VehicleToVSGenerator implements AVGenerator {
     private static final Logger LOGGER = Logger.getLogger(VehicleToVSGenerator.class);
     // ---

@@ -34,8 +34,8 @@ public class VirtualNetworkLayer extends ViewerLayer {
     public boolean drawVNodes = true;
     public boolean drawVLinks = false;
     private VirtualNodeGeometry virtualNodeGeometry = null;
-    private VirtualNodeShader virtualNodeShader = VirtualNodeShader.None;
-    private ColorSchemes colorSchemes = ColorSchemes.Jet;
+    public VirtualNodeShader virtualNodeShader = VirtualNodeShader.None;
+    public ColorSchemes colorSchemes = ColorSchemes.Jet;
 
     public void setVirtualNetwork(VirtualNetwork<Link> virtualNetwork) {
         this.virtualNetwork = virtualNetwork;

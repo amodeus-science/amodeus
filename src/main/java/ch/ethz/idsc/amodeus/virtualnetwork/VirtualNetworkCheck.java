@@ -12,7 +12,7 @@ public enum VirtualNetworkCheck {
             VirtualNode<T> from = virtualLink.getFrom();
             VirtualNode<T> to = virtualLink.getTo();
 
-            for (VirtualLink<T> virtualLinkOther : virtualNetwork.getVirtualLinks()) {
+            for (VirtualLink<T> virtualLinkOther : virtualNetwork.getVirtualLinks())
                 if (!virtualLink.equals(virtualLinkOther)) {
                     boolean sameFrom = virtualLinkOther.getFrom().equals(from);
                     boolean sameTo = virtualLinkOther.getTo().equals(to);
@@ -24,7 +24,6 @@ public enum VirtualNetworkCheck {
                         break;
                     }
                 }
-            }
         }
 
         return networkIsConsistent;

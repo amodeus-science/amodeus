@@ -18,9 +18,9 @@ import org.matsim.core.router.util.TravelTime;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedUniversalDispatcher;
-import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.config.AVGeneratorConfig;
@@ -38,18 +38,18 @@ public class SharedHeuristicDispatcher extends SharedUniversalDispatcher {
     private final double[] networkBounds;
 
     protected SharedHeuristicDispatcher(Config config, //
-            AVDispatcherConfig avconfig, //
+            AVDispatcherConfig avDispatcherConfig, //
             AVGeneratorConfig generatorConfig, //
             TravelTime travelTime, //
             AVRouter router, //
             EventsManager eventsManager, //
             Network network) {
-        super(config, avconfig, travelTime, router, eventsManager);
+        super(config, avDispatcherConfig, travelTime, router, eventsManager);
         this.network = network;
         this.networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
-        SafeConfig safeConfig = SafeConfig.wrap(avconfig);
-        dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 600);
-        shareDistMax = safeConfig.getInteger("sharingDistanceMaximum", 2000);
+        DispatcherConfig dispatcherConfig = DispatcherConfig.wrap(avDispatcherConfig);
+        dispatchPeriod = dispatcherConfig.getDispatchPeriod(600);
+        shareDistMax = dispatcherConfig.getInteger("sharingDistanceMaximum", 2000);
     }
 
     @Override

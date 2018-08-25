@@ -38,6 +38,7 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
     private final FastLinkLookup fastLinkLookup;
     private final StringSocket clientSocket;
     private final int dispatchPeriod;
+    // ---
     private AidoScoreCompiler aidoScoreCompiler;
 
     protected AidoDispatcherHost(Network network, Config config, AVDispatcherConfig avDispatcherConfig, TravelTime travelTime,

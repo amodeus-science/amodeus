@@ -44,12 +44,11 @@ import java.util.Set;
         List<Point> uniqueList = new LinkedList<>();
         for (Point point : list) {
             boolean noduplicate = true;
-            for (Point uniqueP : uniqueList) {
+            for (Point uniqueP : uniqueList)
                 if (point.equals(uniqueP)) {
                     noduplicate = false;
                     break;
                 }
-            }
             if (noduplicate)
                 uniqueList.add(point);
         }

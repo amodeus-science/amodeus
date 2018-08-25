@@ -13,6 +13,7 @@ import org.matsim.core.router.util.TravelTime;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
 import ch.ethz.idsc.amodeus.dispatcher.core.PartitionedDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
@@ -24,8 +25,10 @@ import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.FeasibleRebalanceCreator;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
-import ch.ethz.idsc.amodeus.matsim.SafeConfig;
+import ch.ethz.idsc.amodeus.lp.LPTimeVariant;
+import ch.ethz.idsc.amodeus.matsim.mod.VehicleToVSGenerator;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
+import ch.ethz.idsc.amodeus.traveldata.TravelDatas;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualLink;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
@@ -47,10 +50,11 @@ import ch.ethz.matsim.av.router.AVRouter;
  * Spieser, Kevin, Samitha Samaranayake, and Emilio Frazzoli.
  * "Vehicle routing for shared-mobility systems with time-varying demand."
  * American Control Conference (ACC), 2016. IEEE, 2016. */
-public class FeedForwardFluidicTimeVaryingRebalancingPolicy extends PartitionedDispatcher {
+public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedDispatcher {
     private final AbstractVirtualNodeDest virtualNodeDest;
     private final AbstractRoboTaxiDestMatcher vehicleDestMatcher;
     private final Network network;
+    private final TravelData travelData;
     private final DistanceFunction distanceFunction;
     private final DistanceHeuristics distanceHeuristics;
     private final BipartiteMatchingUtils bipartiteMatchingEngine;
@@ -61,40 +65,36 @@ public class FeedForwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
     // ---
     private int total_rebalanceCount = 0;
     private boolean started = false;
+    private Tensor printVals = Tensors.empty();
+    private Tensor rebalancingRate;
+    private Tensor rebalanceCount;
+    private Tensor rebalanceCountInteger;
 
-    Tensor printVals = Tensors.empty();
-    TravelData travelData;
-    Tensor rebalancingRate;
-    Tensor rebalanceCount;
-    Tensor rebalanceCountInteger;
-
-    public FeedForwardFluidicTimeVaryingRebalancingPolicy(Config config, AVDispatcherConfig avconfig, //
+    public FeedforwardFluidicTimeVaryingRebalancingPolicy( //
+            Config config, AVDispatcherConfig avDispatcherConfig, //
             AVGeneratorConfig generatorConfig, TravelTime travelTime, AVRouter router, //
             EventsManager eventsManager, Network network, VirtualNetwork<Link> virtualNetwork, //
             AbstractVirtualNodeDest abstractVirtualNodeDest, //
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher, TravelData travelData) {
-        super(config, avconfig, travelTime, router, eventsManager, virtualNetwork);
+        super(config, avDispatcherConfig, travelTime, router, eventsManager, virtualNetwork);
         virtualNodeDest = abstractVirtualNodeDest;
         vehicleDestMatcher = abstractVehicleDestMatcher;
-        this.travelData = travelData;
-
         this.network = network;
+        this.travelData = travelData;
         nVNodes = virtualNetwork.getvNodesCount();
         nVLinks = virtualNetwork.getvLinksCount();
         rebalanceCount = Array.zeros(nVNodes, nVNodes);
         rebalanceCountInteger = Array.zeros(nVNodes, nVNodes);
-        SafeConfig safeConfig = SafeConfig.wrap(avconfig);
-        dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
-        rebalancingPeriod = safeConfig.getInteger("rebalancingPeriod", 30);
-        distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getString("distanceHeuristics", //
-                DistanceHeuristics.EUCLIDEAN.name()).toUpperCase());
-        // TODO add test if correct lp solver was used, otherwise stop execution and print error.
-        // TODO still waiting for String description in TravelData
-        GlobalAssert.that(false);
-
+        DispatcherConfig dispatcherConfig = DispatcherConfig.wrap(avDispatcherConfig);
+        dispatchPeriod = dispatcherConfig.getDispatchPeriod(30);
+        rebalancingPeriod = dispatcherConfig.getRebalancingPeriod(30);
+        distanceHeuristics = dispatcherConfig.getDistanceHeuristics(DistanceHeuristics.EUCLIDEAN);
         this.bipartiteMatchingEngine = new BipartiteMatchingUtils(network);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
+
+        GlobalAssert.that(travelData.getLPName().equals(LPTimeVariant.class.getSimpleName()));
+        GlobalAssert.that(StaticHelper.getVehicleGenerator().equals(VehicleToVSGenerator.class.getSimpleName()));
     }
 
     @Override
@@ -110,7 +110,7 @@ public class FeedForwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
         }
 
         /** Part I: permanently rebalance vehicles according to the rates output by the LP */
-        if (round_now % rebalancingPeriod == 0) {
+        if (round_now % rebalancingPeriod == 0 && round_now < TravelDatas.DURATION) {
             rebalancingRate = travelData.getAlphaRateAtTime((int) round_now);
 
             /** update rebalance count using current rate */
@@ -193,7 +193,7 @@ public class FeedForwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(new EuclideanDistanceFunction());
 
-            return new FeedForwardFluidicTimeVaryingRebalancingPolicy(config, avconfig, generatorConfig, travelTime, router, eventsManager, network, virtualNetwork,
+            return new FeedforwardFluidicTimeVaryingRebalancingPolicy(config, avconfig, generatorConfig, travelTime, router, eventsManager, network, virtualNetwork,
                     abstractVirtualNodeDest, abstractVehicleDestMatcher, travelData);
         }
     }

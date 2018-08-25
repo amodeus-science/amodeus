@@ -14,14 +14,16 @@ import ch.ethz.idsc.amodeus.util.gui.RowPanel;
 /** Head Up Display */
 public class ClockLayer extends ViewerLayer {
 
-    boolean show = true;
+    public boolean show = true;
+    /** opacity of clock background */
+    public int alpha = 255;
 
     @Override
     protected void paint(Graphics2D graphics, SimulationObject ref) {
         if (show) {
             final Dimension dimension = amodeusComponent.getSize();
             GraphicsUtil.setQualityHigh(graphics);
-            IdscClockDisplay.INSTANCE.drawClock(graphics, ref.now, new Point(dimension.width - 70, 70));
+            IdscClockDisplay.INSTANCE.drawClock(graphics, ref.now, new Point(dimension.width - 70, 70), alpha);
             GraphicsUtil.setQualityDefault(graphics);
         }
     }

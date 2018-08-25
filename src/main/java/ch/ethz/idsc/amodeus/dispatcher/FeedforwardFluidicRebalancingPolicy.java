@@ -13,6 +13,7 @@ import org.matsim.core.router.util.TravelTime;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
 import ch.ethz.idsc.amodeus.dispatcher.core.PartitionedDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
@@ -24,8 +25,9 @@ import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.FeasibleRebalanceCreator;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
-import ch.ethz.idsc.amodeus.matsim.SafeConfig;
+import ch.ethz.idsc.amodeus.lp.LPTimeInvariant;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
+import ch.ethz.idsc.amodeus.traveldata.TravelDatas;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualLink;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
@@ -51,6 +53,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
     private final AbstractVirtualNodeDest virtualNodeDest;
     private final AbstractRoboTaxiDestMatcher vehicleDestMatcher;
     private final Network network;
+    private final TravelData travelData;
     private final DistanceFunction distanceFunction;
     private final DistanceHeuristics distanceHeuristics;
     private final BipartiteMatchingUtils bipartiteMatchingEngine;
@@ -61,16 +64,14 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
     // ---
     private int total_rebalanceCount = 0;
     private boolean started = false;
-
-    Tensor printVals = Tensors.empty();
-    TravelData travelData;
-    Tensor rebalancingRate;
-    Tensor rebalanceCount;
-    Tensor rebalanceCountInteger;
+    private Tensor printVals = Tensors.empty();
+    private Tensor rebalancingRate;
+    private Tensor rebalanceCount;
+    private Tensor rebalanceCountInteger;
 
     public FeedforwardFluidicRebalancingPolicy( //
             Config config, //
-            AVDispatcherConfig avconfig, //
+            AVDispatcherConfig avDispatcherConfig, //
             AVGeneratorConfig generatorConfig, //
             TravelTime travelTime, //
             AVRouter router, //
@@ -80,7 +81,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
             AbstractVirtualNodeDest abstractVirtualNodeDest, //
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher, //
             TravelData travelData) {
-        super(config, avconfig, travelTime, router, eventsManager, virtualNetwork);
+        super(config, avDispatcherConfig, travelTime, router, eventsManager, virtualNetwork);
         virtualNodeDest = abstractVirtualNodeDest;
         vehicleDestMatcher = abstractVehicleDestMatcher;
         this.travelData = travelData;
@@ -90,14 +91,14 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
         nVLinks = virtualNetwork.getvLinksCount();
         rebalanceCount = Array.zeros(nVNodes, nVNodes);
         rebalanceCountInteger = Array.zeros(nVNodes, nVNodes);
-        SafeConfig safeConfig = SafeConfig.wrap(avconfig);
-        dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
-        rebalancingPeriod = safeConfig.getInteger("rebalancingPeriod", 30);
-        distanceHeuristics = DistanceHeuristics.valueOf(safeConfig.getString("distanceHeuristics", //
-                DistanceHeuristics.EUCLIDEAN.name()).toUpperCase());
+        DispatcherConfig dispatcherConfig = DispatcherConfig.wrap(avDispatcherConfig);
+        dispatchPeriod = dispatcherConfig.getDispatchPeriod(30);
+        rebalancingPeriod = dispatcherConfig.getRebalancingPeriod(30);
+        distanceHeuristics = dispatcherConfig.getDistanceHeuristics(DistanceHeuristics.EUCLIDEAN);
         this.bipartiteMatchingEngine = new BipartiteMatchingUtils(network);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
+        GlobalAssert.that(travelData.getLPName().equals(LPTimeInvariant.class.getSimpleName()));
     }
 
     @Override
@@ -113,7 +114,8 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
         }
 
         /** Part I: permanently rebalance vehicles according to the rates output by the LP */
-        if (round_now % rebalancingPeriod == 0 && round_now < 24 * 3600) {
+        // TODO CF better to solve via a member function e.g. travelData.coversTime((int) round_now);
+        if (round_now % rebalancingPeriod == 0 && round_now < TravelDatas.DURATION) {
             rebalancingRate = travelData.getAlphaRateAtTime((int) round_now);
 
             /** update rebalance count using current rate */

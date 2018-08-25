@@ -8,9 +8,13 @@ import org.matsim.core.config.ReflectiveConfigGroup;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 public class SafeConfig {
-    final ReflectiveConfigGroup reflectiveConfigGroup;
+    public static SafeConfig wrap(ReflectiveConfigGroup reflectiveConfigGroup) {
+        return new SafeConfig(reflectiveConfigGroup);
+    }
 
-    private SafeConfig(ReflectiveConfigGroup reflectiveConfigGroup) {
+    private final ReflectiveConfigGroup reflectiveConfigGroup;
+
+    protected SafeConfig(ReflectiveConfigGroup reflectiveConfigGroup) {
         if (Objects.isNull(reflectiveConfigGroup))
             throw new NullPointerException("reflective group == null");
         this.reflectiveConfigGroup = reflectiveConfigGroup;
@@ -73,7 +77,4 @@ public class SafeConfig {
         return string;
     }
 
-    public static SafeConfig wrap(ReflectiveConfigGroup reflectiveConfigGroup) {
-        return new SafeConfig(reflectiveConfigGroup);
-    }
 }

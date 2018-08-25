@@ -17,6 +17,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.amodeus.util.math.Magnitude;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -25,8 +26,6 @@ import ch.ethz.idsc.tensor.alg.Dimensions;
 
 /** This abstract class is used for {@link LPTimeVariant} and can be used for similar implementations */
 public abstract class LPTimeVariantBase implements LPSolver {
-    protected static final int DURATION = 24 * 60 * 60;
-    // ---
     /** map with variableIDs in problem setup and linkIDs of virtualNetwork */
     protected final Map<List<Integer>, Integer> alphaIDvarID = new HashMap<>();
     protected final Map<List<Integer>, Integer> vIDvarID = new HashMap<>();
@@ -63,7 +62,7 @@ public abstract class LPTimeVariantBase implements LPSolver {
         nvNodes = virtualNetwork.getvNodesCount();
         this.lambdaAbsolute_ij = LPUtils.getRoundedRequireNonNegative(lambdaAbsolute_ij);
         timeSteps = Dimensions.of(lambdaAbsolute_ij).get(0);
-        timeInterval = DURATION / timeSteps;
+        timeInterval = Magnitude.SECOND.toInt(LPUtils.DURATION) / timeSteps;
         numberVehicles = LPUtils.getNumberOfVehicles();
 
         if (virtualNetwork.getvLinksCount() != (nvNodes * nvNodes - nvNodes)) {

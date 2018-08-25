@@ -8,6 +8,7 @@ import java.util.Objects;
 
 import ch.ethz.idsc.amodeus.gfx.AmodeusComponent;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
+import ch.ethz.idsc.amodeus.util.gui.GraphicsUtil;
 
 /** @author onicolo 06-2018
  *         Runnable script for making video renderers of Amod simulation directly from simulation objects. */
@@ -43,7 +44,7 @@ public class SimulationObjectsVideo implements AutoCloseable {
 
         amodeusComponent.setSimulationObject(simulationObject);
 
-        StaticHelper.setQualityHigh(graphics);
+        GraphicsUtil.setQualityHigh(graphics);
         amodeusComponent.paint(graphics);
 
         if (first) {
@@ -53,7 +54,7 @@ public class SimulationObjectsVideo implements AutoCloseable {
             Thread.sleep(millis);
             System.out.println("Starting mp4 Video.");
 
-            StaticHelper.setQualityHigh(graphics);
+            GraphicsUtil.setQualityHigh(graphics);
             amodeusComponent.paint(graphics);
         }
 

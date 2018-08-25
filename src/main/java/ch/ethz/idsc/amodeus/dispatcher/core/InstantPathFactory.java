@@ -13,8 +13,8 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 /** InstantPathFactory may be used by 3rd party dispatchers to compute routes
  * Example: MPCDispatcher */
 public class InstantPathFactory {
-    final ParallelLeastCostPathCalculator parallelLeastCostPathCalculator;
-    final TravelTime travelTime;
+    private final ParallelLeastCostPathCalculator parallelLeastCostPathCalculator;
+    private final TravelTime travelTime;
 
     public InstantPathFactory( //
             ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, //

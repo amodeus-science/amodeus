@@ -7,6 +7,7 @@ import ch.ethz.idsc.amodeus.dispatcher.AdaptiveRealTimeRebalancingPolicy;
 import ch.ethz.idsc.amodeus.dispatcher.DemandSupplyBalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.DriveByDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.FeedforwardFluidicRebalancingPolicy;
+import ch.ethz.idsc.amodeus.dispatcher.FeedforwardFluidicTimeVaryingRebalancingPolicy;
 import ch.ethz.idsc.amodeus.dispatcher.GlobalBipartiteMatchingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.SQMDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.NorthPoleSharedDispatcher;
@@ -34,6 +35,10 @@ public class AmodeusDispatcherModule extends AbstractModule {
 
         bind(FeedforwardFluidicRebalancingPolicy.Factory.class);
         AVUtils.bindDispatcherFactory(binder(), FeedforwardFluidicRebalancingPolicy.class.getSimpleName()).to(FeedforwardFluidicRebalancingPolicy.Factory.class);
+
+        bind(FeedforwardFluidicTimeVaryingRebalancingPolicy.Factory.class);
+        AVUtils.bindDispatcherFactory(binder(), FeedforwardFluidicTimeVaryingRebalancingPolicy.class.getSimpleName())
+                .to(FeedforwardFluidicTimeVaryingRebalancingPolicy.Factory.class);
 
         bind(SQMDispatcher.Factory.class);
         AVUtils.bindDispatcherFactory(binder(), SQMDispatcher.class.getSimpleName()).to(SQMDispatcher.Factory.class);
