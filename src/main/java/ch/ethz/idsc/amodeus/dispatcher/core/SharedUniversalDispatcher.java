@@ -485,16 +485,20 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 
     /** Cleans menu for {@link RoboTaxi} and moves all previously assigned {@link AVRequest} back to pending requests taking them out from request- and pickup-
      * Registers. */
-    /* package */ final void cleanRoboTaxiMenuAndAbandonAssignedRequests(RoboTaxi roboTaxi) {
+    /* package */ final void cleanAndAbondon(RoboTaxi roboTaxi) {
         GlobalAssert.that(roboTaxi.isWithoutCustomer());
+        Objects.requireNonNull(roboTaxi);
         roboTaxi.getMenu().clearWholeMenu();
-        requestRegister.get(roboTaxi).entrySet().stream().forEach(entry -> {
-            pendingRequests.add(entry.getValue());
-            reqStatuses.put(entry.getValue(), RequestStatus.REQUESTED);
-            pickupRegister.remove(entry.getValue());
-        });
-        Map<String, AVRequest> val = requestRegister.remove(roboTaxi);
-        Objects.requireNonNull(val);
+        Objects.requireNonNull(requestRegister);
+        if (requestRegister.containsKey(roboTaxi)) {
+            requestRegister.get(roboTaxi).entrySet().stream().forEach(entry -> {
+                pendingRequests.add(entry.getValue());
+                reqStatuses.put(entry.getValue(), RequestStatus.REQUESTED);
+                pickupRegister.remove(entry.getValue());
+            });
+            Map<String, AVRequest> val = requestRegister.remove(roboTaxi);
+            Objects.requireNonNull(val);
+        }
         GlobalAssert.that(!roboTaxi.getMenu().hasStarter());
         GlobalAssert.that(!requestRegister.containsKey(roboTaxi));
         GlobalAssert.that(!pickupRegister.containsValue(roboTaxi));

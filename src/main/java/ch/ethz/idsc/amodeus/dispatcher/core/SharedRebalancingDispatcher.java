@@ -31,7 +31,7 @@ public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatc
     protected final void setRoboTaxiRebalance(RoboTaxi roboTaxi, final Link destination) {
         GlobalAssert.that(roboTaxi.isWithoutCustomer());
         /** clear menu and put requests back to pending requests */
-        cleanRoboTaxiMenuAndAbandonAssignedRequests(roboTaxi);
+        cleanAndAbondon(roboTaxi);
         GlobalAssert.that(!roboTaxi.getMenu().hasStarter());
         setRoboTaxiDiversion(roboTaxi, destination, RoboTaxiStatus.REBALANCEDRIVE);
         eventsManager.processEvent(RebalanceVehicleEvent.create(getTimeNow(), roboTaxi, destination));
