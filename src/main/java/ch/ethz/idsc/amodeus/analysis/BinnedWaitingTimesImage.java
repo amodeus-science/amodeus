@@ -35,7 +35,7 @@ public enum BinnedWaitingTimesImage implements AnalysisExport {
                     yAxisLabel, //
                     wt.time, //
                     wt.waitTimePlotValues, //
-                    wt.maximumWaitTime / scalingFactor, colorScheme);
+                    new Double[] { 0.0, wt.maximumWaitTime / scalingFactor }, colorScheme);
         } catch (Exception e) {
             System.err.println("Binned Waiting Times Plot was unsucessfull!");
             e.printStackTrace();
