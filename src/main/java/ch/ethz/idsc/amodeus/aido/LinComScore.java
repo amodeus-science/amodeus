@@ -18,17 +18,17 @@ public abstract class LinComScore {
 
     public void update(Tensor measurement) {
         scorePrev = score;
-        score = (Scalar) measurement.dot(alpha);
+        score = ((Scalar) measurement.dot(alpha)).add(scorePrev);
     }
 
-    public Scalar getScore() {
+    public Scalar getScoreIntg() {
         return (Scalar) score.copy();
     }
 
     public Scalar getScoreDiff() {
         Scalar scoreDiff = score.subtract(scorePrev);
-        GlobalAssert.that(Scalars.lessEquals(RealScalar.ZERO, scoreDiff));
-        return (Scalar) score.copy();
+        GlobalAssert.that(Scalars.lessEquals(scoreDiff, RealScalar.ZERO));
+        return scoreDiff;
     }
 
 }

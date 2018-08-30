@@ -4,6 +4,7 @@ package ch.ethz.idsc.amodeus.analysis.plot;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.io.File;
+import java.util.Objects;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -26,7 +27,7 @@ public enum TimeChart {
     public static void of(File directory, String fileTitle, String diagramTitle, //
             boolean filter, int filterSize, double[] scale, //
             String[] labels, String xAxisLabel, String yAxisLabel, Tensor time, Tensor values, //
-            double maxRange, ColorScheme colorScheme) throws Exception {
+            Double[] maxRange, ColorScheme colorScheme) throws Exception {
 
         // keep
         GlobalAssert.that(time.length() == values.length());
@@ -51,8 +52,13 @@ public enum TimeChart {
                 dataset, false, false, false);
 
         // range and colors of the background/grid
-        if (maxRange != -1.0)
-            timechart.getXYPlot().getRangeAxis().setRange(0, maxRange);
+        // if (maxRange != -1.0)
+        // timechart.getXYPlot().getRangeAxis().setRange(0, maxRange);
+        if (Objects.nonNull(maxRange)) {
+            GlobalAssert.that(maxRange[0] < maxRange[1]);
+            timechart.getXYPlot().getRangeAxis().setRange(maxRange[0], maxRange[1]);
+        }
+
         timechart.getPlot().setBackgroundPaint(Color.white);
         timechart.getXYPlot().setRangeGridlinePaint(Color.lightGray);
         timechart.getXYPlot().setDomainGridlinePaint(Color.lightGray);

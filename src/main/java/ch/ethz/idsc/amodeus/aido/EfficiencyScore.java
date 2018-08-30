@@ -17,7 +17,6 @@ import ch.ethz.idsc.tensor.qty.Quantity;
     protected void setAlpha(Properties scrprm) {
         Scalar alpha3 = Quantity.of(Double.parseDouble(scrprm.getProperty("alpha3")), SI.SECOND.negate());
         Scalar alpha4 = Quantity.of(Double.parseDouble(scrprm.getProperty("alpha4")), SI.METER.negate());
-        StaticHelper.requirePositiveOrZero(alpha);
         alpha = Tensors.of(alpha3, alpha4);
     }
 }

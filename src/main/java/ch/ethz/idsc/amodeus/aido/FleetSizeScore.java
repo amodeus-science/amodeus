@@ -8,31 +8,66 @@ import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
+import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.io.ResourceData;
 import ch.ethz.idsc.tensor.qty.Quantity;
+import ch.ethz.idsc.tensor.red.Total;
 
+/** the fleetsize score is defined as following, in the case that the maximum waiting time
+ * wMax is not violated, its toal is -fleetSize, i.e., the differences are
+ * {0,-fleetSize,0,...,0}
+ * 
+ * if the summmed waiting time exceeds wMax, then the final score is -Infinity, the
+ * differences then are
+ * {0,-fleetSize,0,...,0,-Infinity,0,...,0} */
 /* package */ class FleetSizeScore {
-
     private final Scalar wMax;
     private final Scalar fleetSize;
-    private Scalar score;
+    private Scalar scoreFinal = Quantity.of(0, SI.ONE);
+    private Scalar scoreFinalPrev = Quantity.of(0, SI.ONE);
+    private Scalar timeViolate = Quantity.of(-1, SI.SECOND);
+    private Scalar totalWait = Quantity.of(0, SI.SECOND);
+    private boolean firstTime = true;
 
     public FleetSizeScore(Properties scrprm, int totReq, int fleetSize) {
-        Scalar wmean = Quantity.of(//
-                Double.parseDouble(scrprm.getProperty("wmean")), SI.SECOND.negate());
+        Scalar wmean = Quantity.of(Double.parseDouble(scrprm.getProperty("wmean")), SI.SECOND);
         wMax = wmean.multiply(RealScalar.of(totReq));
         this.fleetSize = RationalScalar.of(fleetSize, 1);
-        this.score = this.fleetSize.negate();
+        this.scoreFinal = Quantity.of(0, SI.ONE);
     }
 
-    public void update(Scalar totalWait) {
-        GlobalAssert.that(Scalars.lessEquals(Quantity.of(0, SI.SECOND), totalWait));
-        if (Scalars.lessThan(wMax, totalWait)) {
-            this.score = Quantity.of(Double.NEGATIVE_INFINITY, "");
+    public void update(Scalar incrWait, Scalar time) {
+        GlobalAssert.that(Scalars.lessEquals(Quantity.of(0, SI.SECOND), incrWait));
+        GlobalAssert.that(Scalars.lessEquals(Quantity.of(0, SI.SECOND), time));
+        this.totalWait = this.totalWait.add(incrWait);
+        if (firstTime) { /** score starts at 0, then goes to -N */
+            scoreFinal = this.fleetSize.negate();
+            firstTime = false;
+        } else {
+            /** update previous score */
+            scoreFinalPrev = scoreFinal;
+            /** first time violation takes place, augment to -Infty */
+            if (Scalars.lessThan(wMax, totalWait) //
+                    && !this.scoreFinal.equals(Quantity.of(Double.NEGATIVE_INFINITY, SI.ONE))) {
+                this.scoreFinal = Quantity.of(Double.NEGATIVE_INFINITY, SI.ONE);
+                this.timeViolate = time;
+            }
         }
     }
 
-    public Scalar getScore() {
-        return (Scalar) score.copy();
+    public Scalar getTimeToViolate() {
+        return (Scalar) timeViolate.copy();
     }
 
+    public Scalar getScoreDiff() {
+        Scalar scoreDiff = scoreFinal.subtract(scoreFinalPrev);
+        if (Double.isNaN(scoreDiff.number().doubleValue()))
+            return Quantity.of(0, SI.ONE);
+        return scoreDiff;
+    }
+
+    public Scalar getScoreIntg() {
+        return scoreFinal;
+    }
 }

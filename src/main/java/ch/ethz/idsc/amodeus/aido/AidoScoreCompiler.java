@@ -26,6 +26,6 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
         /** insert and evaluate */
         aidoScoreElement.register(soc.compile());
-        return aidoScoreElement.getCurrentScore();
+        return aidoScoreElement.getScoreDiff();
     }
 }
