@@ -8,9 +8,12 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
+/** used to compute scores which are a linear combination
+ * of variables and weights */
 public abstract class LinComScore {
 
     protected Tensor alpha = null;
+    /** the weight */
     private Scalar score = RealScalar.ZERO;
     private Scalar scorePrev = RealScalar.ZERO;
 
@@ -30,5 +33,4 @@ public abstract class LinComScore {
         GlobalAssert.that(Scalars.lessEquals(scoreDiff, RealScalar.ZERO));
         return scoreDiff;
     }
-
 }

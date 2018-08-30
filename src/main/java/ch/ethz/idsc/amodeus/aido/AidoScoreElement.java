@@ -7,7 +7,6 @@ import ch.ethz.idsc.amodeus.analysis.element.AnalysisElement;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.RationalScalar;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -27,8 +26,6 @@ public class AidoScoreElement implements AnalysisElement {
 
     // ---
     private Scalar timeBefore = Quantity.of(0, SI.SECOND);
-    // private Tensor measureIntegrated = Tensors.of(Quantity.of(0, SI.SECOND), Quantity.of(0, SI.METER), Quantity.of(0, SI.METER));
-    // private Tensor scoreDifferences = Tensors.of(Quantity.of(RealScalar.ZERO, SI.ONE), Quantity.of(RealScalar.ZERO, SI.ONE));
 
     public AidoScoreElement(int numberRoboTaxis, int totReq) {
         aidoDistanceRecorder = new AidoDistanceRecorder(numberRoboTaxis);
@@ -54,15 +51,9 @@ public class AidoScoreElement implements AnalysisElement {
          * it produced a sequence {...,0,0,d1,0,0,d2,0,...} */
 
         Tensor currDistance = aidoDistanceRecorder.distance(simulationObject);
-        // Scalar distCusto = currDistance.Get(0);
         Scalar distEmpty = currDistance.Get(1);
 
-        /** compile score and add to integrated score */
-        // Tensor scoreAdd = Tensors.of(currWaitTime, distCusto, distEmpty);
-        // StaticHelper.requirePositiveOrZero(scoreAdd);
-        // measureIntegrated = measureIntegrated.add(scoreAdd);
-
-        /** compile scores */
+        /** update scores with information */
         squScore.update(Tensors.of(currWaitTime, distEmpty));
         effScore.update(Tensors.of(currWaitTime, distEmpty));
         fltScore.update(currWaitTime, time);
@@ -70,9 +61,6 @@ public class AidoScoreElement implements AnalysisElement {
         /** add score differences to history */
         scoreDiffTable.appendRow(time, squScore.getScoreDiff(), effScore.getScoreDiff(), fltScore.getScoreDiff());
         scoreIntgTable.appendRow(time, squScore.getScoreIntg(), effScore.getScoreIntg(), fltScore.getScoreIntg());
-
-        // /** add to history */
-        // tableBuilder.appendRow(time, measureIntegrated);
 
         timeBefore = time;
     }
@@ -85,9 +73,8 @@ public class AidoScoreElement implements AnalysisElement {
     public Tensor getScoreDiffHistory() {
         return scoreDiffTable.toTable();
     }
-    
+
     public Tensor getScoreIntgHistory() {
         return scoreIntgTable.toTable();
     }
-    
 }

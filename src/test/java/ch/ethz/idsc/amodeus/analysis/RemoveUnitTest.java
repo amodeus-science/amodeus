@@ -17,5 +17,4 @@ public class RemoveUnitTest extends TestCase {
         Scalar scalar = RemoveUnit.FUNCTION.apply(RealScalar.of(-3));
         assertEquals(scalar, RealScalar.of(-3));
     }
-
 }
