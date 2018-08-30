@@ -1,6 +1,8 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.aido;
 
+import java.util.Properties;
+
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisElement;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.util.math.SI;
@@ -8,6 +10,7 @@ import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.io.ResourceData;
 import ch.ethz.idsc.tensor.io.TableBuilder;
 import ch.ethz.idsc.tensor.qty.Quantity;
 
@@ -15,12 +18,18 @@ public class AidoScoreElement implements AnalysisElement {
 
     private final AidoDistanceRecorder aidoDistanceRecorder;
     private final TableBuilder tableBuilder = new TableBuilder();
+    private final Properties scoreparam = ResourceData.properties("/aido/scoreparam.properties");
+    private final ServiceQualityScore squScore = new ServiceQualityScore(scoreparam);
+    private final EfficiencyScore effScore = new EfficiencyScore(scoreparam);
+    private final FleetSizeScore fltScore;
+
     // ---
     private Scalar timeBefore = Quantity.of(0, SI.SECOND);
     private Tensor scoreInt = Tensors.of(Quantity.of(0, SI.SECOND), Quantity.of(0, SI.METER), Quantity.of(0, SI.METER));
 
-    public AidoScoreElement(int numberRoboTaxis) {
+    public AidoScoreElement(int numberRoboTaxis, int totReq) {
         aidoDistanceRecorder = new AidoDistanceRecorder(numberRoboTaxis);
+        fltScore = new FleetSizeScore(scoreparam, totReq, numberRoboTaxis);
     }
 
     @Override

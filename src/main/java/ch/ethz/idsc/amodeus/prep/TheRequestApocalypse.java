@@ -1,0 +1,86 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
+package ch.ethz.idsc.amodeus.prep;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
+import java.util.Set;
+
+import org.matsim.api.core.v01.Id;
+import org.matsim.api.core.v01.population.Person;
+import org.matsim.api.core.v01.population.Population;
+
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Scalars;
+
+/** example use:
+ *
+ * TheApocalypse.reducesThe(population).toNoMoreThan(1000).people(); */
+public final class TheRequestApocalypse {
+    /** the seed is deliberately public */
+    public static final long DEFAULT_SEED = 7582456789l;
+
+    public static TheRequestApocalypse reducesThe(Population population) {
+        return new TheRequestApocalypse(population);
+    }
+
+    // ---
+    private final Population population;
+
+    private TheRequestApocalypse(Population population) {
+        this.population = population;
+    }
+
+    public TheRequestApocalypse toNoMoreThan(Scalar maxRequests, long seed) {
+        GlobalAssert.that(Scalars.lessEquals(maxRequests, LegCount.of(population, "av")));
+
+        /** shuffle list of {@link Person}s */
+        List<Id<Person>> list = new ArrayList<>(population.getPersons().keySet());
+        Collections.shuffle(list, new Random(seed));
+
+        /** doc */
+        Scalar totReq = RealScalar.ZERO;
+        Set<Id<Person>> keepList = new HashSet<>();
+        Person splitUpPerson = null;
+
+        for (Id<Person> pId : list) {
+            if (totReq.equals(maxRequests))
+                break;
+
+            Scalar req = LegCount.of(population.getPersons().get(pId), "av");
+
+            if (Scalars.lessThan(totReq.add(req), maxRequests)) {
+                totReq = totReq.add(req);
+                keepList.add(pId);
+            } else if ((totReq.add(req)).equals(maxRequests)) {
+                totReq = totReq.add(req);
+                keepList.add(pId);
+            } else { // adding more than
+                splitUpPerson = SplitUp.of(population, population.getPersons().get(pId), totReq.add(req).subtract(maxRequests), "av");
+                req = LegCount.of(splitUpPerson, "av");
+                totReq = totReq.add(req);
+            }
+        }
+
+        for (Id<Person> pId : list) {
+            if (!keepList.contains(pId)) {
+                population.removePerson(pId);
+            }
+        }
+
+        if (Objects.nonNull(splitUpPerson))
+            population.addPerson(splitUpPerson);
+
+        GlobalAssert.that(LegCount.of(population, "av").equals(maxRequests));
+        return this;
+    }
+
+    public final void requests() {
+        System.out.println("Population size: " + population.getPersons().values().size());
+    }
+}
