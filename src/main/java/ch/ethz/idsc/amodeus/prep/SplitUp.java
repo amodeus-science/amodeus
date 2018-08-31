@@ -9,12 +9,15 @@ import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.api.core.v01.population.PopulationFactory;
 
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 
 /* package */ class SplitUp {
 
     public static Person of(Population population, Person oldPerson, Scalar numLegs, String mode) {
+
+        System.out.println("split person, num Legs: " + numLegs);
 
         PopulationFactory factory = population.getFactory();
         IDGenerator generator = new IDGenerator(population);
@@ -38,19 +41,26 @@ import ch.ethz.idsc.tensor.Scalar;
                     actNew.setLinkId(actOld.getLinkId());
                     actNew.setFacilityId(actOld.getFacilityId());
                     planShifted.addActivity(actNew);
-                    if(numLegs.equals(numReq))
-                        break;                    
+                    if (numLegs.equals(numReq))
+                        break;
                 }
                 if (pE instanceof Leg) {
+                    System.out.println("numReq: " + numReq);
                     Leg leg = (Leg) pE;
-                    if(leg.getMode().equals(mode))
-                        numReq = numLegs.add(RealScalar.ONE);                    
+                    if (leg.getMode().equals(mode))
+                        numReq = numReq.add(RealScalar.ONE);
                     Leg legNew = factory.createLeg(leg.getMode());
                     legNew.setDepartureTime(leg.getDepartureTime());
+                    System.out.println("numReq: " + numReq);
                     planShifted.addLeg(legNew);
                 }
             }
             newPerson.addPlan(planShifted);
+        }
+        if (!LegCount.of(newPerson, mode).equals(numLegs)) {
+            System.err.println("LegCount.of(newPerson, mode): " + LegCount.of(newPerson, mode));
+            System.err.println("numLegs:                      " + numLegs);
+            GlobalAssert.that(false);
         }
         return newPerson;
     }

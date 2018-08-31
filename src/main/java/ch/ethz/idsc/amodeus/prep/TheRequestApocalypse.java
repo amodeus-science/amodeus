@@ -18,9 +18,6 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 
-/** example use:
- *
- * TheApocalypse.reducesThe(population).toNoMoreThan(1000).people(); */
 public final class TheRequestApocalypse {
     /** the seed is deliberately public */
     public static final long DEFAULT_SEED = 7582456789l;
@@ -51,9 +48,7 @@ public final class TheRequestApocalypse {
         for (Id<Person> pId : list) {
             if (totReq.equals(maxRequests))
                 break;
-
             Scalar req = LegCount.of(population.getPersons().get(pId), "av");
-
             if (Scalars.lessThan(totReq.add(req), maxRequests)) {
                 totReq = totReq.add(req);
                 keepList.add(pId);
