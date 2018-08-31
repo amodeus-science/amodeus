@@ -1,6 +1,5 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.aido;
-
-import java.util.Properties;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -10,14 +9,15 @@ import ch.ethz.idsc.tensor.Tensor;
 
 /** used to compute scores which are a linear combination
  * of variables and weights */
-public abstract class LinComScore {
-
-    protected Tensor alpha = null;
+/* package */ abstract class LinComScore {
+    protected final Tensor alpha;
     /** the weight */
     private Scalar score = RealScalar.ZERO;
     private Scalar scorePrev = RealScalar.ZERO;
 
-    protected abstract void setAlpha(Properties scrprm);
+    protected LinComScore(Tensor alpha) {
+        this.alpha = alpha;
+    }
 
     public void update(Tensor measurement) {
         scorePrev = score;
@@ -25,11 +25,13 @@ public abstract class LinComScore {
     }
 
     public Scalar getScoreIntg() {
-        return (Scalar) score.copy();
+        return score;
     }
 
     public Scalar getScoreDiff() {
         Scalar scoreDiff = score.subtract(scorePrev);
+        // the check below is specific to the reward function used in the aido competition
+        // the check below is not strictly required in general
         GlobalAssert.that(Scalars.lessEquals(scoreDiff, RealScalar.ZERO));
         return scoreDiff;
     }

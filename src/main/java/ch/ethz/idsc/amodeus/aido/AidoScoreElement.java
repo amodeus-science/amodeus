@@ -23,7 +23,6 @@ public class AidoScoreElement implements AnalysisElement {
     private final ServiceQualityScore squScore = new ServiceQualityScore(scoreparam);
     private final EfficiencyScore effScore = new EfficiencyScore(scoreparam);
     private final FleetSizeScore fltScore;
-
     // ---
     private Scalar timeBefore = Quantity.of(0, SI.SECOND);
 

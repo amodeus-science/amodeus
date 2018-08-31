@@ -35,4 +35,21 @@ public class FleetSizeScoreTest extends TestCase {
         }
         assertEquals(Double.NEGATIVE_INFINITY, ((Scalar) Total.of(sumDiff)).number().doubleValue());
     }
+
+    public void testFail2() {
+        Properties scoreparam = ResourceData.properties("/aido/scoreparam.properties");
+        FleetSizeScore fsc = new FleetSizeScore(scoreparam, 10, 27);
+        try {
+            fsc.update(Quantity.of(-2, SI.SECOND), Quantity.of(2, SI.SECOND));
+            assertTrue(false);
+        } catch (Exception exception) {
+            // ---
+        }
+        try {
+            fsc.update(Quantity.of(2, SI.SECOND), Quantity.of(-2, SI.SECOND));
+            assertTrue(false);
+        } catch (Exception exception) {
+            // ---
+        }
+    }
 }

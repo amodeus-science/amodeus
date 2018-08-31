@@ -8,11 +8,7 @@ import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
-import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.io.ResourceData;
 import ch.ethz.idsc.tensor.qty.Quantity;
-import ch.ethz.idsc.tensor.red.Total;
 
 /** the fleetsize score is defined as following, in the case that the maximum waiting time
  * wMax is not violated, its toal is -fleetSize, i.e., the differences are
@@ -40,24 +36,24 @@ import ch.ethz.idsc.tensor.red.Total;
     public void update(Scalar incrWait, Scalar time) {
         GlobalAssert.that(Scalars.lessEquals(Quantity.of(0, SI.SECOND), incrWait));
         GlobalAssert.that(Scalars.lessEquals(Quantity.of(0, SI.SECOND), time));
-        this.totalWait = this.totalWait.add(incrWait);
+        totalWait = totalWait.add(incrWait);
         if (firstTime) { /** score starts at 0, then goes to -N */
-            scoreFinal = this.fleetSize.negate();
+            scoreFinal = fleetSize.negate();
             firstTime = false;
         } else {
             /** update previous score */
             scoreFinalPrev = scoreFinal;
             /** first time violation takes place, augment to -Infty */
             if (Scalars.lessThan(wMax, totalWait) //
-                    && !this.scoreFinal.equals(Quantity.of(Double.NEGATIVE_INFINITY, SI.ONE))) {
-                this.scoreFinal = Quantity.of(Double.NEGATIVE_INFINITY, SI.ONE);
-                this.timeViolate = time;
+                    && !scoreFinal.equals(Quantity.of(Double.NEGATIVE_INFINITY, SI.ONE))) {
+                scoreFinal = Quantity.of(Double.NEGATIVE_INFINITY, SI.ONE);
+                timeViolate = time;
             }
         }
     }
 
     public Scalar getTimeToViolate() {
-        return (Scalar) timeViolate.copy();
+        return timeViolate;
     }
 
     public Scalar getScoreDiff() {
