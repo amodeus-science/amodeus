@@ -14,8 +14,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
     private final AidoScoreElement aidoScoreElement;
 
-    public AidoScoreCompiler(List<RoboTaxi> roboTaxis) {
-        aidoScoreElement = new AidoScoreElement(roboTaxis.size());
+    public AidoScoreCompiler(List<RoboTaxi> roboTaxis, int totReq) {
+        aidoScoreElement = new AidoScoreElement(roboTaxis.size(), totReq);
     }
 
     public Tensor compile(long timeMatsim, List<RoboTaxi> roboTaxis, Collection<AVRequest> requests) {
@@ -26,6 +26,6 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
         /** insert and evaluate */
         aidoScoreElement.register(soc.compile());
-        return aidoScoreElement.getCurrentScore();
+        return aidoScoreElement.getScoreDiff();
     }
 }
