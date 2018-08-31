@@ -135,21 +135,20 @@ public class SharedRoboTaxiTest {
         Scalar occupancyRatio = Mean.of(ate.getDistancElement().ratios).Get(0);
         Scalar distanceRatio = Mean.of(ate.getDistancElement().ratios).Get(1);
 
-        assertEquals(0.2048175925925926, occupancyRatio.number().doubleValue(), 0.0);
-
-        assertEquals(0.8072881014416966, distanceRatio.number().doubleValue(), 0.0);
+        assertEquals(0.2048194444444444, occupancyRatio.number().doubleValue(), 0.0);
+        assertEquals(0.3188073794232303, distanceRatio.number().doubleValue(), 0.0);
 
         /** fleet distances */
         assertTrue(ate.getDistancElement().totalDistance >= 0.0);
-        assertEquals(91404.89496291742, ate.getDistancElement().totalDistance, 0.0);
+        assertEquals(262121.29277006662, ate.getDistancElement().totalDistance, 0.0);
         assertTrue(ate.getDistancElement().totalDistanceWtCst >= 0.0);
-        assertEquals(83248.82545402774, ate.getDistancElement().totalDistanceWtCst, 0.0);
+        assertEquals(83251.71235895174, ate.getDistancElement().totalDistanceWtCst, 0.0);
         assertTrue(ate.getDistancElement().totalDistancePicku > 0.0);
-        assertEquals(8156.069508889132, ate.getDistancElement().totalDistancePicku, 0.0);
+        assertEquals(10440.749239659945, ate.getDistancElement().totalDistancePicku, 0.0);
         assertTrue(ate.getDistancElement().totalDistanceRebal >= 0.0);
-        assertEquals(0.0, ate.getDistancElement().totalDistanceRebal, 0.0);
+        assertEquals(168428.8311714545, ate.getDistancElement().totalDistanceRebal, 0.0);
         assertTrue(ate.getDistancElement().totalDistanceRatio >= 0.0);
-        assertEquals(0.910769882595472, ate.getDistancElement().totalDistanceRatio, 0.0);
+        assertEquals(0.31760759104747865, ate.getDistancElement().totalDistanceRatio, 0.0);
         ate.getDistancElement().totalDistancesPerVehicle.flatten(-1).forEach(s -> //
         assertTrue(Scalars.lessEquals(RealScalar.ZERO, (Scalar) s)));
         assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).number().doubleValue() //

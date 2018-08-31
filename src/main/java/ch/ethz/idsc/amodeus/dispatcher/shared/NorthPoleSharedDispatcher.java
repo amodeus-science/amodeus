@@ -25,6 +25,7 @@ import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.config.AVGeneratorConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
@@ -41,20 +42,21 @@ import ch.ethz.matsim.av.router.AVRouter;
 public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
 
     private final int dispatchPeriod;
+    private final int rebalancePeriod;
     private final List<Link> links;
     private final Random randGen = new Random(1234);
     private final Link cityNorthPole;
+    private final List<Link> equatorLinks;
 
     protected NorthPoleSharedDispatcher(Network network, //
-            Config config, //
-            AVDispatcherConfig avDispatcherConfig, //
-            TravelTime travelTime, //
-            AVRouter router, //
-            EventsManager eventsManager) {
+            Config config, AVDispatcherConfig avDispatcherConfig, //
+            TravelTime travelTime, AVRouter router, EventsManager eventsManager) {
         super(config, avDispatcherConfig, travelTime, router, eventsManager);
         this.cityNorthPole = getNorthPole(network);
+        this.equatorLinks = getEquator(network);
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
+        rebalancePeriod = safeConfig.getInteger("rebalancePeriod", 1800);
         links = new ArrayList<>(network.getLinks().values());
         Collections.shuffle(links, randGen);
     }
@@ -64,6 +66,7 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
         final long round_now = Math.round(now);
 
         if (round_now % dispatchPeriod == 0) {
+            /** assignment of {@link RoboTaxi}s */
             for (RoboTaxi sharedRoboTaxi : getDivertableUnassignedRoboTaxis()) {
                 if (getUnassignedAVRequests().size() >= 4) {
 
@@ -109,6 +112,14 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
             }
         }
 
+        /** dispatching of available {@link RoboTaxi}s to the equator */
+        if (round_now % rebalancePeriod == 0) {
+            /** relocation of empty {@link RoboTaxi}s to a random link on the equator */
+            for (RoboTaxi roboTaxi : getDivertableUnassignedRoboTaxis()) {
+                Link rebalanceLink = equatorLinks.get(randGen.nextInt(equatorLinks.size()));
+                setRoboTaxiRebalance(roboTaxi, rebalanceLink);
+            }
+        }
     }
 
     /** @param network
@@ -119,6 +130,35 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
             links.put(l.getCoord().getY(), l);
         });
         return links.lastEntry().getValue();
+    }
+
+    /** @param network
+     * @return all {@link Link}s crossing the equator of the city {@link Network} , starting
+     *         with links on the equator, if no links found, the search radius is increased by 1 m */
+    private static List<Link> getEquator(Network network) {
+        NavigableMap<Double, Link> links = new TreeMap<>();
+        network.getLinks().values().stream().forEach(l -> {
+            links.put(l.getCoord().getY(), l);
+        });
+        double northX = links.lastEntry().getValue().getCoord().getY();
+        double southX = links.firstEntry().getValue().getCoord().getY();
+        double equator = southX + (northX - southX) / 2;
+
+        List<Link> equatorLinks = new ArrayList<>();
+        double margin = 0.0;
+        while (equatorLinks.size() < 1) {
+            for (Link l : network.getLinks().values()) {
+                boolean crossEq1 = l.getFromNode().getCoord().getY() - margin <= //
+                equator && l.getToNode().getCoord().getY() + margin >= equator;
+                boolean crossEq2 = l.getFromNode().getCoord().getY() + margin >= //
+                equator && l.getToNode().getCoord().getY() - margin <= equator;
+                if (crossEq1 || crossEq2)
+                    equatorLinks.add(l);
+            }
+            margin += 1.0;
+        }
+        GlobalAssert.that(equatorLinks.size() > 0);
+        return equatorLinks;
     }
 
     public static class Factory implements AVDispatcherFactory {
@@ -150,5 +190,4 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
             return new NorthPoleSharedDispatcher(network, config, avconfig, travelTime, router, eventsManager);
         }
     }
-
 }
