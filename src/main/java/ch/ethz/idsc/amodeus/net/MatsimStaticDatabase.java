@@ -50,6 +50,7 @@ public class MatsimStaticDatabase {
 
     /** rapid lookup from MATSIM side */
     private final Map<Link, Integer> linkInteger = new HashMap<>();
+    private final Map<String, Integer> linkInteger_id = new HashMap<>(); // TODO added due to MatsimStaticDatabase problem
     public final ReferenceFrame referenceFrame;
 
     /** rapid lookup from Viewer */
@@ -68,12 +69,19 @@ public class MatsimStaticDatabase {
         int index = 0;
         for (OsmLink osmLink : list) {
             linkInteger.put(osmLink.link, index);
+            linkInteger_id.put(osmLink.link.getId().toString(), index); // TODO added due to MatsimStaticDatabase problem
             ++index;
         }
     }
 
     public int getLinkIndex(Link link) {
         return linkInteger.get(link);
+    }
+
+    // TODO added due to MatsimStaticDatabase problem
+    public int getLinkIndex_id(String linkID) { // link.getId().toString()
+
+        return linkInteger_id.get(linkID); //
     }
 
     /** @return unmodifiable map that assigns a link to
@@ -116,6 +124,7 @@ public class MatsimStaticDatabase {
     }
 
     public int getIteration() {
-        return iteration;
+        return 0; // TODO changed due to MatsimStaticDatabase problem
+        // return iteration;
     }
 }

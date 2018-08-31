@@ -161,6 +161,7 @@ public abstract class LPTimeVariantBase implements LPSolver {
     /** closing the LP in order to release allocated memory */
     protected final void closeLP() {
         GLPK.glp_delete_prob(lp);
+        GLPK.glp_free_env();
         System.out.println("LP instance is getting destroyed");
     }
 
