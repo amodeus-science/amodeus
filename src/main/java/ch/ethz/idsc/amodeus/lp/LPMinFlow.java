@@ -135,7 +135,6 @@ public class LPMinFlow {
     public void closeLP() {
         // release storage allocated for LP
         GLPK.glp_delete_prob(lp);
-        GLPK.glp_free_env();
     }
 
     private void initColumnAlpha_ij() {
