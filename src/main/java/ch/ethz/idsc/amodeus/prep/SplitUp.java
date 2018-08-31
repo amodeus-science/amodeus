@@ -15,23 +15,22 @@ import ch.ethz.idsc.tensor.Scalar;
 
 /* package */ class SplitUp {
 
+    /** @return {@link Person} identical to @param oldPerson from @param population with
+     *         the number of legs in mode @param mode reduced to @param numLegs
+     * 
+     *         usage example: Person splitPerson = SplitUp.of(population,personX,RealScalar.ONE,"av") */
     public static Person of(Population population, Person oldPerson, Scalar numLegs, String mode) {
-
         System.out.println("split person, num Legs: " + numLegs);
-
         PopulationFactory factory = population.getFactory();
         IDGenerator generator = new IDGenerator(population);
         Id<Person> newID = generator.generateUnusedID();
         Person newPerson = factory.createPerson(newID);
-
         Scalar numReq = RealScalar.ZERO;
-
         for (Plan plan : oldPerson.getPlans()) {
             Plan planShifted = factory.createPlan();
             planShifted.setPerson(newPerson);
             planShifted.setScore(plan.getScore());
             planShifted.setType(plan.getType());
-
             for (PlanElement pE : plan.getPlanElements()) {
                 if (pE instanceof Activity) {
                     Activity actOld = (Activity) pE;
@@ -45,13 +44,11 @@ import ch.ethz.idsc.tensor.Scalar;
                         break;
                 }
                 if (pE instanceof Leg) {
-                    System.out.println("numReq: " + numReq);
                     Leg leg = (Leg) pE;
                     if (leg.getMode().equals(mode))
                         numReq = numReq.add(RealScalar.ONE);
                     Leg legNew = factory.createLeg(leg.getMode());
                     legNew.setDepartureTime(leg.getDepartureTime());
-                    System.out.println("numReq: " + numReq);
                     planShifted.addLeg(legNew);
                 }
             }
