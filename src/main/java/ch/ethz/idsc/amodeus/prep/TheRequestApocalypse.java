@@ -56,8 +56,10 @@ public final class TheRequestApocalypse {
                 totReq = totReq.add(req);
                 keepList.add(pId);
             } else { // adding more than
-                splitUpPerson = SplitUp.of(population, population.getPersons().get(pId), totReq.add(req).subtract(maxRequests), "av");
+                Scalar splitNeeded = maxRequests.subtract(totReq);
+                splitUpPerson = SplitUp.of(population, population.getPersons().get(pId), splitNeeded, "av");
                 req = LegCount.of(splitUpPerson, "av");
+                GlobalAssert.that(totReq.add(req).equals(maxRequests));
                 totReq = totReq.add(req);
             }
         }

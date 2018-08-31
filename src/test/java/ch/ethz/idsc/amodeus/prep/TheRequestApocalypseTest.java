@@ -2,6 +2,7 @@ package ch.ethz.idsc.amodeus.prep;
 
 import org.matsim.api.core.v01.population.Population;
 
+import ch.ethz.idsc.amodeus.aido.CleanAidoScenarios;
 import ch.ethz.idsc.tensor.RationalScalar;
 import junit.framework.TestCase;
 
@@ -27,6 +28,7 @@ public class TheRequestApocalypseTest extends TestCase {
         assertEquals(numReqDes, LegCount.of(population, "av").number().intValue());
 
         /** clean scenario */
-        StaticHelper.cleanScenario();
+        CleanAidoScenarios.now();
+
     }
 }

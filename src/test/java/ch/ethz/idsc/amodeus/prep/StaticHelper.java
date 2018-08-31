@@ -1,6 +1,5 @@
 package ch.ethz.idsc.amodeus.prep;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,18 +21,5 @@ import ch.ethz.idsc.tensor.io.ResourceData;
         String key = (String) keys.get(0);
         System.out.println("testing scenario:  " + key);
         AidoScenarioDownload.download(key);
-    }
-
-    /** clean up downloaded files */
-    public static void cleanScenario() {
-        String[] files = new String[] { "AmodeusOptions.properties", "av.xml", //
-                "matsimConfig.xml", "personAtrributes-with-subpopulation.xml", //
-                "preparedNetwork.xml", "config_full.xml", "linkSpeedData" };
-        for (String file : files) {
-            boolean ok = new File(file).delete();
-            if (!ok) {
-                System.err.println("file: " + file + " not deleted.");
-            }
-        }
     }
 }
