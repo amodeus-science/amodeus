@@ -26,8 +26,8 @@ import ch.ethz.idsc.tensor.qty.Quantity;
     private Scalar totalWait = Quantity.of(0, SI.SECOND);
     private boolean firstTime = true;
 
-    public FleetSizeScore(Properties scrprm, int totReq, int fleetSize) {
-        Scalar wmean = Quantity.of(Double.parseDouble(scrprm.getProperty("wmean")), SI.SECOND);
+    public FleetSizeScore(Properties properties, int totReq, int fleetSize) {
+        Scalar wmean = Scalars.fromString(properties.getProperty("wmean"));
         wMax = wmean.multiply(RealScalar.of(totReq));
         this.fleetSize = RationalScalar.of(fleetSize, 1);
         this.scoreFinal = Quantity.of(0, SI.ONE);
