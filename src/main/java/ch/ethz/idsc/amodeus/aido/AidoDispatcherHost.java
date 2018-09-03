@@ -37,15 +37,17 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
     private final Map<Integer, AVRequest> idRequestMap = new HashMap<>();
     private final FastLinkLookup fastLinkLookup;
     private final StringSocket clientSocket;
+    private final int numReqTot;
     private final int dispatchPeriod;
     // ---
     private AidoScoreCompiler aidoScoreCompiler;
 
     protected AidoDispatcherHost(Network network, Config config, AVDispatcherConfig avDispatcherConfig, TravelTime travelTime,
             ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, EventsManager eventsManager, //
-            StringSocket clientSocket) {
+            StringSocket clientSocket, int numReqTot) {
         super(config, avDispatcherConfig, travelTime, parallelLeastCostPathCalculator, eventsManager);
         this.clientSocket = Objects.requireNonNull(clientSocket);
+        this.numReqTot = numReqTot;
         this.fastLinkLookup = new FastLinkLookup(network, MatsimStaticDatabase.INSTANCE);
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
         this.dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
@@ -59,7 +61,7 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
         if (getRoboTaxis().size() > 0 && idRoboTaxiMap.isEmpty()) {
             getRoboTaxis().forEach(//
                     s -> idRoboTaxiMap.put(MatsimStaticDatabase.INSTANCE.getVehicleIndex(s), s));
-            aidoScoreCompiler = new AidoScoreCompiler(getRoboTaxis());
+            aidoScoreCompiler = new AidoScoreCompiler(getRoboTaxis(), numReqTot);
         }
 
         if (round_now % dispatchPeriod == 0) {
@@ -119,10 +121,13 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
         @Inject
         private StringSocket stringSocket;
 
+        @Inject
+        private int numReqTot;
+
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
             return new AidoDispatcherHost( //
-                    network, config, avconfig, travelTime, router, eventsManager, stringSocket);
+                    network, config, avconfig, travelTime, router, eventsManager, stringSocket, numReqTot);
         }
     }
 

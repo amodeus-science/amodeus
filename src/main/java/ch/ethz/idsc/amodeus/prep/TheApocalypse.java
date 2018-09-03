@@ -31,19 +31,19 @@ public final class TheApocalypse {
     }
 
     /** version with seed used so far **/
-    public TheApocalypse toNoMoreThan(int capacityOfArk) {
-        return toNoMoreThan(capacityOfArk, DEFAULT_SEED);
+    public TheApocalypse toNoMoreThan(int maxPrs) {
+        return toNoMoreThan(maxPrs, DEFAULT_SEED);
     }
 
-    public TheApocalypse toNoMoreThan(int capacityOfArk, long seed) {
+    public TheApocalypse toNoMoreThan(int maxPrs, long seed) {
         List<Id<Person>> list = new ArrayList<>(population.getPersons().keySet());
         Collections.shuffle(list, new Random(seed));
         final int sizeAnte = list.size();
         list.stream() //
-                .limit(Math.max(0, sizeAnte - capacityOfArk)) //
+                .limit(Math.max(0, sizeAnte - maxPrs)) //
                 .forEach(population::removePerson);
         final int sizePost = population.getPersons().size();
-        GlobalAssert.that(sizePost <= capacityOfArk);
+        GlobalAssert.that(sizePost <= maxPrs);
         return this;
     }
 
