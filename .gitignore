@@ -16,7 +16,6 @@ buildNumber.properties
 
 # matsim output (in case deletion fails)
 output/
-.properties
 
 # datahaki
 testall.sh
