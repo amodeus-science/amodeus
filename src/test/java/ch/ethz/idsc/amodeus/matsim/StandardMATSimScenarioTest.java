@@ -3,13 +3,13 @@ package ch.ethz.idsc.amodeus.matsim;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -52,9 +52,12 @@ import ch.ethz.idsc.amodeus.matsim.mod.AmodeusVehicleGeneratorModule;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.prep.MatsimKMeansVirtualNetworkCreator;
+import ch.ethz.idsc.amodeus.test.TestFileHandling;
+import ch.ethz.idsc.amodeus.testutils.TestUtils;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.traveldata.TravelDataCreator;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.matsim.av.config.AVConfig;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
@@ -73,7 +76,6 @@ public class StandardMATSimScenarioTest {
         // working properly
 
         // ATTENTION: DriveByDispatcher is not tested, because of long runtime.
-
         return Arrays.asList(new Object[][] { { "SingleHeuristic" }, { "DemandSupplyBalancingDispatcher" }, { "GlobalBipartiteMatchingDispatcher" },
                 // { "AdaptiveRealTimeRebalancingPolicy" }, // TODO TEST @Sebastian, is the input data correct? LP fails sometimes, (depening on order)
                 { "FeedforwardFluidicRebalancingPolicy" } });
@@ -148,6 +150,15 @@ public class StandardMATSimScenarioTest {
                 }
             }
         }
+    }
+
+    @BeforeClass
+    public static void setUp() throws IOException {
+        // copy scenario data into main directory
+        File scenarioDirectory = new File(TestUtils.getSuperFolder("amodeus"), "resources/testScenario");
+        File workingDirectory = MultiFileTools.getWorkingDirectory();
+        GlobalAssert.that(workingDirectory.exists());
+        TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
     }
 
     @Test
@@ -235,7 +246,7 @@ public class StandardMATSimScenarioTest {
         AVConfig avConfig = new AVConfig();
         AVOperatorConfig operatorConfig = avConfig.createOperatorConfig("test");
         AVGeneratorConfig generatorConfig = operatorConfig.createGeneratorConfig("VehicleToVSGenerator");
-        generatorConfig.setNumberOfVehicles(100);
+        generatorConfig.setNumberOfVehicles(200);
 
         // Choose a dispatcher
         AVDispatcherConfig dispatcherConfig = operatorConfig.createDispatcherConfig(dispatcher);
@@ -275,10 +286,8 @@ public class StandardMATSimScenarioTest {
         Assert.assertEquals(0, analyzer.numberOfDepartures - analyzer.numberOfArrivals);
     }
 
-    @After
-    public void after() throws IOException {
-        File toDelete = new File("AmodeusOptions.properties");
-        if (toDelete.exists())
-            Files.delete(toDelete.toPath());
+    @AfterClass
+    public static void tearDownOnce() throws IOException {
+        TestFileHandling.removeGeneratedFiles();
     }
 }

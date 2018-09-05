@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.matsim.api.core.v01.Scenario;
@@ -268,10 +267,4 @@ public class LPMinFlowTester {
 
         lpMinFlow.closeLP();
     }
-
-    @AfterClass
-    public static void cleanUp() {
-        // ---
-    }
-
 }

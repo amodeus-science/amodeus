@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE av SYSTEM "https://www.matsim.org/files/dtd/av_v1.dtd">
+<!DOCTYPE av SYSTEM "av_v1.dtd">
 
 <av>
   <param name="marginalUtilityOfWaitingTime" value="-12.86" />

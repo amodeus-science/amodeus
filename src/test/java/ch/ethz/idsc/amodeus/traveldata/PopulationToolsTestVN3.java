@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.matsim.api.core.v01.Scenario;
@@ -24,7 +25,10 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.prep.PopulationTools;
 import ch.ethz.idsc.amodeus.prep.Request;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;
+import ch.ethz.idsc.amodeus.test.TestFileHandling;
 import ch.ethz.idsc.amodeus.testutils.TestUtils;
+import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -40,10 +44,15 @@ public class PopulationToolsTestVN3 {
     private static Set<Request> requests3 = new HashSet<>();
 
     @BeforeClass
-    public static void setup() throws IOException {
+    public static void setUp() throws IOException {
+        // copy scenario data into main directory
+        File scenarioDirectory = new File(TestUtils.getSuperFolder("amodeus"), "resources/testScenario");
+        File workingDirectory = MultiFileTools.getWorkingDirectory();
+        GlobalAssert.that(workingDirectory.exists());
+        TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
 
         /* input data */
-        File scenarioDirectory = new File(TestUtils.getSuperFolder("amodeus"), "resources/testScenario");
+        scenarioDirectory = new File(TestUtils.getSuperFolder("amodeus"), "resources/testScenario");
         scenarioOptions = new ScenarioOptions(scenarioDirectory, ScenarioOptionsBase.getDefault());
         File configFile = new File(scenarioDirectory, scenarioOptions.getPreparerConfigName());
         Config config = ConfigUtils.loadConfig(configFile.getAbsolutePath());
@@ -82,5 +91,10 @@ public class PopulationToolsTestVN3 {
         lambda = PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(requests3, virtualNetwork3, 12 * 3600);
         assertEquals(lambda, Tensors.of(Tensors.of(Tensors.vector(0, 0, 1), Tensors.vector(0, 0, 1), Tensors.vector(0, 0, 1)),
                 Tensors.of(Tensors.vector(0, 0, 0), Tensors.vector(1, 0, 0), Tensors.vector(0, 0, 0))));
+    }
+
+    @AfterClass
+    public static void tearDownOnce() throws IOException {
+        TestFileHandling.removeGeneratedFiles();
     }
 }
