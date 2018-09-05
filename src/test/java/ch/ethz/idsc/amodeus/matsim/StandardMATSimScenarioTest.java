@@ -1,10 +1,14 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.matsim;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -269,5 +273,12 @@ public class StandardMATSimScenarioTest {
 
         controler.run();
         Assert.assertEquals(0, analyzer.numberOfDepartures - analyzer.numberOfArrivals);
+    }
+
+    @After
+    public void after() throws IOException {
+        File toDelete = new File("AmodeusOptions.properties");
+        if (toDelete.exists())
+            Files.delete(toDelete.toPath());
     }
 }
