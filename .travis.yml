@@ -1,7 +1,7 @@
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get install swig
-  - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:resources/libGLPK
+  - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:resources/3rdparty/glpk/lib/jni
 
 language: java
 jdk:
