@@ -43,6 +43,13 @@ public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatc
         GlobalAssert.that(redirectCourse.getMealType().equals(SharedMealType.REDIRECT));
         roboTaxi.getMenu().addAVCourseAsDessert(redirectCourse);
     }
+    
+    /** {@link RoboTaxi} @param roboTaxi is redirected to the {@link Link} of the {@link SharedCourse}
+     * the course can be moved to another position in the {@link SharedMenu} of the {@link} RoboTaxi */
+    protected static void addSharedRoboTaxiWaiting(RoboTaxi roboTaxi, SharedCourse waitingCourse) {
+        GlobalAssert.that(waitingCourse.getMealType().equals(SharedMealType.WAITFORCUSTOMER));
+        roboTaxi.getMenu().addAVCourseAsDessert(waitingCourse);
+    }
 
     /** @return {@link List } of all {@link RoboTaxi} which are currently rebalancing. */
     protected List<RoboTaxi> getRebalancingRoboTaxis() {

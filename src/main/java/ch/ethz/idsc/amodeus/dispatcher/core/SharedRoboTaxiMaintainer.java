@@ -122,6 +122,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         afterStepTasks();
         executeDirectives();
         consistencyCheck();
+        executeWaiting();
 
     }
 
@@ -200,6 +201,8 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     /* package */ abstract boolean isInPickupRegister(RoboTaxi robotaxi);
 
     /* package */ abstract boolean isInRequestRegister(RoboTaxi robotaxi);
+    
+    /* package */ abstract void executeWaiting();
 
     @Override
     public final void onNextTaskStarted(AVVehicle task) {

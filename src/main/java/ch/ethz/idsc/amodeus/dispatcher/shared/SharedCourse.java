@@ -23,6 +23,10 @@ public class SharedCourse {
     public static SharedCourse redirectCourse(Link link, String id) {
         return new SharedCourse(id, link, SharedMealType.REDIRECT);
     }
+    
+    public static SharedCourse waitingCourse(Link link, String id) {
+        return new SharedCourse(id, link, SharedMealType.WAITFORCUSTOMER);
+    }
 
     /** class implementation */
     private final String requestID;

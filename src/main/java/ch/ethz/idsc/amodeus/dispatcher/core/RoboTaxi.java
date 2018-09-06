@@ -188,6 +188,13 @@ public class RoboTaxi {
     /* package */ boolean notDrivingOnLastLink() {
         if (status.equals(RoboTaxiStatus.STAY))
             return true;
+        
+        if (!menu.getCourses().isEmpty() && menu.getStarterCourse().getMealType() == SharedMealType.WAITFORCUSTOMER) {
+            Task avT = getSchedule().getCurrentTask();
+            if (avT instanceof AVStayTask) {
+                return true;
+            }
+        }
 
         Task avT = getSchedule().getCurrentTask();
 
@@ -280,6 +287,8 @@ public class RoboTaxi {
             } else if (sharedAVCourse.getMealType().equals(SharedMealType.DROPOFF)) {
                 futureNumberCustomers--;
             } else if (sharedAVCourse.getMealType().equals(SharedMealType.REDIRECT)) {
+                // --
+            } else if (sharedAVCourse.getMealType().equals(SharedMealType.WAITFORCUSTOMER)) {
                 // --
             } else {
                 throw new IllegalArgumentException("Unknown SharedAVMealType -- please specify it !!!--");
