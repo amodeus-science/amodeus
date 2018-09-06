@@ -1,8 +1,11 @@
 package ch.ethz.idsc.amodeus.prep;
 
+import java.io.File;
+
 import org.matsim.api.core.v01.population.Population;
 
 import ch.ethz.idsc.amodeus.aido.CleanAidoScenarios;
+import ch.ethz.idsc.amodeus.util.io.FileDelete;
 import ch.ethz.idsc.tensor.RationalScalar;
 import junit.framework.TestCase;
 
@@ -30,5 +33,12 @@ public class TheRequestApocalypseTest extends TestCase {
         /** clean scenario */
         CleanAidoScenarios.now();
 
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        FileDelete.of(new File("preparedNetwork.xml.gz"), 1, 1);
+        FileDelete.of(new File("network.xml.gz"), 1, 1);
+        FileDelete.of(new File("population.xml.gz"), 1, 1);
     }
 }

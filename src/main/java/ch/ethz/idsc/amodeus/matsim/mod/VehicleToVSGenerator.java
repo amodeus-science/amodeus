@@ -4,7 +4,6 @@ package ch.ethz.idsc.amodeus.matsim.mod;
 import java.util.Collection;
 import java.util.Objects;
 
-import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
@@ -37,8 +36,6 @@ import ch.ethz.matsim.av.generator.AVGenerator;
  * 
  * CLASS NAME IS USED AS IDENTIFIER - DO NOT RENAME CLASS */
 public class VehicleToVSGenerator implements AVGenerator {
-    private static final Logger LOGGER = Logger.getLogger(VehicleToVSGenerator.class);
-    // ---
     private final VirtualNetwork<Link> virtualNetwork;
     private final Tensor vehicleDistribution;
     private final String prefix;
@@ -85,7 +82,6 @@ public class VehicleToVSGenerator implements AVGenerator {
         /** update placedVehicles */
         placedVehicles.set(v -> v.add(RealScalar.ONE), vNodeIndex);
 
-        LOGGER.info("car placed at link " + linkGen);
         Id<Vehicle> id = Id.create("av_" + prefix + String.valueOf(generatedNumberOfVehicles), Vehicle.class);
 
         return new AVVehicle(id, linkGen, 4.0, 0.0, Double.POSITIVE_INFINITY);
