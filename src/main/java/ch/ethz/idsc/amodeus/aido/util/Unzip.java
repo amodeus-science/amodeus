@@ -6,6 +6,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -17,42 +22,52 @@ public enum Unzip {
      * @param output folder
      * @param ignoreFirst applies only to zip files that has a single folder at the root level
      *            if ignoreFirst is true, this base folder can be skipped when restoring the compressed files.
+     * @return list of files created in unzip process
      * @throws IOException
      * @throws FileNotFoundException */
-    public static void of(File file, File outputFolder, boolean ignoreFirst) //
+    public static List<File> of(File file, File outputFolder, boolean ignoreFirst) //
             throws FileNotFoundException, IOException {
 
-        if (!outputFolder.exists())
-            outputFolder.mkdir();
+        try (InputStream inputStream = new FileInputStream(file)) {
+            return of(inputStream, outputFolder, ignoreFirst);
+        }
+    }
 
-        byte[] buffer = new byte[1024];
-
-        try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(file))) {
+    /** @param inputStream to unzip
+     * @param output folder
+     * @param ignoreFirst
+     * @return list of files created in unzip process
+     * @throws IOException */
+    public static List<File> of(InputStream inputStream, File outputFolder, boolean ignoreFirst) throws IOException {
+        List<File> list = new LinkedList<>();
+        try (ZipInputStream zipInputStream = new ZipInputStream(inputStream)) {
+            if (!outputFolder.exists())
+                outputFolder.mkdir();
 
             ZipEntry zipEntry = zipInputStream.getNextEntry();
 
-            while (zipEntry != null) {
-                String name = zipEntry.getName();
-                // System.out.println(name);
+            while (Objects.nonNull(zipEntry)) {
+                final String name = zipEntry.getName();
                 int index = ignoreFirst ? name.indexOf('/') : 0;
                 if (index < 0)
                     throw new RuntimeException();
-                File target = new File(outputFolder, name.substring(index));
-                System.out.println(target);
+                final File target = new File(outputFolder, name.substring(index));
+                list.add(target);
                 if (zipEntry.isDirectory())
                     target.mkdirs();
                 else {
                     new File(target.getParent()).mkdirs();
-                    try (FileOutputStream fileOutputStream = new FileOutputStream(target)) {
+                    try (OutputStream outputStream = new FileOutputStream(target)) {
+                        byte[] buffer = new byte[1024];
                         int length;
                         while (0 < (length = zipInputStream.read(buffer)))
-                            fileOutputStream.write(buffer, 0, length);
+                            outputStream.write(buffer, 0, length);
                     }
                 }
                 zipInputStream.closeEntry();
                 zipEntry = zipInputStream.getNextEntry();
             }
-
         }
+        return list;
     }
 }
