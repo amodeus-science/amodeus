@@ -22,6 +22,10 @@ public class AidoScoreElement implements AnalysisElement {
     // ---
     private Scalar timeBefore = Quantity.of(0, SI.SECOND);
 
+    public AidoScoreElement(int numberRoboTaxis, int totReq) {
+        this(numberRoboTaxis, totReq, ScoreParameters.GLOBAL);
+    }
+
     public AidoScoreElement(int numberRoboTaxis, int totReq, ScoreParameters scoreParameters) {
         aidoDistanceRecorder = new AidoDistanceRecorder(numberRoboTaxis);
         squScore = new ServiceQualityScore(scoreParameters);
