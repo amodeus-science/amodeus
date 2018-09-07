@@ -14,19 +14,28 @@ import ch.ethz.idsc.tensor.io.ResourceData;
 public enum AidoScenarioDownload {
     ;
 
-    /** @param key for instance "SanFrancisco"
-     * @throws IOException */
-    public static void download(String key) throws IOException {
+    /** @param key for instance "SanFrancisco.20080519"
+     * @throws Exception */
+    public static void extract(String key) throws IOException {
+        File file = new File(MultiFileTools.getWorkingDirectory(), "scenario.zip");
+        of(key, file);
+        Unzip.of(file, MultiFileTools.getWorkingDirectory(), true);
+        file.delete();
+    }
+
+    /** @param key for instance "SanFrancisco.20080519"
+     * @param file local target
+     * @throws Exception */
+    public static void of(String key, File file) throws IOException {
         Properties properties = ResourceData.properties("/aido/scenarios.properties");
         if (properties.containsKey(key)) {
             /** chosing scenario */
             String value = properties.getProperty(key);
             System.out.println("scenario: " + value);
             /** file name is arbitrary, file will be deleted after un-zipping */
-            File file = new File(MultiFileTools.getWorkingDirectory(), "scenario.zip");
             HttpDownloader.download(value, ContentType.APPLICATION_ZIP).to(file);
-            Unzip.of(file, MultiFileTools.getWorkingDirectory(), true);
-            file.delete();
+            return;
         }
+        throw new RuntimeException();
     }
 }

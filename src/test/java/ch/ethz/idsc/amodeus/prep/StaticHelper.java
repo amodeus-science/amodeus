@@ -21,6 +21,6 @@ import ch.ethz.idsc.tensor.io.ResourceData;
         Collections.shuffle(keys);
         String key = (String) keys.get(0);
         System.out.println("testing scenario:  " + key);
-        AidoScenarioDownload.download(key);
+        AidoScenarioDownload.extract(key);
     }
 }
