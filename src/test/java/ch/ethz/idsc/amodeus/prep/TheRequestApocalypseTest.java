@@ -2,6 +2,8 @@
 package ch.ethz.idsc.amodeus.prep;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 import org.matsim.api.core.v01.population.Population;
 
@@ -38,8 +40,12 @@ public class TheRequestApocalypseTest extends TestCase {
 
     @Override
     public void tearDown() throws Exception {
-        FileDelete.of(new File("preparedNetwork.xml.gz"), 1, 1);
-        FileDelete.of(new File("network.xml.gz"), 1, 1);
-        FileDelete.of(new File("population.xml.gz"), 1, 1);
+        List<File> list = Arrays.asList(//
+                new File("preparedNetwork.xml.gz"), //
+                new File("network.xml.gz"), //
+                new File("population.xml.gz"));
+        for (File file : list)
+            if (file.exists())
+                FileDelete.of(file, 1, 1);
     }
 }

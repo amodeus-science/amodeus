@@ -25,7 +25,7 @@ public final class FileDelete {
      * @param max_depth
      * @param max_count
      * @return
-     * @throws Exception if criteria are not met */
+     * @throws Exception if given file does not exist, or criteria are not met */
     public static FileDelete of(File file, int max_depth, int max_count) throws IOException {
         return new FileDelete(file, max_depth, max_count);
     }
