@@ -14,21 +14,24 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 public class StorageUtils {
 
     /** the output folder is created by MATSim */
-    private static final File defaultOutputDir = new File("output");
+    private static final File DEFAULT_OUTPUT_DIRECTORY = new File("output");
+    private static final String SIMOBJ = "simobj";
+    // ---
     private final File output;
     private final File directory;
 
     public StorageUtils(File outputdirectory) {
-        if (outputdirectory.exists()) {
+        if (outputdirectory.isDirectory()) {
             output = outputdirectory;
 
         } else {
+            System.err.println(outputdirectory.getAbsolutePath());
             System.out.println("supplied outputdircetory does not exist, using default");
-            System.out.println("outputdirectory = " + defaultOutputDir.getAbsolutePath());
-            output = defaultOutputDir;
+            System.out.println("outputdirectory = " + DEFAULT_OUTPUT_DIRECTORY.getAbsolutePath());
+            output = DEFAULT_OUTPUT_DIRECTORY;
         }
 
-        directory = new File(output, "simobj");
+        directory = new File(output, SIMOBJ);
     }
 
     public void printStorageProperties() {
