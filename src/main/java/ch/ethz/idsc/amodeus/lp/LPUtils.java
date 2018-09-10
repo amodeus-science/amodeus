@@ -67,8 +67,8 @@ import ch.ethz.idsc.tensor.sca.Sign;
             numberVehicles = Integer.parseInt(subelem.getAttribute("value"));
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println("av.xml file not found!!! Using default value for number of vehicles instead!");
-            return 100;
+            System.err.println("av.xml or av_v1.dtd file not found!!! Using default value for number of vehicles instead, which is 10!");
+            GlobalAssert.that(false);
         }
         return numberVehicles;
     }

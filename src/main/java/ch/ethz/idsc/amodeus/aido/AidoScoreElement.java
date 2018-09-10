@@ -14,13 +14,23 @@ import ch.ethz.idsc.tensor.qty.Quantity;
 public class AidoScoreElement implements AnalysisElement {
 
     private final AidoDistanceRecorder aidoDistanceRecorder;
-    private final TableBuilder tableBuilder = new TableBuilder();
+    private final TableBuilder scoreDiffTable = new TableBuilder();
+    private final TableBuilder scoreIntgTable = new TableBuilder();
+    private final ServiceQualityScore squScore;
+    private final EfficiencyScore effScore;
+    private final FleetSizeScore fltScore;
     // ---
     private Scalar timeBefore = Quantity.of(0, SI.SECOND);
-    private Tensor scoreInt = Tensors.of(Quantity.of(0, SI.SECOND), Quantity.of(0, SI.METER), Quantity.of(0, SI.METER));
 
-    public AidoScoreElement(int numberRoboTaxis) {
+    public AidoScoreElement(int numberRoboTaxis, int totReq) {
+        this(numberRoboTaxis, totReq, ScoreParameters.GLOBAL);
+    }
+
+    public AidoScoreElement(int numberRoboTaxis, int totReq, ScoreParameters scoreParameters) {
         aidoDistanceRecorder = new AidoDistanceRecorder(numberRoboTaxis);
+        squScore = new ServiceQualityScore(scoreParameters);
+        effScore = new EfficiencyScore(scoreParameters);
+        fltScore = new FleetSizeScore(scoreParameters, totReq, numberRoboTaxis);
     }
 
     @Override
@@ -42,26 +52,30 @@ public class AidoScoreElement implements AnalysisElement {
          * it produced a sequence {...,0,0,d1,0,0,d2,0,...} */
 
         Tensor currDistance = aidoDistanceRecorder.distance(simulationObject);
-        Scalar distCusto = currDistance.Get(0);
         Scalar distEmpty = currDistance.Get(1);
 
-        /** compile score and add to integrated score */
-        Tensor scoreAdd = Tensors.of(currWaitTime, distCusto, distEmpty);
-        StaticHelper.requirePositiveOrZero(scoreAdd);
-        scoreInt = scoreInt.add(scoreAdd);
+        /** update scores with information */
+        squScore.update(Tensors.of(currWaitTime, distEmpty));
+        effScore.update(Tensors.of(currWaitTime, distEmpty));
+        fltScore.update(currWaitTime, time);
 
-        /** add to history */
-        tableBuilder.appendRow(time, scoreInt);
+        /** add score differences to history */
+        scoreDiffTable.appendRow(time, squScore.getScoreDiff(), effScore.getScoreDiff(), fltScore.getScoreDiff());
+        scoreIntgTable.appendRow(time, squScore.getScoreIntg(), effScore.getScoreIntg(), fltScore.getScoreIntg());
 
         timeBefore = time;
     }
 
-    /** @return integrated score */
-    public Tensor getCurrentScore() {
-        return scoreInt.copy();
+    /** @return incremental score */
+    public Tensor getScoreDiff() {
+        return Tensors.of(squScore.getScoreDiff(), effScore.getScoreDiff(), fltScore.getScoreDiff());
     }
 
-    public Tensor getScoreHistory() {
-        return tableBuilder.toTable();
+    public Tensor getScoreDiffHistory() {
+        return scoreDiffTable.toTable();
+    }
+
+    public Tensor getScoreIntgHistory() {
+        return scoreIntgTable.toTable();
     }
 }

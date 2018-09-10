@@ -13,14 +13,14 @@ import java.util.Collection;
 
 import ch.ethz.idsc.amodeus.util.io.FileDelete;
 
-/* package */ enum TestFileHandling {
+public enum TestFileHandling {
     ;
 
     public static void copyScnearioToMainDirectory(String scenarioDir, String mainDir) throws IOException {
 
         CopyOption[] options = new CopyOption[] { StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES };
 
-        String[] fileNames = new String[] { "AmodeusOptions.properties", "av.xml", "config_full.xml", //
+        String[] fileNames = new String[] { "AmodeusOptions.properties", "av.xml", "av_v1.dtd", "config_full.xml", //
                 "linkSpeedData.bin", "network.xml", "population.xml" };
         for (String fileName : fileNames) {
             Path source = Paths.get(scenarioDir, fileName);
@@ -35,6 +35,7 @@ import ch.ethz.idsc.amodeus.util.io.FileDelete;
         /** single files */
         Collection<File> singleFiles = new ArrayList<>();
         singleFiles.add(new File("av.xml"));
+        singleFiles.add(new File("av_v1.dtd"));
         singleFiles.add(new File("config.xml"));
         singleFiles.add(new File("config_full.xml"));
         singleFiles.add(new File("linkSpeedData.bin"));
@@ -47,14 +48,19 @@ import ch.ethz.idsc.amodeus.util.io.FileDelete;
         singleFiles.add(new File("AmodeusOptions.properties"));
 
         for (File file : singleFiles) {
-            FileDelete.of(file, 0, 1);
+            if (file.exists())
+                FileDelete.of(file, 0, 1);
         }
 
         /** virtual network folder */
-        FileDelete.of(new File("virtualNetwork"), 1, 4);
+        File virtualNetwork = new File("virtualNetwork");
+        if (virtualNetwork.exists())
+            FileDelete.of(virtualNetwork, 1, 4);
 
         /** output folder */
-        FileDelete.of(new File("output"), 5, 10999);
+        File output = new File("output");
+        if (output.exists())
+            FileDelete.of(output, 5, 10999);
 
     }
 

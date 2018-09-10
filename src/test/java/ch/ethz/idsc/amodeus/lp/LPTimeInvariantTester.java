@@ -21,7 +21,10 @@ import org.matsim.core.scenario.ScenarioUtils;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;
+import ch.ethz.idsc.amodeus.test.TestFileHandling;
 import ch.ethz.idsc.amodeus.testutils.TestUtils;
+import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
@@ -34,10 +37,15 @@ public class LPTimeInvariantTester {
     private static Network network;
 
     @BeforeClass
-    public static void setup() throws IOException {
+    public static void setUp() throws IOException {
+        // copy scenario data into main directory
+        File scenarioDirectory = new File(TestUtils.getSuperFolder("amodeus"), "resources/testScenario");
+        File workingDirectory = MultiFileTools.getWorkingDirectory();
+        GlobalAssert.that(workingDirectory.exists());
+        TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
 
         /* input data */
-        File scenarioDirectory = new File(TestUtils.getSuperFolder("amodeus"), "resources/testScenario");
+        scenarioDirectory = new File(TestUtils.getSuperFolder("amodeus"), "resources/testScenario");
         scenarioOptions = new ScenarioOptions(scenarioDirectory, ScenarioOptionsBase.getDefault());
         File configFile = new File(scenarioDirectory, scenarioOptions.getPreparerConfigName());
         Config config = ConfigUtils.loadConfig(configFile.getAbsolutePath());
@@ -74,7 +82,7 @@ public class LPTimeInvariantTester {
         assertEquals(lp.getAlphaAbsolute_ij(), null);
         assertEquals(lp.getFRate_ij(), Tensors.of(Tensors.of(Tensors.vector(0, 0), Tensors.vector(0, 0))));
         assertEquals(lp.getFAbsolute_ij(), Tensors.of(Tensors.of(Tensors.vector(0, 0), Tensors.vector(0, 0))));
-        assertEquals(lp.getV0_i(), Tensors.vector(5, 5)); // the 10 vehicles from av.xml are distributed equally
+        assertEquals(lp.getV0_i(), Tensors.vector(100, 100)); // the 200 vehicles from av.xml are distributed equally
         assertEquals(lp.getTimeInterval(), 24 * 3600); // there is only one time interval over the whole day
 
         // test trivial case
@@ -164,7 +172,7 @@ public class LPTimeInvariantTester {
         assertEquals(lp.getAlphaAbsolute_ij(), null);
         assertEquals(lp.getFRate_ij(), Tensors.of(Tensors.of(Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))));
         assertEquals(lp.getFAbsolute_ij(), Tensors.of(Tensors.of(Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))));
-        assertEquals(lp.getV0_i(), Tensors.vector(3, 3, 3)); // the 10 vehicles from av.xml are distributed equally
+        assertEquals(lp.getV0_i(), Tensors.vector(66, 66, 66)); // the 200 vehicles from av.xml are distributed equally
         assertEquals(lp.getTimeInterval(), 24 * 3600); // there is only one time interval over the whole day
 
         // test trivial case
@@ -245,8 +253,7 @@ public class LPTimeInvariantTester {
     }
 
     @AfterClass
-    public static void cleanUp() {
-        // ---
+    public static void tearDownOnce() throws IOException {
+        TestFileHandling.removeGeneratedFiles();
     }
-
 }

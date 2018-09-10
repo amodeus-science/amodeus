@@ -5,20 +5,24 @@ import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.WritableRaster;
+import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
+import ch.ethz.idsc.amodeus.util.io.FileDelete;
 import ch.ethz.idsc.amodeus.util.math.UserHome;
 import junit.framework.TestCase;
 
 public class Mp4AnimationWriterTest extends TestCase {
+    private final static File MP4_FILE = new File(UserHome.file("filename.mp4").toString());
+
     /** test generates short video of 50 frames with random colors per pixel at 10 fps */
     public void testSimple() throws InterruptedException, IOException, Exception {
 
         /** Read in some option values and their defaults. */
         final int snaps = 10; // fps
 
-        final String filename = UserHome.file("filename.mp4").toString();
+        final String filename = MP4_FILE.toString();
 
         Dimension dimension = new Dimension(640, 480);
         try (Mp4AnimationWriter mp4 = new Mp4AnimationWriter(filename, dimension, snaps)) {
@@ -35,5 +39,11 @@ public class Mp4AnimationWriterTest extends TestCase {
             }
         }
 
+    }
+
+    @Override
+    public void tearDown() throws IOException {
+        if (MP4_FILE.exists())
+            FileDelete.of(MP4_FILE, 1, 1);
     }
 }
