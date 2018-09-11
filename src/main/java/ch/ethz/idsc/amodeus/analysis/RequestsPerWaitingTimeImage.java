@@ -27,12 +27,12 @@ public enum RequestsPerWaitingTimeImage implements AnalysisExport {
         int waitBinNumber = 30;
         Scalar waitBinNumberScaling = RealScalar.of(1.0 / waitBinNumber);
         Scalar waitBinSize = Round.of(RealScalar.of(wt.maximumWaitTime).multiply(waitBinNumberScaling));
+        if (waitBinSize.equals(RealScalar.ZERO)) /** for very low waiting times, resolve in 0.1 s steps */
+            waitBinSize = RealScalar.of(0.1);
 
         Tensor waitTimes = Tensors.empty();
         wt.requestWaitTimes.values().stream().forEach(v -> waitTimes.append(RealScalar.of(v)));
-        Tensor waitBinCounter = BinCounts.of(//
-                waitTimes, //
-                waitBinSize);
+        Tensor waitBinCounter = BinCounts.of(waitTimes, waitBinSize);
 
         waitBinCounter = waitBinCounter.divide(RealScalar.of(wt.requestWaitTimes.size()));
 
