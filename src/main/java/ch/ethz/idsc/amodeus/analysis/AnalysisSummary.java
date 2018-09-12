@@ -6,6 +6,7 @@ import java.io.Serializable;
 import ch.ethz.idsc.amodeus.analysis.element.DistanceElement;
 import ch.ethz.idsc.amodeus.analysis.element.RequestRobotaxiInformationElement;
 import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionElement;
+import ch.ethz.idsc.amodeus.analysis.element.TravelTimeAnalysis;
 import ch.ethz.idsc.amodeus.analysis.element.WaitingTimesElement;
 
 public class AnalysisSummary implements Serializable {
@@ -15,6 +16,7 @@ public class AnalysisSummary implements Serializable {
     private final StatusDistributionElement statusDistribution = new StatusDistributionElement();
     private final WaitingTimesElement waitingTimes = new WaitingTimesElement();
     private final DistanceElement distanceElement;
+    private final TravelTimeAnalysis travelTimeAnalysis = new TravelTimeAnalysis();
 
     public AnalysisSummary(int numVehicles, int size) {
         distanceElement = new DistanceElement(numVehicles, size);
@@ -38,5 +40,9 @@ public class AnalysisSummary implements Serializable {
 
     public DistanceElement getDistanceElement() {
         return distanceElement;
+    }
+
+    public TravelTimeAnalysis getTravelTimeAnalysis() {
+        return travelTimeAnalysis;
     }
 }

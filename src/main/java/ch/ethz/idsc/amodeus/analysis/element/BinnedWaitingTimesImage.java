@@ -1,10 +1,9 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.analysis;
+package ch.ethz.idsc.amodeus.analysis.element;
 
 import java.io.File;
 
-import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
-import ch.ethz.idsc.amodeus.analysis.element.WaitingTimesElement;
+import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
 import ch.ethz.idsc.amodeus.analysis.plot.TimeChart;
 
@@ -30,7 +29,7 @@ public enum BinnedWaitingTimesImage implements AnalysisExport {
                     StaticHelper.FILTER_ON, //
                     StaticHelper.FILTERSIZE, //
                     scale, //
-                    WaitingTimesElement.WAITTIMES_LABELS, //
+                    Quantiles.LBL, //
                     xAxisLabel, //
                     yAxisLabel, //
                     wt.time, //

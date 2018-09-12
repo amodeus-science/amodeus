@@ -14,7 +14,8 @@ public enum DriveTimeImages implements AnalysisExport {
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorScheme colorScheme) {
         TravelTimeAnalysis travelTimeAnalysis = analysisSummary.getTravelTimeAnalysis();
-        HistogramReportFigure.of(travelTimeAnalysis.getDriveTimes(), travelTimeAnalysis.getDrveAggrgte().Get(2), //
+        HistogramReportFigure.of(PositiveSubVector.of(travelTimeAnalysis.getDriveTimes()), //
+                travelTimeAnalysis.getDrveAggrgte().Get(2), //
                 colorScheme, relativeDirectory, "Number of Requests per Drive Time", "Drive Times [s]", FILENAME);
     }
 }

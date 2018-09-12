@@ -163,10 +163,10 @@ public class SharedRoboTaxiTest {
             assertTrue(d >= 0.0);//
             assertTrue(d <= ate.getWaitingTimes().maximumWaitTime);
         });
-        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getWaitingTimes().totalWaitTimeQuantile.Get(0)));
-        assertTrue(Scalars.lessEquals(ate.getWaitingTimes().totalWaitTimeQuantile.Get(0), ate.getWaitingTimes().totalWaitTimeQuantile.Get(1)));
-        assertTrue(Scalars.lessEquals(ate.getWaitingTimes().totalWaitTimeQuantile.Get(1), ate.getWaitingTimes().totalWaitTimeQuantile.Get(2)));
-        assertTrue(Scalars.lessEquals(ate.getWaitingTimes().totalWaitTimeMean, ate.getWaitingTimes().totalWaitTimeQuantile.Get(2)));
+        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getWaitingTimes().ttlWaitTQuantile.Get(0)));
+        assertTrue(Scalars.lessEquals(ate.getWaitingTimes().ttlWaitTQuantile.Get(0), ate.getWaitingTimes().ttlWaitTQuantile.Get(1)));
+        assertTrue(Scalars.lessEquals(ate.getWaitingTimes().ttlWaitTQuantile.Get(1), ate.getWaitingTimes().ttlWaitTQuantile.Get(2)));
+        assertTrue(Scalars.lessEquals(ate.getWaitingTimes().totalWaitTimeMean, ate.getWaitingTimes().ttlWaitTQuantile.Get(2)));
         assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getWaitingTimes().totalWaitTimeMean));
 
         /** presence of plot files */

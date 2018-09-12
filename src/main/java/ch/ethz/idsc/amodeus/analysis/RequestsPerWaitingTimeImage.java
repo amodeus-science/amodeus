@@ -44,7 +44,7 @@ public enum RequestsPerWaitingTimeImage implements AnalysisExport {
                     "Number of Requests per Wait Time", //
                     waitBinSize.number().doubleValue(), //
                     "% of requests", //
-                    "Waiting Times [s]", //
+                    "Wait Times [s]", //
                     DiagramSettings.WIDTH, DiagramSettings.HEIGHT, colorScheme);
         } catch (Exception e) {
             System.err.println("Plot of the Wait Times per Requests Failed");

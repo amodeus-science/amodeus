@@ -16,6 +16,14 @@ import org.matsim.core.config.ConfigUtils;
 
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisElement;
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
+import ch.ethz.idsc.amodeus.analysis.element.BinnedWaitingTimesImage;
+import ch.ethz.idsc.amodeus.analysis.element.DistanceDistributionOverDayImage;
+import ch.ethz.idsc.amodeus.analysis.element.DriveTimeHtml;
+import ch.ethz.idsc.amodeus.analysis.element.OccupancyDistanceRatiosImage;
+import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionImage;
+import ch.ethz.idsc.amodeus.analysis.element.TotalJourneyTimeHtml;
+import ch.ethz.idsc.amodeus.analysis.element.TravelTimeExport;
+import ch.ethz.idsc.amodeus.analysis.element.WaitTimesHtml;
 import ch.ethz.idsc.amodeus.analysis.plot.ChartTheme;
 import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
 import ch.ethz.idsc.amodeus.analysis.report.AnalysisReport;
@@ -27,9 +35,8 @@ import ch.ethz.idsc.amodeus.analysis.report.ScenarioParametersHtml;
 import ch.ethz.idsc.amodeus.analysis.report.SimulationInformationHtml;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifier;
-import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifiersAmodeus;
+import ch.ethz.idsc.amodeus.analysis.report.TtlValIdent;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValues;
-import ch.ethz.idsc.amodeus.analysis.report.WaitingTimesHtml;
 import ch.ethz.idsc.amodeus.data.ReferenceFrame;
 import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
 import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
@@ -99,7 +106,7 @@ public class Analysis {
     private final TotalValues totalValues;
     private final ColorScheme colorScheme;
     private final ChartTheme chartTheme;
-    private final Set<String> allAmodeusTotalValueIdentifiers = TotalValueIdentifiersAmodeus.getAllIdentifiers();
+    private final Set<String> allAmodeusTotalValueIdentifiers = TtlValIdent.getAllIdentifiers();
 
     /** Constructor of the Analysis Class can be called with any combination of null
      * and the respective parameter.
@@ -168,6 +175,7 @@ public class Analysis {
         analysisElements.add(analysisSummary.getStatusDistribution());
         analysisElements.add(analysisSummary.getWaitingTimes());
         analysisElements.add(analysisSummary.getDistanceElement());
+        analysisElements.add(analysisSummary.getTravelTimeAnalysis());
 
         analysisExports.add(BinnedWaitingTimesImage.INSTANCE);
         analysisExports.add(DistanceDistributionOverDayImage.INSTANCE);
@@ -176,19 +184,24 @@ public class Analysis {
         analysisExports.add(StackedDistanceChartImage.INSTANCE);
         analysisExports.add(StatusDistributionImage.INSTANCE);
         analysisExports.add(ScenarioParametersExport.INSTANCE);
+        analysisExports.add(DriveTimeImages.INSTANCE);
+        analysisExports.add(TotalJourneyTimeImage.INSTANCE);
 
         analysisExports.add(DistancesOverDayTable.INSTANCE);
         analysisExports.add(DistancesRatiosTable.INSTANCE);
         analysisExports.add(WaitingTimesTable.INSTANCE);
         analysisExports.add(StatusDistributionTable.INSTANCE);
         analysisExports.add(VirtualNetworkExport.INSTANCE);
+        analysisExports.add(TravelTimeExport.INSTANCE);
 
         // default list of analysis reports
         htmlReport = new HtmlReport(configFile, outputDirectory, scenOptions);
         htmlReport.addHtmlReportElement(ScenarioParametersHtml.INSTANCE);
         htmlReport.addHtmlReportElement(SimulationInformationHtml.INSTANCE);
         htmlReport.addHtmlReportElement(DistanceElementHtml.INSTANCE);
-        htmlReport.addHtmlReportElement(WaitingTimesHtml.INSTANCE);
+        htmlReport.addHtmlReportElement(WaitTimesHtml.INSTANCE);
+        htmlReport.addHtmlReportElement(DriveTimeHtml.INSTANCE);
+        htmlReport.addHtmlReportElement(TotalJourneyTimeHtml.INSTANCE);
         htmlReport.addHtmlReportElement(FleetEfficiencyHtml.INSTANCE);
 
         analysisReports.add(htmlReport);
@@ -227,12 +240,6 @@ public class Analysis {
         }
         totalValues.append(totalValueAppender);
     }
-
-    // public void addCostAnalysis(RoboTaxiCostFunction roboTaxiCostFunction) {
-    // FleetCostElement fleetCostElement = new FleetCostElement(roboTaxiCostFunction);
-    // analysisExports.add(fleetCostElement);
-    // totalValues.append(fleetCostElement);
-    // }
 
     public void run() throws Exception {
         // Iteration over all Simulation Objects

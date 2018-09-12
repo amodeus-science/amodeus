@@ -11,7 +11,7 @@ import java.util.stream.IntStream;
 
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifier;
-import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifiersAmodeus;
+import ch.ethz.idsc.amodeus.analysis.report.TtlValIdent;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.net.VehicleContainer;
@@ -118,13 +118,13 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
 
     @Override
     public Map<TotalValueIdentifier, String> getTotalValues() {
-        totalValues.put(TotalValueIdentifiersAmodeus.TOTALROBOTAXIDISTANCE, String.valueOf(totalDistance));
-        totalValues.put(TotalValueIdentifiersAmodeus.TOTALROBOTAXIDISTANCEPICKU, String.valueOf(totalDistancePicku));
-        totalValues.put(TotalValueIdentifiersAmodeus.TOTALROBOTAXIDISTANCEWTCST, String.valueOf(totalDistanceWtCst));
-        totalValues.put(TotalValueIdentifiersAmodeus.TOTALROBOTAXIDISTANCEREB, String.valueOf(totalDistanceRebal));
-        totalValues.put(TotalValueIdentifiersAmodeus.DISTANCERATIO, String.valueOf(totalDistanceRatio));
-        totalValues.put(TotalValueIdentifiersAmodeus.OCCUPANCYRATIO, String.valueOf(avgOccupancy));
-        totalValues.put(TotalValueIdentifiersAmodeus.AVGTRIPDISTANCE, String.valueOf(avgTripDistance));
+        totalValues.put(TtlValIdent.TOTALROBOTAXIDISTANCE, String.valueOf(totalDistance));
+        totalValues.put(TtlValIdent.TOTALROBOTAXIDISTANCEPICKU, String.valueOf(totalDistancePicku));
+        totalValues.put(TtlValIdent.TOTALROBOTAXIDISTANCEWTCST, String.valueOf(totalDistanceWtCst));
+        totalValues.put(TtlValIdent.TOTALROBOTAXIDISTANCEREB, String.valueOf(totalDistanceRebal));
+        totalValues.put(TtlValIdent.DISTANCERATIO, String.valueOf(totalDistanceRatio));
+        totalValues.put(TtlValIdent.OCCUPANCYRATIO, String.valueOf(avgOccupancy));
+        totalValues.put(TtlValIdent.AVGTRIPDISTANCE, String.valueOf(avgTripDistance));
         return totalValues;
     }
 

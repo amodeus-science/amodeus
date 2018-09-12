@@ -15,7 +15,7 @@ public enum TotalJourneyTimeImage implements AnalysisExport {
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorScheme colorScheme) {
         TravelTimeAnalysis travelTimeAnalysis = analysisSummary.getTravelTimeAnalysis();
-        HistogramReportFigure.of(travelTimeAnalysis.getTotalJourneyTimes(), travelTimeAnalysis.getTotJAggrgte().Get(2), //
+        HistogramReportFigure.of(PositiveSubVector.of(travelTimeAnalysis.getTotalJourneyTimes()), travelTimeAnalysis.getTotJAggrgte().Get(2), //
                 colorScheme, relativeDirectory, "Number of Requests per Total Journey Time", "Total Journey Times [s]", FILENAME);
     }
 }
