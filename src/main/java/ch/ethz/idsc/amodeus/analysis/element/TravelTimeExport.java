@@ -14,7 +14,7 @@ import ch.ethz.idsc.tensor.Tensors;
 public enum TravelTimeExport implements AnalysisExport {
     INSTANCE;
 
-    private final String identifier = "requestTimeStamps";
+    private final String identifier = "trvlTimeRqstInfo";
 
     @Override
     public void summaryTarget(AnalysisSummary anlysSmry, File relDir, ColorScheme cScheme) {
@@ -26,14 +26,10 @@ public enum TravelTimeExport implements AnalysisExport {
             UnitSaveUtils.saveFile(travelTime.requstStmps.toTable(), identifier, relDir);
             File dataFolder = new File(relDir, identifier);
             GlobalAssert.that(dataFolder.isDirectory());
-            SaveFormats.CSV.save(//
-                    Tensors.fromString("{\"request index\",\"submission time\",\"assignment time\",\"pickup time\",\"dropoff time\"}"), //
+            SaveFormats.CSV.save(Tensors.fromString("request index, submission time, assignment time, pickup time, dropoff time"), //
                     dataFolder, "description");
-
-            /** figures */
-
         } catch (Exception e) {
-            System.out.println("Error saving the requestTimeStamps");
+            System.err.println("Error saving the travel time information for every request.");
             e.printStackTrace(System.out);
         }
     }

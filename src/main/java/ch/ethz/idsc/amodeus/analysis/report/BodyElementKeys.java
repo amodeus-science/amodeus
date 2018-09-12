@@ -6,7 +6,5 @@ public enum BodyElementKeys {
     public static final String SIMULATIONINFORMATION = "Simulation Information";
     public static final String AGGREGATERESULTS = "Aggregated Results";
     public static final String JOURNEYTIMES = "Journey Times";
-//    public static final String TRAVELTIMES = "Travel Times";
-//    public static final String TOTJRNTIMES = "Total Journey Times";
     public static final String FLEETEFFICIENCY = "Fleet Efficiency";
 }

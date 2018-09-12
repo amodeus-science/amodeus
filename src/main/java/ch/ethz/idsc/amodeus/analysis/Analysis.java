@@ -23,6 +23,7 @@ import ch.ethz.idsc.amodeus.analysis.element.OccupancyDistanceRatiosImage;
 import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionImage;
 import ch.ethz.idsc.amodeus.analysis.element.TotalJourneyTimeHtml;
 import ch.ethz.idsc.amodeus.analysis.element.TravelTimeExport;
+import ch.ethz.idsc.amodeus.analysis.element.WaitTimeHtmlNew;
 import ch.ethz.idsc.amodeus.analysis.element.WaitTimesHtml;
 import ch.ethz.idsc.amodeus.analysis.plot.ChartTheme;
 import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
@@ -200,6 +201,7 @@ public class Analysis {
         htmlReport.addHtmlReportElement(SimulationInformationHtml.INSTANCE);
         htmlReport.addHtmlReportElement(DistanceElementHtml.INSTANCE);
         htmlReport.addHtmlReportElement(WaitTimesHtml.INSTANCE);
+        htmlReport.addHtmlReportElement(WaitTimeHtmlNew.INSTANCE);
         htmlReport.addHtmlReportElement(DriveTimeHtml.INSTANCE);
         htmlReport.addHtmlReportElement(TotalJourneyTimeHtml.INSTANCE);
         htmlReport.addHtmlReportElement(FleetEfficiencyHtml.INSTANCE);
