@@ -23,8 +23,7 @@ import ch.ethz.idsc.amodeus.analysis.element.OccupancyDistanceRatiosImage;
 import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionImage;
 import ch.ethz.idsc.amodeus.analysis.element.TotalJourneyTimeHtml;
 import ch.ethz.idsc.amodeus.analysis.element.TravelTimeExport;
-import ch.ethz.idsc.amodeus.analysis.element.WaitTimeHtmlNew;
-import ch.ethz.idsc.amodeus.analysis.element.WaitTimesHtml;
+import ch.ethz.idsc.amodeus.analysis.element.WaitTimeHtml;
 import ch.ethz.idsc.amodeus.analysis.plot.ChartTheme;
 import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
 import ch.ethz.idsc.amodeus.analysis.report.AnalysisReport;
@@ -36,8 +35,8 @@ import ch.ethz.idsc.amodeus.analysis.report.ScenarioParametersHtml;
 import ch.ethz.idsc.amodeus.analysis.report.SimulationInformationHtml;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifier;
-import ch.ethz.idsc.amodeus.analysis.report.TtlValIdent;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValues;
+import ch.ethz.idsc.amodeus.analysis.report.TtlValIdent;
 import ch.ethz.idsc.amodeus.data.ReferenceFrame;
 import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
 import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
@@ -174,17 +173,16 @@ public class Analysis {
         // default List of Analysis Elements which will be loaded
         analysisElements.add(analysisSummary.getSimulationInformationElement());
         analysisElements.add(analysisSummary.getStatusDistribution());
-        analysisElements.add(analysisSummary.getWaitingTimes());
         analysisElements.add(analysisSummary.getDistanceElement());
         analysisElements.add(analysisSummary.getTravelTimeAnalysis());
 
         analysisExports.add(BinnedWaitingTimesImage.INSTANCE);
         analysisExports.add(DistanceDistributionOverDayImage.INSTANCE);
         analysisExports.add(OccupancyDistanceRatiosImage.INSTANCE);
-        analysisExports.add(RequestsPerWaitingTimeImage.INSTANCE);
         analysisExports.add(StackedDistanceChartImage.INSTANCE);
         analysisExports.add(StatusDistributionImage.INSTANCE);
         analysisExports.add(ScenarioParametersExport.INSTANCE);
+        analysisExports.add(WaitTimeHistoImage.INSTANCE);
         analysisExports.add(DriveTimeImages.INSTANCE);
         analysisExports.add(TotalJourneyTimeImage.INSTANCE);
 
@@ -200,8 +198,7 @@ public class Analysis {
         htmlReport.addHtmlReportElement(ScenarioParametersHtml.INSTANCE);
         htmlReport.addHtmlReportElement(SimulationInformationHtml.INSTANCE);
         htmlReport.addHtmlReportElement(DistanceElementHtml.INSTANCE);
-        htmlReport.addHtmlReportElement(WaitTimesHtml.INSTANCE);
-        htmlReport.addHtmlReportElement(WaitTimeHtmlNew.INSTANCE);
+        htmlReport.addHtmlReportElement(WaitTimeHtml.INSTANCE);
         htmlReport.addHtmlReportElement(DriveTimeHtml.INSTANCE);
         htmlReport.addHtmlReportElement(TotalJourneyTimeHtml.INSTANCE);
         htmlReport.addHtmlReportElement(FleetEfficiencyHtml.INSTANCE);
@@ -212,7 +209,7 @@ public class Analysis {
         totalValues.append(analysisSummary.getScenarioParameters());
         totalValues.append(analysisSummary.getSimulationInformationElement());
         totalValues.append(analysisSummary.getStatusDistribution());
-        totalValues.append(analysisSummary.getWaitingTimes());
+        totalValues.append(analysisSummary.getTravelTimeAnalysis());
         totalValues.append(analysisSummary.getDistanceElement());
         analysisReports.add(totalValues);
 
@@ -244,7 +241,7 @@ public class Analysis {
     }
 
     public void run() throws Exception {
-        // Iteration over all Simulation Objects
+        /** iterate simulation objects */
         for (int index = 0; index < size; ++index) {
             SimulationObject simulationObject = storageSupplier.getSimulationObject(index);
             analysisElements.stream().forEach(analysisElement -> analysisElement.register(simulationObject));
@@ -252,14 +249,13 @@ public class Analysis {
                 System.out.println(simulationObject.now);
         }
 
-        // create plots and carry out other analysis on the data for each Analysis
-        // Element
+        /** this tep includes processing after all time steps are loaded */
         analysisElements.forEach(AnalysisElement::consolidate);
 
         for (AnalysisExport analysisExport : analysisExports)
             analysisExport.summaryTarget(analysisSummary, dataDirectory, colorScheme);
 
-        // Generate the Reports
+        /** generate reports */
         analysisReports.forEach(analysisReport -> analysisReport.generate(analysisSummary));
     }
 }

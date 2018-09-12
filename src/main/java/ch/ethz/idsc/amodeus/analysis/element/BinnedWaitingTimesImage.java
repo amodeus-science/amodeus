@@ -14,32 +14,19 @@ public enum BinnedWaitingTimesImage implements AnalysisExport {
 
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorScheme colorScheme) {
-        WaitingTimesElement wt = analysisSummary.getWaitingTimes();
-
+        TravelTimeAnalysis tta = analysisSummary.getTravelTimeAnalysis();
         String xAxisLabel = "Time";
         String yAxisLabel = "Waiting Times [min]";
         double scalingFactor = 60.0; // [s] to [min]
         double[] scale = new double[] { 1.0 / scalingFactor, 1.0 / scalingFactor, 1.0 / scalingFactor, 1.0 / scalingFactor };
 
         try {
-            TimeChart.of( //
-                    relativeDirectory, //
-                    FILENAME, //
-                    "Binned Waiting Times", //
-                    StaticHelper.FILTER_ON, //
-                    StaticHelper.FILTERSIZE, //
-                    scale, //
-                    Quantiles.LBL, //
-                    xAxisLabel, //
-                    yAxisLabel, //
-                    wt.time, //
-                    wt.waitTimePlotValues, //
-                    new Double[] { 0.0, wt.maximumWaitTime / scalingFactor }, colorScheme);
+            TimeChart.of(relativeDirectory, FILENAME, "Binned Waiting Times", StaticHelper.FILTER_ON, StaticHelper.FILTERSIZE, //
+                    scale, Quantiles.LBL, xAxisLabel, yAxisLabel, tta.time, tta.waitTimePlotValues, //
+                    new Double[] { 0.0, tta.getWaitAggrgte().Get(2).number().doubleValue() / scalingFactor }, colorScheme);
         } catch (Exception e) {
             System.err.println("Binned Waiting Times Plot was unsucessfull!");
             e.printStackTrace();
         }
-
     }
-
 }

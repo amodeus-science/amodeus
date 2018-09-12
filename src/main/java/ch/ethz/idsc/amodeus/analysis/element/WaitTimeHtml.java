@@ -10,7 +10,7 @@ import ch.ethz.idsc.amodeus.analysis.WaitTimeHistoImage;
 import ch.ethz.idsc.amodeus.analysis.report.HtmlBodyElement;
 import ch.ethz.idsc.amodeus.analysis.report.HtmlReportElement;
 
-public enum WaitTimeHtmlNew implements HtmlReportElement {
+public enum WaitTimeHtml implements HtmlReportElement {
     INSTANCE;
 
     private static final String IMAGE_FOLDER = "../data"; // relative to report folder
@@ -41,7 +41,6 @@ public enum WaitTimeHtmlNew implements HtmlReportElement {
 
         // TODO also distribution over time bins?
         // aRElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + RequestsPerWaitingTimeImage.FILENAME + ".png", 800, 600);
-
         Map<String, HtmlBodyElement> bodyElements = new HashMap<>();
         bodyElements.put("", aRElement);
         return bodyElements;

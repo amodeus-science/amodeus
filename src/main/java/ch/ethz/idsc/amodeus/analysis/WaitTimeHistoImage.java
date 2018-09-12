@@ -18,5 +18,4 @@ public enum WaitTimeHistoImage implements AnalysisExport {
                 travelTimeAnalysis.getWaitAggrgte().Get(2), //
                 colorScheme, relativeDirectory, "Number of Requests per Wait Time", "Wait Times [s]", FILENAME);
     }
-
 }
