@@ -22,8 +22,13 @@ public class TravelHistory {
     public final int toLinkIndx;
     public final Scalar submsnTime;
     private Scalar asgnmtTime = defaultValue;
+    /** the pickup process, typically 10[s], is not counted as waiting */
+    private Scalar waitEndTme = defaultValue;
     private Scalar pickupTime = defaultValue;
     private Scalar drpOffTime = defaultValue;
+
+    // --
+    private Scalar timePrev = defaultValue;
 
     public TravelHistory(RequestContainer requestContainer, long now) {
         fromLinkIndx = requestContainer.fromLinkIndex;
@@ -48,21 +53,23 @@ public class TravelHistory {
             if (asgnmtTime.equals(defaultValue)) {
                 asgnmtTime = now.subtract(Quantity.of(1, SI.SECOND));
             }
+            waitEndTme = timePrev;
             pickupTime = now;
             break;
         case DROPOFF:
-            GlobalAssert.that(Scalars.lessEquals(pickupTime, now));
+            GlobalAssert.that(Scalars.lessEquals(waitEndTme, now));
             if (asgnmtTime.equals(defaultValue)) {
                 asgnmtTime = now.subtract(Quantity.of(2, SI.SECOND));
             }
-            if (pickupTime == defaultValue) {
-                pickupTime = now.subtract(Quantity.of(1, SI.SECOND));
+            if (waitEndTme == defaultValue) {
+                waitEndTme = now.subtract(Quantity.of(1, SI.SECOND));
             }
             drpOffTime = now;
             break;
         default:
             break;
         }
+        timePrev = now;
     }
 
     public Scalar getTotalTravelTime() {
@@ -74,17 +81,17 @@ public class TravelHistory {
     }
 
     public Scalar getDriveTime() {
-        if (drpOffTime.equals(defaultValue) || pickupTime.equals(defaultValue))
+        if (drpOffTime.equals(defaultValue) || waitEndTme.equals(defaultValue))
             return defaultValue;
-        Scalar driveTime = drpOffTime.subtract(pickupTime);
+        Scalar driveTime = drpOffTime.subtract(waitEndTme);
         GlobalAssert.that(Scalars.lessEquals(Quantity.of(0, SI.SECOND), driveTime));
         return driveTime;
     }
 
     public Scalar getWaitTime() {
-        if (pickupTime.equals(defaultValue))
+        if (waitEndTme.equals(defaultValue))
             return defaultValue;
-        Scalar waitTime = pickupTime.subtract(submsnTime);
+        Scalar waitTime = waitEndTme.subtract(submsnTime);
         GlobalAssert.that(Scalars.lessEquals(Quantity.of(0, SI.SECOND), waitTime));
         return waitTime;
     }
@@ -97,8 +104,8 @@ public class TravelHistory {
         return drpOffTime;
     }
 
-    public Scalar getPickupTime() {
-        return pickupTime;
+    public Scalar getWaitEndTime() {
+        return waitEndTme;
     }
 
     public void isConsistent() {

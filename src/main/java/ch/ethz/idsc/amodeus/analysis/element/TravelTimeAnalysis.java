@@ -55,7 +55,7 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
                     travelHistory.getDriveTime(), travelHistory.getTotalTravelTime()));
             requstStmps.appendRow(Tensors.of( //
                     RealScalar.of(travelHistory.reqIndx), travelHistory.submsnTime, //
-                    travelHistory.getAssignmentTime(), travelHistory.getPickupTime(), //
+                    travelHistory.getAssignmentTime(), travelHistory.getWaitEndTime(), //
                     travelHistory.getDropOffTime()));
         }
         /** aggregate information {quantile1, quantile2, quantile3, mean, maximum} */
