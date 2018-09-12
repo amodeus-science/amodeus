@@ -32,9 +32,6 @@ import ch.ethz.idsc.tensor.sca.Round;
         /** for very low values, resolve in decimal steps */
         if (((Quantity) binSize).value().equals(RealScalar.ZERO))
             binSize = maxVal.multiply(binNmbrScaling);
-        System.out.println("binNmbrScaling: " + binNmbrScaling);
-        System.out.println("maxVal: " + maxVal);
-        System.out.println("binSize: " + binSize);
         Tensor binCounter = BinCounts.of(vals, binSize);
         binCounter = binCounter.divide(RealScalar.of(vals.length()));
         try {

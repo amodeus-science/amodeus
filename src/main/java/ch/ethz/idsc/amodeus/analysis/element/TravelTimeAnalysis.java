@@ -10,12 +10,15 @@ import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifier;
 import ch.ethz.idsc.amodeus.analysis.report.TtlValIdent;
 import ch.ethz.idsc.amodeus.net.RequestContainer;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
+import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Join;
 import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.io.TableBuilder;
+import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.red.Max;
 import ch.ethz.idsc.tensor.red.Mean;
 import ch.ethz.idsc.tensor.red.Quantile;
@@ -30,6 +33,7 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
     private Tensor waitTAgg;
     private Tensor drveAgg;
     private Tensor totJTAgg;
+    private Scalar tLast = Quantity.of(0, SI.SECOND);
 
     /** time series during day */
     public final Tensor time = Tensors.empty();
@@ -55,14 +59,16 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
         waitTimePlotValues.append(Join.of(StaticHelper.quantiles(submission, Quantiles.SET), //
                 Tensors.vector(StaticHelper.means(submission).number().doubleValue())));
 
+        /** maximum time */
+        tLast = Quantity.of(simulationObject.now, SI.SECOND);
     }
 
     @Override
     public void consolidate() {
         for (TravelHistory travelHistory : travelHistories.values()) {
             travelTimes.appendRow(Tensors.of( //
-                    RealScalar.of(travelHistory.reqIndx), travelHistory.getWaitTime(), //
-                    travelHistory.getDriveTime(), travelHistory.getTotalTravelTime()));
+                    RealScalar.of(travelHistory.reqIndx), travelHistory.getWaitTime(tLast), //
+                    travelHistory.getDriveTime(tLast), travelHistory.getTotalTravelTime(tLast)));
             requstStmps.appendRow(Tensors.of( //
                     RealScalar.of(travelHistory.reqIndx), travelHistory.submsnTime, //
                     travelHistory.getAssignmentTime(), travelHistory.getWaitEndTime(), //
@@ -80,7 +86,6 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
                 getTotalJourneyTimes().flatten(-1).reduce(Max::of).get().Get());
 
         travelHistories.values().forEach(th -> th.isConsistent());
-
     }
 
     /** @return {@link Tensor} containing all recorded wait times of the simulation */

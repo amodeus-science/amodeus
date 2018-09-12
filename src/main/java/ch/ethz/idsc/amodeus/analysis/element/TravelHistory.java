@@ -72,25 +72,25 @@ public class TravelHistory {
         timePrev = now;
     }
 
-    public Scalar getTotalTravelTime() {
+    public Scalar getTotalTravelTime(Scalar tLast) {
         if (drpOffTime.equals(defaultValue))
-            return defaultValue;
+            return tLast.subtract(submsnTime);
         Scalar totalTravelTime = drpOffTime.subtract(submsnTime);
         GlobalAssert.that(Scalars.lessEquals(Quantity.of(0, SI.SECOND), totalTravelTime));
         return totalTravelTime;
     }
 
-    public Scalar getDriveTime() {
-        if (drpOffTime.equals(defaultValue) || waitEndTme.equals(defaultValue))
-            return defaultValue;
+    public Scalar getDriveTime(Scalar tLast) {
+        if (drpOffTime.equals(defaultValue) && !waitEndTme.equals(defaultValue))
+            return tLast.subtract(waitEndTme);
         Scalar driveTime = drpOffTime.subtract(waitEndTme);
         GlobalAssert.that(Scalars.lessEquals(Quantity.of(0, SI.SECOND), driveTime));
         return driveTime;
     }
 
-    public Scalar getWaitTime() {
+    public Scalar getWaitTime(Scalar tLast) {
         if (waitEndTme.equals(defaultValue))
-            return defaultValue;
+            return tLast.subtract(submsnTime);
         Scalar waitTime = waitEndTme.subtract(submsnTime);
         GlobalAssert.that(Scalars.lessEquals(Quantity.of(0, SI.SECOND), waitTime));
         return waitTime;
@@ -110,7 +110,10 @@ public class TravelHistory {
 
     public void isConsistent() {
         if (!drpOffTime.equals(defaultValue)) {
-            GlobalAssert.that(getTotalTravelTime().equals(getWaitTime().add(getDriveTime())));
+            /** default value used for convenience as this is only called when tLast is not used in
+             * any of the three functions. */
+            GlobalAssert.that(getTotalTravelTime(defaultValue)//
+                    .equals(getWaitTime(defaultValue).add(getDriveTime(defaultValue))));
         }
     }
 }
