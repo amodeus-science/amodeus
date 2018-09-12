@@ -4,7 +4,7 @@ package ch.ethz.idsc.amodeus.analysis.report;
 import java.util.HashSet;
 import java.util.Set;
 
-public enum TotalValueIdentifiersAmodeus implements TotalValueIdentifier {
+public enum TtlValIdent implements TotalValueIdentifier {
 
     // General, Dispatchers, Generators
     TIMESTAMP("timeStamp"), //
@@ -20,11 +20,11 @@ public enum TotalValueIdentifiersAmodeus implements TotalValueIdentifier {
     POPULATIONSIZE("populationSize"), //
 
     // Wait Times
-    MEANWAITINGTIME("MeanWaitingTime"), //
-    WAITTIMEQUANTILE1("WaitTimeQuantile1"), //
-    WAITTIMEQUANTILE2("WaitTimeQuantile2"), //
-    WAITTIMEQUANTILE3("WaitTimeQuantile3"), //
-    WAITTIMEMAX("waitTimeMax"), //
+    WAITTMEA("MeanWaitingTime"), //
+    WAITTQU1("WaitTimeQuantile1"), //
+    WAITTQU2("WaitTimeQuantile2"), //
+    WAITTQU3("WaitTimeQuantile3"), //
+    WAITTMAX("waitTimeMax"), //
 
     // Drive Times
     // MEANDRIVETIME("MeanDriveTime"), //
@@ -39,6 +39,12 @@ public enum TotalValueIdentifiersAmodeus implements TotalValueIdentifier {
     DISTANCERATIO("distanceRatio"), //
     OCCUPANCYRATIO("occupancyRatio"), //
 
+    AVERAGEJOURNEYTIMEROBOTAXI("AverageJourneyTimeRoboTaxi"), //
+//    // MEANPEAKWAITTIME("MeanPeakWaitTime"), //
+//    // MEANOFFPEAKWAITTIME("MeanOffPeakWaitTime"), //
+//
+    MEANDRIVETIME("MeanDriveTime"), //
+
     // Velocities
     // AVERAGEROBOTAXIVELOCITY("AverageRobotaxiVelocity"), //
 
@@ -48,7 +54,7 @@ public enum TotalValueIdentifiersAmodeus implements TotalValueIdentifier {
 
     private final String identifier;
 
-    private TotalValueIdentifiersAmodeus(String identifier) {
+    private TtlValIdent(String identifier) {
         this.identifier = identifier;
     }
 
@@ -59,7 +65,7 @@ public enum TotalValueIdentifiersAmodeus implements TotalValueIdentifier {
 
     public static Set<String> getAllIdentifiers() {
         Set<String> allIdentifiers = new HashSet<>();
-        for (TotalValueIdentifiersAmodeus totalValueIdentifiersAmodeus : values()) {
+        for (TtlValIdent totalValueIdentifiersAmodeus : values()) {
             allIdentifiers.add(totalValueIdentifiersAmodeus.identifier);
         }
         return allIdentifiers;
