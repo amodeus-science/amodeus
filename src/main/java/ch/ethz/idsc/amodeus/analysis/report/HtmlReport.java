@@ -16,7 +16,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 public class HtmlReport implements AnalysisReport {
     private static final String REPORT_NAME = "report";
-    private static final String TITLE = "RoboTaxi Simulation Report";
+    private static final String TITLE = "AMoDeus Simulation Report";
     // ---
     private final File reportFolder;
     private final HtmlGenerator htmlGenerator;

@@ -1,11 +1,10 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.analysis;
+package ch.ethz.idsc.amodeus.analysis.element;
 
 import java.io.File;
 import java.util.Arrays;
 
-import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
-import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionElement;
+import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
 import ch.ethz.idsc.amodeus.analysis.plot.StackedTimeChart;
 
