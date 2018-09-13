@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RequestStatus;
@@ -38,6 +39,12 @@ public class SimulationObjectCompiler {
 
     public void insertRequests(Collection<AVRequest> requests, RequestStatus status) {
         requests.stream().forEach(r -> insertRequest(r, status));
+    }
+    
+    public void insertRequests(Map<AVRequest, RequestStatus> requestStatuses) {
+        for (Entry<AVRequest, RequestStatus> entry : requestStatuses.entrySet()) {
+            insertRequest(entry.getKey(), entry.getValue());
+        }
     }
 
     public void insertVehicles(List<RoboTaxi> robotaxis) {

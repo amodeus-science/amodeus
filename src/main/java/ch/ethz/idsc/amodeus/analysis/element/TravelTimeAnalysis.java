@@ -11,6 +11,7 @@ import ch.ethz.idsc.amodeus.analysis.report.TtlValIdent;
 import ch.ethz.idsc.amodeus.net.RequestContainer;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.util.math.SI;
+import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -38,6 +39,7 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
     /** time series during day */
     public final Tensor time = Tensors.empty();
     public final Tensor waitTimePlotValues = Tensors.empty();
+    public final Tensor waitingCustomers = Tensors.empty();
 
     @Override
     public void register(SimulationObject simulationObject) {
@@ -50,14 +52,16 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
             else
                 travelHistories.put(requestIndex, new TravelHistory(requestContainer, simulationObject.now));
         }
-        /** analyze the distribution of wat times at every time instant */
-        /** Get the TimeStep */
+        /** analyze the distribution of wait times at every time instant
+         * and the number of waiting customers */
         time.append(RealScalar.of(simulationObject.now));
         Tensor submission = Tensor.of(simulationObject.requests.stream()//
                 .filter(rc -> rc.requestStatus.unServiced())//
                 .map(rc -> RealScalar.of(simulationObject.now - rc.submissionTime)));
         waitTimePlotValues.append(Join.of(StaticHelper.quantiles(submission, Quantiles.SET), //
                 Tensors.vector(StaticHelper.means(submission).number().doubleValue())));
+        waitingCustomers.append(RationalScalar.of(simulationObject.requests.stream()//
+                .filter(rc -> rc.requestStatus.unServiced()).count(), 1));//
 
         /** maximum time */
         tLast = Quantity.of(simulationObject.now, SI.SECOND);

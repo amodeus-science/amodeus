@@ -24,6 +24,7 @@ import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionImage;
 import ch.ethz.idsc.amodeus.analysis.element.TotalJourneyTimeHtml;
 import ch.ethz.idsc.amodeus.analysis.element.TravelTimeExport;
 import ch.ethz.idsc.amodeus.analysis.element.WaitTimeHtml;
+import ch.ethz.idsc.amodeus.analysis.element.WaitingCustomerExport;
 import ch.ethz.idsc.amodeus.analysis.plot.ChartTheme;
 import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
 import ch.ethz.idsc.amodeus.analysis.report.AnalysisReport;
@@ -192,6 +193,7 @@ public class Analysis {
         analysisExports.add(StatusDistributionTable.INSTANCE);
         analysisExports.add(VirtualNetworkExport.INSTANCE);
         analysisExports.add(TravelTimeExport.INSTANCE);
+        analysisExports.add(WaitingCustomerExport.INSTANCE);
 
         // default list of analysis reports
         htmlReport = new HtmlReport(configFile, outputDirectory, scenOptions);
