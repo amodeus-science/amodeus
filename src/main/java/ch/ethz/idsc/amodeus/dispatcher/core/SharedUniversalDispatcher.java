@@ -28,9 +28,9 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
-import ch.ethz.idsc.amodeus.net.SharedSimulationObjectCompiler;
 import ch.ethz.idsc.amodeus.net.SimulationDistribution;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
+import ch.ethz.idsc.amodeus.net.SimulationObjectCompiler;
 import ch.ethz.idsc.amodeus.net.SimulationObjects;
 import ch.ethz.idsc.amodeus.net.StorageUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
@@ -53,7 +53,8 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
     private final Map<AVRequest, RoboTaxi> pickupRegister = new HashMap<>(); // new RequestRegister
     private final Map<RoboTaxi, Map<String, AVRequest>> requestRegister = new HashMap<>();
     private final Set<AVRequest> periodPickedUpRequests = new HashSet<>(); // new
-    private final Set<AVRequest> periodFulfilledRequests = new HashSet<>(); // new
+    private final Set<AVRequest> periodFulfilledRequests = new HashSet<>();
+    private final Set<AVRequest> periodAssignedRequests = new HashSet<>();
                                                                             // temporaryRequestRegister
                                                                             // for fulfilled requests
     private final Map<AVRequest, RequestStatus> reqStatuses = new HashMap<>(); // Storing the Request Statuses for the
@@ -161,6 +162,9 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         if (!requestRegister.containsKey(roboTaxi)) {
             requestRegister.put(roboTaxi, new HashMap<>());
         }
+        
+        if (!pickupRegister.containsKey(avRequest))
+            periodAssignedRequests.add(avRequest);
 
         // If the request was already assigned remove it from this vehicle in the request register and update its menu;
         if (pickupRegister.containsKey(avRequest)) {
@@ -592,14 +596,17 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
     @Override
     protected final void notifySimulationSubscribers(long round_now, StorageUtils storageUtils) {
         if (publishPeriod > 0 && round_now % publishPeriod == 0) {
-            SharedSimulationObjectCompiler simulationObjectCompiler = SharedSimulationObjectCompiler.create( //
+            SimulationObjectCompiler simulationObjectCompiler = SimulationObjectCompiler.create( //
                     round_now, getInfoLine(), total_matchedRequests);
 
             simulationObjectCompiler.insertRequests(reqStatuses);
-            simulationObjectCompiler.insertFulfilledRequests(periodFulfilledRequests);
-            periodFulfilledRequests.clear();
-            simulationObjectCompiler.insertPickedUpRequests(periodPickedUpRequests);
+            simulationObjectCompiler.insertRequests(periodAssignedRequests, RequestStatus.ASSIGNED);
+            simulationObjectCompiler.insertRequests(periodPickedUpRequests, RequestStatus.PICKUP);
+            simulationObjectCompiler.insertRequests(periodFulfilledRequests, RequestStatus.DROPOFF);
+
+            periodAssignedRequests.clear();
             periodPickedUpRequests.clear();
+            periodFulfilledRequests.clear();
 
             simulationObjectCompiler.insertVehicles(getRoboTaxis());
             SimulationObject simulationObject = simulationObjectCompiler.compile();
