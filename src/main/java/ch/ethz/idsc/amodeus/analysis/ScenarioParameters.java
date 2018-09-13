@@ -20,7 +20,7 @@ import org.matsim.core.scenario.ScenarioUtils;
 
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifier;
-import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifiersAmodeus;
+import ch.ethz.idsc.amodeus.analysis.report.TtlValIdent;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
@@ -118,14 +118,14 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
 
     @Override
     public Map<TotalValueIdentifier, String> getTotalValues() {
-        totalValues.put(TotalValueIdentifiersAmodeus.DISPATCHER, dispatcher);
-        totalValues.put(TotalValueIdentifiersAmodeus.DISPATCHINGPERIOD, String.valueOf(redispatchPeriod));
-        totalValues.put(TotalValueIdentifiersAmodeus.REBALANCEPERIOD, String.valueOf(rebalancingPeriod));
-        totalValues.put(TotalValueIdentifiersAmodeus.DISTANCEHEURISTIC, String.valueOf(distanceHeuristic));
-        totalValues.put(TotalValueIdentifiersAmodeus.POPULATIONSIZE, String.valueOf(populationSize));
-        totalValues.put(TotalValueIdentifiersAmodeus.VIRTUALNODES, String.valueOf(virtualNodesCount));
-        totalValues.put(TotalValueIdentifiersAmodeus.VEHICLEGENERATOR, vehicleGenerator);
-        totalValues.put(TotalValueIdentifiersAmodeus.TIMESTAMP, date);
+        totalValues.put(TtlValIdent.DISPATCHER, dispatcher);
+        totalValues.put(TtlValIdent.DISPATCHINGPERIOD, String.valueOf(redispatchPeriod));
+        totalValues.put(TtlValIdent.REBALANCEPERIOD, String.valueOf(rebalancingPeriod));
+        totalValues.put(TtlValIdent.DISTANCEHEURISTIC, String.valueOf(distanceHeuristic));
+        totalValues.put(TtlValIdent.POPULATIONSIZE, String.valueOf(populationSize));
+        totalValues.put(TtlValIdent.VIRTUALNODES, String.valueOf(virtualNodesCount));
+        totalValues.put(TtlValIdent.VEHICLEGENERATOR, vehicleGenerator);
+        totalValues.put(TtlValIdent.TIMESTAMP, date);
 
         return totalValues;
     }

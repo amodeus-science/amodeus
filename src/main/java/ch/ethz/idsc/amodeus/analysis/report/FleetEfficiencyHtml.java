@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
-import ch.ethz.idsc.amodeus.analysis.DistanceDistributionOverDayImage;
-import ch.ethz.idsc.amodeus.analysis.OccupancyDistanceRatiosImage;
-import ch.ethz.idsc.amodeus.analysis.StatusDistributionImage;
+import ch.ethz.idsc.amodeus.analysis.element.DistanceDistributionOverDayImage;
+import ch.ethz.idsc.amodeus.analysis.element.OccupancyDistanceRatiosImage;
+import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionImage;
 
 public enum FleetEfficiencyHtml implements HtmlReportElement {
     INSTANCE;
