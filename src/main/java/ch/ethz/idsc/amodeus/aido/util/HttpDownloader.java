@@ -10,8 +10,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class HttpDownloader {
-    private static final int BUFFER_SIZE = 4096;
-
+    /** @param fileURL
+     * @param contentType
+     * @return instance of HttpDownloader to download given fileURL of given contentType */
     public static HttpDownloader download(String fileURL, ContentType contentType) {
         return new HttpDownloader(fileURL, contentType);
     }
@@ -27,7 +28,7 @@ public class HttpDownloader {
         this.contentType = contentType;
     }
 
-    /** @param file
+    /** @param file to download web content to
      * @throws IOException */
     public void to(File file) throws IOException {
         URL url = new URL(fileURL);
@@ -46,7 +47,7 @@ public class HttpDownloader {
                 System.out.println("Content-Disposition = " + disposition);
                 System.out.println("Content-Length = " + contentLength);
 
-                byte[] buffer = new byte[BUFFER_SIZE];
+                byte[] buffer = new byte[4096]; // buffer size
                 // opens input stream from the HTTP connection
                 try (InputStream inputStream = httpURLConnection.getInputStream()) {
                     // opens an output stream to save into file

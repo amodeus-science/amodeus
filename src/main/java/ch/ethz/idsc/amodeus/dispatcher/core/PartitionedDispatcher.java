@@ -46,6 +46,11 @@ public abstract class PartitionedDispatcher extends RebalancingDispatcher {
         return virtualNetwork.binToVirtualNode(getAVRequests(), AVRequest::getFromLink);
     }
 
+    /** @return {@link java.util.Map} where all {@link AVRequest} are listed at the {@link VirtualNode} where their {@link AVRequest.fromLink} is. */
+    protected Map<VirtualNode<Link>, List<AVRequest>> getVirtualNodeUnassignedRequests() {
+        return virtualNetwork.binToVirtualNode(getUnassignedAVRequests(), AVRequest::getFromLink);
+    }
+
     /** @return {@link java.util.Map} where all divertable not rebalancing {@link RoboTaxi} are listed at the {@link VirtualNode} where their {@link Link}
      *         divertableLocation is. */
     protected Map<VirtualNode<Link>, List<RoboTaxi>> getVirtualNodeDivertableNotRebalancingRoboTaxis() {

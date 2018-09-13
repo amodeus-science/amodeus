@@ -72,8 +72,13 @@ public class AmodeusViewerFrame implements Runnable {
         this(amodeusComponent, outputDirectory, outputDirectory, network);
     }
 
-    /** Constructs the {@code Demo}. */
-    public AmodeusViewerFrame(AmodeusComponent amodeusComponent, File workingDirectory, File defaultDirectory, Network network) {
+    /** Constructs the {@code Demo}.
+     * 
+     * @param amodeusComponent
+     * @param outputDirectory
+     * @param defaultDirectory TODO document difference to outputDirectory
+     * @param network */
+    public AmodeusViewerFrame(AmodeusComponent amodeusComponent, File outputDirectory, File defaultDirectory, Network network) {
         this.network = network;
         this.amodeusComponent = amodeusComponent;
         // ---
@@ -128,7 +133,7 @@ public class AmodeusViewerFrame implements Runnable {
         }
 
         // find the maximal folder depth of the simulation objects relative to the working directory
-        currentMaxDepth = SimulationFolderUtils.getMaxDepth(workingDirectory, SIMOBJ) - 1;
+        currentMaxDepth = SimulationFolderUtils.getMaxDepth(outputDirectory, SIMOBJ) - 1;
         if (currentMaxDepth < 0) {
             System.out.println("ERROR: no simulation objects found in this working directory!");
             GlobalAssert.that(false);
@@ -197,7 +202,7 @@ public class AmodeusViewerFrame implements Runnable {
                         : Cursor.DEFAULT_CURSOR));
             }
         });
-        updateSubsequentSpinnerLabels(workingDirectory, defaultDirectory, 0);
+        updateSubsequentSpinnerLabels(outputDirectory, defaultDirectory, 0);
         thread = new Thread(this);
         thread.start();
     }

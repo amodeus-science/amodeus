@@ -8,7 +8,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.matsim.api.core.v01.Scenario;
@@ -145,10 +144,4 @@ public class VehicleToVSGeneratorTester {
             assertEquals(vehicleToVSGenerator.getPlacedVehicles(), Tensors.vector(3, 3, 4));
         }
     }
-
-    @AfterClass
-    public static void cleanUp() {
-        // ---
-    }
-
 }

@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.matsim.api.core.v01.Scenario;
@@ -68,10 +67,4 @@ public class KMeansVirtualNetworkCreatorTest {
             }
         }
     }
-
-    @AfterClass
-    public static void cleanUp() {
-        // ---
-    }
-
 }

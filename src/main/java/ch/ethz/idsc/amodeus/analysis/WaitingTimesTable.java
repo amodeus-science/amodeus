@@ -4,7 +4,7 @@ package ch.ethz.idsc.amodeus.analysis;
 import java.io.File;
 
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
-import ch.ethz.idsc.amodeus.analysis.element.WaitingTimesElement;
+import ch.ethz.idsc.amodeus.analysis.element.TravelTimeAnalysis;
 import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
 import ch.ethz.idsc.tensor.io.TableBuilder;
 
@@ -13,11 +13,10 @@ public enum WaitingTimesTable implements AnalysisExport {
 
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorScheme colorScheme) {
-        WaitingTimesElement wt = analysisSummary.getWaitingTimes();
-
+        TravelTimeAnalysis tta = analysisSummary.getTravelTimeAnalysis();
         TableBuilder tableBuilder = new TableBuilder();
-        for (int index = 0; index < wt.time.length(); ++index)
-            tableBuilder.appendRow(wt.time.Get(index), wt.waitTimePlotValues.get(index));
+        for (int index = 0; index < tta.time.length(); ++index)
+            tableBuilder.appendRow(tta.time.Get(index), tta.waitTimePlotValues.get(index));
 
         try {
             SaveUtils.saveFile(tableBuilder.toTable(), "WaitingTimes", relativeDirectory);
@@ -25,5 +24,4 @@ public enum WaitingTimesTable implements AnalysisExport {
             e.printStackTrace();
         }
     }
-
 }

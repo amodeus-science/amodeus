@@ -1,6 +1,5 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.aido;
-
-import java.util.Properties;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.util.math.SI;
@@ -26,8 +25,8 @@ import ch.ethz.idsc.tensor.qty.Quantity;
     private Scalar totalWait = Quantity.of(0, SI.SECOND);
     private boolean firstTime = true;
 
-    public FleetSizeScore(Properties properties, int totReq, int fleetSize) {
-        Scalar wmean = Scalars.fromString(properties.getProperty("wmean"));
+    public FleetSizeScore(ScoreParameters scoreParameters, int totReq, int fleetSize) {
+        Scalar wmean = scoreParameters.wmean;
         wMax = wmean.multiply(RealScalar.of(totReq));
         this.fleetSize = RationalScalar.of(fleetSize, 1);
         this.scoreFinal = Quantity.of(0, SI.ONE);
