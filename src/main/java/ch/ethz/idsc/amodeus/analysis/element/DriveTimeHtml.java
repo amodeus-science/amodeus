@@ -20,21 +20,19 @@ public enum DriveTimeHtml implements HtmlReportElement {
     public Map<String, HtmlBodyElement> process(AnalysisSummary analysisSummary) {
         TravelTimeAnalysis travelTimeAnalysis = analysisSummary.getTravelTimeAnalysis();
         HtmlBodyElement aRElement = new HtmlBodyElement();
-        aRElement.getHTMLGenerator()
-                .insertTextLeft(aRElement.getHTMLGenerator().bold("Drive Times") + //
-                        "\n\t" + Quantiles.LBL[0] + //
-                        "\n\t" + Quantiles.LBL[1] + //
-                        "\n\t" + Quantiles.LBL[2] + //
-                        "\n\t" + Quantiles.LBL[3] + //
-                        "\n\tMaximum:" //
+        aRElement.getHTMLGenerator().insertTextLeft(aRElement.getHTMLGenerator().bold("Drive Times") + //
+                "\n\t" + Quantiles.LBL[0] + //
+                "\n\t" + Quantiles.LBL[1] + //
+                "\n\t" + Quantiles.LBL[2] + //
+                "\n\t" + Quantiles.LBL[3] + //
+                "\n\tMaximum:" //
         );
-        aRElement.getHTMLGenerator()
-                .insertTextLeft(" " + //
-                        "\n" + Time.writeTime(travelTimeAnalysis.getDrveAggrgte().get(0).Get(0).number().doubleValue()) + //
-                        "\n" + Time.writeTime(travelTimeAnalysis.getDrveAggrgte().get(0).Get(1).number().doubleValue()) + //
-                        "\n" + Time.writeTime(travelTimeAnalysis.getDrveAggrgte().get(0).Get(2).number().doubleValue()) + //
-                        "\n" + Time.writeTime(travelTimeAnalysis.getDrveAggrgte().Get(1).number().doubleValue()) + //
-                        "\n" + Time.writeTime(travelTimeAnalysis.getDrveAggrgte().Get(2).number().doubleValue()));
+        aRElement.getHTMLGenerator().insertTextLeft(" " + //
+                "\n" + Time.writeTime(travelTimeAnalysis.getDrveAggrgte().get(0).Get(0).number().doubleValue()) + //
+                "\n" + Time.writeTime(travelTimeAnalysis.getDrveAggrgte().get(0).Get(1).number().doubleValue()) + //
+                "\n" + Time.writeTime(travelTimeAnalysis.getDrveAggrgte().get(0).Get(2).number().doubleValue()) + //
+                "\n" + Time.writeTime(travelTimeAnalysis.getDrveAggrgte().Get(1).number().doubleValue()) + //
+                "\n" + Time.writeTime(travelTimeAnalysis.getDrveAggrgte().Get(2).number().doubleValue()));
 
         aRElement.getHTMLGenerator().newLine();
         aRElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + DriveTimeImages.FILENAME + ".png", 800, 600);
