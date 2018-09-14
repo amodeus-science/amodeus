@@ -55,6 +55,8 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
     private final Set<AVRequest> periodPickedUpRequests = new HashSet<>(); // new
     private final Set<AVRequest> periodFulfilledRequests = new HashSet<>();
     private final Set<AVRequest> periodAssignedRequests = new HashSet<>();
+    private final Set<AVRequest> periodSubmittdRequests = new HashSet<>();
+
     // temporaryRequestRegister
     // for fulfilled requests
     private final Map<AVRequest, RequestStatus> reqStatuses = new HashMap<>(); // Storing the Request Statuses for the
@@ -485,6 +487,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         boolean added = pendingRequests.add(request); // <- store request
         GlobalAssert.that(added);
         reqStatuses.put(request, RequestStatus.REQUESTED);
+        periodSubmittdRequests.add(request);
     }
 
     /** Cleans menu for {@link RoboTaxi} and moves all previously assigned {@link AVRequest} back to pending requests taking them out from request- and pickup-
@@ -584,10 +587,12 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
             simulationObjectCompiler.insertRequests(periodAssignedRequests, RequestStatus.ASSIGNED);
             simulationObjectCompiler.insertRequests(periodPickedUpRequests, RequestStatus.PICKUP);
             simulationObjectCompiler.insertRequests(periodFulfilledRequests, RequestStatus.DROPOFF);
+            simulationObjectCompiler.insertRequests(periodSubmittdRequests, RequestStatus.REQUESTED);
 
             periodAssignedRequests.clear();
             periodPickedUpRequests.clear();
             periodFulfilledRequests.clear();
+            periodSubmittdRequests.clear();
 
             simulationObjectCompiler.insertVehicles(getRoboTaxis());
             SimulationObject simulationObject = simulationObjectCompiler.compile();
