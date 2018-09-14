@@ -12,6 +12,7 @@ import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.scenario.ScenarioUtils;
 
+import ch.ethz.idsc.amodeus.lp.LPUtils;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.prep.ConfigCreator;
@@ -67,7 +68,7 @@ public class TestPreparer {
 
         // 4) create TravelData
         /** reading the customer requests */
-        TravelData travelData = TravelDataCreator.create(virtualNetwork, networkPrepared, populationPrepared, scenarioOptions, 100);
+        TravelData travelData = TravelDataCreator.create(virtualNetwork, networkPrepared, populationPrepared, scenarioOptions, LPUtils.getNumberOfVehicles());
         File travelDataFile = new File(scenarioOptions.getVirtualNetworkName(), scenarioOptions.getTravelDataName());
         TravelDataIO.write(travelDataFile, travelData);
 

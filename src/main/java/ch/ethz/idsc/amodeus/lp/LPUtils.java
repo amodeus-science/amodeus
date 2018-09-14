@@ -25,7 +25,7 @@ import ch.ethz.idsc.tensor.sca.Chop;
 import ch.ethz.idsc.tensor.sca.Round;
 import ch.ethz.idsc.tensor.sca.Sign;
 
-/* package */ enum LPUtils {
+public enum LPUtils {
     ;
     /* package */ static final Scalar DURATION = Quantity.of(24 * 60 * 60, SI.SECOND);
     /* package */ static final Scalar AVERAGE_VEL = Quantity.of(30, "km*h^-1");
@@ -52,7 +52,7 @@ import ch.ethz.idsc.tensor.sca.Sign;
     }
 
     /** @return returns the parameter of the av.xml file for the number of vehicles */
-    /* package */ static int getNumberOfVehicles() {
+    public static int getNumberOfVehicles() {
         int numberVehicles = 0;
         /** reading the number of vehicles out of the av.xml file */
         try {
