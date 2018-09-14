@@ -12,7 +12,7 @@ import ch.ethz.idsc.tensor.pdf.BinCounts;
 import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.sca.Round;
 
-/* package */ class HistogramReportFigure {
+/* package */ enum HistogramReportFigure {
     ;
 
     private static final int binNmbr = 30;
