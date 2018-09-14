@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.matsim.mod;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -65,6 +66,9 @@ public class VehicleToVSGenerator implements AVGenerator {
 
         vehicleDistribution = noDistribution ? Tensors.vector(v -> RealScalar.of(average), vNodes) : Floor.of(v0);
         placedVehicles = Array.zeros(vNodes);
+
+        /** make sure that {@link Random} is reset every subsequent simulation */
+        MatsimRandom.reset();
     }
 
     @Override
@@ -99,8 +103,9 @@ public class VehicleToVSGenerator implements AVGenerator {
     /** Return a random {@link Link} of the according virtual station with index vNodeIndex */
     protected Link getNextLink(VirtualNode<Link> vNode) {
         Collection<Link> links = vNode.getLinks();
+        ArrayList<Link> sortedLinks = StaticHelper.getSortedLinks(links); /** needed for identical outcome with a certain random seed */
         int elemRand = MatsimRandom.getRandom().nextInt(links.size());
-        return links.stream().skip(elemRand).findFirst().get();
+        return sortedLinks.get(elemRand);
     }
 
     /** for debugging */
