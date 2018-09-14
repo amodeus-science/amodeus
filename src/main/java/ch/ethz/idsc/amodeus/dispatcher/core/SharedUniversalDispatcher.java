@@ -55,8 +55,8 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
     private final Set<AVRequest> periodPickedUpRequests = new HashSet<>(); // new
     private final Set<AVRequest> periodFulfilledRequests = new HashSet<>();
     private final Set<AVRequest> periodAssignedRequests = new HashSet<>();
-                                                                            // temporaryRequestRegister
-                                                                            // for fulfilled requests
+    // temporaryRequestRegister
+    // for fulfilled requests
     private final Map<AVRequest, RequestStatus> reqStatuses = new HashMap<>(); // Storing the Request Statuses for the
                                                                                // SimObjects
     private final double pickupDurationPerStop;
@@ -162,7 +162,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         if (!requestRegister.containsKey(roboTaxi)) {
             requestRegister.put(roboTaxi, new HashMap<>());
         }
-        
+
         if (!pickupRegister.containsKey(avRequest))
             periodAssignedRequests.add(avRequest);
 
