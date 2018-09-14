@@ -4,6 +4,7 @@ package ch.ethz.idsc.amodeus.matsim.mod;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Random;
 
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
@@ -37,8 +38,11 @@ import ch.ethz.matsim.av.generator.AVGenerator;
  * 
  * CLASS NAME IS USED AS IDENTIFIER - DO NOT RENAME CLASS */
 public class VehicleToVSGenerator implements AVGenerator {
+    private static final long DEFAULT_RANDOM_SEED = 4711;
+    // ---
     private final VirtualNetwork<Link> virtualNetwork;
     private final Tensor vehicleDistribution;
+    private final Random random;
     private final String prefix;
     private final long numberOfVehicles;
     // ---
@@ -68,7 +72,7 @@ public class VehicleToVSGenerator implements AVGenerator {
         placedVehicles = Array.zeros(vNodes);
 
         /** make sure that {@link Random} is reset every subsequent simulation */
-        MatsimRandom.reset();
+        random = new Random(DEFAULT_RANDOM_SEED);
     }
 
     @Override
@@ -97,14 +101,14 @@ public class VehicleToVSGenerator implements AVGenerator {
             if (Sign.isPositive(vehicleDistribution.Get(i).subtract(placedVehicles.Get(i))))
                 return i;
         }
-        return MatsimRandom.getRandom().nextInt(virtualNetwork.getvNodesCount());
+        return random.nextInt(virtualNetwork.getvNodesCount());
     }
 
     /** Return a random {@link Link} of the according virtual station with index vNodeIndex */
     protected Link getNextLink(VirtualNode<Link> vNode) {
         Collection<Link> links = vNode.getLinks();
         ArrayList<Link> sortedLinks = StaticHelper.getSortedLinks(links); /** needed for identical outcome with a certain random seed */
-        int elemRand = MatsimRandom.getRandom().nextInt(links.size());
+        int elemRand = random.nextInt(links.size());
         return sortedLinks.get(elemRand);
     }
 
