@@ -10,7 +10,6 @@ import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.dvrp.data.Vehicle;
-import org.matsim.core.gbl.MatsimRandom;
 
 import com.google.inject.Inject;
 

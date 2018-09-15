@@ -7,7 +7,7 @@ import java.util.Comparator;
 
 import org.matsim.api.core.v01.network.Link;
 
-public enum StaticHelper {
+/* package */ enum StaticHelper {
     ;
     /* package */ static ArrayList<Link> getSortedLinks(Collection<Link> links) {
         ArrayList<Link> sortedLinks = new ArrayList<Link>(links);
