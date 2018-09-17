@@ -46,12 +46,14 @@ public class BipartiteMatchingUtils {
             gbpMatch = globalBipartiteMatching.match(roboTaxis, requests);
         }
         stopwatch1.stop();
+        System.out.println("stopwatch1 :  " +  stopwatch1.display_nanoSeconds()/1000000);
 
         stopwatch2.start();
         /** prevent cycling an assignment is only updated if the new distance is smaller than the
          * old distance */
         Map<RoboTaxi, AVRequest> gbpMatchCleaned = CyclicSolutionPreventer.apply(gbpMatch, universalDispatcher, accDstFctn);
         stopwatch2.stop();
+        System.out.println("stopwatch2 :  " +  stopwatch2.display_nanoSeconds()/1000000);
 
         /** perform dispatching */
         for (Entry<RoboTaxi, AVRequest> entry : gbpMatchCleaned.entrySet())
