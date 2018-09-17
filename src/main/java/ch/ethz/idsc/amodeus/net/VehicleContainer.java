@@ -5,6 +5,8 @@ import java.io.Serializable;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 
+// TODO Lukas include ArrayList (even better int[] abc = new int[]{} of integer with requests currently associated to robotaxi, check before if 
+// data size also increases (by how much) for empty list. 
 public class VehicleContainer implements Serializable {
     public static final int LINK_UNSPECIFIED = -1;
 
