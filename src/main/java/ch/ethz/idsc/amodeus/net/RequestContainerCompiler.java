@@ -25,9 +25,9 @@ enum RequestContainerCompiler {
 
         RequestContainer requestContainer = new RequestContainer();
         requestContainer.requestIndex = db.getRequestIndex(avRequest);
-        requestContainer.fromLinkIndex = db.getLinkIndex_id(avRequest.getFromLink().getId().toString()); // TODO changed due to MatsimStaticDatabase problem
+        requestContainer.fromLinkIndex = db.getLinkIndex(avRequest.getFromLink());
         requestContainer.submissionTime = avRequest.getSubmissionTime();
-        requestContainer.toLinkIndex = db.getLinkIndex_id(avRequest.getToLink().getId().toString()); // TODO changed due to MatsimStaticDatabase problem
+        requestContainer.toLinkIndex = db.getLinkIndex(avRequest.getToLink());
         requestContainer.requestStatus = requestStatus;
 
         return requestContainer;

@@ -20,10 +20,10 @@ enum VehicleContainerCompiler {
         vehicleContainer.vehicleIndex = db.getVehicleIndex(robotaxi);
         final Link fromLink = robotaxi.getLastKnownLocation();
         GlobalAssert.that(Objects.nonNull(fromLink));
-        vehicleContainer.linkIndex = db.getLinkIndex_id(fromLink.getId().toString()); // TODO changed due to MatsimStaticDatabase problem
+        vehicleContainer.linkIndex = db.getLinkIndex(fromLink);
         vehicleContainer.roboTaxiStatus = robotaxi.getStatus();
         Link toLink = robotaxi.getCurrentDriveDestination();
-        vehicleContainer.destinationLinkIndex = db.getLinkIndex_id(Objects.requireNonNull(toLink).getId().toString()); // TODO changed due to MatsimStaticDatabase problem
+        vehicleContainer.destinationLinkIndex = db.getLinkIndex(Objects.requireNonNull(toLink));
         return vehicleContainer;
     }
 
