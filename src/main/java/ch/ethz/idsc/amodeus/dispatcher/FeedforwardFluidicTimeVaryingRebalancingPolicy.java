@@ -93,7 +93,7 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
         this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
 
         GlobalAssert.that(travelData.getLPName().equals(LPTimeVariant.class.getSimpleName()));
-        GlobalAssert.that(StaticHelper.getVehicleGenerator().equals(VehicleToVSGenerator.class.getSimpleName()));
+        GlobalAssert.that(generatorConfig.getStrategyName().equals(VehicleToVSGenerator.class.getSimpleName()));
     }
 
     @Override
