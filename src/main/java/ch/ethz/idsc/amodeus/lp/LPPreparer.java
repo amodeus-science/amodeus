@@ -14,10 +14,10 @@ public enum LPPreparer {
     /** Solves the LP by the given solver and returns the solver where the LP solution can be taken out if it */
     public static LPSolver run(VirtualNetwork<Link> virtualNetwork, //
             Network network, Tensor lambdaAbsolute, //
-            ScenarioOptions scenarioOptions) throws Exception {
+            ScenarioOptions scenarioOptions, int numberOfVehicles) throws Exception {
 
         LPCreator lpCreator = scenarioOptions.getLPSolver();
-        LPSolver solver = lpCreator.create(virtualNetwork, network, scenarioOptions, lambdaAbsolute);
+        LPSolver solver = lpCreator.create(virtualNetwork, network, scenarioOptions, lambdaAbsolute, numberOfVehicles);
 
         solver.initiateLP();
         solver.solveLP(false);
