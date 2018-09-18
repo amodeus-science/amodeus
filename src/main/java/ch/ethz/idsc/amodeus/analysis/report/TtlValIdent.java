@@ -40,9 +40,9 @@ public enum TtlValIdent implements TotalValueIdentifier {
     OCCUPANCYRATIO("occupancyRatio"), //
 
     AVERAGEJOURNEYTIMEROBOTAXI("AverageJourneyTimeRoboTaxi"), //
-//    // MEANPEAKWAITTIME("MeanPeakWaitTime"), //
-//    // MEANOFFPEAKWAITTIME("MeanOffPeakWaitTime"), //
-//
+    // // MEANPEAKWAITTIME("MeanPeakWaitTime"), //
+    // // MEANOFFPEAKWAITTIME("MeanOffPeakWaitTime"), //
+    //
     MEANDRIVETIME("MeanDriveTime"), //
 
     // Velocities
