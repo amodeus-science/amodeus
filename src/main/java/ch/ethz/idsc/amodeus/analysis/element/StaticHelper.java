@@ -39,8 +39,7 @@ import ch.ethz.idsc.tensor.red.Quantile;
     public static Scalar means(Tensor submission) {
         return Tensors.isEmpty(submission) ? RealScalar.ZERO : (Scalar) Mean.of(submission);
     }
-    
-    
+
     /** for small scenarios, a filter is necessary to obain smooth waiting times plots */
     public static final int FILTERSIZE = 50;
     public static final boolean FILTER_ON = true;

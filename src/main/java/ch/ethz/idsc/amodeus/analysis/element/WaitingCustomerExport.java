@@ -33,7 +33,7 @@ public enum WaitingCustomerExport implements AnalysisExport {
 
         try {
             TimeChart.of(relDir, FILENAME, "Waiting Customers per Day Time", //
-                    StaticHelper.FILTER_ON, StaticHelper.FILTERSIZE, scale, new String[]{"# waiting customers"}, //
+                    StaticHelper.FILTER_ON, StaticHelper.FILTERSIZE, scale, new String[] { "# waiting customers" }, //
                     xAxisLabel, yAxisLabel, travelTime.time, Transpose.of(Tensors.of(travelTime.waitingCustomers)), //
                     new Double[] { 0.0, maxWaiting + 1 }, colorScheme);
         } catch (Exception e) {

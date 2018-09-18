@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.analysis;
 
 import java.util.stream.Collectors;
@@ -19,15 +20,14 @@ import ch.ethz.idsc.tensor.qty.Unit;
                 vector.flatten(-1).//
                         filter(s -> Scalars.lessEquals(Quantity.of(0, unit), (Scalar) s)).//
                         map(s -> ((Scalar) s).number()).//
-                        collect(Collectors.toList())).multiply(Quantity.of(1, unit));//
+                        collect(Collectors.toList()))
+                .multiply(Quantity.of(1, unit));//
     }
 
     private static Unit getUnitof(Scalar scalar) {
         if (!(scalar instanceof Quantity))
             return SI.ONE;
-        else {
-            Quantity q = (Quantity) scalar;
-            return q.unit();
-        }
+        Quantity q = (Quantity) scalar;
+        return q.unit();
     }
 }
