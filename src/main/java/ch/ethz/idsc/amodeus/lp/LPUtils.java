@@ -67,8 +67,8 @@ public enum LPUtils {
             numberVehicles = Integer.parseInt(subelem.getAttribute("value"));
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println("av.xml or av_v1.dtd file not found!!! Using default value for number of vehicles instead, which is 10!");
-            GlobalAssert.that(false);
+            System.err.println("av.xml or av_v1.dtd file not found!!! Using default value for number of vehicles instead, which is 100!");
+            numberVehicles = 100;
         }
         return numberVehicles;
     }
