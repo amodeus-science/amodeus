@@ -58,9 +58,6 @@ public enum ScenarioOptionsBase {
         properties.setProperty(VIRTUALNETWORKCREATORIDENTIFIER, VirtualNetworkCreators.KMEANS.name());
         properties.setProperty(POPULATIONCUTTERIDENTIFIER, PopulationCutters.NETWORKBASED.name());
         properties.setProperty(SHAPEFILEIDENTIFIER, "AbsoluteShapeFileName");
-        properties.setProperty(LPSOLVER, "none");
-        properties.setProperty(LPWEIGHTQ, "0.99");
-        properties.setProperty(LPWEIGHTR, "0.01");
         return properties;
     }
 

@@ -18,6 +18,8 @@ import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.scenario.ScenarioUtils;
 
+import ch.ethz.idsc.amodeus.options.LPOptions;
+import ch.ethz.idsc.amodeus.options.LPOptionsBase;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;
@@ -32,9 +34,9 @@ import ch.ethz.idsc.tensor.Tensors;
 public class LPTimeVariantTester {
     private static VirtualNetwork<Link> virtualNetwork2;
     private static VirtualNetwork<Link> virtualNetwork3;
-    private static ScenarioOptions scenarioOptions;
     private static Population population;
     private static Network network;
+    private static LPOptions lpOptions;
 
     @BeforeClass
     public static void setUp() throws IOException {
@@ -46,7 +48,7 @@ public class LPTimeVariantTester {
 
         /* input data */
         scenarioDirectory = new File(TestUtils.getSuperFolder("amodeus"), "resources/testScenario");
-        scenarioOptions = new ScenarioOptions(scenarioDirectory, ScenarioOptionsBase.getDefault());
+        ScenarioOptions scenarioOptions = new ScenarioOptions(scenarioDirectory, ScenarioOptionsBase.getDefault());
         File configFile = new File(scenarioDirectory, scenarioOptions.getPreparerConfigName());
         Config config = ConfigUtils.loadConfig(configFile.getAbsolutePath());
         Scenario scenario = ScenarioUtils.loadScenario(config);
@@ -62,6 +64,8 @@ public class LPTimeVariantTester {
         scenarioOptions.setProperty(ScenarioOptionsBase.NUMVNODESIDENTIFIER, "3");
         virtualNetworkCreator = scenarioOptions.getVirtualNetworkCreator();
         virtualNetwork3 = virtualNetworkCreator.create(network, population, scenarioOptions);
+
+        lpOptions = new LPOptions(MultiFileTools.getWorkingDirectory(), LPOptionsBase.getDefault());
     }
 
     @Test
@@ -77,7 +81,7 @@ public class LPTimeVariantTester {
     @Test
     public void testLP2Nodes() {
         // init LP time-invariant
-        LPTimeVariant lp = new LPTimeVariant(virtualNetwork2, network, scenarioOptions, Tensors.of(Tensors.of(Tensors.vector(0, 0), Tensors.vector(0, 0))));
+        LPTimeVariant lp = new LPTimeVariant(virtualNetwork2, network, lpOptions, Tensors.of(Tensors.of(Tensors.vector(0, 0), Tensors.vector(0, 0))));
         assertEquals(lp.getAlphaRate_ij(), null);
         assertEquals(lp.getAlphaAbsolute_ij(), null);
         assertEquals(lp.getFRate_ij(), null);
@@ -86,7 +90,7 @@ public class LPTimeVariantTester {
         assertEquals(lp.getTimeInterval(), 24 * 3600); // there is only one time interval over the whole day
 
         // test trivial case
-        lp = new LPTimeVariant(virtualNetwork2, network, scenarioOptions, Tensors.of(Tensors.of(Tensors.vector(0, 0), Tensors.vector(0, 0))));
+        lp = new LPTimeVariant(virtualNetwork2, network, lpOptions, Tensors.of(Tensors.of(Tensors.vector(0, 0), Tensors.vector(0, 0))));
         lp.initiateLP();
         lp.solveLP(false);
         assertEquals(lp.getAlphaAbsolute_ij(), Tensors.of(Tensors.of(Tensors.vector(0, 0), Tensors.vector(0, 0))));
@@ -94,56 +98,56 @@ public class LPTimeVariantTester {
 
         // test infeasible cases
         try {
-            lp = new LPTimeVariant(virtualNetwork2, network, scenarioOptions, Tensors.of(Tensors.of(Tensors.vector(0, -1), Tensors.vector(0, 0))));
+            lp = new LPTimeVariant(virtualNetwork2, network, lpOptions, Tensors.of(Tensors.of(Tensors.vector(0, -1), Tensors.vector(0, 0))));
             assertTrue(false);
         } catch (Exception exception) {
             // ---
         }
 
         try {
-            lp = new LPTimeVariant(virtualNetwork2, network, scenarioOptions, Tensors.of(Tensors.of(Tensors.vector(0, 0.01), Tensors.vector(0, 0))));
+            lp = new LPTimeVariant(virtualNetwork2, network, lpOptions, Tensors.of(Tensors.of(Tensors.vector(0, 0.01), Tensors.vector(0, 0))));
             assertTrue(false);
         } catch (Exception exception) {
             // ---
         }
 
         // test simple rounding case
-        lp = new LPTimeVariant(virtualNetwork2, network, scenarioOptions, Tensors.of(Tensors.of(Tensors.vector(0, 0.00001), Tensors.vector(0, 0))));
+        lp = new LPTimeVariant(virtualNetwork2, network, lpOptions, Tensors.of(Tensors.of(Tensors.vector(0, 0.00001), Tensors.vector(0, 0))));
         lp.initiateLP();
         lp.solveLP(false);
         assertEquals(lp.getAlphaAbsolute_ij(), Tensors.of(Tensors.of(Tensors.vector(0, 0), Tensors.vector(0, 0))));
         assertEquals(lp.getAlphaRate_ij(), Tensors.of(Tensors.of(Tensors.vector(0, 0), Tensors.vector(0, 0))));
 
         // test simple case with one timeStep
-        lp = new LPTimeVariant(virtualNetwork2, network, scenarioOptions, Tensors.of(Tensors.of(Tensors.vector(0, 1), Tensors.vector(0, 0))));
+        lp = new LPTimeVariant(virtualNetwork2, network, lpOptions, Tensors.of(Tensors.of(Tensors.vector(0, 1), Tensors.vector(0, 0))));
         lp.initiateLP();
         lp.solveLP(false);
         assertEquals(lp.getAlphaAbsolute_ij(), Tensors.of(Tensors.of(Tensors.vector(0, 0), Tensors.vector(1, 0))));
         assertEquals(lp.getAlphaRate_ij(), Tensors.of(Tensors.of(Tensors.vector(0, 0), Tensors.vector(1, 0))).divide(RealScalar.of(24 * 3600)));
 
         // test simple case with one timeStep
-        lp = new LPTimeVariant(virtualNetwork2, network, scenarioOptions, Tensors.of(Tensors.of(Tensors.vector(0, 0), Tensors.vector(1, 0))));
+        lp = new LPTimeVariant(virtualNetwork2, network, lpOptions, Tensors.of(Tensors.of(Tensors.vector(0, 0), Tensors.vector(1, 0))));
         lp.initiateLP();
         lp.solveLP(false);
         assertEquals(lp.getAlphaAbsolute_ij(), Tensors.of(Tensors.of(Tensors.vector(0, 1), Tensors.vector(0, 0))));
         assertEquals(lp.getAlphaRate_ij(), Tensors.of(Tensors.of(Tensors.vector(0, 1), Tensors.vector(0, 0))).divide(RealScalar.of(24 * 3600)));
 
         // test simple case with one timeStep
-        lp = new LPTimeVariant(virtualNetwork2, network, scenarioOptions, Tensors.of(Tensors.of(Tensors.vector(0, 1), Tensors.vector(1, 0))));
+        lp = new LPTimeVariant(virtualNetwork2, network, lpOptions, Tensors.of(Tensors.of(Tensors.vector(0, 1), Tensors.vector(1, 0))));
         lp.initiateLP();
         lp.solveLP(false);
         assertEquals(lp.getAlphaAbsolute_ij(), Tensors.of(Tensors.of(Tensors.vector(0, 0), Tensors.vector(0, 0))));
         assertEquals(lp.getAlphaRate_ij(), Tensors.of(Tensors.of(Tensors.vector(0, 0), Tensors.vector(0, 0))));
 
         // test simple case with one timeStep
-        lp = new LPTimeVariant(virtualNetwork2, network, scenarioOptions, Tensors.of(Tensors.of(Tensors.vector(1, 1), Tensors.vector(1, 2))));
+        lp = new LPTimeVariant(virtualNetwork2, network, lpOptions, Tensors.of(Tensors.of(Tensors.vector(1, 1), Tensors.vector(1, 2))));
         lp.initiateLP();
         lp.solveLP(false);
         assertEquals(lp.getAlphaAbsolute_ij(), Tensors.of(Tensors.of(Tensors.vector(0, 0), Tensors.vector(0, 0))));
         assertEquals(lp.getAlphaRate_ij(), Tensors.of(Tensors.of(Tensors.vector(0, 0), Tensors.vector(0, 0))));
 
         // test case with one timeStep
-        lp = new LPTimeVariant(virtualNetwork2, network, scenarioOptions, Tensors.of(Tensors.of(Tensors.vector(0, 2), Tensors.vector(1, 0))));
+        lp = new LPTimeVariant(virtualNetwork2, network, lpOptions, Tensors.of(Tensors.of(Tensors.vector(0, 2), Tensors.vector(1, 0))));
         lp.initiateLP();
         lp.solveLP(false);
         assertEquals(lp.getAlphaAbsolute_ij(), Tensors.of(Tensors.of(Tensors.vector(0, 0), Tensors.vector(1, 0))));
@@ -152,7 +156,7 @@ public class LPTimeVariantTester {
         assertEquals(lp.getFRate_ij(), Tensors.of(Tensors.of(Tensors.vector(0, 2), Tensors.vector(1, 0)).divide(RealScalar.of(24 * 3600))));
 
         // test case with two timeSteps
-        lp = new LPTimeVariant(virtualNetwork2, network, scenarioOptions,
+        lp = new LPTimeVariant(virtualNetwork2, network, lpOptions,
                 Tensors.of(Tensors.of(Tensors.vector(0, 2), Tensors.vector(1, 0)), Tensors.of(Tensors.vector(0, 1), Tensors.vector(2, 0))));
         lp.initiateLP();
         lp.solveLP(false);
@@ -165,7 +169,7 @@ public class LPTimeVariantTester {
     @Test
     public void testLP3Nodes() {
         // init LP time-invariant
-        LPTimeVariant lp = new LPTimeVariant(virtualNetwork3, network, scenarioOptions,
+        LPTimeVariant lp = new LPTimeVariant(virtualNetwork3, network, lpOptions,
                 Tensors.of(Tensors.of(Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))));
         assertEquals(lp.getAlphaRate_ij(), null);
         assertEquals(lp.getAlphaAbsolute_ij(), null);
@@ -182,70 +186,70 @@ public class LPTimeVariantTester {
 
         // test infeasible cases
         try {
-            lp = new LPTimeVariant(virtualNetwork3, network, scenarioOptions, Tensors.of(Tensors.of(Tensors.vector(0, -1, 0), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))));
+            lp = new LPTimeVariant(virtualNetwork3, network, lpOptions, Tensors.of(Tensors.of(Tensors.vector(0, -1, 0), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))));
             assertTrue(false);
         } catch (Exception exception) {
             // ---
         }
 
         try {
-            lp = new LPTimeVariant(virtualNetwork3, network, scenarioOptions, Tensors.of(Tensors.of(Tensors.vector(0, 0.01, 0), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))));
+            lp = new LPTimeVariant(virtualNetwork3, network, lpOptions, Tensors.of(Tensors.of(Tensors.vector(0, 0.01, 0), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))));
             assertTrue(false);
         } catch (Exception exception) {
             // ---
         }
 
         // test simple rounding case
-        lp = new LPTimeVariant(virtualNetwork3, network, scenarioOptions, Tensors.of(Tensors.of(Tensors.vector(0, 0.00001, 0), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))));
+        lp = new LPTimeVariant(virtualNetwork3, network, lpOptions, Tensors.of(Tensors.of(Tensors.vector(0, 0.00001, 0), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))));
         lp.initiateLP();
         lp.solveLP(false);
         assertEquals(lp.getAlphaAbsolute_ij(), Tensors.of(Tensors.of(Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))));
         assertEquals(lp.getAlphaRate_ij(), Tensors.of(Tensors.of(Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))));
 
         // test simple case with one timeStep
-        lp = new LPTimeVariant(virtualNetwork3, network, scenarioOptions, Tensors.of(Tensors.of(Tensors.vector(0, 1, 0), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))));
+        lp = new LPTimeVariant(virtualNetwork3, network, lpOptions, Tensors.of(Tensors.of(Tensors.vector(0, 1, 0), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))));
         lp.initiateLP();
         lp.solveLP(false);
         assertEquals(lp.getAlphaAbsolute_ij(), Tensors.of(Tensors.of(Tensors.vector(0, 0, 0), Tensors.vector(1, 0, 0), Tensors.vector(0, 0, 0))));
 
         // test simple case with one timeStep
-        lp = new LPTimeVariant(virtualNetwork3, network, scenarioOptions, Tensors.of(Tensors.of(Tensors.vector(0, 0, 1), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))));
+        lp = new LPTimeVariant(virtualNetwork3, network, lpOptions, Tensors.of(Tensors.of(Tensors.vector(0, 0, 1), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))));
         lp.initiateLP();
         lp.solveLP(false);
         assertEquals(lp.getAlphaAbsolute_ij(), Tensors.of(Tensors.of(Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0), Tensors.vector(1, 0, 0))));
 
         // test simple case with one timeStep
-        lp = new LPTimeVariant(virtualNetwork3, network, scenarioOptions, Tensors.of(Tensors.of(Tensors.vector(0, 1, 1), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))));
+        lp = new LPTimeVariant(virtualNetwork3, network, lpOptions, Tensors.of(Tensors.of(Tensors.vector(0, 1, 1), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))));
         lp.initiateLP();
         lp.solveLP(false);
         assertEquals(lp.getAlphaAbsolute_ij(), Tensors.of(Tensors.of(Tensors.vector(0, 0, 0), Tensors.vector(1, 0, 0), Tensors.vector(1, 0, 0))));
 
         // test simple case with one timeStep
-        lp = new LPTimeVariant(virtualNetwork3, network, scenarioOptions, Tensors.of(Tensors.of(Tensors.vector(1, 1, 1), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))));
+        lp = new LPTimeVariant(virtualNetwork3, network, lpOptions, Tensors.of(Tensors.of(Tensors.vector(1, 1, 1), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))));
         lp.initiateLP();
         lp.solveLP(false);
         assertEquals(lp.getAlphaAbsolute_ij(), Tensors.of(Tensors.of(Tensors.vector(0, 0, 0), Tensors.vector(1, 0, 0), Tensors.vector(1, 0, 0))));
 
         // test simple case with one timeStep
-        lp = new LPTimeVariant(virtualNetwork3, network, scenarioOptions, Tensors.of(Tensors.of(Tensors.vector(0, 1, 1), Tensors.vector(1, 0, 1), Tensors.vector(1, 1, 0))));
+        lp = new LPTimeVariant(virtualNetwork3, network, lpOptions, Tensors.of(Tensors.of(Tensors.vector(0, 1, 1), Tensors.vector(1, 0, 1), Tensors.vector(1, 1, 0))));
         lp.initiateLP();
         lp.solveLP(false);
         assertEquals(lp.getAlphaAbsolute_ij(), Tensors.of(Tensors.of(Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))));
 
         // test simple case with one timeStep
-        lp = new LPTimeVariant(virtualNetwork3, network, scenarioOptions, Tensors.of(Tensors.of(Tensors.vector(0, 1, 0), Tensors.vector(0, 0, 1), Tensors.vector(1, 0, 0))));
+        lp = new LPTimeVariant(virtualNetwork3, network, lpOptions, Tensors.of(Tensors.of(Tensors.vector(0, 1, 0), Tensors.vector(0, 0, 1), Tensors.vector(1, 0, 0))));
         lp.initiateLP();
         lp.solveLP(false);
         assertEquals(lp.getAlphaAbsolute_ij(), Tensors.of(Tensors.of(Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))));
 
         // test simple case with one timeStep
-        lp = new LPTimeVariant(virtualNetwork3, network, scenarioOptions, Tensors.of(Tensors.of(Tensors.vector(0, 2, 1), Tensors.vector(1, 0, 1), Tensors.vector(1, 1, 0))));
+        lp = new LPTimeVariant(virtualNetwork3, network, lpOptions, Tensors.of(Tensors.of(Tensors.vector(0, 2, 1), Tensors.vector(1, 0, 1), Tensors.vector(1, 1, 0))));
         lp.initiateLP();
         lp.solveLP(false);
         assertEquals(lp.getAlphaAbsolute_ij(), Tensors.of(Tensors.of(Tensors.vector(0, 0, 0), Tensors.vector(1, 0, 0), Tensors.vector(0, 0, 0))));
 
         // test simple case with one timeStep
-        lp = new LPTimeVariant(virtualNetwork3, network, scenarioOptions, Tensors.of(Tensors.of(Tensors.vector(0, 2, 2), Tensors.vector(1, 0, 1), Tensors.vector(1, 1, 0))));
+        lp = new LPTimeVariant(virtualNetwork3, network, lpOptions, Tensors.of(Tensors.of(Tensors.vector(0, 2, 2), Tensors.vector(1, 0, 1), Tensors.vector(1, 1, 0))));
         lp.initiateLP();
         lp.solveLP(false);
         assertEquals(lp.getAlphaAbsolute_ij(), Tensors.of(Tensors.of(Tensors.vector(0, 0, 0), Tensors.vector(1, 0, 0), Tensors.vector(1, 0, 0))));

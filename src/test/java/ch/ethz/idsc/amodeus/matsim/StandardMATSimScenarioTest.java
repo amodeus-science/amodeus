@@ -49,6 +49,8 @@ import com.google.inject.name.Named;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDispatcherModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusVehicleGeneratorModule;
+import ch.ethz.idsc.amodeus.options.LPOptions;
+import ch.ethz.idsc.amodeus.options.LPOptionsBase;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.prep.MatsimKMeansVirtualNetworkCreator;
@@ -211,7 +213,7 @@ public class StandardMATSimScenarioTest {
         // Make the scenario multimodal
         fixInvalidActivityLocations(scenario.getNetwork(), scenario.getPopulation());
         makeMultimodal(scenario);
-        
+
         // Config
 
         AVConfig avConfig = new AVConfig();
@@ -255,7 +257,10 @@ public class StandardMATSimScenarioTest {
                 // Same as for the virtual network: For the LPFF dispatcher we need travel
                 // data, which we generate on the fly here.
                 ScenarioOptions scenarioOptions = new ScenarioOptions(MultiFileTools.getWorkingDirectory(), ScenarioOptionsBase.getDefault());
-                scenarioOptions.setProperty(ScenarioOptionsBase.LPSOLVER, "TIMEINVARIANT");
+
+                LPOptions lpOptions = new LPOptions(MultiFileTools.getWorkingDirectory(), LPOptionsBase.getDefault());
+                lpOptions.setProperty(LPOptionsBase.LPSOLVER, "timeInvariant");
+                lpOptions.saveAndOverwriteLPOptions();
                 TravelData travelData = TravelDataCreator.create(virtualNetwork, network, population, scenarioOptions, (int) generatorConfig.getNumberOfVehicles());
                 return travelData;
             }
