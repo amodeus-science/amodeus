@@ -14,7 +14,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.dispatcher.FeedforwardFluidicTimeVaryingRebalancingPolicy;
-import ch.ethz.idsc.amodeus.options.ScenarioOptions;
+import ch.ethz.idsc.amodeus.options.LPOptions;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.util.math.Magnitude;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
@@ -46,11 +46,11 @@ public class LPTimeVariant extends LPTimeVariantBase {
 
     /** @param virtualNetwork
      *            the virtual network (complete directed graph) on which the optimization is computed. */
-    public LPTimeVariant(VirtualNetwork<Link> virtualNetwork, Network network, ScenarioOptions scenarioOptions, Tensor lambdaAbsolute_ij) {
+    public LPTimeVariant(VirtualNetwork<Link> virtualNetwork, Network network, LPOptions lpOptions, Tensor lambdaAbsolute_ij) {
         super(virtualNetwork, network, lambdaAbsolute_ij);
-        System.out.println("Creating time-variant LP with QueuingWeight " + scenarioOptions.getLPWeightQ() + " and RebalancingWeight " + scenarioOptions.getLPWeightR());
-        weightQ = scenarioOptions.getLPWeightQ();
-        weightR = scenarioOptions.getLPWeightR();
+        System.out.println("Creating time-variant LP with QueuingWeight " + lpOptions.getLPWeightQ() + " and RebalancingWeight " + lpOptions.getLPWeightR());
+        weightQ = lpOptions.getLPWeightQ();
+        weightR = lpOptions.getLPWeightR();
         GlobalAssert.that(weightQ + weightR == 1.0);
 
         timeVS_ij = getTimeVS_ij();

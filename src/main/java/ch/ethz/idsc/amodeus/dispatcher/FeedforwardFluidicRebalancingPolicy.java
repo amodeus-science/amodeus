@@ -97,6 +97,8 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
         this.bipartiteMatchingEngine = new BipartiteMatchingUtils(network);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
+        System.out.println(travelData.getLPName());
+        System.out.println(LPTimeInvariant.class.getSimpleName());
         GlobalAssert.that(travelData.getLPName().equals(LPTimeInvariant.class.getSimpleName()));
     }
 
