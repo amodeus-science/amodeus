@@ -211,7 +211,7 @@ public class StandardMATSimScenarioTest {
         // Make the scenario multimodal
         fixInvalidActivityLocations(scenario.getNetwork(), scenario.getPopulation());
         makeMultimodal(scenario);
-        
+
         // Config
 
         AVConfig avConfig = new AVConfig();
