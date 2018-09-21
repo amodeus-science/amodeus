@@ -133,7 +133,7 @@ public class LinkLayer extends ViewerLayer {
             if (0 < count)
                 amodeusComponent.append("%5d/%5d streets", count, amodeusComponent.db.getOsmLinksSize());
             else
-                amodeusComponent.append("too many streets");
+//                amodeusComponent.append("too many streets");
             amodeusComponent.appendSeparator();
         }
     }

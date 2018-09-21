@@ -149,11 +149,17 @@ public class RequestsLayer extends ViewerLayer {
         if (maxWaitTimeInHud) {
             InfoString infoString = new InfoString(String.format("%5d %s", Math.round(maxWaitTime / 60), "maxWaitTime [min]"));
             infoString.color = Color.BLACK; // new Color(255, 102, 0);
-            amodeusComponent.append(infoString);
+//            amodeusComponent.append(infoString);
         }
         if (ref != null)
-            amodeusComponent.append("%5d %s", ref.total_matchedRequests, "matched req.");
+//            amodeusComponent.append("%5d %s", ref.total_matchedRequests, "matched req.");
         amodeusComponent.appendSeparator();
+        if(ref != null) {
+        	InfoString infoString = new InfoString(String.format("%s","high request density"));
+            infoString.color = Color.ORANGE;
+            amodeusComponent.append(infoString);
+        }
+        	
     }
 
     public void setDrawDestinations(boolean selected) {

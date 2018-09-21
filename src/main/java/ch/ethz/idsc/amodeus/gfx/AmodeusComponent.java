@@ -16,6 +16,7 @@ import javax.swing.JLabel;
 
 import org.matsim.api.core.v01.Coord;
 
+import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.util.gui.GraphicsUtil;
@@ -108,9 +109,11 @@ public class AmodeusComponent extends JMapViewer {
         final Graphics2D graphics = (Graphics2D) g;
 
         infoStrings.clear();
+        
 
         if (Objects.nonNull(ref)) {
-            append("i=%-3s %s", "" + ref.iteration, new SecondsToHMS(ref.now).toDigitalWatch());
+//            append("i=%-3s %s", "" + ref.iteration, new SecondsToHMS(ref.now).toDigitalWatch());
+        	append(new SecondsToHMS(ref.now).toDigitalWatch());
             appendSeparator();
         }
 
@@ -129,8 +132,8 @@ public class AmodeusComponent extends JMapViewer {
             }
         });
 
-        append("%5d zoom", getZoom());
-        append("%5d m/pixel", (int) Math.ceil(getMeterPerPixel()));
+//        append("%5d zoom", getZoom());
+//        append("%5d m/pixel", (int) Math.ceil(getMeterPerPixel()));
         appendSeparator();
 
         if (Objects.nonNull(ref))

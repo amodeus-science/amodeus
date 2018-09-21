@@ -26,6 +26,13 @@ public enum RoboTaxiStatusColors {
             new Color(0, 224, 255), // rebalance
             new Color(0, 255, 0), // stay
             new Color(32, 32, 32)), // off service
+    /*** New ICRA color set */
+    ICRA( //
+            new Color(255, 0, 0), // with customer
+            Color.MAGENTA, // to customer
+            new Color(0, 224, 255), // rebalance
+            new Color(0, 255, 0), // stay
+            new Color(32, 32, 32)), // off service
     ;
 
     private final Color[] colors;

@@ -29,7 +29,7 @@ public class VehiclesLayer extends ViewerLayer {
     public boolean showLocation = true;
 
     public VehiclesLayer() {
-        bitSet(RoboTaxiStatus.DRIVETOCUSTOMER);
+//        bitSet(RoboTaxiStatus.DRIVETOCUSTOMER);
         bitSet(RoboTaxiStatus.REBALANCEDRIVE);
     }
 
@@ -79,13 +79,21 @@ public class VehiclesLayer extends ViewerLayer {
             ref.vehicles.forEach(v -> ++count[v.roboTaxiStatus.ordinal()]);
 
             for (RoboTaxiStatus avStatus : RoboTaxiStatus.values()) {
-                InfoString infoString = new InfoString(String.format("%5d %s", count[avStatus.ordinal()], avStatus.description()));
+                InfoString infoString = new InfoString(String.format("%5d %s", count[avStatus.ordinal()], avStatus.description() + " RoboTaxi"));
                 infoString.color = statusColors.of(avStatus);
+                if(avStatus == RoboTaxiStatus.OFFSERVICE) {
+                	continue;
+                }
                 amodeusComponent.append(infoString);
             }
-            InfoString infoString = new InfoString(String.format("%5d %s", ref.vehicles.size(), "total"));
+            InfoString infoString = new InfoString(String.format("%5d %s", ref.vehicles.size(), "total number of RoboTaxis"));
             infoString.color = Color.BLACK;
             amodeusComponent.append(infoString);
+            amodeusComponent.appendSeparator();
+            
+            InfoString infoStringDestLine = new InfoString(String.format("%s","-destination line"));
+            infoStringDestLine.color = statusColors.of(RoboTaxiStatus.REBALANCEDRIVE);
+            amodeusComponent.append(infoStringDestLine);
             amodeusComponent.appendSeparator();
         }
     }

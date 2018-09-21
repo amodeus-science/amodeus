@@ -35,7 +35,7 @@ public class TravelHistory {
         toLinkIndx = requestContainer.toLinkIndex;
         reqIndx = requestContainer.requestIndex;
         submsnTime = Quantity.of(requestContainer.submissionTime, SI.SECOND);
-        GlobalAssert.that(requestContainer.requestStatus.equals(RequestStatus.REQUESTED));
+//        GlobalAssert.that(requestContainer.requestStatus.equals(RequestStatus.REQUESTED));
         register(requestContainer, now);
     }
 
