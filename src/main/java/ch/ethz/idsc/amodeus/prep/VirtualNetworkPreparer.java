@@ -7,8 +7,6 @@ import java.util.Objects;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
-import org.matsim.core.config.Config;
-import org.matsim.core.config.ConfigUtils;
 
 import ch.ethz.idsc.amodeus.lp.LPUtils;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
