@@ -37,8 +37,4 @@ public enum RequestStatus {
         return tag;
     }
 
-    public boolean unServiced() {
-        return !equals(RequestStatus.PICKUP) && !equals(RequestStatus.DRIVING) && !equals(RequestStatus.DROPOFF);
-    }
-
 }

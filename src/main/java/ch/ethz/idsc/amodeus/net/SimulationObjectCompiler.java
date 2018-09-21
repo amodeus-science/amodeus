@@ -52,8 +52,12 @@ public class SimulationObjectCompiler {
     }
 
     private void insertRequest(AVRequest avRequest, RequestStatus requestStatus) {
-        RequestContainer requestContainer = RequestContainerCompiler.compile(avRequest, db, requestStatus);
-        requestMap.put(avRequest.getId().toString(), requestContainer);
+        if (requestMap.containsKey(avRequest.getId().toString())) {
+            requestMap.get(avRequest.getId().toString()).requestStatus.add(requestStatus);
+        } else {
+            RequestContainer requestContainer = RequestContainerCompiler.compile(avRequest, db, requestStatus);
+            requestMap.put(avRequest.getId().toString(), requestContainer);
+        }
     }
 
     private void insertVehicle(RoboTaxi robotaxi) {
