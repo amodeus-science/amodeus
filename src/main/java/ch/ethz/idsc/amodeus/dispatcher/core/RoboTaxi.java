@@ -290,5 +290,24 @@ public class RoboTaxi {
         }
         return true;
     }
+    
+    public boolean menuAllowsOneMorePickup() {
+        int futureNumberCustomers = getCurrentNumberOfCustomersOnBoard();
+        for (SharedCourse sharedAVCourse : menu.getCourses()) {
+            if (sharedAVCourse.getMealType().equals(SharedMealType.PICKUP)) {
+                futureNumberCustomers++;
+            } else if (sharedAVCourse.getMealType().equals(SharedMealType.DROPOFF)) {
+                futureNumberCustomers--;
+            } else if (sharedAVCourse.getMealType().equals(SharedMealType.REDIRECT)) {
+                // --
+            } else {
+                throw new IllegalArgumentException("Unknown SharedAVMealType -- please specify it !!!--");
+            }
+            if (futureNumberCustomers >= getCapacity()) {
+                return false;
+            }
+        }
+        return true;
+    }
 
 }
