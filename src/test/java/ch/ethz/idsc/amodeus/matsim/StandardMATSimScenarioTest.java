@@ -212,6 +212,26 @@ public class StandardMATSimScenarioTest {
         fixInvalidActivityLocations(scenario.getNetwork(), scenario.getPopulation());
         makeMultimodal(scenario);
 
+        // Config
+
+        AVConfig avConfig = new AVConfig();
+        AVOperatorConfig operatorConfig = avConfig.createOperatorConfig("test");
+        AVGeneratorConfig generatorConfig = operatorConfig.createGeneratorConfig("VehicleToVSGenerator");
+        generatorConfig.setNumberOfVehicles(100);
+
+        // Choose a dispatcher
+        AVDispatcherConfig dispatcherConfig = operatorConfig.createDispatcherConfig(dispatcher);
+
+        // Make sure that we do not need the SimulationObjectCompiler
+        dispatcherConfig.addParam("publishPeriod", "-1");
+
+        controler.addOverridingModule(new AbstractModule() {
+            @Override
+            public void install() {
+                bind(AVConfig.class).toInstance(avConfig);
+            }
+        });
+
         // Set up a virtual network for the LPFBDispatcher
 
         controler.addOverridingModule(new AbstractModule() {
@@ -236,28 +256,8 @@ public class StandardMATSimScenarioTest {
                 // data, which we generate on the fly here.
                 ScenarioOptions scenarioOptions = new ScenarioOptions(MultiFileTools.getWorkingDirectory(), ScenarioOptionsBase.getDefault());
                 scenarioOptions.setProperty(ScenarioOptionsBase.LPSOLVER, "TIMEINVARIANT");
-                TravelData travelData = TravelDataCreator.create(virtualNetwork, network, population, scenarioOptions);
+                TravelData travelData = TravelDataCreator.create(virtualNetwork, network, population, scenarioOptions, (int) generatorConfig.getNumberOfVehicles());
                 return travelData;
-            }
-        });
-
-        // Config
-
-        AVConfig avConfig = new AVConfig();
-        AVOperatorConfig operatorConfig = avConfig.createOperatorConfig("test");
-        AVGeneratorConfig generatorConfig = operatorConfig.createGeneratorConfig("VehicleToVSGenerator");
-        generatorConfig.setNumberOfVehicles(200);
-
-        // Choose a dispatcher
-        AVDispatcherConfig dispatcherConfig = operatorConfig.createDispatcherConfig(dispatcher);
-
-        // Make sure that we do not need the SimulationObjectCompiler
-        dispatcherConfig.addParam("publishPeriod", "-1");
-
-        controler.addOverridingModule(new AbstractModule() {
-            @Override
-            public void install() {
-                bind(AVConfig.class).toInstance(avConfig);
             }
         });
 
