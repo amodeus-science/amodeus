@@ -66,6 +66,15 @@ public class SimulationObjectCompiler {
         vehicleMap.put(key, vehicleContainer);
     }
 
+    public void addRequestRoboTaxiAssoc(Map<AVRequest, RoboTaxi> map) {
+        map.entrySet().stream().forEach(e -> {
+            if (requestMap.containsKey(e.getKey().getId().toString())) {
+                requestMap.get(e.getKey().getId().toString()).associatedVehicle = //
+                        db.getVehicleIndex(e.getValue());
+            }
+        });
+    }
+
     public SimulationObject compile() {
         simulationObject.vehicles = vehicleMap.values().stream().collect(Collectors.toList());
         simulationObject.requests = requestMap.values().stream().collect(Collectors.toList());
