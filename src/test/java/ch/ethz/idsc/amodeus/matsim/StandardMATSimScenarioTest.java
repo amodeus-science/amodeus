@@ -49,6 +49,8 @@ import com.google.inject.name.Named;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDispatcherModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusVehicleGeneratorModule;
+import ch.ethz.idsc.amodeus.options.LPOptions;
+import ch.ethz.idsc.amodeus.options.LPOptionsBase;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.prep.MatsimKMeansVirtualNetworkCreator;
@@ -212,6 +214,26 @@ public class StandardMATSimScenarioTest {
         fixInvalidActivityLocations(scenario.getNetwork(), scenario.getPopulation());
         makeMultimodal(scenario);
 
+        // Config
+
+        AVConfig avConfig = new AVConfig();
+        AVOperatorConfig operatorConfig = avConfig.createOperatorConfig("test");
+        AVGeneratorConfig generatorConfig = operatorConfig.createGeneratorConfig("VehicleToVSGenerator");
+        generatorConfig.setNumberOfVehicles(100);
+
+        // Choose a dispatcher
+        AVDispatcherConfig dispatcherConfig = operatorConfig.createDispatcherConfig(dispatcher);
+
+        // Make sure that we do not need the SimulationObjectCompiler
+        dispatcherConfig.addParam("publishPeriod", "-1");
+
+        controler.addOverridingModule(new AbstractModule() {
+            @Override
+            public void install() {
+                bind(AVConfig.class).toInstance(avConfig);
+            }
+        });
+
         // Set up a virtual network for the LPFBDispatcher
 
         controler.addOverridingModule(new AbstractModule() {
@@ -235,29 +257,12 @@ public class StandardMATSimScenarioTest {
                 // Same as for the virtual network: For the LPFF dispatcher we need travel
                 // data, which we generate on the fly here.
                 ScenarioOptions scenarioOptions = new ScenarioOptions(MultiFileTools.getWorkingDirectory(), ScenarioOptionsBase.getDefault());
-                scenarioOptions.setProperty(ScenarioOptionsBase.LPSOLVER, "TIMEINVARIANT");
-                TravelData travelData = TravelDataCreator.create(virtualNetwork, network, population, scenarioOptions);
+
+                LPOptions lpOptions = new LPOptions(MultiFileTools.getWorkingDirectory(), LPOptionsBase.getDefault());
+                lpOptions.setProperty(LPOptionsBase.LPSOLVER, "timeInvariant");
+                lpOptions.saveAndOverwriteLPOptions();
+                TravelData travelData = TravelDataCreator.create(virtualNetwork, network, population, scenarioOptions, (int) generatorConfig.getNumberOfVehicles());
                 return travelData;
-            }
-        });
-
-        // Config
-
-        AVConfig avConfig = new AVConfig();
-        AVOperatorConfig operatorConfig = avConfig.createOperatorConfig("test");
-        AVGeneratorConfig generatorConfig = operatorConfig.createGeneratorConfig("VehicleToVSGenerator");
-        generatorConfig.setNumberOfVehicles(200);
-
-        // Choose a dispatcher
-        AVDispatcherConfig dispatcherConfig = operatorConfig.createDispatcherConfig(dispatcher);
-
-        // Make sure that we do not need the SimulationObjectCompiler
-        dispatcherConfig.addParam("publishPeriod", "-1");
-
-        controler.addOverridingModule(new AbstractModule() {
-            @Override
-            public void install() {
-                bind(AVConfig.class).toInstance(avConfig);
             }
         });
 

@@ -25,7 +25,7 @@ import ch.ethz.idsc.tensor.sca.Chop;
 import ch.ethz.idsc.tensor.sca.Round;
 import ch.ethz.idsc.tensor.sca.Sign;
 
-/* package */ enum LPUtils {
+public enum LPUtils {
     ;
     /* package */ static final Scalar DURATION = Quantity.of(24 * 60 * 60, SI.SECOND);
     /* package */ static final Scalar AVERAGE_VEL = Quantity.of(30, "km*h^-1");
@@ -52,11 +52,11 @@ import ch.ethz.idsc.tensor.sca.Sign;
     }
 
     /** @return returns the parameter of the av.xml file for the number of vehicles */
-    /* package */ static int getNumberOfVehicles() {
+    public static int getNumberOfVehicles() {
         int numberVehicles = 0;
         /** reading the number of vehicles out of the av.xml file */
         try {
-            File fXmlFile = new File("av.xml");
+            File fXmlFile = new File("av.xml"); // TODO still hard coded, try to read it from {@link Config}
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(fXmlFile);
@@ -67,8 +67,8 @@ import ch.ethz.idsc.tensor.sca.Sign;
             numberVehicles = Integer.parseInt(subelem.getAttribute("value"));
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println("av.xml or av_v1.dtd file not found!!! Using default value for number of vehicles instead, which is 10!");
-            GlobalAssert.that(false);
+            System.err.println("av.xml or av_v1.dtd file not found!!! Using default value for number of vehicles instead, which is 100!");
+            numberVehicles = 100;
         }
         return numberVehicles;
     }
