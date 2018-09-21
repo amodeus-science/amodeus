@@ -168,13 +168,13 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
             RoboTaxi oldRoboTaxi = pickupRegister.get(avRequest);
             AVRequest val = requestRegister.get(oldRoboTaxi).remove(avRequest.getId().toString());
             Objects.requireNonNull(val);
-            
+
             SharedCourse sharedAVCoursePickUp = SharedCourse.pickupCourse(avRequest);
             SharedCourse sharedAVCourseDropoff = SharedCourse.dropoffCourse(avRequest);
             GlobalAssert.that(oldRoboTaxi.getMenu().containsCourse(sharedAVCoursePickUp) && oldRoboTaxi.getMenu().containsCourse(sharedAVCoursePickUp));
             oldRoboTaxi.getMenu().removeAVCourse(sharedAVCoursePickUp);
             oldRoboTaxi.getMenu().removeAVCourse(sharedAVCourseDropoff);
-            
+
             if (oldRoboTaxi.getMenu().getStarterCourse() == null) {
                 Map<String, AVRequest> val2 = requestRegister.remove(oldRoboTaxi);
                 Objects.requireNonNull(val2);
@@ -539,18 +539,14 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
                 }
                 uniqueAvRequests.add(avRequest);
             }
-                
+
         }
-        
+
         // there cannot be more pickup vehicles than open requests
         GlobalAssert.that(pickupRegister.size() <= pendingRequests.size());
 
         // all Robotaxi in the request Register have a current course
-        for (RoboTaxi roboTaxi : requestRegister.keySet()) {
-            if (roboTaxi.getMenu().getStarterCourse() == null) {
-                System.out.println("We have a problem!");
-            }
-        }
+        requestRegister.keySet().forEach(roboTaxi -> GlobalAssert.that(roboTaxi.getMenu().getStarterCourse() != null));
 
         requestRegister.forEach((k, v) -> GlobalAssert.that(k.getMenu().getStarterCourse() != null));
 

@@ -290,7 +290,7 @@ public class RoboTaxi {
         }
         return true;
     }
-    
+
     public boolean menuAllowsOneMorePickup() {
         int futureNumberCustomers = getCurrentNumberOfCustomersOnBoard();
         for (SharedCourse sharedAVCourse : menu.getCourses()) {
