@@ -155,7 +155,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
          * bipartite matching */
         if (round_now % dispatchPeriod == 0) {
             printVals = bipartiteMatchingEngine.executePickup(this, getDivertableRoboTaxis(), //
-                    getAVRequests(), distanceFunction, network, false);
+                    getAVRequests(), distanceFunction, network);
         }
     }
 
