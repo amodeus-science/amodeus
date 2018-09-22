@@ -65,7 +65,7 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
         pickupDurationPerStop = avDispatcherConfig.getParent().getTimingParameters().getPickupDurationPerStop();
         dropoffDurationPerStop = avDispatcherConfig.getParent().getTimingParameters().getDropoffDurationPerStop();
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
-        publishPeriod = safeConfig.getInteger("publishPeriod", 10);
+        publishPeriod = safeConfig.getInteger("publishPeriod", 7);
     }
 
     // ===================================================================================
@@ -339,7 +339,7 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
     /** save simulation data into {@link SimulationObject} for later analysis and visualization. */
     @Override
     protected final void notifySimulationSubscribers(long round_now, StorageUtils storageUtils) {
-        if (publishPeriod > 0 && round_now % publishPeriod == 0) {
+        if (publishPeriod > 0 && round_now % publishPeriod == 0 && round_now > 1) {
             SimulationObjectCompiler simulationObjectCompiler = SimulationObjectCompiler.create( //
                     round_now, getInfoLine(), total_matchedRequests);
 

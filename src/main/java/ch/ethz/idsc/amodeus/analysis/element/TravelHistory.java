@@ -25,37 +25,23 @@ public class TravelHistory {
     private Scalar asgnmtTime;
     /** the pickup process, typically 10[s], is not counted as waiting */
     private Scalar waitEndTme;
-    private Scalar pickupTime;
     private Scalar drpOffTime;
-
-    // --
-    private Scalar timePrev = Quantity.of(0, "s");
 
     public TravelHistory(RequestContainer requestContainer, long now) {
         fromLinkIndx = requestContainer.fromLinkIndex;
         toLinkIndx = requestContainer.toLinkIndex;
         reqIndx = requestContainer.requestIndex;
         submsnTime = Quantity.of(requestContainer.submissionTime, SI.SECOND);
-        if(!(requestContainer.requestStatus.contains(RequestStatus.REQUESTED))){
-            requestContainer.requestStatus.stream().forEach(rs->{
-                System.err.println(rs);
-            });
-        }
-        GlobalAssert.that(requestContainer.requestStatus.contains(RequestStatus.REQUESTED));
         register(requestContainer, Quantity.of(now, SI.SECOND));
     }
 
     public void register(RequestContainer requestContainer, Scalar now) {
         if (requestContainer.requestStatus.contains(RequestStatus.ASSIGNED))
             asgnmtTime = now;
-        if (requestContainer.requestStatus.contains(RequestStatus.PICKUP)) {
-            waitEndTme = timePrev;
-            pickupTime = now;
-        }
-        if (requestContainer.requestStatus.contains(RequestStatus.DROPOFF)) {
+        if (requestContainer.requestStatus.contains(RequestStatus.PICKUP))
+            waitEndTme = now;
+        if (requestContainer.requestStatus.contains(RequestStatus.DROPOFF))
             drpOffTime = now;
-        }
-        timePrev = now;
     }
 
     public Scalar getTotalTravelTime(Scalar tLast) {
@@ -93,5 +79,4 @@ public class TravelHistory {
     public Scalar getWaitEndTime() {
         return waitEndTme;
     }
-
 }
