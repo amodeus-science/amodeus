@@ -113,7 +113,7 @@ public class AmodeusComponent extends JMapViewer {
 
         if (Objects.nonNull(ref)) {
 //            append("i=%-3s %s", "" + ref.iteration, new SecondsToHMS(ref.now).toDigitalWatch());
-        	append(new SecondsToHMS(ref.now).toDigitalWatch());
+        	append("  " + new SecondsToHMS(ref.now).toDigitalWatch());
             appendSeparator();
         }
 
@@ -156,7 +156,8 @@ public class AmodeusComponent extends JMapViewer {
             if (infoString.message.isEmpty()) {
                 piy += height * 2 / 3;
             } else {
-                graphics.setColor(new Color(255, 255, 255, 128));
+//                graphics.setColor(new Color(255, 255, 255, 128));
+                graphics.setColor(Color.WHITE);
                 int width = fontMetrics.stringWidth(infoString.message);
                 graphics.fillRect(0, piy, pix + width + 1, height);
                 graphics.setColor(infoString.color);

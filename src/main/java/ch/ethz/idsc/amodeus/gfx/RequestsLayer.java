@@ -155,7 +155,7 @@ public class RequestsLayer extends ViewerLayer {
 //            amodeusComponent.append("%5d %s", ref.total_matchedRequests, "matched req.");
         amodeusComponent.appendSeparator();
         if(ref != null) {
-        	InfoString infoString = new InfoString(String.format("%s","high request density"));
+        	InfoString infoString = new InfoString(String.format("%s","  region with high waiting times"));
             infoString.color = Color.ORANGE;
             amodeusComponent.append(infoString);
         }

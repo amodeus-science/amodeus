@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 
 import javax.swing.JCheckBox;
 
+import org.matsim.contrib.dvrp.data.Vehicles;
+
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.net.OsmLink;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
@@ -77,7 +79,7 @@ public class VehiclesLayer extends ViewerLayer {
         int[] count = new int[RoboTaxiStatus.values().length];
         if (ref != null) {
             ref.vehicles.forEach(v -> ++count[v.roboTaxiStatus.ordinal()]);
-
+            
             for (RoboTaxiStatus avStatus : RoboTaxiStatus.values()) {
                 InfoString infoString = new InfoString(String.format("%5d %s", count[avStatus.ordinal()], avStatus.description() + " RoboTaxi"));
                 infoString.color = statusColors.of(avStatus);
@@ -91,7 +93,7 @@ public class VehiclesLayer extends ViewerLayer {
             amodeusComponent.append(infoString);
             amodeusComponent.appendSeparator();
             
-            InfoString infoStringDestLine = new InfoString(String.format("%s","-destination line"));
+            InfoString infoStringDestLine = new InfoString(String.format("%s","  - destination line"));
             infoStringDestLine.color = statusColors.of(RoboTaxiStatus.REBALANCEDRIVE);
             amodeusComponent.append(infoStringDestLine);
             amodeusComponent.appendSeparator();
