@@ -27,7 +27,7 @@ public class RandomVirtualNodeDest implements AbstractVirtualNodeDest {
             return Collections.emptyList();
 
         List<Link> selected = new ArrayList<>();
-        ArrayList<Link> links = StaticHelper.getSortedLinks(virtualNode.getLinks());
+        List<Link> links = StaticHelper.getSortedLinks(virtualNode.getLinks());
         while (selected.size() < size) {
             int elemRand = random.nextInt(links.size());
             Link randLink = links.stream().skip(elemRand).findFirst().get();
