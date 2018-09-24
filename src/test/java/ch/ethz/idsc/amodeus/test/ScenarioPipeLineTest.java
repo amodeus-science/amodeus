@@ -152,10 +152,9 @@ public class ScenarioPipeLineTest {
         // simulation objects should exist after simulation (simulation data)
         File simobj = new File("output/001/simobj/it.00");
         assertTrue(simobj.exists());
-        assertEquals(108, simobj.listFiles().length);
-        assertTrue(new File(simobj, "0107000/0107877.bin").exists());
-        assertTrue(new File(simobj, "0000000/0000007.bin").exists());
-
+        assertEquals(109, simobj.listFiles().length);
+        assertTrue(new File(simobj, "0000000/0000010.bin").exists());
+        assertTrue(new File(simobj, "0107000/0107940.bin").exists());
     }
 
     @Test
@@ -179,20 +178,20 @@ public class ScenarioPipeLineTest {
         /** distance and occupancy ratios */
         Scalar occupancyRatio = Mean.of(ate.getDistancElement().ratios).Get(0);
         Scalar distanceRatio = Mean.of(ate.getDistancElement().ratios).Get(1);
-        assertEquals(0.08272945294270158, occupancyRatio.number().doubleValue(), 0.0);
-        assertEquals(0.6778894952653081, distanceRatio.number().doubleValue(), 0.0);
+        assertEquals(0.08269814814814815, occupancyRatio.number().doubleValue(), 0.0);
+        assertEquals(0.6771498509323725, distanceRatio.number().doubleValue(), 0.0);
         
         /** fleet distances */
         assertTrue(ate.getDistancElement().totalDistance >= 0.0);
-        assertEquals(35412.21654004305, ate.getDistancElement().totalDistance, 0.0);
+        assertEquals(34551.22501867892, ate.getDistancElement().totalDistance, 0.0);
         assertTrue(ate.getDistancElement().totalDistanceWtCst >= 0.0);
-        assertEquals(29733.935234307635, ate.getDistancElement().totalDistanceWtCst, 0.0);
+        assertEquals(28985.51649729462, ate.getDistancElement().totalDistanceWtCst, 0.0);
         assertTrue(ate.getDistancElement().totalDistancePicku > 0.0);
-        assertEquals(5678.281305735489, ate.getDistancElement().totalDistancePicku, 0.0);
+        assertEquals(5565.708521384286, ate.getDistancElement().totalDistancePicku, 0.0);
         assertTrue(ate.getDistancElement().totalDistanceRebal >= 0.0);
         assertEquals(0.0, ate.getDistancElement().totalDistanceRebal, 0.0);
         assertTrue(ate.getDistancElement().totalDistanceRatio >= 0.0);
-        assertEquals(0.8396519094105677, ate.getDistancElement().totalDistanceRatio, 0.0);
+        assertEquals(0.8389142926661677, ate.getDistancElement().totalDistanceRatio, 0.0);
         ate.getDistancElement().totalDistancesPerVehicle.flatten(-1).forEach(s -> //
         assertTrue(Scalars.lessEquals(RealScalar.ZERO, (Scalar) s)));
         assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).number().doubleValue() //
@@ -212,12 +211,10 @@ public class ScenarioPipeLineTest {
         assertTrue(Scalars.lessEquals(ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(0), ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(1)));
         assertTrue(Scalars.lessEquals(ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(1), ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(2)));
         assertTrue(Scalars.lessEquals(Quantity.of(0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1)));
-        
-        
-        assertEquals(289.739, ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1).number().doubleValue(), 0);
-        assertEquals(3260.0, ate.getTravelTimeAnalysis().getWaitAggrgte().Get(2).number().doubleValue(), 0);
-        assertEquals(1786281/2000.0, ate.getTravelTimeAnalysis().getDrveAggrgte().Get(1).number().doubleValue(), 0);
-        assertEquals(3668, ate.getTravelTimeAnalysis().getDrveAggrgte().Get(2).number().doubleValue(), 0);
+        assertEquals(291.645, ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1).number().doubleValue(), 0);
+        assertEquals(3261.0, ate.getTravelTimeAnalysis().getWaitAggrgte().Get(2).number().doubleValue(), 0);
+        assertEquals(892.86, ate.getTravelTimeAnalysis().getDrveAggrgte().Get(1).number().doubleValue(), 0);
+        assertEquals(3670.0, ate.getTravelTimeAnalysis().getDrveAggrgte().Get(2).number().doubleValue(), 0);
 
         /** presence of plot files */
         assertTrue((new File("output/001/data/binnedWaitingTimes.png")).exists());

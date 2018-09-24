@@ -65,7 +65,7 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
         pickupDurationPerStop = avDispatcherConfig.getParent().getTimingParameters().getPickupDurationPerStop();
         dropoffDurationPerStop = avDispatcherConfig.getParent().getTimingParameters().getDropoffDurationPerStop();
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
-        publishPeriod = safeConfig.getInteger("publishPeriod", 7);
+        publishPeriod = safeConfig.getInteger("publishPeriod", 10);
     }
 
     // ===================================================================================
