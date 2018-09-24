@@ -29,6 +29,7 @@ import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.router.AVRouter;
 
+// TODO Lukas if some value for explaining API, move to NorthPoledispatcher, otherwise delete.
 /** simple demonstration of shared {@link RoboTaxi} dispatching and rebalancing functionality */
 public class SharedHeuristicDispatcher extends SharedUniversalDispatcher {
 

@@ -10,6 +10,8 @@ import ch.ethz.idsc.amodeus.util.io.SaveFormats;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Tensors;
 
+// TODO Lukas make a plot with estimated additional travel time, to compute travel times, see 
+// class DistanceHelperNetwork in amodidsc
 public enum TravelTimeExport implements AnalysisExport {
     INSTANCE;
 
