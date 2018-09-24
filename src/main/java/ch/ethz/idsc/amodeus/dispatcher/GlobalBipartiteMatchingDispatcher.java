@@ -59,7 +59,8 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
                     distanceFunction, network, //
                     /* whenever the distance function is Euclidean the kdTree reduction
                      * should be used to enhance performance */
-                    distanceFunction.equals(EuclideanDistanceFunction.INSTANCE));
+                    false);
+//                    distanceFunction.equals(EuclideanDistanceFunction.INSTANCE));
         }
     }
 
