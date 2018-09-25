@@ -2,6 +2,7 @@
 package ch.ethz.idsc.amodeus.net;
 
 import java.io.Serializable;
+import java.util.Set;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RequestStatus;
 
@@ -22,6 +23,6 @@ public class RequestContainer implements Serializable {
     public int fromLinkIndex = -1; // where the person is now
     public double submissionTime = -1;
     public int toLinkIndex = -1; // where the person wants to go
-    public RequestStatus requestStatus = RequestStatus.EMPTY;
-
+    public Set<RequestStatus> requestStatus;
+    public int associatedVehicle; // vehicle currently associated to request, e.g., assigned for pickup
 }

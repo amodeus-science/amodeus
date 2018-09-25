@@ -8,6 +8,7 @@ import java.util.TreeMap;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifier;
 import ch.ethz.idsc.amodeus.analysis.report.TtlValIdent;
+import ch.ethz.idsc.amodeus.dispatcher.core.RStatusHelper;
 import ch.ethz.idsc.amodeus.net.RequestContainer;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.util.math.SI;
@@ -48,7 +49,7 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
         for (RequestContainer requestContainer : simulationObject.requests) {
             Integer requestIndex = Integer.valueOf(requestContainer.requestIndex);
             if (travelHistories.containsKey(requestIndex))
-                travelHistories.get(requestIndex).register(requestContainer, simulationObject.now);
+                travelHistories.get(requestIndex).register(requestContainer, Quantity.of(simulationObject.now, SI.SECOND));
             else
                 travelHistories.put(requestIndex, new TravelHistory(requestContainer, simulationObject.now));
         }
@@ -56,12 +57,12 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
          * and the number of waiting customers */
         time.append(RealScalar.of(simulationObject.now));
         Tensor submission = Tensor.of(simulationObject.requests.stream()//
-                .filter(rc -> rc.requestStatus.unServiced())//
+                .filter(rc -> RStatusHelper.unserviced(rc.requestStatus))//
                 .map(rc -> RealScalar.of(simulationObject.now - rc.submissionTime)));
         waitTimePlotValues.append(Join.of(StaticHelper.quantiles(submission, Quantiles.SET), //
                 Tensors.vector(StaticHelper.means(submission).number().doubleValue())));
         waitingCustomers.append(RationalScalar.of(simulationObject.requests.stream()//
-                .filter(rc -> rc.requestStatus.unServiced()).count(), 1));//
+                .filter(rc -> RStatusHelper.unserviced(rc.requestStatus)).count(), 1));//
 
         /** maximum time */
         tLast = Quantity.of(simulationObject.now, SI.SECOND);
@@ -88,8 +89,6 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
         totJTAgg = Tensors.of(StaticHelper.quantiles(getTotalJourneyTimes(), Quantiles.SET), //
                 Mean.of(getTotalJourneyTimes()), //
                 getTotalJourneyTimes().flatten(-1).reduce(Max::of).get().Get());
-
-        travelHistories.values().forEach(th -> th.isConsistent());
     }
 
     /** @return {@link Tensor} containing all recorded wait times of the simulation */

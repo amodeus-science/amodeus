@@ -339,7 +339,7 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
     /** save simulation data into {@link SimulationObject} for later analysis and visualization. */
     @Override
     protected final void notifySimulationSubscribers(long round_now, StorageUtils storageUtils) {
-        if (publishPeriod > 0 && round_now % publishPeriod == 0) {
+        if (publishPeriod > 0 && round_now % publishPeriod == 0 && round_now > 1) {
             SimulationObjectCompiler simulationObjectCompiler = SimulationObjectCompiler.create( //
                     round_now, getInfoLine(), total_matchedRequests);
 
@@ -360,10 +360,15 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
             periodAssignedRequests.clear();
             periodPickedUpRequests.clear();
 
+            /** insert {@link RoboTaxi}s */
             simulationObjectCompiler.insertVehicles(getRoboTaxis());
-            SimulationObject simulationObject = simulationObjectCompiler.compile();
+
+            /** insert information of association of {@link RoboTaxi}s and {@link AVRequest}s */
+            simulationObjectCompiler.addRequestRoboTaxiAssoc(pickupRegister);
+            simulationObjectCompiler.addRequestRoboTaxiAssoc(rqstDrvRegister);
 
             /** first pass vehicles typically empty, then no storage / communication of {@link SimulationObject}s */
+            SimulationObject simulationObject = simulationObjectCompiler.compile();
             if (SimulationObjects.hasVehicles(simulationObject)) {
                 SimulationDistribution.of(simulationObject, storageUtils);
             }

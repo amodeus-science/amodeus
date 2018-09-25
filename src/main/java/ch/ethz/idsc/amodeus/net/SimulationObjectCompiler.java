@@ -52,14 +52,27 @@ public class SimulationObjectCompiler {
     }
 
     private void insertRequest(AVRequest avRequest, RequestStatus requestStatus) {
-        RequestContainer requestContainer = RequestContainerCompiler.compile(avRequest, db, requestStatus);
-        requestMap.put(avRequest.getId().toString(), requestContainer);
+        if (requestMap.containsKey(avRequest.getId().toString())) {
+            requestMap.get(avRequest.getId().toString()).requestStatus.add(requestStatus);
+        } else {
+            RequestContainer requestContainer = RequestContainerCompiler.compile(avRequest, db, requestStatus);
+            requestMap.put(avRequest.getId().toString(), requestContainer);
+        }
     }
 
     private void insertVehicle(RoboTaxi robotaxi) {
         VehicleContainer vehicleContainer = VehicleContainerCompiler.compile(robotaxi, db);
         final String key = robotaxi.getId().toString();
         vehicleMap.put(key, vehicleContainer);
+    }
+
+    public void addRequestRoboTaxiAssoc(Map<AVRequest, RoboTaxi> map) {
+        map.entrySet().stream().forEach(e -> {
+            if (requestMap.containsKey(e.getKey().getId().toString())) {
+                requestMap.get(e.getKey().getId().toString()).associatedVehicle = //
+                        db.getVehicleIndex(e.getValue());
+            }
+        });
     }
 
     public SimulationObject compile() {

@@ -1,6 +1,8 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.net;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Objects;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RequestStatus;
@@ -9,7 +11,6 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
 enum RequestContainerCompiler {
     ;
-
     /** @param avRequest
      * @param db
      * @param requestStatus
@@ -28,9 +29,7 @@ enum RequestContainerCompiler {
         requestContainer.fromLinkIndex = db.getLinkIndex(avRequest.getFromLink());
         requestContainer.submissionTime = avRequest.getSubmissionTime();
         requestContainer.toLinkIndex = db.getLinkIndex(avRequest.getToLink());
-        requestContainer.requestStatus = requestStatus;
-
+        requestContainer.requestStatus = new HashSet<>(Arrays.asList(requestStatus));
         return requestContainer;
     }
-
 }

@@ -14,7 +14,6 @@ import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatchingUtils;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
-import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
@@ -50,16 +49,12 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
     @Override
     public void redispatch(double now) {
         final long round_now = Math.round(now);
-
         if (round_now % dispatchPeriod == 0) {
             printVals = bipartiteMatchingUtils.executePickup( //
                     this, //
                     getDivertableRoboTaxis(), //
                     getAVRequests(), //
-                    distanceFunction, network, //
-                    /* whenever the distance function is Euclidean the kdTree reduction
-                     * should be used to enhance performance */
-                    distanceFunction.equals(EuclideanDistanceFunction.INSTANCE));
+                    distanceFunction, network);
         }
     }
 
