@@ -79,7 +79,7 @@ public class LPTimeVariantTester {
     }
 
     @Test
-    public void testLP2Nodes() {
+    public void testLP2Nodes() throws IOException {
         // init LP time-invariant
         LPTimeVariant lp = new LPTimeVariant(virtualNetwork2, network, lpOptions, Tensors.of(Tensors.of(Tensors.vector(0, 0), Tensors.vector(0, 0))));
         assertEquals(lp.getAlphaRate_ij(), null);

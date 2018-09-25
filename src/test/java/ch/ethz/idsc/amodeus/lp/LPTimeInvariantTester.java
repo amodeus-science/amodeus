@@ -75,7 +75,7 @@ public class LPTimeInvariantTester {
     }
 
     @Test
-    public void testLP2Nodes() {
+    public void testLP2Nodes() throws IOException {
         // init LP time-invariant
         LPTimeInvariant lp = new LPTimeInvariant(virtualNetwork2, Tensors.of(Tensors.of(Tensors.vector(0, 0), Tensors.vector(0, 0))));
         assertEquals(lp.getAlphaRate_ij(), null);
@@ -165,7 +165,7 @@ public class LPTimeInvariantTester {
     }
 
     @Test
-    public void testLP3Nodes() {
+    public void testLP3Nodes() throws IOException {
         // init LP time-invariant
         LPTimeInvariant lp = new LPTimeInvariant(virtualNetwork3, Tensors.of(Tensors.of(Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))));
         assertEquals(lp.getAlphaRate_ij(), null);

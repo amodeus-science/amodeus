@@ -18,11 +18,11 @@ import ch.ethz.idsc.tensor.Tensor;
 public enum TravelDataCreator {
     ;
     /** Creates the travel data by counting all travel requests and solving an LP depending on this request information */
-    public static TravelData create(VirtualNetwork<Link> virtualNetwork, Network network, Population population, ScenarioOptions scenarioOptions, int numberOfVehicles)
+    public static TravelData create(VirtualNetwork<Link> virtualNetwork, Network network, Population population, ScenarioOptions scenarioOptions)
             throws Exception {
         Tensor lambdaAbsolute = getLambdaAbsolute(network, virtualNetwork, population, scenarioOptions.getdtTravelData());
 
-        LPSolver lp = LPPreparer.run(virtualNetwork, network, lambdaAbsolute, numberOfVehicles);
+        LPSolver lp = LPPreparer.run(virtualNetwork, network, lambdaAbsolute);
 
         String lpName = lp.getClass().getSimpleName();
         Tensor alphaAbsolute = lp.getAlphaAbsolute_ij();
