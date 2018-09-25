@@ -75,30 +75,6 @@ public class SharedMenu {
         GlobalAssert.that(roboTaxiMenu.isEmpty());
         roboTaxiMenu.addAll(sharedAVMenu.getCourses());
     }
-    
-    /**
-     *  Changes Order of the Menue such that first all Pickups and then All Dropoffs occur. The order is kept. The Redirect Courses are put at the end*/
-    public void firstAllPickupsThenDropoffs() {
-        // TODO Computationally improve
-        SharedMenu newMenu = new SharedMenu();
-        // add PickupCourses
-        for (SharedCourse sharedCourse : roboTaxiMenu) {
-            if (sharedCourse.getMealType().equals(SharedMealType.PICKUP)) {
-                newMenu.addAVCourseAsDessert(sharedCourse);
-            }
-        }
-        for (SharedCourse sharedCourse : roboTaxiMenu) {
-            if (sharedCourse.getMealType().equals(SharedMealType.DROPOFF)) {
-                newMenu.addAVCourseAsDessert(sharedCourse);
-            }
-        }
-        for (SharedCourse sharedCourse : roboTaxiMenu) {
-            if (sharedCourse.getMealType().equals(SharedMealType.REDIRECT)) {
-                newMenu.addAVCourseAsDessert(sharedCourse);
-            }
-        }
-        replaceWith(newMenu);
-    }
 
     // **************************************************
     // REMOVING COURSES
