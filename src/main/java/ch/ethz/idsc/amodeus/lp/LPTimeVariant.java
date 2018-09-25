@@ -46,8 +46,8 @@ public class LPTimeVariant extends LPTimeVariantBase {
 
     /** @param virtualNetwork
      *            the virtual network (complete directed graph) on which the optimization is computed. */
-    public LPTimeVariant(VirtualNetwork<Link> virtualNetwork, Network network, LPOptions lpOptions, Tensor lambdaAbsolute_ij) {
-        super(virtualNetwork, network, lambdaAbsolute_ij);
+    public LPTimeVariant(VirtualNetwork<Link> virtualNetwork, Network network, LPOptions lpOptions, Tensor lambdaAbsolute_ij, int numberVehicles) {
+        super(virtualNetwork, network, lambdaAbsolute_ij, numberVehicles);
         System.out.println("Creating time-variant LP with QueuingWeight " + lpOptions.getLPWeightQ() + " and RebalancingWeight " + lpOptions.getLPWeightR());
         weightQ = lpOptions.getLPWeightQ();
         weightR = lpOptions.getLPWeightR();
@@ -64,7 +64,8 @@ public class LPTimeVariant extends LPTimeVariantBase {
 
     @Override
     public Tensor getTimeVS_ij() {
-        // identify the travel times between the virtual stations (based on the paper with direct euclidean distance between virtual stations and velocity 30km/h)
+        // identify the travel times between the virtual stations (based on the paper with direct euclidean distance between virtual stations and velocity
+        // 30km/h)
         return LPUtils.getEuclideanTravelTimeBetweenVSCenters(virtualNetwork, LPUtils.AVERAGE_VEL);
     }
 

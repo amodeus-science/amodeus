@@ -57,13 +57,13 @@ public abstract class LPTimeVariantBase implements LPSolver {
     /** @param virtualNetwork
      * @param network
      * @param lambdaAbsolute_ij has to be integer numbered */
-    protected LPTimeVariantBase(VirtualNetwork<Link> virtualNetwork, Network network, Tensor lambdaAbsolute_ij) {
+    protected LPTimeVariantBase(VirtualNetwork<Link> virtualNetwork, Network network, Tensor lambdaAbsolute_ij, int numberVehicles) {
         this.virtualNetwork = virtualNetwork;
         nvNodes = virtualNetwork.getvNodesCount();
         this.lambdaAbsolute_ij = LPUtils.getRoundedRequireNonNegative(lambdaAbsolute_ij);
         timeSteps = Dimensions.of(lambdaAbsolute_ij).get(0);
         timeInterval = Magnitude.SECOND.toInt(LPUtils.DURATION) / timeSteps;
-        numberVehicles = LPUtils.getNumberOfVehicles();
+        this.numberVehicles = numberVehicles;
 
         if (virtualNetwork.getvLinksCount() != (nvNodes * nvNodes - nvNodes)) {
             System.err.println("These computations are only valid for a complete graph. Aborting.");

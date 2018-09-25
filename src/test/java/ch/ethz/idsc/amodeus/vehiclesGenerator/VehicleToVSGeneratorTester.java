@@ -24,6 +24,7 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.testutils.TestUtils;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
+import ch.ethz.idsc.amodeus.util.io.ProvideAVConfig;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -33,6 +34,7 @@ import ch.ethz.idsc.tensor.sca.Chop;
 import ch.ethz.matsim.av.config.AVConfig;
 import ch.ethz.matsim.av.config.AVGeneratorConfig;
 import ch.ethz.matsim.av.config.AVOperatorConfig;
+import ch.ethz.matsim.av.framework.AVConfigGroup;
 
 public class VehicleToVSGeneratorTester {
     private static final int TRIALS = 1000;
@@ -53,13 +55,17 @@ public class VehicleToVSGeneratorTester {
         File scenarioDirectory = new File(TestUtils.getSuperFolder("amodeus"), "resources/testScenario");
         scenarioOptions = new ScenarioOptions(scenarioDirectory, ScenarioOptionsBase.getDefault());
         File configFile = new File(scenarioDirectory, scenarioOptions.getPreparerConfigName());
-        Config config = ConfigUtils.loadConfig(configFile.getAbsolutePath());
+        AVConfigGroup avCg = new AVConfigGroup();
+        Config config = ConfigUtils.loadConfig(configFile.getAbsolutePath(), avCg);
+        AVConfig avC = ProvideAVConfig.with(config, avCg);
+        AVGeneratorConfig genConfig = avC.getOperatorConfigs().iterator().next().getGeneratorConfig();
+        int numRt = (int) genConfig.getNumberOfVehicles();
         Scenario scenario = ScenarioUtils.loadScenario(config);
         network = scenario.getNetwork();
         population = scenario.getPopulation();
         scenarioOptions.setProperty(ScenarioOptionsBase.NUMVNODESIDENTIFIER, "3");
         VirtualNetworkCreator virtualNetworkCreator = scenarioOptions.getVirtualNetworkCreator();
-        virtualNetwork = virtualNetworkCreator.create(network, population, scenarioOptions);
+        virtualNetwork = virtualNetworkCreator.create(network, population, scenarioOptions, numRt);
 
         /** creating dummy config with 10 vehicles */
         avGeneratorConfig = new AVGeneratorConfig(new AVOperatorConfig("id", new AVConfig()), "strategy");

@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ch.ethz.idsc</groupId>
 	<artifactId>amodeus</artifactId>
-	<version>1.4.4</version>
+	<version>1.4.5</version>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -38,7 +38,7 @@
 		<dependency>
 			<groupId>ch.ethz.idsc</groupId>
 			<artifactId>tensor</artifactId>
-			<version>0.5.9</version>
+			<version>0.6.0</version>
 		</dependency>
 		<dependency>
 			<groupId>de.lmu.ifi.dbs.elki</groupId>
