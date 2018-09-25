@@ -29,11 +29,15 @@ import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.test.TestFileHandling;
 import ch.ethz.idsc.amodeus.testutils.TestUtils;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
+import ch.ethz.idsc.amodeus.util.io.ProvideAVConfig;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
+import ch.ethz.matsim.av.config.AVConfig;
+import ch.ethz.matsim.av.config.AVGeneratorConfig;
+import ch.ethz.matsim.av.framework.AVConfigGroup;
 
 public class PopulationToolsTestVN2 {
     private static VirtualNetwork<Link> virtualNetwork2;
@@ -55,7 +59,11 @@ public class PopulationToolsTestVN2 {
         /* input data */
         scenarioOptions = new ScenarioOptions(scenarioDirectory, ScenarioOptionsBase.getDefault());
         File configFile = new File(scenarioDirectory, scenarioOptions.getPreparerConfigName());
-        Config config = ConfigUtils.loadConfig(configFile.getAbsolutePath());
+        AVConfigGroup avCg = new AVConfigGroup();
+        Config config = ConfigUtils.loadConfig(configFile.getAbsolutePath(), avCg);
+        AVConfig avC = ProvideAVConfig.with(config, avCg);
+        AVGeneratorConfig genConfig = avC.getOperatorConfigs().iterator().next().getGeneratorConfig();
+        int numRt = (int) genConfig.getNumberOfVehicles();
         Scenario scenario = ScenarioUtils.loadScenario(config);
         network = scenario.getNetwork();
         population = scenario.getPopulation();
@@ -63,7 +71,7 @@ public class PopulationToolsTestVN2 {
         // create 2 node virtual network
         scenarioOptions.setProperty(ScenarioOptionsBase.NUMVNODESIDENTIFIER, "2");
         VirtualNetworkCreator virtualNetworkCreator = scenarioOptions.getVirtualNetworkCreator();
-        virtualNetwork2 = virtualNetworkCreator.create(network, population, scenarioOptions);
+        virtualNetwork2 = virtualNetworkCreator.create(network, population, scenarioOptions, numRt);
 
         Link node0 = (Link) virtualNetwork2.getVirtualNode(0).getLinks().toArray()[0];
         Link node1 = (Link) virtualNetwork2.getVirtualNode(1).getLinks().toArray()[0];
