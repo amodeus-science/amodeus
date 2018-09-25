@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
+import java.awt.Robot;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -625,12 +626,22 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
             periodPickedUpRequests.clear();
             periodFulfilledRequests.clear();
             periodSubmittdRequests.clear();
-
+            
+            /** insert {@link RoboTaxi}s */
             simulationObjectCompiler.insertVehicles(getRoboTaxis());
-            SimulationObject simulationObject = simulationObjectCompiler.compile();
 
+            /** insert information of association of {@link RoboTaxi}s and {@link AVRequest}s */
+            Map<AVRequest,RoboTaxi> map = new HashMap<>();
+            for(RoboTaxi roboTaxi :  requestRegister.keySet()){
+                for(AVRequest avr : requestRegister.get(roboTaxi).values()){
+                    map.put(avr,roboTaxi);
+                }                
+            }
+            simulationObjectCompiler.addRequestRoboTaxiAssoc(map);
+            
             /** in the first pass, the vehicles are typically empty, then
              * {@link SimulationObject} is not stored or communicated */
+            SimulationObject simulationObject = simulationObjectCompiler.compile();
             if (SimulationObjects.hasVehicles(simulationObject)) {
                 SimulationDistribution.of(simulationObject, storageUtils);
             }

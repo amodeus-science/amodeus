@@ -56,7 +56,7 @@ public enum LPUtils {
         int numberVehicles = 0;
         /** reading the number of vehicles out of the av.xml file */
         try {
-            File fXmlFile = new File("av.xml");
+            File fXmlFile = new File("av.xml"); // TODO still hard coded, try to read it from {@link Config}
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(fXmlFile);

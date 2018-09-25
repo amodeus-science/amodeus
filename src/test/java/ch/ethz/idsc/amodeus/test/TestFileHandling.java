@@ -46,6 +46,7 @@ public enum TestFileHandling {
         singleFiles.add(new File("network.xml"));
         singleFiles.add(new File("population.xml"));
         singleFiles.add(new File("AmodeusOptions.properties"));
+        singleFiles.add(new File("LPOptions.properties"));
 
         for (File file : singleFiles) {
             if (file.exists())
@@ -60,7 +61,7 @@ public enum TestFileHandling {
         /** output folder */
         File output = new File("output");
         if (output.exists())
-            FileDelete.of(output, 5, 10999);
+            FileDelete.of(output, 5, 15700);
 
     }
 

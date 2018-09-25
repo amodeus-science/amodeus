@@ -22,7 +22,7 @@ public enum TravelDataCreator {
             throws Exception {
         Tensor lambdaAbsolute = getLambdaAbsolute(network, virtualNetwork, population, scenarioOptions.getdtTravelData());
 
-        LPSolver lp = LPPreparer.run(virtualNetwork, network, lambdaAbsolute, scenarioOptions, numberOfVehicles);
+        LPSolver lp = LPPreparer.run(virtualNetwork, network, lambdaAbsolute, numberOfVehicles);
 
         String lpName = lp.getClass().getSimpleName();
         Tensor alphaAbsolute = lp.getAlphaAbsolute_ij();

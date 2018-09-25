@@ -10,11 +10,11 @@ enum StaticHelper {
     ;
 
     /** @param directory
-     *            with simulation data an dan IDSC.Options.properties file
+     *            with simulation data and an IDSC.Options.properties file
      * @return Properties object with default options and any options found in
      *         folder
      * @throws IOException */
-    static Properties loadOrCreate(File directory, Properties simOptions) throws IOException {
+    static Properties loadOrCreateScenarioOptions(File directory, Properties simOptions) throws IOException {
         System.out.println("working in directory \n" + directory.getCanonicalFile());
 
         File simOptionsFile = new File(directory, ScenarioOptionsBase.OPTIONSFILENAME);
@@ -26,4 +26,20 @@ enum StaticHelper {
         return simOptions;
     }
 
+    /** @param directory
+     *            with simulation data and an IDSC.Options.properties file
+     * @return Properties object with default options and any options found in
+     *         folder
+     * @throws IOException */
+    static Properties loadOrCreateLPOptions(File directory, Properties simOptions) throws IOException {
+        System.out.println("working in directory \n" + directory.getCanonicalFile());
+
+        File simOptionsFile = new File(directory, LPOptionsBase.OPTIONSFILENAME);
+        if (simOptionsFile.exists()) {
+            simOptions.load(new FileInputStream(simOptionsFile));
+        } else
+            LPOptionsBase.saveProperties(simOptions, simOptionsFile);
+
+        return simOptions;
+    }
 }

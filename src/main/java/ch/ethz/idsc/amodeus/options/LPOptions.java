@@ -16,7 +16,22 @@ public class LPOptions {
     }
 
     public LPOptions(File workingDirectory, Properties fallbackDefault) throws IOException {
-        this.properties = StaticHelper.loadOrCreate(workingDirectory, fallbackDefault);
+        this.properties = StaticHelper.loadOrCreateLPOptions(workingDirectory, fallbackDefault);
+    }
+
+    // PROPERTIES FUNCTIONS
+
+    public final void setProperty(String key, String value) {
+        properties.setProperty(key, value);
+    }
+
+    public void saveAndOverwriteLPOptions() throws IOException {
+        LPOptionsBase.saveProperties(properties);
+    }
+
+    public void saveToFolder(File folder, String header) throws IOException {
+        File file = new File(folder, LPOptionsBase.getOptionsFileName());
+        LPOptionsBase.saveProperties(properties, file, header);
     }
 
     public double getLPWeightQ() {
@@ -31,23 +46,9 @@ public class LPOptions {
         return LPCreator.valueOf(getString(ScenarioOptionsBase.LPSOLVER).toUpperCase());
     }
 
-    public File getShapeFile() {
-        File shapeFile = new File(getString(ScenarioOptionsBase.SHAPEFILEIDENTIFIER));
-        System.out.println("shapeFile = " + shapeFile.getAbsolutePath());
-        return shapeFile.exists() ? shapeFile : null;
-    }
-
     // base access functions ==================================================
     public final String getString(String key) {
         return properties.getProperty(key);
-    }
-
-    public final boolean getBoolean(String key) {
-        return Boolean.valueOf(properties.getProperty(key));
-    }
-
-    public final int getInt(String key) {
-        return Integer.valueOf(properties.getProperty(key));
     }
 
     public final double getDouble(String key) {
