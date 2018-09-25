@@ -32,7 +32,7 @@ import ch.ethz.idsc.tensor.alg.Dimensions;
  * Robotic load balancing for mobility-on-demand systems.
  * The International Journal of Robotics Research, 31(7), pp.839-854.
  * 
- * On page 845 on the right side is the implemented algorithm shown.
+ * On page 845 on the right-hand side is the implemented algorithm shown.
  * 
  * https://github.com/idsc-frazzoli/amodeus/files/2290529/lptimeinvariant-impl.pdf
  * 
