@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.lp;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -56,15 +57,15 @@ public abstract class LPTimeVariantBase implements LPSolver {
 
     /** @param virtualNetwork
      * @param network
-     * @param lambdaAbsolute_ij has to be integer numbered */
+     * @param lambdaAbsolute_ij has to be integer numbered
+     * @throws IOException */
     protected LPTimeVariantBase(VirtualNetwork<Link> virtualNetwork, Network network, Tensor lambdaAbsolute_ij) {
         this.virtualNetwork = virtualNetwork;
         nvNodes = virtualNetwork.getvNodesCount();
         this.lambdaAbsolute_ij = LPUtils.getRoundedRequireNonNegative(lambdaAbsolute_ij);
         timeSteps = Dimensions.of(lambdaAbsolute_ij).get(0);
         timeInterval = Magnitude.SECOND.toInt(LPUtils.DURATION) / timeSteps;
-        numberVehicles = LPUtils.getNumberOfVehicles();
-
+        numberVehicles = NumberRoboTaxis.load();
         if (virtualNetwork.getvLinksCount() != (nvNodes * nvNodes - nvNodes)) {
             System.err.println("These computations are only valid for a complete graph. Aborting.");
             GlobalAssert.that(false);

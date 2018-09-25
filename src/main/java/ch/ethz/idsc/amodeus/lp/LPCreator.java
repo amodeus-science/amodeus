@@ -11,22 +11,22 @@ import ch.ethz.idsc.tensor.Tensor;
 public enum LPCreator {
     NONE {
         @Override
-        public LPSolver create(VirtualNetwork<Link> virtualNetwork, Network network, LPOptions lpOptions, Tensor lambdaAbsolute, int numberOfVehicles) {
+        public LPSolver create(VirtualNetwork<Link> virtualNetwork, Network network, LPOptions lpOptions, Tensor lambdaAbsolute) {
             return new LPEmpty(virtualNetwork, lambdaAbsolute);
         }
     },
     TIMEINVARIANT {
         @Override
-        public LPSolver create(VirtualNetwork<Link> virtualNetwork, Network network, LPOptions lpOptions, Tensor lambdaAbsolute, int numberOfVehicles) {
-            return new LPTimeInvariant(virtualNetwork, lambdaAbsolute, numberOfVehicles);
+        public LPSolver create(VirtualNetwork<Link> virtualNetwork, Network network, LPOptions lpOptions, Tensor lambdaAbsolute) {
+                        return new LPTimeInvariant(virtualNetwork, lambdaAbsolute);
         }
     },
     TIMEVARIANT {
         @Override
-        public LPSolver create(VirtualNetwork<Link> virtualNetwork, Network network, LPOptions lpOptions, Tensor lambdaAbsolute, int numberOfVehicles) {
+        public LPSolver create(VirtualNetwork<Link> virtualNetwork, Network network, LPOptions lpOptions, Tensor lambdaAbsolute) {
             return new LPTimeVariant(virtualNetwork, network, lpOptions, lambdaAbsolute);
         }
     };
 
-    public abstract LPSolver create(VirtualNetwork<Link> virtualNetwork, Network network, LPOptions lpOptions, Tensor lambdaAbsolute, int numberOfVehicles);
+    public abstract LPSolver create(VirtualNetwork<Link> virtualNetwork, Network network, LPOptions lpOptions, Tensor lambdaAbsolute);
 }

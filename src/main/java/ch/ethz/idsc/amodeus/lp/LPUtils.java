@@ -51,27 +51,28 @@ public enum LPUtils {
         return travelTime;
     }
 
-    /** @return returns the parameter of the av.xml file for the number of vehicles */
-    public static int getNumberOfVehicles() {
-        int numberVehicles = 0;
-        /** reading the number of vehicles out of the av.xml file */
-        try {
-            File fXmlFile = new File("av.xml"); // TODO still hard coded, try to read it from {@link Config}
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(fXmlFile);
-
-            NodeList nList = doc.getElementsByTagName("generator");
-            Element elem = (Element) nList.item(0);
-            Element subelem = (Element) elem.getElementsByTagName("param").item(0);
-            numberVehicles = Integer.parseInt(subelem.getAttribute("value"));
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("av.xml or av_v1.dtd file not found!!! Using default value for number of vehicles instead, which is 100!");
-            numberVehicles = 100;
-        }
-        return numberVehicles;
-    }
+//    /** @return returns the parameter of the av.xml file for the number of vehicles */
+//    public static int getNumberOfVehicles() {
+//        int numberVehicles = 0;
+//        /** reading the number of vehicles out of the av.xml file */
+//        try {
+//            File fXmlFile = new File("av.xml"); // TODO still hard coded, try to read it from {@link Config}
+//            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+//            dbFactory.setValidating(false);
+//            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+//            Document doc = dBuilder.parse(fXmlFile);
+//
+//            NodeList nList = doc.getElementsByTagName("generator");
+//            Element elem = (Element) nList.item(0);
+//            Element subelem = (Element) elem.getElementsByTagName("param").item(0);
+//            numberVehicles = Integer.parseInt(subelem.getAttribute("value"));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            System.err.println("av.xml or av_v1.dtd file not found!!! Using default value for number of vehicles instead, which is 100!");
+//            numberVehicles = 100;
+//        }
+//        return numberVehicles;
+//    }
 
     /** @param tensor
      * @return the rounded vector where non-negativity and almost integer elements are required, else an exception is thrown */

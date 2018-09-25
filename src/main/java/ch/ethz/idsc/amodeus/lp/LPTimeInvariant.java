@@ -1,6 +1,9 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.lp;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -14,8 +17,14 @@ import org.gnu.glpk.SWIGTYPE_p_int;
 import org.gnu.glpk.glp_prob;
 import org.gnu.glpk.glp_smcp;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.core.config.Config;
+import org.matsim.core.config.ConfigGroup;
+import org.matsim.core.config.ConfigUtils;
 
 import ch.ethz.idsc.amodeus.dispatcher.FeedforwardFluidicRebalancingPolicy;
+import ch.ethz.idsc.amodeus.options.ScenarioOptions;
+import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
+import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.util.math.Magnitude;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
@@ -25,6 +34,10 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.Dimensions;
+import ch.ethz.matsim.av.config.AVConfig;
+import ch.ethz.matsim.av.config.AVConfigReader;
+import ch.ethz.matsim.av.config.AVGeneratorConfig;
+import ch.ethz.matsim.av.framework.AVConfigGroup;
 
 /** Implementation of the LPTimeInvariant solver of
  * "Feedforward Fluidic Optimal Rebalancing Policy" presented in
@@ -59,9 +72,10 @@ public class LPTimeInvariant implements LPSolver {
     private int rowId;
 
     /** @param virtualNetwork
-     *            the virtual network (complete directed graph) on which the optimization is computed. */
-    public LPTimeInvariant(VirtualNetwork<Link> virtualNetwork, Tensor lambdaAbsolute_ij, int numberOfVehicles) {
-        numberVehicles = numberOfVehicles;
+     *            the virtual network (complete directed graph) on which the optimization is computed.
+     * @throws IOException */
+    public LPTimeInvariant(VirtualNetwork<Link> virtualNetwork, Tensor lambdaAbsolute_ij) {
+        numberVehicles = NumberRoboTaxis.load();
         nvNodes = virtualNetwork.getvNodesCount();
         gamma_ij = LPUtils.getEuclideanTravelTimeBetweenVSCenters(virtualNetwork, LPUtils.AVERAGE_VEL);
         timeSteps = Dimensions.of(lambdaAbsolute_ij).get(0);
@@ -77,10 +91,6 @@ public class LPTimeInvariant implements LPSolver {
         }
 
         System.out.println("creating rebalancing time-invariant LP for system with " + nvNodes + " virtualNodes");
-    }
-
-    public LPTimeInvariant(VirtualNetwork<Link> virtualNetwork, Tensor lambdaAbsolute_ij) {
-        this(virtualNetwork, lambdaAbsolute_ij, LPUtils.getNumberOfVehicles());
     }
 
     /** initiate the linear program */
