@@ -463,10 +463,8 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
             boolean isOk = dropoffVehicle.getSchedule().getCurrentTask() == Schedules.getLastTask(dropoffVehicle.getSchedule()); // instanceof AVDriveTask;
 
             SharedCourse currentCourse = dropoffVehicle.getMenu().getStarterCourse();
-            if (currentCourse == null) {
-                // TODO Lukas, How can it be we have this case.
-                System.out.println("its the current course");
-            }
+            Objects.requireNonNull(currentCourse);
+
             AVRequest avR = requestRegister.get(dropoffVehicle).get(currentCourse.getRequestId());
 
             if (currentCourse.getMealType().equals(SharedMealType.DROPOFF) && //

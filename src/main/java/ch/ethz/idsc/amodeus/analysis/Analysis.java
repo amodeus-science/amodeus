@@ -11,8 +11,15 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.dvrp.router.DistanceAsTravelDisutility;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
+import org.matsim.core.router.FastAStarLandmarksFactory;
+import org.matsim.core.router.util.LeastCostPathCalculator;
+import org.matsim.core.router.util.LeastCostPathCalculatorFactory;
+import org.matsim.core.router.util.TravelDisutility;
+import org.matsim.core.router.util.TravelTime;
+import org.matsim.core.trafficmonitoring.FreeSpeedTravelTime;
 
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisElement;
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
@@ -169,7 +176,7 @@ public class Analysis {
         System.out.println("Found files: " + size);
         int numVehicles = storageSupplier.getSimulationObject(1).vehicles.size();
 
-        analysisSummary = new AnalysisSummary(numVehicles, size);
+        analysisSummary = new AnalysisSummary(numVehicles, size, network);
 
         // default List of Analysis Elements which will be loaded
         analysisElements.add(analysisSummary.getSimulationInformationElement());
