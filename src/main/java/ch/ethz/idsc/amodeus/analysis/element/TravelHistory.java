@@ -1,7 +1,9 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.analysis.element;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.core.router.util.LeastCostPathCalculator;
@@ -12,7 +14,6 @@ import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
 import ch.ethz.idsc.amodeus.net.RequestContainer;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.util.math.SI;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.qty.Quantity;
@@ -35,6 +36,10 @@ public class TravelHistory {
 
     /** Standard Time */
     private Scalar stdDrpOffTime;
+    
+    /** Sharing properties:*/
+//    private Integer servedByVehicle;
+//    private Set<Integer> sharedWith = new HashSet<>();
 
     public TravelHistory(RequestContainer requestContainer, long now) {
         fromLinkIndx = requestContainer.fromLinkIndex;
