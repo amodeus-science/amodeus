@@ -19,8 +19,8 @@ public enum NumberPassengerStackedImage implements AnalysisExport {
 
         NumberPassengersAnalysis nPA = analysisSummary.getNumberPassengersAnalysis();
         
-        String[] statusLabels = new String[nPA.getMaxNumPassengers().number().intValue()+1];
-        IntStream.range(0, nPA.getMaxNumPassengers().number().intValue()+1).forEach(i -> statusLabels[i] = i + "Passenger" );
+        String[] statusLabels = new String[nPA.getMaxNumPassengers().number().intValue()+1]; 
+        IntStream.range(0, nPA.getMaxNumPassengers().number().intValue()+1).forEach(i -> statusLabels[i] = i + " Passenger" );
         
         Double[] scale = new Double[statusLabels.length];
         Arrays.fill(scale, 1.0);

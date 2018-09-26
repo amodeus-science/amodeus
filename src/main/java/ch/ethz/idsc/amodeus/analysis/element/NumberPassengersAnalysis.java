@@ -34,8 +34,9 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
 
     private final Map<Integer, Integer> requestVehiclePickups = new HashMap<>();
     private final Map<Integer, Set<Integer>> currentPassengers = new HashMap<>();
-    private Tensor sharedWithNOthers;
-    private Tensor maxOtherSharedDis;
+    private final Map<Integer, Integer> sharedOthersMap = new HashMap<>();
+
+    private final Tensor sharedOthersPerRequest = Tensors.empty();
 
     @Override
     public void register(SimulationObject simulationObject) {
@@ -43,7 +44,6 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
 
         if (beforeFirstSimulationObject) {
             lastNumPassInVs = Array.zeros(simulationObject.vehicles.size());
-            sharedWithNOthers = Array.zeros(simulationObject.requests.size());
             simulationObject.vehicles.forEach(vc -> currentPassengers.put(vc.vehicleIndex, new HashSet<>()));
             beforeFirstSimulationObject = false;
         }
@@ -62,11 +62,12 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
             if (requestContainer.requestStatus.contains(RequestStatus.DROPOFF)) {
                 GlobalAssert.that(requestVehiclePickups.containsKey(requestContainer.requestIndex));
                 // TODO It should be possible that the dropoff vehicle is stored in the Request Container
+                // TODO but it seems this information is not stored!
                 int vehicleIndex = requestVehiclePickups.get(requestContainer.requestIndex);
                 Scalar lastNumberPassengerDropOff = lastNumPassInVs.Get(vehicleIndex);
                 lastNumPassInVs.set(lastNumberPassengerDropOff.subtract(RealScalar.ONE), vehicleIndex);
 
-                boolean result = currentPassengers.get(requestContainer.associatedVehicle).remove(requestContainer.requestIndex);
+                boolean result = currentPassengers.get(vehicleIndex).remove(requestContainer.requestIndex);
                 GlobalAssert.that(result);
             }
         }
@@ -78,13 +79,16 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
 
     private void updateSharedWith(int vehicleIndex) {
         Set<Integer> requestsInVehicle = currentPassengers.get(vehicleIndex);
-        Scalar numberOtherPassengers = RealScalar.of(requestsInVehicle.size()).subtract(RealScalar.ONE);
+        int numberOtherPassengers = requestsInVehicle.size() - 1;
         for (Integer requestindex : requestsInVehicle) {
-            if (Scalars.lessThan(sharedWithNOthers.Get(requestindex), numberOtherPassengers)) {
-                sharedWithNOthers.set(numberOtherPassengers, requestindex);
+            if (sharedOthersMap.containsKey(requestindex)) {
+                if (sharedOthersMap.get(requestindex) < numberOtherPassengers) {
+                    sharedOthersMap.put(requestindex, numberOtherPassengers);
+                }
+            } else {
+                sharedOthersMap.put(requestindex, numberOtherPassengers);
             }
         }
-
     }
 
     @Override
@@ -93,8 +97,10 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
         maxNumPassengers = numberPassengers.flatten(-1).reduce(Max::of).get().Get();
         passengerDistribution = PadRight.zeros(passengerDistribution.length(), maxNumPassengers.number().intValue() + 1).apply(passengerDistribution);
 
-        /** max Shared number per request aggregate */
-        maxOtherSharedDis = BinCounts.of(sharedWithNOthers);
+        
+        for (Integer index : sharedOthersMap.keySet()) {
+            sharedOthersPerRequest.append(RealScalar.of(sharedOthersMap.get(index)));
+        }
     }
 
     public Tensor getNumberPassengers() {
@@ -113,12 +119,16 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
         return time;
     }
 
-    public Tensor getMaxOtherSharedDis() {
-        return maxOtherSharedDis;
+    public Tensor getSharedOthersDistribution() {
+        return BinCounts.of(sharedOthersPerRequest);
     }
 
-    public Tensor getSharedWithNOthers() {
-        return sharedWithNOthers;
+    /**
+     * 
+     * @return the maximal number of other customer in the Robo Taxi for picked up requests. The order of the Requests is not corresponding to the index. 
+     */
+    public Tensor getSharedOthersPerRequest() {
+        return sharedOthersPerRequest;
     }
 
     @Override
