@@ -54,7 +54,7 @@ public class DemoDispatcher extends RebalancingDispatcher {
 
         // stop all vehicles which are driving by an open request
         total_abortTrip += DrivebyRequestStopper //
-                .stopDrivingBy(DispatcherUtils.getAVRequestsAtLinks(getAVRequests()), getDivertableRoboTaxis(), this::setRoboTaxiPickup);
+                .stopDrivingBy(DispatcherUtils.getAVRequestsAtLinks(getAVRequests()), getDivertableRoboTaxis(), this::setRoboTaxiPickup).size();
 
         // send vehicles to travel around the city to random links (random
         // loitering)
