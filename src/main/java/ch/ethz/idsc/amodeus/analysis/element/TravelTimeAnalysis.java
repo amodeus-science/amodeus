@@ -168,7 +168,7 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
      *         extra drive time quantile 3},extra drive time mean, extra drive time maximum}
      *         chosen quantiles defined in {@link Quantiles} */
     public Tensor getXDTAggrgte() {
-        return totJTAgg;
+        return xDTAgg;
     }
 
     @Override

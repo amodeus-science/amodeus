@@ -28,6 +28,16 @@ public enum ColorScheme {
             new Color(0, 0, 255), //
             new Color(0, 255, 0), //
             new Color(224, 224, 224)), // off service
+    LONG( // One being used right now
+            new Color(255, 85, 85), // with customer
+            new Color(85, 85, 255), // to customer
+            new Color(85, 255, 85), // rebalance
+            new Color(255, 255, 85), // stay
+            new Color(255, 85, 255), // TODO LUkas Fill with meaningfull colors
+            new Color(255, 85, 255),
+            new Color(255, 85, 255),
+            new Color(255, 85, 255),
+            new Color(255, 85, 255)), // off service
     ;
 
     private final Color[] colors;
