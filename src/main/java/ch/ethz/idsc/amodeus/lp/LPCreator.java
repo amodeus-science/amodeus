@@ -24,7 +24,7 @@ public enum LPCreator {
     TIMEVARIANT {
         @Override
         public LPSolver create(VirtualNetwork<Link> virtualNetwork, Network network, LPOptions lpOptions, Tensor lambdaAbsolute, int numberOfVehicles) {
-            return new LPTimeVariant(virtualNetwork, network, lpOptions, lambdaAbsolute);
+            return new LPTimeVariant(virtualNetwork, network, lpOptions, lambdaAbsolute, numberOfVehicles);
         }
     };
 

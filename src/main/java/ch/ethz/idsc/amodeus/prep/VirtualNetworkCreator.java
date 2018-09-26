@@ -12,6 +12,7 @@ public interface VirtualNetworkCreator {
     /** @param network
      * @param population
      * @param scenarioOptions
+     * @param numRoboTaxis
      * @return virtual network */
-    VirtualNetwork<Link> create(Network network, Population population, ScenarioOptions scenarioOptions);
+    VirtualNetwork<Link> create(Network network, Population population, ScenarioOptions scenarioOptions, int numRoboTaxis);
 }

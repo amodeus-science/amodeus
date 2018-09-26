@@ -6,15 +6,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 import org.gnu.glpk.GLPK;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.gbl.MatsimRandom;
@@ -26,13 +23,9 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.testutils.TestPreparer;
 import ch.ethz.idsc.amodeus.testutils.TestServer;
 import ch.ethz.idsc.amodeus.testutils.TestUtils;
-import ch.ethz.idsc.amodeus.traveldata.TravelDataTestHelper;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.util.math.SI;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkGet;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkIO;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
@@ -46,9 +39,6 @@ public class ScenarioPipeLineTest {
 
     private static TestPreparer testPreparer;
     private static TestServer testServer;
-    private static VirtualNetwork<Link> vNCreated;
-    private static VirtualNetwork<Link> vNSaved;
-    private static TravelDataTestHelper travelDataTestHelper;
 
     @BeforeClass
     public static void setUpOnce() throws Exception {
@@ -73,14 +63,6 @@ public class ScenarioPipeLineTest {
 
         // run scenario server
         testServer = TestServer.run().on(workingDirectory);
-
-        // prepare travel data test
-        vNCreated = VirtualNetworkGet.readDefault(testPreparer.getPreparedNetwork());
-        Map<String, Link> map = new HashMap<>();
-        testPreparer.getPreparedNetwork().getLinks().entrySet().forEach(e -> map.put(e.getKey().toString(), e.getValue()));
-        vNSaved = VirtualNetworkIO.fromByte(map, new File("resources/testComparisonFiles/virtualNetwork"));
-        travelDataTestHelper = TravelDataTestHelper.prepare(vNCreated, vNSaved);
-
     }
 
     @Test
@@ -112,27 +94,6 @@ public class ScenarioPipeLineTest {
         Population population = testPreparer.getPreparedPopulation();
         assertEquals(2000, population.getPersons().size());
 
-        // consistency of virtualNetwork
-        assertEquals(testServer.getScenarioOptions().getNumVirtualNodes(), vNCreated.getVirtualNodes().size());
-        assertEquals(vNSaved.getVirtualNodes().size(), vNCreated.getVirtualNodes().size());
-        assertEquals(vNSaved.getVirtualLinks().size(), vNCreated.getVirtualLinks().size());
-        assertEquals(vNSaved.getVirtualLink(0).getId(), vNCreated.getVirtualLink(0).getId());
-        assertEquals(vNSaved.getVirtualLink(5).getFrom().getId(), vNCreated.getVirtualLink(5).getFrom().getId());
-        assertEquals(vNSaved.getVirtualLink(6).getTo().getId(), vNCreated.getVirtualLink(6).getTo().getId());
-        assertEquals(vNSaved.getVirtualNode(0).getLinks().size(), vNCreated.getVirtualNode(0).getLinks().size());
-        assertEquals(vNSaved.getVirtualNode(1).getLinks().size(), vNCreated.getVirtualNode(1).getLinks().size());
-        assertEquals(vNSaved.getVirtualNode(2).getLinks().size(), vNCreated.getVirtualNode(2).getLinks().size());
-        assertEquals(vNSaved.getVirtualNode(3).getLinks().size(), vNCreated.getVirtualNode(3).getLinks().size());
-
-        // consistency of travelData
-        assertTrue(travelDataTestHelper.timeIntervalCheck());
-        assertTrue(travelDataTestHelper.timeStepsCheck());
-        assertTrue(travelDataTestHelper.lambdaAbsoluteCheck());
-        assertTrue(travelDataTestHelper.lambdaAbsoluteAtTimeCheck());
-        assertTrue(travelDataTestHelper.lambdaInvalidAbsoluteAtTimeCheck());
-        assertTrue(travelDataTestHelper.lambdaRateCheck());
-        assertTrue(travelDataTestHelper.lambdaRateAtTimeCheck());
-        assertTrue(travelDataTestHelper.lambdaInvalidRateAtTimeCheck());
     }
 
     @Test
@@ -174,13 +135,12 @@ public class ScenarioPipeLineTest {
         distributionSum.flatten(-1).forEach(e -> //
         assertTrue(e.equals(RealScalar.of(ate.getSimulationInformationElement().vehicleSize()))));
 
-
         /** distance and occupancy ratios */
         Scalar occupancyRatio = Mean.of(ate.getDistancElement().ratios).Get(0);
         Scalar distanceRatio = Mean.of(ate.getDistancElement().ratios).Get(1);
         assertEquals(0.08269814814814815, occupancyRatio.number().doubleValue(), 0.0);
         assertEquals(0.6771498509323725, distanceRatio.number().doubleValue(), 0.0);
-        
+
         /** fleet distances */
         assertTrue(ate.getDistancElement().totalDistance >= 0.0);
         assertEquals(34551.22501867892, ate.getDistancElement().totalDistance, 0.0);

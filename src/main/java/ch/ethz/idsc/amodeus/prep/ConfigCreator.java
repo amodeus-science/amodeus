@@ -5,21 +5,17 @@ import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigWriter;
 
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
-import ch.ethz.matsim.av.framework.AVConfigGroup;
 
 public enum ConfigCreator {
     ;
-
+    /** * Function writes a simulation config file after prepared network and prepared population
+     * are created, the new config file is identical to @param fullConfig, except that network and
+     * population file names are changed, the new names are taken from @param scenOptions */
     public static void createSimulationConfigFile(Config fullConfig, ScenarioOptions scenOptions) {
-
-        // change population and network such that converted is loaded
+        /** change network and population name */
         fullConfig.network().setInputFile(scenOptions.getPreparedNetworkName() + ".xml.gz");
         fullConfig.plans().setInputFile(scenOptions.getPreparedPopulationName() + ".xml.gz");
-
-        AVConfigGroup avConfigGroup = new AVConfigGroup();
-        fullConfig.addModule(avConfigGroup);
-
-        // save under correct name
+        /** save with correct name */
         new ConfigWriter(fullConfig).writeFileV2(scenOptions.getSimulationConfigName());
     }
 
