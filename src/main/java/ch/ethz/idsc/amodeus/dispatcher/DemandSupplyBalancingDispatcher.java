@@ -33,7 +33,6 @@ import ch.ethz.matsim.av.router.AVRouter;
 public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
 
     private final int dispatchPeriod;
-    private final double[] networkBounds;
     private final QuadTree<AVRequest> pendingRequestsTree;
     /** data structures are used to enable fast "contains" searching */
     private final Set<AVRequest> openRequests = new HashSet<>();
@@ -50,7 +49,7 @@ public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
         super(config, avDispatcherConfig, travelTime, router, eventsManager);
         DispatcherConfig dispatcherConfig = DispatcherConfig.wrap(avDispatcherConfig);
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(10);
-        networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
+        double[] networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
         pendingRequestsTree = new QuadTree<>(networkBounds[0], networkBounds[1], networkBounds[2], networkBounds[3]);
         unassignedVehiclesTree = new QuadTree<>(networkBounds[0], networkBounds[1], networkBounds[2], networkBounds[3]);
     }
