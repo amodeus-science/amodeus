@@ -7,9 +7,9 @@ import java.util.stream.IntStream;
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
 import ch.ethz.idsc.amodeus.analysis.plot.CompositionStack;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Max;
+import ch.ethz.idsc.tensor.red.Total;
 
 public enum NumberOtherPassengerStackedChart implements AnalysisExport {
     INSTANCE;
@@ -24,10 +24,9 @@ public enum NumberOtherPassengerStackedChart implements AnalysisExport {
         String[] labels = new String[maxNumberOtherPassenger + 1];
         IntStream.range(0, maxNumberOtherPassenger + 1).forEach(i -> labels[i] = i + " other Passenger");
 
-        double[] values = new double[maxNumberOtherPassenger + 1];
-        
-        Tensor disTensor = nPA.getSharedOthersDistribution().divide(RealScalar.of(nPA.getSharedOthersPerRequest().length()));
-        IntStream.range(0, maxNumberOtherPassenger + 1).forEach(i -> values[i] = disTensor.Get(i).number().intValue());
+        Tensor sharedDistribution = nPA.getSharedOthersDistribution();
+        double totalNumberPassengers = Total.of(sharedDistribution).Get().number().doubleValue();
+        double[] values = sharedDistribution.stream().mapToDouble(s -> s.Get().number().doubleValue() / totalNumberPassengers).toArray();
 
         try {
             CompositionStack.of( //
