@@ -20,6 +20,7 @@ import com.google.inject.name.Named;
 import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
+import ch.ethz.idsc.amodeus.dispatcher.util.TreeMaintainer;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
@@ -33,9 +34,10 @@ import ch.ethz.matsim.av.router.AVRouter;
 public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
 
     private final int dispatchPeriod;
-    private final QuadTree<AVRequest> pendingRequestsTree;
+    // private final QuadTree<AVRequest> pendingRequestsTree;
     /** data structures are used to enable fast "contains" searching */
-    private final Set<AVRequest> openRequests = new HashSet<>();
+    // private final Set<AVRequest> openRequests = new HashSet<>();
+    private final TreeMaintainer<AVRequest> requestMaintainer;
     private final QuadTree<RoboTaxi> unassignedVehiclesTree;
     private final Set<RoboTaxi> unassignedVehicles = new HashSet<>();
 
@@ -50,7 +52,8 @@ public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
         DispatcherConfig dispatcherConfig = DispatcherConfig.wrap(avDispatcherConfig);
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(10);
         double[] networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
-        pendingRequestsTree = new QuadTree<>(networkBounds[0], networkBounds[1], networkBounds[2], networkBounds[3]);
+        this.requestMaintainer = new TreeMaintainer<AVRequest>(network, this::getLocation);
+        // pendingRequestsTree = new QuadTree<>(networkBounds[0], networkBounds[1], networkBounds[2], networkBounds[3]);
         unassignedVehiclesTree = new QuadTree<>(networkBounds[0], networkBounds[1], networkBounds[2], networkBounds[3]);
     }
 
@@ -65,7 +68,8 @@ public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
             addUnassignedVehicles(getDivertableUnassignedRoboTaxis());
 
             List<AVRequest> requests = getUnassignedAVRequests();
-            addOpenRequests(requests);
+            requests.stream().forEach(r->requestMaintainer.add(r));
+//            addOpenRequests(requests);
 
             boolean oversupply = false;
             if (unassignedVehicles.size() >= requests.size())
@@ -80,12 +84,15 @@ public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
                         if (closestRobotaxi != null) {
                             setRoboTaxiPickup(closestRobotaxi, avr);
                             removeFromTrees(closestRobotaxi, avr);
+                            requestMaintainer.remove(avr);
                         }
                     }
                 } else { // UNDERSUPPLY CASE
                     for (RoboTaxi robotaxi : robotaxisDivertable) {
 
-                        AVRequest closestReq = findClosestRequest(robotaxi);
+//                        AVRequest closestReq = findClosestRequest(robotaxi);
+                        AVRequest closestReq = requestMaintainer.getClosest(//
+                                robotaxi.getDivertableLocation().getFromNode().getCoord());
                         if (closestReq != null) {
                             setRoboTaxiPickup(robotaxi, closestReq);
                             removeFromTrees(robotaxi, closestReq);
@@ -98,10 +105,10 @@ public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
 
     private boolean removeFromTrees(RoboTaxi robotaxi, AVRequest avRequest) {
         // remove avRequest
-        boolean succRM = openRequests.remove(avRequest);
-        boolean succRT = pendingRequestsTree.remove(avRequest.getFromLink().getFromNode().getCoord().getX(), avRequest.getFromLink().getFromNode().getCoord().getY(), avRequest);
-        boolean removeSuccessR = succRT && succRM;
-        GlobalAssert.that(removeSuccessR);
+//        boolean succRM = openRequests.remove(avRequest);
+//        boolean succRT = pendingRequestsTree.remove(avRequest.getFromLink().getFromNode().getCoord().getX(), avRequest.getFromLink().getFromNode().getCoord().getY(), avRequest);
+//        boolean removeSuccessR = succRT && succRM;
+//        GlobalAssert.that(removeSuccessR);
 
         // remove robotaxi
         boolean succVM = unassignedVehicles.remove(robotaxi);
@@ -109,7 +116,8 @@ public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
         boolean removeSuccessV = succVT && succVM;
         GlobalAssert.that(removeSuccessV);
 
-        return removeSuccessR && removeSuccessV;
+//        return removeSuccessR && removeSuccessV;
+        return removeSuccessV;
     }
 
     /** @param avRequest
@@ -137,28 +145,32 @@ public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
         }
     }
 
-    /** @param robotaxi
-     * @return the closest Request to robotaxi found with tree-search */
-    private AVRequest findClosestRequest(RoboTaxi robotaxi) {
-        Coord vehicleCoord = robotaxi.getDivertableLocation().getFromNode().getCoord();
-        return pendingRequestsTree.getClosest(vehicleCoord.getX(), vehicleCoord.getY());
-    }
+//    /** @param robotaxi
+//     * @return the closest Request to robotaxi found with tree-search */
+//    private AVRequest findClosestRequest(RoboTaxi robotaxi) {
+//        Coord vehicleCoord = robotaxi.getDivertableLocation().getFromNode().getCoord();
+//        return pendingRequestsTree.getClosest(vehicleCoord.getX(), vehicleCoord.getY());
+//    }
 
-    /** ensures that new open requests are added to a list with all open requests
-     * 
-     * @param avRequests */
-    private void addOpenRequests(Collection<AVRequest> avRequests) {
-        for (AVRequest avRequest : avRequests) {
-            if (!openRequests.contains(avRequest)) {
-                Coord toMatchRequestCoord = avRequest.getFromLink().getFromNode().getCoord();
-                boolean orSucc = openRequests.add(avRequest);
-                boolean qtSucc = pendingRequestsTree.put( //
-                        toMatchRequestCoord.getX(), //
-                        toMatchRequestCoord.getY(), //
-                        avRequest);
-                GlobalAssert.that(orSucc && qtSucc);
-            }
-        }
+//    /** ensures that new open requests are added to a list with all open requests
+//     * 
+//     * @param avRequests */
+//    private void addOpenRequests(Collection<AVRequest> avRequests) {
+//        for (AVRequest avRequest : avRequests) {
+//            if (!openRequests.contains(avRequest)) {
+//                Coord toMatchRequestCoord = avRequest.getFromLink().getFromNode().getCoord();
+//                boolean orSucc = openRequests.add(avRequest);
+//                boolean qtSucc = pendingRequestsTree.put( //
+//                        toMatchRequestCoord.getX(), //
+//                        toMatchRequestCoord.getY(), //
+//                        avRequest);
+//                GlobalAssert.that(orSucc && qtSucc);
+//            }
+//        }
+//    }
+
+    /* package */ Coord getLocation(AVRequest request) {
+        return request.getFromLink().getFromNode().getCoord();
     }
 
     public static class Factory implements AVDispatcherFactory {
