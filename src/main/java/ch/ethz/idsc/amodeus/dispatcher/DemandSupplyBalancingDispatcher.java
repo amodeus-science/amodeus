@@ -2,25 +2,22 @@
 package ch.ethz.idsc.amodeus.dispatcher;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
-import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.router.util.TravelTime;
-import org.matsim.core.utils.collections.QuadTree;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.amodeus.dispatcher.util.TreeMaintainer;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.framework.AVModule;
@@ -33,26 +30,17 @@ import ch.ethz.matsim.av.router.AVRouter;
 public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
 
     private final int dispatchPeriod;
-    private final double[] networkBounds;
-    private final QuadTree<AVRequest> pendingRequestsTree;
     /** data structures are used to enable fast "contains" searching */
-    private final Set<AVRequest> openRequests = new HashSet<>();
-    private final QuadTree<RoboTaxi> unassignedVehiclesTree;
-    private final Set<RoboTaxi> unassignedVehicles = new HashSet<>();
+    private final TreeMaintainer<AVRequest> requestMaintainer;
+    private final TreeMaintainer<RoboTaxi> unassignedRoboTaxis;
 
-    private DemandSupplyBalancingDispatcher( //
-            Config config, //
-            AVDispatcherConfig avDispatcherConfig, //
-            TravelTime travelTime, //
-            AVRouter router, //
-            EventsManager eventsManager, //
-            Network network) {
+    private DemandSupplyBalancingDispatcher(Config config, AVDispatcherConfig avDispatcherConfig, //
+            TravelTime travelTime, AVRouter router, EventsManager eventsManager, Network network) {
         super(config, avDispatcherConfig, travelTime, router, eventsManager);
         DispatcherConfig dispatcherConfig = DispatcherConfig.wrap(avDispatcherConfig);
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(10);
-        networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
-        pendingRequestsTree = new QuadTree<>(networkBounds[0], networkBounds[1], networkBounds[2], networkBounds[3]);
-        unassignedVehiclesTree = new QuadTree<>(networkBounds[0], networkBounds[1], networkBounds[2], networkBounds[3]);
+        this.requestMaintainer = new TreeMaintainer<>(network, this::getLocation);
+        this.unassignedRoboTaxis = new TreeMaintainer<>(network, this::getRoboTaxiLoc);
     }
 
     @Override
@@ -60,36 +48,36 @@ public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
         final long round_now = Math.round(now);
 
         if (round_now % dispatchPeriod == 0) {
-
-            // get open requests and available vehicles
+            /** get open requests and available vehicles */
             Collection<RoboTaxi> robotaxisDivertable = getDivertableUnassignedRoboTaxis();
-            addUnassignedVehicles(getDivertableUnassignedRoboTaxis());
-
+            getRoboTaxiSubset(RoboTaxiStatus.STAY).stream().forEach(rt -> unassignedRoboTaxis.add(rt));
             List<AVRequest> requests = getUnassignedAVRequests();
-            addOpenRequests(requests);
+            requests.stream().forEach(r -> requestMaintainer.add(r));
 
+            /** distinguish over- and undersupply cases */
             boolean oversupply = false;
-            if (unassignedVehicles.size() >= requests.size())
+            if (unassignedRoboTaxis.size() >= requests.size())
                 oversupply = true;
 
-            boolean canMatch = unassignedVehicles.size() > 0 && requests.size() > 0;
-
-            if (canMatch) {
-                if (oversupply) { // OVERSUPPLY CASE
+            if (unassignedRoboTaxis.size() > 0 && requests.size() > 0) {
+                /** oversupply case */
+                if (oversupply) {
                     for (AVRequest avr : requests) {
-                        RoboTaxi closestRobotaxi = findClosestVehicle(avr);
-                        if (closestRobotaxi != null) {
-                            setRoboTaxiPickup(closestRobotaxi, avr);
-                            removeFromTrees(closestRobotaxi, avr);
+                        RoboTaxi closest = unassignedRoboTaxis.getClosest(getLocation(avr));
+                        if (closest != null) {
+                            setRoboTaxiPickup(closest, avr);
+                            unassignedRoboTaxis.remove(closest);
+                            requestMaintainer.remove(avr);
                         }
                     }
-                } else { // UNDERSUPPLY CASE
+                    /** undersupply case */
+                } else {
                     for (RoboTaxi robotaxi : robotaxisDivertable) {
-
-                        AVRequest closestReq = findClosestRequest(robotaxi);
-                        if (closestReq != null) {
-                            setRoboTaxiPickup(robotaxi, closestReq);
-                            removeFromTrees(robotaxi, closestReq);
+                        AVRequest closest = requestMaintainer.getClosest(robotaxi.getDivertableLocation().getFromNode().getCoord());
+                        if (closest != null) {
+                            setRoboTaxiPickup(robotaxi, closest);
+                            unassignedRoboTaxis.remove(robotaxi);
+                            requestMaintainer.remove(closest);
                         }
                     }
                 }
@@ -97,69 +85,16 @@ public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
         }
     }
 
-    private boolean removeFromTrees(RoboTaxi robotaxi, AVRequest avRequest) {
-        // remove avRequest
-        boolean succRM = openRequests.remove(avRequest);
-        boolean succRT = pendingRequestsTree.remove(avRequest.getFromLink().getFromNode().getCoord().getX(), avRequest.getFromLink().getFromNode().getCoord().getY(), avRequest);
-        boolean removeSuccessR = succRT && succRM;
-        GlobalAssert.that(removeSuccessR);
-
-        // remove robotaxi
-        boolean succVM = unassignedVehicles.remove(robotaxi);
-        boolean succVT = unassignedVehiclesTree.remove(robotaxi.getDivertableLocation().getCoord().getX(), robotaxi.getDivertableLocation().getCoord().getY(), robotaxi);
-        boolean removeSuccessV = succVT && succVM;
-        GlobalAssert.that(removeSuccessV);
-
-        return removeSuccessR && removeSuccessV;
+    /** @param request
+     * @return {@link Coord} with {@link AVRequest} location */
+    /* package */ Coord getLocation(AVRequest request) {
+        return request.getFromLink().getFromNode().getCoord();
     }
 
-    /** @param avRequest
-     * @return the RoboTaxi closest to the given request */
-    private RoboTaxi findClosestVehicle(AVRequest avRequest) {
-        Coord requestCoord = avRequest.getFromLink().getCoord();
-        // System.out.println("treesize " + unassignedVehiclesTree.size());
-        return unassignedVehiclesTree.getClosest(requestCoord.getX(), requestCoord.getY());
-    }
-
-    /** ensures that new unassignedVehicles are added to a list with all unassigned vehicles
-     * 
-     * @param roboTaxis */
-    private void addUnassignedVehicles(Collection<RoboTaxi> roboTaxis) {
-        for (RoboTaxi roboTaxi : roboTaxis) {
-            if (!unassignedVehicles.contains(roboTaxi)) {
-                Coord toMatchVehicleCoord = roboTaxi.getDivertableLocation().getCoord();
-                boolean uaSucc = unassignedVehicles.add(roboTaxi);
-                boolean qtSucc = unassignedVehiclesTree.put( //
-                        toMatchVehicleCoord.getX(), //
-                        toMatchVehicleCoord.getY(), //
-                        roboTaxi);
-                GlobalAssert.that(uaSucc && qtSucc);
-            }
-        }
-    }
-
-    /** @param robotaxi
-     * @return the closest Request to robotaxi found with tree-search */
-    private AVRequest findClosestRequest(RoboTaxi robotaxi) {
-        Coord vehicleCoord = robotaxi.getDivertableLocation().getFromNode().getCoord();
-        return pendingRequestsTree.getClosest(vehicleCoord.getX(), vehicleCoord.getY());
-    }
-
-    /** ensures that new open requests are added to a list with all open requests
-     * 
-     * @param avRequests */
-    private void addOpenRequests(Collection<AVRequest> avRequests) {
-        for (AVRequest avRequest : avRequests) {
-            if (!openRequests.contains(avRequest)) {
-                Coord toMatchRequestCoord = avRequest.getFromLink().getFromNode().getCoord();
-                boolean orSucc = openRequests.add(avRequest);
-                boolean qtSucc = pendingRequestsTree.put( //
-                        toMatchRequestCoord.getX(), //
-                        toMatchRequestCoord.getY(), //
-                        avRequest);
-                GlobalAssert.that(orSucc && qtSucc);
-            }
-        }
+    /** @param roboTaxi
+     * @return {@link Coord} with {@link RoboTaxi} location */
+    /* package */ Coord getRoboTaxiLoc(RoboTaxi roboTaxi) {
+        return roboTaxi.getDivertableLocation().getCoord();
     }
 
     public static class Factory implements AVDispatcherFactory {
