@@ -1,7 +1,6 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
-import java.awt.Robot;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,6 +36,7 @@ import ch.ethz.idsc.amodeus.net.SimulationObjects;
 import ch.ethz.idsc.amodeus.net.StorageUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
+import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 import ch.ethz.matsim.av.schedule.AVDriveTask;
@@ -47,7 +47,6 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 /** purpose of {@link SharedUniversalDispatcher} is to collect and manage
  * {@link AVRequest}s alternative implementation of {@link AVDispatcher};
  * supersedes {@link AbstractDispatcher}. */
-/** @author Nicolo Ormezzano, Lukas Sieber */
 public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer {
 
     private final FuturePathFactory futurePathFactory;
@@ -624,19 +623,19 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
             periodPickedUpRequests.clear();
             periodFulfilledRequests.clear();
             periodSubmittdRequests.clear();
-            
+
             /** insert {@link RoboTaxi}s */
             simulationObjectCompiler.insertVehicles(getRoboTaxis());
 
             /** insert information of association of {@link RoboTaxi}s and {@link AVRequest}s */
-            Map<AVRequest,RoboTaxi> map = new HashMap<>();
-            for(RoboTaxi roboTaxi :  requestRegister.keySet()){
-                for(AVRequest avr : requestRegister.get(roboTaxi).values()){
-                    map.put(avr,roboTaxi);
-                }                
+            Map<AVRequest, RoboTaxi> map = new HashMap<>();
+            for (RoboTaxi roboTaxi : requestRegister.keySet()) {
+                for (AVRequest avr : requestRegister.get(roboTaxi).values()) {
+                    map.put(avr, roboTaxi);
+                }
             }
             simulationObjectCompiler.addRequestRoboTaxiAssoc(map);
-            
+
             /** in the first pass, the vehicles are typically empty, then
              * {@link SimulationObject} is not stored or communicated */
             SimulationObject simulationObject = simulationObjectCompiler.compile();
