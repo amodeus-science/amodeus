@@ -3,20 +3,24 @@ package ch.ethz.idsc.amodeus.dispatcher.util;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiConsumer;
 
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 public enum DrivebyRequestStopper {
     ;
 
     /** Matches all {@link RoboTaxi} @param roboTaxis to the requests sorted in @param requestLocs
-     * if they are located on the same {@link Link} with the @param biConsumer
+     * if they are located on the same {@link Link} with the @param biConsumer, every request is only
+     * matched once.
      * 
      * @return {@link Map} with the matchings */
     public static Map<RoboTaxi, AVRequest> stopDrivingBy(Map<Link, List<AVRequest>> requestLocs, Collection<RoboTaxi> roboTaxis, //
@@ -30,9 +34,16 @@ public enum DrivebyRequestStopper {
                     AVRequest request = requestList.get(0);
                     biConsumer.accept(roboTaxi, request);
                     pickups.put(roboTaxi, request);
+                    requestList.remove(0);
                 }
             }
         }
+        Set<AVRequest> requests = new HashSet<>();
+        pickups.values().stream().forEach(r -> {
+            boolean notContained = requests.add(r);
+            GlobalAssert.that(notContained);
+
+        });
         return pickups;
     }
 }

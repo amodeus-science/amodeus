@@ -138,20 +138,20 @@ public class ScenarioPipeLineTest {
         /** distance and occupancy ratios */
         Scalar occupancyRatio = Mean.of(ate.getDistancElement().ratios).Get(0);
         Scalar distanceRatio = Mean.of(ate.getDistancElement().ratios).Get(1);
-        assertEquals(0.08269814814814815, occupancyRatio.number().doubleValue(), 0.0);
-        assertEquals(0.6771498509323725, distanceRatio.number().doubleValue(), 0.0);
+        assertEquals(0.08269953703703704, occupancyRatio.number().doubleValue(), 0.0);
+        assertEquals(0.6796628382756873, distanceRatio.number().doubleValue(), 0.0);
 
         /** fleet distances */
         assertTrue(ate.getDistancElement().totalDistance >= 0.0);
-        assertEquals(34551.22501867892, ate.getDistancElement().totalDistance, 0.0);
+        assertEquals(34429.271548560515, ate.getDistancElement().totalDistance, 0.0);
         assertTrue(ate.getDistancElement().totalDistanceWtCst >= 0.0);
-        assertEquals(28985.51649729462, ate.getDistancElement().totalDistanceWtCst, 0.0);
+        assertEquals(28980.70185154435, ate.getDistancElement().totalDistanceWtCst, 0.0);
         assertTrue(ate.getDistancElement().totalDistancePicku > 0.0);
-        assertEquals(5565.708521384286, ate.getDistancElement().totalDistancePicku, 0.0);
+        assertEquals(5448.5696970161725, ate.getDistancElement().totalDistancePicku, 0.0);
         assertTrue(ate.getDistancElement().totalDistanceRebal >= 0.0);
         assertEquals(0.0, ate.getDistancElement().totalDistanceRebal, 0.0);
         assertTrue(ate.getDistancElement().totalDistanceRatio >= 0.0);
-        assertEquals(0.8389142926661677, ate.getDistancElement().totalDistanceRatio, 0.0);
+        assertEquals(0.8417460070471933, ate.getDistancElement().totalDistanceRatio, 0.0);
         ate.getDistancElement().totalDistancesPerVehicle.flatten(-1).forEach(s -> //
         assertTrue(Scalars.lessEquals(RealScalar.ZERO, (Scalar) s)));
         assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).number().doubleValue() //
@@ -171,9 +171,9 @@ public class ScenarioPipeLineTest {
         assertTrue(Scalars.lessEquals(ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(0), ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(1)));
         assertTrue(Scalars.lessEquals(ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(1), ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(2)));
         assertTrue(Scalars.lessEquals(Quantity.of(0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1)));
-        assertEquals(291.645, ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1).number().doubleValue(), 0);
+        assertEquals(287.18, ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1).number().doubleValue(), 0);
         assertEquals(3261.0, ate.getTravelTimeAnalysis().getWaitAggrgte().Get(2).number().doubleValue(), 0);
-        assertEquals(892.86, ate.getTravelTimeAnalysis().getDrveAggrgte().Get(1).number().doubleValue(), 0);
+        assertEquals(892.875, ate.getTravelTimeAnalysis().getDrveAggrgte().Get(1).number().doubleValue(), 0);
         assertEquals(3670.0, ate.getTravelTimeAnalysis().getDrveAggrgte().Get(2).number().doubleValue(), 0);
 
         /** presence of plot files */
