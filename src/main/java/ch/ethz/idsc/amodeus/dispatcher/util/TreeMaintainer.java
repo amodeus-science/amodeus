@@ -53,4 +53,9 @@ public class TreeMaintainer<T> {
         boolean treeok = tree.remove(coord.getX(), coord.getY(), t);
         GlobalAssert.that(setok && treeok);
     }
+
+    public int size() {
+        GlobalAssert.that(tree.size() == set.size());
+        return tree.size();
+    }
 }
