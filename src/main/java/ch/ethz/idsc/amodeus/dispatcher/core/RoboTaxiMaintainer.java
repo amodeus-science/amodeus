@@ -57,7 +57,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         return private_now;
     }
 
-    /** @return collection of {@link RoboTaxi} */
+    /** @return {@link List} of {@link RoboTaxi} */
     protected final List<RoboTaxi> getRoboTaxis() {
         if (roboTaxis.isEmpty() || !roboTaxis.get(0).getSchedule().getStatus().equals(Schedule.ScheduleStatus.STARTED))
             return Collections.emptyList();
