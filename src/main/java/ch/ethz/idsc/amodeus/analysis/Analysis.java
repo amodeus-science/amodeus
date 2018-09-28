@@ -11,15 +11,8 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.matsim.api.core.v01.network.Network;
-import org.matsim.contrib.dvrp.router.DistanceAsTravelDisutility;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
-import org.matsim.core.router.FastAStarLandmarksFactory;
-import org.matsim.core.router.util.LeastCostPathCalculator;
-import org.matsim.core.router.util.LeastCostPathCalculatorFactory;
-import org.matsim.core.router.util.TravelDisutility;
-import org.matsim.core.router.util.TravelTime;
-import org.matsim.core.trafficmonitoring.FreeSpeedTravelTime;
 
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisElement;
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
@@ -28,7 +21,6 @@ import ch.ethz.idsc.amodeus.analysis.element.DistanceDistributionOverDayImage;
 import ch.ethz.idsc.amodeus.analysis.element.DriveTimeHtml;
 import ch.ethz.idsc.amodeus.analysis.element.NumberOtherPassengerStackedChart;
 import ch.ethz.idsc.amodeus.analysis.element.NumberPassengerStackedImage;
-import ch.ethz.idsc.amodeus.analysis.element.NumberPassengersAnalysis;
 import ch.ethz.idsc.amodeus.analysis.element.OccupancyDistanceRatiosImage;
 import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionImage;
 import ch.ethz.idsc.amodeus.analysis.element.TotalJourneyTimeHtml;
@@ -198,8 +190,8 @@ public class Analysis {
         analysisExports.add(DriveTimeImages.INSTANCE);
         analysisExports.add(TotalJourneyTimeImage.INSTANCE);
         analysisExports.add(ExtraDriveTimeImage.INSTANCE); // TODO Lukas Write Test
-        analysisExports.add(NumberPassengerStackedImage.INSTANCE); // TODO Lukas Write Test
         analysisExports.add(NumberOtherPassengerStackedChart.INSTANCE); // TODO Lukas Write Test
+        analysisExports.add(NumberPassengerStackedImage.INSTANCE); // TODO Lukas Write Test
 
         analysisExports.add(DistancesOverDayTable.INSTANCE);
         analysisExports.add(DistancesRatiosTable.INSTANCE);

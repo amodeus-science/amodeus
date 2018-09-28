@@ -57,7 +57,7 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
     private Tensor xDTAgg;
 
     public TravelTimeAnalysis(Network network) {
-        //TODO might be moved to a Place where we have the acutal lcpc available.
+        // TODO might be moved to a Place where we have the acutal lcpc available.
         FastAStarLandmarksFactory factory = new FastAStarLandmarksFactory();
         TravelDisutility disutility = new DistanceAsTravelDisutility();
         TravelTime travelTime = new FreeSpeedTravelTime();
@@ -95,13 +95,13 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
     public void consolidate() {
         /** calculate standard dropoff time. */
         travelHistories.values().forEach(th -> th.calculateStandardDrpOffTime(lcpc, db));
-
+        travelHistories.values().forEach(th -> th.fillNotFinishedData(tLast));
         /** finish filling of travel Histories */
         for (TravelHistory travelHistory : travelHistories.values()) {
             travelTimes.appendRow(Tensors.of( //
-                    RealScalar.of(travelHistory.reqIndx), travelHistory.getWaitTime(tLast), //
-                    travelHistory.getDriveTime(tLast), travelHistory.getTotalTravelTime(tLast), //
-                    travelHistory.getExtraDriveTime(tLast)));
+                    RealScalar.of(travelHistory.reqIndx), travelHistory.getWaitTime(), //
+                    travelHistory.getDriveTime(), travelHistory.getTotalTravelTime(), //
+                    travelHistory.getExtraDriveTime()));
             requstStmps.appendRow(Tensors.of( //
                     RealScalar.of(travelHistory.reqIndx), travelHistory.submsnTime, //
                     travelHistory.getAssignmentTime(), travelHistory.getWaitEndTime(), //

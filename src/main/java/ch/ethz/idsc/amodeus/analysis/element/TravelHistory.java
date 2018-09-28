@@ -1,9 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.analysis.element;
 
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.core.router.util.LeastCostPathCalculator;
@@ -36,10 +34,10 @@ public class TravelHistory {
 
     /** Standard Time */
     private Scalar stdDrpOffTime;
-    
-    /** Sharing properties:*/
-//    private Integer servedByVehicle;
-//    private Set<Integer> sharedWith = new HashSet<>();
+
+    /** Sharing properties: */
+    // private Integer servedByVehicle;
+    // private Set<Integer> sharedWith = new HashSet<>();
 
     public TravelHistory(RequestContainer requestContainer, long now) {
         fromLinkIndx = requestContainer.fromLinkIndex;
@@ -61,14 +59,28 @@ public class TravelHistory {
     /* package */ void calculateStandardDrpOffTime(LeastCostPathCalculator lcpc, MatsimStaticDatabase db) {
         Link linkStart = db.getOsmLink(fromLinkIndx).link;
         Link linkEnd = db.getOsmLink(toLinkIndx).link;
-//        double startTime = (waitEndTme == null) ? 1 : waitEndTme.Get().number().doubleValue();
+        // double startTime = (waitEndTme == null) ? 1 : waitEndTme.Get().number().doubleValue();
         double startTime = 1;
         Path shortest = lcpc.calcLeastCostPath(linkStart.getFromNode(), linkEnd.getToNode(), startTime, null, null);
-        
-        stdDrpOffTime = waitEndTme.add(Quantity.of(shortest.travelTime, SI.SECOND));
+        if (waitEndTme != null) {
+            stdDrpOffTime = waitEndTme.add(Quantity.of(shortest.travelTime, SI.SECOND));
+        }
     }
 
-    public Scalar getTotalTravelTime(Scalar tLast) {
+    /* package */ void fillNotFinishedData(Scalar tLast) {
+        Objects.requireNonNull(tLast);
+        if (Objects.isNull(asgnmtTime))
+            asgnmtTime = tLast;
+        if (Objects.isNull(waitEndTme))
+            waitEndTme = tLast;
+        if (Objects.isNull(drpOffTime))
+            drpOffTime = tLast;
+        if (Objects.isNull(stdDrpOffTime))
+            stdDrpOffTime = tLast;
+    }
+
+    // TODO should the tLast not be set in a different function which has to be called on the Last time step?
+    public Scalar getTotalTravelTime() {
         Objects.requireNonNull(submsnTime);
         Objects.requireNonNull(drpOffTime);
         Scalar totalTravelTime = drpOffTime.subtract(submsnTime);
@@ -76,7 +88,7 @@ public class TravelHistory {
         return totalTravelTime;
     }
 
-    public Scalar getDriveTime(Scalar tLast) {
+    public Scalar getDriveTime() {
         Objects.requireNonNull(waitEndTme);
         Objects.requireNonNull(drpOffTime);
         Scalar driveTime = drpOffTime.subtract(waitEndTme);
@@ -84,7 +96,7 @@ public class TravelHistory {
         return driveTime;
     }
 
-    public Scalar getWaitTime(Scalar tLast) {
+    public Scalar getWaitTime() {
         Objects.requireNonNull(waitEndTme);
         Objects.requireNonNull(submsnTime);
         Scalar waitTime = waitEndTme.subtract(submsnTime);
@@ -92,12 +104,12 @@ public class TravelHistory {
         return waitTime;
     }
 
-    public Scalar getExtraDriveTime(Scalar tLast) {
+    public Scalar getExtraDriveTime() {
         Objects.requireNonNull(drpOffTime);
         Objects.requireNonNull(stdDrpOffTime);
         Scalar extraDriveTime = drpOffTime.subtract(stdDrpOffTime);
         // TODO define a check here
-//        GlobalAssert.that(Scalars.lessEquals(Quantity.of(0, SI.SECOND), extraDriveTime));
+        // GlobalAssert.that(Scalars.lessEquals(Quantity.of(0, SI.SECOND), extraDriveTime));
         return extraDriveTime;
     }
 

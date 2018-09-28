@@ -22,7 +22,7 @@ public enum NumberOtherPassengerStackedChart implements AnalysisExport {
 
         int maxNumberOtherPassenger = nPA.getSharedOthersPerRequest().flatten(-1).reduce(Max::of).get().Get().number().intValue();
         String[] labels = new String[maxNumberOtherPassenger + 1];
-        IntStream.range(0, maxNumberOtherPassenger + 1).forEach(i -> labels[i] = i + " other Passenger");
+        IntStream.range(0, maxNumberOtherPassenger + 1).forEach(i -> labels[i] = i + 1 + " tot Passengers");
 
         Tensor sharedDistribution = nPA.getSharedOthersDistribution();
         double totalNumberPassengers = Total.of(sharedDistribution).Get().number().doubleValue();
