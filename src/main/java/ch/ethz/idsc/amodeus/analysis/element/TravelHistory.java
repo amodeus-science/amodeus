@@ -46,14 +46,18 @@ public class TravelHistory {
 
     public Scalar getTotalTravelTime(Scalar tLast) {
         Objects.requireNonNull(submsnTime);
-        Objects.requireNonNull(drpOffTime);
+        if (Objects.isNull(drpOffTime))
+            drpOffTime = tLast;
         Scalar totalTravelTime = drpOffTime.subtract(submsnTime);
         GlobalAssert.that(Scalars.lessEquals(Quantity.of(0, SI.SECOND), totalTravelTime));
         return totalTravelTime;
     }
 
     public Scalar getDriveTime(Scalar tLast) {
-        Objects.requireNonNull(waitEndTme);
+        if (Objects.isNull(waitEndTme))
+            waitEndTme = tLast;
+        if (Objects.isNull(drpOffTime))
+            drpOffTime = tLast;
         Objects.requireNonNull(drpOffTime);
         Scalar driveTime = drpOffTime.subtract(waitEndTme);
         GlobalAssert.that(Scalars.lessEquals(Quantity.of(0, SI.SECOND), driveTime));
@@ -61,7 +65,8 @@ public class TravelHistory {
     }
 
     public Scalar getWaitTime(Scalar tLast) {
-        Objects.requireNonNull(waitEndTme);
+        if (Objects.isNull(waitEndTme))
+            waitEndTme = tLast;
         Objects.requireNonNull(submsnTime);
         Scalar waitTime = waitEndTme.subtract(submsnTime);
         GlobalAssert.that(Scalars.lessEquals(Quantity.of(0, SI.SECOND), waitTime));

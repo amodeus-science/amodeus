@@ -3,6 +3,7 @@ package ch.ethz.idsc.amodeus.analysis.element;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
@@ -74,6 +75,18 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
             travelTimes.appendRow(Tensors.of( //
                     RealScalar.of(travelHistory.reqIndx), travelHistory.getWaitTime(tLast), //
                     travelHistory.getDriveTime(tLast), travelHistory.getTotalTravelTime(tLast)));
+            if(Objects.isNull(travelHistory.reqIndx))
+                System.out.println("travelHistory.reqIndx");
+            if(Objects.isNull(travelHistory.submsnTime))
+                System.out.println("travelHistory.submsnTime");
+            if(Objects.isNull(travelHistory))
+                System.out.println("travelHistory");
+            if(Objects.isNull(travelHistory.getAssignmentTime()))
+                System.out.println("travelHistory.getAssignmentTime()");                        
+            if(Objects.isNull(travelHistory.getWaitEndTime()))
+                System.out.println("travelHistory.getWaitEndTime()");                        
+            if(Objects.isNull(travelHistory.getDropOffTime()))
+                System.out.println("travelHistory.getDropOffTime()");                        
             requstStmps.appendRow(Tensors.of( //
                     RealScalar.of(travelHistory.reqIndx), travelHistory.submsnTime, //
                     travelHistory.getAssignmentTime(), travelHistory.getWaitEndTime(), //
