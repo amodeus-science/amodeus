@@ -20,7 +20,7 @@ public class AnalysisSummary implements Serializable {
     private final TravelTimeAnalysis travelTimeAnalysis;
     private final NumberPassengersAnalysis numberPassengersAnalysis = new NumberPassengersAnalysis();
 
-    public AnalysisSummary(int numVehicles, int size, Network network) {
+    /*package*/ AnalysisSummary(int numVehicles, int size, Network network) {
         distanceElement = new DistanceElement(numVehicles, size);
         /** Standard Least Path Calculator for Standard Travel Times */
         travelTimeAnalysis = new TravelTimeAnalysis(network);

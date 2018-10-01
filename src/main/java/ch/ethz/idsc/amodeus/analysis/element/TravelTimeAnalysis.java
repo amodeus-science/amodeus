@@ -3,6 +3,7 @@ package ch.ethz.idsc.amodeus.analysis.element;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 import org.matsim.api.core.v01.network.Network;
@@ -56,12 +57,20 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
     private final MatsimStaticDatabase db = MatsimStaticDatabase.INSTANCE;
     private Tensor xDTAgg;
 
+    /**
+     * Analyses the Travel Times simulated and lying in the simulation Objects
+     * @param network can be set to null if no Extra drive time should be calculated
+     */
     public TravelTimeAnalysis(Network network) {
-        // TODO might be moved to a Place where we have the acutal lcpc available.
-        FastAStarLandmarksFactory factory = new FastAStarLandmarksFactory();
-        TravelDisutility disutility = new DistanceAsTravelDisutility();
-        TravelTime travelTime = new FreeSpeedTravelTime();
-        lcpc = factory.createPathCalculator(network, disutility, travelTime);
+        if (!Objects.isNull(network)) {
+            // TODO might be moved to a Place where we have the acutal lcpc available.
+            FastAStarLandmarksFactory factory = new FastAStarLandmarksFactory();
+            TravelDisutility disutility = new DistanceAsTravelDisutility();
+            TravelTime travelTime = new FreeSpeedTravelTime();
+            lcpc = factory.createPathCalculator(network, disutility, travelTime);
+        } else {
+            lcpc = null;
+        }
     }
 
     @Override
@@ -94,8 +103,10 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
     @Override
     public void consolidate() {
         /** calculate standard dropoff time. */
-        travelHistories.values().forEach(th -> th.calculateStandardDrpOffTime(lcpc, db));
         travelHistories.values().forEach(th -> th.fillNotFinishedData(tLast));
+        if (!Objects.isNull(lcpc)) {
+            travelHistories.values().forEach(th -> th.calculateStandardDrpOffTime(lcpc, db));
+        }
         /** finish filling of travel Histories */
         for (TravelHistory travelHistory : travelHistories.values()) {
             travelTimes.appendRow(Tensors.of( //
@@ -118,9 +129,11 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
         totJTAgg = Tensors.of(StaticHelper.quantiles(getTotalJourneyTimes(), Quantiles.SET), //
                 Mean.of(getTotalJourneyTimes()), //
                 getTotalJourneyTimes().flatten(-1).reduce(Max::of).get().Get());
-        xDTAgg = Tensors.of(StaticHelper.quantiles(getExtraDriveTimes(), Quantiles.SET), //
-                Mean.of(getExtraDriveTimes()), //
-                getExtraDriveTimes().flatten(-1).reduce(Max::of).get().Get());
+        if (!Objects.isNull(lcpc)) {
+            xDTAgg = Tensors.of(StaticHelper.quantiles(getExtraDriveTimes(), Quantiles.SET), //
+                    Mean.of(getExtraDriveTimes()), //
+                    getExtraDriveTimes().flatten(-1).reduce(Max::of).get().Get());
+        }
     }
 
     /** @return {@link Tensor} containing all recorded wait times of the simulation */
@@ -140,7 +153,7 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
 
     /** @return {@link Tensor} containing all recorded extra drive times of the simulation */
     public Tensor getExtraDriveTimes() {
-        return Transpose.of(travelTimes.toTable()).get(4);
+        return (Objects.isNull(lcpc)) ? null : Transpose.of(travelTimes.toTable()).get(4);
     }
 
     /** @return {@link Tensor} containing
@@ -168,7 +181,7 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
      *         extra drive time quantile 3},extra drive time mean, extra drive time maximum}
      *         chosen quantiles defined in {@link Quantiles} */
     public Tensor getXDTAggrgte() {
-        return xDTAgg;
+        return (Objects.isNull(lcpc)) ? null : xDTAgg;
     }
 
     @Override
