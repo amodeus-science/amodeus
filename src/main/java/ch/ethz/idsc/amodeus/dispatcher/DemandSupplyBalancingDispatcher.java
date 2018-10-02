@@ -50,8 +50,6 @@ public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
         if (round_now % dispatchPeriod == 0) {
             /** get open requests and available vehicles */
             Collection<RoboTaxi> robotaxisDivertable = getDivertableUnassignedRoboTaxis();
-            // TODO @Claudio, why not robotaxisDivertable.stream()... like it is it has the potential
-            // to cause problems as a robotaxi ca appear in the loops and can then not be removed from the treemaintainer
             getRoboTaxiSubset(RoboTaxiStatus.STAY).stream().forEach(rt -> unassignedRoboTaxis.add(rt));
             List<AVRequest> requests = getUnassignedAVRequests();
             requests.stream().forEach(r -> requestMaintainer.add(r));
