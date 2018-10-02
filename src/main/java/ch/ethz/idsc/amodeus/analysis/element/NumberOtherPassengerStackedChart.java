@@ -14,7 +14,7 @@ import ch.ethz.idsc.tensor.red.Total;
 public enum NumberOtherPassengerStackedChart implements AnalysisExport {
     INSTANCE;
 
-    public static final String FILENAME = "numberOtherPassengerStacked";
+    public static final String FILENAME = "SharedNumberPassengerStacked";
 
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorScheme colorScheme) {
@@ -32,7 +32,7 @@ public enum NumberOtherPassengerStackedChart implements AnalysisExport {
             CompositionStack.of( //
                     relativeDirectory, //
                     FILENAME, //
-                    "Number of Other Passengers in the RoboTaxi", //
+                    "Passengers for request", //
                     values, //
                     labels, //
                     ColorScheme.LONG);
