@@ -23,8 +23,7 @@ public class BipartiteMatchingUtils {
         accDstFctn = new NetworkDistanceFunction(network, new FastAStarLandmarksFactory());
     }
 
-    public Tensor executePickup( //
-            UniversalDispatcher universalDispatcher, //
+    public Tensor executePickup(UniversalDispatcher universalDispatcher, //
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
             Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
             DistanceFunction distanceFunction, Network network) {
@@ -47,8 +46,7 @@ public class BipartiteMatchingUtils {
         return infoLine;
     }
 
-    public Map<RoboTaxi, AVRequest> getGBPMatch( //
-            UniversalDispatcher universalDispatcher, //
+    public Map<RoboTaxi, AVRequest> getGBPMatch(UniversalDispatcher universalDispatcher, //
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
             Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
             DistanceFunction distanceFunction, Network network) {
