@@ -33,7 +33,6 @@ public class BipartiteMatchingUtils {
 
         /** reduction of problem size with kd-tree, helps to downsize problems where n << m or m>> n
          * for n number of available taxis and m number of available requests */
-
         GlobalBipartiteMatching globalBipartiteMatching = new GlobalBipartiteMatching(distanceFunction);
         gbpMatch = globalBipartiteMatching.match(roboTaxis, requests);
 
