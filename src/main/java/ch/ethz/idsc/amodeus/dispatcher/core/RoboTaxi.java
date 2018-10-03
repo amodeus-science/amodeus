@@ -301,22 +301,21 @@ public class RoboTaxi {
         menu.addAVCourseAsDessert(SharedCourse.dropoffCourse(avRequest));
     }
 
-    /**
-     * Removes an AV Request from the Robo Taxi Menu. This function can only be called if the Request has not been picked up
-     * @param avRequest
-     */
+    /** Removes an AV Request from the Robo Taxi Menu. This function can only be called if the Request has not been picked up
+     * 
+     * @param avRequest */
     public void removeAVRequestFromMenu(AVRequest avRequest) {
         SharedCourse sharedAVCoursePickUp = SharedCourse.pickupCourse(avRequest);
         SharedCourse sharedAVCourseDropoff = SharedCourse.dropoffCourse(avRequest);
         GlobalAssert.that(menu.containsCourse(sharedAVCoursePickUp) && menu.containsCourse(sharedAVCoursePickUp));
         menu.removeAVCourse(sharedAVCoursePickUp);
-        menu.removeAVCourse(sharedAVCourseDropoff);        
+        menu.removeAVCourse(sharedAVCourseDropoff);
     }
 
     public void finishRedirection() {
         GlobalAssert.that(menu.hasStarter());
         GlobalAssert.that(menu.getStarterCourse().getMealType().equals(SharedMealType.REDIRECT));
-        GlobalAssert.that(menu.getStarterCourse().getLink().equals(  getDivertableLocation()));
+        GlobalAssert.that(menu.getStarterCourse().getLink().equals(getDivertableLocation()));
         getMenu().removeAVCourse(0);
     }
 

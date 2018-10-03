@@ -79,9 +79,9 @@ public class LPTimeInvariant implements LPSolver {
         System.out.println("creating rebalancing time-invariant LP for system with " + nvNodes + " virtualNodes");
     }
 
-//    public LPTimeInvariant(VirtualNetwork<Link> virtualNetwork, Tensor lambdaAbsolute_ij) {
-//        this(virtualNetwork, lambdaAbsolute_ij, LPUtils.getNumberOfVehicles());
-//    }
+    // public LPTimeInvariant(VirtualNetwork<Link> virtualNetwork, Tensor lambdaAbsolute_ij) {
+    // this(virtualNetwork, lambdaAbsolute_ij, LPUtils.getNumberOfVehicles());
+    // }
 
     /** initiate the linear program */
     @Override
