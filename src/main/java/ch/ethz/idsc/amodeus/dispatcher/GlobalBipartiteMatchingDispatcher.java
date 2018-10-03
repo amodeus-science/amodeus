@@ -50,11 +50,8 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
     public void redispatch(double now) {
         final long round_now = Math.round(now);
         if (round_now % dispatchPeriod == 0) {
-            printVals = bipartiteMatchingUtils.executePickup( //
-                    this, //
-                    getDivertableRoboTaxis(), //
-                    getAVRequests(), //
-                    distanceFunction, network);
+            printVals = bipartiteMatchingUtils.executePickup(this, getDivertableRoboTaxis(), //
+                    getAVRequests(), distanceFunction, network);
         }
     }
 

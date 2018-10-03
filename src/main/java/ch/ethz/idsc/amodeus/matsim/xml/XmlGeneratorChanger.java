@@ -1,4 +1,3 @@
-/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.matsim.xml;
 
 import java.io.File;
@@ -7,25 +6,24 @@ import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 
-public enum XmlDispatcherChanger {
-    ;
+public class XmlGeneratorChanger {
 
-    /** Changes dispatcher in "av.xml" file in @param simFolder to the value @param newDispatcher
+    /** Changes generator in "av.xml" file in @param simFolder to the value @param newGenerator
      * 
      * @throws Exception */
-    public static void of(File simFolder, String newDispatcher) throws Exception {
-        System.out.println("changing dispatcher to " + newDispatcher);
+    public static void of(File simFolder, String newGenerator) throws Exception {
+        System.out.println("changing generator to " + newGenerator);
         File xmlFile = new File(simFolder, "av.xml");
         System.out.println("looking for av.xml file at " + xmlFile.getAbsolutePath());
         try (XmlModifier xmlModifier = new XmlModifier(xmlFile)) {
             Document doc = xmlModifier.getDocument();
             Element rootNode = doc.getRootElement();
             Element operator = rootNode.getChild("operator");
-            Element dispatcher = operator.getChild("dispatcher");
-
+            Element dispatcher = operator.getChild("generator");
             Attribute strategy = dispatcher.getAttribute("strategy");
-            if (strategy.getValue() != newDispatcher)
-                strategy.setValue(newDispatcher);
+            if (strategy.getValue() != newGenerator)
+                strategy.setValue(newGenerator);
         }
     }
+
 }
