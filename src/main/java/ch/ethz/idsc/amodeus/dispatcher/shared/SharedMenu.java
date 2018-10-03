@@ -181,7 +181,7 @@ public class SharedMenu {
     }
 
     public long getNumberCustomersOnBoard() {
-        return getNumberDropoffs() - getNumberDropoffs();
+        return getNumberDropoffs() - getNumberPickups();
     }
 
     public Set<String> getOnBoardRequestIds() {
