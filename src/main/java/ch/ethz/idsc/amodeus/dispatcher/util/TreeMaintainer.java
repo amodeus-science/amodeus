@@ -9,6 +9,7 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.utils.collections.QuadTree;
 
+import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
@@ -52,6 +53,10 @@ public class TreeMaintainer<T> {
         boolean setok = set.remove(t);
         boolean treeok = tree.remove(coord.getX(), coord.getY(), t);
         GlobalAssert.that(setok && treeok);
+    }
+
+    public boolean contains(T t) {
+        return set.contains(t);
     }
 
     public int size() {

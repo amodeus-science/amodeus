@@ -41,4 +41,5 @@ public class AnalysisTestExport implements AnalysisExport {
     public TravelTimeAnalysis getTravelTimeAnalysis() {
         return travelTimeAnalysis;
     }
+
 }
