@@ -480,7 +480,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
                 if (currentCourse.getMealType().equals(SharedMealType.REDIRECT)) {
                     /** search if arrived at redirect destination */
                     if (currentCourse.getLink().equals(roboTaxi.getDivertableLocation())) {
-                        roboTaxi.finishRedirection(roboTaxi.getDivertableLocation());
+                        roboTaxi.finishRedirection();
                     }
                 }
             }

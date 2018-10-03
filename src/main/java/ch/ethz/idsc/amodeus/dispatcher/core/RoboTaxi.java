@@ -313,10 +313,10 @@ public class RoboTaxi {
         menu.removeAVCourse(sharedAVCourseDropoff);        
     }
 
-    public void finishRedirection(Link currentLocation) {
+    public void finishRedirection() {
         GlobalAssert.that(menu.hasStarter());
         GlobalAssert.that(menu.getStarterCourse().getMealType().equals(SharedMealType.REDIRECT));
-        GlobalAssert.that(menu.getStarterCourse().getLink().equals(currentLocation));
+        GlobalAssert.that(menu.getStarterCourse().getLink().equals(  getDivertableLocation()));
         getMenu().removeAVCourse(0);
     }
 
