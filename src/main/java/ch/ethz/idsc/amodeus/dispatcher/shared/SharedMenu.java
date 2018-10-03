@@ -7,13 +7,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 /** Object containing list of pickup and dropoff planned
- * for an AV.
- * 
- * @author Nicolo Ormezzano, Lukas Sieber */
+ * for an AV. */
 public class SharedMenu {
     private final List<SharedCourse> roboTaxiMenu = new ArrayList<>();
 
@@ -80,6 +79,8 @@ public class SharedMenu {
     // REMOVING COURSES
     // **************************************************
 
+    // FIXME we have to rethink this. It is very dangerous to just let the people change the menu and remove courses. 
+    // especially if there is the possibility to remove dropoff courses of onboard customers 
     public void removeStarterCourse() {
         GlobalAssert.that(hasStarter());
         removeAVCourse(0);
@@ -157,6 +158,44 @@ public class SharedMenu {
 
     public void printMenu() {
         roboTaxiMenu.forEach(course -> System.out.println(course.getRequestId().toString() + ":\t" + course.getMealType().name()));
+    }
+
+    // **************************************************
+    // GET FUNCTIONS
+    // **************************************************
+
+    public long getNumberPickups() {
+        return getNumberSharedMealType(SharedMealType.PICKUP);
+    }
+
+    public long getNumberDropoffs() {
+        return getNumberSharedMealType(SharedMealType.DROPOFF);
+    }
+
+    public long getNumberRedirections() {
+        return getNumberSharedMealType(SharedMealType.REDIRECT);
+    }
+
+    private long getNumberSharedMealType(SharedMealType sharedMealType) {
+        return roboTaxiMenu.stream().filter(sc -> sc.getMealType().equals(sharedMealType)).count();
+    }
+
+    public long getNumberCustomersOnBoard() {
+        return getNumberDropoffs() - getNumberPickups();
+    }
+
+    public Set<String> getOnBoardRequestIds() {
+        Set<String> pickups = getIdsWithMealType(SharedMealType.PICKUP);
+        Set<String> dropoffs = getIdsWithMealType(SharedMealType.DROPOFF);
+        for (String avRequestIDpickup : pickups) {
+            boolean removeOk = dropoffs.remove(avRequestIDpickup);
+            GlobalAssert.that(removeOk);
+        }
+        return dropoffs;
+    }
+
+    private Set<String> getIdsWithMealType(SharedMealType sharedMealType) {
+        return roboTaxiMenu.stream().filter(sc -> sc.getMealType().equals(sharedMealType)).map(sc -> sc.getRequestId()).collect(Collectors.toSet());
     }
 
     // **************************************************
