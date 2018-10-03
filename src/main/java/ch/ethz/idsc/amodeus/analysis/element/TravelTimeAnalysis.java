@@ -66,19 +66,25 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
 
         /** maximum time */
         tLast = Quantity.of(simulationObject.now, SI.SECOND);
+
     }
 
     @Override
     public void consolidate() {
+        /** calculate standard dropoff time. */
+        travelHistories.values().forEach(th -> th.fillNotFinishedData(tLast));
+
+        /** finish filling of travel Histories */
         for (TravelHistory travelHistory : travelHistories.values()) {
             travelTimes.appendRow(Tensors.of( //
-                    RealScalar.of(travelHistory.reqIndx), travelHistory.getWaitTime(tLast), //
-                    travelHistory.getDriveTime(tLast), travelHistory.getTotalTravelTime(tLast)));
+                    RealScalar.of(travelHistory.reqIndx), travelHistory.getWaitTime(), //
+                    travelHistory.getDriveTime(), travelHistory.getTotalTravelTime()));
             requstStmps.appendRow(Tensors.of( //
                     RealScalar.of(travelHistory.reqIndx), travelHistory.submsnTime, //
                     travelHistory.getAssignmentTime(), travelHistory.getWaitEndTime(), //
                     travelHistory.getDropOffTime()));
         }
+
         /** aggregate information {quantile1, quantile2, quantile3, mean, maximum} */
         waitTAgg = Tensors.of(StaticHelper.quantiles(getWaitTimes(), Quantiles.SET), //
                 Mean.of(getWaitTimes()), //
@@ -89,6 +95,7 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
         totJTAgg = Tensors.of(StaticHelper.quantiles(getTotalJourneyTimes(), Quantiles.SET), //
                 Mean.of(getTotalJourneyTimes()), //
                 getTotalJourneyTimes().flatten(-1).reduce(Max::of).get().Get());
+
     }
 
     /** @return {@link Tensor} containing all recorded wait times of the simulation */

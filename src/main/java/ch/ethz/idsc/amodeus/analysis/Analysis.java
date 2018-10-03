@@ -241,6 +241,11 @@ public class Analysis {
         }
         totalValues.append(totalValueAppender);
     }
+    
+    @Deprecated //use the add functions and run instead! this reduces the amount of code for custom Analysis
+    public AnalysisSummary getAnalysisSummary() {
+        return analysisSummary;
+    }
 
     public void run() throws Exception {
         /** iterate simulation objects */
