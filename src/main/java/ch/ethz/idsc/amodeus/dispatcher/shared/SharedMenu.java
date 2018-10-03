@@ -191,6 +191,7 @@ public class SharedMenu {
             boolean removeOk = dropoffs.remove(avRequestIDpickup);
             GlobalAssert.that(removeOk);
         }
+        GlobalAssert.that(getNumberCustomersOnBoard() == dropoffs.size());
         return dropoffs;
     }
 
