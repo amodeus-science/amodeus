@@ -44,7 +44,11 @@ public class TravelHistory {
             drpOffTime = now;
     }
 
-    /* package */ void fillNotFinishedData(Scalar tLast) {
+    /** This function should be called on the last Timestep of the simulation.
+     * It makes sure that all the Times are set properly in case that not all requests have been served.
+     * 
+     * @param tLast */
+    public void fillNotFinishedData(Scalar tLast) {
         Objects.requireNonNull(tLast);
         if (Objects.isNull(asgnmtTime))
             asgnmtTime = tLast;
@@ -54,7 +58,6 @@ public class TravelHistory {
             drpOffTime = tLast;
     }
 
-    // TODO should the tLast not be set in a different function which has to be called on the Last time step?
     public Scalar getTotalTravelTime() {
         Objects.requireNonNull(submsnTime);
         Objects.requireNonNull(drpOffTime);
@@ -78,6 +81,7 @@ public class TravelHistory {
         GlobalAssert.that(Scalars.lessEquals(Quantity.of(0, SI.SECOND), waitTime));
         return waitTime;
     }
+
     public Scalar getAssignmentTime() {
         return asgnmtTime;
     }

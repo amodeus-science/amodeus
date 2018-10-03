@@ -14,11 +14,10 @@ public class AnalysisSummary implements Serializable {
     private final RequestRobotaxiInformationElement simulationInformationElement = new RequestRobotaxiInformationElement();
     private final StatusDistributionElement statusDistribution = new StatusDistributionElement();
     private final DistanceElement distanceElement;
-    private final TravelTimeAnalysis travelTimeAnalysis = new TravelTimeAnalysis();;
+    private final TravelTimeAnalysis travelTimeAnalysis = new TravelTimeAnalysis();
 
     /* package */ AnalysisSummary(int numVehicles, int size) {
         distanceElement = new DistanceElement(numVehicles, size);
-        /** Standard Least Path Calculator for Standard Travel Times */
     }
 
     public ScenarioParameters getScenarioParameters() {
@@ -40,5 +39,4 @@ public class AnalysisSummary implements Serializable {
     public TravelTimeAnalysis getTravelTimeAnalysis() {
         return travelTimeAnalysis;
     }
-
 }
