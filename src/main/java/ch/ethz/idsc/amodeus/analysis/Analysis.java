@@ -19,8 +19,6 @@ import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.amodeus.analysis.element.BinnedWaitingTimesImage;
 import ch.ethz.idsc.amodeus.analysis.element.DistanceDistributionOverDayImage;
 import ch.ethz.idsc.amodeus.analysis.element.DriveTimeHtml;
-import ch.ethz.idsc.amodeus.analysis.element.NumberOtherPassengerStackedChart;
-import ch.ethz.idsc.amodeus.analysis.element.NumberPassengerStackedImage;
 import ch.ethz.idsc.amodeus.analysis.element.OccupancyDistanceRatiosImage;
 import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionImage;
 import ch.ethz.idsc.amodeus.analysis.element.TotalJourneyTimeHtml;
@@ -171,14 +169,13 @@ public class Analysis {
         System.out.println("Found files: " + size);
         int numVehicles = storageSupplier.getSimulationObject(1).vehicles.size();
 
-        analysisSummary = new AnalysisSummary(numVehicles, size, network);
+        analysisSummary = new AnalysisSummary(numVehicles, size);
 
         // default List of Analysis Elements which will be loaded
         analysisElements.add(analysisSummary.getSimulationInformationElement());
         analysisElements.add(analysisSummary.getStatusDistribution());
         analysisElements.add(analysisSummary.getDistanceElement());
         analysisElements.add(analysisSummary.getTravelTimeAnalysis());
-        analysisElements.add(analysisSummary.getNumberPassengersAnalysis());
 
         analysisExports.add(BinnedWaitingTimesImage.INSTANCE);
         analysisExports.add(DistanceDistributionOverDayImage.INSTANCE);
@@ -189,9 +186,6 @@ public class Analysis {
         analysisExports.add(WaitTimeHistoImage.INSTANCE);
         analysisExports.add(DriveTimeImages.INSTANCE);
         analysisExports.add(TotalJourneyTimeImage.INSTANCE);
-        analysisExports.add(ExtraDriveTimeImage.INSTANCE); // TODO Lukas Write Test
-        analysisExports.add(NumberOtherPassengerStackedChart.INSTANCE); // TODO Lukas Write Test
-        analysisExports.add(NumberPassengerStackedImage.INSTANCE); // TODO Lukas Write Test
 
         analysisExports.add(DistancesOverDayTable.INSTANCE);
         analysisExports.add(DistancesRatiosTable.INSTANCE);
