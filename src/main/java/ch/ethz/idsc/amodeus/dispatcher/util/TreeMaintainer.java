@@ -8,6 +8,8 @@ import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.utils.collections.QuadTree;
+import org.matsim.core.utils.collections.QuadTree.Executor;
+import org.matsim.core.utils.collections.QuadTree.Rect;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
@@ -62,5 +64,15 @@ public class TreeMaintainer<T> {
     public int size() {
         GlobalAssert.that(tree.size() == set.size());
         return tree.size();
+    }
+
+    public int inFrame(Rect bounds) {
+        return tree.getRectangle(bounds, new HashSet<>()).size();
+    }
+
+    private static class DoNothingExecutor<T> implements Executor<T> {
+        @Override
+        public void execute(double x, double y, T object) {
+        }
     }
 }
