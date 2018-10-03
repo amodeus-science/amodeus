@@ -16,6 +16,8 @@ public class AnalysisSummary implements Serializable {
     private final DistanceElement distanceElement;
     private final TravelTimeAnalysis travelTimeAnalysis = new TravelTimeAnalysis();
 
+    // TODO Claudio, is public required here? We normally use it as a Part of the Analysis()
+    // Thus an initialization of AnalysisSummary() is superficial..
     public AnalysisSummary(int numVehicles, int size) {
         distanceElement = new DistanceElement(numVehicles, size);
     }

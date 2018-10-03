@@ -44,29 +44,38 @@ public class TravelHistory {
             drpOffTime = now;
     }
 
-    public Scalar getTotalTravelTime(Scalar tLast) {
-        Objects.requireNonNull(submsnTime);
+    /** This function should be called on the last Timestep of the simulation.
+     * It makes sure that all the Times are set properly in case that not all requests have been served.
+     * 
+     * @param tLast */
+    public void fillNotFinishedData(Scalar tLast) {
+        Objects.requireNonNull(tLast);
+        if (Objects.isNull(asgnmtTime))
+            asgnmtTime = tLast;
+        if (Objects.isNull(waitEndTme))
+            waitEndTme = tLast;
         if (Objects.isNull(drpOffTime))
             drpOffTime = tLast;
+    }
+
+    public Scalar getTotalTravelTime() {
+        Objects.requireNonNull(submsnTime);
+        Objects.requireNonNull(drpOffTime);
         Scalar totalTravelTime = drpOffTime.subtract(submsnTime);
         GlobalAssert.that(Scalars.lessEquals(Quantity.of(0, SI.SECOND), totalTravelTime));
         return totalTravelTime;
     }
 
-    public Scalar getDriveTime(Scalar tLast) {
-        if (Objects.isNull(waitEndTme))
-            waitEndTme = tLast;
-        if (Objects.isNull(drpOffTime))
-            drpOffTime = tLast;
+    public Scalar getDriveTime() {
+        Objects.requireNonNull(waitEndTme);
         Objects.requireNonNull(drpOffTime);
         Scalar driveTime = drpOffTime.subtract(waitEndTme);
         GlobalAssert.that(Scalars.lessEquals(Quantity.of(0, SI.SECOND), driveTime));
         return driveTime;
     }
 
-    public Scalar getWaitTime(Scalar tLast) {
-        if (Objects.isNull(waitEndTme))
-            waitEndTme = tLast;
+    public Scalar getWaitTime() {
+        Objects.requireNonNull(waitEndTme);
         Objects.requireNonNull(submsnTime);
         Scalar waitTime = waitEndTme.subtract(submsnTime);
         GlobalAssert.that(Scalars.lessEquals(Quantity.of(0, SI.SECOND), waitTime));
