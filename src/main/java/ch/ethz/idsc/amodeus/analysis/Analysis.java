@@ -176,6 +176,7 @@ public class Analysis {
         analysisElements.add(analysisSummary.getStatusDistribution());
         analysisElements.add(analysisSummary.getDistanceElement());
         analysisElements.add(analysisSummary.getTravelTimeAnalysis());
+        analysisElements.add(analysisSummary.getNumberPassengersAnalysis());
 
         analysisExports.add(BinnedWaitingTimesImage.INSTANCE);
         analysisExports.add(DistanceDistributionOverDayImage.INSTANCE);
