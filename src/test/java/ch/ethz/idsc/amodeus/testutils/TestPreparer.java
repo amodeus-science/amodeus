@@ -2,7 +2,6 @@
 package ch.ethz.idsc.amodeus.testutils;
 
 import java.io.File;
-import java.net.URL;
 import java.util.Objects;
 
 import org.matsim.api.core.v01.Scenario;
@@ -10,7 +9,6 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.Config;
-import org.matsim.core.config.ConfigGroup;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.scenario.ScenarioUtils;
 
@@ -26,7 +24,6 @@ import ch.ethz.idsc.amodeus.traveldata.TravelDataIO;
 import ch.ethz.idsc.amodeus.util.io.ProvideAVConfig;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.matsim.av.config.AVConfig;
-import ch.ethz.matsim.av.config.AVConfigReader;
 import ch.ethz.matsim.av.config.AVGeneratorConfig;
 import ch.ethz.matsim.av.framework.AVConfigGroup;
 
@@ -94,6 +91,5 @@ public class TestPreparer {
     public Network getPreparedNetwork() {
         return Objects.requireNonNull(networkPrepared);
     }
-
 
 }
