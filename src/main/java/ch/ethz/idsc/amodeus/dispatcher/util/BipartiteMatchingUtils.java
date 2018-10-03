@@ -23,8 +23,7 @@ public class BipartiteMatchingUtils {
         accDstFctn = new NetworkDistanceFunction(network, new FastAStarLandmarksFactory());
     }
 
-    public Tensor executePickup( //
-            UniversalDispatcher universalDispatcher, //
+    public Tensor executePickup(UniversalDispatcher universalDispatcher, //
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
             Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
             DistanceFunction distanceFunction, Network network) {
@@ -33,7 +32,6 @@ public class BipartiteMatchingUtils {
 
         /** reduction of problem size with kd-tree, helps to downsize problems where n << m or m>> n
          * for n number of available taxis and m number of available requests */
-
         GlobalBipartiteMatching globalBipartiteMatching = new GlobalBipartiteMatching(distanceFunction);
         gbpMatch = globalBipartiteMatching.match(roboTaxis, requests);
 
@@ -48,8 +46,7 @@ public class BipartiteMatchingUtils {
         return infoLine;
     }
 
-    public Map<RoboTaxi, AVRequest> getGBPMatch( //
-            UniversalDispatcher universalDispatcher, //
+    public Map<RoboTaxi, AVRequest> getGBPMatch(UniversalDispatcher universalDispatcher, //
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
             Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
             DistanceFunction distanceFunction, Network network) {

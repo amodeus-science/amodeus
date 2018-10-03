@@ -176,6 +176,7 @@ public class Analysis {
         analysisElements.add(analysisSummary.getStatusDistribution());
         analysisElements.add(analysisSummary.getDistanceElement());
         analysisElements.add(analysisSummary.getTravelTimeAnalysis());
+        analysisElements.add(analysisSummary.getNumberPassengersAnalysis());
 
         analysisExports.add(BinnedWaitingTimesImage.INSTANCE);
         analysisExports.add(DistanceDistributionOverDayImage.INSTANCE);
@@ -240,6 +241,11 @@ public class Analysis {
             GlobalAssert.that(!allAmodeusTotalValueIdentifiers.contains(totalValueIdentifier.getIdentifier()));
         }
         totalValues.append(totalValueAppender);
+    }
+    
+    @Deprecated //use the add functions and run instead! this reduces the amount of code for custom Analysis
+    public AnalysisSummary getAnalysisSummary() {
+        return analysisSummary;
     }
 
     public void run() throws Exception {

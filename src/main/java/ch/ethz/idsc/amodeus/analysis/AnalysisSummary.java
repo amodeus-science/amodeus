@@ -4,6 +4,7 @@ package ch.ethz.idsc.amodeus.analysis;
 import java.io.Serializable;
 
 import ch.ethz.idsc.amodeus.analysis.element.DistanceElement;
+import ch.ethz.idsc.amodeus.analysis.element.NumberPassengersAnalysis;
 import ch.ethz.idsc.amodeus.analysis.element.RequestRobotaxiInformationElement;
 import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionElement;
 import ch.ethz.idsc.amodeus.analysis.element.TravelTimeAnalysis;
@@ -15,7 +16,10 @@ public class AnalysisSummary implements Serializable {
     private final StatusDistributionElement statusDistribution = new StatusDistributionElement();
     private final DistanceElement distanceElement;
     private final TravelTimeAnalysis travelTimeAnalysis = new TravelTimeAnalysis();
+    private final NumberPassengersAnalysis numberPassengersAnalysis = new NumberPassengersAnalysis();
 
+    // TODO Claudio, is public required here? We normally use it as a Part of the Analysis()
+    // Thus an initialization of AnalysisSummary() is superficial..
     public AnalysisSummary(int numVehicles, int size) {
         distanceElement = new DistanceElement(numVehicles, size);
     }
@@ -38,5 +42,9 @@ public class AnalysisSummary implements Serializable {
 
     public TravelTimeAnalysis getTravelTimeAnalysis() {
         return travelTimeAnalysis;
+    }
+
+    public NumberPassengersAnalysis getNumberPassengersAnalysis() {
+        return numberPassengersAnalysis;
     }
 }
