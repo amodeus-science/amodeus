@@ -8,12 +8,12 @@ package ch.ethz.idsc.amodeus.prep;
      * @throws Exception */
     public static void setupScenario() throws Exception {
         // TODO claudio download a scenario in a different way.
-//        Properties properties = ResourceData.properties("/aido/scenarios.properties");
-//        List<Object> keys = new ArrayList<>();
-//        keys.addAll(properties.keySet());
-//        Collections.shuffle(keys);
-//        String key = (String) keys.get(0);
-//        System.out.println("testing scenario:  " + key);
-//        AidoScenarioDownload.extract(key);
+        // Properties properties = ResourceData.properties("/aido/scenarios.properties");
+        // List<Object> keys = new ArrayList<>();
+        // keys.addAll(properties.keySet());
+        // Collections.shuffle(keys);
+        // String key = (String) keys.get(0);
+        // System.out.println("testing scenario: " + key);
+        // AidoScenarioDownload.extract(key);
     }
 }
