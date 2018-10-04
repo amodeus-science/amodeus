@@ -13,7 +13,7 @@ import java.util.Objects;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Link;
 
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.OsmLink;
 import ch.ethz.idsc.amodeus.net.TensorCoords;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
@@ -25,7 +25,7 @@ import ch.ethz.idsc.tensor.opt.ConvexHull;
 /* package */ class VirtualNodeGeometry {
     private final Map<VirtualNode<Link>, Tensor> convexHulls = new LinkedHashMap<>(); // ordering matters
 
-    VirtualNodeGeometry(MatsimStaticDatabase db, VirtualNetwork<Link> virtualNetwork) {
+    VirtualNodeGeometry(MatsimAmodeusDatabase db, VirtualNetwork<Link> virtualNetwork) {
         if (Objects.isNull(virtualNetwork))
             return;
         for (VirtualNode<Link> virtualNode : virtualNetwork.getVirtualNodes()) {

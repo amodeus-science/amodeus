@@ -15,7 +15,7 @@ enum VehicleContainerCompiler {
      * @param db
      * @return {@link VehicleContainer} filled with information for later viewing and storage
      *         in {@link SimulationObject} */
-    public static VehicleContainer compile(RoboTaxi robotaxi, MatsimStaticDatabase db) {
+    public static VehicleContainer compile(RoboTaxi robotaxi, MatsimAmodeusDatabase db) {
         VehicleContainer vehicleContainer = new VehicleContainer();
         vehicleContainer.vehicleIndex = db.getVehicleIndex(robotaxi);
         final Link fromLink = robotaxi.getLastKnownLocation();

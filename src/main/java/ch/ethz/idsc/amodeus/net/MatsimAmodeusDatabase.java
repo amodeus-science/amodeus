@@ -23,10 +23,9 @@ import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.red.Median;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-public class MatsimStaticDatabase {
+public class MatsimAmodeusDatabase {
 
-    public static void initializeSingletonInstance( //
-            Network network, //
+    public static MatsimAmodeusDatabase initialize(Network network, //
             ReferenceFrame referenceFrame) {
 
         NavigableMap<String, OsmLink> linkMap = new TreeMap<>();
@@ -40,13 +39,34 @@ public class MatsimStaticDatabase {
             );
             linkMap.put(link.getId().toString(), osmLink);
         }
-
-        INSTANCE = new MatsimStaticDatabase( //
-                referenceFrame, //
-                linkMap);
+        // INSTANCE = new MatsimStaticDatabase( //
+        // referenceFrame, //
+        // linkMap);
+        return new MatsimAmodeusDatabase(referenceFrame, linkMap);
     }
 
-    public static MatsimStaticDatabase INSTANCE;
+    // public static void initializeSingletonInstance( //
+    // Network network, //
+    // ReferenceFrame referenceFrame) {
+    //
+    // NavigableMap<String, OsmLink> linkMap = new TreeMap<>();
+    //
+    // CoordinateTransformation coords_toWGS84 = referenceFrame.coords_toWGS84();
+    //
+    // for (Link link : network.getLinks().values()) {
+    // OsmLink osmLink = new OsmLink(link, //
+    // coords_toWGS84.transform(link.getFromNode().getCoord()), //
+    // coords_toWGS84.transform(link.getToNode().getCoord()) //
+    // );
+    // linkMap.put(link.getId().toString(), osmLink);
+    // }
+    //
+    // INSTANCE = new MatsimStaticDatabase( //
+    // referenceFrame, //
+    // linkMap);
+    // }
+
+    // public static MatsimStaticDatabase INSTANCE;
 
     /** rapid lookup from MATSIM side */
     private final Map<Link, Integer> linkInteger = new HashMap<>();
@@ -60,7 +80,7 @@ public class MatsimStaticDatabase {
 
     private Integer iteration;
 
-    private MatsimStaticDatabase( //
+    private MatsimAmodeusDatabase( //
             ReferenceFrame referenceFrame, //
             NavigableMap<String, OsmLink> linkMap) {
         this.referenceFrame = referenceFrame;

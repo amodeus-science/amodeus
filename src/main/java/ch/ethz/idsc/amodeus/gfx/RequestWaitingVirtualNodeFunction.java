@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 import org.matsim.api.core.v01.network.Link;
 
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.RequestContainer;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
@@ -21,7 +21,7 @@ public class RequestWaitingVirtualNodeFunction extends AbstractVirtualNodeFuncti
     private final Function<Tensor, Scalar> function;
 
     public RequestWaitingVirtualNodeFunction( //
-            MatsimStaticDatabase db, VirtualNetwork<Link> virtualNetwork, Function<Tensor, Scalar> function) {
+            MatsimAmodeusDatabase db, VirtualNetwork<Link> virtualNetwork, Function<Tensor, Scalar> function) {
         super(db, virtualNetwork);
         this.function = function;
     }

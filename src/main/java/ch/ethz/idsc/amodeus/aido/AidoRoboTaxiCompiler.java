@@ -4,30 +4,34 @@ package ch.ethz.idsc.amodeus.aido;
 import java.util.List;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.TensorCoords;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.io.StringScalar;
+import ch.ethz.idsc.tensor.qty.Boole;
 
-/* package */ enum AidoRoboTaxiCompiler {
-    ;
+/* package */ class AidoRoboTaxiCompiler {
+    private final MatsimAmodeusDatabase db;
 
-    public static Tensor compile(List<RoboTaxi> roboTaxis) {
-        return Tensor.of(roboTaxis.stream().map(AidoRoboTaxiCompiler::ofTaxi));
+    public AidoRoboTaxiCompiler(MatsimAmodeusDatabase db) {
+        this.db = db;
     }
 
-    private static Tensor ofTaxi(RoboTaxi roboTaxi) {
+    public Tensor compile(List<RoboTaxi> roboTaxis) {
+        return Tensor.of(roboTaxis.stream().map(rt -> this.ofTaxi(rt)));
+    }
+
+    private Tensor ofTaxi(RoboTaxi roboTaxi) {
         // id
-        Tensor info = Tensors.vector(MatsimStaticDatabase.INSTANCE.getVehicleIndex(roboTaxi));
+        Tensor info = Tensors.vector(db.getVehicleIndex(roboTaxi));
         // divertable location
-        info.append(TensorCoords.toTensor(MatsimStaticDatabase.INSTANCE.referenceFrame.coords_toWGS84().transform(//
+        info.append(TensorCoords.toTensor(db.referenceFrame.coords_toWGS84().transform( //
                 roboTaxi.getDivertableLocation().getCoord())));
         // status
         info.append(StringScalar.of(roboTaxi.getStatus().name()));
         // divertable?
-        info.append(roboTaxi.isDivertable() ? RealScalar.ONE : RealScalar.ZERO);
+        info.append(Boole.of(roboTaxi.isDivertable()));
         return info;
     }
 }

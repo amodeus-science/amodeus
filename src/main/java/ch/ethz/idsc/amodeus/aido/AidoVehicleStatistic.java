@@ -7,7 +7,7 @@ import java.util.List;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.VehicleContainer;
 import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.RationalScalar;
@@ -19,6 +19,11 @@ import ch.ethz.idsc.tensor.qty.Quantity;
 // TODO small rounding errors compared to VehicleStatistic
 // ... find out where the differences come from and adapt
 /* package */ class AidoVehicleStatistic {
+    private final MatsimAmodeusDatabase db;
+
+    public AidoVehicleStatistic(MatsimAmodeusDatabase db) {
+        this.db = db;
+    }
 
     /** list is used as a buffer and is periodically emptied */
     private final List<VehicleContainer> list = new LinkedList<>();
@@ -47,7 +52,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
         Scalar distEmpty = Quantity.of(0, SI.METER);
         if (!list.isEmpty()) {
             final int linkId = list.get(0).linkIndex;
-            Link distanceLink = MatsimStaticDatabase.INSTANCE.getOsmLink(linkId).link;
+            Link distanceLink = db.getOsmLink(linkId).link;
             /** this total distance on the link was travelled on during all simulationObjects stored
              * in the list. */
             Scalar distance = Quantity.of(distanceLink.getLength(), SI.METER);

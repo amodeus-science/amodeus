@@ -75,14 +75,14 @@ public class MultiPolygonsVirtualNetworkCreator<T, U> {
             }
         }
 
-        CreatorUtils.addToVNodes(vNodeTMap, nameOf, virtualNetwork);
+        VirtualNetworkCreatorUtils.addToVNodes(vNodeTMap, nameOf, virtualNetwork);
 
         // create virtualLinks for complete or neighboring graph
         VirtualLinkBuilder.build(virtualNetwork, completeGraph, uElements);
         GlobalAssert.that(VirtualNetworkCheck.virtualLinkConsistencyCheck(virtualNetwork));
 
         // fill information for serialization
-        CreatorUtils.fillSerializationInfo(elements, virtualNetwork, nameOf);
+        VirtualNetworkCreatorUtils.fillSerializationInfo(elements, virtualNetwork, nameOf);
 
         return virtualNetwork;
     }
