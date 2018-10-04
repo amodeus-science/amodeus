@@ -11,7 +11,8 @@ import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
     @Override
     public Scalar apply(Scalar scalar) {
         return scalar instanceof Quantity //
-                ? ((Quantity) scalar).value() : scalar;
+                ? ((Quantity) scalar).value()
+                : scalar;
     }
 
 }

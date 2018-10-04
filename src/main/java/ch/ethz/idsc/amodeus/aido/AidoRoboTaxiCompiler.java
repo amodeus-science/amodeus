@@ -6,10 +6,10 @@ import java.util.List;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.TensorCoords;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.io.StringScalar;
+import ch.ethz.idsc.tensor.qty.Boole;
 
 /* package */ class AidoRoboTaxiCompiler {
     private final MatsimAmodeusDatabase db;
@@ -26,12 +26,12 @@ import ch.ethz.idsc.tensor.io.StringScalar;
         // id
         Tensor info = Tensors.vector(db.getVehicleIndex(roboTaxi));
         // divertable location
-        info.append(TensorCoords.toTensor(db.referenceFrame.coords_toWGS84().transform(//
+        info.append(TensorCoords.toTensor(db.referenceFrame.coords_toWGS84().transform( //
                 roboTaxi.getDivertableLocation().getCoord())));
         // status
         info.append(StringScalar.of(roboTaxi.getStatus().name()));
         // divertable?
-        info.append(roboTaxi.isDivertable() ? RealScalar.ONE : RealScalar.ZERO);
+        info.append(Boole.of(roboTaxi.isDivertable()));
         return info;
     }
 }

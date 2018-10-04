@@ -54,9 +54,6 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
     // distRatio;
     public Tensor ratios;
 
-    // total Values for TotalValuesFile
-    private final Map<TotalValueIdentifier, String> totalValues = new HashMap<>();
-
     public DistanceElement(int numVehicles, int size, MatsimAmodeusDatabase db) {
         IntStream.range(0, numVehicles).forEach(i -> list.add(new VehicleStatistic(size, db)));
     }
@@ -117,16 +114,17 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
                 .orElse(Array.zeros(2));
     }
 
-    @Override
+    @Override // from TotalValueAppender
     public Map<TotalValueIdentifier, String> getTotalValues() {
-        totalValues.put(TtlValIdent.TOTALROBOTAXIDISTANCE, String.valueOf(totalDistance));
-        totalValues.put(TtlValIdent.TOTALROBOTAXIDISTANCEPICKU, String.valueOf(totalDistancePicku));
-        totalValues.put(TtlValIdent.TOTALROBOTAXIDISTANCEWTCST, String.valueOf(totalDistanceWtCst));
-        totalValues.put(TtlValIdent.TOTALROBOTAXIDISTANCEREB, String.valueOf(totalDistanceRebal));
-        totalValues.put(TtlValIdent.DISTANCERATIO, String.valueOf(totalDistanceRatio));
-        totalValues.put(TtlValIdent.OCCUPANCYRATIO, String.valueOf(avgOccupancy));
-        totalValues.put(TtlValIdent.AVGTRIPDISTANCE, String.valueOf(avgTripDistance));
-        return totalValues;
+        Map<TotalValueIdentifier, String> map = new HashMap<>();
+        map.put(TtlValIdent.TOTALROBOTAXIDISTANCE, String.valueOf(totalDistance));
+        map.put(TtlValIdent.TOTALROBOTAXIDISTANCEPICKU, String.valueOf(totalDistancePicku));
+        map.put(TtlValIdent.TOTALROBOTAXIDISTANCEWTCST, String.valueOf(totalDistanceWtCst));
+        map.put(TtlValIdent.TOTALROBOTAXIDISTANCEREB, String.valueOf(totalDistanceRebal));
+        map.put(TtlValIdent.DISTANCERATIO, String.valueOf(totalDistanceRatio));
+        map.put(TtlValIdent.OCCUPANCYRATIO, String.valueOf(avgOccupancy));
+        map.put(TtlValIdent.AVGTRIPDISTANCE, String.valueOf(avgTripDistance));
+        return map;
     }
 
 }

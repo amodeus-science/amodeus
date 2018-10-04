@@ -13,7 +13,7 @@ import java.util.Objects;
  * <li>whenever stopped, the number on the display is frozen.
  * <li>the number on the display can be read anytime.
  * </ul>
-*/
+ */
 public class Stopwatch {
     /** @return new instance of {@code Stopwatch} that is started upon creation */
     public static Stopwatch started() {

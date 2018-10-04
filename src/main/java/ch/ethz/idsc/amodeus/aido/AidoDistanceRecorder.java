@@ -11,10 +11,8 @@ import ch.ethz.idsc.tensor.Tensor;
 
 /* package */ class AidoDistanceRecorder {
     private final List<AidoVehicleStatistic> list;
-    private final MatsimAmodeusDatabase db;
 
     public AidoDistanceRecorder(int numVehicles, MatsimAmodeusDatabase db) {
-        this.db = db;
         list = IntStream.range(0, numVehicles) //
                 .mapToObj(i -> new AidoVehicleStatistic(db)) //
                 .collect(Collectors.toList());

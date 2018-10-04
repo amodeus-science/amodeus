@@ -51,9 +51,6 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
     public final String user;
     public final String date;
 
-    // total Values for TotalValuesFile
-    private final Map<TotalValueIdentifier, String> totalValues = new HashMap<>();
-
     public ScenarioParameters() {
         File workingDirectory = null;
         ScenarioOptions scenOptions = null;
@@ -105,7 +102,8 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
         }
 
         virtualNodesCount = Objects.isNull(virtualNetwork) //
-                ? UNDEFINED_INT : virtualNetwork.getvNodesCount();
+                ? UNDEFINED_INT
+                : virtualNetwork.getvNodesCount();
 
         iterations = config.controler().getLastIteration();
 
@@ -117,16 +115,16 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
 
     @Override
     public Map<TotalValueIdentifier, String> getTotalValues() {
-        totalValues.put(TtlValIdent.DISPATCHER, dispatcher);
-        totalValues.put(TtlValIdent.DISPATCHINGPERIOD, String.valueOf(redispatchPeriod));
-        totalValues.put(TtlValIdent.REBALANCEPERIOD, String.valueOf(rebalancingPeriod));
-        totalValues.put(TtlValIdent.DISTANCEHEURISTIC, String.valueOf(distanceHeuristic));
-        totalValues.put(TtlValIdent.POPULATIONSIZE, String.valueOf(populationSize));
-        totalValues.put(TtlValIdent.VIRTUALNODES, String.valueOf(virtualNodesCount));
-        totalValues.put(TtlValIdent.VEHICLEGENERATOR, vehicleGenerator);
-        totalValues.put(TtlValIdent.TIMESTAMP, date);
-
-        return totalValues;
+        Map<TotalValueIdentifier, String> map = new HashMap<>();
+        map.put(TtlValIdent.DISPATCHER, dispatcher);
+        map.put(TtlValIdent.DISPATCHINGPERIOD, String.valueOf(redispatchPeriod));
+        map.put(TtlValIdent.REBALANCEPERIOD, String.valueOf(rebalancingPeriod));
+        map.put(TtlValIdent.DISTANCEHEURISTIC, String.valueOf(distanceHeuristic));
+        map.put(TtlValIdent.POPULATIONSIZE, String.valueOf(populationSize));
+        map.put(TtlValIdent.VIRTUALNODES, String.valueOf(virtualNodesCount));
+        map.put(TtlValIdent.VEHICLEGENERATOR, vehicleGenerator);
+        map.put(TtlValIdent.TIMESTAMP, date);
+        return map;
     }
 
 }
