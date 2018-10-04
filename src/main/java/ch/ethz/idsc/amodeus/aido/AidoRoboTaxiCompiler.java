@@ -14,7 +14,7 @@ import ch.ethz.idsc.tensor.io.StringScalar;
 /* package */ enum AidoRoboTaxiCompiler {
     ;
 
-    public static Tensor compile(List<RoboTaxi> roboTaxis) {
+    static Tensor compile(List<RoboTaxi> roboTaxis) {
         return Tensor.of(roboTaxis.stream().map(AidoRoboTaxiCompiler::ofTaxi));
     }
 
