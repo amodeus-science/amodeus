@@ -15,12 +15,12 @@ public enum LPPreparer {
 
     /** Solves the LP by the given solver and returns the solver where the LP solution can be taken out if it */
     public static LPSolver run(VirtualNetwork<Link> virtualNetwork, //
-            Network network, Tensor lambdaAbsolute, int numberOfVehicles) throws Exception {
+            Network network, Tensor lambdaAbsolute, int numberOfVehicles, int endTime) throws Exception {
 
         LPOptions lpOptions = new LPOptions(MultiFileTools.getWorkingDirectory(), LPOptionsBase.getDefault());
 
         LPCreator lpCreator = lpOptions.getLPSolver();
-        LPSolver solver = lpCreator.create(virtualNetwork, network, lpOptions, lambdaAbsolute, numberOfVehicles);
+        LPSolver solver = lpCreator.create(virtualNetwork, network, lpOptions, lambdaAbsolute, numberOfVehicles, endTime);
 
         solver.initiateLP();
         solver.solveLP(false);

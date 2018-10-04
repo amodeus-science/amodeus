@@ -49,23 +49,6 @@ public class RequestTest {
     }
 
     @Test
-    public void testInvalid() {
-        try {
-            new Request(-1, link0, link1);
-            assertTrue(false);
-        } catch (Exception exception) {
-            // ---
-        }
-
-        try {
-            new Request(3600 * 24, link0, link1);
-            assertTrue(false);
-        } catch (Exception exception) {
-            // ---
-        }
-    }
-
-    @Test
     public void testFilterLinks() {
         Request request0 = new Request(1, link0, link1);
         Request request1 = new Request(1, link2, link1);

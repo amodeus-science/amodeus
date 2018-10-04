@@ -46,6 +46,7 @@ public class PopulationToolsTestVN3 {
     private static Set<Request> requestsSingle3 = new HashSet<>();
     private static Set<Request> requestsEmpty = Collections.emptySet();
     private static Set<Request> requests3 = new HashSet<>();
+    private static int endTime;
 
     @BeforeClass
     public static void setUp() throws IOException {
@@ -64,7 +65,7 @@ public class PopulationToolsTestVN3 {
         AVConfig avC = ProvideAVConfig.with(config, avCg);
         AVGeneratorConfig genConfig = avC.getOperatorConfigs().iterator().next().getGeneratorConfig();
         int numRt = (int) genConfig.getNumberOfVehicles();
-        int endTime = (int) config.qsim().getEndTime();
+        endTime = (int) config.qsim().getEndTime();
         Scenario scenario = ScenarioUtils.loadScenario(config);
         network = scenario.getNetwork();
         population = scenario.getPopulation();
@@ -81,23 +82,23 @@ public class PopulationToolsTestVN3 {
         requestsSingle3.add(new Request(10, node0, node2));
         requests3.add(new Request(0, node0, node2));
         requests3.add(new Request(3600, node1, node2));
-        requests3.add(new Request(24 * 3600 - 1, node1, node0));
+        requests3.add(new Request(30 * 3600 - 1, node1, node0));
         requests3.add(new Request(3600, node2, node2));
     }
 
     @Test
     public void testEmpty() {
-        Tensor lambda = PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(requestsEmpty, virtualNetwork3, 900);
-        assertEquals(lambda, Array.zeros(96, 3, 3));
+        Tensor lambda = PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(requestsEmpty, virtualNetwork3, 3600, endTime);
+        assertEquals(lambda, Array.zeros(30, 3, 3));
     }
 
     @Test
     public void testVirtualNetwork3() {
-        Tensor lambda = PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(requestsSingle3, virtualNetwork3, 12 * 3600);
+        Tensor lambda = PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(requestsSingle3, virtualNetwork3, 15 * 3600, endTime);
         assertEquals(lambda, Tensors.of(Tensors.of(Tensors.vector(0, 0, 1), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0)),
                 Tensors.of(Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))));
 
-        lambda = PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(requests3, virtualNetwork3, 12 * 3600);
+        lambda = PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(requests3, virtualNetwork3, 15 * 3600, endTime);
         assertEquals(lambda, Tensors.of(Tensors.of(Tensors.vector(0, 0, 1), Tensors.vector(0, 0, 1), Tensors.vector(0, 0, 1)),
                 Tensors.of(Tensors.vector(0, 0, 0), Tensors.vector(1, 0, 0), Tensors.vector(0, 0, 0))));
     }

@@ -25,8 +25,6 @@ import ch.ethz.idsc.tensor.sca.Clip;
 
 public enum PopulationTools {
     ;
-    private static final int DAYDURATION = 24 * 60 * 60;
-    private static final Clip TIME_CLIP = Clip.function(0, DAYDURATION - 1);
     private static final Logger log = Logger.getLogger(PopulationTools.class);
 
     public static void removeOutsideNetwork(Population population, Network network) {
@@ -63,10 +61,10 @@ public enum PopulationTools {
         }
     }
 
-    /** Removes all persons that have legs with departure time or the end time of its predecessor activity outside the first 24 hours */
-    public static void removeOutsideDayTime(Population population) {
-
-        log.info("All people in population  which have activities outside the first 24 hours are removed.");
+    /** Removes all persons that have legs with departure time or the end time of its predecessor activity outside the time interval [0,endTime) */
+    public static void removeOutsideTimeInterval(Population population, int endTime) {
+        Clip timeClip = Clip.function(0, endTime - 1);
+        log.info("All people in population  which have activities outside the time interval [0, " + endTime + ") are removed.");
 
         Iterator<? extends Person> itPerson = population.getPersons().values().iterator();
 
@@ -91,9 +89,9 @@ public enum PopulationTools {
                     if (planCurrent instanceof Leg) {
                         Leg leg = (Leg) planCurrent;
                         Activity actBefore = (Activity) planBefore;
-                        if (TIME_CLIP.isOutside(RealScalar.of(leg.getDepartureTime())))
+                        if (timeClip.isOutside(RealScalar.of(leg.getDepartureTime())))
                             removePerson = true;
-                        if (TIME_CLIP.isOutside(RealScalar.of(actBefore.getEndTime())))
+                        if (timeClip.isOutside(RealScalar.of(actBefore.getEndTime())))
                             removePerson = true;
                     }
                 }
@@ -107,8 +105,9 @@ public enum PopulationTools {
     /** @param population
      * @param network
      * @return the set of all AV requests in the population */
-    public static Set<Request> getAVRequests(Population population, Network network) {
+    public static Set<Request> getAVRequests(Population population, Network network, int endTime) {
         Set<Request> requests = new HashSet<>();
+        Clip timeClip = Clip.function(0, endTime - 1);
         // fill based on population file
         for (Person person : population.getPersons().values()) {
             for (Plan plan : person.getPlans()) {
@@ -132,7 +131,7 @@ public enum PopulationTools {
                                 Activity actBefore = (Activity) planElMins;
                                 startTime = actBefore.getEndTime();
                             }
-                            TIME_CLIP.requireInside(RealScalar.of(startTime));
+                            timeClip.requireInside(RealScalar.of(startTime));
 
                             Link startLink = network.getLinks().get(((Activity) planElMins).getLinkId());
                             Link endLink = network.getLinks().get(((Activity) planElPlus).getLinkId());
@@ -148,15 +147,16 @@ public enum PopulationTools {
     /** @param requests
      * @param virtualNetwork
      * @param timeInterval
+     * @param endTime
      * @return {@link Tensor} with indices k,i,j where the elements are the number of requests from virtual station i to j at time interval k. E.g. (5,1,2)=10 means
      *         that 10 requests appear in virtual station i with destination in virtual station j at time interval 5. */
-    public static Tensor getLambdaInVirtualNodesAndTimeIntervals(Set<Request> requests, VirtualNetwork<Link> virtualNetwork, int timeInterval) {
-        GlobalAssert.that(DAYDURATION % timeInterval == 0);
+    public static Tensor getLambdaInVirtualNodesAndTimeIntervals(Set<Request> requests, VirtualNetwork<Link> virtualNetwork, int timeIntervalLength, int endTime) {
+        GlobalAssert.that(endTime % timeIntervalLength == 0);
 
-        Tensor lambda = Array.zeros(DAYDURATION / timeInterval, virtualNetwork.getvNodesCount(), virtualNetwork.getvNodesCount());
+        Tensor lambda = Array.zeros(endTime / timeIntervalLength, virtualNetwork.getvNodesCount(), virtualNetwork.getvNodesCount());
 
         for (Request request : requests) {
-            int timeIndex = (int) Math.floor(request.startTime() / timeInterval);
+            int timeIndex = (int) Math.floor(request.startTime() / timeIntervalLength);
             int vNodeIndexFrom = virtualNetwork.getVirtualNode(request.startLink()).getIndex();
             int vNodeIndexTo = virtualNetwork.getVirtualNode(request.endLink()).getIndex();
 
