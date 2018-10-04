@@ -14,7 +14,6 @@ import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
@@ -42,13 +41,13 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
     public void register(SimulationObject simulationObject) {
 
         /** On first Timestep fill the Tensor for the Vehicles as well as the map with the current passengers */
-        // TODO as soon as the robo taxi contains a list of requests, use this instead 
+        // TODO as soon as the robo taxi contains a list of requests, use this instead
         if (beforeFirstSimulationObject) {
             lastNumPassInVs = Array.zeros(simulationObject.vehicles.size());
             simulationObject.vehicles.forEach(vc -> currentPassengers.put(vc.vehicleIndex, new HashSet<>()));
             beforeFirstSimulationObject = false;
         }
-        
+
         /** build the Number of Requests per Time Step */
         for (RequestContainer requestContainer : simulationObject.requests) {
 
@@ -99,7 +98,6 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
         maxNumPassengers = numberPassengers.flatten(-1).reduce(Max::of).get().Get();
         passengerDistribution = PadRight.zeros(passengerDistribution.length(), maxNumPassengers.number().intValue() + 1).apply(passengerDistribution);
 
-        
         for (Integer index : sharedOthersMap.keySet()) {
             sharedOthersPerRequest.append(RealScalar.of(sharedOthersMap.get(index)));
         }
@@ -125,10 +123,7 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
         return BinCounts.of(sharedOthersPerRequest);
     }
 
-    /**
-     * 
-     * @return the maximal number of other customer in the Robo Taxi for picked up requests. The order of the Requests is not corresponding to the index. 
-     */
+    /** @return the maximal number of other customer in the Robo Taxi for picked up requests. The order of the Requests is not corresponding to the index. */
     public Tensor getSharedOthersPerRequest() {
         return sharedOthersPerRequest;
     }

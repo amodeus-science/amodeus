@@ -79,8 +79,8 @@ public class SharedMenu {
     // REMOVING COURSES
     // **************************************************
 
-    // FIXME we have to rethink this. It is very dangerous to just let the people change the menu and remove courses. 
-    // especially if there is the possibility to remove dropoff courses of onboard customers 
+    // FIXME we have to rethink this. It is very dangerous to just let the people change the menu and remove courses.
+    // especially if there is the possibility to remove dropoff courses of onboard customers
     public void removeStarterCourse() {
         GlobalAssert.that(hasStarter());
         removeAVCourse(0);
@@ -191,6 +191,7 @@ public class SharedMenu {
             boolean removeOk = dropoffs.remove(avRequestIDpickup);
             GlobalAssert.that(removeOk);
         }
+        GlobalAssert.that(getNumberCustomersOnBoard() == dropoffs.size());
         return dropoffs;
     }
 

@@ -1,15 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.lp;
 
-import java.io.File;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.matsim.api.core.v01.network.Link;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.util.math.Magnitude;
@@ -51,28 +43,28 @@ public enum LPUtils {
         return travelTime;
     }
 
-//    // TODO delete this, this should not be done in this way, make it the proper way!
-//    /** @return returns the parameter of the av.xml file for the number of vehicles */
-//    public static int getNumberOfVehicles() {
-//        int numberVehicles = 0;
-//        /** reading the number of vehicles out of the av.xml file */
-//        try {
-//            File fXmlFile = new File("av.xml"); // TODO still hard coded, try to read it from {@link Config}
-//            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-//            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-//            Document doc = dBuilder.parse(fXmlFile);
-//
-//            NodeList nList = doc.getElementsByTagName("generator");
-//            Element elem = (Element) nList.item(0);
-//            Element subelem = (Element) elem.getElementsByTagName("param").item(0);
-//            numberVehicles = Integer.parseInt(subelem.getAttribute("value"));
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            System.err.println("av.xml or av_v1.dtd file not found!!! Using default value for number of vehicles instead, which is 100!");
-//            numberVehicles = 100;
-//        }
-//        return numberVehicles;
-//    }
+    // // TODO delete this, this should not be done in this way, make it the proper way!
+    // /** @return returns the parameter of the av.xml file for the number of vehicles */
+    // public static int getNumberOfVehicles() {
+    // int numberVehicles = 0;
+    // /** reading the number of vehicles out of the av.xml file */
+    // try {
+    // File fXmlFile = new File("av.xml"); // TODO still hard coded, try to read it from {@link Config}
+    // DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+    // DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+    // Document doc = dBuilder.parse(fXmlFile);
+    //
+    // NodeList nList = doc.getElementsByTagName("generator");
+    // Element elem = (Element) nList.item(0);
+    // Element subelem = (Element) elem.getElementsByTagName("param").item(0);
+    // numberVehicles = Integer.parseInt(subelem.getAttribute("value"));
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // System.err.println("av.xml or av_v1.dtd file not found!!! Using default value for number of vehicles instead, which is 100!");
+    // numberVehicles = 100;
+    // }
+    // return numberVehicles;
+    // }
 
     /** @param tensor
      * @return the rounded vector where non-negativity and almost integer elements are required, else an exception is thrown */
