@@ -19,7 +19,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDatabaseModule;
 import ch.ethz.idsc.amodeus.net.FastLinkLookup;
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.TensorCoords;
 import ch.ethz.idsc.amodeus.util.net.StringSocket;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -33,7 +33,7 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 import ch.ethz.matsim.av.router.AVRouter;
 
 public class AidoDispatcherHost extends RebalancingDispatcher {
-    private final MatsimStaticDatabase db;
+    private final MatsimAmodeusDatabase db;
 
     private final Map<Integer, RoboTaxi> idRoboTaxiMap = new HashMap<>();
     private final Map<Integer, AVRequest> idRequestMap = new HashMap<>();
@@ -49,7 +49,7 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
     protected AidoDispatcherHost(Network network, Config config, AVDispatcherConfig avDispatcherConfig, TravelTime travelTime,
             ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, EventsManager eventsManager, //
             StringSocket clientSocket, int numReqTot, //
-            MatsimStaticDatabase db) {
+            MatsimAmodeusDatabase db) {
         super(config, avDispatcherConfig, travelTime, parallelLeastCostPathCalculator, eventsManager, db);
         this.db = db;
         this.clientSocket = Objects.requireNonNull(clientSocket);
@@ -132,7 +132,7 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
         private int numReqTot;
 
         @Inject
-        private MatsimStaticDatabase db;
+        private MatsimAmodeusDatabase db;
 
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {

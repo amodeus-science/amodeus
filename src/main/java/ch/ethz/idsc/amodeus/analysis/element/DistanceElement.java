@@ -13,7 +13,7 @@ import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifier;
 import ch.ethz.idsc.amodeus.analysis.report.TtlValIdent;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.net.VehicleContainer;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -57,7 +57,7 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
     // total Values for TotalValuesFile
     private final Map<TotalValueIdentifier, String> totalValues = new HashMap<>();
 
-    public DistanceElement(int numVehicles, int size, MatsimStaticDatabase db) {
+    public DistanceElement(int numVehicles, int size, MatsimAmodeusDatabase db) {
         IntStream.range(0, numVehicles).forEach(i -> list.add(new VehicleStatistic(size, db)));
     }
 

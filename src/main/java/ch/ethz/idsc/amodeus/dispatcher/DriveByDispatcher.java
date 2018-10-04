@@ -20,7 +20,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherUtils;
 import ch.ethz.idsc.amodeus.dispatcher.core.RebalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.util.DrivebyRequestStopper;
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.framework.AVModule;
@@ -37,7 +37,7 @@ public class DriveByDispatcher extends RebalancingDispatcher {
 
     private DriveByDispatcher(Config config, AVDispatcherConfig avDispatcherConfig, //
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, //
-            Network network, MatsimStaticDatabase db) {
+            Network network, MatsimAmodeusDatabase db) {
         super(config, avDispatcherConfig, travelTime, router, eventsManager, db);
         links = new ArrayList<>(network.getLinks().values());
         Collections.shuffle(links, randGen);
@@ -94,7 +94,7 @@ public class DriveByDispatcher extends RebalancingDispatcher {
         private Config config;
 
         @Inject
-        private MatsimStaticDatabase db;
+        private MatsimAmodeusDatabase db;
 
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {

@@ -3,7 +3,7 @@ package ch.ethz.idsc.amodeus.aido;
 
 import java.util.Collection;
 
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.TensorCoords;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -11,9 +11,9 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 /* package */ class AidoRequestCompiler {
-    private final MatsimStaticDatabase db;
+    private final MatsimAmodeusDatabase db;
 
-    public AidoRequestCompiler(MatsimStaticDatabase db) {
+    public AidoRequestCompiler(MatsimAmodeusDatabase db) {
         this.db = db;
     }
 

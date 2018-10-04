@@ -52,7 +52,7 @@ import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDatabaseModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDispatcherModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusVehicleGeneratorModule;
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.options.LPOptions;
 import ch.ethz.idsc.amodeus.options.LPOptionsBase;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
@@ -182,7 +182,7 @@ public class StandardMATSimScenarioTest {
         ScenarioOptions simOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
         LocationSpec locationSpec = simOptions.getLocationSpec();
         ReferenceFrame referenceFrame = locationSpec.referenceFrame();
-        MatsimStaticDatabase db = MatsimStaticDatabase.initialize(scenario.getNetwork(), referenceFrame);
+        MatsimAmodeusDatabase db = MatsimAmodeusDatabase.initialize(scenario.getNetwork(), referenceFrame);
 
         PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams(AVModule.AV_MODE);
         modeParams.setMonetaryDistanceRate(0.0);

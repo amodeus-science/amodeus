@@ -21,7 +21,7 @@ import com.google.inject.name.Named;
 import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedUniversalDispatcher;
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.config.AVGeneratorConfig;
@@ -46,7 +46,7 @@ public class SharedHeuristicDispatcher extends SharedUniversalDispatcher {
             AVRouter router, //
             EventsManager eventsManager, //
             Network network, //
-            MatsimStaticDatabase db) {
+            MatsimAmodeusDatabase db) {
         super(config, avDispatcherConfig, travelTime, router, eventsManager, db);
         this.network = network;
         this.networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
@@ -138,7 +138,7 @@ public class SharedHeuristicDispatcher extends SharedUniversalDispatcher {
         private Config config;
 
         @Inject
-        private MatsimStaticDatabase db;
+        private MatsimAmodeusDatabase db;
 
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {

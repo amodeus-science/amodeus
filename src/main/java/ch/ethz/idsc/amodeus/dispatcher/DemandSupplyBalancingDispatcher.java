@@ -18,7 +18,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.TreeMaintainer;
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.framework.AVModule;
@@ -37,7 +37,7 @@ public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
 
     private DemandSupplyBalancingDispatcher(Config config, AVDispatcherConfig avDispatcherConfig, //
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, Network network, //
-            MatsimStaticDatabase db) {
+            MatsimAmodeusDatabase db) {
         super(config, avDispatcherConfig, travelTime, router, eventsManager, db);
         DispatcherConfig dispatcherConfig = DispatcherConfig.wrap(avDispatcherConfig);
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(10);
@@ -115,7 +115,7 @@ public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
         private Config config;
 
         @Inject
-        private MatsimStaticDatabase db;
+        private MatsimAmodeusDatabase db;
 
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {

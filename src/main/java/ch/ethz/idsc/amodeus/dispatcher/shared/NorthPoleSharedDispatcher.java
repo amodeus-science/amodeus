@@ -25,7 +25,7 @@ import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.config.AVGeneratorConfig;
@@ -52,7 +52,7 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
     protected NorthPoleSharedDispatcher(Network network, //
             Config config, AVDispatcherConfig avDispatcherConfig, //
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, //
-            MatsimStaticDatabase db) {
+            MatsimAmodeusDatabase db) {
         super(config, avDispatcherConfig, travelTime, router, eventsManager, db);
         this.cityNorthPole = getNorthPole(network);
         this.equatorLinks = getEquator(network);
@@ -179,7 +179,7 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
         private Config config;
 
         @Inject
-        private MatsimStaticDatabase db;
+        private MatsimAmodeusDatabase db;
 
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {

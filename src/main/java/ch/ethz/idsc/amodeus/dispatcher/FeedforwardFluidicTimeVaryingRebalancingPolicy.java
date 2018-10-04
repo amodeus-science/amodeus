@@ -27,7 +27,7 @@ import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.lp.LPTimeVariant;
 import ch.ethz.idsc.amodeus.matsim.mod.VehicleToVSGenerator;
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualLink;
@@ -76,7 +76,7 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
             EventsManager eventsManager, Network network, VirtualNetwork<Link> virtualNetwork, //
             AbstractVirtualNodeDest abstractVirtualNodeDest, //
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher, TravelData travelData, //
-            MatsimStaticDatabase db) {
+            MatsimAmodeusDatabase db) {
         super(config, avDispatcherConfig, travelTime, router, eventsManager, virtualNetwork, db);
         virtualNodeDest = abstractVirtualNodeDest;
         vehicleDestMatcher = abstractVehicleDestMatcher;
@@ -188,7 +188,7 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
         private Config config;
 
         @Inject
-        private MatsimStaticDatabase db;
+        private MatsimAmodeusDatabase db;
 
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {

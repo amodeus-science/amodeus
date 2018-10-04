@@ -22,7 +22,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.PartitionedDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.net.FastLinkLookup;
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.TensorCoords;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
@@ -48,7 +48,7 @@ import ch.ethz.matsim.av.router.AVRouter;
  * 
  * @author fluric */
 public class SQMDispatcher extends PartitionedDispatcher {
-    private final MatsimStaticDatabase db;
+    private final MatsimAmodeusDatabase db;
     private final Map<VirtualNode<Link>, RoboTaxi> nodeToTaxi = new HashMap<>();
     private final Map<RoboTaxi, VirtualNode<Link>> taxiToNode = new HashMap<>();
     private final Map<VirtualNode<Link>, Link> nodeToLink = new HashMap<>();
@@ -58,7 +58,7 @@ public class SQMDispatcher extends PartitionedDispatcher {
     protected SQMDispatcher(Config config, AVDispatcherConfig avDispatcherConfig, //
             TravelTime travelTime, AVGeneratorConfig generatorConfig, AVRouter router, //
             EventsManager eventsManager, Network network, //
-            VirtualNetwork<Link> virtualNetwork, MatsimStaticDatabase db) {
+            VirtualNetwork<Link> virtualNetwork, MatsimAmodeusDatabase db) {
         super(config, avDispatcherConfig, travelTime, router, eventsManager, virtualNetwork, db);
         GlobalAssert.that(virtualNetwork != null);
         GlobalAssert.that((int) generatorConfig.getNumberOfVehicles() == virtualNetwork.getvNodesCount());
@@ -166,7 +166,7 @@ public class SQMDispatcher extends PartitionedDispatcher {
         private Config config;
 
         @Inject
-        private MatsimStaticDatabase db;
+        private MatsimAmodeusDatabase db;
 
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {

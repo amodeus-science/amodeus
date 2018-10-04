@@ -40,7 +40,7 @@ import ch.ethz.idsc.amodeus.analysis.report.TotalValues;
 import ch.ethz.idsc.amodeus.analysis.report.TtlValIdent;
 import ch.ethz.idsc.amodeus.data.ReferenceFrame;
 import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.net.StorageSupplier;
 import ch.ethz.idsc.amodeus.net.StorageUtils;
@@ -63,12 +63,12 @@ public class Analysis {
      * @param network
      * @return
      * @throws Exception */
-    public static Analysis setup(Network network, MatsimStaticDatabase db) throws Exception {
+    public static Analysis setup(Network network, MatsimAmodeusDatabase db) throws Exception {
         return setup(null, null, null, network, db);
     }
 
     public static Analysis setup(File workingDirectory, File configFile, //
-            File outputDirectory, MatsimStaticDatabase db) throws Exception {
+            File outputDirectory, MatsimAmodeusDatabase db) throws Exception {
         return new Analysis(workingDirectory, configFile, outputDirectory, null, db);
     }
 
@@ -91,7 +91,7 @@ public class Analysis {
      *            Scenario Server)
      * @throws Exception */
     public static Analysis setup(File workingDirectory, File configFile, File outputDirectory, //
-            Network network, MatsimStaticDatabase db) throws Exception {
+            Network network, MatsimAmodeusDatabase db) throws Exception {
         return new Analysis(workingDirectory, configFile, outputDirectory, network, db);
     }
 
@@ -131,7 +131,7 @@ public class Analysis {
      * @throws Exception */
 
     protected Analysis(File workingDirectory, File configFile, File outputDirectory, //
-            Network network, MatsimStaticDatabase db) throws Exception {
+            Network network, MatsimAmodeusDatabase db) throws Exception {
         if (Objects.isNull(workingDirectory) || !workingDirectory.isDirectory())
             workingDirectory = new File("").getCanonicalFile();
         System.out.println("workingDirectory in Analysis: " + workingDirectory.getAbsolutePath());

@@ -25,7 +25,7 @@ import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
 
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationDistribution;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.net.SimulationObjectCompiler;
@@ -43,7 +43,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
  * implementation of {@link AVDispatcher}; supersedes
  * {@link AbstractDispatcher}. */
 public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
-    private final MatsimStaticDatabase db;
+    private final MatsimAmodeusDatabase db;
     private final FuturePathFactory futurePathFactory;
     private final Set<AVRequest> pendingRequests = new LinkedHashSet<>();
     private final Map<AVRequest, RoboTaxi> pickupRegister = new HashMap<>();
@@ -62,7 +62,7 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
             TravelTime travelTime, //
             ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, //
             EventsManager eventsManager, //
-            MatsimStaticDatabase db) {
+            MatsimAmodeusDatabase db) {
         super(eventsManager, config, avDispatcherConfig);
         this.db = db;
         futurePathFactory = new FuturePathFactory(parallelLeastCostPathCalculator, travelTime);

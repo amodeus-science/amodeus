@@ -14,7 +14,7 @@ import com.google.inject.Inject;
     // }
 
     @Inject
-    private MatsimStaticDatabase db;
+    private MatsimAmodeusDatabase db;
 
     @Override
     public void notifyIterationEnds(IterationEndsEvent event) {

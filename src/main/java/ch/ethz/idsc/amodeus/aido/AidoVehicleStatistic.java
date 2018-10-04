@@ -7,7 +7,7 @@ import java.util.List;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.VehicleContainer;
 import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.RationalScalar;
@@ -19,9 +19,9 @@ import ch.ethz.idsc.tensor.qty.Quantity;
 // TODO small rounding errors compared to VehicleStatistic
 // ... find out where the differences come from and adapt
 /* package */ class AidoVehicleStatistic {
-    private final MatsimStaticDatabase db;
+    private final MatsimAmodeusDatabase db;
 
-    public AidoVehicleStatistic(MatsimStaticDatabase db) {
+    public AidoVehicleStatistic(MatsimAmodeusDatabase db) {
         this.db = db;
     }
 

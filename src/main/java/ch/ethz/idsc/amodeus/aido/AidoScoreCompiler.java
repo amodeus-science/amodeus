@@ -6,7 +6,7 @@ import java.util.List;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RequestStatus;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationObjectCompiler;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.matsim.av.passenger.AVRequest;
@@ -14,9 +14,9 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 /* package */ class AidoScoreCompiler {
 
     private final AidoScoreElement aidoScoreElement;
-    private final MatsimStaticDatabase db;
+    private final MatsimAmodeusDatabase db;
 
-    public AidoScoreCompiler(List<RoboTaxi> roboTaxis, int totReq, MatsimStaticDatabase db) {
+    public AidoScoreCompiler(List<RoboTaxi> roboTaxis, int totReq, MatsimAmodeusDatabase db) {
         this.db = db;
         aidoScoreElement = new AidoScoreElement(roboTaxis.size(), totReq, ScoreParameters.GLOBAL, db);
     }

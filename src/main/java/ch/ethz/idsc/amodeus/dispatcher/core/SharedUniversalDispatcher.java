@@ -29,7 +29,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationDistribution;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.net.SimulationObjectCompiler;
@@ -49,7 +49,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
  * {@link AVRequest}s alternative implementation of {@link AVDispatcher};
  * supersedes {@link AbstractDispatcher}. */
 public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer {
-    private final MatsimStaticDatabase db;
+    private final MatsimAmodeusDatabase db;
 
     private final FuturePathFactory futurePathFactory;
     private final Set<AVRequest> pendingRequests = new LinkedHashSet<>();
@@ -76,7 +76,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
             TravelTime travelTime, //
             ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, //
             EventsManager eventsManager, //
-            MatsimStaticDatabase db) {
+            MatsimAmodeusDatabase db) {
         super(eventsManager, config, avDispatcherConfig);
         this.db = db;
         futurePathFactory = new FuturePathFactory(parallelLeastCostPathCalculator, travelTime);

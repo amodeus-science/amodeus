@@ -3,7 +3,7 @@ package ch.ethz.idsc.amodeus.gfx;
 
 import org.matsim.api.core.v01.network.Link;
 
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.RequestContainer;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
@@ -15,7 +15,7 @@ import ch.ethz.idsc.tensor.Tensors;
 /** mean request distance */
 /* package */ class MeanRequestDistanceVirtualNodeFunction extends AbstractVirtualNodeFunction {
 
-    public MeanRequestDistanceVirtualNodeFunction(MatsimStaticDatabase db, VirtualNetwork<Link> virtualNetwork) {
+    public MeanRequestDistanceVirtualNodeFunction(MatsimAmodeusDatabase db, VirtualNetwork<Link> virtualNetwork) {
         super(db, virtualNetwork);
     }
 

@@ -11,7 +11,7 @@ import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
 
 import ch.ethz.idsc.amodeus.gfx.AmodeusComponent;
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.view.jmapviewer.Coordinate;
 import ch.ethz.idsc.amodeus.view.jmapviewer.JMapViewer;
@@ -20,7 +20,7 @@ public enum AmodeusComponentUtil {
     ;
 
     public static void adjustMapZoom(AmodeusComponent amodeusComponent, Network network, //
-            ScenarioOptions simOptions, MatsimStaticDatabase db) {
+            ScenarioOptions simOptions, MatsimAmodeusDatabase db) {
         // Bounding box -> {minX, minY, maxX, maxY}
         double[] bBox = NetworkUtils.getBoundingBox(network.getNodes().values());
         CoordinateTransformation ct = simOptions.getLocationSpec().referenceFrame().coords_toWGS84();

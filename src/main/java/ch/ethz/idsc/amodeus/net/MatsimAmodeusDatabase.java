@@ -23,9 +23,9 @@ import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.red.Median;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-public class MatsimStaticDatabase {
+public class MatsimAmodeusDatabase {
 
-    public static MatsimStaticDatabase initialize(Network network, //
+    public static MatsimAmodeusDatabase initialize(Network network, //
             ReferenceFrame referenceFrame) {
 
         NavigableMap<String, OsmLink> linkMap = new TreeMap<>();
@@ -42,7 +42,7 @@ public class MatsimStaticDatabase {
         // INSTANCE = new MatsimStaticDatabase( //
         // referenceFrame, //
         // linkMap);
-        return new MatsimStaticDatabase(referenceFrame, linkMap);
+        return new MatsimAmodeusDatabase(referenceFrame, linkMap);
     }
 
     // public static void initializeSingletonInstance( //
@@ -80,7 +80,7 @@ public class MatsimStaticDatabase {
 
     private Integer iteration;
 
-    private MatsimStaticDatabase( //
+    private MatsimAmodeusDatabase( //
             ReferenceFrame referenceFrame, //
             NavigableMap<String, OsmLink> linkMap) {
         this.referenceFrame = referenceFrame;

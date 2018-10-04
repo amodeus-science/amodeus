@@ -7,7 +7,7 @@ import java.util.List;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.VehicleContainer;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -17,7 +17,7 @@ import ch.ethz.idsc.tensor.alg.Array;
 
 /* package */ class VehicleStatistic {
 
-    private final MatsimStaticDatabase db;
+    private final MatsimAmodeusDatabase db;
 
     public final Tensor distanceTotal;
     public final Tensor distanceWithCustomer;
@@ -30,7 +30,7 @@ import ch.ethz.idsc.tensor.alg.Array;
     // this is used as a buffer and is periodically emptied
     private final List<VehicleContainer> list = new LinkedList<>();
 
-    public VehicleStatistic(int tics_max, MatsimStaticDatabase db) {
+    public VehicleStatistic(int tics_max, MatsimAmodeusDatabase db) {
         this.db = db;
         distanceTotal = Array.zeros(tics_max);
         distanceWithCustomer = Array.zeros(tics_max);

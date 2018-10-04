@@ -9,7 +9,7 @@ import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
 
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.passenger.AVRequest;
@@ -20,7 +20,7 @@ public abstract class RebalancingDispatcher extends UniversalDispatcher {
 
     protected RebalancingDispatcher(Config config, AVDispatcherConfig avDispatcherConfig, TravelTime travelTime, //
             ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, EventsManager eventsManager, //
-            MatsimStaticDatabase db) {
+            MatsimAmodeusDatabase db) {
         super(config, avDispatcherConfig, travelTime, parallelLeastCostPathCalculator, eventsManager, db);
     }
 

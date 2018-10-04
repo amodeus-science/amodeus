@@ -8,7 +8,7 @@ import ch.ethz.idsc.amodeus.analysis.element.NumberPassengersAnalysis;
 import ch.ethz.idsc.amodeus.analysis.element.RequestRobotaxiInformationElement;
 import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionElement;
 import ch.ethz.idsc.amodeus.analysis.element.TravelTimeAnalysis;
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 
 public class AnalysisSummary implements Serializable {
 
@@ -21,7 +21,7 @@ public class AnalysisSummary implements Serializable {
 
     // TODO Claudio, is public required here? We normally use it as a Part of the Analysis()
     // Thus an initialization of AnalysisSummary() is superficial..
-    public AnalysisSummary(int numVehicles, int size, MatsimStaticDatabase db) {
+    public AnalysisSummary(int numVehicles, int size, MatsimAmodeusDatabase db) {
         distanceElement = new DistanceElement(numVehicles, size, db);
     }
 
