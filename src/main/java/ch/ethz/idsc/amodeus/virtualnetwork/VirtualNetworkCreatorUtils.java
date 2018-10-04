@@ -14,7 +14,7 @@ import ch.ethz.idsc.amodeus.util.nd.NdTreeMap;
 import ch.ethz.idsc.tensor.Tensor;
 
 // TODO JPH used externally, rename to more specific name before next release
-public enum CreatorUtils {
+public enum VirtualNetworkCreatorUtils {
     ;
 
     public static <T> void addToVNodes( //
