@@ -25,9 +25,8 @@ public class AmodeusDatabaseModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public MatsimStaticDatabase provideVirtualNetwork() {
+    public MatsimStaticDatabase provideDatabase() {
         return db;
-
     }
 
 }
