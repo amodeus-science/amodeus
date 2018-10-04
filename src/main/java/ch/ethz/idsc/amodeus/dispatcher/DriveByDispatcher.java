@@ -38,7 +38,7 @@ public class DriveByDispatcher extends RebalancingDispatcher {
     private DriveByDispatcher(Config config, AVDispatcherConfig avDispatcherConfig, //
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, //
             Network network, MatsimStaticDatabase db) {
-        super(config, avDispatcherConfig, travelTime, router, eventsManager,db);
+        super(config, avDispatcherConfig, travelTime, router, eventsManager, db);
         links = new ArrayList<>(network.getLinks().values());
         Collections.shuffle(links, randGen);
         DispatcherConfig dispatcherConfig = DispatcherConfig.wrap(avDispatcherConfig);
@@ -92,13 +92,13 @@ public class DriveByDispatcher extends RebalancingDispatcher {
 
         @Inject
         private Config config;
-        
+
         @Inject
         private MatsimStaticDatabase db;
 
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
-            return new DriveByDispatcher(config, avconfig, travelTime, router, eventsManager, network,db);
+            return new DriveByDispatcher(config, avconfig, travelTime, router, eventsManager, network, db);
         }
     }
 

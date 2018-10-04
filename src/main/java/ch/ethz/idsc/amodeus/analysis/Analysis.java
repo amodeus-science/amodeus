@@ -92,7 +92,7 @@ public class Analysis {
      * @throws Exception */
     public static Analysis setup(File workingDirectory, File configFile, File outputDirectory, //
             Network network, MatsimStaticDatabase db) throws Exception {
-        return new Analysis(workingDirectory, configFile, outputDirectory, network,db);
+        return new Analysis(workingDirectory, configFile, outputDirectory, network, db);
     }
 
     // List of Analysis Elements which will be loaded

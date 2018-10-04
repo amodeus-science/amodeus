@@ -50,7 +50,7 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
             ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, EventsManager eventsManager, //
             StringSocket clientSocket, int numReqTot, //
             MatsimStaticDatabase db) {
-        super(config, avDispatcherConfig, travelTime, parallelLeastCostPathCalculator, eventsManager,db);
+        super(config, avDispatcherConfig, travelTime, parallelLeastCostPathCalculator, eventsManager, db);
         this.db = db;
         this.clientSocket = Objects.requireNonNull(clientSocket);
         this.numReqTot = numReqTot;

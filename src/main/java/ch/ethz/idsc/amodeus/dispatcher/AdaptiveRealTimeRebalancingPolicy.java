@@ -73,9 +73,9 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
             AVRouter router, EventsManager eventsManager, //
             Network network, VirtualNetwork<Link> virtualNetwork, //
             AbstractVirtualNodeDest abstractVirtualNodeDest, //
-            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher,//
+            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher, //
             MatsimStaticDatabase db) {
-        super(config, avDispatcherConfig, travelTime, router, eventsManager, virtualNetwork,db);
+        super(config, avDispatcherConfig, travelTime, router, eventsManager, virtualNetwork, db);
         virtualNodeDest = abstractVirtualNodeDest;
         vehicleDestMatcher = abstractVehicleDestMatcher;
         numRobotaxi = (int) generatorConfig.getNumberOfVehicles();
@@ -209,7 +209,7 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
 
         @Inject
         private Config config;
-        
+
         @Inject
         private MatsimStaticDatabase db;
 
@@ -223,7 +223,7 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
             return new AdaptiveRealTimeRebalancingPolicy( //
                     config, avconfig, generatorConfig, travelTime, //
                     router, eventsManager, network, virtualNetwork, //
-                    abstractVirtualNodeDest, abstractVehicleDestMatcher,db);
+                    abstractVirtualNodeDest, abstractVehicleDestMatcher, db);
         }
     }
 }

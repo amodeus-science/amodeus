@@ -42,9 +42,9 @@ public class DemoDispatcher extends RebalancingDispatcher {
             TravelTime travelTime, //
             AVRouter router, //
             EventsManager eventsManager, //
-            Network network,//
+            Network network, //
             MatsimStaticDatabase db) {
-        super(config, avconfig, travelTime, router, eventsManager,db);
+        super(config, avconfig, travelTime, router, eventsManager, db);
         links = new ArrayList<>(network.getLinks().values());
         Collections.shuffle(links, randGen);
         SafeConfig safeConfig = SafeConfig.wrap(avconfig);
@@ -97,7 +97,7 @@ public class DemoDispatcher extends RebalancingDispatcher {
 
         @Inject
         private Config config;
-        
+
         @Inject
         private MatsimStaticDatabase db;
 

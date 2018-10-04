@@ -25,13 +25,13 @@ public class AidoScoreElement implements AnalysisElement {
     private Scalar timeBefore = Quantity.of(0, SI.SECOND);
 
     public AidoScoreElement(int numberRoboTaxis, int totReq, MatsimStaticDatabase db) {
-        this(numberRoboTaxis, totReq, ScoreParameters.GLOBAL,db);
+        this(numberRoboTaxis, totReq, ScoreParameters.GLOBAL, db);
     }
 
-    public AidoScoreElement(int numberRoboTaxis, int totReq, ScoreParameters scoreParameters,//
+    public AidoScoreElement(int numberRoboTaxis, int totReq, ScoreParameters scoreParameters, //
             MatsimStaticDatabase db) {
         this.db = db;
-        aidoDistanceRecorder = new AidoDistanceRecorder(numberRoboTaxis,db);
+        aidoDistanceRecorder = new AidoDistanceRecorder(numberRoboTaxis, db);
         squScore = new ServiceQualityScore(scoreParameters);
         effScore = new EfficiencyScore(scoreParameters);
         fltScore = new FleetSizeScore(scoreParameters, totReq, numberRoboTaxis);

@@ -20,19 +20,21 @@ public enum TotalJourneyTimeHtml implements HtmlReportElement {
     public Map<String, HtmlBodyElement> process(AnalysisSummary analysisSummary) {
         TravelTimeAnalysis travelTimeAnalysis = analysisSummary.getTravelTimeAnalysis();
         HtmlBodyElement aRElement = new HtmlBodyElement();
-        aRElement.getHTMLGenerator().insertTextLeft(aRElement.getHTMLGenerator().bold("Total Journey Times") + //
-                "\n\t" + Quantiles.LBL[0] + //
-                "\n\t" + Quantiles.LBL[1] + //
-                "\n\t" + Quantiles.LBL[2] + //
-                "\n\t" + Quantiles.LBL[3] + //
-                "\n\tMaximum:" //
+        aRElement.getHTMLGenerator()
+                .insertTextLeft(aRElement.getHTMLGenerator().bold("Total Journey Times") + //
+                        "\n\t" + Quantiles.LBL[0] + //
+                        "\n\t" + Quantiles.LBL[1] + //
+                        "\n\t" + Quantiles.LBL[2] + //
+                        "\n\t" + Quantiles.LBL[3] + //
+                        "\n\tMaximum:" //
         );
-        aRElement.getHTMLGenerator().insertTextLeft(" " + //
-                "\n" + Time.writeTime(travelTimeAnalysis.getTotJAggrgte().get(0).Get(0).number().doubleValue()) + //
-                "\n" + Time.writeTime(travelTimeAnalysis.getTotJAggrgte().get(0).Get(1).number().doubleValue()) + //
-                "\n" + Time.writeTime(travelTimeAnalysis.getTotJAggrgte().get(0).Get(2).number().doubleValue()) + //
-                "\n" + Time.writeTime(travelTimeAnalysis.getTotJAggrgte().Get(1).number().doubleValue()) + //
-                "\n" + Time.writeTime(travelTimeAnalysis.getTotJAggrgte().Get(2).number().doubleValue()));
+        aRElement.getHTMLGenerator()
+                .insertTextLeft(" " + //
+                        "\n" + Time.writeTime(travelTimeAnalysis.getTotJAggrgte().get(0).Get(0).number().doubleValue()) + //
+                        "\n" + Time.writeTime(travelTimeAnalysis.getTotJAggrgte().get(0).Get(1).number().doubleValue()) + //
+                        "\n" + Time.writeTime(travelTimeAnalysis.getTotJAggrgte().get(0).Get(2).number().doubleValue()) + //
+                        "\n" + Time.writeTime(travelTimeAnalysis.getTotJAggrgte().Get(1).number().doubleValue()) + //
+                        "\n" + Time.writeTime(travelTimeAnalysis.getTotJAggrgte().Get(2).number().doubleValue()));
 
         aRElement.getHTMLGenerator().newLine();
         aRElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + TotalJourneyTimeImage.FILENAME + ".png", 800, 600);

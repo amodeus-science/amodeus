@@ -33,7 +33,7 @@ public abstract class PartitionedDispatcher extends RebalancingDispatcher {
             EventsManager eventsManager, //
             VirtualNetwork<Link> virtualNetwork, //
             MatsimStaticDatabase db) {
-        super(config, avDispatcherConfig, travelTime, router, eventsManager,db);
+        super(config, avDispatcherConfig, travelTime, router, eventsManager, db);
 
         if (virtualNetwork == null) {
             throw new IllegalStateException(

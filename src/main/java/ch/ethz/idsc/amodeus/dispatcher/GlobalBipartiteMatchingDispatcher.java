@@ -35,9 +35,9 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
 
     private GlobalBipartiteMatchingDispatcher(Network network, Config config, //
             AVDispatcherConfig avDispatcherConfig, TravelTime travelTime, //
-            AVRouter router, EventsManager eventsManager,//
+            AVRouter router, EventsManager eventsManager, //
             MatsimStaticDatabase db) {
-        super(config, avDispatcherConfig, travelTime, router, eventsManager,db);
+        super(config, avDispatcherConfig, travelTime, router, eventsManager, db);
         DispatcherConfig dispatcherConfig = DispatcherConfig.wrap(avDispatcherConfig);
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(30);
         DistanceHeuristics distanceHeuristics = //
@@ -79,14 +79,14 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
 
         @Inject
         private Config config;
-        
+
         @Inject
         private MatsimStaticDatabase db;
 
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
             return new GlobalBipartiteMatchingDispatcher( //
-                    network, config, avconfig, travelTime, router, eventsManager,db);
+                    network, config, avconfig, travelTime, router, eventsManager, db);
         }
     }
 }

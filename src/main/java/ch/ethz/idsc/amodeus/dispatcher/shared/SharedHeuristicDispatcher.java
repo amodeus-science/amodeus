@@ -47,7 +47,7 @@ public class SharedHeuristicDispatcher extends SharedUniversalDispatcher {
             EventsManager eventsManager, //
             Network network, //
             MatsimStaticDatabase db) {
-        super(config, avDispatcherConfig, travelTime, router, eventsManager,db);
+        super(config, avDispatcherConfig, travelTime, router, eventsManager, db);
         this.network = network;
         this.networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
         DispatcherConfig dispatcherConfig = DispatcherConfig.wrap(avDispatcherConfig);
@@ -136,14 +136,14 @@ public class SharedHeuristicDispatcher extends SharedUniversalDispatcher {
 
         @Inject
         private Config config;
-        
+
         @Inject
         private MatsimStaticDatabase db;
 
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
             AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
-            return new SharedHeuristicDispatcher(config, avconfig, generatorConfig, travelTime, router, eventsManager, network,db);
+            return new SharedHeuristicDispatcher(config, avconfig, generatorConfig, travelTime, router, eventsManager, network, db);
         }
     }
 

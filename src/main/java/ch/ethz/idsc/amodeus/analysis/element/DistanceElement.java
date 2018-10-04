@@ -58,7 +58,7 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
     private final Map<TotalValueIdentifier, String> totalValues = new HashMap<>();
 
     public DistanceElement(int numVehicles, int size, MatsimStaticDatabase db) {
-        IntStream.range(0, numVehicles).forEach(i -> list.add(new VehicleStatistic(size,db)));
+        IntStream.range(0, numVehicles).forEach(i -> list.add(new VehicleStatistic(size, db)));
     }
 
     @Override

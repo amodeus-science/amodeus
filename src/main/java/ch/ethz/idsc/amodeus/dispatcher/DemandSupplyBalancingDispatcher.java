@@ -36,9 +36,9 @@ public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
     private final TreeMaintainer<RoboTaxi> unassignedRoboTaxis;
 
     private DemandSupplyBalancingDispatcher(Config config, AVDispatcherConfig avDispatcherConfig, //
-            TravelTime travelTime, AVRouter router, EventsManager eventsManager, Network network,//
+            TravelTime travelTime, AVRouter router, EventsManager eventsManager, Network network, //
             MatsimStaticDatabase db) {
-        super(config, avDispatcherConfig, travelTime, router, eventsManager,db);
+        super(config, avDispatcherConfig, travelTime, router, eventsManager, db);
         DispatcherConfig dispatcherConfig = DispatcherConfig.wrap(avDispatcherConfig);
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(10);
         this.requestMaintainer = new TreeMaintainer<>(network, this::getLocation);
@@ -113,7 +113,7 @@ public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
 
         @Inject
         private Config config;
-        
+
         @Inject
         private MatsimStaticDatabase db;
 
@@ -121,7 +121,7 @@ public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
             return new DemandSupplyBalancingDispatcher( //
                     config, avconfig, travelTime, //
-                    router, eventsManager, network,db);
+                    router, eventsManager, network, db);
         }
     }
 }

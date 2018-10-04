@@ -32,7 +32,7 @@ public abstract class SharedPartitionedDispatcher extends SharedRebalancingDispa
             EventsManager eventsManager, //
             VirtualNetwork<Link> virtualNetwork, //
             MatsimStaticDatabase db) {
-        super(config, avconfig, travelTime, router, eventsManager,db);
+        super(config, avconfig, travelTime, router, eventsManager, db);
 
         if (virtualNetwork == null) {
             throw new IllegalStateException(

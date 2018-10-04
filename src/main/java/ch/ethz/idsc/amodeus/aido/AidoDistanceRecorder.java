@@ -14,7 +14,7 @@ import ch.ethz.idsc.tensor.Tensor;
     private final MatsimStaticDatabase db;
 
     public AidoDistanceRecorder(int numVehicles, MatsimStaticDatabase db) {
-        this.db =db;
+        this.db = db;
         list = IntStream.range(0, numVehicles) //
                 .mapToObj(i -> new AidoVehicleStatistic(db)) //
                 .collect(Collectors.toList());

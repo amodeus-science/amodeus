@@ -19,7 +19,7 @@ import ch.ethz.idsc.tensor.io.StringScalar;
     }
 
     public Tensor compile(List<RoboTaxi> roboTaxis) {
-        return Tensor.of(roboTaxis.stream().map(  rt-> this.ofTaxi(rt)));
+        return Tensor.of(roboTaxis.stream().map(rt -> this.ofTaxi(rt)));
     }
 
     private Tensor ofTaxi(RoboTaxi roboTaxi) {

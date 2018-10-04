@@ -23,9 +23,9 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatcher {
 
     protected SharedRebalancingDispatcher(Config config, AVDispatcherConfig avDispatcherConfig, TravelTime travelTime,
-            ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, EventsManager eventsManager,//
+            ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, EventsManager eventsManager, //
             MatsimStaticDatabase db) {
-        super(config, avDispatcherConfig, travelTime, parallelLeastCostPathCalculator, eventsManager,db);
+        super(config, avDispatcherConfig, travelTime, parallelLeastCostPathCalculator, eventsManager, db);
     }
 
     /** @param roboTaxi is rebalanced to
