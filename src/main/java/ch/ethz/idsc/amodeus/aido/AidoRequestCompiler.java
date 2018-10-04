@@ -3,30 +3,34 @@ package ch.ethz.idsc.amodeus.aido;
 
 import java.util.Collection;
 
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.TensorCoords;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-/* package */ enum AidoRequestCompiler {
-    ;
+/* package */ class AidoRequestCompiler {
+    private final MatsimAmodeusDatabase db;
 
-    public static Tensor compile(Collection<AVRequest> requests) {
-        return Tensor.of(requests.stream().map(AidoRequestCompiler::of));
+    public AidoRequestCompiler(MatsimAmodeusDatabase db) {
+        this.db = db;
     }
 
-    private static Tensor of(AVRequest request) {
+    public Tensor compile(Collection<AVRequest> requests) {
+        return Tensor.of(requests.stream().map(r -> this.of(r)));
+    }
+
+    private Tensor of(AVRequest request) {
         // id
-        Tensor info = Tensors.vector(MatsimStaticDatabase.INSTANCE.getRequestIndex(request));
+        Tensor info = Tensors.vector(db.getRequestIndex(request));
         // submission time
         info.append(RealScalar.of(request.getSubmissionTime()));
         // from location
-        info.append(TensorCoords.toTensor(MatsimStaticDatabase.INSTANCE.referenceFrame.coords_toWGS84().transform(//
+        info.append(TensorCoords.toTensor(db.referenceFrame.coords_toWGS84().transform(//
                 request.getFromLink().getCoord())));
         // to location
-        info.append(TensorCoords.toTensor(MatsimStaticDatabase.INSTANCE.referenceFrame.coords_toWGS84().transform(//
+        info.append(TensorCoords.toTensor(db.referenceFrame.coords_toWGS84().transform(//
                 request.getToLink().getCoord())));
         return info;
     }

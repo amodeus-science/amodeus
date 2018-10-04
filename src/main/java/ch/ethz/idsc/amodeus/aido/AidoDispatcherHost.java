@@ -18,7 +18,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RebalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.FastLinkLookup;
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.TensorCoords;
 import ch.ethz.idsc.amodeus.util.net.StringSocket;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -32,6 +32,7 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 import ch.ethz.matsim.av.router.AVRouter;
 
 public class AidoDispatcherHost extends RebalancingDispatcher {
+    private final MatsimAmodeusDatabase db;
 
     private final Map<Integer, RoboTaxi> idRoboTaxiMap = new HashMap<>();
     private final Map<Integer, AVRequest> idRequestMap = new HashMap<>();
@@ -39,19 +40,24 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
     private final StringSocket clientSocket;
     private final int numReqTot;
     private final int dispatchPeriod;
+    private final AidoRequestCompiler aidoReqComp;
+    private final AidoRoboTaxiCompiler aidoRobTaxComp;
     // ---
     private AidoScoreCompiler aidoScoreCompiler;
 
     protected AidoDispatcherHost(Network network, Config config, AVDispatcherConfig avDispatcherConfig, TravelTime travelTime,
             ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, EventsManager eventsManager, //
-            StringSocket clientSocket, int numReqTot) {
-        super(config, avDispatcherConfig, travelTime, parallelLeastCostPathCalculator, eventsManager);
+            StringSocket clientSocket, int numReqTot, //
+            MatsimAmodeusDatabase db) {
+        super(config, avDispatcherConfig, travelTime, parallelLeastCostPathCalculator, eventsManager, db);
+        this.db = db;
         this.clientSocket = Objects.requireNonNull(clientSocket);
         this.numReqTot = numReqTot;
-        this.fastLinkLookup = new FastLinkLookup(network, MatsimStaticDatabase.INSTANCE);
+        this.fastLinkLookup = new FastLinkLookup(network, db);
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
         this.dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
-
+        aidoReqComp = new AidoRequestCompiler(db);
+        aidoRobTaxComp = new AidoRoboTaxiCompiler(db);
     }
 
     @Override
@@ -60,8 +66,8 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
 
         if (getRoboTaxis().size() > 0 && idRoboTaxiMap.isEmpty()) {
             getRoboTaxis().forEach(//
-                    s -> idRoboTaxiMap.put(MatsimStaticDatabase.INSTANCE.getVehicleIndex(s), s));
-            aidoScoreCompiler = new AidoScoreCompiler(getRoboTaxis(), numReqTot);
+                    s -> idRoboTaxiMap.put(db.getVehicleIndex(s), s));
+            aidoScoreCompiler = new AidoScoreCompiler(getRoboTaxis(), numReqTot, db);
         }
 
         if (round_now % dispatchPeriod == 0) {
@@ -69,11 +75,11 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
             if (Objects.nonNull(aidoScoreCompiler))
                 try {
                     getAVRequests().forEach(//
-                            r -> idRequestMap.put(MatsimStaticDatabase.INSTANCE.getRequestIndex(r), r));
+                            r -> idRequestMap.put(db.getRequestIndex(r), r));
 
                     Tensor status = Tensors.of(RealScalar.of((long) now), //
-                            AidoRoboTaxiCompiler.compile(getRoboTaxis()), //
-                            AidoRequestCompiler.compile(getAVRequests()), //
+                            aidoRobTaxComp.compile(getRoboTaxis()), //
+                            aidoReqComp.compile(getAVRequests()), //
                             aidoScoreCompiler.compile(round_now, getRoboTaxis(), getAVRequests()));
                     clientSocket.writeln(status);
 
@@ -124,10 +130,13 @@ public class AidoDispatcherHost extends RebalancingDispatcher {
         @Inject
         private int numReqTot;
 
+        @Inject
+        private MatsimAmodeusDatabase db;
+
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
-            return new AidoDispatcherHost( //
-                    network, config, avconfig, travelTime, router, eventsManager, stringSocket, numReqTot);
+            return new AidoDispatcherHost(network, config, avconfig, travelTime, router, eventsManager, //
+                    stringSocket, numReqTot, db);
         }
     }
 

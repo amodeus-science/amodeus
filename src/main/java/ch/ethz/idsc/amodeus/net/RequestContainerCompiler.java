@@ -16,7 +16,7 @@ enum RequestContainerCompiler {
      * @param requestStatus
      * @return {@link RequestContainer} with information for storage and later viewing in
      *         {@link SimulationObject} */
-    public static RequestContainer compile(AVRequest avRequest, MatsimStaticDatabase db, //
+    public static RequestContainer compile(AVRequest avRequest, MatsimAmodeusDatabase db, //
             RequestStatus requestStatus) {
         GlobalAssert.that(Objects.nonNull(avRequest));
 

@@ -103,7 +103,7 @@ public class HtmlGenerator {
                 width + "px;height:" + heigth + "px;\">");
     }
 
-    public String bold(String text) {
+    public static String bold(String text) {
         return "<b>" + text + "</b>";
     }
 

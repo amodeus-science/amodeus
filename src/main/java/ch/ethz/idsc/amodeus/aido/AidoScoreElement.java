@@ -2,6 +2,7 @@
 package ch.ethz.idsc.amodeus.aido;
 
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisElement;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.RationalScalar;
@@ -22,12 +23,13 @@ public class AidoScoreElement implements AnalysisElement {
     // ---
     private Scalar timeBefore = Quantity.of(0, SI.SECOND);
 
-    public AidoScoreElement(int numberRoboTaxis, int totReq) {
-        this(numberRoboTaxis, totReq, ScoreParameters.GLOBAL);
+    public AidoScoreElement(int numberRoboTaxis, int totReq, MatsimAmodeusDatabase db) {
+        this(numberRoboTaxis, totReq, ScoreParameters.GLOBAL, db);
     }
 
-    public AidoScoreElement(int numberRoboTaxis, int totReq, ScoreParameters scoreParameters) {
-        aidoDistanceRecorder = new AidoDistanceRecorder(numberRoboTaxis);
+    public AidoScoreElement( //
+            int numberRoboTaxis, int totReq, ScoreParameters scoreParameters, MatsimAmodeusDatabase db) {
+        aidoDistanceRecorder = new AidoDistanceRecorder(numberRoboTaxis, db);
         squScore = new ServiceQualityScore(scoreParameters);
         effScore = new EfficiencyScore(scoreParameters);
         fltScore = new FleetSizeScore(scoreParameters, totReq, numberRoboTaxis);
