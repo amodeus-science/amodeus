@@ -136,20 +136,20 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
 
     @Override
     public Map<TotalValueIdentifier, String> getTotalValues() {
-        Map<TotalValueIdentifier, String> totalValues = new HashMap<>();
-        totalValues.put(TtlValIdent.AVERAGEJOURNEYTIMEROBOTAXI, String.valueOf(Mean.of(getTotalJourneyTimes()).Get().number().doubleValue()));
+        Map<TotalValueIdentifier, String> map = new HashMap<>();
+        map.put(TtlValIdent.AVERAGEJOURNEYTIMEROBOTAXI, String.valueOf(Mean.of(getTotalJourneyTimes()).Get().number().doubleValue()));
 
         double meanWaitTime = Mean.of(getWaitTimes()).get().Get().number().doubleValue();
-        totalValues.put(TtlValIdent.WAITTMEA, String.valueOf(meanWaitTime));
+        map.put(TtlValIdent.WAITTMEA, String.valueOf(meanWaitTime));
 
         Tensor quantils = Quantile.of(getWaitTimes(), Quantiles.SET);
-        totalValues.put(TtlValIdent.WAITTQU1, String.valueOf(quantils.get(0).Get().number().doubleValue()));
-        totalValues.put(TtlValIdent.WAITTQU2, String.valueOf(quantils.get(1).Get().number().doubleValue()));
-        totalValues.put(TtlValIdent.WAITTQU3, String.valueOf(quantils.get(2).Get().number().doubleValue()));
+        map.put(TtlValIdent.WAITTQU1, String.valueOf(quantils.get(0).Get().number().doubleValue()));
+        map.put(TtlValIdent.WAITTQU2, String.valueOf(quantils.get(1).Get().number().doubleValue()));
+        map.put(TtlValIdent.WAITTQU3, String.valueOf(quantils.get(2).Get().number().doubleValue()));
 
         double meanDriveTime = Mean.of(getDriveTimes()).get().Get().number().doubleValue();
-        totalValues.put(TtlValIdent.MEANDRIVETIME, String.valueOf(meanDriveTime));
+        map.put(TtlValIdent.MEANDRIVETIME, String.valueOf(meanDriveTime));
 
-        return totalValues;
+        return map;
     }
 }

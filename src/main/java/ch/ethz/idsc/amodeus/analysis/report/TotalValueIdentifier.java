@@ -2,5 +2,6 @@
 package ch.ethz.idsc.amodeus.analysis.report;
 
 public interface TotalValueIdentifier {
+    /** @return string key in map that stores values of total quantities in analysis */
     String getIdentifier();
 }

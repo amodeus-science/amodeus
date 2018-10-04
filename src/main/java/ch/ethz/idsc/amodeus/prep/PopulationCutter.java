@@ -10,5 +10,7 @@ import org.matsim.core.config.Config;
 
 public interface PopulationCutter {
     // TODO document
+    // TODO LUKAS my suggestion is that this function does not throw any exception ...
+    // ... any exception internal to a cutter may be passed on as a RuntimeException
     void cut(Population population, Network network, Config config) throws MalformedURLException, IOException, Exception;
 }

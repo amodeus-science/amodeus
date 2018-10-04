@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.analysis.element;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,9 +19,6 @@ public class StatusDistributionElement implements AnalysisElement, TotalValueApp
     public final Tensor time = Tensors.empty();
     public final Tensor statusTensor = Tensors.empty();
     public final Tensor occupancyTensor = Tensors.empty();
-
-    // total Values for TotalValuesFile
-    private final Map<TotalValueIdentifier, String> totalValues = new HashMap<>();
 
     @Override
     public void register(SimulationObject simulationObject) {
@@ -40,7 +38,7 @@ public class StatusDistributionElement implements AnalysisElement, TotalValueApp
 
     @Override
     public void consolidate() {
-        // TODo Check these Calculations!!!!! DOES NOT WORK YET!!!
+        // TODO Check these Calculations!!!!! DOES NOT WORK YET!!!
         int timeStep = time.Get(1).subtract(time.Get(0)).number().intValue();
         Map<RoboTaxiStatus, Integer> timeStepsPerStatus = new HashMap<>();
         for (RoboTaxiStatus roboTaxiStatus : RoboTaxiStatus.values()) {
@@ -58,6 +56,6 @@ public class StatusDistributionElement implements AnalysisElement, TotalValueApp
 
     @Override
     public Map<TotalValueIdentifier, String> getTotalValues() {
-        return totalValues;
+        return Collections.emptyMap();
     }
 }
