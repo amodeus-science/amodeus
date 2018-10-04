@@ -10,6 +10,7 @@ import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 
 public interface VirtualNetworkCreator {
+    // TODO document interface function
     /** @param network
      * @param population
      * @param scenarioOptions

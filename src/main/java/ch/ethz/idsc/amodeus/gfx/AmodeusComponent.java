@@ -16,7 +16,7 @@ import javax.swing.JLabel;
 
 import org.matsim.api.core.v01.Coord;
 
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.util.gui.GraphicsUtil;
 import ch.ethz.idsc.amodeus.view.jmapviewer.AmodeusHeatMap;
@@ -27,7 +27,7 @@ public class AmodeusComponent extends JMapViewer {
 
     /** @param db
      * @return instance of MatsimMapComponent with default sequence of {@link ViewerLayer}s */
-    public static AmodeusComponent createDefault(MatsimStaticDatabase db) {
+    public static AmodeusComponent createDefault(MatsimAmodeusDatabase db) {
         AmodeusComponent amodeusComponent = new AmodeusComponent(db);
         amodeusComponent.addLayer(new TilesLayer());
         amodeusComponent.addLayer(new VirtualNetworkLayer());
@@ -40,7 +40,7 @@ public class AmodeusComponent extends JMapViewer {
         return amodeusComponent;
     }
 
-    protected final MatsimStaticDatabase db;
+    protected final MatsimAmodeusDatabase db;
     @SuppressWarnings("unused")
     private int repaint_count = 0;
     private SimulationObject simulationObject = null;
@@ -59,7 +59,7 @@ public class AmodeusComponent extends JMapViewer {
      * use the function {@link #addLayer(ViewerLayer)} to append layers
      * 
      * @param db */
-    public AmodeusComponent(MatsimStaticDatabase db) {
+    public AmodeusComponent(MatsimAmodeusDatabase db) {
         this.db = db;
         // ---
         addMouseListener(amodeusComponentMouse);

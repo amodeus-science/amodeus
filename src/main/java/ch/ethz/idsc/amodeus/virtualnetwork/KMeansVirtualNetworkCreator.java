@@ -119,16 +119,16 @@ public class KMeansVirtualNetworkCreator<T, U> {
         }
 
         // 2) ASSIGN network links to closest nodes with a quadtree structure
-        CreatorUtils.addByProximity(vNMap, lbounds, ubounds, elements, locationOf);
+        VirtualNetworkCreatorUtils.addByProximity(vNMap, lbounds, ubounds, elements, locationOf);
 
-        CreatorUtils.addToVNodes(vNMap, nameOf, virtualNetwork);
+        VirtualNetworkCreatorUtils.addToVNodes(vNMap, nameOf, virtualNetwork);
 
         // create virtualLinks for complete or neighboring graph
         VirtualLinkBuilder.build(virtualNetwork, completeGraph, uElements);
         GlobalAssert.that(VirtualNetworkCheck.virtualLinkConsistencyCheck(virtualNetwork));
 
         // fill information for serialization
-        CreatorUtils.fillSerializationInfo(elements, virtualNetwork, nameOf);
+        VirtualNetworkCreatorUtils.fillSerializationInfo(elements, virtualNetwork, nameOf);
 
         return virtualNetwork;
     }

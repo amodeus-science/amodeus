@@ -51,13 +51,13 @@ public class TrivialVirtualNetworkCreator<T> {
         Map<VirtualNode<T>, Set<T>> vNodeTMap = new LinkedHashMap<>();
         vNodeTMap.put(virtualNode, set);
 
-        CreatorUtils.addToVNodes(vNodeTMap, nameOf, virtualNetwork);
+        VirtualNetworkCreatorUtils.addToVNodes(vNodeTMap, nameOf, virtualNetwork);
 
         VirtualLinkBuilder.buildComplete(virtualNetwork);
         GlobalAssert.that(VirtualNetworkCheck.virtualLinkConsistencyCheck(virtualNetwork));
 
         // fill information for serialization
-        CreatorUtils.fillSerializationInfo(elements, virtualNetwork, nameOf);
+        VirtualNetworkCreatorUtils.fillSerializationInfo(elements, virtualNetwork, nameOf);
 
         return virtualNetwork;
 

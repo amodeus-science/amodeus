@@ -4,6 +4,7 @@ package ch.ethz.idsc.amodeus.analysis.report;
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 
 public interface AnalysisReport {
+    // TODO document
     /** @param analysisSummary */
     void generate(AnalysisSummary analysisSummary);
 }

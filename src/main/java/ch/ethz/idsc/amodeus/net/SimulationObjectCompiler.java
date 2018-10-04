@@ -19,21 +19,23 @@ public class SimulationObjectCompiler {
     private final SimulationObject simulationObject;
     private final Map<String, VehicleContainer> vehicleMap = new HashMap<>();
     private final Map<String, RequestContainer> requestMap = new HashMap<>();
-    private final MatsimStaticDatabase db = MatsimStaticDatabase.INSTANCE;
+    private final MatsimAmodeusDatabase db;
 
     public static SimulationObjectCompiler create( //
-            long now, String infoLine, int total_matchedRequests) {
-        final MatsimStaticDatabase db = MatsimStaticDatabase.INSTANCE;
+            long now, String infoLine, int total_matchedRequests, //
+            MatsimAmodeusDatabase db) {
         SimulationObject simulationObject = new SimulationObject();
         simulationObject.iteration = db.getIteration();
         simulationObject.now = now;
         simulationObject.infoLine = infoLine;
         simulationObject.total_matchedRequests = total_matchedRequests;
-        return new SimulationObjectCompiler(simulationObject);
+        return new SimulationObjectCompiler(simulationObject, db);
     }
 
-    private SimulationObjectCompiler(SimulationObject simulationObject) {
+    private SimulationObjectCompiler(SimulationObject simulationObject, //
+            MatsimAmodeusDatabase db) {
         GlobalAssert.that(Objects.nonNull(simulationObject));
+        this.db = db;
         this.simulationObject = simulationObject;
     }
 
