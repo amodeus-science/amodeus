@@ -2,5 +2,6 @@
 package ch.ethz.idsc.amodeus.analysis.report;
 
 public interface TotalValueIdentifier {
+    // TODO document
     String getIdentifier();
 }

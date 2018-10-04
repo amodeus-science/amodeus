@@ -13,7 +13,9 @@ import ch.ethz.idsc.amodeus.util.nd.NdMap;
 import ch.ethz.idsc.amodeus.util.nd.NdTreeMap;
 import ch.ethz.idsc.tensor.Tensor;
 
-// TODO JPH used externally, rename to more specific name before next release
+// TODO V147 used externally, rename to more specific name before next release
+// TODO document each function since order of calls matters
+// TODO potentially change API (design as class) to avoid misuse 
 public enum CreatorUtils {
     ;
 
