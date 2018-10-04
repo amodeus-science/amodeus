@@ -19,7 +19,8 @@ import ch.ethz.idsc.amodeus.view.jmapviewer.JMapViewer;
 public enum AmodeusComponentUtil {
     ;
 
-    public static void adjustMapZoom(AmodeusComponent amodeusComponent, Network network, ScenarioOptions simOptions) {
+    public static void adjustMapZoom(AmodeusComponent amodeusComponent, Network network, //
+            ScenarioOptions simOptions, MatsimStaticDatabase db) {
         // Bounding box -> {minX, minY, maxX, maxY}
         double[] bBox = NetworkUtils.getBoundingBox(network.getNodes().values());
         CoordinateTransformation ct = simOptions.getLocationSpec().referenceFrame().coords_toWGS84();
@@ -33,7 +34,7 @@ public enum AmodeusComponentUtil {
         envelop.add(northWest);
         envelop.add(southEast);
 
-        Coord center = MatsimStaticDatabase.INSTANCE.getCenter();
+        Coord center = db.getCenter();
         boolean zoomAdj = false;
         boolean zoomAdjPrev = false;
         int prevZoom = 10;
@@ -53,5 +54,4 @@ public enum AmodeusComponentUtil {
             ((JMapViewer) amodeusComponent).setDisplayPosition(ccc, new Coordinate(center.getY(), center.getX()), prevZoom);
         }
     }
-
 }

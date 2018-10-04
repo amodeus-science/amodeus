@@ -26,6 +26,7 @@ import ch.ethz.idsc.amodeus.dispatcher.util.FeasibleRebalanceCreator;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.lp.LPTimeInvariant;
+import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualLink;
@@ -79,8 +80,9 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
             VirtualNetwork<Link> virtualNetwork, //
             AbstractVirtualNodeDest abstractVirtualNodeDest, //
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher, //
-            TravelData travelData) {
-        super(config, avDispatcherConfig, travelTime, router, eventsManager, virtualNetwork);
+            TravelData travelData,//
+            MatsimStaticDatabase db) {
+        super(config, avDispatcherConfig, travelTime, router, eventsManager, virtualNetwork,db);
         virtualNodeDest = abstractVirtualNodeDest;
         vehicleDestMatcher = abstractVehicleDestMatcher;
         this.travelData = travelData;
@@ -190,6 +192,9 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
 
         @Inject
         private Config config;
+        
+        @Inject
+        private MatsimStaticDatabase db;
 
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
@@ -199,7 +204,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceFunction.INSTANCE);
 
             return new FeedforwardFluidicRebalancingPolicy(config, avconfig, generatorConfig, travelTime, router, eventsManager, network, virtualNetwork, abstractVirtualNodeDest,
-                    abstractVehicleDestMatcher, travelData);
+                    abstractVehicleDestMatcher, travelData,db);
         }
     }
 }

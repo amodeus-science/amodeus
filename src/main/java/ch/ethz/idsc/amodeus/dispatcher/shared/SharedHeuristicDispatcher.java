@@ -21,6 +21,7 @@ import com.google.inject.name.Named;
 import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedUniversalDispatcher;
+import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.config.AVGeneratorConfig;
@@ -44,8 +45,9 @@ public class SharedHeuristicDispatcher extends SharedUniversalDispatcher {
             TravelTime travelTime, //
             AVRouter router, //
             EventsManager eventsManager, //
-            Network network) {
-        super(config, avDispatcherConfig, travelTime, router, eventsManager);
+            Network network, //
+            MatsimStaticDatabase db) {
+        super(config, avDispatcherConfig, travelTime, router, eventsManager,db);
         this.network = network;
         this.networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
         DispatcherConfig dispatcherConfig = DispatcherConfig.wrap(avDispatcherConfig);
@@ -134,11 +136,14 @@ public class SharedHeuristicDispatcher extends SharedUniversalDispatcher {
 
         @Inject
         private Config config;
+        
+        @Inject
+        private MatsimStaticDatabase db;
 
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
             AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
-            return new SharedHeuristicDispatcher(config, avconfig, generatorConfig, travelTime, router, eventsManager, network);
+            return new SharedHeuristicDispatcher(config, avconfig, generatorConfig, travelTime, router, eventsManager, network,db);
         }
     }
 

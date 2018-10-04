@@ -14,6 +14,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatchingUtils;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
+import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
@@ -34,8 +35,9 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
 
     private GlobalBipartiteMatchingDispatcher(Network network, Config config, //
             AVDispatcherConfig avDispatcherConfig, TravelTime travelTime, //
-            AVRouter router, EventsManager eventsManager) {
-        super(config, avDispatcherConfig, travelTime, router, eventsManager);
+            AVRouter router, EventsManager eventsManager,//
+            MatsimStaticDatabase db) {
+        super(config, avDispatcherConfig, travelTime, router, eventsManager,db);
         DispatcherConfig dispatcherConfig = DispatcherConfig.wrap(avDispatcherConfig);
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(30);
         DistanceHeuristics distanceHeuristics = //
@@ -77,11 +79,14 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
 
         @Inject
         private Config config;
+        
+        @Inject
+        private MatsimStaticDatabase db;
 
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
             return new GlobalBipartiteMatchingDispatcher( //
-                    network, config, avconfig, travelTime, router, eventsManager);
+                    network, config, avconfig, travelTime, router, eventsManager,db);
         }
     }
 }

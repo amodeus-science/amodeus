@@ -48,25 +48,22 @@ import ch.ethz.matsim.av.router.AVRouter;
  * 
  * @author fluric */
 public class SQMDispatcher extends PartitionedDispatcher {
+    private final MatsimStaticDatabase db;
     private final Map<VirtualNode<Link>, RoboTaxi> nodeToTaxi = new HashMap<>();
     private final Map<RoboTaxi, VirtualNode<Link>> taxiToNode = new HashMap<>();
     private final Map<VirtualNode<Link>, Link> nodeToLink = new HashMap<>();
     private final List<Link> virtualCenters;
     private final FastLinkLookup fastLinkLookup;
 
-    protected SQMDispatcher(//
-            Config config, //
-            AVDispatcherConfig avDispatcherConfig, //
-            TravelTime travelTime, //
-            AVGeneratorConfig generatorConfig, //
-            AVRouter router, //
-            EventsManager eventsManager, //
-            Network network, //
-            VirtualNetwork<Link> virtualNetwork) {
-        super(config, avDispatcherConfig, travelTime, router, eventsManager, virtualNetwork);
+    protected SQMDispatcher(Config config, AVDispatcherConfig avDispatcherConfig, //
+            TravelTime travelTime, AVGeneratorConfig generatorConfig, AVRouter router, //
+            EventsManager eventsManager, Network network, //
+            VirtualNetwork<Link> virtualNetwork, MatsimStaticDatabase db) {
+        super(config, avDispatcherConfig, travelTime, router, eventsManager, virtualNetwork, db);
         GlobalAssert.that(virtualNetwork != null);
         GlobalAssert.that((int) generatorConfig.getNumberOfVehicles() == virtualNetwork.getvNodesCount());
-        this.fastLinkLookup = new FastLinkLookup(network, MatsimStaticDatabase.INSTANCE);
+        this.db = db;
+        this.fastLinkLookup = new FastLinkLookup(network, db);
         this.virtualCenters = assignNodesToNearestLinks(virtualNetwork.getVirtualNodes());
     }
 
@@ -145,7 +142,7 @@ public class SQMDispatcher extends PartitionedDispatcher {
 
             // find the closest link
             int index = fastLinkLookup.getLinkIndexFromXY(coord);
-            Link closest = MatsimStaticDatabase.INSTANCE.getOsmLink(index).link;
+            Link closest = db.getOsmLink(index).link;
 
             list.add(closest);
         }
@@ -168,6 +165,9 @@ public class SQMDispatcher extends PartitionedDispatcher {
         @Inject
         private Config config;
 
+        @Inject
+        private MatsimStaticDatabase db;
+
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
             AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
@@ -179,7 +179,7 @@ public class SQMDispatcher extends PartitionedDispatcher {
                 GlobalAssert.that(false);
             }
             return new SQMDispatcher(config, avconfig, travelTime, generatorConfig, router, eventsManager, network, //
-                    virtualNetwork);
+                    virtualNetwork, db);
         }
     }
 

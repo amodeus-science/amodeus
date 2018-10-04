@@ -19,6 +19,11 @@ import ch.ethz.idsc.tensor.qty.Quantity;
 // TODO small rounding errors compared to VehicleStatistic
 // ... find out where the differences come from and adapt
 /* package */ class AidoVehicleStatistic {
+    private final MatsimStaticDatabase db;
+
+    public AidoVehicleStatistic(MatsimStaticDatabase db) {
+        this.db = db;
+    }
 
     /** list is used as a buffer and is periodically emptied */
     private final List<VehicleContainer> list = new LinkedList<>();
@@ -47,7 +52,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
         Scalar distEmpty = Quantity.of(0, SI.METER);
         if (!list.isEmpty()) {
             final int linkId = list.get(0).linkIndex;
-            Link distanceLink = MatsimStaticDatabase.INSTANCE.getOsmLink(linkId).link;
+            Link distanceLink = db.getOsmLink(linkId).link;
             /** this total distance on the link was travelled on during all simulationObjects stored
              * in the list. */
             Scalar distance = Quantity.of(distanceLink.getLength(), SI.METER);

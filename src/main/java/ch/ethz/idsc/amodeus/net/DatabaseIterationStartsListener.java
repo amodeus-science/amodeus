@@ -5,8 +5,14 @@ import org.matsim.core.controler.events.IterationStartsEvent;
 import org.matsim.core.controler.listener.IterationStartsListener;
 
 /* package */ class DatabaseIterationStartsListener implements IterationStartsListener {
+    private final MatsimStaticDatabase db;
+
+    public DatabaseIterationStartsListener(MatsimStaticDatabase db) {
+        this.db = db;
+    }
+
     @Override
     public void notifyIterationStarts(IterationStartsEvent event) {
-        MatsimStaticDatabase.INSTANCE.setIteration(event.getIteration());
+        db.setIteration(event.getIteration());
     }
 }

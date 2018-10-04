@@ -10,6 +10,7 @@ import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
 
+import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNode;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
@@ -30,8 +31,9 @@ public abstract class PartitionedDispatcher extends RebalancingDispatcher {
             TravelTime travelTime, //
             ParallelLeastCostPathCalculator router, //
             EventsManager eventsManager, //
-            VirtualNetwork<Link> virtualNetwork) {
-        super(config, avDispatcherConfig, travelTime, router, eventsManager);
+            VirtualNetwork<Link> virtualNetwork, //
+            MatsimStaticDatabase db) {
+        super(config, avDispatcherConfig, travelTime, router, eventsManager,db);
 
         if (virtualNetwork == null) {
             throw new IllegalStateException(

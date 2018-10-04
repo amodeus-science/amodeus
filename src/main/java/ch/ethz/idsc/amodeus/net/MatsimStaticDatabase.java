@@ -25,8 +25,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
 public class MatsimStaticDatabase {
 
-    public static void initializeSingletonInstance( //
-            Network network, //
+    public static MatsimStaticDatabase initialize(Network network, //
             ReferenceFrame referenceFrame) {
 
         NavigableMap<String, OsmLink> linkMap = new TreeMap<>();
@@ -40,13 +39,34 @@ public class MatsimStaticDatabase {
             );
             linkMap.put(link.getId().toString(), osmLink);
         }
-
-        INSTANCE = new MatsimStaticDatabase( //
-                referenceFrame, //
-                linkMap);
+        // INSTANCE = new MatsimStaticDatabase( //
+        // referenceFrame, //
+        // linkMap);
+        return new MatsimStaticDatabase(referenceFrame, linkMap);
     }
 
-    public static MatsimStaticDatabase INSTANCE;
+    // public static void initializeSingletonInstance( //
+    // Network network, //
+    // ReferenceFrame referenceFrame) {
+    //
+    // NavigableMap<String, OsmLink> linkMap = new TreeMap<>();
+    //
+    // CoordinateTransformation coords_toWGS84 = referenceFrame.coords_toWGS84();
+    //
+    // for (Link link : network.getLinks().values()) {
+    // OsmLink osmLink = new OsmLink(link, //
+    // coords_toWGS84.transform(link.getFromNode().getCoord()), //
+    // coords_toWGS84.transform(link.getToNode().getCoord()) //
+    // );
+    // linkMap.put(link.getId().toString(), osmLink);
+    // }
+    //
+    // INSTANCE = new MatsimStaticDatabase( //
+    // referenceFrame, //
+    // linkMap);
+    // }
+
+    // public static MatsimStaticDatabase INSTANCE;
 
     /** rapid lookup from MATSIM side */
     private final Map<Link, Integer> linkInteger = new HashMap<>();

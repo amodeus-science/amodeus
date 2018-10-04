@@ -29,6 +29,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
+import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationDistribution;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.net.SimulationObjectCompiler;
@@ -48,6 +49,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
  * {@link AVRequest}s alternative implementation of {@link AVDispatcher};
  * supersedes {@link AbstractDispatcher}. */
 public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer {
+    private final MatsimStaticDatabase db;
 
     private final FuturePathFactory futurePathFactory;
     private final Set<AVRequest> pendingRequests = new LinkedHashSet<>();
@@ -73,9 +75,10 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
             AVDispatcherConfig avDispatcherConfig, //
             TravelTime travelTime, //
             ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, //
-            EventsManager eventsManager //
-    ) {
+            EventsManager eventsManager, //
+            MatsimStaticDatabase db) {
         super(eventsManager, config, avDispatcherConfig);
+        this.db = db;
         futurePathFactory = new FuturePathFactory(parallelLeastCostPathCalculator, travelTime);
         pickupDurationPerStop = avDispatcherConfig.getParent().getTimingParameters().getPickupDurationPerStop();
         dropoffDurationPerStop = avDispatcherConfig.getParent().getTimingParameters().getDropoffDurationPerStop();
@@ -594,7 +597,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
     protected final void notifySimulationSubscribers(long round_now, StorageUtils storageUtils) {
         if (publishPeriod > 0 && round_now % publishPeriod == 0) {
             SimulationObjectCompiler simulationObjectCompiler = SimulationObjectCompiler.create( //
-                    round_now, getInfoLine(), total_matchedRequests);
+                    round_now, getInfoLine(), total_matchedRequests, db);
 
             simulationObjectCompiler.insertRequests(reqStatuses);
             simulationObjectCompiler.insertRequests(periodAssignedRequests, RequestStatus.ASSIGNED);

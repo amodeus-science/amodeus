@@ -17,6 +17,8 @@ import ch.ethz.idsc.tensor.alg.Array;
 
 /* package */ class VehicleStatistic {
 
+    private final MatsimStaticDatabase db;
+
     public final Tensor distanceTotal;
     public final Tensor distanceWithCustomer;
     public final Tensor distancePickup;
@@ -28,7 +30,8 @@ import ch.ethz.idsc.tensor.alg.Array;
     // this is used as a buffer and is periodically emptied
     private final List<VehicleContainer> list = new LinkedList<>();
 
-    public VehicleStatistic(int tics_max) {
+    public VehicleStatistic(int tics_max, MatsimStaticDatabase db) {
+        this.db = db;
         distanceTotal = Array.zeros(tics_max);
         distanceWithCustomer = Array.zeros(tics_max);
         distancePickup = Array.zeros(tics_max);
@@ -51,7 +54,7 @@ import ch.ethz.idsc.tensor.alg.Array;
     public void consolidate() {
         if (!list.isEmpty()) {
             final int linkId = list.get(0).linkIndex;
-            Link distanceLink = MatsimStaticDatabase.INSTANCE.getOsmLink(linkId).link;
+            Link distanceLink = db.getOsmLink(linkId).link;
             /** this total distance on the link was travelled on during all simulationObjects stored
              * in the list. */
             double distance = distanceLink.getLength();

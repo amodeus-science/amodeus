@@ -107,7 +107,7 @@ public class SharedTestServer {
         population = scenario.getPopulation();
         GlobalAssert.that(scenario != null && network != null && population != null);
 
-        MatsimStaticDatabase.initializeSingletonInstance(network, referenceFrame);
+        MatsimStaticDatabase db = MatsimStaticDatabase.initialize(network, referenceFrame);
         controler = new Controler(scenario);
 
         controler.addOverridingModule(new DvrpTravelTimeModule());
@@ -137,7 +137,8 @@ public class SharedTestServer {
         // close port for visualization
         SimulationServer.INSTANCE.stopAccepting();
 
-        Analysis analysis = Analysis.setup(workingDirectory, configFile, new File(workingDirectory, "output/001"), network);
+        Analysis analysis = Analysis.setup(workingDirectory, configFile, //
+                new File(workingDirectory, "output/001"), network, db);
         ate = new AnalysisTestExport();
         analysis.addAnalysisExport(ate);
         analysis.run();

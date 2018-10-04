@@ -25,6 +25,7 @@ import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
 
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
+import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationDistribution;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.net.SimulationObjectCompiler;
@@ -42,6 +43,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
  * implementation of {@link AVDispatcher}; supersedes
  * {@link AbstractDispatcher}. */
 public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
+    private final MatsimStaticDatabase db;
     private final FuturePathFactory futurePathFactory;
     private final Set<AVRequest> pendingRequests = new LinkedHashSet<>();
     private final Map<AVRequest, RoboTaxi> pickupRegister = new HashMap<>();
@@ -59,8 +61,10 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
             AVDispatcherConfig avDispatcherConfig, //
             TravelTime travelTime, //
             ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, //
-            EventsManager eventsManager) {
+            EventsManager eventsManager, //
+            MatsimStaticDatabase db) {
         super(eventsManager, config, avDispatcherConfig);
+        this.db = db;
         futurePathFactory = new FuturePathFactory(parallelLeastCostPathCalculator, travelTime);
         pickupDurationPerStop = avDispatcherConfig.getParent().getTimingParameters().getPickupDurationPerStop();
         dropoffDurationPerStop = avDispatcherConfig.getParent().getTimingParameters().getDropoffDurationPerStop();
@@ -341,7 +345,7 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
     protected final void notifySimulationSubscribers(long round_now, StorageUtils storageUtils) {
         if (publishPeriod > 0 && round_now % publishPeriod == 0 && round_now > 1) {
             SimulationObjectCompiler simulationObjectCompiler = SimulationObjectCompiler.create( //
-                    round_now, getInfoLine(), total_matchedRequests);
+                    round_now, getInfoLine(), total_matchedRequests,db);
 
             /** pickup register must be after pending requests, request is pending from
              * moment it appears until it is picked up, this period may contain several
