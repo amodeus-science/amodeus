@@ -24,7 +24,6 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.test.TestFileHandling;
-import ch.ethz.idsc.amodeus.testutils.TestPreparer;
 import ch.ethz.idsc.amodeus.testutils.TestUtils;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.io.ProvideAVConfig;
@@ -56,10 +55,11 @@ public class LPTimeVariantTester {
         ScenarioOptions scenarioOptions = new ScenarioOptions(scenarioDirectory, ScenarioOptionsBase.getDefault());
         File configFile = new File(scenarioDirectory, scenarioOptions.getPreparerConfigName());
         AVConfigGroup avCg = new AVConfigGroup();
-        Config config = ConfigUtils.loadConfig(configFile.getAbsolutePath(),avCg);
+        Config config = ConfigUtils.loadConfig(configFile.getAbsolutePath(), avCg);
         AVConfig avC = ProvideAVConfig.with(config, avCg);
         AVGeneratorConfig genConfig = avC.getOperatorConfigs().iterator().next().getGeneratorConfig();
-        int numRt = (int) genConfig.getNumberOfVehicles();        
+        int numRt = (int) genConfig.getNumberOfVehicles();
+        int endTime = (int) config.qsim().getEndTime();
         Scenario scenario = ScenarioUtils.loadScenario(config);
         network = scenario.getNetwork();
         population = scenario.getPopulation();
@@ -67,12 +67,12 @@ public class LPTimeVariantTester {
         // create 2 node virtual network
         scenarioOptions.setProperty(ScenarioOptionsBase.NUMVNODESIDENTIFIER, "2");
         VirtualNetworkCreator virtualNetworkCreator = scenarioOptions.getVirtualNetworkCreator();
-        virtualNetwork2 = virtualNetworkCreator.create(network, population, scenarioOptions, numRt);
+        virtualNetwork2 = virtualNetworkCreator.create(network, population, scenarioOptions, numRt, endTime);
 
         // create 3 node virtual network
         scenarioOptions.setProperty(ScenarioOptionsBase.NUMVNODESIDENTIFIER, "3");
         virtualNetworkCreator = scenarioOptions.getVirtualNetworkCreator();
-        virtualNetwork3 = virtualNetworkCreator.create(network, population, scenarioOptions, numRt);
+        virtualNetwork3 = virtualNetworkCreator.create(network, population, scenarioOptions, numRt, endTime);
 
         lpOptions = new LPOptions(MultiFileTools.getWorkingDirectory(), LPOptionsBase.getDefault());
     }

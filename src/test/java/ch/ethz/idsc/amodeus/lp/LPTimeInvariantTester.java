@@ -57,6 +57,7 @@ public class LPTimeInvariantTester {
         AVConfig avC = ProvideAVConfig.with(config, avCg);
         AVGeneratorConfig genConfig = avC.getOperatorConfigs().iterator().next().getGeneratorConfig();
         int numRt = (int) genConfig.getNumberOfVehicles();
+        int endTime = (int) config.qsim().getEndTime();
         Scenario scenario = ScenarioUtils.loadScenario(config);
         network = scenario.getNetwork();
         population = scenario.getPopulation();
@@ -64,12 +65,12 @@ public class LPTimeInvariantTester {
         // create 2 node virtual network
         scenarioOptions.setProperty(ScenarioOptionsBase.NUMVNODESIDENTIFIER, "2");
         VirtualNetworkCreator virtualNetworkCreator = scenarioOptions.getVirtualNetworkCreator();
-        virtualNetwork2 = virtualNetworkCreator.create(network, population, scenarioOptions, numRt);
+        virtualNetwork2 = virtualNetworkCreator.create(network, population, scenarioOptions, numRt, endTime);
 
         // create 3 node virtual network
         scenarioOptions.setProperty(ScenarioOptionsBase.NUMVNODESIDENTIFIER, "3");
         virtualNetworkCreator = scenarioOptions.getVirtualNetworkCreator();
-        virtualNetwork3 = virtualNetworkCreator.create(network, population, scenarioOptions, numRt);
+        virtualNetwork3 = virtualNetworkCreator.create(network, population, scenarioOptions, numRt, endTime);
     }
 
     @Test

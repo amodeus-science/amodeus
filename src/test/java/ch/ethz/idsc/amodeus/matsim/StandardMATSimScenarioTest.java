@@ -220,6 +220,7 @@ public class StandardMATSimScenarioTest {
         AVOperatorConfig operatorConfig = avConfig.createOperatorConfig("test");
         AVGeneratorConfig generatorConfig = operatorConfig.createGeneratorConfig("VehicleToVSGenerator");
         generatorConfig.setNumberOfVehicles(100);
+        int endTime = (int) config.qsim().getEndTime();
 
         // Choose a dispatcher
         AVDispatcherConfig dispatcherConfig = operatorConfig.createDispatcherConfig(dispatcher);
@@ -261,7 +262,7 @@ public class StandardMATSimScenarioTest {
                 LPOptions lpOptions = new LPOptions(MultiFileTools.getWorkingDirectory(), LPOptionsBase.getDefault());
                 lpOptions.setProperty(LPOptionsBase.LPSOLVER, "timeInvariant");
                 lpOptions.saveAndOverwriteLPOptions();
-                TravelData travelData = TravelDataCreator.create(virtualNetwork, network, population, scenarioOptions, (int) generatorConfig.getNumberOfVehicles());
+                TravelData travelData = TravelDataCreator.create(virtualNetwork, network, population, scenarioOptions, (int) generatorConfig.getNumberOfVehicles(), endTime);
                 return travelData;
             }
         });

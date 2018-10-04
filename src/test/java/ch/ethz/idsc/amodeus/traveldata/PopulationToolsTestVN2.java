@@ -64,6 +64,7 @@ public class PopulationToolsTestVN2 {
         AVConfig avC = ProvideAVConfig.with(config, avCg);
         AVGeneratorConfig genConfig = avC.getOperatorConfigs().iterator().next().getGeneratorConfig();
         int numRt = (int) genConfig.getNumberOfVehicles();
+        int endTime = (int) config.qsim().getEndTime();
         Scenario scenario = ScenarioUtils.loadScenario(config);
         network = scenario.getNetwork();
         population = scenario.getPopulation();
@@ -71,7 +72,7 @@ public class PopulationToolsTestVN2 {
         // create 2 node virtual network
         scenarioOptions.setProperty(ScenarioOptionsBase.NUMVNODESIDENTIFIER, "2");
         VirtualNetworkCreator virtualNetworkCreator = scenarioOptions.getVirtualNetworkCreator();
-        virtualNetwork2 = virtualNetworkCreator.create(network, population, scenarioOptions, numRt);
+        virtualNetwork2 = virtualNetworkCreator.create(network, population, scenarioOptions, numRt, endTime);
 
         Link node0 = (Link) virtualNetwork2.getVirtualNode(0).getLinks().toArray()[0];
         Link node1 = (Link) virtualNetwork2.getVirtualNode(1).getLinks().toArray()[0];
