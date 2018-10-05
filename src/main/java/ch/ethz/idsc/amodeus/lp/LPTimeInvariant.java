@@ -17,7 +17,6 @@ import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.FeedforwardFluidicRebalancingPolicy;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.amodeus.util.math.Magnitude;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -46,7 +45,7 @@ public class LPTimeInvariant implements LPSolver {
     private final int rowTotal;
     private final int columnTotal;
     private final int timeSteps;
-    private final int timeInterval;
+    private final int timeIntervalLength;
     private final int numberVehicles;
     // ---
     private glp_prob lp;
@@ -60,14 +59,14 @@ public class LPTimeInvariant implements LPSolver {
 
     /** @param virtualNetwork
      *            the virtual network (complete directed graph) on which the optimization is computed. */
-    public LPTimeInvariant(VirtualNetwork<Link> virtualNetwork, Tensor lambdaAbsolute_ij, int numberOfVehicles) {
+    public LPTimeInvariant(VirtualNetwork<Link> virtualNetwork, Tensor lambdaAbsolute_ij, int numberOfVehicles, int endTime) {
         numberVehicles = numberOfVehicles;
         nvNodes = virtualNetwork.getvNodesCount();
         gamma_ij = LPUtils.getEuclideanTravelTimeBetweenVSCenters(virtualNetwork, LPUtils.AVERAGE_VEL);
         timeSteps = Dimensions.of(lambdaAbsolute_ij).get(0);
-        timeInterval = Magnitude.SECOND.toInt(LPUtils.DURATION) / timeSteps;
+        timeIntervalLength = endTime / timeSteps;
         this.lambdaAbsolute_ij = LPUtils.getRoundedRequireNonNegative(lambdaAbsolute_ij);
-        lambdaRate_ij = lambdaAbsolute_ij.divide(RealScalar.of(timeInterval));
+        lambdaRate_ij = lambdaAbsolute_ij.divide(RealScalar.of(timeIntervalLength));
         columnTotal = getColumnTotal();
         rowTotal = getRowTotal();
 
@@ -78,10 +77,6 @@ public class LPTimeInvariant implements LPSolver {
 
         System.out.println("creating rebalancing time-invariant LP for system with " + nvNodes + " virtualNodes");
     }
-
-    // public LPTimeInvariant(VirtualNetwork<Link> virtualNetwork, Tensor lambdaAbsolute_ij) {
-    // this(virtualNetwork, lambdaAbsolute_ij, LPUtils.getNumberOfVehicles());
-    // }
 
     /** initiate the linear program */
     @Override
@@ -249,7 +244,7 @@ public class LPTimeInvariant implements LPSolver {
         }
         Tensor alphaAbsoluteRounded = LPUtils.getRoundedRequireNonNegative(alphaAbsolute);
         alphaAbsolute_ij.set(v -> alphaAbsoluteRounded, timeIndex);
-        alphaRate_ij = alphaAbsolute_ij.divide(RealScalar.of(timeInterval));
+        alphaRate_ij = alphaAbsolute_ij.divide(RealScalar.of(timeIntervalLength));
     }
 
     /** writes the solution of the LP on the consoles */
@@ -296,8 +291,8 @@ public class LPTimeInvariant implements LPSolver {
     }
 
     @Override
-    public int getTimeInterval() {
-        return timeInterval;
+    public int getTimeIntervalLength() {
+        return timeIntervalLength;
     }
 
 }

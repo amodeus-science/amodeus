@@ -60,19 +60,20 @@ public class VehicleToVSGeneratorTester {
         AVConfig avC = ProvideAVConfig.with(config, avCg);
         AVGeneratorConfig genConfig = avC.getOperatorConfigs().iterator().next().getGeneratorConfig();
         int numRt = (int) genConfig.getNumberOfVehicles();
+        int endTime = (int) config.qsim().getEndTime();
         Scenario scenario = ScenarioUtils.loadScenario(config);
         network = scenario.getNetwork();
         population = scenario.getPopulation();
         scenarioOptions.setProperty(ScenarioOptionsBase.NUMVNODESIDENTIFIER, "3");
         VirtualNetworkCreator virtualNetworkCreator = scenarioOptions.getVirtualNetworkCreator();
-        virtualNetwork = virtualNetworkCreator.create(network, population, scenarioOptions, numRt);
+        virtualNetwork = virtualNetworkCreator.create(network, population, scenarioOptions, numRt, endTime);
 
         /** creating dummy config with 10 vehicles */
         avGeneratorConfig = new AVGeneratorConfig(new AVOperatorConfig("id", new AVConfig()), "strategy");
 
-        travelData000 = new TravelData(virtualNetwork.getvNetworkID(), Array.zeros(3, 3, 3), Array.zeros(3, 3, 3), Array.zeros(3, 3, 3), Array.zeros(3), "");
-        travelData123 = new TravelData(virtualNetwork.getvNetworkID(), Array.zeros(3, 3, 3), Array.zeros(3, 3, 3), Array.zeros(3, 3, 3), Tensors.vector(1, 2, 3), "");
-        travelData334 = new TravelData(virtualNetwork.getvNetworkID(), Array.zeros(3, 3, 3), Array.zeros(3, 3, 3), Array.zeros(3, 3, 3), Tensors.vector(3, 3, 4), "");
+        travelData000 = new TravelData(virtualNetwork.getvNetworkID(), Array.zeros(3, 3, 3), Array.zeros(3, 3, 3), Array.zeros(3, 3, 3), Array.zeros(3), "", endTime);
+        travelData123 = new TravelData(virtualNetwork.getvNetworkID(), Array.zeros(3, 3, 3), Array.zeros(3, 3, 3), Array.zeros(3, 3, 3), Tensors.vector(1, 2, 3), "", endTime);
+        travelData334 = new TravelData(virtualNetwork.getvNetworkID(), Array.zeros(3, 3, 3), Array.zeros(3, 3, 3), Array.zeros(3, 3, 3), Tensors.vector(3, 3, 4), "", endTime);
     }
 
     @Test

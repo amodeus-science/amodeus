@@ -45,6 +45,7 @@ public class KMeansVirtualNetworkCreatorTest {
         AVConfig avC = ProvideAVConfig.with(config, avCg);
         AVGeneratorConfig genConfig = avC.getOperatorConfigs().iterator().next().getGeneratorConfig();
         int numRt = (int) genConfig.getNumberOfVehicles();
+        int endTime = (int) config.qsim().getEndTime();
         Scenario scenario = ScenarioUtils.loadScenario(config);
         Network network = scenario.getNetwork();
         Population population = scenario.getPopulation();
@@ -53,7 +54,7 @@ public class KMeansVirtualNetworkCreatorTest {
 
         /* generate nCreations networks */
         for (int i = 0; i < nCreations; ++i) {
-            virtualNetworks.add(virtualNetworkCreator.create(network, population, scenarioOptions, numRt));
+            virtualNetworks.add(virtualNetworkCreator.create(network, population, scenarioOptions, numRt, endTime));
         }
 
     }

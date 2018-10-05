@@ -62,7 +62,7 @@ public class SaveLoadTest {
         assertTrue(travelDataTestHelper.timeStepsCheck());
         assertTrue(travelDataTestHelper.lambdaAbsoluteCheck());
         assertTrue(travelDataTestHelper.lambdaAbsoluteAtTimeCheck());
-        assertTrue(travelDataTestHelper.lambdaInvalidAbsoluteAtTimeCheck());
+        assertTrue(travelDataTestHelper.lambdaOutOfRangeCheck());
         assertTrue(travelDataTestHelper.lambdaRateCheck());
         assertTrue(travelDataTestHelper.lambdaRateAtTimeCheck());
         assertTrue(travelDataTestHelper.lambdaInvalidRateAtTimeCheck());

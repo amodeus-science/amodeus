@@ -47,6 +47,7 @@ public class PopulationToolsTestVN2 {
     private static Set<Request> requestsSingle3 = new HashSet<>();
     private static Set<Request> requestsEmpty = Collections.emptySet();
     private static Set<Request> requests3 = new HashSet<>();
+    private static int endTime;
 
     @BeforeClass
     public static void setup() throws IOException {
@@ -64,6 +65,7 @@ public class PopulationToolsTestVN2 {
         AVConfig avC = ProvideAVConfig.with(config, avCg);
         AVGeneratorConfig genConfig = avC.getOperatorConfigs().iterator().next().getGeneratorConfig();
         int numRt = (int) genConfig.getNumberOfVehicles();
+        endTime = (int) config.qsim().getEndTime();
         Scenario scenario = ScenarioUtils.loadScenario(config);
         network = scenario.getNetwork();
         population = scenario.getPopulation();
@@ -71,7 +73,7 @@ public class PopulationToolsTestVN2 {
         // create 2 node virtual network
         scenarioOptions.setProperty(ScenarioOptionsBase.NUMVNODESIDENTIFIER, "2");
         VirtualNetworkCreator virtualNetworkCreator = scenarioOptions.getVirtualNetworkCreator();
-        virtualNetwork2 = virtualNetworkCreator.create(network, population, scenarioOptions, numRt);
+        virtualNetwork2 = virtualNetworkCreator.create(network, population, scenarioOptions, numRt, endTime);
 
         Link node0 = (Link) virtualNetwork2.getVirtualNode(0).getLinks().toArray()[0];
         Link node1 = (Link) virtualNetwork2.getVirtualNode(1).getLinks().toArray()[0];
@@ -79,7 +81,7 @@ public class PopulationToolsTestVN2 {
         requestsSingle3.add(new Request(10, node0, node1));
         requests3.add(new Request(0, node0, node1));
         requests3.add(new Request(3600, node1, node0));
-        requests3.add(new Request(24 * 3600 - 1, node1, node0));
+        requests3.add(new Request(30 * 3600 - 1, node1, node0));
         requests3.add(new Request(3600, node0, node0));
 
     }
@@ -87,14 +89,14 @@ public class PopulationToolsTestVN2 {
     @Test
     public void testInvalid() {
         try {
-            PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(requestsSingle3, virtualNetwork2, 3601);
+            PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(requestsSingle3, virtualNetwork2, 3601, endTime);
             assertTrue(false);
         } catch (Exception exception) {
             // ---
         }
 
         try {
-            PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(requestsSingle3, virtualNetwork2, -1);
+            PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(requestsSingle3, virtualNetwork2, -1, endTime);
             assertTrue(false);
         } catch (Exception exception) {
             // ---
@@ -103,16 +105,16 @@ public class PopulationToolsTestVN2 {
 
     @Test
     public void testEmpty() {
-        Tensor lambda = PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(requestsEmpty, virtualNetwork2, 3600);
-        assertEquals(lambda, Array.zeros(24, 2, 2));
+        Tensor lambda = PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(requestsEmpty, virtualNetwork2, 3600, endTime);
+        assertEquals(lambda, Array.zeros(30, 2, 2));
     }
 
     @Test
     public void testVirtualNetwork2() {
-        Tensor lambda = PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(requestsSingle3, virtualNetwork2, 12 * 3600);
+        Tensor lambda = PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(requestsSingle3, virtualNetwork2, 15 * 3600, endTime);
         assertEquals(lambda, Tensors.of(Tensors.of(Tensors.vector(0, 1), Tensors.vector(0, 0)), Tensors.of(Tensors.vector(0, 0), Tensors.vector(0, 0))));
 
-        lambda = PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(requests3, virtualNetwork2, 12 * 3600);
+        lambda = PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(requests3, virtualNetwork2, 15 * 3600, endTime);
         assertEquals(lambda, Tensors.of(Tensors.of(Tensors.vector(1, 1), Tensors.vector(1, 0)), Tensors.of(Tensors.vector(0, 0), Tensors.vector(1, 0))));
     }
 
