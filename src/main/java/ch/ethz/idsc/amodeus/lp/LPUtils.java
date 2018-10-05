@@ -24,7 +24,7 @@ public enum LPUtils {
      * and derives the travel time for a given constant velocity.
      *
      * 
-     * @param velocity in [km/h]
+     * @param velocity non-zero
      * @return tensor with travel time between the virtual stations in [s], e.g. output.get(i,j) is the travel
      *         time from virtual station i to j */
     /* package */ static Tensor getEuclideanTravelTimeBetweenVSCenters(VirtualNetwork<Link> virtualNetwork, Scalar velocity) {
@@ -34,9 +34,7 @@ public enum LPUtils {
         for (VirtualLink<Link> link : virtualNetwork.getVirtualLinks()) {
             int sourceIndex = link.getFrom().getIndex();
             int sinkIndex = link.getTo().getIndex();
-
             travelTime.set(RealScalar.of(link.getDistance() / velocityMperS), sourceIndex, sinkIndex);
-
         }
         return travelTime;
     }
@@ -44,9 +42,8 @@ public enum LPUtils {
     /** @param tensor
      * @return the rounded vector where non-negativity and almost integer elements are required, else an exception is thrown */
     /* package */ static Tensor getRoundedRequireNonNegative(Tensor tensor) {
-        Tensor rounded = Round.of(tensor);
-        GlobalAssert.that(Chop._04.close(tensor, rounded));
-        rounded.flatten(-1).forEach(element -> Sign.requirePositiveOrZero(element.Get()));
+        Tensor rounded = getRounded(tensor);
+        rounded.flatten(-1).map(Scalar.class::cast).forEach(Sign::requirePositiveOrZero);
         return rounded;
     }
 
