@@ -1,5 +1,6 @@
 package ch.ethz.idsc.amodeus.dispatcher.util;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
@@ -8,7 +9,6 @@ import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.utils.collections.QuadTree;
-import org.matsim.core.utils.collections.QuadTree.Executor;
 import org.matsim.core.utils.collections.QuadTree.Rect;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
@@ -28,10 +28,20 @@ public class TreeMaintainer<T> {
     private final Set<T> set = new HashSet<>();
     private final Function<T, Coord> location;
 
+    /** For the Checks */
+    private final Rect outerRect;
+
     public TreeMaintainer(Network network, Function<T, Coord> location) {
         this.location = location;
         double[] networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
+        this.outerRect = new Rect(networkBounds[0], networkBounds[1], networkBounds[2], networkBounds[3]);
         tree = new QuadTree<>(networkBounds[0], networkBounds[1], networkBounds[2], networkBounds[3]);
+    }
+
+    public TreeMaintainer(double minX, double minY, double maxX, double maxY, Function<T, Coord> location) {
+        this.location = location;
+        this.outerRect = new Rect(minX, minY, maxX, maxY);
+        tree = new QuadTree<>(minX, minY, maxX, maxY);
     }
 
     /** @return closest {@link T} in tree from {@link Coord} @param coord */
@@ -66,13 +76,16 @@ public class TreeMaintainer<T> {
         return tree.size();
     }
 
-    public int inFrame(Rect bounds) {
-        return tree.getRectangle(bounds, new HashSet<>()).size();
+    public Collection<T> inFrame(Rect bounds) {
+        return tree.getRectangle(bounds, new HashSet<>());
     }
 
-    private static class DoNothingExecutor<T> implements Executor<T> {
-        @Override
-        public void execute(double x, double y, T object) {
-        }
+    public boolean contains(Coord coord) {
+        return outerRect.contains(coord.getX(), coord.getY());
     }
+
+    public Set<T> getValues() {
+        return set;
+    }
+
 }
