@@ -19,21 +19,23 @@ public class SimulationObjectCompiler {
     private final SimulationObject simulationObject;
     private final Map<String, VehicleContainer> vehicleMap = new HashMap<>();
     private final Map<String, RequestContainer> requestMap = new HashMap<>();
-    private final MatsimStaticDatabase db = MatsimStaticDatabase.INSTANCE;
+    private final MatsimAmodeusDatabase db;
 
     public static SimulationObjectCompiler create( //
-            long now, String infoLine, int total_matchedRequests) {
-        final MatsimStaticDatabase db = MatsimStaticDatabase.INSTANCE;
+            long now, String infoLine, int total_matchedRequests, //
+            MatsimAmodeusDatabase db) {
         SimulationObject simulationObject = new SimulationObject();
         simulationObject.iteration = db.getIteration();
         simulationObject.now = now;
         simulationObject.infoLine = infoLine;
         simulationObject.total_matchedRequests = total_matchedRequests;
-        return new SimulationObjectCompiler(simulationObject);
+        return new SimulationObjectCompiler(simulationObject, db);
     }
 
-    private SimulationObjectCompiler(SimulationObject simulationObject) {
+    private SimulationObjectCompiler(SimulationObject simulationObject, //
+            MatsimAmodeusDatabase db) {
         GlobalAssert.that(Objects.nonNull(simulationObject));
+        this.db = db;
         this.simulationObject = simulationObject;
     }
 
@@ -52,14 +54,27 @@ public class SimulationObjectCompiler {
     }
 
     private void insertRequest(AVRequest avRequest, RequestStatus requestStatus) {
-        RequestContainer requestContainer = RequestContainerCompiler.compile(avRequest, db, requestStatus);
-        requestMap.put(avRequest.getId().toString(), requestContainer);
+        if (requestMap.containsKey(avRequest.getId().toString())) {
+            requestMap.get(avRequest.getId().toString()).requestStatus.add(requestStatus);
+        } else {
+            RequestContainer requestContainer = RequestContainerCompiler.compile(avRequest, db, requestStatus);
+            requestMap.put(avRequest.getId().toString(), requestContainer);
+        }
     }
 
     private void insertVehicle(RoboTaxi robotaxi) {
         VehicleContainer vehicleContainer = VehicleContainerCompiler.compile(robotaxi, db);
         final String key = robotaxi.getId().toString();
         vehicleMap.put(key, vehicleContainer);
+    }
+
+    public void addRequestRoboTaxiAssoc(Map<AVRequest, RoboTaxi> map) {
+        map.entrySet().stream().forEach(e -> {
+            if (requestMap.containsKey(e.getKey().getId().toString())) {
+                requestMap.get(e.getKey().getId().toString()).associatedVehicle = //
+                        db.getVehicleIndex(e.getValue());
+            }
+        });
     }
 
     public SimulationObject compile() {

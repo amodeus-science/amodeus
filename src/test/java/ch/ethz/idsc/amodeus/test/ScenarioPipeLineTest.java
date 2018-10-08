@@ -6,15 +6,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 import org.gnu.glpk.GLPK;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.gbl.MatsimRandom;
@@ -26,13 +23,9 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.testutils.TestPreparer;
 import ch.ethz.idsc.amodeus.testutils.TestServer;
 import ch.ethz.idsc.amodeus.testutils.TestUtils;
-import ch.ethz.idsc.amodeus.traveldata.TravelDataTestHelper;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.util.math.SI;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkGet;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkIO;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
@@ -46,9 +39,6 @@ public class ScenarioPipeLineTest {
 
     private static TestPreparer testPreparer;
     private static TestServer testServer;
-    private static VirtualNetwork<Link> vNCreated;
-    private static VirtualNetwork<Link> vNSaved;
-    private static TravelDataTestHelper travelDataTestHelper;
 
     @BeforeClass
     public static void setUpOnce() throws Exception {
@@ -73,14 +63,6 @@ public class ScenarioPipeLineTest {
 
         // run scenario server
         testServer = TestServer.run().on(workingDirectory);
-
-        // prepare travel data test
-        vNCreated = VirtualNetworkGet.readDefault(testPreparer.getPreparedNetwork());
-        Map<String, Link> map = new HashMap<>();
-        testPreparer.getPreparedNetwork().getLinks().entrySet().forEach(e -> map.put(e.getKey().toString(), e.getValue()));
-        vNSaved = VirtualNetworkIO.fromByte(map, new File("resources/testComparisonFiles/virtualNetwork"));
-        travelDataTestHelper = TravelDataTestHelper.prepare(vNCreated, vNSaved);
-
     }
 
     @Test
@@ -112,27 +94,6 @@ public class ScenarioPipeLineTest {
         Population population = testPreparer.getPreparedPopulation();
         assertEquals(2000, population.getPersons().size());
 
-        // consistency of virtualNetwork
-        assertEquals(testServer.getScenarioOptions().getNumVirtualNodes(), vNCreated.getVirtualNodes().size());
-        assertEquals(vNSaved.getVirtualNodes().size(), vNCreated.getVirtualNodes().size());
-        assertEquals(vNSaved.getVirtualLinks().size(), vNCreated.getVirtualLinks().size());
-        assertEquals(vNSaved.getVirtualLink(0).getId(), vNCreated.getVirtualLink(0).getId());
-        assertEquals(vNSaved.getVirtualLink(5).getFrom().getId(), vNCreated.getVirtualLink(5).getFrom().getId());
-        assertEquals(vNSaved.getVirtualLink(6).getTo().getId(), vNCreated.getVirtualLink(6).getTo().getId());
-        assertEquals(vNSaved.getVirtualNode(0).getLinks().size(), vNCreated.getVirtualNode(0).getLinks().size());
-        assertEquals(vNSaved.getVirtualNode(1).getLinks().size(), vNCreated.getVirtualNode(1).getLinks().size());
-        assertEquals(vNSaved.getVirtualNode(2).getLinks().size(), vNCreated.getVirtualNode(2).getLinks().size());
-        assertEquals(vNSaved.getVirtualNode(3).getLinks().size(), vNCreated.getVirtualNode(3).getLinks().size());
-
-        // consistency of travelData
-        assertTrue(travelDataTestHelper.timeIntervalCheck());
-        assertTrue(travelDataTestHelper.timeStepsCheck());
-        assertTrue(travelDataTestHelper.lambdaAbsoluteCheck());
-        assertTrue(travelDataTestHelper.lambdaAbsoluteAtTimeCheck());
-        assertTrue(travelDataTestHelper.lambdaInvalidAbsoluteAtTimeCheck());
-        assertTrue(travelDataTestHelper.lambdaRateCheck());
-        assertTrue(travelDataTestHelper.lambdaRateAtTimeCheck());
-        assertTrue(travelDataTestHelper.lambdaInvalidRateAtTimeCheck());
     }
 
     @Test
@@ -153,9 +114,8 @@ public class ScenarioPipeLineTest {
         File simobj = new File("output/001/simobj/it.00");
         assertTrue(simobj.exists());
         assertEquals(109, simobj.listFiles().length);
-        assertTrue(new File(simobj, "0108000/0108000.bin").exists());
         assertTrue(new File(simobj, "0000000/0000010.bin").exists());
-
+        assertTrue(new File(simobj, "0107000/0107940.bin").exists());
     }
 
     @Test
@@ -178,37 +138,20 @@ public class ScenarioPipeLineTest {
         /** distance and occupancy ratios */
         Scalar occupancyRatio = Mean.of(ate.getDistancElement().ratios).Get(0);
         Scalar distanceRatio = Mean.of(ate.getDistancElement().ratios).Get(1);
-        // INFO with change to av-package 0.1.6-amodeus there was a minor change
-        // in this test, old value: 0.08270601851851851
-        assertEquals(0.08269814814814815, occupancyRatio.number().doubleValue(), 0.0);
-
-        // INFO with change to av-package 0.1.6-amodeus there was a minor change
-        // in this test, old value: 0.6757250816100977
-        assertEquals(0.6771498509323725, distanceRatio.number().doubleValue(), 0.0);
+        assertEquals(0.08269953703703704, occupancyRatio.number().doubleValue(), 0.0);
+        assertEquals(0.6796628382756873, distanceRatio.number().doubleValue(), 0.0);
 
         /** fleet distances */
         assertTrue(ate.getDistancElement().totalDistance >= 0.0);
-        // INFO with change to av-package 0.1.6-amodeus there was a minor change
-        // in this test, old value: 34754.7000511536
-        assertEquals(34551.22501867892, ate.getDistancElement().totalDistance, 0.0);
-
+        assertEquals(34429.271548560515, ate.getDistancElement().totalDistance, 0.0);
         assertTrue(ate.getDistancElement().totalDistanceWtCst >= 0.0);
-
-        // INFO with change to av-package 0.1.6-amodeus there was a minor change
-        // in this test, old value: 28974.040196898222
-        assertEquals(28985.51649729462, ate.getDistancElement().totalDistanceWtCst, 0.0);
+        assertEquals(28980.70185154435, ate.getDistancElement().totalDistanceWtCst, 0.0);
         assertTrue(ate.getDistancElement().totalDistancePicku > 0.0);
-
-        // INFO with change to av-package 0.1.6-amodeus there was a minor change
-        // in this test, old value: 5780.659854255442
-        assertEquals(5565.708521384286, ate.getDistancElement().totalDistancePicku, 0.0);
+        assertEquals(5448.5696970161725, ate.getDistancElement().totalDistancePicku, 0.0);
         assertTrue(ate.getDistancElement().totalDistanceRebal >= 0.0);
         assertEquals(0.0, ate.getDistancElement().totalDistanceRebal, 0.0);
         assertTrue(ate.getDistancElement().totalDistanceRatio >= 0.0);
-
-        // INFO with change to av-package 0.1.6-amodeus there was a minor change
-        // in this test, old value: 0.8336725724651016
-        assertEquals(0.8389142926661677, ate.getDistancElement().totalDistanceRatio, 0.0);
+        assertEquals(0.8417460070471933, ate.getDistancElement().totalDistanceRatio, 0.0);
         ate.getDistancElement().totalDistancesPerVehicle.flatten(-1).forEach(s -> //
         assertTrue(Scalars.lessEquals(RealScalar.ZERO, (Scalar) s)));
         assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).number().doubleValue() //
@@ -216,7 +159,7 @@ public class ScenarioPipeLineTest {
         assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).number().doubleValue() //
         == ate.getDistancElement().totalDistance);
 
-        /** waiting Times */
+        /** wait times, drive times */
         assertTrue(Scalars.lessEquals(Quantity.of(0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(2)));
         ate.getTravelTimeAnalysis().getWaitTimes().flatten(-1).forEach(t -> {
             Scalars.lessEquals(Quantity.of(0, SI.SECOND), (Scalar) t);
@@ -228,6 +171,10 @@ public class ScenarioPipeLineTest {
         assertTrue(Scalars.lessEquals(ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(0), ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(1)));
         assertTrue(Scalars.lessEquals(ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(1), ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(2)));
         assertTrue(Scalars.lessEquals(Quantity.of(0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1)));
+        assertEquals(287.18, ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1).number().doubleValue(), 0);
+        assertEquals(3261.0, ate.getTravelTimeAnalysis().getWaitAggrgte().Get(2).number().doubleValue(), 0);
+        assertEquals(892.875, ate.getTravelTimeAnalysis().getDrveAggrgte().Get(1).number().doubleValue(), 0);
+        assertEquals(3670.0, ate.getTravelTimeAnalysis().getDrveAggrgte().Get(2).number().doubleValue(), 0);
 
         /** presence of plot files */
         assertTrue((new File("output/001/data/binnedWaitingTimes.png")).exists());

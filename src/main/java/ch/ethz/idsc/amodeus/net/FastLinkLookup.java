@@ -8,10 +8,10 @@ import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.utils.collections.QuadTree;
 
 public class FastLinkLookup {
-    private final MatsimStaticDatabase db;
+    private final MatsimAmodeusDatabase db;
     private final QuadTree<Link> quadTree;
 
-    public FastLinkLookup(Network network, MatsimStaticDatabase db) {
+    public FastLinkLookup(Network network, MatsimAmodeusDatabase db) {
         this.db = db;
         final double[] networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
         quadTree = new QuadTree<>( //

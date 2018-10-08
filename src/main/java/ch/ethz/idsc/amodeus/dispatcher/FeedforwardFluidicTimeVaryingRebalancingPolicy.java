@@ -27,6 +27,7 @@ import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.lp.LPTimeVariant;
 import ch.ethz.idsc.amodeus.matsim.mod.VehicleToVSGenerator;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualLink;
@@ -74,8 +75,9 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
             AVGeneratorConfig generatorConfig, TravelTime travelTime, AVRouter router, //
             EventsManager eventsManager, Network network, VirtualNetwork<Link> virtualNetwork, //
             AbstractVirtualNodeDest abstractVirtualNodeDest, //
-            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher, TravelData travelData) {
-        super(config, avDispatcherConfig, travelTime, router, eventsManager, virtualNetwork);
+            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher, TravelData travelData, //
+            MatsimAmodeusDatabase db) {
+        super(config, avDispatcherConfig, travelTime, router, eventsManager, virtualNetwork, db);
         virtualNodeDest = abstractVirtualNodeDest;
         vehicleDestMatcher = abstractVehicleDestMatcher;
         this.network = network;
@@ -151,7 +153,7 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
          * bipartite matching */
         if (round_now % dispatchPeriod == 0) {
             printVals = bipartiteMatchingEngine.executePickup(this, getDivertableRoboTaxis(), //
-                    getAVRequests(), distanceFunction, network, false);
+                    getAVRequests(), distanceFunction, network);
         }
     }
 
@@ -185,6 +187,9 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
         @Inject
         private Config config;
 
+        @Inject
+        private MatsimAmodeusDatabase db;
+
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
             AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
@@ -193,7 +198,7 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceFunction.INSTANCE);
 
             return new FeedforwardFluidicTimeVaryingRebalancingPolicy(config, avconfig, generatorConfig, travelTime, router, eventsManager, network, virtualNetwork,
-                    abstractVirtualNodeDest, abstractVehicleDestMatcher, travelData);
+                    abstractVirtualNodeDest, abstractVehicleDestMatcher, travelData, db);
         }
     }
 }

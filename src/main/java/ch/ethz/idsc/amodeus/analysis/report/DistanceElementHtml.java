@@ -23,10 +23,11 @@ public enum DistanceElementHtml implements HtmlReportElement {
         // Aggregated Results:
         String aRKey = BodyElementKeys.AGGREGATERESULTS;
         HtmlBodyElement aRElement = new HtmlBodyElement();
+        aRElement.getHTMLGenerator();
         aRElement.getHTMLGenerator().insertTextLeft("\nDistance Ratio:" + //
                 "\nOccupancy Ratio:" + //
                 "\n" + //
-                "\n" + aRElement.getHTMLGenerator().bold("Distances") + //
+                "\n" + HtmlGenerator.bold("Distances") + //
                 "\n\tTotal:" + //
                 "\n\tRebalancing:" + //
                 "\n\tPickup:" + //

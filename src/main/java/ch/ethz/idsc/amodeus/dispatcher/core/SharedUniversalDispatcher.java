@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -28,6 +29,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationDistribution;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.net.SimulationObjectCompiler;
@@ -35,6 +37,7 @@ import ch.ethz.idsc.amodeus.net.SimulationObjects;
 import ch.ethz.idsc.amodeus.net.StorageUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
+import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 import ch.ethz.matsim.av.schedule.AVDriveTask;
@@ -45,8 +48,8 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 /** purpose of {@link SharedUniversalDispatcher} is to collect and manage
  * {@link AVRequest}s alternative implementation of {@link AVDispatcher};
  * supersedes {@link AbstractDispatcher}. */
-/** @author Nicolo Ormezzano, Lukas Sieber */
 public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer {
+    private final MatsimAmodeusDatabase db;
 
     private final FuturePathFactory futurePathFactory;
     private final Set<AVRequest> pendingRequests = new LinkedHashSet<>();
@@ -72,9 +75,10 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
             AVDispatcherConfig avDispatcherConfig, //
             TravelTime travelTime, //
             ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, //
-            EventsManager eventsManager //
-    ) {
+            EventsManager eventsManager, //
+            MatsimAmodeusDatabase db) {
         super(eventsManager, config, avDispatcherConfig);
+        this.db = db;
         futurePathFactory = new FuturePathFactory(parallelLeastCostPathCalculator, travelTime);
         pickupDurationPerStop = avDispatcherConfig.getParent().getTimingParameters().getPickupDurationPerStop();
         dropoffDurationPerStop = avDispatcherConfig.getParent().getTimingParameters().getDropoffDurationPerStop();
@@ -142,7 +146,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 
     protected final Collection<RoboTaxi> getRoboTaxisWithAtLeastXFreeSeats(int x) {
         return getDivertableRoboTaxis().stream() //
-                .filter(rt -> rt.hasAtLeastXSeatsFree(x)) //
+                .filter(rt -> rt.getCapacity() - rt.getCurrentNumberOfCustomersOnBoard() >= x) //
                 .collect(Collectors.toList());
     }
 
@@ -161,6 +165,22 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         GlobalAssert.that(roboTaxi.canPickupNewCustomer());
         GlobalAssert.that(pendingRequests.contains(avRequest));
 
+        // If the request was already assigned remove it from this vehicle in the request register and update its menu;
+        if (pickupRegister.containsKey(avRequest)) {
+            // warning: unlikely-arg-type
+            RoboTaxi oldRoboTaxi = pickupRegister.get(avRequest);
+            AVRequest val = requestRegister.get(oldRoboTaxi).remove(avRequest.getId().toString());
+            Objects.requireNonNull(val);
+
+            oldRoboTaxi.removeAVRequestFromMenu(avRequest);
+
+            if (oldRoboTaxi.getMenu().getStarterCourse() == null) {
+                Map<String, AVRequest> val2 = requestRegister.remove(oldRoboTaxi);
+                Objects.requireNonNull(val2);
+            }
+            GlobalAssert.that(oldRoboTaxi.checkMenuConsistency());
+        }
+
         if (!requestRegister.containsKey(roboTaxi)) {
             requestRegister.put(roboTaxi, new HashMap<>());
         }
@@ -168,24 +188,10 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         if (!pickupRegister.containsKey(avRequest))
             periodAssignedRequests.add(avRequest);
 
-        // If the request was already assigned remove it from this vehicle in the request register and update its menu;
-        if (pickupRegister.containsKey(avRequest)) {
-            // warning: unlikely-arg-type
-            requestRegister.get(pickupRegister.get(avRequest)).remove(avRequest.getId());
-            RoboTaxi oldRoboTaxi = pickupRegister.get(avRequest);
-            SharedCourse sharedAVCoursePickUp = SharedCourse.pickupCourse(avRequest);
-            SharedCourse sharedAVCourseDropoff = SharedCourse.dropoffCourse(avRequest);
-            GlobalAssert.that(oldRoboTaxi.getMenu().containsCourse(sharedAVCoursePickUp) && oldRoboTaxi.getMenu().containsCourse(sharedAVCoursePickUp));
-            oldRoboTaxi.getMenu().removeAVCourse(sharedAVCoursePickUp);
-            oldRoboTaxi.getMenu().removeAVCourse(sharedAVCourseDropoff);
-            GlobalAssert.that(oldRoboTaxi.checkMenuConsistency());
-        }
-
         pickupRegister.put(avRequest, roboTaxi);
         requestRegister.get(roboTaxi).put(avRequest.getId().toString(), avRequest);
+        roboTaxi.addAVRequestToMenu(avRequest);
 
-        roboTaxi.getMenu().addAVCourseAsDessert(SharedCourse.pickupCourse(avRequest));
-        roboTaxi.getMenu().addAVCourseAsDessert(SharedCourse.dropoffCourse(avRequest));
         GlobalAssert.that(roboTaxi.getMenu().getUniqueAVRequests().contains(avRequest.getId().toString()));
 
         reqStatuses.put(avRequest, RequestStatus.ASSIGNED);
@@ -230,7 +236,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
     /** Helper Function
      * 
      * @param sRoboTaxi
-     * @return The Next Link based on the menu and the request Register. */
+     * @return The Next Link based on the menu. */
     private static Link getStarterLink(RoboTaxi sRoboTaxi) {
         return sRoboTaxi.getMenu().getStarterCourse().getLink();
     }
@@ -382,6 +388,9 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 
         reqStatuses.remove(avRequest);
         total_dropedOffRequests++;
+        if (requestRegister.containsKey(roboTaxi)) {
+            GlobalAssert.that(!requestRegister.get(roboTaxi).containsKey(avRequest));
+        }
     }
 
     @Override
@@ -451,6 +460,8 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
             boolean isOk = dropoffVehicle.getSchedule().getCurrentTask() == Schedules.getLastTask(dropoffVehicle.getSchedule()); // instanceof AVDriveTask;
 
             SharedCourse currentCourse = dropoffVehicle.getMenu().getStarterCourse();
+            Objects.requireNonNull(currentCourse);
+
             AVRequest avR = requestRegister.get(dropoffVehicle).get(currentCourse.getRequestId());
 
             if (currentCourse.getMealType().equals(SharedMealType.DROPOFF) && //
@@ -472,7 +483,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
                 if (currentCourse.getMealType().equals(SharedMealType.REDIRECT)) {
                     /** search if arrived at redirect destination */
                     if (currentCourse.getLink().equals(roboTaxi.getDivertableLocation())) {
-                        roboTaxi.getMenu().removeAVCourse(0);
+                        roboTaxi.finishRedirection();
                     }
                 }
             }
@@ -534,8 +545,25 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
      * {@linksRoboTaxiMaintainer.consistencyCheck} in each iteration. */
     @Override
     protected final void consistencySubCheck() {
+        Set<AVRequest> uniqueAvRequests = new HashSet<>();
+        for (Entry<RoboTaxi, Map<String, AVRequest>> entry : requestRegister.entrySet()) {
+            for (AVRequest avRequest : entry.getValue().values()) {
+                if (uniqueAvRequests.contains(avRequest)) {
+                    System.out.println("This AV Request Occured Twice in the request Register " + avRequest.getId().toString());
+                    GlobalAssert.that(false);
+                }
+                uniqueAvRequests.add(avRequest);
+            }
+
+        }
+
         // there cannot be more pickup vehicles than open requests
         GlobalAssert.that(pickupRegister.size() <= pendingRequests.size());
+
+        // all Robotaxi in the request Register have a current course
+        requestRegister.keySet().forEach(roboTaxi -> GlobalAssert.that(roboTaxi.getMenu().getStarterCourse() != null));
+
+        requestRegister.forEach((k, v) -> GlobalAssert.that(k.getMenu().getStarterCourse() != null));
 
         // pickupRegister needs to be a subset of requestRegister
         pickupRegister.forEach((k, v) -> GlobalAssert.that(requestRegister.get(v).containsValue(k)));
@@ -571,18 +599,6 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         requestRegister.values().stream().forEach(m -> m.keySet().stream().forEach(s -> {
             uniqueRegisterRequests.add(s);
             if (!uniqueMenuRequests.contains(s)) {
-                System.out.println("=====");
-                System.out.println("s = " + s);
-                System.out.println("uniqueMenuRequests.size() " + uniqueMenuRequests.size());
-                System.out.println("uniqueMenuRequests:");
-                uniqueMenuRequests.stream().forEach(r -> {
-                    System.out.println(r);
-                });
-                System.out.println("requestRegister:");
-                requestRegister.values().stream().forEach(m2 -> m2.keySet().stream().forEach(s2 -> {
-                    System.out.println(s2);
-                }));
-
                 GlobalAssert.that(false);
             }
         }));
@@ -600,7 +616,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
     protected final void notifySimulationSubscribers(long round_now, StorageUtils storageUtils) {
         if (publishPeriod > 0 && round_now % publishPeriod == 0) {
             SimulationObjectCompiler simulationObjectCompiler = SimulationObjectCompiler.create( //
-                    round_now, getInfoLine(), total_matchedRequests);
+                    round_now, getInfoLine(), total_matchedRequests, db);
 
             simulationObjectCompiler.insertRequests(reqStatuses);
             simulationObjectCompiler.insertRequests(periodAssignedRequests, RequestStatus.ASSIGNED);
@@ -613,11 +629,21 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
             periodFulfilledRequests.clear();
             periodSubmittdRequests.clear();
 
+            /** insert {@link RoboTaxi}s */
             simulationObjectCompiler.insertVehicles(getRoboTaxis());
-            SimulationObject simulationObject = simulationObjectCompiler.compile();
+
+            /** insert information of association of {@link RoboTaxi}s and {@link AVRequest}s */
+            Map<AVRequest, RoboTaxi> map = new HashMap<>();
+            for (RoboTaxi roboTaxi : requestRegister.keySet()) {
+                for (AVRequest avr : requestRegister.get(roboTaxi).values()) {
+                    map.put(avr, roboTaxi);
+                }
+            }
+            simulationObjectCompiler.addRequestRoboTaxiAssoc(map);
 
             /** in the first pass, the vehicles are typically empty, then
              * {@link SimulationObject} is not stored or communicated */
+            SimulationObject simulationObject = simulationObjectCompiler.compile();
             if (SimulationObjects.hasVehicles(simulationObject)) {
                 SimulationDistribution.of(simulationObject, storageUtils);
             }

@@ -61,7 +61,7 @@ public enum TestFileHandling {
         /** output folder */
         File output = new File("output");
         if (output.exists())
-            FileDelete.of(output, 5, 10999);
+            FileDelete.of(output, 5, 15700);
 
     }
 

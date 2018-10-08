@@ -1,5 +1,5 @@
 /* amod - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.aido.util;
+package ch.ethz.idsc.amodeus.util.io;
 
 import java.io.File;
 import java.io.FileOutputStream;

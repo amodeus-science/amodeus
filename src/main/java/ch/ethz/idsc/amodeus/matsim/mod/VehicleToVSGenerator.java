@@ -1,8 +1,8 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.matsim.mod;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
@@ -106,7 +106,7 @@ public class VehicleToVSGenerator implements AVGenerator {
     /** Return a random {@link Link} of the according virtual station with index vNodeIndex */
     protected Link getNextLink(VirtualNode<Link> vNode) {
         Collection<Link> links = vNode.getLinks();
-        ArrayList<Link> sortedLinks = StaticHelper.getSortedLinks(links); /** needed for identical outcome with a certain random seed */
+        List<Link> sortedLinks = StaticHelper.getSortedLinks(links); /** needed for identical outcome with a certain random seed */
         int elemRand = random.nextInt(links.size());
         return sortedLinks.get(elemRand);
     }

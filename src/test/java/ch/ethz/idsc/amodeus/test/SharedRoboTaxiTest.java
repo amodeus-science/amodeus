@@ -39,6 +39,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.red.Mean;
 import ch.ethz.idsc.tensor.red.Total;
 
+// TODO Lukas add new tests in beginning and continuously for your changes
 public class SharedRoboTaxiTest {
 
     private static TestPreparer testPreparer;

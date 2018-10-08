@@ -18,24 +18,24 @@ import ch.ethz.idsc.tensor.Tensor;
 public enum TravelDataCreator {
     ;
     /** Creates the travel data by counting all travel requests and solving an LP depending on this request information */
-    public static TravelData create(VirtualNetwork<Link> virtualNetwork, Network network, Population population, ScenarioOptions scenarioOptions, int numberOfVehicles)
+    public static TravelData create(VirtualNetwork<Link> virtualNetwork, Network network, Population population, ScenarioOptions scenarioOptions, int numberOfVehicles, int endTime)
             throws Exception {
-        Tensor lambdaAbsolute = getLambdaAbsolute(network, virtualNetwork, population, scenarioOptions.getdtTravelData());
+        Tensor lambdaAbsolute = getLambdaAbsolute(network, virtualNetwork, population, scenarioOptions.getdtTravelData(), endTime);
 
-        LPSolver lp = LPPreparer.run(virtualNetwork, network, lambdaAbsolute, numberOfVehicles);
+        LPSolver lp = LPPreparer.run(virtualNetwork, network, lambdaAbsolute, numberOfVehicles, endTime);
 
         String lpName = lp.getClass().getSimpleName();
         Tensor alphaAbsolute = lp.getAlphaAbsolute_ij();
         Tensor v0_i = lp.getV0_i();
         Tensor fAbsolute = lp.getFAbsolute_ij();
 
-        return new TravelData(virtualNetwork.getvNetworkID(), lambdaAbsolute, alphaAbsolute, fAbsolute, v0_i, lpName);
+        return new TravelData(virtualNetwork.getvNetworkID(), lambdaAbsolute, alphaAbsolute, fAbsolute, v0_i, lpName, endTime);
     }
 
     /** returns the lambdaAbsolute {@link Tensor} that represents all requests in the population. E.g. lambdaAbsolute(k,i,j)=n means that n requests appear at
      * timeInterval k with departure in virtual node i and destination in virtual node j */
-    private static Tensor getLambdaAbsolute(Network network, VirtualNetwork<Link> virtualNetwork, Population population, int timeInterval) {
-        Set<Request> avRequests = PopulationTools.getAVRequests(population, network);
-        return PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(avRequests, virtualNetwork, timeInterval);
+    private static Tensor getLambdaAbsolute(Network network, VirtualNetwork<Link> virtualNetwork, Population population, int timeIntervalLength, int endTime) {
+        Set<Request> avRequests = PopulationTools.getAVRequests(population, network, endTime);
+        return PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(avRequests, virtualNetwork, timeIntervalLength, endTime);
     }
 }

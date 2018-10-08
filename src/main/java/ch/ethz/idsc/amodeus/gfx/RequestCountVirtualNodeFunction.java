@@ -3,7 +3,7 @@ package ch.ethz.idsc.amodeus.gfx;
 
 import org.matsim.api.core.v01.network.Link;
 
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.RequestContainer;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
@@ -14,7 +14,7 @@ import ch.ethz.idsc.tensor.sca.Increment;
 
 /** count requests */
 /* package */ class RequestCountVirtualNodeFunction extends AbstractVirtualNodeFunction {
-    public RequestCountVirtualNodeFunction(MatsimStaticDatabase db, VirtualNetwork<Link> virtualNetwork) {
+    public RequestCountVirtualNodeFunction(MatsimAmodeusDatabase db, VirtualNetwork<Link> virtualNetwork) {
         super(db, virtualNetwork);
     }
 

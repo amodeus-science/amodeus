@@ -14,7 +14,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatchingUtils;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
-import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
@@ -35,8 +35,9 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
 
     private GlobalBipartiteMatchingDispatcher(Network network, Config config, //
             AVDispatcherConfig avDispatcherConfig, TravelTime travelTime, //
-            AVRouter router, EventsManager eventsManager) {
-        super(config, avDispatcherConfig, travelTime, router, eventsManager);
+            AVRouter router, EventsManager eventsManager, //
+            MatsimAmodeusDatabase db) {
+        super(config, avDispatcherConfig, travelTime, router, eventsManager, db);
         DispatcherConfig dispatcherConfig = DispatcherConfig.wrap(avDispatcherConfig);
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(30);
         DistanceHeuristics distanceHeuristics = //
@@ -50,16 +51,9 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
     @Override
     public void redispatch(double now) {
         final long round_now = Math.round(now);
-
         if (round_now % dispatchPeriod == 0) {
-            printVals = bipartiteMatchingUtils.executePickup( //
-                    this, //
-                    getDivertableRoboTaxis(), //
-                    getAVRequests(), //
-                    distanceFunction, network, //
-                    /* whenever the distance function is Euclidean the kdTree reduction
-                     * should be used to enhance performance */
-                    distanceFunction.equals(EuclideanDistanceFunction.INSTANCE));
+            printVals = bipartiteMatchingUtils.executePickup(this, getDivertableRoboTaxis(), //
+                    getAVRequests(), distanceFunction, network);
         }
     }
 
@@ -86,10 +80,13 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
         @Inject
         private Config config;
 
+        @Inject
+        private MatsimAmodeusDatabase db;
+
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
             return new GlobalBipartiteMatchingDispatcher( //
-                    network, config, avconfig, travelTime, router, eventsManager);
+                    network, config, avconfig, travelTime, router, eventsManager, db);
         }
     }
 }

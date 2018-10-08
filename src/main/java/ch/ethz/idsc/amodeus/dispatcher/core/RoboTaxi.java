@@ -2,6 +2,7 @@
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.Objects;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
@@ -16,6 +17,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.data.AVVehicle;
+import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.schedule.AVDriveTask;
 import ch.ethz.matsim.av.schedule.AVDropoffTask;
 import ch.ethz.matsim.av.schedule.AVPickupTask;
@@ -40,6 +42,7 @@ public class RoboTaxi {
     private AbstractDirective directive;
 
     /** capacity > 1 fields */
+    // TODO remove this field as it is redundant information to the RoboTaxiMenu
     private int onBoardCustomers = 0;
     private final SharedMenu menu = new SharedMenu();
 
@@ -154,7 +157,7 @@ public class RoboTaxi {
     /** @return true if robotaxi is without a customer */
     /* package */ boolean isWithoutCustomer() {
         // For now this works with universal dispatcher i.e. single used robotaxis as number of customers is never changed
-        return !status.equals(RoboTaxiStatus.DRIVEWITHCUSTOMER) && onBoardCustomers == 0;
+        return !status.equals(RoboTaxiStatus.DRIVEWITHCUSTOMER) && getCurrentNumberOfCustomersOnBoard() == 0;
     }
 
     /** @return {@Schedule} of the RoboTaxi, to be used only inside core package,
@@ -239,8 +242,20 @@ public class RoboTaxi {
     }
 
     // **********************************************
-    // Shared Functionalities
+    // Shared Functionalities, needed here because of capacity
     // **********************************************
+
+    public SharedMenu getMenu() {
+        return menu;
+    }
+
+    public boolean canPickupNewCustomer() {
+        return getCurrentNumberOfCustomersOnBoard() >= 0 && getCurrentNumberOfCustomersOnBoard() < getCapacity();
+    }
+
+    public Set<String> getAVRequestIdsOnBoard() {
+        return menu.getOnBoardRequestIds();
+    }
 
     /* package */ void pickupNewCustomerOnBoard() {
         GlobalAssert.that(canPickupNewCustomer());
@@ -249,28 +264,18 @@ public class RoboTaxi {
         menu.removeAVCourse(0);
     }
 
-    public boolean canPickupNewCustomer() {
-        return onBoardCustomers >= 0 && onBoardCustomers < getCapacity();
-    }
-
     /* package */ void dropOffCustomer() {
-        GlobalAssert.that(onBoardCustomers > 0);
-        GlobalAssert.that(onBoardCustomers <= getCapacity());
+        GlobalAssert.that(getCurrentNumberOfCustomersOnBoard() > 0);
+        GlobalAssert.that(getCurrentNumberOfCustomersOnBoard() <= getCapacity());
         GlobalAssert.that(menu.getStarterCourse().getMealType().equals(SharedMealType.DROPOFF));
         onBoardCustomers--;
         menu.removeAVCourse(0);
     }
 
     public int getCurrentNumberOfCustomersOnBoard() {
+        // TODO remove onboard customers in the future this
+        GlobalAssert.that(onBoardCustomers == menu.getNumberCustomersOnBoard());
         return onBoardCustomers;
-    }
-
-    /* package */ boolean hasAtLeastXSeatsFree(int x) {
-        return getCapacity() - onBoardCustomers >= x;
-    }
-
-    public SharedMenu getMenu() {
-        return menu;
     }
 
     public boolean checkMenuConsistency() {
@@ -298,6 +303,29 @@ public class RoboTaxi {
             }
         }
         return true;
+    }
+
+    public void addAVRequestToMenu(AVRequest avRequest) {
+        menu.addAVCourseAsDessert(SharedCourse.pickupCourse(avRequest));
+        menu.addAVCourseAsDessert(SharedCourse.dropoffCourse(avRequest));
+    }
+
+    /** Removes an AV Request from the Robo Taxi Menu. This function can only be called if the Request has not been picked up
+     * 
+     * @param avRequest */
+    public void removeAVRequestFromMenu(AVRequest avRequest) {
+        SharedCourse sharedAVCoursePickUp = SharedCourse.pickupCourse(avRequest);
+        SharedCourse sharedAVCourseDropoff = SharedCourse.dropoffCourse(avRequest);
+        GlobalAssert.that(menu.containsCourse(sharedAVCoursePickUp) && menu.containsCourse(sharedAVCoursePickUp));
+        menu.removeAVCourse(sharedAVCoursePickUp);
+        menu.removeAVCourse(sharedAVCourseDropoff);
+    }
+
+    public void finishRedirection() {
+        GlobalAssert.that(menu.hasStarter());
+        GlobalAssert.that(menu.getStarterCourse().getMealType().equals(SharedMealType.REDIRECT));
+        GlobalAssert.that(menu.getStarterCourse().getLink().equals(getDivertableLocation()));
+        getMenu().removeAVCourse(0);
     }
 
 }

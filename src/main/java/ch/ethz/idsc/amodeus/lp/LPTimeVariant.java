@@ -16,7 +16,6 @@ import org.matsim.api.core.v01.network.Network;
 import ch.ethz.idsc.amodeus.dispatcher.FeedforwardFluidicTimeVaryingRebalancingPolicy;
 import ch.ethz.idsc.amodeus.options.LPOptions;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.amodeus.util.math.Magnitude;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -46,8 +45,8 @@ public class LPTimeVariant extends LPTimeVariantBase {
 
     /** @param virtualNetwork
      *            the virtual network (complete directed graph) on which the optimization is computed. */
-    public LPTimeVariant(VirtualNetwork<Link> virtualNetwork, Network network, LPOptions lpOptions, Tensor lambdaAbsolute_ij) {
-        super(virtualNetwork, network, lambdaAbsolute_ij);
+    public LPTimeVariant(VirtualNetwork<Link> virtualNetwork, Network network, LPOptions lpOptions, Tensor lambdaAbsolute_ij, int numberVehicles, int endTime) {
+        super(virtualNetwork, network, lambdaAbsolute_ij, numberVehicles, endTime);
         System.out.println("Creating time-variant LP with QueuingWeight " + lpOptions.getLPWeightQ() + " and RebalancingWeight " + lpOptions.getLPWeightR());
         weightQ = lpOptions.getLPWeightQ();
         weightR = lpOptions.getLPWeightR();
@@ -64,7 +63,8 @@ public class LPTimeVariant extends LPTimeVariantBase {
 
     @Override
     public Tensor getTimeVS_ij() {
-        // identify the travel times between the virtual stations (based on the paper with direct euclidean distance between virtual stations and velocity 30km/h)
+        // identify the travel times between the virtual stations (based on the paper with direct euclidean distance between virtual stations and velocity
+        // 30km/h)
         return LPUtils.getEuclideanTravelTimeBetweenVSCenters(virtualNetwork, LPUtils.AVERAGE_VEL);
     }
 
@@ -236,12 +236,12 @@ public class LPTimeVariant extends LPTimeVariantBase {
                         if (j == i)
                             continue;
                         // heaviside function, skip if heaviside gives 0
-                        if ((t - k) * timeInterval - wLambda_ij.Get(j, i).number().doubleValue() > 0) {
+                        if ((t - k) * timeIntervalLength - wLambda_ij.Get(j, i).number().doubleValue() > 0) {
                             index = fIDvarID.get(Arrays.asList(k, j, i));
                             GLPK.intArray_setitem(ind, index, index);
                             GLPK.doubleArray_setitem(val, index, 1);
                         }
-                        if ((t - k) * timeInterval - wAlpha_ij.Get(j, i).number().doubleValue() > 0) {
+                        if ((t - k) * timeIntervalLength - wAlpha_ij.Get(j, i).number().doubleValue() > 0) {
                             index = alphaIDvarID.get(Arrays.asList(k, j, i));
                             GLPK.intArray_setitem(ind, index, index);
                             GLPK.doubleArray_setitem(val, index, 1);
@@ -309,14 +309,13 @@ public class LPTimeVariant extends LPTimeVariantBase {
     @Override
     public void initObjCr() {
         // set C_r
-        double duration = Magnitude.SECOND.toDouble(LPUtils.DURATION);
         for (int t = 0; t < timeSteps; t++) {
             for (int i = 0; i < nvNodes; i++) {
                 for (int j = 0; j < nvNodes; j++) {
                     if (i == j)
                         continue;
                     int index = alphaIDvarID.get(Arrays.asList(t, i, j));
-                    GLPK.glp_set_obj_coef(lp, index, weightR / duration * gamma_ij.Get(i, j).number().doubleValue());
+                    GLPK.glp_set_obj_coef(lp, index, weightR / endTime * gamma_ij.Get(i, j).number().doubleValue());
                 }
             }
         }
@@ -324,7 +323,6 @@ public class LPTimeVariant extends LPTimeVariantBase {
 
     @Override
     public void initObjCq() {
-        double duration = Magnitude.SECOND.toDouble(LPUtils.DURATION);
         // set C_q (the lambdaij term can be ignored)
         for (int t = 0; t < timeSteps - 1; t++) {
             for (int i = 0; i < nvNodes; i++) {
@@ -332,7 +330,7 @@ public class LPTimeVariant extends LPTimeVariantBase {
                     if (i == j)
                         continue;
                     int index = fIDvarID.get(Arrays.asList(t, i, j));
-                    GLPK.glp_set_obj_coef(lp, index, -weightQ * timeInterval / duration * (timeSteps - t - 1));
+                    GLPK.glp_set_obj_coef(lp, index, -weightQ * timeIntervalLength / endTime * (timeSteps - t - 1));
                 }
             }
         }
@@ -350,6 +348,6 @@ public class LPTimeVariant extends LPTimeVariantBase {
             }
         }
         fAbsolute_ij = LPUtils.getRoundedRequireNonNegative(fAbsolute_ij);
-        fRate_ij = fAbsolute_ij.divide(RealScalar.of(timeInterval));
+        fRate_ij = fAbsolute_ij.divide(RealScalar.of(timeIntervalLength));
     }
 }

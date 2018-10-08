@@ -4,9 +4,20 @@ package ch.ethz.idsc.amodeus.net;
 import org.matsim.core.controler.events.IterationStartsEvent;
 import org.matsim.core.controler.listener.IterationStartsListener;
 
+import com.google.inject.Inject;
+
 /* package */ class DatabaseIterationStartsListener implements IterationStartsListener {
+    // private final MatsimStaticDatabase db;
+    //
+    // public DatabaseIterationStartsListener(MatsimStaticDatabase db) {
+    // this.db = db;
+    // }
+
+    @Inject
+    private MatsimAmodeusDatabase db;
+
     @Override
     public void notifyIterationStarts(IterationStartsEvent event) {
-        MatsimStaticDatabase.INSTANCE.setIteration(event.getIteration());
+        db.setIteration(event.getIteration());
     }
 }

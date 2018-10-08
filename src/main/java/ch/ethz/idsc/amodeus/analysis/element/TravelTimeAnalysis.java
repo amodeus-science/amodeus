@@ -8,6 +8,7 @@ import java.util.TreeMap;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifier;
 import ch.ethz.idsc.amodeus.analysis.report.TtlValIdent;
+import ch.ethz.idsc.amodeus.dispatcher.core.RStatusHelper;
 import ch.ethz.idsc.amodeus.net.RequestContainer;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.util.math.SI;
@@ -48,7 +49,7 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
         for (RequestContainer requestContainer : simulationObject.requests) {
             Integer requestIndex = Integer.valueOf(requestContainer.requestIndex);
             if (travelHistories.containsKey(requestIndex))
-                travelHistories.get(requestIndex).register(requestContainer, simulationObject.now);
+                travelHistories.get(requestIndex).register(requestContainer, Quantity.of(simulationObject.now, SI.SECOND));
             else
                 travelHistories.put(requestIndex, new TravelHistory(requestContainer, simulationObject.now));
         }
@@ -56,28 +57,34 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
          * and the number of waiting customers */
         time.append(RealScalar.of(simulationObject.now));
         Tensor submission = Tensor.of(simulationObject.requests.stream()//
-                .filter(rc -> rc.requestStatus.unServiced())//
+                .filter(rc -> RStatusHelper.unserviced(rc.requestStatus))//
                 .map(rc -> RealScalar.of(simulationObject.now - rc.submissionTime)));
         waitTimePlotValues.append(Join.of(StaticHelper.quantiles(submission, Quantiles.SET), //
                 Tensors.vector(StaticHelper.means(submission).number().doubleValue())));
         waitingCustomers.append(RationalScalar.of(simulationObject.requests.stream()//
-                .filter(rc -> rc.requestStatus.unServiced()).count(), 1));//
+                .filter(rc -> RStatusHelper.unserviced(rc.requestStatus)).count(), 1));//
 
         /** maximum time */
         tLast = Quantity.of(simulationObject.now, SI.SECOND);
+
     }
 
     @Override
     public void consolidate() {
+        /** calculate standard dropoff time. */
+        travelHistories.values().forEach(th -> th.fillNotFinishedData(tLast));
+
+        /** finish filling of travel Histories */
         for (TravelHistory travelHistory : travelHistories.values()) {
             travelTimes.appendRow(Tensors.of( //
-                    RealScalar.of(travelHistory.reqIndx), travelHistory.getWaitTime(tLast), //
-                    travelHistory.getDriveTime(tLast), travelHistory.getTotalTravelTime(tLast)));
+                    RealScalar.of(travelHistory.reqIndx), travelHistory.getWaitTime(), //
+                    travelHistory.getDriveTime(), travelHistory.getTotalTravelTime()));
             requstStmps.appendRow(Tensors.of( //
                     RealScalar.of(travelHistory.reqIndx), travelHistory.submsnTime, //
                     travelHistory.getAssignmentTime(), travelHistory.getWaitEndTime(), //
                     travelHistory.getDropOffTime()));
         }
+
         /** aggregate information {quantile1, quantile2, quantile3, mean, maximum} */
         waitTAgg = Tensors.of(StaticHelper.quantiles(getWaitTimes(), Quantiles.SET), //
                 Mean.of(getWaitTimes()), //
@@ -89,7 +96,6 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
                 Mean.of(getTotalJourneyTimes()), //
                 getTotalJourneyTimes().flatten(-1).reduce(Max::of).get().Get());
 
-        travelHistories.values().forEach(th -> th.isConsistent());
     }
 
     /** @return {@link Tensor} containing all recorded wait times of the simulation */
@@ -130,20 +136,20 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
 
     @Override
     public Map<TotalValueIdentifier, String> getTotalValues() {
-        Map<TotalValueIdentifier, String> totalValues = new HashMap<>();
-        totalValues.put(TtlValIdent.AVERAGEJOURNEYTIMEROBOTAXI, String.valueOf(Mean.of(getTotalJourneyTimes()).Get().number().doubleValue()));
+        Map<TotalValueIdentifier, String> map = new HashMap<>();
+        map.put(TtlValIdent.AVERAGEJOURNEYTIMEROBOTAXI, String.valueOf(Mean.of(getTotalJourneyTimes()).Get().number().doubleValue()));
 
         double meanWaitTime = Mean.of(getWaitTimes()).get().Get().number().doubleValue();
-        totalValues.put(TtlValIdent.WAITTMEA, String.valueOf(meanWaitTime));
+        map.put(TtlValIdent.WAITTMEA, String.valueOf(meanWaitTime));
 
         Tensor quantils = Quantile.of(getWaitTimes(), Quantiles.SET);
-        totalValues.put(TtlValIdent.WAITTQU1, String.valueOf(quantils.get(0).Get().number().doubleValue()));
-        totalValues.put(TtlValIdent.WAITTQU2, String.valueOf(quantils.get(1).Get().number().doubleValue()));
-        totalValues.put(TtlValIdent.WAITTQU3, String.valueOf(quantils.get(2).Get().number().doubleValue()));
+        map.put(TtlValIdent.WAITTQU1, String.valueOf(quantils.get(0).Get().number().doubleValue()));
+        map.put(TtlValIdent.WAITTQU2, String.valueOf(quantils.get(1).Get().number().doubleValue()));
+        map.put(TtlValIdent.WAITTQU3, String.valueOf(quantils.get(2).Get().number().doubleValue()));
 
         double meanDriveTime = Mean.of(getDriveTimes()).get().Get().number().doubleValue();
-        totalValues.put(TtlValIdent.MEANDRIVETIME, String.valueOf(meanDriveTime));
+        map.put(TtlValIdent.MEANDRIVETIME, String.valueOf(meanDriveTime));
 
-        return totalValues;
+        return map;
     }
 }

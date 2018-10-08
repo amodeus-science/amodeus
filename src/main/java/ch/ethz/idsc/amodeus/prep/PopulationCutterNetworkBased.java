@@ -7,15 +7,17 @@ import org.matsim.api.core.v01.population.Population;
 public class PopulationCutterNetworkBased implements PopulationCutterFunction {
 
     private final Network network;
+    private final int endTime;
 
-    public PopulationCutterNetworkBased(Network network) {
+    public PopulationCutterNetworkBased(Network network, int endTime) {
         this.network = network;
+        this.endTime = endTime;
     }
 
     @Override
     public void process(Population population) {
         PopulationTools.removeOutsideNetwork(population, network);
-        PopulationTools.removeOutsideDayTime(population);
+        PopulationTools.removeOutsideTimeInterval(population, endTime);
     }
 
     @Override

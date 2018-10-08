@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.matsim.api.core.v01.network.Link;
 
-import ch.ethz.idsc.amodeus.util.math.Magnitude;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Array;
@@ -16,7 +15,7 @@ import ch.ethz.idsc.tensor.alg.Dimensions;
 /** This solver is called when no LP has to be solved. alpha, f and v0_i are set to 0 matrices with the proper dimensions. */
 public class LPEmpty implements LPSolver {
     protected final int timeSteps;
-    protected final int timeInterval;
+    protected final int timeIntervalLength;
     protected Tensor alphaAbsolute_ij;
     protected Tensor alphaRate_ij;
     protected Tensor fAbsolute_ij;
@@ -29,10 +28,10 @@ public class LPEmpty implements LPSolver {
 
     /** @param virtualNetworkIn
      *            the virtual network (complete directed graph) on which the optimization is computed. */
-    public LPEmpty(VirtualNetwork<Link> virtualNetwork, Tensor lambdaAbsolute_ij) {
+    public LPEmpty(VirtualNetwork<Link> virtualNetwork, Tensor lambdaAbsolute_ij, int endTime) {
         int nvNodes = virtualNetwork.getvNodesCount();
         timeSteps = Dimensions.of(lambdaAbsolute_ij).get(0);
-        timeInterval = Magnitude.SECOND.toInt(LPUtils.DURATION) / timeSteps;
+        timeIntervalLength = endTime / timeSteps;
         alphaAbsolute_ij = Array.zeros(timeSteps, nvNodes, nvNodes);
         alphaRate_ij = Array.zeros(timeSteps, nvNodes, nvNodes);
         fAbsolute_ij = Array.zeros(timeSteps, nvNodes, nvNodes);
@@ -83,8 +82,8 @@ public class LPEmpty implements LPSolver {
     }
 
     @Override
-    public int getTimeInterval() {
-        return timeInterval;
+    public int getTimeIntervalLength() {
+        return timeIntervalLength;
     }
 
 }

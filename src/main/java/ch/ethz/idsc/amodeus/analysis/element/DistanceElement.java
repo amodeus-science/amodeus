@@ -13,6 +13,7 @@ import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifier;
 import ch.ethz.idsc.amodeus.analysis.report.TtlValIdent;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.net.VehicleContainer;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -53,11 +54,8 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
     // distRatio;
     public Tensor ratios;
 
-    // total Values for TotalValuesFile
-    private final Map<TotalValueIdentifier, String> totalValues = new HashMap<>();
-
-    public DistanceElement(int numVehicles, int size) {
-        IntStream.range(0, numVehicles).forEach(i -> list.add(new VehicleStatistic(size)));
+    public DistanceElement(int numVehicles, int size, MatsimAmodeusDatabase db) {
+        IntStream.range(0, numVehicles).forEach(i -> list.add(new VehicleStatistic(size, db)));
     }
 
     @Override
@@ -116,16 +114,17 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
                 .orElse(Array.zeros(2));
     }
 
-    @Override
+    @Override // from TotalValueAppender
     public Map<TotalValueIdentifier, String> getTotalValues() {
-        totalValues.put(TtlValIdent.TOTALROBOTAXIDISTANCE, String.valueOf(totalDistance));
-        totalValues.put(TtlValIdent.TOTALROBOTAXIDISTANCEPICKU, String.valueOf(totalDistancePicku));
-        totalValues.put(TtlValIdent.TOTALROBOTAXIDISTANCEWTCST, String.valueOf(totalDistanceWtCst));
-        totalValues.put(TtlValIdent.TOTALROBOTAXIDISTANCEREB, String.valueOf(totalDistanceRebal));
-        totalValues.put(TtlValIdent.DISTANCERATIO, String.valueOf(totalDistanceRatio));
-        totalValues.put(TtlValIdent.OCCUPANCYRATIO, String.valueOf(avgOccupancy));
-        totalValues.put(TtlValIdent.AVGTRIPDISTANCE, String.valueOf(avgTripDistance));
-        return totalValues;
+        Map<TotalValueIdentifier, String> map = new HashMap<>();
+        map.put(TtlValIdent.TOTALROBOTAXIDISTANCE, String.valueOf(totalDistance));
+        map.put(TtlValIdent.TOTALROBOTAXIDISTANCEPICKU, String.valueOf(totalDistancePicku));
+        map.put(TtlValIdent.TOTALROBOTAXIDISTANCEWTCST, String.valueOf(totalDistanceWtCst));
+        map.put(TtlValIdent.TOTALROBOTAXIDISTANCEREB, String.valueOf(totalDistanceRebal));
+        map.put(TtlValIdent.DISTANCERATIO, String.valueOf(totalDistanceRatio));
+        map.put(TtlValIdent.OCCUPANCYRATIO, String.valueOf(avgOccupancy));
+        map.put(TtlValIdent.AVGTRIPDISTANCE, String.valueOf(avgTripDistance));
+        return map;
     }
 
 }

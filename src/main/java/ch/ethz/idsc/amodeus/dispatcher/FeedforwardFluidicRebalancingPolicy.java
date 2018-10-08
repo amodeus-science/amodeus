@@ -26,6 +26,7 @@ import ch.ethz.idsc.amodeus.dispatcher.util.FeasibleRebalanceCreator;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.lp.LPTimeInvariant;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualLink;
@@ -79,8 +80,9 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
             VirtualNetwork<Link> virtualNetwork, //
             AbstractVirtualNodeDest abstractVirtualNodeDest, //
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher, //
-            TravelData travelData) {
-        super(config, avDispatcherConfig, travelTime, router, eventsManager, virtualNetwork);
+            TravelData travelData, //
+            MatsimAmodeusDatabase db) {
+        super(config, avDispatcherConfig, travelTime, router, eventsManager, virtualNetwork, db);
         virtualNodeDest = abstractVirtualNodeDest;
         vehicleDestMatcher = abstractVehicleDestMatcher;
         this.travelData = travelData;
@@ -157,7 +159,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
          * bipartite matching */
         if (round_now % dispatchPeriod == 0) {
             printVals = bipartiteMatchingEngine.executePickup(this, getDivertableRoboTaxis(), //
-                    getAVRequests(), distanceFunction, network, false);
+                    getAVRequests(), distanceFunction, network);
         }
     }
 
@@ -191,6 +193,9 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
         @Inject
         private Config config;
 
+        @Inject
+        private MatsimAmodeusDatabase db;
+
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
             AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
@@ -199,7 +204,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceFunction.INSTANCE);
 
             return new FeedforwardFluidicRebalancingPolicy(config, avconfig, generatorConfig, travelTime, router, eventsManager, network, virtualNetwork, abstractVirtualNodeDest,
-                    abstractVehicleDestMatcher, travelData);
+                    abstractVehicleDestMatcher, travelData, db);
         }
     }
 }

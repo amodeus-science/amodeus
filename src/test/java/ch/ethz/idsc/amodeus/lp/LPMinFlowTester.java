@@ -21,9 +21,13 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.testutils.TestUtils;
+import ch.ethz.idsc.amodeus.util.io.ProvideAVConfig;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
+import ch.ethz.matsim.av.config.AVConfig;
+import ch.ethz.matsim.av.config.AVGeneratorConfig;
+import ch.ethz.matsim.av.framework.AVConfigGroup;
 
 public class LPMinFlowTester {
     private static VirtualNetwork<Link> virtualNetwork2;
@@ -40,7 +44,12 @@ public class LPMinFlowTester {
         File scenarioDirectory = new File(TestUtils.getSuperFolder("amodeus"), "resources/testScenario");
         scenarioOptions = new ScenarioOptions(scenarioDirectory, ScenarioOptionsBase.getDefault());
         File configFile = new File(scenarioDirectory, scenarioOptions.getPreparerConfigName());
-        Config config = ConfigUtils.loadConfig(configFile.getAbsolutePath());
+        AVConfigGroup avCg = new AVConfigGroup();
+        Config config = ConfigUtils.loadConfig(configFile.getAbsolutePath(), avCg);
+        AVConfig avC = ProvideAVConfig.with(config, avCg);
+        AVGeneratorConfig genConfig = avC.getOperatorConfigs().iterator().next().getGeneratorConfig();
+        int numRt = (int) genConfig.getNumberOfVehicles();
+        int endTime = (int) config.qsim().getEndTime();
         Scenario scenario = ScenarioUtils.loadScenario(config);
         network = scenario.getNetwork();
         population = scenario.getPopulation();
@@ -48,17 +57,17 @@ public class LPMinFlowTester {
         // create 2 node virtual network
         scenarioOptions.setProperty(ScenarioOptionsBase.NUMVNODESIDENTIFIER, "2");
         VirtualNetworkCreator virtualNetworkCreator = scenarioOptions.getVirtualNetworkCreator();
-        virtualNetwork2 = virtualNetworkCreator.create(network, population, scenarioOptions);
+        virtualNetwork2 = virtualNetworkCreator.create(network, population, scenarioOptions, numRt, endTime);
 
         // create 3 node virtual network
         scenarioOptions.setProperty(ScenarioOptionsBase.NUMVNODESIDENTIFIER, "3");
         virtualNetworkCreator = scenarioOptions.getVirtualNetworkCreator();
-        virtualNetwork3 = virtualNetworkCreator.create(network, population, scenarioOptions);
+        virtualNetwork3 = virtualNetworkCreator.create(network, population, scenarioOptions, numRt, endTime);
 
         // create 3 node virtual network incomplete
         scenarioOptions.setProperty(ScenarioOptionsBase.COMPLETEGRAPHIDENTIFIER, "false");
         virtualNetworkCreator = scenarioOptions.getVirtualNetworkCreator();
-        virtualNetwork3incomplete = virtualNetworkCreator.create(network, population, scenarioOptions);
+        virtualNetwork3incomplete = virtualNetworkCreator.create(network, population, scenarioOptions, numRt, endTime);
     }
 
     @Test

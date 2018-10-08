@@ -26,6 +26,7 @@ import ch.ethz.idsc.amodeus.dispatcher.util.FeasibleRebalanceCreator;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.lp.LPMinFlow;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualLink;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
@@ -72,8 +73,9 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
             AVRouter router, EventsManager eventsManager, //
             Network network, VirtualNetwork<Link> virtualNetwork, //
             AbstractVirtualNodeDest abstractVirtualNodeDest, //
-            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher) {
-        super(config, avDispatcherConfig, travelTime, router, eventsManager, virtualNetwork);
+            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher, //
+            MatsimAmodeusDatabase db) {
+        super(config, avDispatcherConfig, travelTime, router, eventsManager, virtualNetwork, db);
         virtualNodeDest = abstractVirtualNodeDest;
         vehicleDestMatcher = abstractVehicleDestMatcher;
         numRobotaxi = (int) generatorConfig.getNumberOfVehicles();
@@ -177,7 +179,7 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
         /** Part II: outside rebalancing periods, permanently assign destinations to vehicles using bipartite matching */
         if (round_now % dispatchPeriod == 0) {
             printVals = bipartiteMatchingEngine.executePickup(this, getDivertableRoboTaxis(), //
-                    getAVRequests(), distanceFunction, network, false);
+                    getAVRequests(), distanceFunction, network);
         }
     }
 
@@ -208,6 +210,9 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
         @Inject
         private Config config;
 
+        @Inject
+        private MatsimAmodeusDatabase db;
+
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
             AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
@@ -218,7 +223,7 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
             return new AdaptiveRealTimeRebalancingPolicy( //
                     config, avconfig, generatorConfig, travelTime, //
                     router, eventsManager, network, virtualNetwork, //
-                    abstractVirtualNodeDest, abstractVehicleDestMatcher);
+                    abstractVirtualNodeDest, abstractVehicleDestMatcher, db);
         }
     }
 }

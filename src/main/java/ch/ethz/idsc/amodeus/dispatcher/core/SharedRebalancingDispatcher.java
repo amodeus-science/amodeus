@@ -12,6 +12,7 @@ import org.matsim.core.router.util.TravelTime;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
@@ -22,8 +23,9 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatcher {
 
     protected SharedRebalancingDispatcher(Config config, AVDispatcherConfig avDispatcherConfig, TravelTime travelTime,
-            ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, EventsManager eventsManager) {
-        super(config, avDispatcherConfig, travelTime, parallelLeastCostPathCalculator, eventsManager);
+            ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, EventsManager eventsManager, //
+            MatsimAmodeusDatabase db) {
+        super(config, avDispatcherConfig, travelTime, parallelLeastCostPathCalculator, eventsManager, db);
     }
 
     /** @param roboTaxi is rebalanced to

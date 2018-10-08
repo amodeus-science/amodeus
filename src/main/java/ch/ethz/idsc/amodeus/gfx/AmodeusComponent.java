@@ -16,8 +16,7 @@ import javax.swing.JLabel;
 
 import org.matsim.api.core.v01.Coord;
 
-import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.util.gui.GraphicsUtil;
 import ch.ethz.idsc.amodeus.view.jmapviewer.AmodeusHeatMap;
@@ -28,7 +27,7 @@ public class AmodeusComponent extends JMapViewer {
 
     /** @param db
      * @return instance of MatsimMapComponent with default sequence of {@link ViewerLayer}s */
-    public static AmodeusComponent createDefault(MatsimStaticDatabase db) {
+    public static AmodeusComponent createDefault(MatsimAmodeusDatabase db) {
         AmodeusComponent amodeusComponent = new AmodeusComponent(db);
         amodeusComponent.addLayer(new TilesLayer());
         amodeusComponent.addLayer(new VirtualNetworkLayer());
@@ -41,7 +40,7 @@ public class AmodeusComponent extends JMapViewer {
         return amodeusComponent;
     }
 
-    protected final MatsimStaticDatabase db;
+    protected final MatsimAmodeusDatabase db;
     @SuppressWarnings("unused")
     private int repaint_count = 0;
     private SimulationObject simulationObject = null;
@@ -60,7 +59,7 @@ public class AmodeusComponent extends JMapViewer {
      * use the function {@link #addLayer(ViewerLayer)} to append layers
      * 
      * @param db */
-    public AmodeusComponent(MatsimStaticDatabase db) {
+    public AmodeusComponent(MatsimAmodeusDatabase db) {
         this.db = db;
         // ---
         addMouseListener(amodeusComponentMouse);
@@ -112,8 +111,7 @@ public class AmodeusComponent extends JMapViewer {
         
 
         if (Objects.nonNull(ref)) {
-//            append("i=%-3s %s", "" + ref.iteration, new SecondsToHMS(ref.now).toDigitalWatch());
-        	append("  " + new SecondsToHMS(ref.now).toDigitalWatch());
+            append("i=%-3s %s", "" + ref.iteration, new SecondsToHMS(ref.now).toDigitalWatch());
             appendSeparator();
         }
 
@@ -132,8 +130,8 @@ public class AmodeusComponent extends JMapViewer {
             }
         });
 
-//        append("%5d zoom", getZoom());
-//        append("%5d m/pixel", (int) Math.ceil(getMeterPerPixel()));
+        append("%5d zoom", getZoom());
+        append("%5d m/pixel", (int) Math.ceil(getMeterPerPixel()));
         appendSeparator();
 
         if (Objects.nonNull(ref))
@@ -156,8 +154,7 @@ public class AmodeusComponent extends JMapViewer {
             if (infoString.message.isEmpty()) {
                 piy += height * 2 / 3;
             } else {
-//                graphics.setColor(new Color(255, 255, 255, 128));
-                graphics.setColor(Color.WHITE);
+                graphics.setColor(new Color(255, 255, 255, 128));
                 int width = fontMetrics.stringWidth(infoString.message);
                 graphics.fillRect(0, piy, pix + width + 1, height);
                 graphics.setColor(infoString.color);

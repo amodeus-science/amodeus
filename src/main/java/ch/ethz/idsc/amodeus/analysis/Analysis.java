@@ -40,7 +40,7 @@ import ch.ethz.idsc.amodeus.analysis.report.TotalValues;
 import ch.ethz.idsc.amodeus.analysis.report.TtlValIdent;
 import ch.ethz.idsc.amodeus.data.ReferenceFrame;
 import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.net.StorageSupplier;
 import ch.ethz.idsc.amodeus.net.StorageUtils;
@@ -63,12 +63,13 @@ public class Analysis {
      * @param network
      * @return
      * @throws Exception */
-    public static Analysis setup(Network network) throws Exception {
-        return setup(null, null, null, network);
+    public static Analysis setup(Network network, MatsimAmodeusDatabase db) throws Exception {
+        return setup(null, null, null, network, db);
     }
 
-    public static Analysis setup(File workingDirectory, File configFile, File outputDirectory) throws Exception {
-        return new Analysis(workingDirectory, configFile, outputDirectory, null);
+    public static Analysis setup(File workingDirectory, File configFile, //
+            File outputDirectory, MatsimAmodeusDatabase db) throws Exception {
+        return new Analysis(workingDirectory, configFile, outputDirectory, null, db);
     }
 
     /** returns an Instance of the Analysis Class can be called with any combination
@@ -89,8 +90,9 @@ public class Analysis {
      *            runtime if the Network was already loaded in a previous step (e.g.
      *            Scenario Server)
      * @throws Exception */
-    public static Analysis setup(File workingDirectory, File configFile, File outputDirectory, Network network) throws Exception {
-        return new Analysis(workingDirectory, configFile, outputDirectory, network);
+    public static Analysis setup(File workingDirectory, File configFile, File outputDirectory, //
+            Network network, MatsimAmodeusDatabase db) throws Exception {
+        return new Analysis(workingDirectory, configFile, outputDirectory, network, db);
     }
 
     // List of Analysis Elements which will be loaded
@@ -128,7 +130,8 @@ public class Analysis {
      *            Scenario Server)
      * @throws Exception */
 
-    protected Analysis(File workingDirectory, File configFile, File outputDirectory, Network network) throws Exception {
+    protected Analysis(File workingDirectory, File configFile, File outputDirectory, //
+            Network network, MatsimAmodeusDatabase db) throws Exception {
         if (Objects.isNull(workingDirectory) || !workingDirectory.isDirectory())
             workingDirectory = new File("").getCanonicalFile();
         System.out.println("workingDirectory in Analysis: " + workingDirectory.getAbsolutePath());
@@ -159,7 +162,7 @@ public class Analysis {
         dataDirectory.mkdir();
 
         // load coordinate system
-        MatsimStaticDatabase.initializeSingletonInstance(network, referenceFrame);
+        // MatsimStaticDatabase db = MatsimStaticDatabase.initialize(network, referenceFrame);
 
         // load simulation data
         StorageUtils storageUtils = new StorageUtils(outputDirectory);
@@ -169,13 +172,14 @@ public class Analysis {
         System.out.println("Found files: " + size);
         int numVehicles = storageSupplier.getSimulationObject(1).vehicles.size();
 
-        analysisSummary = new AnalysisSummary(numVehicles, size);
+        analysisSummary = new AnalysisSummary(numVehicles, size, db);
 
         // default List of Analysis Elements which will be loaded
         analysisElements.add(analysisSummary.getSimulationInformationElement());
         analysisElements.add(analysisSummary.getStatusDistribution());
         analysisElements.add(analysisSummary.getDistanceElement());
         analysisElements.add(analysisSummary.getTravelTimeAnalysis());
+        analysisElements.add(analysisSummary.getNumberPassengersAnalysis());
 
         analysisExports.add(BinnedWaitingTimesImage.INSTANCE);
         analysisExports.add(DistanceDistributionOverDayImage.INSTANCE);
@@ -240,6 +244,11 @@ public class Analysis {
             GlobalAssert.that(!allAmodeusTotalValueIdentifiers.contains(totalValueIdentifier.getIdentifier()));
         }
         totalValues.append(totalValueAppender);
+    }
+
+    @Deprecated // use the add functions and run instead! this reduces the amount of code for custom Analysis
+    public AnalysisSummary getAnalysisSummary() {
+        return analysisSummary;
     }
 
     public void run() throws Exception {
