@@ -39,9 +39,9 @@ public class TravelDataTestHelper {
         return Chop._06.close(tDSaved.getLambdaAbsoluteAtTime(1000), tDCreated.getLambdaAbsoluteAtTime(1000));
     }
 
-    public boolean lambdaInvalidAbsoluteAtTimeCheck() {
+    public boolean lambdaOutOfRangeCheck() {
         try {
-            tDCreated.getLambdaRateAtTime(24 * 3600 + 1);
+            tDCreated.getLambdaRateAtTime(30 * 3600);
         } catch (Exception e) {
             return true;
         }

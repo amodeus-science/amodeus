@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.analysis.element;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -128,11 +129,10 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
         return sharedOthersPerRequest;
     }
 
-    @Override
+    @Override // from TotalValueAppender
     public Map<TotalValueIdentifier, String> getTotalValues() {
-        Map<TotalValueIdentifier, String> totalValues = new HashMap<>();
+        // in case a map with a single entry is required, use Collections.singletonMap(...)
         // totalValues.put(TtlValIdent.AVERAGEJOURNEYTIMEROBOTAXI, String.valueOf(Mean.of(getTotalJourneyTimes()).Get().number().doubleValue()));
-
-        return totalValues;
+        return Collections.emptyMap();
     }
 }

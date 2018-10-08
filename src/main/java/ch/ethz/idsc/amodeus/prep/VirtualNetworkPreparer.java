@@ -22,9 +22,9 @@ public enum VirtualNetworkPreparer implements VirtualNetworkCreator {
     // ---
 
     @Override
-    public VirtualNetwork<Link> create(Network network, Population population, ScenarioOptions scenarioOptions, int numVehicles) {
+    public VirtualNetwork<Link> create(Network network, Population population, ScenarioOptions scenarioOptions, int numVehicles, int endTime) {
         VirtualNetworkCreator virtualNetworkCreators = scenarioOptions.getVirtualNetworkCreator();
-        VirtualNetwork<Link> virtualNetwork = virtualNetworkCreators.create(network, population, scenarioOptions, numVehicles);
+        VirtualNetwork<Link> virtualNetwork = virtualNetworkCreators.create(network, population, scenarioOptions, numVehicles, endTime);
 
         final File vnDir = new File(scenarioOptions.getVirtualNetworkName());
         System.out.println("vnDir = " + vnDir.getAbsolutePath());
@@ -39,7 +39,7 @@ public enum VirtualNetworkPreparer implements VirtualNetworkCreator {
             System.out.println("successfully converted simulation data files from in " + MultiFileTools.getWorkingDirectory());
 
             /** reading the whole travel data */
-            TravelData travelData = TravelDataCreator.create(virtualNetwork, network, population, scenarioOptions, numVehicles);
+            TravelData travelData = TravelDataCreator.create(virtualNetwork, network, population, scenarioOptions, numVehicles, endTime);
 
             File travelDataFile = new File(scenarioOptions.getVirtualNetworkName(), scenarioOptions.getTravelDataName());
             TravelDataIO.write(travelDataFile, travelData);

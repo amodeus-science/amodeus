@@ -22,12 +22,13 @@ import com.google.inject.name.Names;
 import ch.ethz.idsc.amodeus.analysis.Analysis;
 import ch.ethz.idsc.amodeus.data.LocationSpec;
 import ch.ethz.idsc.amodeus.data.ReferenceFrame;
+import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDatabaseModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDispatcherModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusVehicleGeneratorModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusVirtualNetworkModule;
 import ch.ethz.idsc.amodeus.net.DatabaseModule;
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationServer;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
@@ -107,7 +108,7 @@ public class SharedTestServer {
         population = scenario.getPopulation();
         GlobalAssert.that(scenario != null && network != null && population != null);
 
-        MatsimStaticDatabase.initializeSingletonInstance(network, referenceFrame);
+        MatsimAmodeusDatabase db = MatsimAmodeusDatabase.initialize(network, referenceFrame);
         controler = new Controler(scenario);
 
         controler.addOverridingModule(new DvrpTravelTimeModule());
@@ -116,6 +117,7 @@ public class SharedTestServer {
         controler.addOverridingModule(new AmodeusVehicleGeneratorModule());
         controler.addOverridingModule(new AmodeusDispatcherModule());
         controler.addOverridingModule(new AmodeusVirtualNetworkModule());
+        controler.addOverridingModule(new AmodeusDatabaseModule(db));
         controler.addOverridingModule(new AbstractModule() {
             @Override
             public void install() {
@@ -137,7 +139,8 @@ public class SharedTestServer {
         // close port for visualization
         SimulationServer.INSTANCE.stopAccepting();
 
-        Analysis analysis = Analysis.setup(workingDirectory, configFile, new File(workingDirectory, "output/001"), network);
+        Analysis analysis = Analysis.setup(workingDirectory, configFile, //
+                new File(workingDirectory, "output/001"), network, db);
         ate = new AnalysisTestExport();
         analysis.addAnalysisExport(ate);
         analysis.run();

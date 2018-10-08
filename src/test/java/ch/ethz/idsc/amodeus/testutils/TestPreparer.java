@@ -60,6 +60,7 @@ public class TestPreparer {
         AVConfig avC = ProvideAVConfig.with(config, avCg);
         AVGeneratorConfig genConfig = avC.getOperatorConfigs().iterator().next().getGeneratorConfig();
         int numRt = (int) genConfig.getNumberOfVehicles();
+        int endTime = (int) config.qsim().getEndTime();
 
         // 1) cut network (and reduce population to new network)
         networkPrepared = scenario.getNetwork();
@@ -71,11 +72,11 @@ public class TestPreparer {
 
         // 3) create virtual Network
         VirtualNetworkPreparer virtualNetworkPreparer = VirtualNetworkPreparer.INSTANCE;
-        VirtualNetwork<Link> virtualNetwork = virtualNetworkPreparer.create(networkPrepared, populationPrepared, scenarioOptions, numRt);
+        VirtualNetwork<Link> virtualNetwork = virtualNetworkPreparer.create(networkPrepared, populationPrepared, scenarioOptions, numRt, endTime);
 
         // 4) create TravelData
         /** reading the customer requests */
-        TravelData travelData = TravelDataCreator.create(virtualNetwork, networkPrepared, populationPrepared, scenarioOptions, numRt);
+        TravelData travelData = TravelDataCreator.create(virtualNetwork, networkPrepared, populationPrepared, scenarioOptions, numRt, endTime);
         File travelDataFile = new File(scenarioOptions.getVirtualNetworkName(), scenarioOptions.getTravelDataName());
         TravelDataIO.write(travelDataFile, travelData);
 

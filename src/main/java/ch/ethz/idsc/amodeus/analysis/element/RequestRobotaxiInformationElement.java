@@ -15,9 +15,6 @@ public class RequestRobotaxiInformationElement implements AnalysisElement, Total
     private final Set<Integer> requestIndices = new HashSet<>();
     private final Set<Integer> vehicleIndices = new HashSet<>();
 
-    // total Values for TotalValuesFile
-    private final Map<TotalValueIdentifier, String> totalValues = new HashMap<>();
-
     @Override
     public void register(SimulationObject simulationObject) {
         simulationObject.requests.stream().forEach(r -> requestIndices.add(r.requestIndex));
@@ -34,9 +31,10 @@ public class RequestRobotaxiInformationElement implements AnalysisElement, Total
 
     @Override
     public Map<TotalValueIdentifier, String> getTotalValues() {
-        totalValues.put(TtlValIdent.TOTALREQUESTS, String.valueOf(reqsize()));
-        totalValues.put(TtlValIdent.TOTALVEHICLES, String.valueOf(vehicleSize()));
-        return totalValues;
+        Map<TotalValueIdentifier, String> map = new HashMap<>();
+        map.put(TtlValIdent.TOTALREQUESTS, String.valueOf(reqsize()));
+        map.put(TtlValIdent.TOTALVEHICLES, String.valueOf(vehicleSize()));
+        return map;
     }
 
 }

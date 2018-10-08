@@ -3,7 +3,7 @@ package ch.ethz.idsc.amodeus.data;
 
 import org.matsim.api.core.v01.Coord;
 
-/** the location spec help to make the ScenarioViewer
+/** the location spec helps to make the ScenarioViewer
  * zoom in on the correct location in the map. */
 public interface LocationSpec {
     /** @return reference frame of simulation */
