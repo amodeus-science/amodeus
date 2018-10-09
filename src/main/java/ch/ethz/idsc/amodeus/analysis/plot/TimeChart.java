@@ -68,17 +68,17 @@ public enum TimeChart {
             timechart.getXYPlot().getRangeAxis().setRange(maxRange[0], maxRange[1]);
         }
 
-        timechart.getPlot().setBackgroundPaint(Color.white);
-        timechart.getXYPlot().setRangeGridlinePaint(Color.lightGray);
-        timechart.getXYPlot().setDomainGridlinePaint(Color.lightGray);
+        timechart.getPlot().setBackgroundPaint(Color.WHITE);
+        timechart.getXYPlot().setRangeGridlinePaint(Color.LIGHT_GRAY);
+        timechart.getXYPlot().setDomainGridlinePaint(Color.LIGHT_GRAY);
 
         /** line thickness */
-        for (int k = 0; k < time.length(); k++) {
+        for (int k = 0; k < time.length(); ++k) {
             timechart.getXYPlot().getRenderer().setSeriesStroke(k, new BasicStroke(2.0f));
         }
 
         /** color themes, adapt colors & style */
-        for (int i = 0; i < labels.length; i++) {
+        for (int i = 0; i < labels.length; ++i) {
             timechart.getXYPlot().getRenderer().setSeriesPaint(i, colorDataIndexed.getColor(i));
         }
 

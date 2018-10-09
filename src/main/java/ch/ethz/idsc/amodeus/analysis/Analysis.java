@@ -26,7 +26,7 @@ import ch.ethz.idsc.amodeus.analysis.element.TravelTimeExport;
 import ch.ethz.idsc.amodeus.analysis.element.WaitTimeHtml;
 import ch.ethz.idsc.amodeus.analysis.element.WaitingCustomerExport;
 import ch.ethz.idsc.amodeus.analysis.plot.ChartTheme;
-import ch.ethz.idsc.amodeus.analysis.plot.ColorDataListsAmodeus;
+import ch.ethz.idsc.amodeus.analysis.plot.ColorDataAmodeus;
 import ch.ethz.idsc.amodeus.analysis.report.AnalysisReport;
 import ch.ethz.idsc.amodeus.analysis.report.DistanceElementHtml;
 import ch.ethz.idsc.amodeus.analysis.report.FleetEfficiencyHtml;
@@ -38,7 +38,6 @@ import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifier;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValues;
 import ch.ethz.idsc.amodeus.analysis.report.TtlValIdent;
-import ch.ethz.idsc.amodeus.data.ReferenceFrame;
 import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
@@ -137,7 +136,6 @@ public class Analysis {
             workingDirectory = new File("").getCanonicalFile();
         System.out.println("workingDirectory in Analysis: " + workingDirectory.getAbsolutePath());
         ScenarioOptions scenOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
-        ReferenceFrame referenceFrame = scenOptions.getLocationSpec().referenceFrame();
         if (configFile == null || !configFile.isFile())
             configFile = new File(workingDirectory, scenOptions.getSimulationConfigName());
         if (outputDirectory == null || !outputDirectory.isDirectory()) {
@@ -151,7 +149,8 @@ public class Analysis {
         }
 
         // load colorScheme & theme
-        colorDataIndexed = ColorDataListsAmodeus.valueOf(scenOptions.getColorScheme());
+        colorDataIndexed = ColorDataAmodeus.indexed(scenOptions.getColorScheme());
+
         chartTheme = ChartTheme.valueOf(scenOptions.getChartTheme());
 
         ChartFactory.setChartTheme(chartTheme.getChartTheme(false));
