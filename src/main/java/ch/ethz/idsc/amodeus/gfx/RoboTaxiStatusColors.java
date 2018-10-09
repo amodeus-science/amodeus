@@ -9,10 +9,10 @@ import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
 /** color schemes for RoboTaxiStatus */
 public enum RoboTaxiStatusColors {
-    Standard(ColorDataAmodeusSpecific.STANDARD.strict()), //
-    Mild(ColorDataAmodeusSpecific.MILD.strict()), //
+    Standard(ColorDataAmodeusSpecific.STANDARD.cyclic()), //
+    Mild(ColorDataAmodeusSpecific.MILD.cyclic()), //
     /*** New poppy color set */
-    Pop(ColorDataAmodeusSpecific.POP.strict()), //
+    Pop(ColorDataAmodeusSpecific.POP.cyclic()), //
     ;
 
     private final ColorDataIndexed colorDataIndexed;

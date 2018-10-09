@@ -47,7 +47,6 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
-import ch.ethz.idsc.tensor.img.ColorDataLists;
 
 public class Analysis {
     /** Use this method to create an standalone Analysis with all the default values
@@ -150,13 +149,7 @@ public class Analysis {
         }
 
         // load colorScheme & theme
-        ColorDataIndexed colorDataIndexed = ColorDataLists._097.cyclic();
-        try {
-            colorDataIndexed = ColorDataAmodeus.valueOf(scenOptions.getColorScheme());
-        } catch (Exception exception) {
-            System.err.println(exception.getMessage());
-        }
-        this.colorDataIndexed = colorDataIndexed;
+        colorDataIndexed = ColorDataAmodeus.indexed(scenOptions.getColorScheme());
 
         chartTheme = ChartTheme.valueOf(scenOptions.getChartTheme());
 

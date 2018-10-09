@@ -1,45 +1,40 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.analysis.plot;
 
-import java.awt.Color;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
-import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.img.ColorDataLists;
 
-// TODO make a map that lookups CDI
-public enum ColorDataAmodeus implements ColorDataIndexed {
-    NONE(ColorDataAmodeusSpecific.NONE.strict()), //
-    COLORFUL(ColorDataAmodeusSpecific.COLORFUL.strict()), //
-    STANDARD(ColorDataAmodeusSpecific.STANDARD.strict()), //
-    POP(ColorDataAmodeusSpecific.POP.strict()), //
-    MILD(ColorDataAmodeusSpecific.MILD.strict()), //
-    LONG(ColorDataLists._097.cyclic());
-
-    private final ColorDataIndexed colorDataIndexed;
-
-    private ColorDataAmodeus(ColorDataIndexed colorDataIndexed) {
-        this.colorDataIndexed = colorDataIndexed;
+public enum ColorDataAmodeus {
+    INSTANCE;
+    // ---
+    public static ColorDataIndexed indexed(String name) {
+        ColorDataIndexed colorDataIndexed = INSTANCE.map.get(normalize(name));
+        if (Objects.isNull(colorDataIndexed))
+            return ColorDataAmodeusSpecific.COLORFUL.cyclic();
+        return colorDataIndexed;
     }
 
-    @Override
-    public Tensor apply(Scalar t) {
-        return colorDataIndexed.apply(t);
+    private final Map<String, ColorDataIndexed> map = new HashMap<>();
+
+    private ColorDataAmodeus() {
+        for (ColorDataLists colorDataLists : ColorDataLists.values())
+            put(colorDataLists.name(), colorDataLists.cyclic());
+
+        for (ColorDataAmodeusSpecific colorDataAmodeusSpecific : ColorDataAmodeusSpecific.values())
+            put(colorDataAmodeusSpecific.name(), colorDataAmodeusSpecific.cyclic());
     }
 
-    @Override
-    public Color getColor(int index) {
-        return colorDataIndexed.getColor(index);
+    private void put(String name, ColorDataIndexed colorDataIndexed) {
+        map.put(normalize(name), colorDataIndexed);
     }
 
-    @Override
-    public Color rescaled(double value) {
-        return colorDataIndexed.rescaled(value);
-    }
-
-    @Override
-    public ColorDataIndexed deriveWithAlpha(int alpha) {
-        return colorDataIndexed.deriveWithAlpha(alpha);
+    private static String normalize(String name) {
+        if (name.charAt(0) == '_')
+            return normalize(name.substring(1));
+        return name.toUpperCase();
     }
 }

@@ -3,7 +3,7 @@ package ch.ethz.idsc.amodeus.analysis.plot;
 
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
-import ch.ethz.idsc.tensor.img.StrictColorDataIndexed;
+import ch.ethz.idsc.tensor.img.CyclicColorDataIndexed;
 import ch.ethz.idsc.tensor.io.ResourceData;
 
 public enum ColorDataAmodeusSpecific {
@@ -14,10 +14,10 @@ public enum ColorDataAmodeusSpecific {
     MILD, //
     ;
     private final Tensor tensor = ResourceData.of(StaticHelperColor.colorlist(name()));
-    private final ColorDataIndexed colorDataIndexed = StrictColorDataIndexed.create(tensor);
+    private final ColorDataIndexed colorDataIndexed = CyclicColorDataIndexed.create(tensor);
 
     /** @return */
-    public ColorDataIndexed strict() {
+    public ColorDataIndexed cyclic() {
         return colorDataIndexed;
     }
 
