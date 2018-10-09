@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.analysis.plot;
 
 import java.awt.Color;
@@ -7,18 +8,18 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.img.ColorDataLists;
 
-public enum ColorDataListsAmodeus implements ColorDataIndexed{
-    NONE(ColorDataListAmodeusSpecific._none.strict()), //
-    COLORFULL(ColorDataListAmodeusSpecific._colorfull.strict()), //
-    STANDARD(ColorDataListAmodeusSpecific._standard.strict()), //
-    POP(ColorDataListAmodeusSpecific._pop.strict()), //
-    MILD(ColorDataListAmodeusSpecific._mild.strict()), //
-    LONG(ColorDataLists._097.cyclic())
-    ;
-    
+// TODO make a map that lookups CDI
+public enum ColorDataAmodeus implements ColorDataIndexed {
+    NONE(ColorDataAmodeusSpecific.NONE.strict()), //
+    COLORFUL(ColorDataAmodeusSpecific.COLORFUL.strict()), //
+    STANDARD(ColorDataAmodeusSpecific.STANDARD.strict()), //
+    POP(ColorDataAmodeusSpecific.POP.strict()), //
+    MILD(ColorDataAmodeusSpecific.MILD.strict()), //
+    LONG(ColorDataLists._097.cyclic());
+
     private final ColorDataIndexed colorDataIndexed;
 
-    private ColorDataListsAmodeus(ColorDataIndexed colorDataIndexed) {
+    private ColorDataAmodeus(ColorDataIndexed colorDataIndexed) {
         this.colorDataIndexed = colorDataIndexed;
     }
 
