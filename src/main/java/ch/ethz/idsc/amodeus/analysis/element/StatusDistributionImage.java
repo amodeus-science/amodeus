@@ -5,8 +5,8 @@ import java.io.File;
 import java.util.Arrays;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
-import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
 import ch.ethz.idsc.amodeus.analysis.plot.StackedTimeChart;
+import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
 public enum StatusDistributionImage implements AnalysisExport {
     INSTANCE;
@@ -14,7 +14,7 @@ public enum StatusDistributionImage implements AnalysisExport {
     public static final String FILENAME = "statusDistribution";
 
     @Override
-    public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorScheme colorScheme) {
+    public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
         String[] statusLabels = StaticHelper.descriptions();
         StatusDistributionElement st = analysisSummary.getStatusDistribution();
 
@@ -32,7 +32,7 @@ public enum StatusDistributionImage implements AnalysisExport {
                     "RoboTaxis", //
                     st.time, //
                     st.statusTensor, //
-                    colorScheme);
+                    colorDataIndexed);
         } catch (Exception e1) {
             System.err.println("The Modular status dist with Tensor was not carried out!!");
             e1.printStackTrace();

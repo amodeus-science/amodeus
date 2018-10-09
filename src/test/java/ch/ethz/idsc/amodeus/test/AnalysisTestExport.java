@@ -9,7 +9,7 @@ import ch.ethz.idsc.amodeus.analysis.element.DistanceElement;
 import ch.ethz.idsc.amodeus.analysis.element.RequestRobotaxiInformationElement;
 import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionElement;
 import ch.ethz.idsc.amodeus.analysis.element.TravelTimeAnalysis;
-import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
+import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
 public class AnalysisTestExport implements AnalysisExport {
 
@@ -19,7 +19,7 @@ public class AnalysisTestExport implements AnalysisExport {
     private TravelTimeAnalysis travelTimeAnalysis;
 
     @Override
-    public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorScheme colorScheme) {
+    public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
         simulationInformationElement = analysisSummary.getSimulationInformationElement();
         statusDistribution = analysisSummary.getStatusDistribution();
         distanceElement = analysisSummary.getDistanceElement();

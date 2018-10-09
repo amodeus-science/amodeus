@@ -18,6 +18,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Dimensions;
+import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
 public enum HistogramPlot {
     ;
@@ -35,7 +36,7 @@ public enum HistogramPlot {
      * @throws Exception */
     public static File of(Tensor bins, File directory, String filename, String diagramTitle, //
             double binSize, String axisLabelY, String axisLabelX, //
-            int imageWidth, int imageHeight, ColorScheme colorScheme, String... labels) throws Exception {
+            int imageWidth, int imageHeight, ColorDataIndexed colorDataIndexed, String... labels) throws Exception {
 
         // if input Tensor is vector, convert to tensor
         List<Integer> dim = Dimensions.of(bins);
@@ -73,8 +74,8 @@ public enum HistogramPlot {
 
         // Adapt colors & style
         for (int i = 0; i < dim.size(); i++) {
-            chart.getCategoryPlot().getRenderer().setSeriesPaint(i, colorScheme.of(i));
-            chart.getCategoryPlot().getRenderer().setSeriesOutlinePaint(i, colorScheme.of(i).darker());
+            chart.getCategoryPlot().getRenderer().setSeriesPaint(i, colorDataIndexed.getColor(i));
+            chart.getCategoryPlot().getRenderer().setSeriesOutlinePaint(i, colorDataIndexed.getColor(i).darker());
             chart.getCategoryPlot().getRenderer().setSeriesOutlineStroke(i, new BasicStroke(1.0f));
         }
 

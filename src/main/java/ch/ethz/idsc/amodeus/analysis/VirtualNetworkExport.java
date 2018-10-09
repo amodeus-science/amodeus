@@ -7,17 +7,17 @@ import java.io.IOException;
 import com.google.common.io.Files;
 
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
-import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
 public enum VirtualNetworkExport implements AnalysisExport {
     INSTANCE;
 
     @Override
-    public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorScheme colorScheme) {
+    public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
         File workingDirectory = null;
         try {
             workingDirectory = MultiFileTools.getWorkingDirectory();
