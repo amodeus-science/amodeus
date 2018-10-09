@@ -17,6 +17,7 @@ import org.jfree.ui.RectangleEdge;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Transpose;
+import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
 public enum TimeChart {
     ;
@@ -39,7 +40,7 @@ public enum TimeChart {
     public static void of(File directory, String fileTitle, String diagramTitle, //
             boolean filter, int filterSize, double[] scale, //
             String[] labels, String xAxisLabel, String yAxisLabel, Tensor time, Tensor values, //
-            Double[] maxRange, ColorScheme colorScheme) throws Exception {
+            Double[] maxRange, ColorDataIndexed colorDataIndexed) throws Exception {
 
         GlobalAssert.that(time.length() == values.length());
         GlobalAssert.that(Transpose.of(values).length() == labels.length);
@@ -78,7 +79,7 @@ public enum TimeChart {
 
         /** color themes, adapt colors & style */
         for (int i = 0; i < labels.length; i++) {
-            timechart.getXYPlot().getRenderer().setSeriesPaint(i, colorScheme.of(i));
+            timechart.getXYPlot().getRenderer().setSeriesPaint(i, colorDataIndexed.getColor(i));
         }
 
         LegendTitle legend = new LegendTitle(timechart.getXYPlot().getRenderer());

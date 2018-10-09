@@ -3,16 +3,16 @@ package ch.ethz.idsc.amodeus.gfx;
 
 import java.awt.Color;
 
-import ch.ethz.idsc.amodeus.analysis.plot.ColorDataListAmodeus;
+import ch.ethz.idsc.amodeus.analysis.plot.ColorDataListAmodeusSpecific;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
 /** color schemes for RoboTaxiStatus */
 public enum RoboTaxiStatusColors {
-    Standard(ColorDataListAmodeus._standard.strict()), //
-    Mild(ColorDataListAmodeus._mild.strict()), //
+    Standard(ColorDataListAmodeusSpecific._standard.strict()), //
+    Mild(ColorDataListAmodeusSpecific._mild.strict()), //
     /*** New poppy color set */
-    Pop(ColorDataListAmodeus._pop.strict()), //
+    Pop(ColorDataListAmodeusSpecific._pop.strict()), //
     ;
 
     private final ColorDataIndexed colorDataIndexed;

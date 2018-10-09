@@ -5,7 +5,7 @@ import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.img.StrictColorDataIndexed;
 import ch.ethz.idsc.tensor.io.ResourceData;
 
-public enum ColorDataListAmodeus {
+public enum ColorDataListAmodeusSpecific {
     _colorfull, //
     _none, //
     _standard, //

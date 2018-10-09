@@ -26,7 +26,7 @@ import ch.ethz.idsc.amodeus.analysis.element.TravelTimeExport;
 import ch.ethz.idsc.amodeus.analysis.element.WaitTimeHtml;
 import ch.ethz.idsc.amodeus.analysis.element.WaitingCustomerExport;
 import ch.ethz.idsc.amodeus.analysis.plot.ChartTheme;
-import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
+import ch.ethz.idsc.amodeus.analysis.plot.ColorDataListsAmodeus;
 import ch.ethz.idsc.amodeus.analysis.report.AnalysisReport;
 import ch.ethz.idsc.amodeus.analysis.report.DistanceElementHtml;
 import ch.ethz.idsc.amodeus.analysis.report.FleetEfficiencyHtml;
@@ -47,6 +47,7 @@ import ch.ethz.idsc.amodeus.net.StorageUtils;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
 public class Analysis {
     /** Use this method to create an standalone Analysis with all the default values
@@ -107,7 +108,7 @@ public class Analysis {
     private final AnalysisSummary analysisSummary;
     private final HtmlReport htmlReport;
     private final TotalValues totalValues;
-    private final ColorScheme colorScheme;
+    private final ColorDataIndexed colorDataIndexed;
     private final ChartTheme chartTheme;
     private final Set<String> allAmodeusTotalValueIdentifiers = TtlValIdent.getAllIdentifiers();
 
@@ -150,7 +151,7 @@ public class Analysis {
         }
 
         // load colorScheme & theme
-        colorScheme = ColorScheme.valueOf(scenOptions.getColorScheme());
+        colorDataIndexed = ColorDataListsAmodeus.valueOf(scenOptions.getColorScheme());
         chartTheme = ChartTheme.valueOf(scenOptions.getChartTheme());
 
         ChartFactory.setChartTheme(chartTheme.getChartTheme(false));
@@ -264,7 +265,7 @@ public class Analysis {
         analysisElements.forEach(AnalysisElement::consolidate);
 
         for (AnalysisExport analysisExport : analysisExports)
-            analysisExport.summaryTarget(analysisSummary, dataDirectory, colorScheme);
+            analysisExport.summaryTarget(analysisSummary, dataDirectory, colorDataIndexed);
 
         /** generate reports */
         analysisReports.forEach(analysisReport -> analysisReport.generate(analysisSummary));
