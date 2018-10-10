@@ -20,6 +20,7 @@ public class SharedCourse {
         return new SharedCourse(avRequest.getId().toString(), avRequest.getToLink(), SharedMealType.DROPOFF);
     }
 
+    // FIXME Whats the meaning of this ID? maype null might be a possibility as it is ment for the AV Request. 
     public static SharedCourse redirectCourse(Link link, String id) {
         return new SharedCourse(id, link, SharedMealType.REDIRECT);
     }

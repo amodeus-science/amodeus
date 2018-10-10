@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared;
 
+import java.awt.Menu;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -84,27 +85,27 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
                     /** add pickup for request 2 and move to first location */
                     addSharedRoboTaxiPickup(sharedRoboTaxi, secondRequest);
                     SharedCourse sharedAVCourse = SharedCourse.pickupCourse(secondRequest);
-                    sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse);
+                    sharedRoboTaxi.moveAVCourseToPrev(sharedAVCourse);
 
                     /** add pickup for request 3 and move to first location */
                     addSharedRoboTaxiPickup(sharedRoboTaxi, thirdRequest);
                     SharedCourse sharedAVCourse3 = SharedCourse.pickupCourse(thirdRequest);
-                    sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse3);
-                    sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse3);
+                    sharedRoboTaxi.moveAVCourseToPrev(sharedAVCourse3);
+                    sharedRoboTaxi.moveAVCourseToPrev(sharedAVCourse3);
 
                     /** add pickup for request 4 and move to first location */
                     addSharedRoboTaxiPickup(sharedRoboTaxi, fourthRequest);
                     SharedCourse sharedAVCourse4 = SharedCourse.pickupCourse(fourthRequest);
-                    sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse4);
-                    sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse4);
-                    sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse4);
+                    sharedRoboTaxi.moveAVCourseToPrev(sharedAVCourse4);
+                    sharedRoboTaxi.moveAVCourseToPrev(sharedAVCourse4);
+                    sharedRoboTaxi.moveAVCourseToPrev(sharedAVCourse4);
 
                     /** add a redirect task (to the north pole) and move to prev */
                     Link redirectLink = cityNorthPole;
                     SharedCourse redirectCourse = SharedCourse.redirectCourse(redirectLink, //
                             Double.toString(now) + sharedRoboTaxi.getId().toString());
                     addSharedRoboTaxiRedirect(sharedRoboTaxi, redirectCourse);
-                    sharedRoboTaxi.getMenu().moveAVCourseToPrev(redirectCourse);
+                    sharedRoboTaxi.moveAVCourseToPrev(redirectCourse);
 
                     /** check consistency and end */
                     sharedRoboTaxi.checkMenuConsistency();

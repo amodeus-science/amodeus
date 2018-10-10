@@ -34,7 +34,7 @@ public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatc
         GlobalAssert.that(roboTaxi.isWithoutCustomer());
         /** clear menu and put requests back to pending requests */
         cleanAndAbondon(roboTaxi);
-        GlobalAssert.that(!roboTaxi.getMenu().hasStarter());
+        GlobalAssert.that(!roboTaxi.getCopyOfMenu().hasStarter());
         setRoboTaxiDiversion(roboTaxi, destination, RoboTaxiStatus.REBALANCEDRIVE);
         eventsManager.processEvent(RebalanceVehicleEvent.create(getTimeNow(), roboTaxi, destination));
     }
@@ -43,7 +43,7 @@ public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatc
      * the course can be moved to another position in the {@link SharedMenu} of the {@link} RoboTaxi */
     protected static void addSharedRoboTaxiRedirect(RoboTaxi roboTaxi, SharedCourse redirectCourse) {
         GlobalAssert.that(redirectCourse.getMealType().equals(SharedMealType.REDIRECT));
-        roboTaxi.getMenu().addAVCourseAsDessert(redirectCourse);
+        roboTaxi.addRedirectCourseToMenu(redirectCourse);
     }
 
     /** @return {@link List } of all {@link RoboTaxi} which are currently rebalancing. */

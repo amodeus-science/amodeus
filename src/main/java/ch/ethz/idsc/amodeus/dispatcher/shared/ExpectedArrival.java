@@ -38,11 +38,11 @@ public enum ExpectedArrival {
      *         time for completion of the {@link SharedCourse} */
     public static Map<String, Scalar> of(RoboTaxi roboTaxi, double now, AVRouter router) {
         Map<String, Scalar> expDropoff = new HashMap<>();
-        SharedMenu menu = roboTaxi.getMenu();
+        SharedMenu menu = roboTaxi.getCopyOfMenu();
         Scalar time = Quantity.of(now, SI.SECOND);
         Link linkCurr = roboTaxi.getDivertableLocation();
         boolean failFlag = false;
-        for (SharedCourse course : menu.getCourses()) {
+        for (SharedCourse course : menu.getRoboTaxiMenu()) {
             Scalar timeTo = timeFromTo(linkCurr, course.getLink(), time, roboTaxi, router);
             if (Objects.isNull(timeTo))
                 failFlag = true;

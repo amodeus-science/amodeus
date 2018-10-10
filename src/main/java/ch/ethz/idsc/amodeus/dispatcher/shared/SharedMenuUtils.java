@@ -4,20 +4,46 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+
 /** This class covers the static functions on a Shared Menu.
  * 
  * @author Lukas Sieber */
 public enum SharedMenuUtils {
     ;
 
-
+    // **************************************************
+    // Get Functions
+    // **************************************************
+    /** Gets the next course of the menu.
+     * 
+     * @return */
+    public static SharedCourse getStarterCourse(SharedMenu sharedMenu) {
+        GlobalAssert.that(hasStarter(sharedMenu));
+        return sharedMenu.getRoboTaxiMenu().get(0);
+    }    
+    
     // **************************************************
     // Check Menus
     // **************************************************
-    public static boolean containSamecourses(SharedMenu sharedMenu1, SharedMenu sharedMenu2) {
-        
+    public static boolean containSameCourses(SharedMenu sharedMenu1, SharedMenu sharedMenu2) {
+        return sharedMenu1.getRoboTaxiMenu().size() == sharedMenu2.getRoboTaxiMenu().size() && //
+                sharedMenu1.getRoboTaxiMenu().containsAll(sharedMenu2.getRoboTaxiMenu());
+    }
+    
+    public static boolean checkAllCoursesAppearOnlyOnce(SharedMenu sharedMenu) {
+        return SharedCourseListUtils.checkAllCoursesAppearOnlyOnce(sharedMenu.getRoboTaxiMenu());
     }
 
+    public static boolean checkNoPickupAfterDropoffOfSameRequest(SharedMenu sharedMenu) {
+        return SharedCourseListUtils.checkNoPickupAfterDropoffOfSameRequest(sharedMenu.getRoboTaxiMenu());
+    }
+    
+    /** @return true if the menu has entries */
+    public static boolean hasStarter(SharedMenu sharedMenu) {
+        return !sharedMenu.getRoboTaxiMenu().isEmpty();
+    }
+    
     // **************************************************
     // ADDING COURSES
     // **************************************************
@@ -30,7 +56,6 @@ public enum SharedMenuUtils {
     }
 
     public static SharedMenu addAVCourseAtIndex(SharedMenu sharedMenu, SharedCourse avCourse, int courseIndex) {
-        // TODO implement it as well with an Apply function
         List<SharedCourse> list = sharedMenu.getModifiableCopyOfMenu();
         SharedCourseListUtils.addAVCourseAtIndex(list, avCourse, courseIndex);
         return SharedMenu.of(list);

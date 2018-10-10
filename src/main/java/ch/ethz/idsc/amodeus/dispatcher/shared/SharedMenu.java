@@ -3,49 +3,61 @@ package ch.ethz.idsc.amodeus.dispatcher.shared;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 /** Object containing list of shared Courses (pickup, dropoff, rebalance) planned
- * for an RoboTaxi.  If the menu */
+ * for an RoboTaxi. If the menu */
 public class SharedMenu {
-    /**
-     * Unmodifiable List of Shared Courses
-     */
+    /** Unmodifiable List of Shared Courses */
     private final List<SharedCourse> roboTaxiMenu;
 
+    /** Creates a Shared Menu which is consistent in itself (e.g. no coureses appear twice, for each request it is secured that the dropoff happens after the pickup
+     * 
+     * @param list
+     * @return */
     public static SharedMenu of(List<SharedCourse> list) {
-        // TODO check Consistency of the menu
+        GlobalAssert.that(SharedCourseListUtils.consistencyCheck(list));
         return new SharedMenu(list);
     }
 
+    public static SharedMenu empty() {
+        return new SharedMenu(null);
+    }
     private SharedMenu(List<SharedCourse> list) {
-        roboTaxiMenu = Collections.unmodifiableList((Objects.isNull(list))? new ArrayList<>(): list);
+        roboTaxiMenu = Collections.unmodifiableList((Objects.isNull(list)) ? new ArrayList<>() : list);
     }
 
+    /** Two ways how to get the Courses in the Menu:
+     * this function returns an unmodifiable view of the menu.
+     * 
+     * @return */
     public List<SharedCourse> getRoboTaxiMenu() {
         return roboTaxiMenu;
     }
 
+    /** Two ways how to get the Courses in the Menu:
+     * this function returns an deep copy of the courses in the menu.
+     * 
+     * @return */
     public List<SharedCourse> getModifiableCopyOfMenu() {
         return SharedCourseListUtils.copy(roboTaxiMenu);
     }
-    
-    /** Gets the next course of the menu.
-     * 
-     * @return */
-    public Optional<SharedCourse> getStarterCourse() {
-        return Optional.ofNullable(roboTaxiMenu.get(0));
+
+    /** Two exeptions for convinience might be removed and all the Functions substidized with The Utils Classes */
+
+    /** @return The next Course of the Menu */
+    public SharedCourse getStarterCourse() {
+        return SharedMenuUtils.getStarterCourse(this);
     }
 
     /** @return true if the menu has entries */
     public boolean hasStarter() {
-        return !roboTaxiMenu.isEmpty();
+        return SharedMenuUtils.hasStarter(this);
     }
+
     // **************************************************
     // ADDING COURSES
     // **************************************************
@@ -230,70 +242,74 @@ public class SharedMenu {
     // return !roboTaxiMenu.isEmpty();
     // }
 
-    /** Checks if the given sharedAvCourse is contained in the menu
-     * 
-     * @param sharedAVCourse
-     * @return */
-    public boolean containsCourse(SharedCourse sharedAVCourse) {
-        return roboTaxiMenu.contains(sharedAVCourse);
-    }
-
-    /** @return false if any dropoff occurs after pickup in the menu */
-    public boolean checkNoPickupAfterDropoffOfSameRequest() {
-        for (SharedCourse course : roboTaxiMenu) {
-            if (course.getMealType().equals(SharedMealType.PICKUP)) {
-                int pickupIndex = roboTaxiMenu.indexOf(course);
-                SharedCourse dropoffCourse = getCorrespDropoff(course);
-                if (Objects.nonNull(dropoffCourse)) {
-                    int dropofIndex = roboTaxiMenu.indexOf(dropoffCourse);
-                    if (pickupIndex > dropofIndex) {
-                        System.err.println("The SharedRoboTaxiMenu contains a pickup after its dropoff. Stopping Execution.");
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
-    }
-
-    /** @param pickupCourse
-     * @return corresponding {@link SharedCourse} where dropoff takes place or
-     *         null if not found */
-    public SharedCourse getCorrespDropoff(SharedCourse pickupCourse) {
-        GlobalAssert.that(pickupCourse.getMealType().equals(SharedMealType.PICKUP));
-        for (SharedCourse course : roboTaxiMenu) {
-            if (course.getRequestId().equals(pickupCourse.getRequestId())) {
-                if (course.getMealType().equals(SharedMealType.DROPOFF)) {
-                    return course;
-                }
-            }
-        }
-        return null;
-    }
-
-    /** Checks if the menu contains exactly the same courses as the inputed menu.
-     * 
-     * @param sharedAVMenu
-     * @return true if the the two menus contain the same courses */
-    public boolean containsSameCourses(SharedMenu sharedAVMenu) {
-        return roboTaxiMenu.size() == sharedAVMenu.roboTaxiMenu.size() && //
-                sharedAVMenu.roboTaxiMenu.containsAll(roboTaxiMenu);
-    }
-
-    public boolean checkAllCoursesAppearOnlyOnce() {
-        return new HashSet<>(roboTaxiMenu).size() == roboTaxiMenu.size();
-    }
+    // /** Checks if the given sharedAvCourse is contained in the menu
+    // *
+    // * @param sharedAVCourse
+    // * @return */
+    // public boolean containsCourse(SharedCourse sharedAVCourse) {
+    // return roboTaxiMenu.contains(sharedAVCourse);
+    // }
+    //
+    // /** @return false if any dropoff occurs after pickup in the menu */
+    // public boolean checkNoPickupAfterDropoffOfSameRequest() {
+    // for (SharedCourse course : roboTaxiMenu) {
+    // if (course.getMealType().equals(SharedMealType.PICKUP)) {
+    // int pickupIndex = roboTaxiMenu.indexOf(course);
+    // SharedCourse dropoffCourse = getCorrespDropoff(course);
+    // if (Objects.nonNull(dropoffCourse)) {
+    // int dropofIndex = roboTaxiMenu.indexOf(dropoffCourse);
+    // if (pickupIndex > dropofIndex) {
+    // System.err.println("The SharedRoboTaxiMenu contains a pickup after its dropoff. Stopping Execution.");
+    // return false;
+    // }
+    // }
+    // }
+    // }
+    // return true;
+    // }
+    //
+    // /** @param pickupCourse
+    // * @return corresponding {@link SharedCourse} where dropoff takes place or
+    // * null if not found */
+    // public SharedCourse getCorrespDropoff(SharedCourse pickupCourse) {
+    // GlobalAssert.that(pickupCourse.getMealType().equals(SharedMealType.PICKUP));
+    // for (SharedCourse course : roboTaxiMenu) {
+    // if (course.getRequestId().equals(pickupCourse.getRequestId())) {
+    // if (course.getMealType().equals(SharedMealType.DROPOFF)) {
+    // return course;
+    // }
+    // }
+    // }
+    // return null;
+    // }
+    //
+    // /** Checks if the menu contains exactly the same courses as the inputed menu.
+    // *
+    // * @param sharedAVMenu
+    // * @return true if the the two menus contain the same courses */
+    // public boolean containsSameCourses(SharedMenu sharedAVMenu) {
+    // return roboTaxiMenu.size() == sharedAVMenu.roboTaxiMenu.size() && //
+    // sharedAVMenu.roboTaxiMenu.containsAll(roboTaxiMenu);
+    // }
+    //
+    // public boolean checkAllCoursesAppearOnlyOnce() {
+    // return new HashSet<>(roboTaxiMenu).size() == roboTaxiMenu.size();
+    // }
 
     @Override
     public boolean equals(Object object) {
         if (object instanceof SharedMenu) {
             SharedMenu sharedAVMenu = (SharedMenu) object;
+            boolean simpleCheck = roboTaxiMenu.equals(sharedAVMenu.getRoboTaxiMenu());
             List<SharedCourse> otherMenu = sharedAVMenu.roboTaxiMenu;
             // TODO LUXURY there is an easier way to check for equality
             if (otherMenu.size() == roboTaxiMenu.size()) {
                 for (int i = 0; i < roboTaxiMenu.size(); i++)
-                    if (!roboTaxiMenu.get(i).equals(sharedAVMenu.roboTaxiMenu.get(i)))
+                    if (!roboTaxiMenu.get(i).equals(sharedAVMenu.roboTaxiMenu.get(i))) {
+                        GlobalAssert.that(!simpleCheck);
                         return false;
+                    }
+                GlobalAssert.that(simpleCheck);
                 return true;
             }
         }

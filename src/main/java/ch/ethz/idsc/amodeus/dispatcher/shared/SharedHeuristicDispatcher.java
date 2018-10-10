@@ -108,13 +108,14 @@ public class SharedHeuristicDispatcher extends SharedUniversalDispatcher {
                                 pickupMenu.add(SharedCourse.pickupCourse(avReqShrd));
                                 dropoffMenu.add(SharedCourse.dropoffCourse(avReqShrd));
                             }
-                            SharedMenu sharedAVMenu = new SharedMenu();
-                            sharedAVMenu.addAVCourseAsStarter(SharedCourse.dropoffCourse(avRequest));
-                            pickupMenu.forEach(course -> sharedAVMenu.addAVCourseAsDessert(course));
-                            sharedAVMenu.addAVCourseAsDessert(SharedCourse.dropoffCourse(avRequest));
-                            dropoffMenu.forEach(course -> sharedAVMenu.addAVCourseAsDessert(course));
-                            GlobalAssert.that(sharedAVMenu.checkNoPickupAfterDropoffOfSameRequest());
-                            matchedRoboTaxi.getMenu().replaceWith(sharedAVMenu);
+                            List<SharedCourse> list = new ArrayList<>();
+                            list.add(SharedCourse.dropoffCourse(avRequest));
+                            list.addAll(pickupMenu);
+                            list.add(SharedCourse.dropoffCourse(avRequest));
+                            list.addAll(dropoffMenu);
+                            SharedMenu menu = SharedMenu.of(list);
+                            GlobalAssert.that(SharedMenuUtils.checkNoPickupAfterDropoffOfSameRequest(menu));
+                            matchedRoboTaxi.updateMenu(menu);
                         }
                     }
                 }

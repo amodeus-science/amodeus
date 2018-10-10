@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -13,8 +14,10 @@ import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenuUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.passenger.AVRequest;
@@ -44,7 +47,7 @@ public class RoboTaxi {
     /** capacity > 1 fields */
     // TODO remove this field as it is redundant information to the RoboTaxiMenu
     private int onBoardCustomers = 0;
-    private final SharedMenu menu = new SharedMenu();
+    private SharedMenu menu = SharedMenu.empty();;
 
     /** Standard constructor
      * 
@@ -238,48 +241,44 @@ public class RoboTaxi {
     // Shared Functionalities, needed here because of capacity
     // **********************************************
 
-    public SharedMenu getMenu() {
-        return menu;
+    // TODO discuss with jan if this makes sense or if just a list should be given back
+    public SharedMenu getCopyOfMenu() {
+        return SharedMenu.of(menu.getRoboTaxiMenu());
     }
 
+    public void moveAVCourseToPrev(SharedCourse sharedCourse) {
+        menu = SharedMenuUtils.moveAVCourseToPrev(menu, sharedCourse);
+    }
+    
+    public void moveAVCourseToNext(SharedCourse sharedCourse) {
+        menu = SharedMenuUtils.moveAVCourseToNext(menu, sharedCourse);
+    }
+    
+    public void updateMenu(SharedMenu menu) {
+        // TODO Discuss with Claudio/ Jan if this should throw an error or just ignore the command
+        GlobalAssert.that(checkMenuConsistency());
+        GlobalAssert.that(SharedMenuUtils.containSameCourses(this.menu, menu));
+        this.menu = menu;
+    }
+
+    // TODO MAKE THESE FUNCTIONS INTO A STATIC FUNCTIONS (e.g. RoboTaxiUtils)
     public boolean canPickupNewCustomer() {
         return getCurrentNumberOfCustomersOnBoard() >= 0 && getCurrentNumberOfCustomersOnBoard() < getCapacity();
     }
 
-    public Set<String> getAVRequestIdsOnBoard() {
-        return menu.getOnBoardRequestIds();
-    }
-
-    /* package */ void pickupNewCustomerOnBoard() {
-        GlobalAssert.that(canPickupNewCustomer());
-        GlobalAssert.that(menu.getStarterCourse().getMealType().equals(SharedMealType.PICKUP));
-        onBoardCustomers++;
-        menu.removeAVCourse(0);
-    }
-
-    /* package */ void dropOffCustomer() {
-        GlobalAssert.that(getCurrentNumberOfCustomersOnBoard() > 0);
-        GlobalAssert.that(getCurrentNumberOfCustomersOnBoard() <= getCapacity());
-        GlobalAssert.that(menu.getStarterCourse().getMealType().equals(SharedMealType.DROPOFF));
-        onBoardCustomers--;
-        menu.removeAVCourse(0);
-    }
-
     public int getCurrentNumberOfCustomersOnBoard() {
         // TODO remove onboard customers in the future this
-        GlobalAssert.that(onBoardCustomers == menu.getNumberCustomersOnBoard());
+        GlobalAssert.that(onBoardCustomers == SharedCourseListUtils.getNumberCustomersOnBoard(menu.getRoboTaxiMenu()));
         return onBoardCustomers;
     }
 
     public boolean checkMenuConsistency() {
-        return menu.checkAllCoursesAppearOnlyOnce() && //
-                menu.checkNoPickupAfterDropoffOfSameRequest() && //
-                checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity();
+        return checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity();
     }
 
     public boolean checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity() {
         int futureNumberCustomers = getCurrentNumberOfCustomersOnBoard();
-        for (SharedCourse sharedAVCourse : menu.getCourses()) {
+        for (SharedCourse sharedAVCourse : menu.getRoboTaxiMenu()) {
             if (sharedAVCourse.getMealType().equals(SharedMealType.PICKUP)) {
                 futureNumberCustomers++;
             } else if (sharedAVCourse.getMealType().equals(SharedMealType.DROPOFF)) {
@@ -296,27 +295,64 @@ public class RoboTaxi {
         return true;
     }
 
-    public void addAVRequestToMenu(AVRequest avRequest) {
-        menu.addAVCourseAsDessert(SharedCourse.pickupCourse(avRequest));
-        menu.addAVCourseAsDessert(SharedCourse.dropoffCourse(avRequest));
+    public Set<String> getAVRequestIdsOnBoard() {
+        return SharedCourseListUtils.getOnBoardRequestIds(menu.getRoboTaxiMenu());
+    }
+
+    /* package */ void addAVRequestToMenu(AVRequest avRequest) {
+        menu = SharedMenuUtils.addAVCourseAsDessert(menu, SharedCourse.pickupCourse(avRequest));
+        menu = SharedMenuUtils.addAVCourseAsDessert(menu, SharedCourse.dropoffCourse(avRequest));
+    }
+    /* package */ void addRedirectCourseToMenu(SharedCourse redirectCourse) {
+        GlobalAssert.that(menu.getStarterCourse().getMealType().equals(SharedMealType.REDIRECT));
+        menu = SharedMenuUtils.addAVCourseAsDessert(menu, redirectCourse);
+    }
+
+    /* package */ void pickupNewCustomerOnBoard() {
+        // TODO check these Global Asserts
+        GlobalAssert.that(canPickupNewCustomer());
+        GlobalAssert.that(menu.getStarterCourse().getMealType().equals(SharedMealType.PICKUP));
+        // TODO This should be removed so that we are independant of this
+        onBoardCustomers++;
+        menu = SharedMenuUtils.removeStarterCourse(menu);
+    }
+
+    /* package */ void dropOffCustomer() {
+        // TODO Check this Global Asserts
+        GlobalAssert.that(getCurrentNumberOfCustomersOnBoard() > 0);
+        GlobalAssert.that(getCurrentNumberOfCustomersOnBoard() <= getCapacity());
+        GlobalAssert.that(menu.getStarterCourse().getMealType().equals(SharedMealType.DROPOFF));
+        // TODO This should be removed so that we are independant of this
+        onBoardCustomers--;
+        menu = SharedMenuUtils.removeStarterCourse(menu);
+    }
+
+    /* package */ void finishRedirection() {
+        GlobalAssert.that(menu.hasStarter());
+        GlobalAssert.that(menu.getStarterCourse().getMealType().equals(SharedMealType.REDIRECT));
+        GlobalAssert.that(menu.getStarterCourse().getLink().equals(getDivertableLocation()));
+        menu = SharedMenuUtils.removeStarterCourse(menu);
     }
 
     /** Removes an AV Request from the Robo Taxi Menu. This function can only be called if the Request has not been picked up
      * 
      * @param avRequest */
-    public void removeAVRequestFromMenu(AVRequest avRequest) {
-        SharedCourse sharedAVCoursePickUp = SharedCourse.pickupCourse(avRequest);
-        SharedCourse sharedAVCourseDropoff = SharedCourse.dropoffCourse(avRequest);
-        GlobalAssert.that(menu.containsCourse(sharedAVCoursePickUp) && menu.containsCourse(sharedAVCoursePickUp));
-        menu.removeAVCourse(sharedAVCoursePickUp);
-        menu.removeAVCourse(sharedAVCourseDropoff);
+    /* package */ void removeAVRequestFromMenu(AVRequest avRequest) {
+        SharedCourse pickupCourse = SharedCourse.pickupCourse(avRequest);
+        SharedCourse dropoffCourse = SharedCourse.dropoffCourse(avRequest);
+        GlobalAssert.that(menu.getRoboTaxiMenu().contains(pickupCourse) && menu.getRoboTaxiMenu().contains(dropoffCourse));
+        menu = SharedMenuUtils.removeAVCourse(menu, pickupCourse);
+        menu = SharedMenuUtils.removeAVCourse(menu, dropoffCourse);
     }
-
-    public void finishRedirection() {
-        GlobalAssert.that(menu.hasStarter());
-        GlobalAssert.that(menu.getStarterCourse().getMealType().equals(SharedMealType.REDIRECT));
-        GlobalAssert.that(menu.getStarterCourse().getLink().equals(getDivertableLocation()));
-        getMenu().removeAVCourse(0);
+    
+    /**
+     * This function deletes all the current Courses from the menu. 
+     * @return all the courses which have been removed
+     */
+    /*package*/ List<SharedCourse> cleanAndAbandonMenu(){
+        List<SharedCourse> oldMenu = menu.getModifiableCopyOfMenu();
+        menu = SharedMenu.empty();
+        return oldMenu;
     }
 
 }
