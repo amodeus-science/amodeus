@@ -4,10 +4,10 @@ package ch.ethz.idsc.amodeus.analysis.element;
 import java.io.File;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
-import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
+import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
 public interface AnalysisExport {
     /** @param analysisSummary
      * @param relativeDirectory for instance "output/001/data" */
-    void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorScheme colorScheme);
+    void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed);
 }

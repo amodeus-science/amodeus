@@ -5,10 +5,10 @@ import java.io.File;
 import java.util.Arrays;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
-import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
 import ch.ethz.idsc.amodeus.analysis.plot.StackedTimeChart;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Transpose;
+import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
 public enum DistanceDistributionOverDayImage implements AnalysisExport {
     INSTANCE;
@@ -16,7 +16,7 @@ public enum DistanceDistributionOverDayImage implements AnalysisExport {
     public static final String FILENAME = "distanceDistribution";
 
     @Override
-    public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorScheme colorScheme) {
+    public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
         DistanceElement de = analysisSummary.getDistanceElement();
         String[] diagramLables = Arrays.copyOf(StaticHelper.descriptions(), 3);
         Double[] scale = new Double[diagramLables.length];
@@ -35,7 +35,7 @@ public enum DistanceDistributionOverDayImage implements AnalysisExport {
                     "Distance [km]", //
                     de.time, //
                     distances, //
-                    colorScheme);
+                    colorDataIndexed);
         } catch (Exception e) {
             System.err.println("modularDistanceDistribution plot was unsucessfull");
             e.printStackTrace();
