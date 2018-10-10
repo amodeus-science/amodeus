@@ -242,6 +242,7 @@ public class RoboTaxi {
     // **********************************************
 
     // TODO discuss with jan if this makes sense or if just a list should be given back
+    // TODO Lukas CHECK WHERE THIS FUNCTION IS CALLED! THIS MIGHT GIVE A NICE INDICATION OF WHAT TO CHANGE NEXT
     public SharedMenu getCopyOfMenu() {
         return SharedMenu.of(menu.getRoboTaxiMenu());
     }

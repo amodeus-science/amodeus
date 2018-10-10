@@ -49,8 +49,9 @@ public class SharedMenu {
     /** Two exeptions for convinience might be removed and all the Functions substidized with The Utils Classes */
 
     /** @return The next Course of the Menu */
+    // TODO REMOVE THIS FUNCTIONS OR MAKE IT WITH OPTIONAL... right now this is often copared to be equal to null...
     public SharedCourse getStarterCourse() {
-        return SharedMenuUtils.getStarterCourse(this);
+        return (hasStarter()) ? SharedMenuUtils.getStarterCourse(this): null;
     }
 
     /** @return true if the menu has entries */

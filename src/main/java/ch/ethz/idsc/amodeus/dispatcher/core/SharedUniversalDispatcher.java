@@ -478,13 +478,15 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
     @Override
     void executeRedirects() {
         for (RoboTaxi roboTaxi : getRoboTaxis()) {
-            SharedCourse currentCourse = roboTaxi.getCopyOfMenu().getStarterCourse();
-            /** search redirect courses */
-            if (Objects.nonNull(currentCourse)) {
-                if (currentCourse.getMealType().equals(SharedMealType.REDIRECT)) {
-                    /** search if arrived at redirect destination */
-                    if (currentCourse.getLink().equals(roboTaxi.getDivertableLocation())) {
-                        roboTaxi.finishRedirection();
+            if (roboTaxi.getCopyOfMenu().hasStarter()) {
+                SharedCourse currentCourse = roboTaxi.getCopyOfMenu().getStarterCourse();
+                /** search redirect courses */
+                if (Objects.nonNull(currentCourse)) {
+                    if (currentCourse.getMealType().equals(SharedMealType.REDIRECT)) {
+                        /** search if arrived at redirect destination */
+                        if (currentCourse.getLink().equals(roboTaxi.getDivertableLocation())) {
+                            roboTaxi.finishRedirection();
+                        }
                     }
                 }
             }
