@@ -1,8 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.net;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Objects;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RequestStatus;
@@ -16,7 +15,9 @@ enum RequestContainerCompiler {
      * @param requestStatus
      * @return {@link RequestContainer} with information for storage and later viewing in
      *         {@link SimulationObject} */
-    public static RequestContainer compile(AVRequest avRequest, MatsimAmodeusDatabase db, //
+    public static RequestContainer compile( //
+            AVRequest avRequest, //
+            MatsimAmodeusDatabase db, //
             RequestStatus requestStatus) {
         GlobalAssert.that(Objects.nonNull(avRequest));
 
@@ -29,7 +30,7 @@ enum RequestContainerCompiler {
         requestContainer.fromLinkIndex = db.getLinkIndex(avRequest.getFromLink());
         requestContainer.submissionTime = avRequest.getSubmissionTime();
         requestContainer.toLinkIndex = db.getLinkIndex(avRequest.getToLink());
-        requestContainer.requestStatus = new HashSet<>(Arrays.asList(requestStatus));
+        requestContainer.requestStatus = EnumSet.of(requestStatus);
         return requestContainer;
     }
 }

@@ -6,8 +6,7 @@ import java.util.Set;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RequestStatus;
 
-/** the suffix "index" is chosen since the value is not identical to the "ID" of
- * matsim
+/** the suffix "index" is chosen since the value is not identical to the "ID" of matsim
  * 
  * values are initialized to -1 to detect is assignment has been overlooked */
 public class RequestContainer implements Serializable {
@@ -23,6 +22,7 @@ public class RequestContainer implements Serializable {
     public int fromLinkIndex = -1; // where the person is now
     public double submissionTime = -1;
     public int toLinkIndex = -1; // where the person wants to go
+    // TODO document how to interpret the set of requestStatus
     public Set<RequestStatus> requestStatus;
     public int associatedVehicle; // vehicle currently associated to request, e.g., assigned for pickup
 }

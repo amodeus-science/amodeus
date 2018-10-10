@@ -28,7 +28,7 @@ public enum ColorDataAmodeus {
             put(colorDataAmodeusSpecific.name(), colorDataAmodeusSpecific.cyclic());
     }
 
-    private void put(String name, ColorDataIndexed colorDataIndexed) {
+    public void put(String name, ColorDataIndexed colorDataIndexed) {
         map.put(normalize(name), colorDataIndexed);
     }
 
