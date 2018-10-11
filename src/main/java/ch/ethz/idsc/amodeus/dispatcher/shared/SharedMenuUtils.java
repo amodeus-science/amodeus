@@ -21,8 +21,8 @@ public enum SharedMenuUtils {
     public static SharedCourse getStarterCourse(SharedMenu sharedMenu) {
         GlobalAssert.that(hasStarter(sharedMenu));
         return sharedMenu.getRoboTaxiMenu().get(0);
-    }    
-    
+    }
+
     // **************************************************
     // Check Menus
     // **************************************************
@@ -30,7 +30,7 @@ public enum SharedMenuUtils {
         return sharedMenu1.getRoboTaxiMenu().size() == sharedMenu2.getRoboTaxiMenu().size() && //
                 sharedMenu1.getRoboTaxiMenu().containsAll(sharedMenu2.getRoboTaxiMenu());
     }
-    
+
     public static boolean checkAllCoursesAppearOnlyOnce(SharedMenu sharedMenu) {
         return SharedCourseListUtils.checkAllCoursesAppearOnlyOnce(sharedMenu.getRoboTaxiMenu());
     }
@@ -38,26 +38,28 @@ public enum SharedMenuUtils {
     public static boolean checkNoPickupAfterDropoffOfSameRequest(SharedMenu sharedMenu) {
         return SharedCourseListUtils.checkNoPickupAfterDropoffOfSameRequest(sharedMenu.getRoboTaxiMenu());
     }
-    
+
     /** @return true if the menu has entries */
     public static boolean hasStarter(SharedMenu sharedMenu) {
         return !sharedMenu.getRoboTaxiMenu().isEmpty();
     }
-    
+
     // **************************************************
     // ADDING COURSES
     // **************************************************
-    public static SharedMenu addAVCourseAsStarter(SharedMenu sharedMenu, SharedCourse avCourse) {
-        return applyFunction(sharedMenu, avCourse, SharedCourseListUtils::addAVCourseAsStarter);
+    public static SharedMenu addAVCoursesAsStarter(SharedMenu sharedMenu, SharedCourse... avCourses) {
+        return applyFunction(sharedMenu, SharedCourseListUtils::addAVCourseAsStarter, avCourses);
     }
 
-    public static SharedMenu addAVCourseAsDessert(SharedMenu sharedMenu, SharedCourse avCourse) {
-        return applyFunction(sharedMenu, avCourse, SharedCourseListUtils::addAVCourseAsDessert);
+    public static SharedMenu addAVCoursesAsDessert(SharedMenu sharedMenu, SharedCourse... avCourses) {
+        return applyFunction(sharedMenu, SharedCourseListUtils::addAVCourseAsDessert, avCourses);
     }
 
-    public static SharedMenu addAVCourseAtIndex(SharedMenu sharedMenu, SharedCourse avCourse, int courseIndex) {
+    public static SharedMenu addAVCoursesAtIndex(SharedMenu sharedMenu, int courseIndex, SharedCourse... avCourses) {
         List<SharedCourse> list = sharedMenu.getModifiableCopyOfMenu();
-        SharedCourseListUtils.addAVCourseAtIndex(list, avCourse, courseIndex);
+        for (SharedCourse sharedCourse : avCourses) {
+            SharedCourseListUtils.addAVCourseAtIndex(list, sharedCourse, courseIndex);
+        }
         return SharedMenu.of(list);
     }
 
@@ -66,11 +68,11 @@ public enum SharedMenuUtils {
     // **************************************************
 
     public static SharedMenu moveAVCourseToPrev(SharedMenu sharedMenu, SharedCourse sharedAVCourse) {
-        return applyFunction(sharedMenu, sharedAVCourse, SharedCourseListUtils::moveAVCourseToPrev);
+        return applyFunction(sharedMenu, SharedCourseListUtils::moveAVCourseToPrev, sharedAVCourse);
     }
 
     public static SharedMenu moveAVCourseToNext(SharedMenu sharedMenu, SharedCourse sharedAVCourse) {
-        return applyFunction(sharedMenu, sharedAVCourse, SharedCourseListUtils::moveAVCourseToNext);
+        return applyFunction(sharedMenu, SharedCourseListUtils::moveAVCourseToNext, sharedAVCourse);
     }
 
     // **************************************************
@@ -85,25 +87,25 @@ public enum SharedMenuUtils {
         return applyFunction(sharedMenu, courseIndex, SharedCourseListUtils::removeAVCourse);
     }
 
-    public static SharedMenu removeAVCourse(SharedMenu sharedMenu, SharedCourse sharedAVCourse) {
-        return applyFunction(sharedMenu, sharedAVCourse, SharedCourseListUtils::removeAVCourse);
+    public static SharedMenu removeAVCourses(SharedMenu sharedMenu, SharedCourse...sharedAVCourses) {
+        return applyFunction(sharedMenu, SharedCourseListUtils::removeAVCourse, sharedAVCourses);
     }
-    
 
     // **************************************************
     // APPLY FUNCTIONS TO THE MENU
     // **************************************************
 
-    
     private static SharedMenu applyFunction(SharedMenu sharedMenu, Consumer<List<SharedCourse>> listFunction) {
         List<SharedCourse> list = sharedMenu.getModifiableCopyOfMenu();
         listFunction.accept(list);
         return SharedMenu.of(list);
     }
 
-    private static SharedMenu applyFunction(SharedMenu sharedMenu, SharedCourse sharedAVCourse, BiConsumer<List<SharedCourse>, SharedCourse> listFunction) {
+    private static SharedMenu applyFunction(SharedMenu sharedMenu, BiConsumer<List<SharedCourse>, SharedCourse> listFunction, SharedCourse... sharedCourses) {
         List<SharedCourse> list = sharedMenu.getModifiableCopyOfMenu();
-        listFunction.accept(list, sharedAVCourse);
+        for (SharedCourse sharedCourse : sharedCourses) {
+            listFunction.accept(list, sharedCourse);
+        }
         return SharedMenu.of(list);
     }
 

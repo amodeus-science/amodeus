@@ -250,11 +250,11 @@ public class RoboTaxi {
     public void moveAVCourseToPrev(SharedCourse sharedCourse) {
         menu = SharedMenuUtils.moveAVCourseToPrev(menu, sharedCourse);
     }
-    
+
     public void moveAVCourseToNext(SharedCourse sharedCourse) {
         menu = SharedMenuUtils.moveAVCourseToNext(menu, sharedCourse);
     }
-    
+
     public void updateMenu(SharedMenu menu) {
         // TODO Discuss with Claudio/ Jan if this should throw an error or just ignore the command
         GlobalAssert.that(checkMenuConsistency());
@@ -301,12 +301,11 @@ public class RoboTaxi {
     }
 
     /* package */ void addAVRequestToMenu(AVRequest avRequest) {
-        menu = SharedMenuUtils.addAVCourseAsDessert(menu, SharedCourse.pickupCourse(avRequest));
-        menu = SharedMenuUtils.addAVCourseAsDessert(menu, SharedCourse.dropoffCourse(avRequest));
+        menu = SharedMenuUtils.addAVCoursesAsDessert(menu, SharedCourse.pickupCourse(avRequest), SharedCourse.dropoffCourse(avRequest));
     }
+
     /* package */ void addRedirectCourseToMenu(SharedCourse redirectCourse) {
-        GlobalAssert.that(menu.getStarterCourse().getMealType().equals(SharedMealType.REDIRECT));
-        menu = SharedMenuUtils.addAVCourseAsDessert(menu, redirectCourse);
+        menu = SharedMenuUtils.addAVCoursesAsDessert(menu, redirectCourse);
     }
 
     /* package */ void pickupNewCustomerOnBoard() {
@@ -342,15 +341,13 @@ public class RoboTaxi {
         SharedCourse pickupCourse = SharedCourse.pickupCourse(avRequest);
         SharedCourse dropoffCourse = SharedCourse.dropoffCourse(avRequest);
         GlobalAssert.that(menu.getRoboTaxiMenu().contains(pickupCourse) && menu.getRoboTaxiMenu().contains(dropoffCourse));
-        menu = SharedMenuUtils.removeAVCourse(menu, pickupCourse);
-        menu = SharedMenuUtils.removeAVCourse(menu, dropoffCourse);
+        menu = SharedMenuUtils.removeAVCourses(menu, pickupCourse, dropoffCourse);
     }
-    
-    /**
-     * This function deletes all the current Courses from the menu. 
-     * @return all the courses which have been removed
-     */
-    /*package*/ List<SharedCourse> cleanAndAbandonMenu(){
+
+    /** This function deletes all the current Courses from the menu.
+     * 
+     * @return all the courses which have been removed */
+    /* package */ List<SharedCourse> cleanAndAbandonMenu() {
         List<SharedCourse> oldMenu = menu.getModifiableCopyOfMenu();
         menu = SharedMenu.empty();
         return oldMenu;
