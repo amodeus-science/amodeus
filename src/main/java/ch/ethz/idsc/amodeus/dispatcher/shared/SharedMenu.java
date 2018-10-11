@@ -79,7 +79,7 @@ public class SharedMenu {
     // REMOVING COURSES
     // **************************************************
 
-    // FIXME we have to rethink this. It is very dangerous to just let the people change the menu and remove courses.
+    // FIXME Lukas we have to rethink this. It is very dangerous to just let the people change the menu and remove courses.
     // especially if there is the possibility to remove dropoff courses of onboard customers
     public void removeStarterCourse() {
         GlobalAssert.that(hasStarter());
@@ -267,7 +267,7 @@ public class SharedMenu {
         if (object instanceof SharedMenu) {
             SharedMenu sharedAVMenu = (SharedMenu) object;
             List<SharedCourse> otherMenu = sharedAVMenu.getCourses();
-            // TODO LUXURY there is an easier way to check for equality
+            // TODO Lukas there is an easier way to check for equality
             if (otherMenu.size() == roboTaxiMenu.size()) {
                 for (int i = 0; i < roboTaxiMenu.size(); i++)
                     if (!roboTaxiMenu.get(i).equals(sharedAVMenu.getCourses().get(i)))
@@ -280,7 +280,7 @@ public class SharedMenu {
 
     @Override
     public int hashCode() {
-        // TODO SHARED not yet implemented
+        // TODO Lukas SHARED not yet implemented
         throw new RuntimeException();
     }
 

@@ -43,7 +43,7 @@ public enum VirtualNetworkGet {
     public static VirtualNetwork<Link> readFromOutputDirectory(Network network, File outputDirectory) throws IOException {
         File workingDirectory = MultiFileTools.getWorkingDirectory();
         ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
-        final File virtualnetworkFolder = new File(outputDirectory, "data"); // TODO still hard-coded
+        final File virtualnetworkFolder = new File(outputDirectory, "data"); // TODO Joel still hard-coded, search for "data" in project
         final File virtualnetworkFile = new File(virtualnetworkFolder, scenarioOptions.getVirtualNetworkName());
         System.out.println("reading virtual network from" + virtualnetworkFile.getAbsoluteFile());
         try {
