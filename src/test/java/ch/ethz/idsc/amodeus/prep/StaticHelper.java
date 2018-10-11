@@ -7,7 +7,7 @@ package ch.ethz.idsc.amodeus.prep;
      * 
      * @throws Exception */
     public static void setupScenario() throws Exception {
-        // TODO claudio download a scenario in a different way.
+        // TODO Joel download a scenario in a different way.
         // Properties properties = ResourceData.properties("/aido/scenarios.properties");
         // List<Object> keys = new ArrayList<>();
         // keys.addAll(properties.keySet());

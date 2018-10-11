@@ -29,7 +29,7 @@ public class SharedCourse {
     private final Link link;
     private final SharedMealType sharedRoboTaxiMealType;
 
-    // TODO after implementing tests, carefully check if requestID and link can be replaced with AVRequest ?
+    // TODO Lukas after implementing tests, carefully check if requestID and link can be replaced with AVRequest ?
     /** @param for {@link SharedMealType} PICKUP and DROPOFF the requestID must be the
      *            id of the {@link AVRequest}, otherwise a self-chosen id to distinguish different
      *            {@link SharedMealType} tasks of type REDIRECT

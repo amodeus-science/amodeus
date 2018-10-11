@@ -11,7 +11,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.qty.Quantity;
 
-/** TODO currently only the last and successful pickup attempt is recorded.
+/** TODO Who? currently only the last and successful pickup attempt is recorded.
  * Additionally, it is possible to record also all pickup attempts in a
  * {@link RequestStatus} history similar to: {REQUESTED,REQUESTED,
  * ASSIGNED,PICKUPDRIVE,PICKUPDRIVE,REQUESTED,ASSIGNED,PICKUPDRIVE,
