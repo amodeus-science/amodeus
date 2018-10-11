@@ -22,6 +22,10 @@ public enum SharedMenuUtils {
         GlobalAssert.that(hasStarter(sharedMenu));
         return sharedMenu.getRoboTaxiMenu().get(0);
     }
+    
+    public static long getNumberCustomersOnBoard(SharedMenu sharedMenu) {
+        return SharedCourseListUtils.getNumberCustomersOnBoard(sharedMenu.getRoboTaxiMenu());
+    }
 
     // **************************************************
     // Check Menus

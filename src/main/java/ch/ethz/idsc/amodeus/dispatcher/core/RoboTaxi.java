@@ -13,10 +13,12 @@ import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 
+import ch.ethz.idsc.amodeus.dispatcher.shared.RoboTaxiUtils;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenuChecks;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenuUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.data.AVVehicle;
@@ -247,24 +249,54 @@ public class RoboTaxi {
         return SharedMenu.of(menu.getRoboTaxiMenu());
     }
 
+    /**
+     * Modifies the menu of the RoboTaxi. The given course is moved up in the menu by one position. 
+     * @param sharedCourse
+     */
     public void moveAVCourseToPrev(SharedCourse sharedCourse) {
         menu = SharedMenuUtils.moveAVCourseToPrev(menu, sharedCourse);
     }
 
+    /**
+     * Modifies the menu of the RoboTaxi. The given course is moved down in the menu by one position. 
+     * @param sharedCourse
+     */
     public void moveAVCourseToNext(SharedCourse sharedCourse) {
         menu = SharedMenuUtils.moveAVCourseToNext(menu, sharedCourse);
     }
 
+    /**
+     * This function allows to update the menu of the RoboTaxi with a new orderd menu. 
+     * Thereby the new menu has to fulfill the following conditions:
+     * 1. The exact same Courses have to be in the Menu. 
+     * 2. The menu can not plan to pickup more persons than the capacity of the Robo Taxi at any Time 
+     * @param menu
+     */
     public void updateMenu(SharedMenu menu) {
         // TODO Discuss with Claudio/ Jan if this should throw an error or just ignore the command
         GlobalAssert.that(checkMenuConsistency());
         GlobalAssert.that(SharedMenuUtils.containSameCourses(this.menu, menu));
         this.menu = menu;
     }
+    
+    /**
+     * This function allows to update the menu of the RoboTaxi with a new List of Shared Courses. 
+     * Thereby the new menu has to fulfill the following conditions:
+     * 1. The exact same Courses have to be in the Menu. 
+     * 2. The menu can not plan to pickup more persons than the capacity of the Robo Taxi at any Time
+     * 3. The menu has to be consistent in itself (i.e. for each pickup a dropoff of the same request is present, 
+     *      for each request the dropoff occurs after the pickup and no course apears exactely once)  
+     * @param List<SharedCourse>
+     */
+    public void updateMenu(List<SharedCourse> list) {
+        this.menu = SharedMenu.of(list);
+    }
 
+    
     // TODO MAKE THESE FUNCTIONS INTO A STATIC FUNCTIONS (e.g. RoboTaxiUtils)
+    @Deprecated
     public boolean canPickupNewCustomer() {
-        return getCurrentNumberOfCustomersOnBoard() >= 0 && getCurrentNumberOfCustomersOnBoard() < getCapacity();
+        return RoboTaxiUtils.canPickupNewCustomer(this);
     }
 
     public int getCurrentNumberOfCustomersOnBoard() {
@@ -273,29 +305,17 @@ public class RoboTaxi {
         return onBoardCustomers;
     }
 
+    @Deprecated
     public boolean checkMenuConsistency() {
         return checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity();
     }
 
+    @Deprecated
     public boolean checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity() {
-        int futureNumberCustomers = getCurrentNumberOfCustomersOnBoard();
-        for (SharedCourse sharedAVCourse : menu.getRoboTaxiMenu()) {
-            if (sharedAVCourse.getMealType().equals(SharedMealType.PICKUP)) {
-                futureNumberCustomers++;
-            } else if (sharedAVCourse.getMealType().equals(SharedMealType.DROPOFF)) {
-                futureNumberCustomers--;
-            } else if (sharedAVCourse.getMealType().equals(SharedMealType.REDIRECT)) {
-                // --
-            } else {
-                throw new IllegalArgumentException("Unknown SharedAVMealType -- please specify it !!!--");
-            }
-            if (futureNumberCustomers > getCapacity()) {
-                return false;
-            }
-        }
-        return true;
+        return SharedMenuChecks.checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(menu, getCapacity());
     }
 
+    
     public Set<String> getAVRequestIdsOnBoard() {
         return SharedCourseListUtils.getOnBoardRequestIds(menu.getRoboTaxiMenu());
     }
