@@ -1,7 +1,6 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared;
 
-import java.awt.Menu;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -108,7 +107,7 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
                     sharedRoboTaxi.moveAVCourseToPrev(redirectCourse);
 
                     /** check consistency and end */
-                    sharedRoboTaxi.checkMenuConsistency();
+                    GlobalAssert.that(RoboTaxiUtils.checkMenuConsistency(sharedRoboTaxi));
                 } else {
                     break;
                 }

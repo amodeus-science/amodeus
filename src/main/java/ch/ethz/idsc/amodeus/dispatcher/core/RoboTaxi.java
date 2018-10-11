@@ -161,6 +161,7 @@ public class RoboTaxi {
 
     /** @return true if robotaxi is without a customer */
     /* package */ boolean isWithoutCustomer() {
+        // TODO Check this comment
         // For now this works with universal dispatcher i.e. single used robotaxis as number of customers is never changed
         return !status.equals(RoboTaxiStatus.DRIVEWITHCUSTOMER) && getCurrentNumberOfCustomersOnBoard() == 0;
     }
@@ -274,7 +275,7 @@ public class RoboTaxi {
      */
     public void updateMenu(SharedMenu menu) {
         // TODO Discuss with Claudio/ Jan if this should throw an error or just ignore the command
-        GlobalAssert.that(checkMenuConsistency());
+        GlobalAssert.that(RoboTaxiUtils.checkMenuConsistency(this));
         GlobalAssert.that(SharedMenuUtils.containSameCourses(this.menu, menu));
         this.menu = menu;
     }
@@ -294,28 +295,14 @@ public class RoboTaxi {
 
     
     // TODO MAKE THESE FUNCTIONS INTO A STATIC FUNCTIONS (e.g. RoboTaxiUtils)
-    @Deprecated
-    public boolean canPickupNewCustomer() {
-        return RoboTaxiUtils.canPickupNewCustomer(this);
-    }
-
+    // TODO Remove This function
     public int getCurrentNumberOfCustomersOnBoard() {
         // TODO remove onboard customers in the future this
         GlobalAssert.that(onBoardCustomers == SharedCourseListUtils.getNumberCustomersOnBoard(menu.getRoboTaxiMenu()));
         return onBoardCustomers;
     }
 
-    @Deprecated
-    public boolean checkMenuConsistency() {
-        return checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity();
-    }
-
-    @Deprecated
-    public boolean checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity() {
-        return SharedMenuChecks.checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(menu, getCapacity());
-    }
-
-    
+    // TODO Remove This function
     public Set<String> getAVRequestIdsOnBoard() {
         return SharedCourseListUtils.getOnBoardRequestIds(menu.getRoboTaxiMenu());
     }
@@ -330,8 +317,8 @@ public class RoboTaxi {
 
     /* package */ void pickupNewCustomerOnBoard() {
         // TODO check these Global Asserts
-        GlobalAssert.that(canPickupNewCustomer());
-        GlobalAssert.that(menu.getStarterCourse().getMealType().equals(SharedMealType.PICKUP));
+        GlobalAssert.that(RoboTaxiUtils.canPickupNewCustomer(this));
+        GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.PICKUP));
         // TODO This should be removed so that we are independant of this
         onBoardCustomers++;
         menu = SharedMenuUtils.removeStarterCourse(menu);
@@ -341,16 +328,16 @@ public class RoboTaxi {
         // TODO Check this Global Asserts
         GlobalAssert.that(getCurrentNumberOfCustomersOnBoard() > 0);
         GlobalAssert.that(getCurrentNumberOfCustomersOnBoard() <= getCapacity());
-        GlobalAssert.that(menu.getStarterCourse().getMealType().equals(SharedMealType.DROPOFF));
+        GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.DROPOFF));
         // TODO This should be removed so that we are independant of this
         onBoardCustomers--;
         menu = SharedMenuUtils.removeStarterCourse(menu);
     }
 
     /* package */ void finishRedirection() {
-        GlobalAssert.that(menu.hasStarter());
-        GlobalAssert.that(menu.getStarterCourse().getMealType().equals(SharedMealType.REDIRECT));
-        GlobalAssert.that(menu.getStarterCourse().getLink().equals(getDivertableLocation()));
+        GlobalAssert.that(RoboTaxiUtils.hasNextCourse(this));
+        GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.REDIRECT));
+        GlobalAssert.that(RoboTaxiUtils.getStarterCourse(this).get().getLink().equals(getDivertableLocation()));
         menu = SharedMenuUtils.removeStarterCourse(menu);
     }
 

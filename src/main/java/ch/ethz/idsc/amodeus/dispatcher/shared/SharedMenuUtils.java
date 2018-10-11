@@ -1,10 +1,9 @@
 package ch.ethz.idsc.amodeus.dispatcher.shared;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 /** This class covers the static functions on a Shared Menu.
  * 
@@ -18,11 +17,10 @@ public enum SharedMenuUtils {
     /** Gets the next course of the menu.
      * 
      * @return */
-    public static SharedCourse getStarterCourse(SharedMenu sharedMenu) {
-        GlobalAssert.that(hasStarter(sharedMenu));
-        return sharedMenu.getRoboTaxiMenu().get(0);
+    public static Optional<SharedCourse> getStarterCourse(SharedMenu sharedMenu) {
+        return Optional.ofNullable((hasStarter(sharedMenu)) ? sharedMenu.getRoboTaxiMenu().get(0) : null);
     }
-    
+
     public static long getNumberCustomersOnBoard(SharedMenu sharedMenu) {
         return SharedCourseListUtils.getNumberCustomersOnBoard(sharedMenu.getRoboTaxiMenu());
     }
@@ -91,7 +89,7 @@ public enum SharedMenuUtils {
         return applyFunction(sharedMenu, courseIndex, SharedCourseListUtils::removeAVCourse);
     }
 
-    public static SharedMenu removeAVCourses(SharedMenu sharedMenu, SharedCourse...sharedAVCourses) {
+    public static SharedMenu removeAVCourses(SharedMenu sharedMenu, SharedCourse... sharedAVCourses) {
         return applyFunction(sharedMenu, SharedCourseListUtils::removeAVCourse, sharedAVCourses);
     }
 
