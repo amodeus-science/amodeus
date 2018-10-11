@@ -47,7 +47,7 @@ public class RoboTaxi {
     private AbstractDirective directive;
 
     /** capacity > 1 fields */
-    // TODO remove this field as it is redundant information to the RoboTaxiMenu
+    // TODO Lukas remove this field as it is redundant information to the RoboTaxiMenu
     private int onBoardCustomers = 0;
     private SharedMenu menu = SharedMenu.empty();;
 
@@ -200,7 +200,7 @@ public class RoboTaxi {
 
         Task avT = getSchedule().getCurrentTask();
 
-        // TODO check why this appears often
+        // TODO Who? check why this appears often
         if (avT instanceof AVStayTask) {
             // TODO MISC For now, this works, but probably needs fixing somewhere upfront /sh, apr 2018
             logger.warn("RoboTaxiStatus != STAY, but Schedule.getCurrentTask() == AVStayTask; probably needs fixing");

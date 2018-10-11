@@ -15,6 +15,7 @@ public class SharedMenu {
     private final List<SharedCourse> roboTaxiMenu;
 
     /** Creates a Shared Menu which is consistent in itself (e.g. no coureses appear twice, for each request it is secured that the dropoff happens after the pickup
+
      * 
      * @param list
      * @return */
@@ -54,6 +55,7 @@ public class SharedMenu {
             boolean simpleCheck = roboTaxiMenu.equals(sharedAVMenu.getRoboTaxiMenu());
             List<SharedCourse> otherMenu = sharedAVMenu.roboTaxiMenu;
             // TODO LUXURY there is an easier way to check for equality
+
             if (otherMenu.size() == roboTaxiMenu.size()) {
                 for (int i = 0; i < roboTaxiMenu.size(); i++)
                     if (!roboTaxiMenu.get(i).equals(sharedAVMenu.roboTaxiMenu.get(i))) {
@@ -69,7 +71,7 @@ public class SharedMenu {
 
     @Override
     public int hashCode() {
-        // TODO SHARED not yet implemented
+        // TODO Lukas SHARED not yet implemented
         throw new RuntimeException();
     }
 
