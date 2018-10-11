@@ -25,7 +25,6 @@ import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
 
-import ch.ethz.idsc.amodeus.dispatcher.shared.RoboTaxiUtils;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
@@ -194,7 +193,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         requestRegister.get(roboTaxi).put(avRequest.getId().toString(), avRequest);
         roboTaxi.addAVRequestToMenu(avRequest);
         // TODO can be done more efficiently
-        GlobalAssert.that(SharedCourseListUtils.getUniqueAVRequests(roboTaxi.getCopyOfMenu().getRoboTaxiMenu()).contains(avRequest.getId().toString()));
+        GlobalAssert.that(SharedCourseListUtils.getUniqueAVRequests(roboTaxi.getUnmodifiableViewOfCourses()).contains(avRequest.getId().toString()));
 
         reqStatuses.put(avRequest, RequestStatus.ASSIGNED);
 
@@ -572,7 +571,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         /** if a request appears in a menu, it must be in the request register */
         for (RoboTaxi roboTaxi : getRoboTaxis()) {
             if (RoboTaxiUtils.hasNextCourse(roboTaxi)) {
-                for (SharedCourse course : roboTaxi.getCopyOfMenu().getRoboTaxiMenu()) {
+                for (SharedCourse course : roboTaxi.getUnmodifiableViewOfCourses()) {
                     if (!course.getMealType().equals(SharedMealType.REDIRECT)) {
                         String requestId = course.getRequestId();
                         Map<String, AVRequest> requests = requestRegister.get(roboTaxi);
@@ -585,7 +584,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
         /** test: every request appears only 2 times, pickup and dropff accross all menus */
         List<String> requestsInMenus = new ArrayList<>();
         getRoboTaxis().stream().filter(rt -> RoboTaxiUtils.hasNextCourse(rt)).forEach(//
-                rtx -> SharedCourseListUtils.getUniqueAVRequests(rtx.getCopyOfMenu().getRoboTaxiMenu()).forEach(id -> requestsInMenus.add(id)));
+                rtx -> SharedCourseListUtils.getUniqueAVRequests(rtx.getUnmodifiableViewOfCourses()).forEach(id -> requestsInMenus.add(id)));
         Set<String> uniqueMenuRequests = new HashSet<>(requestsInMenus);
         GlobalAssert.that(uniqueMenuRequests.size() == requestsInMenus.size());
 

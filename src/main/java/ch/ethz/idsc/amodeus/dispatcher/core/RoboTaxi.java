@@ -13,13 +13,10 @@ import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 
-import ch.ethz.idsc.amodeus.dispatcher.shared.RoboTaxiUtils;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenuChecks;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenuUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.passenger.AVRequest;
@@ -244,10 +241,8 @@ public class RoboTaxi {
     // Shared Functionalities, needed here because of capacity
     // **********************************************
 
-    // TODO discuss with jan if this makes sense or if just a list should be given back
-    // TODO Lukas CHECK WHERE THIS FUNCTION IS CALLED! THIS MIGHT GIVE A NICE INDICATION OF WHAT TO CHANGE NEXT
-    public SharedMenu getCopyOfMenu() {
-        return SharedMenu.of(menu.getRoboTaxiMenu());
+    public List<SharedCourse> getUnmodifiableViewOfCourses() {
+        return menu.getRoboTaxiMenu();
     }
 
     /**
@@ -355,7 +350,7 @@ public class RoboTaxi {
      * 
      * @return all the courses which have been removed */
     /* package */ List<SharedCourse> cleanAndAbandonMenu() {
-        List<SharedCourse> oldMenu = menu.getModifiableCopyOfMenu();
+        List<SharedCourse> oldMenu = SharedCourseListUtils.copy(menu.getRoboTaxiMenu());
         menu = SharedMenu.empty();
         return oldMenu;
     }

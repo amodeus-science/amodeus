@@ -1,14 +1,18 @@
-package ch.ethz.idsc.amodeus.dispatcher.shared;
+package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
+
 /** This class covers the static functions on a Shared Menu.
  * 
  * @author Lukas Sieber */
-public enum SharedMenuUtils {
+/*package*/ enum SharedMenuUtils {
     ;
 
     // **************************************************
@@ -18,7 +22,7 @@ public enum SharedMenuUtils {
      * 
      * @return */
     public static Optional<SharedCourse> getStarterCourse(SharedMenu sharedMenu) {
-        return Optional.ofNullable((hasStarter(sharedMenu)) ? sharedMenu.getRoboTaxiMenu().get(0) : null);
+        return SharedCourseListUtils.getStarterCourse(sharedMenu.getRoboTaxiMenu());
     }
 
     public static long getNumberCustomersOnBoard(SharedMenu sharedMenu) {
@@ -40,10 +44,14 @@ public enum SharedMenuUtils {
     public static boolean checkNoPickupAfterDropoffOfSameRequest(SharedMenu sharedMenu) {
         return SharedCourseListUtils.checkNoPickupAfterDropoffOfSameRequest(sharedMenu.getRoboTaxiMenu());
     }
+    
+    public static boolean checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(SharedMenu sharedMenu, int roboTaxiCapacity) {
+        return SharedCourseListUtils.checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(sharedMenu.getRoboTaxiMenu(), roboTaxiCapacity);
+    }
 
     /** @return true if the menu has entries */
     public static boolean hasStarter(SharedMenu sharedMenu) {
-        return !sharedMenu.getRoboTaxiMenu().isEmpty();
+        return SharedCourseListUtils.hasStarter(sharedMenu.getRoboTaxiMenu());
     }
 
     // **************************************************
@@ -58,7 +66,7 @@ public enum SharedMenuUtils {
     }
 
     public static SharedMenu addAVCoursesAtIndex(SharedMenu sharedMenu, int courseIndex, SharedCourse... avCourses) {
-        List<SharedCourse> list = sharedMenu.getModifiableCopyOfMenu();
+        List<SharedCourse> list = SharedCourseListUtils.copy(sharedMenu.getRoboTaxiMenu());
         for (SharedCourse sharedCourse : avCourses) {
             SharedCourseListUtils.addAVCourseAtIndex(list, sharedCourse, courseIndex);
         }
@@ -98,13 +106,13 @@ public enum SharedMenuUtils {
     // **************************************************
 
     private static SharedMenu applyFunction(SharedMenu sharedMenu, Consumer<List<SharedCourse>> listFunction) {
-        List<SharedCourse> list = sharedMenu.getModifiableCopyOfMenu();
+        List<SharedCourse> list = SharedCourseListUtils.copy(sharedMenu.getRoboTaxiMenu());
         listFunction.accept(list);
         return SharedMenu.of(list);
     }
 
     private static SharedMenu applyFunction(SharedMenu sharedMenu, BiConsumer<List<SharedCourse>, SharedCourse> listFunction, SharedCourse... sharedCourses) {
-        List<SharedCourse> list = sharedMenu.getModifiableCopyOfMenu();
+        List<SharedCourse> list = SharedCourseListUtils.copy(sharedMenu.getRoboTaxiMenu());
         for (SharedCourse sharedCourse : sharedCourses) {
             listFunction.accept(list, sharedCourse);
         }
@@ -112,7 +120,7 @@ public enum SharedMenuUtils {
     }
 
     private static SharedMenu applyFunction(SharedMenu sharedMenu, Integer integer, BiConsumer<List<SharedCourse>, Integer> listFunction) {
-        List<SharedCourse> list = sharedMenu.getModifiableCopyOfMenu();
+        List<SharedCourse> list = SharedCourseListUtils.copy(sharedMenu.getRoboTaxiMenu());
         listFunction.accept(list, integer);
         return SharedMenu.of(list);
     }

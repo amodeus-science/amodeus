@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -62,11 +63,22 @@ public enum SharedCourseListUtils {
     public static Set<String> getUniqueAVRequests(List<SharedCourse> courses) {
         return courses.stream().filter(sc -> !sc.getMealType().equals(SharedMealType.REDIRECT)).map(sc -> sc.getRequestId()).collect(Collectors.toSet());//
     }
+    
+    /** Gets the next course of the menu.
+     * 
+     * @return */
+    public static Optional<SharedCourse> getStarterCourse(List<SharedCourse> courses) {
+        return Optional.ofNullable((hasStarter(courses)) ? courses.get(0) : null);
+    }
 
     // **************************************************
     // Check Shared Course List
     // **************************************************
 
+    public static boolean hasStarter(List<SharedCourse> courses) {
+        return !courses.isEmpty();
+    }
+    
     public static boolean consistencyCheck(List<SharedCourse> courses) {
         return checkAllCoursesAppearOnlyOnce(courses) && checkNoPickupAfterDropoffOfSameRequest(courses);
     }
@@ -75,7 +87,7 @@ public enum SharedCourseListUtils {
         return new HashSet<>(courses).size() == courses.size();
     }
 
-    // TODO rewrite the following two functions.. might be done nicer
+    // TODO rewrite the following three functions.. might be done nicer
     /** @return false if any dropoff occurs after pickup in the menu or no dropoff ocurs for one pickup */
     public static boolean checkNoPickupAfterDropoffOfSameRequest(List<SharedCourse> courses) {
         for (SharedCourse course : courses) {
@@ -109,6 +121,25 @@ public enum SharedCourseListUtils {
             }
         }
         return null;
+    }
+    
+    public static boolean checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(List<SharedCourse> courses, int roboTaxiCapacity) {
+        long futureNumberCustomers = SharedCourseListUtils.getNumberCustomersOnBoard(courses);
+        for (SharedCourse sharedAVCourse : courses) {
+            if (sharedAVCourse.getMealType().equals(SharedMealType.PICKUP)) {
+                futureNumberCustomers++;
+            } else if (sharedAVCourse.getMealType().equals(SharedMealType.DROPOFF)) {
+                futureNumberCustomers--;
+            } else if (sharedAVCourse.getMealType().equals(SharedMealType.REDIRECT)) {
+                // --
+            } else {
+                throw new IllegalArgumentException("Unknown SharedAVMealType -- please specify it !!!--");
+            }
+            if (futureNumberCustomers > roboTaxiCapacity) {
+                return false;
+            }
+        }
+        return true;
     }
 
     // **************************************************

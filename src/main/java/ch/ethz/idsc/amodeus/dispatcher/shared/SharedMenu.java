@@ -32,20 +32,12 @@ public class SharedMenu {
         roboTaxiMenu = Collections.unmodifiableList((Objects.isNull(list)) ? new ArrayList<>() : list);
     }
 
-    /** Two ways how to get the Courses in the Menu:
+    /** 
      * this function returns an unmodifiable view of the menu.
      * 
      * @return */
     public List<SharedCourse> getRoboTaxiMenu() {
         return roboTaxiMenu;
-    }
-
-    /** Two ways how to get the Courses in the Menu:
-     * this function returns an deep copy of the courses in the menu.
-     * 
-     * @return */
-    public List<SharedCourse> getModifiableCopyOfMenu() {
-        return SharedCourseListUtils.copy(roboTaxiMenu);
     }
 
     @Override
