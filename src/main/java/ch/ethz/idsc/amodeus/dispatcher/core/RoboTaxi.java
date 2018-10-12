@@ -3,7 +3,6 @@ package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
@@ -13,7 +12,6 @@ import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 
-import ch.ethz.idsc.amodeus.analysis.Analysis;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
@@ -44,9 +42,9 @@ public class RoboTaxi {
     private LinkTimePair divertableLinkTime;
     private AbstractDirective directive;
 
-    /** capacity > 1 fields */
-    // TODO Lukas remove this field as it is redundant information to the RoboTaxiMenu
-    private int onBoardCustomers = 0;
+    /** shared fields
+     *  The Shared menu contains a lot of information. These can be extracted with the Utils functions
+     *  in RoboTaxiUtils and SharedCourseLItsUtils */
     private SharedMenu menu = SharedMenu.empty();;
 
     /** Standard constructor
@@ -161,7 +159,7 @@ public class RoboTaxi {
     /* package */ boolean isWithoutCustomer() {
         // TODO Check this comment
         // For now this works with universal dispatcher i.e. single used robotaxis as number of customers is never changed
-        return !status.equals(RoboTaxiStatus.DRIVEWITHCUSTOMER) && getCurrentNumberOfCustomersOnBoard() == 0;
+        return !status.equals(RoboTaxiStatus.DRIVEWITHCUSTOMER) && RoboTaxiUtils.getNumberOnBoardRequests(this) == 0;
     }
 
     /** @return {@Schedule} of the RoboTaxi, to be used only inside core package,
@@ -244,7 +242,7 @@ public class RoboTaxi {
 
     /**
      * Gives full information of the future menu (i.e. plans) of the {@link RoboTaxi}.
-     * This Information contains for example the numeber of customers on Board or the possibility to pick up new customers.
+     * This Information contains for example the number of customers on Board or the possibility to pick up new customers.
      * To get all this Information the {@link SharedCourseListUtils} class offers some of the standard functionalities. 
      * Similar Functionalities are Offered as well by the {@link RoboTaxiUtils} class. Take a look at these two clases when implementing Dispatchers 
      * Further information can be pulled from this menu by using standard List functionalities. 
@@ -277,10 +275,9 @@ public class RoboTaxi {
      * 2. The menu can not plan to pickup more persons than the capacity of the Robo Taxi at any Time 
      * @param menu
      */
-    public void updateMenu(SharedMenu menu) {
-        // TODO Discuss with Claudio/ Jan if this should throw an error or just ignore the command
-        GlobalAssert.that(RoboTaxiUtils.checkMenuConsistency(this));
+    private void updateMenu(SharedMenu menu) {
         GlobalAssert.that(SharedMenuUtils.containSameCourses(this.menu, menu));
+        GlobalAssert.that(SharedCourseListUtils.checkMenuConsistency(getUnmodifiableViewOfCourses(), getCapacity()));
         this.menu = menu;
     }
     
@@ -294,21 +291,7 @@ public class RoboTaxi {
      * @param List<SharedCourse>
      */
     public void updateMenu(List<SharedCourse> list) {
-        this.menu = SharedMenu.of(list);
-    }
-
-    
-    // TODO MAKE THESE FUNCTIONS INTO A STATIC FUNCTIONS (e.g. RoboTaxiUtils)
-    // TODO Remove This function
-    public int getCurrentNumberOfCustomersOnBoard() {
-        // TODO remove onboard customers in the future this
-        GlobalAssert.that(onBoardCustomers == SharedCourseListUtils.getNumberCustomersOnBoard(menu.getRoboTaxiMenu()));
-        return onBoardCustomers;
-    }
-
-    // TODO Remove This function
-    public Set<String> getAVRequestIdsOnBoard() {
-        return SharedCourseListUtils.getOnBoardRequestIds(menu.getRoboTaxiMenu());
+        updateMenu(SharedMenu.of(list));
     }
 
     /* package */ void addAVRequestToMenu(AVRequest avRequest) {
@@ -323,18 +306,14 @@ public class RoboTaxi {
         // TODO check these Global Asserts
         GlobalAssert.that(RoboTaxiUtils.canPickupNewCustomer(this));
         GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.PICKUP));
-        // TODO This should be removed so that we are independant of this
-        onBoardCustomers++;
         menu = SharedMenuUtils.removeStarterCourse(menu);
     }
 
     /* package */ void dropOffCustomer() {
         // TODO Check this Global Asserts
-        GlobalAssert.that(getCurrentNumberOfCustomersOnBoard() > 0);
-        GlobalAssert.that(getCurrentNumberOfCustomersOnBoard() <= getCapacity());
+        GlobalAssert.that(RoboTaxiUtils.getNumberOnBoardRequests(this) > 0);
+        GlobalAssert.that(RoboTaxiUtils.getNumberOnBoardRequests(this) <= getCapacity());
         GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.DROPOFF));
-        // TODO This should be removed so that we are independant of this
-        onBoardCustomers--;
         menu = SharedMenuUtils.removeStarterCourse(menu);
     }
 

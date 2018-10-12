@@ -15,10 +15,12 @@ public class SharedCourse {
     
     /** fast access functions */
     public static SharedCourse pickupCourse(AVRequest avRequest) {
+        Objects.requireNonNull(avRequest);
         return new SharedCourse(avRequest, avRequest.getFromLink(), SharedMealType.PICKUP);
     }
 
     public static SharedCourse dropoffCourse(AVRequest avRequest) {
+        Objects.requireNonNull(avRequest);
         return new SharedCourse(avRequest, avRequest.getToLink(), SharedMealType.DROPOFF);
     }
 
@@ -34,15 +36,16 @@ public class SharedCourse {
     private final AVRequest avRequest;
     private static final AVRequest STANDARD_REDIRECT_AVREQUEST = null;
 
-    // TODO Lukas after implementing tests, carefully check if requestID and link can be replaced with AVRequest ?
     /** @param for {@link SharedMealType} PICKUP and DROPOFF the requestID must be the
      *            id of the {@link AVRequest}, otherwise a self-chosen id to distinguish different
      *            {@link SharedMealType} tasks of type REDIRECT
      * @param link
      * @param sharedAVMealType */
-    private SharedCourse(AVRequest avRequest, Link link, SharedMealType sharedAVMealType) {
+    protected SharedCourse(AVRequest avRequest, Link link, SharedMealType sharedAVMealType) {
+        Objects.requireNonNull(link);
         this.link = link;
         this.avRequest = avRequest;
+        Objects.requireNonNull(sharedAVMealType);
         this.sharedRoboTaxiMealType = sharedAVMealType;
     }
 

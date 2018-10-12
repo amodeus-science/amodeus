@@ -36,7 +36,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
         return sharedMenu1.getRoboTaxiMenu().size() == sharedMenu2.getRoboTaxiMenu().size() && //
                 sharedMenu1.getRoboTaxiMenu().containsAll(sharedMenu2.getRoboTaxiMenu());
     }
-
+    
     public static boolean checkAllCoursesAppearOnlyOnce(SharedMenu sharedMenu) {
         return SharedCourseListUtils.checkAllCoursesAppearOnlyOnce(sharedMenu.getRoboTaxiMenu());
     }

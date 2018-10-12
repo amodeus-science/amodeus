@@ -89,6 +89,10 @@ public enum SharedCourseListUtils {
         return new HashSet<>(courses).size() == courses.size();
     }
 
+    public static boolean checkMenuConsistency(List<SharedCourse> courses, int capacity) {
+        return checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(courses, capacity);
+    }
+    
     /** @return false if any dropoff occurs after pickup in the menu.
      *         If no dropoff ocurs for one pickup an exception is thrown as this is not allowed in a {@link SharedMenu} */
     public static boolean checkNoPickupAfterDropoffOfSameRequest(List<SharedCourse> courses) {
@@ -188,5 +192,7 @@ public enum SharedCourseListUtils {
         GlobalAssert.that(courses.contains(sharedAVCourse));
         courses.remove(sharedAVCourse);
     }
+
+
 
 }

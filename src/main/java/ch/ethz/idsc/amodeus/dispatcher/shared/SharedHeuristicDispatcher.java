@@ -113,8 +113,7 @@ public class SharedHeuristicDispatcher extends SharedUniversalDispatcher {
                             list.addAll(pickupMenu);
                             list.add(SharedCourse.dropoffCourse(avRequest));
                             list.addAll(dropoffMenu);
-                            SharedMenu menu = SharedMenu.of(list);
-                            matchedRoboTaxi.updateMenu(menu);
+                            matchedRoboTaxi.updateMenu(list);
                         }
                     }
                 }

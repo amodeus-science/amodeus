@@ -147,7 +147,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 
     protected final Collection<RoboTaxi> getRoboTaxisWithAtLeastXFreeSeats(int x) {
         return getDivertableRoboTaxis().stream() //
-                .filter(rt -> rt.getCapacity() - rt.getCurrentNumberOfCustomersOnBoard() >= x) //
+                .filter(rt -> rt.getCapacity() - RoboTaxiUtils.getNumberOnBoardRequests(rt) >= x) //
                 .collect(Collectors.toList());
     }
 
@@ -219,7 +219,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
                     if (roboTaxi.isDivertable()) {
                         Link destLink = getStarterLink(roboTaxi);
                         RoboTaxiStatus status = RoboTaxiStatus.REBALANCEDRIVE;
-                        if (roboTaxi.getCurrentNumberOfCustomersOnBoard() > 0) {
+                        if (RoboTaxiUtils.getNumberOnBoardRequests(roboTaxi) > 0) {
                             status = RoboTaxiStatus.DRIVEWITHCUSTOMER;
                         } else if (currentCourse.get().getMealType().equals(SharedMealType.PICKUP)) {
                             status = RoboTaxiStatus.DRIVETOCUSTOMER;
@@ -600,7 +600,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
 
         /** check that the number of customers in vehicles equals
          * the number of picked up minus droped off customers. */
-        GlobalAssert.that(total_matchedRequests - total_dropedOffRequests == getRoboTaxis().stream().mapToInt(rt -> rt.getCurrentNumberOfCustomersOnBoard()).sum());
+        GlobalAssert.that(total_matchedRequests - total_dropedOffRequests == getRoboTaxis().stream().mapToInt(rt -> RoboTaxiUtils.getNumberOnBoardRequests(rt)).sum());
 
     }
 
