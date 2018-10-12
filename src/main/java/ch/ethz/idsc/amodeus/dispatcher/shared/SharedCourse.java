@@ -12,25 +12,27 @@ import ch.ethz.matsim.av.passenger.AVRequest;
  * composed of {@link SharedCourse}s which internally have a {@link SharedMealType}s */
 public class SharedCourse {
 
-    
     /** fast access functions */
     public static SharedCourse pickupCourse(AVRequest avRequest) {
         Objects.requireNonNull(avRequest);
-        return new SharedCourse(avRequest, avRequest.getFromLink(), SharedMealType.PICKUP);
+        return new SharedCourse(avRequest, avRequest.getFromLink(), avRequest.getId().toString(), SharedMealType.PICKUP);
     }
 
     public static SharedCourse dropoffCourse(AVRequest avRequest) {
         Objects.requireNonNull(avRequest);
-        return new SharedCourse(avRequest, avRequest.getToLink(), SharedMealType.DROPOFF);
+        return new SharedCourse(avRequest, avRequest.getToLink(), avRequest.getId().toString(), SharedMealType.DROPOFF);
     }
 
-    // FIXME Whats the meaning of this ID? maybe null might be a possibility as it is ment for the AV Request. 
-    public static SharedCourse redirectCourse(Link link) {
-        return new SharedCourse(STANDARD_REDIRECT_AVREQUEST, link, SharedMealType.REDIRECT);
+    /** @param link the destination of the redirection
+     * @param courseId is an unique identifier for an Redirect Course
+     * @return */
+    public static SharedCourse redirectCourse(Link link, String courseId) {
+        //might it be a possibility to at a new AV Request here? new AVRequest()
+        return new SharedCourse(STANDARD_REDIRECT_AVREQUEST, link, courseId, SharedMealType.REDIRECT);
     }
 
     /** class implementation */
-//    private final String requestID;
+    private final String courseID;
     private final Link link;
     private final SharedMealType sharedRoboTaxiMealType;
     private final AVRequest avRequest;
@@ -41,10 +43,12 @@ public class SharedCourse {
      *            {@link SharedMealType} tasks of type REDIRECT
      * @param link
      * @param sharedAVMealType */
-    protected SharedCourse(AVRequest avRequest, Link link, SharedMealType sharedAVMealType) {
+    protected SharedCourse(AVRequest avRequest, Link link, String courseId, SharedMealType sharedAVMealType) {
         Objects.requireNonNull(link);
         this.link = link;
         this.avRequest = avRequest;
+        Objects.requireNonNull(courseId);
+        this.courseID = courseId;
         Objects.requireNonNull(sharedAVMealType);
         this.sharedRoboTaxiMealType = sharedAVMealType;
     }
@@ -54,8 +58,7 @@ public class SharedCourse {
     }
 
     public String getRequestId() {
-        GlobalAssert.that(!avRequest.equals(STANDARD_REDIRECT_AVREQUEST));
-        return avRequest.getId().toString();
+        return courseID;
     }
 
     public Link getLink() {
@@ -65,12 +68,12 @@ public class SharedCourse {
     public AVRequest getAvRequest() {
         return avRequest;
     }
-    
+
     @Override
     public boolean equals(Object object) {
         if (object instanceof SharedCourse) {
             SharedCourse sharedAVCourse = (SharedCourse) object;
-            // TODO IT might as well Work with comparing the avRequest itself... 
+            // TODO IT might as well Work with comparing the avRequest itself...
             return sharedAVCourse.getRequestId().equals(getRequestId()) && //
                     sharedAVCourse.getLink().equals(link) && //
                     sharedAVCourse.getMealType().equals(sharedRoboTaxiMealType);
@@ -80,6 +83,6 @@ public class SharedCourse {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getRequestId(), sharedRoboTaxiMealType);
+        return Objects.hash(courseID, sharedRoboTaxiMealType, link);
     }
 }
