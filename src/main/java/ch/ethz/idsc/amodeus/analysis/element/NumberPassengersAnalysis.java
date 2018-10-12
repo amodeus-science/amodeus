@@ -56,13 +56,12 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
             // In case a request was picked up in this timestep
             if (requestContainer.requestStatus.contains(RequestStatus.PICKUP)) {
                 int vehicleId = requestContainer.associatedVehicle;
-                
+
                 lastNumPassInVs.set(lastNumPassInVs.Get(vehicleId).add(RealScalar.ONE), vehicleId);
                 // update the map which stores for each pickup which RoboTaxi serves this request
                 requestVehiclePickups.put(requestContainer.requestIndex, vehicleId);
                 // update the map which stores with how many other requests the trip was shared
                 GlobalAssert.that(currentPassengers.get(vehicleId).add(requestContainer.requestIndex));
-                updateSharedWith(vehicleId);
             }
             // In case a request was dropped off in this timestep
             if (requestContainer.requestStatus.contains(RequestStatus.DROPOFF)) {
@@ -72,26 +71,31 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
                 GlobalAssert.that(currentPassengers.get(vehicleId).remove(requestContainer.requestIndex));
             }
         }
+
+        // Update the sharing graph for all the vehicles
+        updateSharedWith();
+
         // TEST which can be used to make this calculation easier in the future;
         Tensor numPassengersPerRoboTaxi = Array.zeros(simulationObject.vehicles.size()); // could be done before class
         currentPassengers.forEach((v, rs) -> numPassengersPerRoboTaxi.set(RealScalar.of(rs.size()), v));
         GlobalAssert.that(numPassengersPerRoboTaxi.equals(lastNumPassInVs));
-        
+
         numberPassengers.append(lastNumPassInVs);
         passengerDistribution.append(BinCounts.of(lastNumPassInVs));
         time.append(RealScalar.of(simulationObject.now));
     }
 
-    private void updateSharedWith(int vehicleIndex) {
-        Set<Integer> requestsInVehicle = currentPassengers.get(vehicleIndex);
-        int numberOtherPassengers = requestsInVehicle.size() - 1;
-        for (Integer requestindex : requestsInVehicle) {
-            if (sharedOthersMap.containsKey(requestindex)) {
-                if (sharedOthersMap.get(requestindex) < numberOtherPassengers) {
+    private void updateSharedWith() {
+        for (Set<Integer> requestsInVehicle : currentPassengers.values()) {
+            int numberOtherPassengers = requestsInVehicle.size() - 1;
+            for (Integer requestindex : requestsInVehicle) {
+                if (sharedOthersMap.containsKey(requestindex)) {
+                    if (sharedOthersMap.get(requestindex) < numberOtherPassengers) {
+                        sharedOthersMap.put(requestindex, numberOtherPassengers);
+                    }
+                } else {
                     sharedOthersMap.put(requestindex, numberOtherPassengers);
                 }
-            } else {
-                sharedOthersMap.put(requestindex, numberOtherPassengers);
             }
         }
     }
