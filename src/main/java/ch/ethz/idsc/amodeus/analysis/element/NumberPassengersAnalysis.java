@@ -42,7 +42,6 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
     public void register(SimulationObject simulationObject) {
 
         /** On first Timestep fill the Tensor for the Vehicles as well as the map with the current passengers */
-        // TODO Lukas as soon as the robo taxi contains a list of requests, use this instead
         if (beforeFirstSimulationObject) {
             lastNumPassInVs = Array.zeros(simulationObject.vehicles.size());
             simulationObject.vehicles.forEach(vc -> currentPassengers.put(vc.vehicleIndex, new HashSet<>()));
@@ -63,8 +62,6 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
             }
             if (requestContainer.requestStatus.contains(RequestStatus.DROPOFF)) {
                 GlobalAssert.that(requestVehiclePickups.containsKey(requestContainer.requestIndex));
-                // TODO Lukas It should be possible that the dropoff vehicle is stored in the Request Container
-                // TODO Lukas but it seems this information is not stored!
                 int vehicleIndex = requestVehiclePickups.get(requestContainer.requestIndex);
                 Scalar lastNumberPassengerDropOff = lastNumPassInVs.Get(vehicleIndex);
                 lastNumPassInVs.set(lastNumberPassengerDropOff.subtract(RealScalar.ONE), vehicleIndex);

@@ -102,7 +102,7 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
 
                     /** add a redirect task (to the north pole) and move to prev */
                     Link redirectLink = cityNorthPole;
-                    SharedCourse redirectCourse = SharedCourse.redirectCourse(redirectLink, // TODO LUKAS/ CLAUDIO, do we need this information in this string?
+                    SharedCourse redirectCourse = SharedCourse.redirectCourse(redirectLink,
                             Double.toString(now) + sharedRoboTaxi.getId().toString());
                     addSharedRoboTaxiRedirect(sharedRoboTaxi, redirectCourse);
                     sharedRoboTaxi.moveAVCourseToPrev(redirectCourse);

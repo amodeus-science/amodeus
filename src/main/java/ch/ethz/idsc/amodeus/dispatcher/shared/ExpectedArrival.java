@@ -48,9 +48,9 @@ public enum ExpectedArrival {
             if (!failFlag) {
                 time = time.add(timeTo);
                 linkCurr = course.getLink();
-                expDropoff.put(course.getRequestId(), time);
+                expDropoff.put(course.getCourseId(), time);
             } else {
-                expDropoff.put(course.getRequestId(), null);
+                expDropoff.put(course.getCourseId(), null);
             }
         }
         return expDropoff;

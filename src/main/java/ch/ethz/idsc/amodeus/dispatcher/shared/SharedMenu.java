@@ -53,8 +53,7 @@ public class SharedMenu {
             SharedMenu sharedAVMenu = (SharedMenu) object;
             boolean simpleCheck = roboTaxiMenu.equals(sharedAVMenu.getRoboTaxiMenu());
             List<SharedCourse> otherMenu = sharedAVMenu.roboTaxiMenu;
-            // TODO LUXURY there is an easier way to check for equality
-
+            // TODO Lukas Remove soon the part below and use the result of above.
             if (otherMenu.size() == roboTaxiMenu.size()) {
                 for (int i = 0; i < roboTaxiMenu.size(); i++)
                     if (!roboTaxiMenu.get(i).equals(sharedAVMenu.roboTaxiMenu.get(i))) {

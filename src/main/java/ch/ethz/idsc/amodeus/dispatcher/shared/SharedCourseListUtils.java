@@ -62,10 +62,13 @@ public enum SharedCourseListUtils {
         return getNumberDropoffs(courses) - getNumberPickups(courses);
     }
 
-    public static Set<String> getUniqueAVRequests(List<SharedCourse> courses) {
-        return courses.stream().filter(sc -> !sc.getMealType().equals(SharedMealType.REDIRECT)).map(sc -> sc.getRequestId()).collect(Collectors.toSet());//
+    public static Set<String> getUniqueAVRequestIds(List<SharedCourse> courses) {
+        return getUniqueAVRequest(courses).stream().map(av->av.getId().toString()).collect(Collectors.toSet());//
     }
 
+    public static Set<AVRequest> getUniqueAVRequest(List<SharedCourse> courses) {
+        return courses.stream().filter(sc -> !sc.getMealType().equals(SharedMealType.REDIRECT)).map(sc -> sc.getAvRequest()).collect(Collectors.toSet());//
+    }
     /** Gets the next course of the menu.
      * 
      * @return */

@@ -11,7 +11,6 @@ import ch.ethz.idsc.amodeus.dispatcher.FeedforwardFluidicTimeVaryingRebalancingP
 import ch.ethz.idsc.amodeus.dispatcher.GlobalBipartiteMatchingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.SQMDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.NorthPoleSharedDispatcher;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedHeuristicDispatcher;
 import ch.ethz.matsim.av.framework.AVUtils;
 
 public class AmodeusDispatcherModule extends AbstractModule {
@@ -45,9 +44,6 @@ public class AmodeusDispatcherModule extends AbstractModule {
 
         bind(NorthPoleSharedDispatcher.Factory.class);
         AVUtils.bindDispatcherFactory(binder(), NorthPoleSharedDispatcher.class.getSimpleName()).to(NorthPoleSharedDispatcher.Factory.class);
-
-        bind(SharedHeuristicDispatcher.Factory.class);
-        AVUtils.bindDispatcherFactory(binder(), SharedHeuristicDispatcher.class.getSimpleName()).to(SharedHeuristicDispatcher.Factory.class);
 
     }
 }

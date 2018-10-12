@@ -27,7 +27,7 @@ public class SharedCourse {
      * @param courseId is an unique identifier for an Redirect Course
      * @return */
     public static SharedCourse redirectCourse(Link link, String courseId) {
-        //might it be a possibility to at a new AV Request here? new AVRequest()
+        // TODO Claudio, Lukas. What would be a good solution for this id? might it be a possibility to at a new AV Request here? new AVRequest()
         return new SharedCourse(STANDARD_REDIRECT_AVREQUEST, link, courseId, SharedMealType.REDIRECT);
     }
 
@@ -57,7 +57,7 @@ public class SharedCourse {
         return sharedRoboTaxiMealType;
     }
 
-    public String getRequestId() {
+    public String getCourseId() {
         return courseID;
     }
 
@@ -73,8 +73,7 @@ public class SharedCourse {
     public boolean equals(Object object) {
         if (object instanceof SharedCourse) {
             SharedCourse sharedAVCourse = (SharedCourse) object;
-            // TODO IT might as well Work with comparing the avRequest itself...
-            return sharedAVCourse.getRequestId().equals(getRequestId()) && //
+            return sharedAVCourse.getCourseId().equals(courseID) && //
                     sharedAVCourse.getLink().equals(link) && //
                     sharedAVCourse.getMealType().equals(sharedRoboTaxiMealType);
         }
