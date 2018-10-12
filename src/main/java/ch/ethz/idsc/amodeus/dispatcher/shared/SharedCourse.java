@@ -51,7 +51,7 @@ public class SharedCourse {
     }
 
     public String getRequestId() {
-        GlobalAssert.that(avRequest.equals(STANDARD_REDIRECT_AVREQUEST));
+        GlobalAssert.that(!avRequest.equals(STANDARD_REDIRECT_AVREQUEST));
         return avRequest.getId().toString();
     }
 
@@ -59,6 +59,10 @@ public class SharedCourse {
         return link;
     }
 
+    public AVRequest getAvRequest() {
+        return avRequest;
+    }
+    
     @Override
     public boolean equals(Object object) {
         if (object instanceof SharedCourse) {

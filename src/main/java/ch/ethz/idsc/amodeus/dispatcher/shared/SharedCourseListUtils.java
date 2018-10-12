@@ -4,16 +4,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.matsim.av.passenger.AVRequest;
 
-/** This class gives some functionalities on modifiable Lists of Shared AV Courses. It extends normal List functionalities with some Tests
- * 
- * @author Lukas Sieber */
+/** This class gives some functionalities on modifiable Lists of Shared AV Courses. It extends normal List functionalities with some Tests */
 public enum SharedCourseListUtils {
     ;
 
@@ -26,9 +24,13 @@ public enum SharedCourseListUtils {
     // **************************************************
 
     public static Set<String> getOnBoardRequestIds(List<SharedCourse> courses) {
-        Set<String> pickups = getIdsWithMealType(courses, SharedMealType.PICKUP);
-        Set<String> dropoffs = getIdsWithMealType(courses, SharedMealType.DROPOFF);
-        for (String avRequestIDpickup : pickups) {
+        return getOnBoardRequests(courses).stream().map(avR -> avR.getId().toString()).collect(Collectors.toSet());
+    }
+
+    public static Set<AVRequest> getOnBoardRequests(List<SharedCourse> courses) {
+        Set<AVRequest> pickups = getRequestsWithMealType(courses, SharedMealType.PICKUP);
+        Set<AVRequest> dropoffs = getRequestsWithMealType(courses, SharedMealType.DROPOFF);
+        for (AVRequest avRequestIDpickup : pickups) {
             boolean removeOk = dropoffs.remove(avRequestIDpickup);
             GlobalAssert.that(removeOk);
         }
@@ -36,8 +38,8 @@ public enum SharedCourseListUtils {
         return dropoffs;
     }
 
-    private static Set<String> getIdsWithMealType(List<SharedCourse> courses, SharedMealType sharedMealType) {
-        return courses.stream().filter(sc -> sc.getMealType().equals(sharedMealType)).map(sc -> sc.getRequestId()).collect(Collectors.toSet());
+    private static Set<AVRequest> getRequestsWithMealType(List<SharedCourse> courses, SharedMealType sharedMealType) {
+        return courses.stream().filter(sc -> sc.getMealType().equals(sharedMealType)).map(sc -> sc.getAvRequest()).collect(Collectors.toSet());
     }
 
     public static long getNumberPickups(List<SharedCourse> courses) {
@@ -63,7 +65,7 @@ public enum SharedCourseListUtils {
     public static Set<String> getUniqueAVRequests(List<SharedCourse> courses) {
         return courses.stream().filter(sc -> !sc.getMealType().equals(SharedMealType.REDIRECT)).map(sc -> sc.getRequestId()).collect(Collectors.toSet());//
     }
-    
+
     /** Gets the next course of the menu.
      * 
      * @return */
@@ -78,7 +80,7 @@ public enum SharedCourseListUtils {
     public static boolean hasStarter(List<SharedCourse> courses) {
         return !courses.isEmpty();
     }
-    
+
     public static boolean consistencyCheck(List<SharedCourse> courses) {
         return checkAllCoursesAppearOnlyOnce(courses) && checkNoPickupAfterDropoffOfSameRequest(courses);
     }
@@ -87,20 +89,19 @@ public enum SharedCourseListUtils {
         return new HashSet<>(courses).size() == courses.size();
     }
 
-    // TODO rewrite the following three functions.. might be done nicer
-    /** @return false if any dropoff occurs after pickup in the menu or no dropoff ocurs for one pickup */
+    /** @return false if any dropoff occurs after pickup in the menu.
+     *         If no dropoff ocurs for one pickup an exception is thrown as this is not allowed in a {@link SharedMenu} */
     public static boolean checkNoPickupAfterDropoffOfSameRequest(List<SharedCourse> courses) {
         for (SharedCourse course : courses) {
             if (course.getMealType().equals(SharedMealType.PICKUP)) {
                 int pickupIndex = courses.indexOf(course);
-                SharedCourse dropoffCourse = getCorrespDropoff(courses, course);
-                if (Objects.nonNull(dropoffCourse)) {
-                    int dropofIndex = courses.indexOf(dropoffCourse);
-                    if (pickupIndex > dropofIndex) {
-                        System.err.println("The SharedRoboTaxiMenu contains a pickup after its dropoff. Stopping Execution.");
-                        return false;
-                    }
-                } else {
+                // This has always to be true as the menu has to contain a dropoff for each pick up
+                // TODO Lukas might be removed soon or changed to global Assert
+                SharedCourse dropoffCourse = SharedCourse.dropoffCourse(course.getAvRequest());
+                GlobalAssert.that(courses.contains(dropoffCourse));
+                int dropofIndex = courses.indexOf(dropoffCourse);
+                if (pickupIndex > dropofIndex) {
+                    System.err.println("The SharedRoboTaxiMenu contains a pickup after its dropoff. Stopping Execution.");
                     return false;
                 }
             }
@@ -108,21 +109,6 @@ public enum SharedCourseListUtils {
         return true;
     }
 
-    /** @param pickupCourse
-     * @return corresponding {@link SharedCourse} where dropoff takes place or
-     *         null if not found */
-    private static SharedCourse getCorrespDropoff(List<SharedCourse> courses, SharedCourse pickupCourse) {
-        GlobalAssert.that(pickupCourse.getMealType().equals(SharedMealType.PICKUP));
-        for (SharedCourse course : courses) {
-            if (course.getRequestId().equals(pickupCourse.getRequestId())) {
-                if (course.getMealType().equals(SharedMealType.DROPOFF)) {
-                    return course;
-                }
-            }
-        }
-        return null;
-    }
-    
     public static boolean checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(List<SharedCourse> courses, int roboTaxiCapacity) {
         long futureNumberCustomers = SharedCourseListUtils.getNumberCustomersOnBoard(courses);
         for (SharedCourse sharedAVCourse : courses) {

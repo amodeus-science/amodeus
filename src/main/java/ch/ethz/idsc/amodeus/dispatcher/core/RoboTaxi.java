@@ -13,6 +13,7 @@ import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 
+import ch.ethz.idsc.amodeus.analysis.Analysis;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
@@ -241,6 +242,14 @@ public class RoboTaxi {
     // Shared Functionalities, needed here because of capacity
     // **********************************************
 
+    /**
+     * Gives full information of the future menu (i.e. plans) of the {@link RoboTaxi}.
+     * This Information contains for example the numeber of customers on Board or the possibility to pick up new customers.
+     * To get all this Information the {@link SharedCourseListUtils} class offers some of the standard functionalities. 
+     * Similar Functionalities are Offered as well by the {@link RoboTaxiUtils} class. Take a look at these two clases when implementing Dispatchers 
+     * Further information can be pulled from this menu by using standard List functionalities. 
+     * @return An unmodifiable {@link List} of {@link SharedCourse}s which can only be read but not modified 
+     */
     public List<SharedCourse> getUnmodifiableViewOfCourses() {
         return menu.getRoboTaxiMenu();
     }
