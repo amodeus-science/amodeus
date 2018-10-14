@@ -13,6 +13,8 @@ import org.jfree.chart.title.LegendTitle;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.ui.RectangleEdge;
 
+import ch.ethz.idsc.tensor.img.ColorDataIndexed;
+
 public enum CompositionStack {
     ;
 
@@ -20,7 +22,7 @@ public enum CompositionStack {
     private static final int HEIGHT = 125; /* Height of the image */
 
     public static void of(File directory, String fileTitle, String diagramTitle, //
-            double[] values, String[] labels, ColorScheme colorScheme) throws Exception {
+            double[] values, String[] labels, ColorDataIndexed colorDataIndexed) throws Exception {
 
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         for (int i = 0; i < labels.length; ++i) {
@@ -44,8 +46,8 @@ public enum CompositionStack {
 
         // Adapt colors & style
         for (int i = 0; i < labels.length; i++) {
-            chart.getCategoryPlot().getRenderer().setSeriesPaint(i, colorScheme.of(i));
-            chart.getCategoryPlot().getRenderer().setSeriesOutlinePaint(i, colorScheme.of(i).darker());
+            chart.getCategoryPlot().getRenderer().setSeriesPaint(i, colorDataIndexed.getColor(i));
+            chart.getCategoryPlot().getRenderer().setSeriesOutlinePaint(i, colorDataIndexed.getColor(i).darker());
             chart.getCategoryPlot().getRenderer().setSeriesOutlineStroke(i, new BasicStroke(1.0f));
         }
 

@@ -38,7 +38,7 @@ public class StatusDistributionElement implements AnalysisElement, TotalValueApp
 
     @Override
     public void consolidate() {
-        // TODO Check these Calculations!!!!! DOES NOT WORK YET!!!
+        // TODO Who? Check these Calculations!!!!! DOES NOT WORK YET!!!
         int timeStep = time.Get(1).subtract(time.Get(0)).number().intValue();
         Map<RoboTaxiStatus, Integer> timeStepsPerStatus = new HashMap<>();
         for (RoboTaxiStatus roboTaxiStatus : RoboTaxiStatus.values()) {
