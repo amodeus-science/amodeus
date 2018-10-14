@@ -23,11 +23,11 @@ public enum SharedCourseListUtils {
     // Get Funcitons
     // **************************************************
 
-    public static Set<String> getOnBoardRequestIds(List<SharedCourse> courses) {
+    public static Set<String> getOnBoardRequestIds(List<? extends SharedCourse> courses) {
         return getOnBoardRequests(courses).stream().map(avR -> avR.getId().toString()).collect(Collectors.toSet());
     }
 
-    public static Set<AVRequest> getOnBoardRequests(List<SharedCourse> courses) {
+    public static Set<AVRequest> getOnBoardRequests(List<? extends SharedCourse> courses) {
         Set<AVRequest> pickups = getRequestsWithMealType(courses, SharedMealType.PICKUP);
         Set<AVRequest> dropoffs = getRequestsWithMealType(courses, SharedMealType.DROPOFF);
         for (AVRequest avRequestIDpickup : pickups) {
@@ -38,41 +38,41 @@ public enum SharedCourseListUtils {
         return dropoffs;
     }
 
-    private static Set<AVRequest> getRequestsWithMealType(List<SharedCourse> courses, SharedMealType sharedMealType) {
+    private static Set<AVRequest> getRequestsWithMealType(List<? extends SharedCourse> courses, SharedMealType sharedMealType) {
         return courses.stream().filter(sc -> sc.getMealType().equals(sharedMealType)).map(sc -> sc.getAvRequest()).collect(Collectors.toSet());
     }
 
-    public static long getNumberPickups(List<SharedCourse> courses) {
+    public static long getNumberPickups(List<? extends SharedCourse> courses) {
         return getNumberSharedMealType(courses, SharedMealType.PICKUP);
     }
 
-    public static long getNumberDropoffs(List<SharedCourse> courses) {
+    public static long getNumberDropoffs(List<? extends SharedCourse> courses) {
         return getNumberSharedMealType(courses, SharedMealType.DROPOFF);
     }
 
-    public static long getNumberRedirections(List<SharedCourse> courses) {
+    public static long getNumberRedirections(List<? extends SharedCourse> courses) {
         return getNumberSharedMealType(courses, SharedMealType.REDIRECT);
     }
 
-    private static long getNumberSharedMealType(List<SharedCourse> courses, SharedMealType sharedMealType) {
+    private static long getNumberSharedMealType(List<? extends SharedCourse> courses, SharedMealType sharedMealType) {
         return courses.stream().filter(sc -> sc.getMealType().equals(sharedMealType)).count();
     }
 
-    public static long getNumberCustomersOnBoard(List<SharedCourse> courses) {
+    public static long getNumberCustomersOnBoard(List<? extends SharedCourse> courses) {
         return getNumberDropoffs(courses) - getNumberPickups(courses);
     }
 
-    public static Set<String> getUniqueAVRequestIds(List<SharedCourse> courses) {
+    public static Set<String> getUniqueAVRequestIds(List<? extends SharedCourse> courses) {
         return getUniqueAVRequest(courses).stream().map(av->av.getId().toString()).collect(Collectors.toSet());//
     }
 
-    public static Set<AVRequest> getUniqueAVRequest(List<SharedCourse> courses) {
+    public static Set<AVRequest> getUniqueAVRequest(List<? extends SharedCourse> courses) {
         return courses.stream().filter(sc -> !sc.getMealType().equals(SharedMealType.REDIRECT)).map(sc -> sc.getAvRequest()).collect(Collectors.toSet());//
     }
     /** Gets the next course of the menu.
      * 
      * @return */
-    public static Optional<SharedCourse> getStarterCourse(List<SharedCourse> courses) {
+    public static Optional<? extends SharedCourse> getStarterCourse(List<? extends SharedCourse> courses) {
         return Optional.ofNullable((hasStarter(courses)) ? courses.get(0) : null);
     }
 
@@ -80,25 +80,25 @@ public enum SharedCourseListUtils {
     // Check Shared Course List
     // **************************************************
 
-    public static boolean hasStarter(List<SharedCourse> courses) {
+    public static boolean hasStarter(List<? extends SharedCourse> courses) {
         return !courses.isEmpty();
     }
 
-    public static boolean consistencyCheck(List<SharedCourse> courses) {
+    public static boolean consistencyCheck(List<? extends SharedCourse> courses) {
         return checkAllCoursesAppearOnlyOnce(courses) && checkNoPickupAfterDropoffOfSameRequest(courses);
     }
 
-    public static boolean checkAllCoursesAppearOnlyOnce(List<SharedCourse> courses) {
+    public static boolean checkAllCoursesAppearOnlyOnce(List<? extends SharedCourse> courses) {
         return new HashSet<>(courses).size() == courses.size();
     }
 
-    public static boolean checkMenuConsistency(List<SharedCourse> courses, int capacity) {
+    public static boolean checkMenuConsistency(List<? extends SharedCourse> courses, int capacity) {
         return checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(courses, capacity);
     }
     
     /** @return false if any dropoff occurs after pickup in the menu.
      *         If no dropoff ocurs for one pickup an exception is thrown as this is not allowed in a {@link SharedMenu} */
-    public static boolean checkNoPickupAfterDropoffOfSameRequest(List<SharedCourse> courses) {
+    public static boolean checkNoPickupAfterDropoffOfSameRequest(List<? extends SharedCourse> courses) {
         for (SharedCourse course : courses) {
             if (course.getMealType().equals(SharedMealType.PICKUP)) {
                 int pickupIndex = courses.indexOf(course);
@@ -116,7 +116,7 @@ public enum SharedCourseListUtils {
         return true;
     }
 
-    public static boolean checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(List<SharedCourse> courses, int roboTaxiCapacity) {
+    public static boolean checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(List<? extends SharedCourse> courses, int roboTaxiCapacity) {
         long futureNumberCustomers = SharedCourseListUtils.getNumberCustomersOnBoard(courses);
         for (SharedCourse sharedAVCourse : courses) {
             if (sharedAVCourse.getMealType().equals(SharedMealType.PICKUP)) {

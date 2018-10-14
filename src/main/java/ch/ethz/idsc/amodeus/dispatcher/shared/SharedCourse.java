@@ -36,7 +36,7 @@ public class SharedCourse {
     private final Link link;
     private final SharedMealType sharedRoboTaxiMealType;
     private final AVRequest avRequest;
-    private static final AVRequest STANDARD_REDIRECT_AVREQUEST = null;
+    protected static final AVRequest STANDARD_REDIRECT_AVREQUEST = null;
 
     /** @param for {@link SharedMealType} PICKUP and DROPOFF the requestID must be the
      *            id of the {@link AVRequest}, otherwise a self-chosen id to distinguish different
