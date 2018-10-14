@@ -41,7 +41,7 @@ public enum ExpectedArrival {
         Scalar time = Quantity.of(now, SI.SECOND);
         Link linkCurr = roboTaxi.getDivertableLocation();
         boolean failFlag = false;
-        for (SharedCourse course :roboTaxi.getUnmodifiableViewOfCourses()) {
+        for (SharedCourse course : roboTaxi.getUnmodifiableViewOfCourses()) {
             Scalar timeTo = timeFromTo(linkCurr, course.getLink(), time, roboTaxi, router);
             if (Objects.isNull(timeTo))
                 failFlag = true;

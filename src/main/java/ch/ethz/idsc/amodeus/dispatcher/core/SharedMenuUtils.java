@@ -12,7 +12,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
 /** This class covers the static functions on a Shared Menu.
  * 
  * @author Lukas Sieber */
-/*package*/ enum SharedMenuUtils {
+/* package */ enum SharedMenuUtils {
     ;
 
     // **************************************************
@@ -36,7 +36,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
         return sharedMenu1.getRoboTaxiMenu().size() == sharedMenu2.getRoboTaxiMenu().size() && //
                 sharedMenu1.getRoboTaxiMenu().containsAll(sharedMenu2.getRoboTaxiMenu());
     }
-    
+
     public static boolean checkAllCoursesAppearOnlyOnce(SharedMenu sharedMenu) {
         return SharedCourseListUtils.checkAllCoursesAppearOnlyOnce(sharedMenu.getRoboTaxiMenu());
     }
@@ -44,7 +44,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
     public static boolean checkNoPickupAfterDropoffOfSameRequest(SharedMenu sharedMenu) {
         return SharedCourseListUtils.checkNoPickupAfterDropoffOfSameRequest(sharedMenu.getRoboTaxiMenu());
     }
-    
+
     public static boolean checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(SharedMenu sharedMenu, int roboTaxiCapacity) {
         return SharedCourseListUtils.checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(sharedMenu.getRoboTaxiMenu(), roboTaxiCapacity);
     }

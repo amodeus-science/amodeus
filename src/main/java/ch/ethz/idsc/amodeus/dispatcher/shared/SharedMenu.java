@@ -14,8 +14,8 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
  * A Menu contains a list of shared Courses (pickup, dropoff, rebalance) planned
  * for an RoboTaxi. The List of shared Couses can not be null. It is empty instead.
  * 
- *  Important: the List of Shared Courses is final and not modifiable.
- *  Thus only a View on the current menu can be received and changes are not permitted*/
+ * Important: the List of Shared Courses is final and not modifiable.
+ * Thus only a View on the current menu can be received and changes are not permitted */
 public class SharedMenu {
     /** Unmodifiable List of Shared Courses */
     private final List<SharedCourse> roboTaxiMenu;
@@ -40,9 +40,7 @@ public class SharedMenu {
         roboTaxiMenu = Collections.unmodifiableList((Objects.isNull(list)) ? new ArrayList<>() : list);
     }
 
-    /**
-     * 
-     * @return an unmodifiable view of the menu*/
+    /** @return an unmodifiable view of the menu */
     public List<SharedCourse> getRoboTaxiMenu() {
         return roboTaxiMenu;
     }
