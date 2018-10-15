@@ -26,7 +26,7 @@ import ch.ethz.idsc.amodeus.analysis.element.TravelTimeExport;
 import ch.ethz.idsc.amodeus.analysis.element.WaitTimeHtml;
 import ch.ethz.idsc.amodeus.analysis.element.WaitingCustomerExport;
 import ch.ethz.idsc.amodeus.analysis.plot.ChartTheme;
-import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
+import ch.ethz.idsc.amodeus.analysis.plot.ColorDataAmodeus;
 import ch.ethz.idsc.amodeus.analysis.report.AnalysisReport;
 import ch.ethz.idsc.amodeus.analysis.report.DistanceElementHtml;
 import ch.ethz.idsc.amodeus.analysis.report.FleetEfficiencyHtml;
@@ -38,15 +38,15 @@ import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifier;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValues;
 import ch.ethz.idsc.amodeus.analysis.report.TtlValIdent;
-import ch.ethz.idsc.amodeus.data.ReferenceFrame;
 import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
-import ch.ethz.idsc.amodeus.net.MatsimStaticDatabase;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.net.StorageSupplier;
 import ch.ethz.idsc.amodeus.net.StorageUtils;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
 public class Analysis {
     /** Use this method to create an standalone Analysis with all the default values
@@ -63,12 +63,13 @@ public class Analysis {
      * @param network
      * @return
      * @throws Exception */
-    public static Analysis setup(Network network) throws Exception {
-        return setup(null, null, null, network);
+    public static Analysis setup(Network network, MatsimAmodeusDatabase db) throws Exception {
+        return setup(null, null, null, network, db);
     }
 
-    public static Analysis setup(File workingDirectory, File configFile, File outputDirectory) throws Exception {
-        return new Analysis(workingDirectory, configFile, outputDirectory, null);
+    public static Analysis setup(File workingDirectory, File configFile, //
+            File outputDirectory, MatsimAmodeusDatabase db) throws Exception {
+        return new Analysis(workingDirectory, configFile, outputDirectory, null, db);
     }
 
     /** returns an Instance of the Analysis Class can be called with any combination
@@ -89,8 +90,9 @@ public class Analysis {
      *            runtime if the Network was already loaded in a previous step (e.g.
      *            Scenario Server)
      * @throws Exception */
-    public static Analysis setup(File workingDirectory, File configFile, File outputDirectory, Network network) throws Exception {
-        return new Analysis(workingDirectory, configFile, outputDirectory, network);
+    public static Analysis setup(File workingDirectory, File configFile, File outputDirectory, //
+            Network network, MatsimAmodeusDatabase db) throws Exception {
+        return new Analysis(workingDirectory, configFile, outputDirectory, network, db);
     }
 
     // List of Analysis Elements which will be loaded
@@ -105,7 +107,7 @@ public class Analysis {
     private final AnalysisSummary analysisSummary;
     private final HtmlReport htmlReport;
     private final TotalValues totalValues;
-    private final ColorScheme colorScheme;
+    private final ColorDataIndexed colorDataIndexed;
     private final ChartTheme chartTheme;
     private final Set<String> allAmodeusTotalValueIdentifiers = TtlValIdent.getAllIdentifiers();
 
@@ -128,12 +130,12 @@ public class Analysis {
      *            Scenario Server)
      * @throws Exception */
 
-    protected Analysis(File workingDirectory, File configFile, File outputDirectory, Network network) throws Exception {
+    protected Analysis(File workingDirectory, File configFile, File outputDirectory, //
+            Network network, MatsimAmodeusDatabase db) throws Exception {
         if (Objects.isNull(workingDirectory) || !workingDirectory.isDirectory())
             workingDirectory = new File("").getCanonicalFile();
         System.out.println("workingDirectory in Analysis: " + workingDirectory.getAbsolutePath());
         ScenarioOptions scenOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
-        ReferenceFrame referenceFrame = scenOptions.getLocationSpec().referenceFrame();
         if (configFile == null || !configFile.isFile())
             configFile = new File(workingDirectory, scenOptions.getSimulationConfigName());
         if (outputDirectory == null || !outputDirectory.isDirectory()) {
@@ -147,7 +149,8 @@ public class Analysis {
         }
 
         // load colorScheme & theme
-        colorScheme = ColorScheme.valueOf(scenOptions.getColorScheme());
+        colorDataIndexed = ColorDataAmodeus.indexed(scenOptions.getColorScheme());
+
         chartTheme = ChartTheme.valueOf(scenOptions.getChartTheme());
 
         ChartFactory.setChartTheme(chartTheme.getChartTheme(false));
@@ -159,7 +162,7 @@ public class Analysis {
         dataDirectory.mkdir();
 
         // load coordinate system
-        MatsimStaticDatabase.initializeSingletonInstance(network, referenceFrame);
+        // MatsimStaticDatabase db = MatsimStaticDatabase.initialize(network, referenceFrame);
 
         // load simulation data
         StorageUtils storageUtils = new StorageUtils(outputDirectory);
@@ -169,7 +172,7 @@ public class Analysis {
         System.out.println("Found files: " + size);
         int numVehicles = storageSupplier.getSimulationObject(1).vehicles.size();
 
-        analysisSummary = new AnalysisSummary(numVehicles, size);
+        analysisSummary = new AnalysisSummary(numVehicles, size, db);
 
         // default List of Analysis Elements which will be loaded
         analysisElements.add(analysisSummary.getSimulationInformationElement());
@@ -242,8 +245,8 @@ public class Analysis {
         }
         totalValues.append(totalValueAppender);
     }
-    
-    @Deprecated //use the add functions and run instead! this reduces the amount of code for custom Analysis
+
+    @Deprecated // use the add functions and run instead! this reduces the amount of code for custom Analysis
     public AnalysisSummary getAnalysisSummary() {
         return analysisSummary;
     }
@@ -261,7 +264,7 @@ public class Analysis {
         analysisElements.forEach(AnalysisElement::consolidate);
 
         for (AnalysisExport analysisExport : analysisExports)
-            analysisExport.summaryTarget(analysisSummary, dataDirectory, colorScheme);
+            analysisExport.summaryTarget(analysisSummary, dataDirectory, colorDataIndexed);
 
         /** generate reports */
         analysisReports.forEach(analysisReport -> analysisReport.generate(analysisSummary));

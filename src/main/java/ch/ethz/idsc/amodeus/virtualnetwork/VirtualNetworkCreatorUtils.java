@@ -13,8 +13,10 @@ import ch.ethz.idsc.amodeus.util.nd.NdMap;
 import ch.ethz.idsc.amodeus.util.nd.NdTreeMap;
 import ch.ethz.idsc.tensor.Tensor;
 
-// TODO JPH used externally, rename to more specific name before next release
-public enum CreatorUtils {
+//TODO Joel document each function since order of calls matters
+//TODO Joel potentially change API (design as class) to avoid misuse 
+//TODO Joel general refactor
+public enum VirtualNetworkCreatorUtils {
     ;
 
     public static <T> void addToVNodes( //

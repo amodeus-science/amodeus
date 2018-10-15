@@ -17,6 +17,7 @@ import org.jfree.ui.RectangleEdge;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Transpose;
+import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
 public enum TimeChart {
     ;
@@ -39,7 +40,7 @@ public enum TimeChart {
     public static void of(File directory, String fileTitle, String diagramTitle, //
             boolean filter, int filterSize, double[] scale, //
             String[] labels, String xAxisLabel, String yAxisLabel, Tensor time, Tensor values, //
-            Double[] maxRange, ColorScheme colorScheme) throws Exception {
+            Double[] maxRange, ColorDataIndexed colorDataIndexed) throws Exception {
 
         GlobalAssert.that(time.length() == values.length());
         GlobalAssert.that(Transpose.of(values).length() == labels.length);
@@ -67,18 +68,18 @@ public enum TimeChart {
             timechart.getXYPlot().getRangeAxis().setRange(maxRange[0], maxRange[1]);
         }
 
-        timechart.getPlot().setBackgroundPaint(Color.white);
-        timechart.getXYPlot().setRangeGridlinePaint(Color.lightGray);
-        timechart.getXYPlot().setDomainGridlinePaint(Color.lightGray);
+        timechart.getPlot().setBackgroundPaint(Color.WHITE);
+        timechart.getXYPlot().setRangeGridlinePaint(Color.LIGHT_GRAY);
+        timechart.getXYPlot().setDomainGridlinePaint(Color.LIGHT_GRAY);
 
         /** line thickness */
-        for (int k = 0; k < time.length(); k++) {
+        for (int k = 0; k < time.length(); ++k) {
             timechart.getXYPlot().getRenderer().setSeriesStroke(k, new BasicStroke(2.0f));
         }
 
         /** color themes, adapt colors & style */
-        for (int i = 0; i < labels.length; i++) {
-            timechart.getXYPlot().getRenderer().setSeriesPaint(i, colorScheme.of(i));
+        for (int i = 0; i < labels.length; ++i) {
+            timechart.getXYPlot().getRenderer().setSeriesPaint(i, colorDataIndexed.getColor(i));
         }
 
         LegendTitle legend = new LegendTitle(timechart.getXYPlot().getRenderer());

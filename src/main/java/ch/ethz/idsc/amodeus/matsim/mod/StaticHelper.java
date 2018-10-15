@@ -9,7 +9,7 @@ import java.util.List;
 
 import org.matsim.api.core.v01.network.Link;
 
-// TODO redundant to StaticHelper in ch.ethz.idsc.amodeus.dispatcher.util
+// TODO Joel redundant to StaticHelper in ch.ethz.idsc.amodeus.dispatcher.util
 /* package */ enum StaticHelper {
     ;
     /* package */ static List<Link> getSortedLinks(Collection<Link> links) {

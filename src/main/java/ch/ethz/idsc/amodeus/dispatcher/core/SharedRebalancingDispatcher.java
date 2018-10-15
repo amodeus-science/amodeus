@@ -12,6 +12,7 @@ import org.matsim.core.router.util.TravelTime;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
@@ -22,8 +23,9 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatcher {
 
     protected SharedRebalancingDispatcher(Config config, AVDispatcherConfig avDispatcherConfig, TravelTime travelTime,
-            ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, EventsManager eventsManager) {
-        super(config, avDispatcherConfig, travelTime, parallelLeastCostPathCalculator, eventsManager);
+            ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, EventsManager eventsManager, //
+            MatsimAmodeusDatabase db) {
+        super(config, avDispatcherConfig, travelTime, parallelLeastCostPathCalculator, eventsManager, db);
     }
 
     /** @param roboTaxi is rebalanced to
@@ -32,7 +34,7 @@ public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatc
         GlobalAssert.that(roboTaxi.isWithoutCustomer());
         /** clear menu and put requests back to pending requests */
         cleanAndAbondon(roboTaxi);
-        GlobalAssert.that(!roboTaxi.getMenu().hasStarter());
+        GlobalAssert.that(!RoboTaxiUtils.hasNextCourse(roboTaxi));
         setRoboTaxiDiversion(roboTaxi, destination, RoboTaxiStatus.REBALANCEDRIVE);
         eventsManager.processEvent(RebalanceVehicleEvent.create(getTimeNow(), roboTaxi, destination));
     }
@@ -41,7 +43,7 @@ public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatc
      * the course can be moved to another position in the {@link SharedMenu} of the {@link} RoboTaxi */
     protected static void addSharedRoboTaxiRedirect(RoboTaxi roboTaxi, SharedCourse redirectCourse) {
         GlobalAssert.that(redirectCourse.getMealType().equals(SharedMealType.REDIRECT));
-        roboTaxi.getMenu().addAVCourseAsDessert(redirectCourse);
+        roboTaxi.addRedirectCourseToMenu(redirectCourse);
     }
 
     /** @return {@link List } of all {@link RoboTaxi} which are currently rebalancing. */

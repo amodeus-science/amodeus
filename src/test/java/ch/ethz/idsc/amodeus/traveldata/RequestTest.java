@@ -2,7 +2,6 @@
 package ch.ethz.idsc.amodeus.traveldata;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,23 +45,6 @@ public class RequestTest {
         link0 = (Link) network.getLinks().values().toArray()[0];
         link1 = (Link) network.getLinks().values().toArray()[1];
         link2 = (Link) network.getLinks().values().toArray()[2];
-    }
-
-    @Test
-    public void testInvalid() {
-        try {
-            new Request(-1, link0, link1);
-            assertTrue(false);
-        } catch (Exception exception) {
-            // ---
-        }
-
-        try {
-            new Request(3600 * 24, link0, link1);
-            assertTrue(false);
-        } catch (Exception exception) {
-            // ---
-        }
     }
 
     @Test

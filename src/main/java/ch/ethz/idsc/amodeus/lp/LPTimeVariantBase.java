@@ -17,7 +17,6 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.amodeus.util.math.Magnitude;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -32,8 +31,9 @@ public abstract class LPTimeVariantBase implements LPSolver {
     private final glp_smcp parm = new glp_smcp();
     protected final VirtualNetwork<Link> virtualNetwork;
     protected final int nvNodes;
+    protected final int endTime; // in [s]
     protected final int timeSteps;
-    protected final int timeInterval;
+    protected final int timeIntervalLength; // in [s]
     protected final int numberVehicles;
     // ---
     protected int rowTotal;
@@ -57,12 +57,13 @@ public abstract class LPTimeVariantBase implements LPSolver {
     /** @param virtualNetwork
      * @param network
      * @param lambdaAbsolute_ij has to be integer numbered */
-    protected LPTimeVariantBase(VirtualNetwork<Link> virtualNetwork, Network network, Tensor lambdaAbsolute_ij, int numberVehicles) {
+    protected LPTimeVariantBase(VirtualNetwork<Link> virtualNetwork, Network network, Tensor lambdaAbsolute_ij, int numberVehicles, int endTime) {
         this.virtualNetwork = virtualNetwork;
         nvNodes = virtualNetwork.getvNodesCount();
         this.lambdaAbsolute_ij = LPUtils.getRoundedRequireNonNegative(lambdaAbsolute_ij);
+        this.endTime = endTime;
         timeSteps = Dimensions.of(lambdaAbsolute_ij).get(0);
-        timeInterval = Magnitude.SECOND.toInt(LPUtils.DURATION) / timeSteps;
+        timeIntervalLength = endTime / timeSteps;
         this.numberVehicles = numberVehicles;
 
         if (virtualNetwork.getvLinksCount() != (nvNodes * nvNodes - nvNodes)) {
@@ -264,7 +265,7 @@ public abstract class LPTimeVariantBase implements LPSolver {
             }
         }
         alphaAbsolute_ij = LPUtils.getRoundedRequireNonNegative(alphaAbsolute_ij);
-        alphaRate_ij = alphaAbsolute_ij.divide(RealScalar.of(timeInterval));
+        alphaRate_ij = alphaAbsolute_ij.divide(RealScalar.of(timeIntervalLength));
     }
 
     protected abstract void readF_ij();
@@ -311,8 +312,8 @@ public abstract class LPTimeVariantBase implements LPSolver {
     }
 
     @Override
-    public final int getTimeInterval() {
-        return timeInterval;
+    public final int getTimeIntervalLength() {
+        return timeIntervalLength;
     }
 
 }

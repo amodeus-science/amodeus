@@ -5,8 +5,8 @@ import java.io.File;
 
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.amodeus.analysis.element.DistanceElement;
-import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
 import ch.ethz.idsc.amodeus.analysis.plot.CompositionStack;
+import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
 public enum StackedDistanceChartImage implements AnalysisExport {
     INSTANCE;
@@ -14,7 +14,7 @@ public enum StackedDistanceChartImage implements AnalysisExport {
     public static final String FILENAME = "stackedDistance";
 
     @Override
-    public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorScheme colorScheme) {
+    public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
         DistanceElement de = analysisSummary.getDistanceElement();
         String[] labels = { "With Customer", "Pickup", "Rebalancing" };
         double[] values = new double[] { //
@@ -28,7 +28,7 @@ public enum StackedDistanceChartImage implements AnalysisExport {
                     "Total Distance Distribution", //
                     values, //
                     labels, //
-                    colorScheme);
+                    colorDataIndexed);
         } catch (Exception e) {
             System.err.println("The Stacked Distance Plot was not successfull");
             e.printStackTrace();

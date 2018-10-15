@@ -28,8 +28,8 @@ public interface LPSolver {
     /** Returns the initial vehicles distribution */
     Tensor getV0_i();
 
-    /** Returns the discretized time interval of the LP */
-    int getTimeInterval();
+    /** Returns the discretized time interval length of the LP */
+    int getTimeIntervalLength();
 
     /** Outputs the LP solution */
     void writeLPSolution();

@@ -46,9 +46,13 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 
+import ch.ethz.idsc.amodeus.data.LocationSpec;
+import ch.ethz.idsc.amodeus.data.ReferenceFrame;
+import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDatabaseModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDispatcherModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusVehicleGeneratorModule;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.options.LPOptions;
 import ch.ethz.idsc.amodeus.options.LPOptionsBase;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
@@ -164,15 +168,21 @@ public class StandardMATSimScenarioTest {
     }
 
     @Test
-    public void testStandardMATSimScenario() {
+    public void testStandardMATSimScenario() throws IOException {
         /* This test runs a small test scenario with the different dispatchers and makes
          * sure that all 100 generated agents arrive */
-
+        StaticHelper.setup();
         MatsimRandom.reset();
 
         // Set up
         Config config = ConfigUtils.createConfig(new AVConfigGroup(), new DvrpConfigGroup());
         Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
+
+        File workingDirectory = MultiFileTools.getWorkingDirectory();
+        ScenarioOptions simOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
+        LocationSpec locationSpec = simOptions.getLocationSpec();
+        ReferenceFrame referenceFrame = locationSpec.referenceFrame();
+        MatsimAmodeusDatabase db = MatsimAmodeusDatabase.initialize(scenario.getNetwork(), referenceFrame);
 
         PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams(AVModule.AV_MODE);
         modeParams.setMonetaryDistanceRate(0.0);
@@ -185,6 +195,7 @@ public class StandardMATSimScenarioTest {
         controler.addOverridingModule(new AmodeusModule());
         controler.addOverridingModule(new AmodeusDispatcherModule());
         controler.addOverridingModule(new AmodeusVehicleGeneratorModule());
+        controler.addOverridingModule(new AmodeusDatabaseModule(db));
 
         controler.addOverridingModule(new AbstractModule() {
             @Override
@@ -220,6 +231,7 @@ public class StandardMATSimScenarioTest {
         AVOperatorConfig operatorConfig = avConfig.createOperatorConfig("test");
         AVGeneratorConfig generatorConfig = operatorConfig.createGeneratorConfig("VehicleToVSGenerator");
         generatorConfig.setNumberOfVehicles(100);
+        int endTime = (int) config.qsim().getEndTime();
 
         // Choose a dispatcher
         AVDispatcherConfig dispatcherConfig = operatorConfig.createDispatcherConfig(dispatcher);
@@ -261,7 +273,7 @@ public class StandardMATSimScenarioTest {
                 LPOptions lpOptions = new LPOptions(MultiFileTools.getWorkingDirectory(), LPOptionsBase.getDefault());
                 lpOptions.setProperty(LPOptionsBase.LPSOLVER, "timeInvariant");
                 lpOptions.saveAndOverwriteLPOptions();
-                TravelData travelData = TravelDataCreator.create(virtualNetwork, network, population, scenarioOptions, (int) generatorConfig.getNumberOfVehicles());
+                TravelData travelData = TravelDataCreator.create(virtualNetwork, network, population, scenarioOptions, (int) generatorConfig.getNumberOfVehicles(), endTime);
                 return travelData;
             }
         });

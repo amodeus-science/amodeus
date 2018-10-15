@@ -39,7 +39,6 @@ import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.red.Mean;
 import ch.ethz.idsc.tensor.red.Total;
 
-// TODO Lukas add new tests in beginning and continuously for your changes
 public class SharedRoboTaxiTest {
 
     private static TestPreparer testPreparer;
@@ -116,7 +115,6 @@ public class SharedRoboTaxiTest {
 
     }
 
-    // TODO add more tests for shared functionality
     @Test
     public void testAnalysis() throws Exception {
         System.out.print("Analysis Test:\t");

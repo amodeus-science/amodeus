@@ -23,9 +23,7 @@ import ch.ethz.idsc.tensor.sca.Sign;
  * 
  * TravelData is also used in tests. */
 public class TravelData implements Serializable {
-    private static final int DURATION = 24 * 60 * 60; // for now equal to one day
-    private static final Clip TIME_CLIP = Clip.function(0, DURATION - 1);
-    // ---
+    private final Clip timeClip;
     /** tensor (k,i,j) of dimension (numberofTimeSteps, numberVirtualNodes, numberVirtualNodes) that contains
      * the number of requests that come up in timeStep k from VS i to j */
     private final Tensor lambdaAbsolute;
@@ -35,17 +33,20 @@ public class TravelData implements Serializable {
     private final String lpName;
     private final int timeSteps;
     private final int timeIntervalLength; // used as lookup
+    private final int endTime; // in [s]
     private final long virtualNetworkID; // used for consistency check
 
-    public TravelData(long virtualNetworkID, Tensor lambdaAbsolute, Tensor alphaAbsolute, Tensor fAbsolute, Tensor v0, String lpName) {
+    public TravelData(long virtualNetworkID, Tensor lambdaAbsolute, Tensor alphaAbsolute, Tensor fAbsolute, Tensor v0, String lpName, int endTime) {
         this.virtualNetworkID = virtualNetworkID;
         this.lambdaAbsolute = lambdaAbsolute;
         this.alphaAbsolute = alphaAbsolute;
         this.fAbsolute = fAbsolute;
         this.v0 = v0;
         this.timeSteps = lambdaAbsolute.length();
-        this.timeIntervalLength = DURATION / timeSteps;
+        this.timeIntervalLength = endTime / timeSteps;
+        this.endTime = endTime;
         this.lpName = lpName;
+        timeClip = Clip.function(0, endTime - 1);
 
         checkConsistency();
     }
@@ -53,7 +54,7 @@ public class TravelData implements Serializable {
     /** Returns the absolute number of requests in the timeInterval where time is in. Lambda(i,j) is the number of requests that lead from virtual
      * station i to j. */
     public Tensor getLambdaAbsoluteAtTime(int time) {
-        GlobalAssert.that(TIME_CLIP.isInside(RealScalar.of(time)));
+        GlobalAssert.that(timeClip.isInside(RealScalar.of(time)));
         return lambdaAbsolute.get(time / timeIntervalLength).copy();
     }
 
@@ -66,7 +67,7 @@ public class TravelData implements Serializable {
     /** Returns the request rates in the timeInterval where time is in. Lambda(i,j) is the request rate from virtual
      * station i to j. */
     public Tensor getLambdaRateAtTime(int time) {
-        GlobalAssert.that(TIME_CLIP.isInside(RealScalar.of(time)));
+        GlobalAssert.that(timeClip.isInside(RealScalar.of(time)));
         return lambdaAbsolute.get(time / timeIntervalLength).divide(RealScalar.of(timeIntervalLength));
     }
 
@@ -79,7 +80,7 @@ public class TravelData implements Serializable {
     /** Returns the absolute rebalancing {@link Tensor} in the timeInterval that time is in. Alpha(i,j) is the number of vehicles to rebalance from virtual
      * station i to j in that certain timeInterval. */
     public Tensor getAlphaAbsoluteAtTime(int time) {
-        TIME_CLIP.requireInside(RealScalar.of(time));
+        timeClip.requireInside(RealScalar.of(time));
         return alphaAbsolute.get(time / timeIntervalLength).copy();
     }
 
@@ -92,7 +93,7 @@ public class TravelData implements Serializable {
     /** Returns the rebalancing rate {@link Tensor} in the timeInterval that time is in. Alpha(i,j) is the vehicles rate to rebalance from virtual
      * station i to j in that certain timeInterval. */
     public Tensor getAlphaRateAtTime(int time) {
-        TIME_CLIP.requireInside(RealScalar.of(time));
+        timeClip.requireInside(RealScalar.of(time));
         return alphaAbsolute.get(time / timeIntervalLength).divide(RealScalar.of(timeIntervalLength));
     }
 
@@ -105,7 +106,7 @@ public class TravelData implements Serializable {
     /** Returns the absolute number of customer drives {@link Tensor} in the timeInterval that time is in. F(i,j) represents the number of customer drives to do
      * from virtual station i to j at the specific timeInterval */
     public Tensor getFAbsoluteAtTime(int time) {
-        TIME_CLIP.requireInside(RealScalar.of(time));
+        timeClip.requireInside(RealScalar.of(time));
         return fAbsolute.get(time / timeIntervalLength).copy();
     }
 
@@ -118,7 +119,7 @@ public class TravelData implements Serializable {
     /** Returns the customer drive rates {@link Tensor} in the timeInterval that time is in. F(i,j) represents the customer drive rates to do
      * from virtual station i to j at the specific timeInterval */
     public Tensor getFRateAtTime(int time) {
-        TIME_CLIP.requireInside(RealScalar.of(time));
+        timeClip.requireInside(RealScalar.of(time));
         return fAbsolute.get(time / timeIntervalLength).divide(RealScalar.of(timeIntervalLength));
     }
 
@@ -153,7 +154,7 @@ public class TravelData implements Serializable {
 
     /** returns true if {@link TravelData} covers this time */
     public boolean coversTime(long round_now) {
-        return TIME_CLIP.isInside(RealScalar.of(round_now));
+        return timeClip.isInside(RealScalar.of(round_now));
     }
 
     /** Perform consistency checks after completion of constructor operations. */
@@ -170,7 +171,7 @@ public class TravelData implements Serializable {
      * 
      * @param virtualNetworkID */
     public void checkIdenticalVirtualNetworkID(long virtualNetworkID) {
-        GlobalAssert.that(DURATION % timeIntervalLength == 0);
+        GlobalAssert.that(endTime % timeIntervalLength == 0);
         GlobalAssert.that(virtualNetworkID == this.virtualNetworkID);
     }
 }

@@ -2,7 +2,6 @@
 package ch.ethz.idsc.amodeus.testutils;
 
 import java.io.File;
-import java.net.URL;
 import java.util.Objects;
 
 import org.matsim.api.core.v01.Scenario;
@@ -10,7 +9,6 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.Config;
-import org.matsim.core.config.ConfigGroup;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.scenario.ScenarioUtils;
 
@@ -26,7 +24,6 @@ import ch.ethz.idsc.amodeus.traveldata.TravelDataIO;
 import ch.ethz.idsc.amodeus.util.io.ProvideAVConfig;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.matsim.av.config.AVConfig;
-import ch.ethz.matsim.av.config.AVConfigReader;
 import ch.ethz.matsim.av.config.AVGeneratorConfig;
 import ch.ethz.matsim.av.framework.AVConfigGroup;
 
@@ -63,6 +60,7 @@ public class TestPreparer {
         AVConfig avC = ProvideAVConfig.with(config, avCg);
         AVGeneratorConfig genConfig = avC.getOperatorConfigs().iterator().next().getGeneratorConfig();
         int numRt = (int) genConfig.getNumberOfVehicles();
+        int endTime = (int) config.qsim().getEndTime();
 
         // 1) cut network (and reduce population to new network)
         networkPrepared = scenario.getNetwork();
@@ -74,11 +72,11 @@ public class TestPreparer {
 
         // 3) create virtual Network
         VirtualNetworkPreparer virtualNetworkPreparer = VirtualNetworkPreparer.INSTANCE;
-        VirtualNetwork<Link> virtualNetwork = virtualNetworkPreparer.create(networkPrepared, populationPrepared, scenarioOptions, numRt);
+        VirtualNetwork<Link> virtualNetwork = virtualNetworkPreparer.create(networkPrepared, populationPrepared, scenarioOptions, numRt, endTime);
 
         // 4) create TravelData
         /** reading the customer requests */
-        TravelData travelData = TravelDataCreator.create(virtualNetwork, networkPrepared, populationPrepared, scenarioOptions, numRt);
+        TravelData travelData = TravelDataCreator.create(virtualNetwork, networkPrepared, populationPrepared, scenarioOptions, numRt, endTime);
         File travelDataFile = new File(scenarioOptions.getVirtualNetworkName(), scenarioOptions.getTravelDataName());
         TravelDataIO.write(travelDataFile, travelData);
 
@@ -94,6 +92,5 @@ public class TestPreparer {
     public Network getPreparedNetwork() {
         return Objects.requireNonNull(networkPrepared);
     }
-
 
 }

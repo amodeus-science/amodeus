@@ -4,13 +4,13 @@ import java.io.File;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.UnitSaveUtils;
-import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
 import ch.ethz.idsc.amodeus.analysis.plot.TimeChart;
 import ch.ethz.idsc.amodeus.util.io.SaveFormats;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Transpose;
+import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.red.Max;
 
 public enum WaitingCustomerExport implements AnalysisExport {
@@ -20,7 +20,7 @@ public enum WaitingCustomerExport implements AnalysisExport {
     public static final String FILENAME = "numberCustomersPlot";
 
     @Override
-    public void summaryTarget(AnalysisSummary analysisSummary, File relDir, ColorScheme colorScheme) {
+    public void summaryTarget(AnalysisSummary analysisSummary, File relDir, ColorDataIndexed colorDataIndexed) {
         TravelTimeAnalysis travelTime = analysisSummary.getTravelTimeAnalysis();
 
         /** save graphics */
@@ -35,7 +35,7 @@ public enum WaitingCustomerExport implements AnalysisExport {
             TimeChart.of(relDir, FILENAME, "Waiting Customers per Day Time", //
                     StaticHelper.FILTER_ON, StaticHelper.FILTERSIZE, scale, new String[] { "# waiting customers" }, //
                     xAxisLabel, yAxisLabel, travelTime.time, Transpose.of(Tensors.of(travelTime.waitingCustomers)), //
-                    new Double[] { 0.0, maxWaiting + 1 }, colorScheme);
+                    new Double[] { 0.0, maxWaiting + 1 }, colorDataIndexed);
         } catch (Exception e) {
             System.err.println("Binned Waiting Times Plot was unsucessfull!");
             e.printStackTrace();

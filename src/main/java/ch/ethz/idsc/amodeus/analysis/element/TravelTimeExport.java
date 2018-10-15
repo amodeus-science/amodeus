@@ -5,20 +5,18 @@ import java.io.File;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.UnitSaveUtils;
-import ch.ethz.idsc.amodeus.analysis.plot.ColorScheme;
 import ch.ethz.idsc.amodeus.util.io.SaveFormats;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
-// TODO Lukas make a plot with estimated additional travel time, to compute travel times, see 
-// class DistanceHelperNetwork in amodidsc
 public enum TravelTimeExport implements AnalysisExport {
     INSTANCE;
 
     private final String identifier = "trvlTimeRqstInfo";
 
     @Override
-    public void summaryTarget(AnalysisSummary anlysSmry, File relDir, ColorScheme cScheme) {
+    public void summaryTarget(AnalysisSummary anlysSmry, File relDir, ColorDataIndexed colorDataIndexed) {
         TravelTimeAnalysis travelTime = anlysSmry.getTravelTimeAnalysis();
 
         /** save information for processing in other tools */
