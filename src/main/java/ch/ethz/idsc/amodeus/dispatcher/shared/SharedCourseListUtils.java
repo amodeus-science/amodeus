@@ -15,7 +15,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 public enum SharedCourseListUtils {
     ;
 
-    public static List<SharedCourse> copy(List<? extends SharedCourse> courses) {
+    public static List<SharedCourse> copy(List<SharedCourse> courses) {
         return new ArrayList<>(courses);
     }
 
