@@ -5,12 +5,12 @@ import java.util.Objects;
 
 import org.matsim.api.core.v01.network.Link;
 
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** Middle level class in SharedRoboTaxi functionality, a {@link SharedMenu} is
  * composed of {@link SharedCourse}s which internally have a {@link SharedMealType}s */
 public class SharedCourse {
+    protected static final AVRequest STANDARD_REDIRECT_AVREQUEST = null;
 
     /** fast access functions */
     public static SharedCourse pickupCourse(AVRequest avRequest) {
@@ -31,12 +31,12 @@ public class SharedCourse {
         return new SharedCourse(STANDARD_REDIRECT_AVREQUEST, link, courseId, SharedMealType.REDIRECT);
     }
 
+    // ---
     /** class implementation */
-    private final String courseID;
-    private final Link link;
-    private final SharedMealType sharedRoboTaxiMealType;
     private final AVRequest avRequest;
-    protected static final AVRequest STANDARD_REDIRECT_AVREQUEST = null;
+    private final Link link;
+    private final String courseID;
+    private final SharedMealType sharedRoboTaxiMealType;
 
     /** @param for {@link SharedMealType} PICKUP and DROPOFF the requestID must be the
      *            id of the {@link AVRequest}, otherwise a self-chosen id to distinguish different
@@ -44,13 +44,10 @@ public class SharedCourse {
      * @param link
      * @param sharedAVMealType */
     protected SharedCourse(AVRequest avRequest, Link link, String courseId, SharedMealType sharedAVMealType) {
-        Objects.requireNonNull(link);
-        this.link = link;
         this.avRequest = avRequest;
-        Objects.requireNonNull(courseId);
-        this.courseID = courseId;
-        Objects.requireNonNull(sharedAVMealType);
-        this.sharedRoboTaxiMealType = sharedAVMealType;
+        this.link = Objects.requireNonNull(link);
+        this.courseID = Objects.requireNonNull(courseId);
+        this.sharedRoboTaxiMealType = Objects.requireNonNull(sharedAVMealType);
     }
 
     public SharedMealType getMealType() {
@@ -73,6 +70,7 @@ public class SharedCourse {
     public boolean equals(Object object) {
         if (object instanceof SharedCourse) {
             SharedCourse sharedAVCourse = (SharedCourse) object;
+            // TODO LUKAS REV why is avRequest not used in the comparison?
             return sharedAVCourse.getCourseId().equals(courseID) && //
                     sharedAVCourse.getLink().equals(link) && //
                     sharedAVCourse.getMealType().equals(sharedRoboTaxiMealType);

@@ -1,6 +1,6 @@
 # cd.ethz.idsc.amodeus <a href="https://travis-ci.org/idsc-frazzoli/amodeus"><img src="https://travis-ci.org/idsc-frazzoli/amodeus.svg?branch=master" alt="Build Status"></a>
 
-Autonomous mobility-on-demand simulation library, version `1.5.0`
+Autonomous mobility-on-demand simulation library, version `1.5.1`
 
 ## Purpose
 
@@ -9,6 +9,8 @@ This repository is a library that allows the simulation of autonomous mobility-o
 Try it, orchestrate your own fleet of amod-taxis!
 To get started, install and run [amod](https://github.com/idsc-frazzoli/amod).
 Here is a [visualization](https://www.youtube.com/watch?v=QkFtIQQSHto).
+
+Our website is [amodeus.science](https://www.amodeus.science/).
 
 ## Features
 
@@ -62,7 +64,7 @@ Specify `repository` and `dependency` of the amodeus library in the `pom.xml` fi
       <dependency>
         <groupId>ch.ethz.idsc</groupId>
         <artifactId>amodeus</artifactId>
-        <version>1.5.0</version>
+        <version>1.5.1</version>
       </dependency>
     </dependencies>
 

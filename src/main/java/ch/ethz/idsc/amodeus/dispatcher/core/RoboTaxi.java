@@ -43,9 +43,9 @@ public class RoboTaxi {
     private AbstractDirective directive;
 
     /** shared fields
-     *  The Shared menu contains a lot of information. These can be extracted with the Utils functions
-     *  in RoboTaxiUtils and SharedCourseLItsUtils */
-    private SharedMenu menu = SharedMenu.empty();;
+     * The Shared menu contains a lot of information. These can be extracted with the Utils functions
+     * in RoboTaxiUtils and SharedCourseLItsUtils */
+    private SharedMenu menu = SharedMenu.empty();
 
     /** Standard constructor
      * 
@@ -240,56 +240,51 @@ public class RoboTaxi {
     // Shared Functionalities, needed here because of capacity
     // **********************************************
 
-    /**
-     * Gives full information of the future menu (i.e. plans) of the {@link RoboTaxi}.
+    /** Gives full information of the future menu (i.e. plans) of the {@link RoboTaxi}.
      * This Information contains for example the number of customers on Board or the possibility to pick up new customers.
-     * To get all this Information the {@link SharedCourseListUtils} class offers some of the standard functionalities. 
-     * Similar Functionalities are Offered as well by the {@link RoboTaxiUtils} class. Take a look at these two clases when implementing Dispatchers 
-     * Further information can be pulled from this menu by using standard List functionalities. 
-     * @return An unmodifiable {@link List} of {@link SharedCourse}s which can only be read but not modified 
-     */
+     * To get all this Information the {@link SharedCourseListUtils} class offers some of the standard functionalities.
+     * Similar Functionalities are Offered as well by the {@link RoboTaxiUtils} class. Take a look at these two clases when implementing Dispatchers
+     * Further information can be pulled from this menu by using standard List functionalities.
+     * 
+     * @return An unmodifiable {@link List} of {@link SharedCourse}s which can only be read but not modified */
     public List<SharedCourse> getUnmodifiableViewOfCourses() {
         return menu.getRoboTaxiMenu();
     }
 
-    /**
-     * Modifies the menu of the RoboTaxi. The given course is moved up in the menu by one position. 
-     * @param sharedCourse
-     */
+    /** Modifies the menu of the RoboTaxi. The given course is moved up in the menu by one position.
+     * 
+     * @param sharedCourse */
     public void moveAVCourseToPrev(SharedCourse sharedCourse) {
         menu = SharedMenuUtils.moveAVCourseToPrev(menu, sharedCourse);
     }
 
-    /**
-     * Modifies the menu of the RoboTaxi. The given course is moved down in the menu by one position. 
-     * @param sharedCourse
-     */
+    /** Modifies the menu of the RoboTaxi. The given course is moved down in the menu by one position.
+     * 
+     * @param sharedCourse */
     public void moveAVCourseToNext(SharedCourse sharedCourse) {
         menu = SharedMenuUtils.moveAVCourseToNext(menu, sharedCourse);
     }
 
-    /**
-     * This function allows to update the menu of the RoboTaxi with a new orderd menu. 
+    /** This function allows to update the menu of the RoboTaxi with a new orderd menu.
      * Thereby the new menu has to fulfill the following conditions:
-     * 1. The exact same Courses have to be in the Menu. 
-     * 2. The menu can not plan to pickup more persons than the capacity of the Robo Taxi at any Time 
-     * @param menu
-     */
+     * 1. The exact same Courses have to be in the Menu.
+     * 2. The menu can not plan to pickup more persons than the capacity of the Robo Taxi at any Time
+     * 
+     * @param menu */
     private void updateMenu(SharedMenu menu) {
         GlobalAssert.that(SharedMenuUtils.containSameCourses(this.menu, menu));
         GlobalAssert.that(SharedCourseListUtils.checkMenuConsistency(getUnmodifiableViewOfCourses(), getCapacity()));
         this.menu = menu;
     }
-    
-    /**
-     * This function allows to update the menu of the RoboTaxi with a new List of Shared Courses. 
+
+    /** This function allows to update the menu of the RoboTaxi with a new List of Shared Courses.
      * Thereby the new menu has to fulfill the following conditions:
-     * 1. The exact same Courses have to be in the Menu. 
+     * 1. The exact same Courses have to be in the Menu.
      * 2. The menu can not plan to pickup more persons than the capacity of the Robo Taxi at any Time
-     * 3. The menu has to be consistent in itself (i.e. for each pickup a dropoff of the same request is present, 
-     *      for each request the dropoff occurs after the pickup and no course apears exactely once)  
-     * @param List<SharedCourse>
-     */
+     * 3. The menu has to be consistent in itself (i.e. for each pickup a dropoff of the same request is present,
+     * for each request the dropoff occurs after the pickup and no course apears exactely once)
+     * 
+     * @param List<SharedCourse> */
     public void updateMenu(List<SharedCourse> list) {
         updateMenu(SharedMenu.of(list));
     }

@@ -63,16 +63,17 @@ public enum SharedCourseListUtils {
     }
 
     public static Set<String> getUniqueAVRequestIds(List<? extends SharedCourse> courses) {
-        return getUniqueAVRequest(courses).stream().map(av->av.getId().toString()).collect(Collectors.toSet());//
+        return getUniqueAVRequest(courses).stream().map(av -> av.getId().toString()).collect(Collectors.toSet());//
     }
 
     public static Set<AVRequest> getUniqueAVRequest(List<? extends SharedCourse> courses) {
         return courses.stream().filter(sc -> !sc.getMealType().equals(SharedMealType.REDIRECT)).map(sc -> sc.getAvRequest()).collect(Collectors.toSet());//
     }
+
     /** Gets the next course of the menu.
      * 
      * @return */
-    public static Optional<? extends SharedCourse> getStarterCourse(List<? extends SharedCourse> courses) {
+    public static Optional<SharedCourse> getStarterCourse(List<? extends SharedCourse> courses) {
         return Optional.ofNullable((hasStarter(courses)) ? courses.get(0) : null);
     }
 
@@ -95,7 +96,7 @@ public enum SharedCourseListUtils {
     public static boolean checkMenuConsistency(List<? extends SharedCourse> courses, int capacity) {
         return checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(courses, capacity);
     }
-    
+
     /** @return false if any dropoff occurs after pickup in the menu.
      *         If no dropoff ocurs for one pickup an exception is thrown as this is not allowed in a {@link SharedMenu} */
     public static boolean checkNoPickupAfterDropoffOfSameRequest(List<? extends SharedCourse> courses) {
@@ -195,7 +196,5 @@ public enum SharedCourseListUtils {
         GlobalAssert.that(courses.contains(sharedAVCourse));
         courses.remove(sharedAVCourse);
     }
-
-
 
 }
