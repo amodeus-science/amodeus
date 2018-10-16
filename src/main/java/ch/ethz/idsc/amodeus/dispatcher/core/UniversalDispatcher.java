@@ -16,15 +16,19 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.matsim.api.core.v01.events.Event;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
 import org.matsim.contrib.dvrp.schedule.Task;
+import org.matsim.contrib.dvrp.tracker.TaskTracker;
+import org.matsim.contrib.dvrp.util.LinkTimePair;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
 
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
+import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDriveTaskTracker;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationDistribution;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
@@ -33,10 +37,14 @@ import ch.ethz.idsc.amodeus.net.SimulationObjects;
 import ch.ethz.idsc.amodeus.net.StorageUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
+import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
+import ch.ethz.matsim.av.dispatcher.AVVehicleAssignmentEvent;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 import ch.ethz.matsim.av.schedule.AVDriveTask;
+import ch.ethz.matsim.av.schedule.AVDropoffTask;
+import ch.ethz.matsim.av.schedule.AVPickupTask;
 import ch.ethz.matsim.av.schedule.AVStayTask;
 
 /** purpose of {@link UniversalDispatcher} is to collect and manage {@link AVRequest}s alternative
@@ -398,10 +406,70 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
         // deliberately empty
     }
     
+  /** adding a vehicle during setup of simulation, handeled by {@link AVGenerator} */
+  @Override
+  public final void addVehicle(AVVehicle vehicle) {
+      RoboTaxi roboTaxi = new RoboTaxi(vehicle, new LinkTimePair(vehicle.getStartLink(), 0.0), vehicle.getStartLink(), RoboTaxiUsageType.SINGLEUSED);
+      Event event =new AVVehicleAssignmentEvent(vehicle, 0);
+      addRoboTaxi(roboTaxi, event);
+  }
+    
     
     @Override
     /* package */ boolean isInRequestRegister(RoboTaxi roboTaxi) {
         // TODO make sure nobody uses this and it has no effect, only necessary for shared dispatchers so far.
         return true;
     }
+    
+    
+    
+    /** updates the divertable locations, i.e., locations from which a {@link RoboTaxi} can deviate
+     * its path according to the current Tasks in the MATSim engine */
+    @Override
+    protected final void updateDivertableLocations() {
+        for (RoboTaxi robotaxi : getRoboTaxis()) {
+            GlobalAssert.that(robotaxi.isWithoutDirective());
+            Schedule schedule = robotaxi.getSchedule();
+            new RoboTaxiTaskAdapter(schedule.getCurrentTask()) {
+                @Override
+                public void handle(AVDriveTask avDriveTask) {
+                    // for empty cars the drive task is second to last task
+                    if (ScheduleUtils.isNextToLastTask(schedule, avDriveTask)) {
+                        TaskTracker taskTracker = avDriveTask.getTaskTracker();
+                        AmodeusDriveTaskTracker onlineDriveTaskTracker = (AmodeusDriveTaskTracker) taskTracker;
+                        LinkTimePair linkTimePair = onlineDriveTaskTracker.getSafeDiversionPoint();
+                        robotaxi.setDivertableLinkTime(linkTimePair); // contains null check
+                        robotaxi.setCurrentDriveDestination(avDriveTask.getPath().getToLink());
+                        GlobalAssert.that(!robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
+                    } else
+                        GlobalAssert.that(robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
+                }
+
+                @Override
+                public void handle(AVPickupTask avPickupTask) {
+                    GlobalAssert.that(robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
+                }
+
+                @Override
+                public void handle(AVDropoffTask avDropOffTask) {
+                    GlobalAssert.that(robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
+                }
+
+                @Override
+                public void handle(AVStayTask avStayTask) {
+                    // for empty vehicles the current task has to be the last task
+                    if (ScheduleUtils.isLastTask(schedule, avStayTask) && !isInPickupRegister(robotaxi)) {
+                        GlobalAssert.that(avStayTask.getBeginTime() <= getTimeNow());
+                        GlobalAssert.that(avStayTask.getLink() != null);
+                        robotaxi.setDivertableLinkTime(new LinkTimePair(avStayTask.getLink(), getTimeNow()));
+                        robotaxi.setCurrentDriveDestination(avStayTask.getLink());
+                        robotaxi.setStatus(RoboTaxiStatus.STAY);
+                    }
+                }
+            };
+        }
+    }
+
+    
+    
 }
