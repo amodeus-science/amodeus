@@ -27,7 +27,6 @@ import org.matsim.contrib.dvrp.util.LinkTimePair;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
-import org.matsim.visum.VisumNetwork.Stop;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
@@ -46,6 +45,7 @@ import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.dispatcher.AVVehicleAssignmentEvent;
+import ch.ethz.matsim.av.generator.AVGenerator;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 import ch.ethz.matsim.av.schedule.AVDriveTask;
@@ -92,8 +92,8 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
     private boolean requestRegisterContainsAVRequest(AVRequest avRequest) {
         return getAssignedAvRequests().contains(avRequest);
     }
-    
-    private Set<AVRequest> getAssignedAvRequests(){
+
+    private Set<AVRequest> getAssignedAvRequests() {
         // TODO improve
         Set<AVRequest> avRequests = new HashSet<>();
         for (Map<String, AVRequest> avRequestsMap : requestRegister.values()) {
@@ -101,7 +101,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
         }
         return avRequests;
     }
-    
+
     private Optional<RoboTaxi> getAssignedRoboTaxi(AVRequest avRequest) {
         Map<AVRequest, RoboTaxi> pickupRegister = getPickupRegister();
         if (pickupRegister.containsKey(avRequest)) {
@@ -111,22 +111,24 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
         GlobalAssert.that(false);
         return Optional.ofNullable(null);
     }
-    
+
     private Set<AVRequest> getAssignedPendingRequests() {
-        return getAssignedAvRequests().stream().filter(avr->pendingRequests.contains(avr)).collect(Collectors.toSet());
+        return getAssignedAvRequests().stream().filter(avr -> pendingRequests.contains(avr)).collect(Collectors.toSet());
     }
-    
+
     private Map<AVRequest, RoboTaxi> getPickupRegister() {
         Map<AVRequest, RoboTaxi> pickupRegister = new HashMap<>();
         for (Entry<RoboTaxi, Map<String, AVRequest>> requestRegisterEntry : requestRegister.entrySet()) {
             for (AVRequest avRequest : requestRegisterEntry.getValue().values()) {
-                GlobalAssert.that(!pickupRegister.containsKey(avRequest)); // In that case some of the logic failed. every request can only be assigned to one vehicle
-                pickupRegister.put(avRequest, requestRegisterEntry.getKey());
+                if (pendingRequests.contains(avRequest)) {
+                    GlobalAssert.that(!pickupRegister.containsKey(avRequest)); // In that case some of the logic failed. every request can only be assigned to one vehicle
+                    pickupRegister.put(avRequest, requestRegisterEntry.getKey());
+                }
             }
         }
         return pickupRegister;
     }
-    
+
     // temporaryRequestRegister
     // for fulfilled requests
     private final Map<AVRequest, RequestStatus> reqStatuses = new HashMap<>(); // Storing the Request Statuses for the
@@ -499,8 +501,6 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
             }
         }
     }
-
-
 
     /** complete all matchings if a {@link RoboTaxi} has arrived at the toLink
      * of an {@link AVRequest} */
