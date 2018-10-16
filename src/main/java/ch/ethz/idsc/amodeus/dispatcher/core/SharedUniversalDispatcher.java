@@ -165,7 +165,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
     /** @return AVRequests which are currently not assigned to a vehicle */
     protected synchronized final List<AVRequest> getUnassignedAVRequests() {
         return pendingRequests.stream() //
-                .filter(r -> requestRegisterContainsAVRequest(r)) //
+                .filter(r -> !requestRegisterContainsAVRequest(r)) //
                 .collect(Collectors.toList());
     }
 
