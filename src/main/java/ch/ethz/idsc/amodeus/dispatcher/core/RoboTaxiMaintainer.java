@@ -208,12 +208,14 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
     /* package */ abstract void notifySimulationSubscribers(long round_now, StorageUtils storageUtils);
 
-    /* package */ abstract boolean isInPickupRegister(RoboTaxi robotaxi);
     
     /* package */ abstract void redispatchInternal(double now);
     
     /* package */ abstract void executeRedirects();
-    
+
+    // TODO these functions might be removed
+    /* package */ abstract boolean isInPickupRegister(RoboTaxi robotaxi);
+
     /* package */ abstract boolean isInRequestRegister(RoboTaxi sRoboTaxi);
 
     @Override
