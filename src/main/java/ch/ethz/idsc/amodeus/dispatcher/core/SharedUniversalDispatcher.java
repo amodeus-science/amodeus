@@ -176,20 +176,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
         // If the request was already assigned remove it from this vehicle in the request register and update its menu;
         if (pickupRegister.containsKey(avRequest)) {
-            // warning: unlikely-arg-type
-            RoboTaxi oldRoboTaxi = pickupRegister.get(avRequest);
-            AVRequest val = requestRegister.get(oldRoboTaxi).remove(avRequest.getId().toString());
-            Objects.requireNonNull(val);
-
-            oldRoboTaxi.removeAVRequestFromMenu(avRequest);
-
-            if (!RoboTaxiUtils.hasNextCourse(oldRoboTaxi)) {
-                Map<String, AVRequest> val2 = requestRegister.remove(oldRoboTaxi);
-                Objects.requireNonNull(val2);
-            }
-            GlobalAssert.that(RoboTaxiUtils.checkMenuConsistency(oldRoboTaxi));
-            // FIXME Lukas REDIRECT this vehicle
-
+            abortAvRequest(avRequest);
         }
 
         if (!requestRegister.containsKey(roboTaxi)) {
@@ -208,6 +195,22 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
     }
 
+    
+    protected void abortAvRequest(AVRequest avRequest) {
+        // warning: unlikely-arg-type
+        RoboTaxi oldRoboTaxi = pickupRegister.get(avRequest);
+        AVRequest val = requestRegister.get(oldRoboTaxi).remove(avRequest.getId().toString());
+        Objects.requireNonNull(val);
+
+        oldRoboTaxi.removeAVRequestFromMenu(avRequest);
+
+        if (!RoboTaxiUtils.hasNextCourse(oldRoboTaxi)) {
+            Map<String, AVRequest> val2 = requestRegister.remove(oldRoboTaxi);
+            Objects.requireNonNull(val2);
+        }
+        GlobalAssert.that(RoboTaxiUtils.checkMenuConsistency(oldRoboTaxi));
+    }
+    
     /** carries out the redispatching defined in the {@link SharedMenu} and executes the
      * directives after a check of the menus. */
     @Override
@@ -411,7 +414,15 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
     @Override
     /* package */ void stopAbortedPickupRoboTaxis() {
-        
+        /** stop vehicles still driving to a request but other taxi serving that request already */
+        getRoboTaxis().stream()//
+                .filter(rt -> rt.getStatus().equals(RoboTaxiStatus.DRIVETOCUSTOMER))//
+                .filter(rt -> !requestRegister.containsKey(rt))//
+                .filter(RoboTaxi::isWithoutCustomer)//
+                .filter(RoboTaxi::isWithoutDirective)//
+                .forEach(rt -> setRoboTaxiDiversion(rt, rt.getDivertableLocation(), RoboTaxiStatus.REBALANCEDRIVE));
+        GlobalAssert.that(pickupRegister.size() <= pendingRequests.size());
+   
         GlobalAssert.that(false); // TODO ensure that this stops taxis which have lost their pickup
         // --
     }
