@@ -423,8 +423,6 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
                 .forEach(rt -> setRoboTaxiDiversion(rt, rt.getDivertableLocation(), RoboTaxiStatus.REBALANCEDRIVE));
         GlobalAssert.that(pickupRegister.size() <= pendingRequests.size());
    
-        GlobalAssert.that(false); // TODO ensure that this stops taxis which have lost their pickup
-        // --
     }
 
 //    /** @param avRequest
