@@ -56,19 +56,77 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 /** purpose of {@link SharedUniversalDispatcher} is to collect and manage
  * {@link AVRequest}s alternative implementation of {@link AVDispatcher};
  * supersedes {@link AbstractDispatcher}. */
-//public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer {
-    public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
+// public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer {
+public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
     private final MatsimAmodeusDatabase db;
 
     private final FuturePathFactory futurePathFactory;
     private final Set<AVRequest> pendingRequests = new LinkedHashSet<>();
-    private final Map<AVRequest, RoboTaxi> pickupRegister = new HashMap<>(); // new RequestRegister
+    // private final Map<AVRequest, RoboTaxi> pickupRegister = new HashMap<>(); // new RequestRegister
+    // TODO change from set to map
     private final Map<RoboTaxi, Map<String, AVRequest>> requestRegister = new HashMap<>();
     private final Set<AVRequest> periodPickedUpRequests = new HashSet<>(); // new
     private final Set<AVRequest> periodFulfilledRequests = new HashSet<>();
     private final Set<AVRequest> periodAssignedRequests = new HashSet<>();
     private final Set<AVRequest> periodSubmittdRequests = new HashSet<>();
 
+    // TODO move these functions
+    private void addToRequestRegister(RoboTaxi roboTaxi, AVRequest avRequest) {
+        if (!requestRegister.containsKey(roboTaxi)) {
+            requestRegister.put(roboTaxi, new HashMap<>());
+        }
+        requestRegister.get(roboTaxi).put(avRequest.getId().toString(), avRequest);
+    }
+
+    private void removeFromRequestRegister(RoboTaxi roboTaxi, AVRequest avRequest) {
+        GlobalAssert.that(requestRegister.containsKey(roboTaxi));
+        GlobalAssert.that(requestRegister.get(roboTaxi).containsKey(avRequest.getId().toString()));
+        AVRequest val = requestRegister.get(roboTaxi).remove(avRequest.getId().toString());
+        Objects.requireNonNull(val);
+        if (requestRegister.get(roboTaxi).isEmpty()) {
+            Map<String, AVRequest> val2 = requestRegister.remove(roboTaxi);
+            Objects.requireNonNull(val2);
+        }
+    }
+
+    private boolean requestRegisterContainsAVRequest(AVRequest avRequest) {
+        return getAssignedAvRequests().contains(avRequest);
+    }
+    
+    private Set<AVRequest> getAssignedAvRequests(){
+        // TODO improve
+        Set<AVRequest> avRequests = new HashSet<>();
+        for (Map<String, AVRequest> avRequestsMap : requestRegister.values()) {
+            avRequests.addAll(avRequestsMap.values());
+        }
+        return avRequests;
+    }
+    
+    private Optional<RoboTaxi> getAssignedRoboTaxi(AVRequest avRequest) {
+        Map<AVRequest, RoboTaxi> pickupRegister = getPickupRegister();
+        if (pickupRegister.containsKey(avRequest)) {
+            return Optional.of(pickupRegister.get(avRequest));
+        }
+        System.out.println("Check... Here we should not go");
+        GlobalAssert.that(false);
+        return Optional.ofNullable(null);
+    }
+    
+    private Set<AVRequest> getAssignedPendingRequests() {
+        return getAssignedAvRequests().stream().filter(avr->pendingRequests.contains(avr)).collect(Collectors.toSet());
+    }
+    
+    private Map<AVRequest, RoboTaxi> getPickupRegister() {
+        Map<AVRequest, RoboTaxi> pickupRegister = new HashMap<>();
+        for (Entry<RoboTaxi, Map<String, AVRequest>> requestRegisterEntry : requestRegister.entrySet()) {
+            for (AVRequest avRequest : requestRegisterEntry.getValue().values()) {
+                GlobalAssert.that(!pickupRegister.containsKey(avRequest)); // In that case some of the logic failed. every request can only be assigned to one vehicle
+                pickupRegister.put(avRequest, requestRegisterEntry.getKey());
+            }
+        }
+        return pickupRegister;
+    }
+    
     // temporaryRequestRegister
     // for fulfilled requests
     private final Map<AVRequest, RequestStatus> reqStatuses = new HashMap<>(); // Storing the Request Statuses for the
@@ -107,7 +165,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     /** @return AVRequests which are currently not assigned to a vehicle */
     protected synchronized final List<AVRequest> getUnassignedAVRequests() {
         return pendingRequests.stream() //
-                .filter(r -> !pickupRegister.containsKey(r)) //
+                .filter(r -> requestRegisterContainsAVRequest(r)) //
                 .collect(Collectors.toList());
     }
 
@@ -152,18 +210,6 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
                 .filter(RoboTaxi::isDivertable) //
                 .collect(Collectors.toList());
     }
-//
-//    protected final Collection<RoboTaxi> getRoboTaxisWithAtLeastXFreeSeats(int x) {
-//        return getDivertableRoboTaxis().stream() //
-//                .filter(rt -> rt.getCapacity() - RoboTaxiUtils.getNumberOnBoardRequests(rt) >= x) //
-//                .collect(Collectors.toList());
-//    }
-
-//    /** @return immutable copy of pickupRegister, displays which vehicles are
-//     *         currently scheduled to pickup which request */
-//    protected final Map<AVRequest, RoboTaxi> getPickupRegister() {
-//        return Collections.unmodifiableMap(pickupRegister);
-//    }
 
     /** Function to assign a vehicle to a request. Only to be used in the redispatch function of shared dispatchers.
      * 
@@ -171,53 +217,43 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
      * @param avRequest */
     @SuppressWarnings("unlikely-arg-type")
     public void addSharedRoboTaxiPickup(RoboTaxi roboTaxi, AVRequest avRequest) {
-        GlobalAssert.that(RoboTaxiUtils.canPickupNewCustomer(roboTaxi));
+        // TODO this is not nesscessary!!
+        // GlobalAssert.that(RoboTaxiUtils.canPickupNewCustomer(roboTaxi));
         GlobalAssert.that(pendingRequests.contains(avRequest));
 
         // If the request was already assigned remove it from this vehicle in the request register and update its menu;
-        if (pickupRegister.containsKey(avRequest)) {
+        if (requestRegisterContainsAVRequest(avRequest)) {
             abortAvRequest(avRequest);
-        }
-
-        if (!requestRegister.containsKey(roboTaxi)) {
-            requestRegister.put(roboTaxi, new HashMap<>());
-        }
-
-        if (!pickupRegister.containsKey(avRequest))
+        } else {
             periodAssignedRequests.add(avRequest);
+        }
 
-        pickupRegister.put(avRequest, roboTaxi);
-        requestRegister.get(roboTaxi).put(avRequest.getId().toString(), avRequest);
+        // update the registers
+        addToRequestRegister(roboTaxi, avRequest);
         roboTaxi.addAVRequestToMenu(avRequest);
         GlobalAssert.that(RoboTaxiUtils.getRequestsInMenu(roboTaxi).contains(avRequest));
-
         reqStatuses.put(avRequest, RequestStatus.ASSIGNED);
-
     }
 
-    
     protected void abortAvRequest(AVRequest avRequest) {
         // warning: unlikely-arg-type
-        RoboTaxi oldRoboTaxi = pickupRegister.get(avRequest);
-        AVRequest val = requestRegister.get(oldRoboTaxi).remove(avRequest.getId().toString());
-        Objects.requireNonNull(val);
-
-        oldRoboTaxi.removeAVRequestFromMenu(avRequest);
-
-        if (!RoboTaxiUtils.hasNextCourse(oldRoboTaxi)) {
-            Map<String, AVRequest> val2 = requestRegister.remove(oldRoboTaxi);
-            Objects.requireNonNull(val2);
+        Optional<RoboTaxi> oldRoboTaxi = getAssignedRoboTaxi(avRequest);
+        if (oldRoboTaxi.isPresent()) {
+            RoboTaxi roboTaxi = oldRoboTaxi.get();
+            removeFromRequestRegister(roboTaxi, avRequest);
+            roboTaxi.removeAVRequestFromMenu(avRequest);
+            GlobalAssert.that(RoboTaxiUtils.checkMenuConsistency(roboTaxi));
         }
-        GlobalAssert.that(RoboTaxiUtils.checkMenuConsistency(oldRoboTaxi));
+
     }
-    
+
     /** carries out the redispatching defined in the {@link SharedMenu} and executes the
      * directives after a check of the menus. */
     @Override
     final void redispatchInternal(double now) {
 
-//        /** to be implemented externally in the dispatchers */
-//        redispatch(now);
+        // /** to be implemented externally in the dispatchers */
+        // redispatch(now);
 
         /** {@link RoboTaxi} are diverted which:
          * - have a starter
@@ -333,10 +369,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
             boolean statusPen = pendingRequests.remove(avRequest);
             GlobalAssert.that(statusPen);
         }
-        {
-            RoboTaxi former = pickupRegister.remove(avRequest);
-            GlobalAssert.that(sRoboTaxi == former);
-        }
+        // TODO Claudio Lukas, do we have to do this here? this should be handled by the task handling
         sRoboTaxi.setStatus(RoboTaxiStatus.DRIVEWITHCUSTOMER);
         reqStatuses.put(avRequest, RequestStatus.DRIVING);
         periodPickedUpRequests.add(avRequest);
@@ -404,7 +437,8 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
     @Override
     /* package */ final boolean isInPickupRegister(RoboTaxi sRoboTaxi) {
-        return pickupRegister.containsValue(sRoboTaxi);
+        // TODO this is not required i guess!!!
+        return getAssignedPendingRequests().contains(sRoboTaxi);
     }
 
     @Override
@@ -421,24 +455,24 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
                 .filter(RoboTaxi::isWithoutCustomer)//
                 .filter(RoboTaxi::isWithoutDirective)//
                 .forEach(rt -> setRoboTaxiDiversion(rt, rt.getDivertableLocation(), RoboTaxiStatus.REBALANCEDRIVE));
-        GlobalAssert.that(pickupRegister.size() <= pendingRequests.size());
-   
+        GlobalAssert.that(getAssignedPendingRequests().size() <= pendingRequests.size());
+
     }
 
-//    /** @param avRequest
-//     * @returnsRoboTaxi assigned to given avRequest, or empty if no taxi is assigned
-//     *                  to avRequest Used by BipartiteMatching in
-//     *                  euclideanNonCyclic, there a comparison to the old av
-//     *                  assignment is needed */
-//    public final Optional<RoboTaxi> getPickupTaxi(AVRequest avRequest) {
-//        return Optional.ofNullable(pickupRegister.get(avRequest));
-//    }
+    // /** @param avRequest
+    // * @returnsRoboTaxi assigned to given avRequest, or empty if no taxi is assigned
+    // * to avRequest Used by BipartiteMatching in
+    // * euclideanNonCyclic, there a comparison to the old av
+    // * assignment is needed */
+    // public final Optional<RoboTaxi> getPickupTaxi(AVRequest avRequest) {
+    // return Optional.ofNullable(pickupRegister.get(avRequest));
+    // }
 
     /** complete all matchings if a {@link RoboTaxi} has arrived at the
      * fromLink of an {@link AVRequest} */
     @Override
     void executePickups() {
-        Map<AVRequest, RoboTaxi> pickupRegisterCopy = new HashMap<>(pickupRegister);
+        Map<AVRequest, RoboTaxi> pickupRegisterCopy = new HashMap<>(getPickupRegister());
         List<RoboTaxi> pickupUniqueRoboTaxis = pickupRegisterCopy.values().stream() //
                 .filter(srt -> RoboTaxiUtils.nextCourseIsOfType(srt, SharedMealType.PICKUP)) //
                 .distinct() //
@@ -465,6 +499,8 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
             }
         }
     }
+
+
 
     /** complete all matchings if a {@link RoboTaxi} has arrived at the toLink
      * of an {@link AVRequest} */
@@ -532,14 +568,12 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
             requestRegister.get(roboTaxi).entrySet().stream().forEach(entry -> {
                 pendingRequests.add(entry.getValue());
                 reqStatuses.put(entry.getValue(), RequestStatus.REQUESTED);
-                pickupRegister.remove(entry.getValue());
             });
             Map<String, AVRequest> val = requestRegister.remove(roboTaxi);
             Objects.requireNonNull(val);
         }
         GlobalAssert.that(!RoboTaxiUtils.hasNextCourse(roboTaxi));
         GlobalAssert.that(!requestRegister.containsKey(roboTaxi));
-        GlobalAssert.that(!pickupRegister.containsValue(roboTaxi));
     }
 
     /** Consistency checks to be called by
@@ -560,7 +594,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         }
 
         // there cannot be more pickup vehicles than open requests
-        GlobalAssert.that(pickupRegister.size() <= pendingRequests.size());
+        GlobalAssert.that(getAssignedPendingRequests().size() <= pendingRequests.size());
 
         // all Robotaxi in the request Register have a current course
         // TODO thats two times the same thing right?????
@@ -569,10 +603,10 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         requestRegister.forEach((k, v) -> GlobalAssert.that(RoboTaxiUtils.hasNextCourse(k)));
 
         // pickupRegister needs to be a subset of requestRegister
-        pickupRegister.forEach((k, v) -> GlobalAssert.that(requestRegister.get(v).containsValue(k)));
+        getPickupRegister().forEach((k, v) -> GlobalAssert.that(requestRegister.get(v).containsValue(k)));
 
         // containment check pickupRegister and pendingRequests
-        pickupRegister.keySet().forEach(r -> GlobalAssert.that(pendingRequests.contains(r)));
+        getPickupRegister().keySet().forEach(r -> GlobalAssert.that(pendingRequests.contains(r)));
 
         // check Menu consistency of each Robo Taxi
         getRoboTaxis().stream().filter(rt -> RoboTaxiUtils.hasNextCourse(rt)).forEach(rtx -> GlobalAssert.that(RoboTaxiUtils.checkMenuConsistency(rtx)));
@@ -664,13 +698,12 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
                 getAVRequests().size(), //
                 total_matchedRequests);
     }
-    
-    
+
     /** adding a vehicle during setup of simulation, handeled by {@link AVGenerator} */
     @Override
     public final void addVehicle(AVVehicle vehicle) {
         RoboTaxi roboTaxi = new RoboTaxi(vehicle, new LinkTimePair(vehicle.getStartLink(), 0.0), vehicle.getStartLink(), RoboTaxiUsageType.SHARED);
-        Event event =new AVVehicleAssignmentEvent(vehicle, 0);
+        Event event = new AVVehicleAssignmentEvent(vehicle, 0);
         addRoboTaxi(roboTaxi, event);
     }
 
@@ -713,5 +746,4 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         }
     }
 
-    
 }
