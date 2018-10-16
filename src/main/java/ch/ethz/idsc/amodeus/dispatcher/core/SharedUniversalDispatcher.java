@@ -24,6 +24,7 @@ import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
+import org.matsim.visum.VisumNetwork.Stop;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
@@ -49,7 +50,8 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 /** purpose of {@link SharedUniversalDispatcher} is to collect and manage
  * {@link AVRequest}s alternative implementation of {@link AVDispatcher};
  * supersedes {@link AbstractDispatcher}. */
-public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer {
+//public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer {
+    public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
     private final MatsimAmodeusDatabase db;
 
     private final FuturePathFactory futurePathFactory;
@@ -68,8 +70,8 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
     private final double pickupDurationPerStop;
     private final double dropoffDurationPerStop;
     protected int publishPeriod; // not final, so that dispatchers can disable, or manipulate
-    private int total_matchedRequests = 0;
-    private int total_dropedOffRequests = 0;
+    private int total_matchedRequests = 0; // TODO Shared what is the use of this?
+    private int total_dropedOffRequests = 0;// TODO Shared what is the use of this?
 
     protected SharedUniversalDispatcher( //
             Config config, //
@@ -144,12 +146,12 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
                 .filter(RoboTaxi::isDivertable) //
                 .collect(Collectors.toList());
     }
-
-    protected final Collection<RoboTaxi> getRoboTaxisWithAtLeastXFreeSeats(int x) {
-        return getDivertableRoboTaxis().stream() //
-                .filter(rt -> rt.getCapacity() - RoboTaxiUtils.getNumberOnBoardRequests(rt) >= x) //
-                .collect(Collectors.toList());
-    }
+//
+//    protected final Collection<RoboTaxi> getRoboTaxisWithAtLeastXFreeSeats(int x) {
+//        return getDivertableRoboTaxis().stream() //
+//                .filter(rt -> rt.getCapacity() - RoboTaxiUtils.getNumberOnBoardRequests(rt) >= x) //
+//                .collect(Collectors.toList());
+//    }
 
     /** @return immutable copy of pickupRegister, displays which vehicles are
      *         currently scheduled to pickup which request */
@@ -180,6 +182,8 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
                 Objects.requireNonNull(val2);
             }
             GlobalAssert.that(RoboTaxiUtils.checkMenuConsistency(oldRoboTaxi));
+            // FIXME Lukas REDIRECT this vehicle
+
         }
 
         if (!requestRegister.containsKey(roboTaxi)) {

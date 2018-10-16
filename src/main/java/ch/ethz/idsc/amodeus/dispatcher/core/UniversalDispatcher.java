@@ -387,4 +387,21 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
                 getAVRequests().size(), //
                 total_matchedRequests);
     }
+    
+    @Override
+    final void redispatchInternal(double now) {
+        // deliberately empty
+    }
+   
+    @Override
+    final void executeRedirects() {
+        // deliberately empty
+    }
+    
+    
+    @Override
+    /* package */ boolean isInRequestRegister(RoboTaxi roboTaxi) {
+        // TODO make sure nobody uses this and it has no effect, only necessary for shared dispatchers so far.
+        return true;
+    }
 }

@@ -127,7 +127,9 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         beforeStepTasks(); // <- if problems with RoboTaxi Status to Completed consider to set "simEndtimeInterpretation" to "null"
         executePickups();
         executeDropoffs();
+        executeRedirects();
         redispatch(now);
+        redispatchInternal(now);
         afterStepTasks();
         executeDirectives();
         consistencyCheck();
@@ -199,6 +201,12 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     /* package */ abstract void notifySimulationSubscribers(long round_now, StorageUtils storageUtils);
 
     /* package */ abstract boolean isInPickupRegister(RoboTaxi robotaxi);
+    
+    /* package */ abstract void redispatchInternal(double now);
+    
+    /* package */ abstract void executeRedirects();
+    
+    /* package */ abstract boolean isInRequestRegister(RoboTaxi sRoboTaxi);
 
     @Override
     public final void onNextTaskStarted(AVVehicle task) {
