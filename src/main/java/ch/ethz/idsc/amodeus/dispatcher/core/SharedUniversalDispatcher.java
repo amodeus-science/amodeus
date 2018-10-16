@@ -348,31 +348,29 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
      * @paramsRoboTaxi
      * @param avRequest */
     private synchronized final void setPassengerDropoff(RoboTaxi roboTaxi, AVRequest avRequest) {
-        GlobalAssert.that(requestRegisterClass.contains(avRequest));
-        GlobalAssert.that(requestRegisterClass.contains(roboTaxi));
-        requestRegisterClass.remove(roboTaxi, avRequest);
-        // save avRequests which are matched for one publishPeriod to ensure no requests
-        // are lost in the recording.
-        periodFulfilledRequests.add(avRequest);
+        GlobalAssert.that(requestRegisterClass.contains(roboTaxi, avRequest));
 
+        // Assign Directive To roboTaxi
         final Schedule schedule = roboTaxi.getSchedule();
         // check that current task is last task in schedule
         GlobalAssert.that(schedule.getCurrentTask() == Schedules.getLastTask(schedule)); // instanceof AVDriveTask);
-
         final double endDropOffTime = getTimeNow() + dropoffDurationPerStop;
 
-        roboTaxi.dropOffCustomer();
+        roboTaxi.dropOffCustomer(); // This removes the dropoffCourse from the Menu
 
-        boolean roboTaxiHasNextCourse = RoboTaxiUtils.hasNextCourse(roboTaxi);
-        FuturePathContainer futurePathContainer = (roboTaxiHasNextCourse)
+        FuturePathContainer futurePathContainer = (RoboTaxiUtils.hasNextCourse(roboTaxi))
                 ? futurePathFactory.createFuturePathContainer(avRequest.getToLink(), RoboTaxiUtils.getStarterLink(roboTaxi), endDropOffTime)
                 : futurePathFactory.createFuturePathContainer(avRequest.getToLink(), avRequest.getToLink(), endDropOffTime);
         roboTaxi.assignDirective(new SharedGeneralDriveDirectiveDropoff(roboTaxi, avRequest, futurePathContainer, getTimeNow(), dropoffDurationPerStop));
 
+        // Update Registers
+        requestRegisterClass.remove(roboTaxi, avRequest);
+        periodFulfilledRequests.add(avRequest);
         reqStatuses.remove(avRequest);
         total_dropedOffRequests++;
+
+        // Checks
         if (requestRegisterClass.contains(roboTaxi)) {
-            // TODO THIS changed during the menu changement by lukas
             GlobalAssert.that(!requestRegisterClass.get(roboTaxi).containsKey(avRequest.getId().toString()));
         }
 
@@ -448,8 +446,9 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
             Optional<SharedCourse> currentCourse = RoboTaxiUtils.getStarterCourse(dropoffVehicle);
             GlobalAssert.that(currentCourse.isPresent());
             AVRequest avR = currentCourse.get().getAvRequest();
-            ;
+
             GlobalAssert.that(requestRegisterClass.contains(dropoffVehicle, avR));
+            
             if (currentCourse.get().getMealType().equals(SharedMealType.DROPOFF) && //
                     avR.getToLink().equals(dropoffVehicleLink) && //
                     dropoffVehicle.isWithoutDirective() && //
@@ -511,6 +510,8 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
     @Override
     protected final void consistencySubCheck() {
         // TODO this is important to work through again as this can save a lot of computatioinal effort
+
+        // check that each Request only appears once in the Request Register
         Set<AVRequest> uniqueAvRequests = new HashSet<>();
         for (Entry<RoboTaxi, Map<String, AVRequest>> entry : requestRegisterClass.getRegister().entrySet()) {
             for (AVRequest avRequest : entry.getValue().values()) {
@@ -520,19 +521,18 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
                 }
                 uniqueAvRequests.add(avRequest);
             }
-
         }
 
-        // there cannot be more pickup vehicles than open requests
+        // there cannot be more pickup requests than open requests
         GlobalAssert.that(getAssignedPendingRequests().size() <= pendingRequests.size());
 
+        // there cannot be more pickup vehicles than open requests
+        GlobalAssert.that(getRoboTaxiSubset(RoboTaxiStatus.DRIVETOCUSTOMER).size() <= pendingRequests.size());
+
         // all Robotaxi in the request Register have a current course
-        // TODO thats two times the same thing right?????
-        requestRegisterClass.getRegister().keySet().forEach(roboTaxi -> GlobalAssert.that(RoboTaxiUtils.hasNextCourse(roboTaxi)));
+        GlobalAssert.that(requestRegisterClass.getRegister().keySet().stream().allMatch(RoboTaxiUtils::hasNextCourse));
 
-        requestRegisterClass.getRegister().forEach((k, v) -> GlobalAssert.that(RoboTaxiUtils.hasNextCourse(k)));
-
-        // containment check pickupRegister and pendingRequests
+        // containment check pickupRegisterFunction and pendingRequests
         requestRegisterClass.getPickupRegister(pendingRequests).keySet().forEach(r -> GlobalAssert.that(pendingRequests.contains(r)));
 
         // check Menu consistency of each Robo Taxi
