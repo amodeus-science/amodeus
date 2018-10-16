@@ -411,7 +411,8 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
     @Override
     /* package */ void stopAbortedPickupRoboTaxis() {
-        GlobalAssert.that(true);
+        
+        GlobalAssert.that(false); // TODO ensure that this stops taxis which have lost their pickup
         // --
     }
 
