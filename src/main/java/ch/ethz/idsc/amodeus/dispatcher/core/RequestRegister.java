@@ -1,5 +1,6 @@
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -13,7 +14,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
 /*package */ class RequestRegister {
     
-    Map<RoboTaxi, Map<String, AVRequest>> register = new HashMap<>();
+    private final Map<RoboTaxi, Map<String, AVRequest>> register = new HashMap<>();
     
     /** Adding and removing */
     /*package */ void add(RoboTaxi roboTaxi, AVRequest avRequest) {
@@ -86,7 +87,13 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         return pickupRegister;
     }
 
-    public Map<String, AVRequest> get(RoboTaxi roboTaxi) {
-        return null;
+    /*package */ Map<String, AVRequest> get(RoboTaxi roboTaxi) {
+        GlobalAssert.that(contains(roboTaxi));
+        return register.get(roboTaxi);
     }
+    
+    /*package */ Map<RoboTaxi, Map<String, AVRequest>> getRegister() {
+        return Collections.unmodifiableMap(register);
+    }
+    
 }
