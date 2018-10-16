@@ -166,8 +166,6 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
      * @param avRequest */
     @SuppressWarnings("unlikely-arg-type")
     public void addSharedRoboTaxiPickup(RoboTaxi roboTaxi, AVRequest avRequest) {
-        // TODO this is not nesscessary!!
-        // GlobalAssert.that(RoboTaxiUtils.canPickupNewCustomer(roboTaxi));
         GlobalAssert.that(pendingRequests.contains(avRequest));
 
         // If the request was already assigned remove it from this vehicle in the request register and update its menu;
@@ -416,8 +414,6 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
             // SHARED note that waiting for last staytask adds a one second staytask before
             // switching to pickuptask
             boolean isOk = roboTaxi.getSchedule().getCurrentTask() == Schedules.getLastTask(roboTaxi.getSchedule()); // instanceof
-            // AVDriveTask;
-            // //
 
             Optional<SharedCourse> currentCourse = RoboTaxiUtils.getStarterCourse(roboTaxi);
             GlobalAssert.that(currentCourse.isPresent());
@@ -448,7 +444,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
             AVRequest avR = currentCourse.get().getAvRequest();
 
             GlobalAssert.that(requestRegisterClass.contains(dropoffVehicle, avR));
-            
+
             if (currentCourse.get().getMealType().equals(SharedMealType.DROPOFF) && //
                     avR.getToLink().equals(dropoffVehicleLink) && //
                     dropoffVehicle.isWithoutDirective() && //
