@@ -60,7 +60,7 @@ public enum ExpectedArrival {
      * @param from to the {@link Link} @param to starting at {@link Scalar} @param now and using
      *            the {@link AVRouter} @param router
      * @return null if path calculation unsuccessful */
-    private static Scalar timeFromTo(Link from, Link to, Scalar now, RoboTaxi roboTaxi, AVRouter router) {
+    public static Scalar timeFromTo(Link from, Link to, Scalar now, RoboTaxi roboTaxi, AVRouter router) {
         Future<Path> path = router.calcLeastCostPath(from.getFromNode(), to.getToNode(), now.number().doubleValue(), //
                 null, null);
         Double travelTime = null;
