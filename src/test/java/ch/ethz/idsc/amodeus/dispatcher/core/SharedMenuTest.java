@@ -1,5 +1,6 @@
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import org.matsim.contrib.dvrp.data.Request;
 import org.matsim.core.network.NetworkUtils;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import junit.framework.TestCase;
@@ -58,12 +60,27 @@ public class SharedMenuTest extends TestCase {
         SharedCourse pickupCourse2 = SharedCourse.pickupCourse(avRequest2);
         SharedCourse dropoffCourse2 = SharedCourse.dropoffCourse(avRequest2);
 
-        List<SharedCourse> list = Arrays.asList(pickupCourse1, dropoffCourse1, pickupCourse2, dropoffCourse2);
-        SharedMenu menu = SharedMenu.of(list);
+        List<SharedCourse> list1 = Arrays.asList(pickupCourse1, dropoffCourse1, pickupCourse2, dropoffCourse2);
+        SharedMenu menu1 = SharedMenu.of(list1);
+        
+        assertTrue(SharedMenuUtils.checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(menu1, 1));
+        assertTrue(SharedMenuUtils.checkNoPickupAfterDropoffOfSameRequest(menu1));
+        assertTrue(SharedMenuUtils.checkAllCoursesAppearOnlyOnce(menu1));
+        
+        SharedMenu menu2 = SharedMenuUtils.moveAVCourseToNext(menu1, dropoffCourse1);
+        assertTrue(SharedMenuUtils.containSameCourses(menu1, menu2));
+        SharedMenu menu2Check = SharedMenu.of(Arrays.asList(pickupCourse1, pickupCourse2, dropoffCourse1, dropoffCourse2));
+        assertFalse(menu1.getRoboTaxiMenu().equals(menu2.getRoboTaxiMenu()));
+        assertTrue(menu2.getRoboTaxiMenu().equals(menu2Check.getRoboTaxiMenu()));
+        
+        List<SharedCourse> listInvalid = Arrays.asList(dropoffCourse1,pickupCourse1);
 
-        assertTrue(SharedMenuUtils.checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(menu, 1));
-        assertTrue(SharedMenuUtils.checkNoPickupAfterDropoffOfSameRequest(menu));
-        assertTrue(SharedMenuUtils.checkAllCoursesAppearOnlyOnce(menu));
+        try {
+            SharedMenu.of(listInvalid);
+            assertTrue(false);
+        } catch (Exception e) {
+        }
+        
 
         System.out.println("Shared Menu Test Done");
     }
