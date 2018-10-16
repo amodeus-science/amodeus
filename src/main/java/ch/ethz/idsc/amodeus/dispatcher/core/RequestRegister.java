@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
@@ -87,6 +88,10 @@ import ch.ethz.matsim.av.passenger.AVRequest;
             }
         }
         return pickupRegister;
+    }
+
+    /* package */ Set<AVRequest> getAssignedPendingRequests(Set<AVRequest> pendingRequests) {
+        return getAssignedAvRequests().stream().filter(avr -> pendingRequests.contains(avr)).collect(Collectors.toSet());
     }
 
     /* package */ Map<String, AVRequest> get(RoboTaxi roboTaxi) {

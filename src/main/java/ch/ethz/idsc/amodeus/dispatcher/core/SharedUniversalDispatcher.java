@@ -56,24 +56,20 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 /** purpose of {@link SharedUniversalDispatcher} is to collect and manage
  * {@link AVRequest}s alternative implementation of {@link AVDispatcher};
  * supersedes {@link AbstractDispatcher}. */
-// public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer {
 public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
     private final MatsimAmodeusDatabase db;
 
     private final FuturePathFactory futurePathFactory;
     private final Set<AVRequest> pendingRequests = new LinkedHashSet<>();
-    // private final Map<AVRequest, RoboTaxi> pickupRegister = new HashMap<>(); // new RequestRegister
-    // TODO change from set to map
+    // TODO might be done with robotaxis only?
     private final RequestRegister requestRegisterClass = new RequestRegister();
-    // private final Map<RoboTaxi, Map<String, AVRequest>> requestRegister = new HashMap<>();
-    private final Set<AVRequest> periodPickedUpRequests = new HashSet<>(); // new
+
+    private final Set<AVRequest> periodPickedUpRequests = new HashSet<>(); 
     private final Set<AVRequest> periodFulfilledRequests = new HashSet<>();
     private final Set<AVRequest> periodAssignedRequests = new HashSet<>();
     private final Set<AVRequest> periodSubmittdRequests = new HashSet<>();
 
-    private Set<AVRequest> getAssignedPendingRequests() {
-        return requestRegisterClass.getAssignedAvRequests().stream().filter(avr -> pendingRequests.contains(avr)).collect(Collectors.toSet());
-    }
+
 
     // temporaryRequestRegister
     // for fulfilled requests
@@ -379,7 +375,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
     @Override
     /* package */ final boolean isInPickupRegister(RoboTaxi sRoboTaxi) {
         // TODO this is not required i guess!!!
-        return getAssignedPendingRequests().contains(sRoboTaxi);
+        return requestRegisterClass.getAssignedPendingRequests(pendingRequests).contains(sRoboTaxi);
     }
 
     @Override
@@ -396,7 +392,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
                 .filter(RoboTaxi::isWithoutCustomer)//
                 .filter(RoboTaxi::isWithoutDirective)//
                 .forEach(rt -> setRoboTaxiDiversion(rt, rt.getDivertableLocation(), RoboTaxiStatus.REBALANCEDRIVE));
-        GlobalAssert.that(getAssignedPendingRequests().size() <= pendingRequests.size());
+        GlobalAssert.that(requestRegisterClass.getAssignedPendingRequests(pendingRequests).size() <= pendingRequests.size());
 
     }
 
@@ -525,7 +521,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
         }
 
         // there cannot be more pickup requests than open requests
-        GlobalAssert.that(getAssignedPendingRequests().size() <= pendingRequests.size());
+        GlobalAssert.that(requestRegisterClass.getAssignedPendingRequests(pendingRequests).size() <= pendingRequests.size());
 
         // there cannot be more pickup vehicles than open requests
         GlobalAssert.that(getRoboTaxiSubset(RoboTaxiStatus.DRIVETOCUSTOMER).size() <= pendingRequests.size());
