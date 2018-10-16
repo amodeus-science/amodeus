@@ -441,15 +441,20 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
 
             Optional<SharedCourse> currentCourse = RoboTaxiUtils.getStarterCourse(dropoffVehicle);
             GlobalAssert.that(currentCourse.isPresent());
-            AVRequest avR = currentCourse.get().getAvRequest();
+            if (currentCourse.get().getMealType().equals(SharedMealType.DROPOFF)) {
+                AVRequest avR = currentCourse.get().getAvRequest();
 
-            GlobalAssert.that(requestRegisterClass.contains(dropoffVehicle, avR));
+                if (!requestRegisterClass.contains(dropoffVehicle, avR)) {
+                    System.out.println("stiop");
+                }
+                GlobalAssert.that(requestRegisterClass.contains(dropoffVehicle, avR));
 
-            if (currentCourse.get().getMealType().equals(SharedMealType.DROPOFF) && //
-                    avR.getToLink().equals(dropoffVehicleLink) && //
-                    dropoffVehicle.isWithoutDirective() && //
-                    isOk) {
-                setPassengerDropoff(dropoffVehicle, avR);
+                if (
+                        avR.getToLink().equals(dropoffVehicleLink) && //
+                        dropoffVehicle.isWithoutDirective() && //
+                        isOk) {
+                    setPassengerDropoff(dropoffVehicle, avR);
+                }
             }
         }
     }
