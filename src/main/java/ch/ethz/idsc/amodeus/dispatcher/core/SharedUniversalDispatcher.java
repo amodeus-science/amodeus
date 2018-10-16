@@ -366,7 +366,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
         GlobalAssert.that(currentCourse.isPresent());
         GlobalAssert.that(currentCourse.get().getMealType().equals(SharedMealType.DROPOFF));
         GlobalAssert.that(currentCourse.get().getCourseId().equals(avRequest.getId().toString()));
-        GlobalAssert.that(currentCourse.get().getLink().equals(avRequest.getFromLink()));
+        GlobalAssert.that(currentCourse.get().getLink().equals(avRequest.getToLink()));
         GlobalAssert.that(currentCourse.get().getLink().equals(roboTaxi.getDivertableLocation()));
         final Schedule schedule = roboTaxi.getSchedule();
         GlobalAssert.that(schedule.getCurrentTask() == Schedules.getLastTask(schedule)); // instanceof AVDriveTask);
