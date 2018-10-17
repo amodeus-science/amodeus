@@ -53,7 +53,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     }
 
     /* package */ ArtificialScenarioCreator(Config config) {
-        network = (config == null) ? null : NetworkUtils.createNetwork(config);
+        network = (config == null) ? NetworkUtils.createNetwork() : NetworkUtils.createNetwork(config);
 
         Id<Node> nodeid1 = Id.createNodeId("node1");
         Coord coord1 = new Coord(100, 100);

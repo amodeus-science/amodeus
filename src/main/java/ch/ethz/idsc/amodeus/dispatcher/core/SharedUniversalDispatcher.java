@@ -190,7 +190,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
      * 
      * @param avRequest avRequest to abort */
     public final void abortAvRequest(AVRequest avRequest) {
-        GlobalAssert.that(requestRegister.contains(avRequest));
+        GlobalAssert.that(requestRegister.contains(avRequest)); // Only already picked Up RoboTaxis are considered else you can not call this function
         GlobalAssert.that(pendingRequests.contains(avRequest)); // only then a removal makes sense. else it was picked up by another robotaxi
         Optional<RoboTaxi> oldRoboTaxi = requestRegister.getAssignedRoboTaxi(avRequest);
         if (oldRoboTaxi.isPresent()) {
