@@ -93,12 +93,12 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
                     sharedRoboTaxi.moveAVCourseToPrev(sharedAVCourse3);
                     sharedRoboTaxi.moveAVCourseToPrev(sharedAVCourse3);
 
-                    /** add pickup for request 4 and move to first location */
+                    /** add pickup for request 4 and reorder the menu based on a list of Shared Courses */
+                    List<SharedCourse> courses = SharedCourseListUtils.copy(sharedRoboTaxi.getUnmodifiableViewOfCourses());
+                    courses.add(3, SharedCourse.pickupCourse(fourthRequest));
+                    courses.add(SharedCourse.dropoffCourse(fourthRequest));
                     addSharedRoboTaxiPickup(sharedRoboTaxi, fourthRequest);
-                    SharedCourse sharedAVCourse4 = SharedCourse.pickupCourse(fourthRequest);
-                    sharedRoboTaxi.moveAVCourseToPrev(sharedAVCourse4);
-                    sharedRoboTaxi.moveAVCourseToPrev(sharedAVCourse4);
-                    sharedRoboTaxi.moveAVCourseToPrev(sharedAVCourse4);
+                    sharedRoboTaxi.updateMenu(courses);
 
                     /** add a redirect task (to the north pole) and move to prev */
                     Link redirectLink = cityNorthPole;
