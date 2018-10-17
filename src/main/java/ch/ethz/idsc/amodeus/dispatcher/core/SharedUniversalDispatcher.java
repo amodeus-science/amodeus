@@ -345,7 +345,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
         final double endPickupTime = getTimeNow() + pickupDurationPerStop;
         FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer(avRequest.getFromLink(), RoboTaxiUtils.getStarterLink(roboTaxi), endPickupTime);
         roboTaxi.assignDirective(new SharedGeneralDriveDirectivePickup(roboTaxi, avRequest, futurePathContainer, getTimeNow()));
-    
+
         // After Function Checks
         GlobalAssert.that(!pendingRequests.contains(avRequest));
         GlobalAssert.that(!roboTaxi.getUnmodifiableViewOfCourses().contains(SharedCourse.pickupCourse(avRequest)));
@@ -426,6 +426,8 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
                 .distinct() //
                 .collect(Collectors.toList());
         for (RoboTaxi roboTaxi : pickupUniqueRoboTaxis) {
+            // TODO Lukas Claudio why does it need to be the divertable location and not the current Location????
+            // Same for dropoffs
             Link pickupVehicleLink = roboTaxi.getDivertableLocation();
             // SHARED note that waiting for last staytask adds a one second staytask before
             // switching to pickuptask
@@ -570,7 +572,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
         /** test: every request appears only 2 times, pickup and dropff accross all menus */
         List<String> requestsInMenus = new ArrayList<>();
         getRoboTaxis().stream().filter(rt -> RoboTaxiUtils.hasNextCourse(rt)).forEach(//
-                rtx -> SharedCourseListUtils.getUniqueAVRequestIds(rtx.getUnmodifiableViewOfCourses()).forEach(id -> requestsInMenus.add(id)));
+                rtx -> SharedCourseListUtils.getUniqueAVRequests(rtx.getUnmodifiableViewOfCourses()).forEach(r -> requestsInMenus.add(r.getId().toString())));
         Set<String> uniqueMenuRequests = new HashSet<>(requestsInMenus);
         GlobalAssert.that(uniqueMenuRequests.size() == requestsInMenus.size());
 
