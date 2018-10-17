@@ -35,6 +35,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     public final AVRequest avRequest6;
     public final AVRequest avRequest7;
 
+    public final AVVehicle vehicle1;
+    public final AVVehicle vehicle2 ;
     public final RoboTaxi roboTaxi1;
     public final RoboTaxi roboTaxi2;
 
@@ -93,12 +95,12 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         LinkTimePair divertableLinkTime = new LinkTimePair(linkDepotOut, 0.0);
 
         Id<Vehicle> idAv1 = Id.create("av1", Vehicle.class);
-        AVVehicle av1 = new AVVehicle(idAv1, linkDepotOut, seats, 0.0, Double.POSITIVE_INFINITY);
-        roboTaxi1 = new RoboTaxi(av1, divertableLinkTime, linkDepotOut, RoboTaxiUsageType.SHARED);
+        vehicle1 = new AVVehicle(idAv1, linkDepotOut, seats, 0.0, Double.POSITIVE_INFINITY);
+        roboTaxi1 = new RoboTaxi(vehicle1, divertableLinkTime, linkDepotOut, RoboTaxiUsageType.SHARED);
 
         Id<Vehicle> idAv2 = Id.create("av2", Vehicle.class);
-        AVVehicle av2 = new AVVehicle(idAv2, linkDepotOut, seats, 0.0, Double.POSITIVE_INFINITY);
-        roboTaxi2 = new RoboTaxi(av2, divertableLinkTime, linkDepotOut, RoboTaxiUsageType.SHARED);
+        vehicle2 = new AVVehicle(idAv2, linkDepotOut, seats, 0.0, Double.POSITIVE_INFINITY);
+        roboTaxi2 = new RoboTaxi(vehicle2, divertableLinkTime, linkDepotOut, RoboTaxiUsageType.SHARED);
 
     }
 
