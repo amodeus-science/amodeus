@@ -37,6 +37,10 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
     public static final String UNDEFINED_STRING = "";
     public static final DateFormat DATEFORMAT = new SimpleDateFormat("yyyy/MM/dd - HH:mm:ss");
     // ---
+    public static final String DISPATCHPERIODSTRING = "dispatchPeriod";
+    public static final String REBALANCINGPERIODSTRING = "rebalancingPeriod";
+    public static final String DISTANCEHEURISTICSTRING = "distanceHeuristics";
+
     public final int populationSize;
     public final int iterations;
     public final int redispatchPeriod;
@@ -76,13 +80,13 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
         SafeConfig safeConfig = SafeConfig.wrap(avdispatcherconfig);
         AVGeneratorConfig avgeneratorconfig = oc.getGeneratorConfig();
 
-        redispatchPeriod = safeConfig.getInteger("dispatchPeriod", UNDEFINED_INT);
-        rebalancingPeriod = safeConfig.getInteger("rebalancingPeriod", UNDEFINED_INT);
+        redispatchPeriod = safeConfig.getInteger(DISPATCHPERIODSTRING, UNDEFINED_INT);
+        rebalancingPeriod = safeConfig.getInteger(REBALANCINGPERIODSTRING, UNDEFINED_INT);
         dispatcher = avdispatcherconfig.getStrategyName();
         vehicleGenerator = avgeneratorconfig.getStrategyName();
         Scenario scenario = ScenarioUtils.loadScenario(config);
 
-        distanceHeuristic = safeConfig.getString("distanceHeuristics", UNDEFINED_STRING);
+        distanceHeuristic = safeConfig.getString(DISTANCEHEURISTICSTRING, UNDEFINED_STRING);
         populationSize = scenario.getPopulation().getPersons().values().size();
         virtualNetworkCreator = scenOptions.getString(ScenarioOptionsBase.VIRTUALNETWORKCREATORIDENTIFIER);
 

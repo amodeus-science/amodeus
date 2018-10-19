@@ -59,7 +59,7 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
         this.equatorLinks = getEquator(network);
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
-        rebalancePeriod = safeConfig.getInteger("rebalancePeriod", 1800);
+        rebalancePeriod = safeConfig.getInteger("rebalancingPeriod", 1800);
         links = new ArrayList<>(network.getLinks().values());
         Collections.shuffle(links, randGen);
     }

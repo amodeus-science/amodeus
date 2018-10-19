@@ -64,7 +64,8 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
 
     // Registers for Simulation Objects
     private final Set<AVRequest> periodPickedUpRequests = new HashSet<>();
-    private final Set<AVRequest> periodFulfilledRequests = new HashSet<>();
+    private final Map<AVRequest, RoboTaxi> periodFulfilledRequests = new HashMap<>(); // A request is removed from the requestRegister at dropoff. So here we store the information
+                                                                                      // from which Robotaxi it was droped off
     private final Set<AVRequest> periodAssignedRequests = new HashSet<>();
     private final Set<AVRequest> periodSubmittdRequests = new HashSet<>();
     private final Map<AVRequest, RequestStatus> reqStatuses = new HashMap<>(); // Storing the Request Statuses for the
@@ -383,7 +384,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
 
         // Update Registers
         requestRegister.remove(roboTaxi, avRequest);
-        periodFulfilledRequests.add(avRequest);
+        periodFulfilledRequests.put(avRequest, roboTaxi);
         reqStatuses.remove(avRequest);
         total_dropedOffRequests++;
 
@@ -603,28 +604,28 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
             simulationObjectCompiler.insertRequests(reqStatuses);
             simulationObjectCompiler.insertRequests(periodAssignedRequests, RequestStatus.ASSIGNED);
             simulationObjectCompiler.insertRequests(periodPickedUpRequests, RequestStatus.PICKUP);
-            simulationObjectCompiler.insertRequests(periodFulfilledRequests, RequestStatus.DROPOFF);
+            simulationObjectCompiler.insertRequests(periodFulfilledRequests.keySet(), RequestStatus.DROPOFF);
             simulationObjectCompiler.insertRequests(periodSubmittdRequests, RequestStatus.REQUESTED);
-
-            periodAssignedRequests.clear();
-            periodPickedUpRequests.clear();
-            periodFulfilledRequests.clear();
-            periodSubmittdRequests.clear();
 
             /** insert {@link RoboTaxi}s */
             simulationObjectCompiler.insertVehicles(getRoboTaxis());
 
             /** insert information of association of {@link RoboTaxi}s and {@link AVRequest}s */
-            // FIXME Lukas. The request register does not contain the dropedoff requests in the last period. this leads to the fact that the association is not stored
-            // anymore in the simulation object at dropoff
-            // TODO solve this issue!
             Map<AVRequest, RoboTaxi> map = new HashMap<>();
-            for (RoboTaxi roboTaxi : requestRegister.getRegister().keySet()) {
-                for (AVRequest avr : requestRegister.getRegister().get(roboTaxi).values()) {
+            // The normal case is when the AV Request is in the RequestRegister.
+            for (RoboTaxi roboTaxi : requestRegister.getRegister().keySet())
+                for (AVRequest avr : requestRegister.getRegister().get(roboTaxi).values())
                     map.put(avr, roboTaxi);
-                }
-            }
+            // For the Dropped off customers the AV Request is not in the RequestRegister anymore. then the information is taken from the fulfilled requests
+            periodFulfilledRequests.forEach((avr, rt) -> map.put(avr, rt));
+
             simulationObjectCompiler.addRequestRoboTaxiAssoc(map);
+
+            /** clear all the request Registers */
+            periodAssignedRequests.clear();
+            periodPickedUpRequests.clear();
+            periodFulfilledRequests.clear();
+            periodSubmittdRequests.clear();
 
             /** in the first pass, the vehicles are typically empty, then
              * {@link SimulationObject} is not stored or communicated */
@@ -679,7 +680,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
                 @Override
                 public void handle(AVStayTask avStayTask) {
                     // for empty vehicles the current task has to be the last task
-                    if (ScheduleUtils.isLastTask(schedule, avStayTask) && !isInRequestRegister(robotaxi)) {
+                    if (ScheduleUtils.isLastTask(schedule, avStayTask) && !isInRequestRegister(robotaxi) && !periodFulfilledRequests.containsValue(robotaxi)) {
                         GlobalAssert.that(avStayTask.getBeginTime() <= getTimeNow());
                         GlobalAssert.that(avStayTask.getLink() != null);
                         robotaxi.setDivertableLinkTime(new LinkTimePair(avStayTask.getLink(), getTimeNow()));
