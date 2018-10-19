@@ -153,9 +153,9 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
                 .collect(Collectors.toList());
     }
 
-    // ***********************************************************************************************
-    // ********************* EXTERNAL METHODS TO BE USED BY DISPATCHERS ******************************
-    // ***********************************************************************************************
+    // **********************************************************************************************
+    // ********************* EXTERNAL METHODS TO BE USED BY DISPATCHERS *****************************
+    // **********************************************************************************************
 
     /** Function to assign a vehicle to a request. Only to be used in the redispatch function of shared dispatchers.
      * If another vehicle was assigned to this request this assignement will be aborted and replace with the new assignement
