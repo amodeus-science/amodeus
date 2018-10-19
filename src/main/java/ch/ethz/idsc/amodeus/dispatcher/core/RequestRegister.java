@@ -36,6 +36,12 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         }
     }
 
+    /* package */ void remove(RoboTaxi roboTaxi) {
+        GlobalAssert.that(register.containsKey(roboTaxi));
+        Map<String, AVRequest> val2 = register.remove(roboTaxi);
+        Objects.requireNonNull(val2);
+    }
+
     /** contains functions */
     /* package */ boolean contains(RoboTaxi roboTaxi) {
         return register.containsKey(roboTaxi);

@@ -23,10 +23,6 @@ public enum SharedCourseListUtils {
     // Get Funcitons
     // **************************************************
 
-    public static Set<String> getOnBoardRequestIds(List<? extends SharedCourse> courses) {
-        return getOnBoardRequests(courses).stream().map(avR -> avR.getId().toString()).collect(Collectors.toSet());
-    }
-
     public static Set<AVRequest> getOnBoardRequests(List<? extends SharedCourse> courses) {
         Set<AVRequest> pickups = getRequestsWithMealType(courses, SharedMealType.PICKUP);
         Set<AVRequest> dropoffs = getRequestsWithMealType(courses, SharedMealType.DROPOFF);
@@ -62,11 +58,7 @@ public enum SharedCourseListUtils {
         return getNumberDropoffs(courses) - getNumberPickups(courses);
     }
 
-    public static Set<String> getUniqueAVRequestIds(List<? extends SharedCourse> courses) {
-        return getUniqueAVRequest(courses).stream().map(av -> av.getId().toString()).collect(Collectors.toSet());//
-    }
-
-    public static Set<AVRequest> getUniqueAVRequest(List<? extends SharedCourse> courses) {
+    public static Set<AVRequest> getUniqueAVRequests(List<? extends SharedCourse> courses) {
         return courses.stream().filter(sc -> !sc.getMealType().equals(SharedMealType.REDIRECT)).map(sc -> sc.getAvRequest()).collect(Collectors.toSet());//
     }
 
