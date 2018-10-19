@@ -160,7 +160,8 @@ public class RoboTaxi {
     /* package */ boolean isWithoutCustomer() {
         // TODO Check this comment
         // For now this works with universal dispatcher i.e. single used robotaxis as number of customers is never changed
-        return !status.equals(RoboTaxiStatus.DRIVEWITHCUSTOMER) && RoboTaxiUtils.getNumberOnBoardRequests(this) == 0;
+    	//!status.equals(RoboTaxiStatus.DRIVEWITHCUSTOMER) &&
+        return  RoboTaxiUtils.getNumberOnBoardRequests(this) == 0;
     }
 
     /** @return {@Schedule} of the RoboTaxi, to be used only inside core package,
