@@ -516,8 +516,8 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
             requestRegister.get(roboTaxi).entrySet().stream().forEach(entry -> {
                 pendingRequests.add(entry.getValue());
                 reqStatuses.put(entry.getValue(), RequestStatus.REQUESTED);
-                requestRegister.remove(roboTaxi, entry.getValue());
             });
+            requestRegister.remove(roboTaxi);
         }
         GlobalAssert.that(!RoboTaxiUtils.hasNextCourse(roboTaxi));
         GlobalAssert.that(!requestRegister.contains(roboTaxi));
