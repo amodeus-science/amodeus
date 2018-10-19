@@ -40,6 +40,7 @@ import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.dispatcher.AVVehicleAssignmentEvent;
+import ch.ethz.matsim.av.generator.AVGenerator;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 import ch.ethz.matsim.av.schedule.AVDriveTask;
@@ -395,34 +396,31 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
                 getAVRequests().size(), //
                 total_matchedRequests);
     }
-    
+
     @Override
     final void redispatchInternal(double now) {
         // deliberately empty
     }
-   
+
     @Override
     final void executeRedirects() {
         // deliberately empty
     }
-    
-  /** adding a vehicle during setup of simulation, handeled by {@link AVGenerator} */
-  @Override
-  public final void addVehicle(AVVehicle vehicle) {
-      RoboTaxi roboTaxi = new RoboTaxi(vehicle, new LinkTimePair(vehicle.getStartLink(), 0.0), vehicle.getStartLink(), RoboTaxiUsageType.SINGLEUSED);
-      Event event =new AVVehicleAssignmentEvent(vehicle, 0);
-      addRoboTaxi(roboTaxi, event);
-  }
-    
-    
+
+    /** adding a vehicle during setup of simulation, handeled by {@link AVGenerator} */
+    @Override
+    public final void addVehicle(AVVehicle vehicle) {
+        RoboTaxi roboTaxi = new RoboTaxi(vehicle, new LinkTimePair(vehicle.getStartLink(), 0.0), vehicle.getStartLink(), RoboTaxiUsageType.SINGLEUSED);
+        Event event = new AVVehicleAssignmentEvent(vehicle, 0);
+        addRoboTaxi(roboTaxi, event);
+    }
+
     @Override
     /* package */ boolean isInRequestRegister(RoboTaxi roboTaxi) {
         // TODO make sure nobody uses this and it has no effect, only necessary for shared dispatchers so far.
         return true;
     }
-    
-    
-    
+
     /** updates the divertable locations, i.e., locations from which a {@link RoboTaxi} can deviate
      * its path according to the current Tasks in the MATSim engine */
     @Override
@@ -470,6 +468,4 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
         }
     }
 
-    
-    
 }
