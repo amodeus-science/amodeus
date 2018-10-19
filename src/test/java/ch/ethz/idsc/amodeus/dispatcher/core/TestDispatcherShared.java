@@ -8,7 +8,7 @@ import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
-public class TestDispatcherShared extends SharedUniversalDispatcher{
+public class TestDispatcherShared extends SharedUniversalDispatcher {
 
     protected TestDispatcherShared(Config config, AVDispatcherConfig avDispatcherConfig, TravelTime travelTime, ParallelLeastCostPathCalculator parallelLeastCostPathCalculator,
             EventsManager eventsManager, MatsimAmodeusDatabase db) {
@@ -31,6 +31,6 @@ public class TestDispatcherShared extends SharedUniversalDispatcher{
         onRequestSubmitted(s.avRequest5);
         onRequestSubmitted(s.avRequest6);
         onRequestSubmitted(s.avRequest7);
-        
+
     }
 }
