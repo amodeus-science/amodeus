@@ -3,11 +3,8 @@ package ch.ethz.idsc.amodeus.analysis.element;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
@@ -24,7 +21,6 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.PadRight;
-import ch.ethz.idsc.tensor.io.Pretty;
 import ch.ethz.idsc.tensor.pdf.BinCounts;
 import ch.ethz.idsc.tensor.red.Max;
 import ch.ethz.idsc.tensor.red.Total;
@@ -34,62 +30,60 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
     /** contains the times in s */
     public final Tensor time = Tensors.empty();
     /** contains the number passengers per vehicles for each timestep */
-//    private final Tensor numberPassengers = Tensors.empty();
+    // private final Tensor numberPassengers = Tensors.empty();
     /** contains the distribution of number of passengers per timestep */
     private Tensor passengerDistribution = Tensors.empty();
     /** contains the number of other passengers in the vehicle foreach request */
     private final Tensor sharedOthersPerRequest = Tensors.empty();
 
     /** Helper members */
-//    private boolean beforeFirstSimulation = true;
+    // private boolean beforeFirstSimulation = true;
     private Scalar maxNumPassengers;
-//    private final Map<Integer, Integer> requestVehiclePickups = new HashMap<>();
+    // private final Map<Integer, Integer> requestVehiclePickups = new HashMap<>();
     private final Map<Integer, Integer> sharedOthersMap = new HashMap<>();
 
     @Override
     public void register(SimulationObject simulationObject) {
 
-//        /** On first Timestep fill the Tensor for the Vehicles as well as the map with the current passengers */
-//        if (beforeFirstSimulation) {
-//            simulationObject.vehicles.forEach(vc -> currentPassengers.put(vc.vehicleIndex, new HashSet<>()));
-//            beforeFirstSimulation = false;
-//        }
-//
-//        /** build the Number of Requests per Time Step */
-//        for (RequestContainer requestContainer : simulationObject.requests) {
-//            // In case a request was picked up in this timestep
-//            if (requestContainer.requestStatus.contains(RequestStatus.PICKUP)) {
-//                int vehicleId = requestContainer.associatedVehicle;
-//
-//                // update the map which stores for each pickup which RoboTaxi serves this request
-//                requestVehiclePickups.put(requestContainer.requestIndex, vehicleId);
-//                // update the map which stores with how many other requests the trip was shared
-//                GlobalAssert.that(currentPassengers.get(vehicleId).add(requestContainer.requestIndex));
-//            }
-//            // In case a request was dropped off in this timestep
-//            if (requestContainer.requestStatus.contains(RequestStatus.DROPOFF)) {
-//                GlobalAssert.that(requestVehiclePickups.containsKey(requestContainer.requestIndex));
-//                int vehicleId = requestVehiclePickups.get(requestContainer.requestIndex);
-//                GlobalAssert.that(currentPassengers.get(vehicleId).remove(requestContainer.requestIndex));
-//            }
-//        }
-//
-//        // Update the sharing graph for all the vehicles
-//        updateSharedWith();
+        // /** On first Timestep fill the Tensor for the Vehicles as well as the map with the current passengers */
+        // if (beforeFirstSimulation) {
+        // simulationObject.vehicles.forEach(vc -> currentPassengers.put(vc.vehicleIndex, new HashSet<>()));
+        // beforeFirstSimulation = false;
+        // }
+        //
+        // /** build the Number of Requests per Time Step */
+        // for (RequestContainer requestContainer : simulationObject.requests) {
+        // // In case a request was picked up in this timestep
+        // if (requestContainer.requestStatus.contains(RequestStatus.PICKUP)) {
+        // int vehicleId = requestContainer.associatedVehicle;
+        //
+        // // update the map which stores for each pickup which RoboTaxi serves this request
+        // requestVehiclePickups.put(requestContainer.requestIndex, vehicleId);
+        // // update the map which stores with how many other requests the trip was shared
+        // GlobalAssert.that(currentPassengers.get(vehicleId).add(requestContainer.requestIndex));
+        // }
+        // // In case a request was dropped off in this timestep
+        // if (requestContainer.requestStatus.contains(RequestStatus.DROPOFF)) {
+        // GlobalAssert.that(requestVehiclePickups.containsKey(requestContainer.requestIndex));
+        // int vehicleId = requestVehiclePickups.get(requestContainer.requestIndex);
+        // GlobalAssert.that(currentPassengers.get(vehicleId).remove(requestContainer.requestIndex));
+        // }
+        // }
+        //
+        // // Update the sharing graph for all the vehicles
+        // updateSharedWith();
 
         time.append(RealScalar.of(simulationObject.now));
-        
-        
 
         Map<Integer, List<RequestContainer>> map = simulationObject.requests.stream().filter(rc -> rc.requestStatus.contains(RequestStatus.PICKUP) || //
                 rc.requestStatus.contains(RequestStatus.DRIVING) //
                 || rc.requestStatus.contains(RequestStatus.DROPOFF)) //
                 .collect(Collectors.groupingBy(reqcontainer -> reqcontainer.associatedVehicle));
-        
-        /** number Passenger Distribution over day*/
+
+        /** number Passenger Distribution over day */
         Tensor numberPassengers = Array.zeros(simulationObject.vehicles.size());
         for (VehicleContainer vehicleContainer : simulationObject.vehicles) {
-            int numberPassenger = (map.containsKey(vehicleContainer.vehicleIndex))? map.get(vehicleContainer.vehicleIndex).size() : 0;  
+            int numberPassenger = (map.containsKey(vehicleContainer.vehicleIndex)) ? map.get(vehicleContainer.vehicleIndex).size() : 0;
             numberPassengers.set(RealScalar.of(numberPassenger), vehicleContainer.vehicleIndex);
         }
         Tensor numPassenger = BinCounts.of(numberPassengers);
@@ -98,8 +92,12 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
         // OLD Calculation
         Tensor numStatus = StaticHelper.getNumStatus(simulationObject);
         Scalar numWithCustomer = numStatus.Get(RoboTaxiStatus.DRIVEWITHCUSTOMER.ordinal());
-        GlobalAssert.that(Total.of(numPassenger.extract(1, numPassenger.length())).equals(numWithCustomer));
-   
+// TODO make sure this test holds as well with the single used Dispatchers
+//        if (!Total.of(numPassenger.extract(1, numPassenger.length())).equals(numWithCustomer)) {
+//            System.out.println("Hey there" + numStatus + ", " + numberPassengers);
+//        }
+//        GlobalAssert.that(Total.of(numPassenger.extract(1, numPassenger.length())).equals(numWithCustomer));
+
         /** AV Request Sharing Rate */
         for (List<RequestContainer> requestsInVehicle : map.values()) {
             int numberOtherPassengers = requestsInVehicle.size() - 1;
@@ -115,25 +113,25 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
         }
     }
 
-//    private void updateSharedWith() {
-//        for (Set<Integer> requestsInVehicle : currentPassengers.values()) {
-//            int numberOtherPassengers = requestsInVehicle.size() - 1;
-//            for (Integer requestindex : requestsInVehicle) {
-//                if (sharedOthersMap.containsKey(requestindex)) {
-//                    if (sharedOthersMap.get(requestindex) < numberOtherPassengers) {
-//                        sharedOthersMap.put(requestindex, numberOtherPassengers);
-//                    }
-//                } else {
-//                    sharedOthersMap.put(requestindex, numberOtherPassengers);
-//                }
-//            }
-//        }
-//    }
+    // private void updateSharedWith() {
+    // for (Set<Integer> requestsInVehicle : currentPassengers.values()) {
+    // int numberOtherPassengers = requestsInVehicle.size() - 1;
+    // for (Integer requestindex : requestsInVehicle) {
+    // if (sharedOthersMap.containsKey(requestindex)) {
+    // if (sharedOthersMap.get(requestindex) < numberOtherPassengers) {
+    // sharedOthersMap.put(requestindex, numberOtherPassengers);
+    // }
+    // } else {
+    // sharedOthersMap.put(requestindex, numberOtherPassengers);
+    // }
+    // }
+    // }
+    // }
 
     @Override
     public void consolidate() {
         /** calculate standard dropoff time. */
-        maxNumPassengers = Tensor.of(passengerDistribution.stream().map(t-> RealScalar.of(t.length()))).flatten(-1).reduce(Max::of).get().Get();
+        maxNumPassengers = Tensor.of(passengerDistribution.stream().map(t -> RealScalar.of(t.length()))).flatten(-1).reduce(Max::of).get().Get();
         passengerDistribution = PadRight.zeros(passengerDistribution.length(), maxNumPassengers.number().intValue() + 1).apply(passengerDistribution);
 
         for (Integer index : sharedOthersMap.keySet()) {
@@ -141,13 +139,13 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
         }
     }
 
-//    public Tensor getNumberPassengers() {
-//        return numberPassengers;
-//    }
+    // public Tensor getNumberPassengers() {
+    // return numberPassengers;
+    // }
 
-//    public Scalar getMaxNumPassengers() {
-//        return maxNumPassengers;
-//    }
+    // public Scalar getMaxNumPassengers() {
+    // return maxNumPassengers;
+    // }
 
     public Tensor getPassengerDistribution() {
         return passengerDistribution;

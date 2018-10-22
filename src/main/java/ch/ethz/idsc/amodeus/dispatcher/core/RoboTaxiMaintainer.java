@@ -75,6 +75,8 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
         // REALLY FIXME
         notifySimulationSubscribers(Math.round(now), storageUtils);
         consistencyCheck();
+        
+        
         executePickups();
         executeDropoffs();
         executeRedirects();
