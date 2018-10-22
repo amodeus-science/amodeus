@@ -11,10 +11,5 @@ public class AmodeusVehicleGeneratorModule extends AbstractModule {
         bind(RandomDensityGenerator.Factory.class);
         AVUtils.bindGeneratorFactory(binder(), RandomDensityGenerator.class.getSimpleName()).//
                 to(RandomDensityGenerator.Factory.class);
-        bind(VehicleToVSGenerator.Factory.class);
-
-        /** this vehicle generator requires the {@link AmodeusVirtualNetworkModule} to have {@link VirtualNetwork} and {@link TravelData} injected */
-        AVUtils.bindGeneratorFactory(binder(), VehicleToVSGenerator.class.getSimpleName()).//
-                to(VehicleToVSGenerator.Factory.class);
     }
 }
