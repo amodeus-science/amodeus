@@ -369,9 +369,6 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
             simulationObjectCompiler.insertRequests(periodAssignedRequests, RequestStatus.ASSIGNED);
             simulationObjectCompiler.insertRequests(periodPickedUpRequests, RequestStatus.PICKUP);
             simulationObjectCompiler.insertRequests(periodFulfilledRequests.keySet(), RequestStatus.DROPOFF);
-            periodFulfilledRequests.clear();
-            periodAssignedRequests.clear();
-            periodPickedUpRequests.clear();
 
             /** insert {@link RoboTaxi}s */
             simulationObjectCompiler.insertVehicles(getRoboTaxis());
@@ -379,6 +376,11 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
             /** insert information of association of {@link RoboTaxi}s and {@link AVRequest}s */
             simulationObjectCompiler.addRequestRoboTaxiAssoc(pickupRegister);
             simulationObjectCompiler.addRequestRoboTaxiAssoc(rqstDrvRegister);
+            simulationObjectCompiler.addRequestRoboTaxiAssoc(periodFulfilledRequests);
+
+            periodFulfilledRequests.clear();
+            periodAssignedRequests.clear();
+            periodPickedUpRequests.clear();
 
             /** first pass vehicles typically empty, then no storage / communication of {@link SimulationObject}s */
             SimulationObject simulationObject = simulationObjectCompiler.compile();
