@@ -46,15 +46,11 @@ public enum RoboTaxiUtils {
     }
 
     public static Set<AVRequest> getRequestsInMenu(RoboTaxi roboTaxi) {
-        return SharedCourseListUtils.getUniqueAVRequest(roboTaxi.getUnmodifiableViewOfCourses());
+        return SharedCourseListUtils.getUniqueAVRequests(roboTaxi.getUnmodifiableViewOfCourses());
     }
 
     public static Set<AVRequest> getAvRequestsOnBoard(RoboTaxi roboTaxi) {
         return SharedCourseListUtils.getOnBoardRequests(roboTaxi.getUnmodifiableViewOfCourses());
-    }
-
-    public static Set<String> getIdsOfAvRequestsOnBoard(RoboTaxi roboTaxi) {
-        return SharedCourseListUtils.getOnBoardRequestIds(roboTaxi.getUnmodifiableViewOfCourses());
     }
 
     public static int getNumberOnBoardRequests(RoboTaxi roboTaxi) {
