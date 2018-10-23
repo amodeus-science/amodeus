@@ -317,7 +317,7 @@ public class RoboTaxi {
         GlobalAssert.that(RoboTaxiUtils.getNumberOnBoardRequests(this) > 0);
         GlobalAssert.that(RoboTaxiUtils.getNumberOnBoardRequests(this) <= getCapacity());
         GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.DROPOFF));
-//        GlobalAssert.that(RoboTaxiUtils.getStarterLink(this).equals(getDivertableLocation())); // TODO think again about that
+        GlobalAssert.that(RoboTaxiUtils.getStarterLink(this).equals(getDivertableLocation())); // TODO think again about that
         setMenu(SharedMenuUtils.removeStarterCourse(menu));
     }
 

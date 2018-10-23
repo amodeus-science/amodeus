@@ -305,9 +305,6 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
                 if (dropoffSet.contains(sRoboTaxi)) {
                     Optional<SharedCourse> courseAfterPUOrDO = RoboTaxiUtils.getSecondCourse(sRoboTaxi);
                     nextLink = (courseAfterPUOrDO.isPresent()) ? courseAfterPUOrDO.get().getLink() : null;
-                    if (!nextLink.equals(destination)) {
-                        System.out.println("stop");
-                    }   
                 }else {
                     nextLink = RoboTaxiUtils.getStarterLink(sRoboTaxi);
                 }
@@ -389,13 +386,6 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
         final Link endLink = (secondCourse.isPresent()) ? secondCourse.get().getLink() : avRequest.getToLink();
         FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer(avRequest.getToLink(), endLink, endDropOffTime);
         roboTaxi.assignDirective(new SharedGeneralDriveDirectiveDropoff(roboTaxi, avRequest, futurePathContainer, getTimeNow(), dropoffDurationPerStop));
-
-        // TODO TEST This fails afterwards
-        try {
-            avRequest.getPassenger().getDestinationLinkId();
-        } catch (Exception e) {
-            System.out.println("something is wrong here");
-        }
 
         if (!dropOffTimes.containsKey(endDropOffTime)) {
             dropOffTimes.put(endDropOffTime, new HashMap<>());
@@ -487,11 +477,11 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
                 }
             }
         }
-
-        
-        // Here We had the dropoffs from the register
-
-        
+        /**
+         * Until here only the directives were given. The actual drop off takes place later. 
+         * From the registers the dropoffs are carried out by the dropoffsFormRegisters()
+         * function at the end of updateDivertableLocation()
+         */
     }
 
     
@@ -507,7 +497,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
                     AVRequest avRequest = dropoffPair.getValue();
                     
                     // TODO think again about that
-//                    GlobalAssert.that(roboTaxi.getDivertableLocation().equals(avRequest.getToLink()));
+                    GlobalAssert.that(roboTaxi.getDivertableLocation().equals(avRequest.getToLink()));
                     
                     roboTaxi.dropOffCustomer(); // This removes the dropoffCourse from the Menu
                     requestRegister.remove(roboTaxi, avRequest);
