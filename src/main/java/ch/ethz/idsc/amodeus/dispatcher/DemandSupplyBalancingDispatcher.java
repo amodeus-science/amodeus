@@ -8,6 +8,7 @@ import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
+import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.router.util.TravelTime;
 
 import com.google.inject.Inject;
@@ -41,8 +42,9 @@ public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
         super(config, avDispatcherConfig, travelTime, router, eventsManager, db);
         DispatcherConfig dispatcherConfig = DispatcherConfig.wrap(avDispatcherConfig);
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(10);
-        this.requestMaintainer = new TreeMaintainer<>(network, this::getLocation);
-        this.unassignedRoboTaxis = new TreeMaintainer<>(network, this::getRoboTaxiLoc);
+        double[] networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
+        this.requestMaintainer = new TreeMaintainer<>(networkBounds, this::getLocation);
+        this.unassignedRoboTaxis = new TreeMaintainer<>(networkBounds, this::getRoboTaxiLoc);
     }
 
     @Override

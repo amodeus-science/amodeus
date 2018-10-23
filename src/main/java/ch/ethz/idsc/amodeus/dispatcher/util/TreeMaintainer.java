@@ -7,8 +7,6 @@ import java.util.Set;
 import java.util.function.Function;
 
 import org.matsim.api.core.v01.Coord;
-import org.matsim.api.core.v01.network.Network;
-import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.utils.collections.QuadTree;
 import org.matsim.core.utils.collections.QuadTree.Rect;
 
@@ -32,9 +30,8 @@ public class TreeMaintainer<T> {
     /** For the Checks */
     private final Rect outerRect;
 
-    public TreeMaintainer(Network network, Function<T, Coord> location) {
+    public TreeMaintainer(double[] networkBounds, Function<T, Coord> location) {
         this.location = location;
-        double[] networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
         this.outerRect = new Rect(networkBounds[0], networkBounds[1], networkBounds[2], networkBounds[3]);
         tree = new QuadTree<>(networkBounds[0], networkBounds[1], networkBounds[2], networkBounds[3]);
     }
