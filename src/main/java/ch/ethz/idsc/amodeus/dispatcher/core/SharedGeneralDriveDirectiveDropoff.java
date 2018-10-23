@@ -14,9 +14,9 @@ import ch.ethz.matsim.av.schedule.AVDriveTask;
 import ch.ethz.matsim.av.schedule.AVDropoffTask;
 import ch.ethz.matsim.av.schedule.AVStayTask;
 
-/** for vehicles that are in stay task and should pickup a customer at the link:
- * 1) finish stay task 2) append pickup task 3) append drive task 4) append
- * dropoff task 5) append new stay task */
+/** for vehicles that are in stay task and should dropoff a customer at the link:
+ * 1) finish stay task 2) append dropoff task 3) if more customers planned append drive task
+ * 4) append new stay task */
 /* package */ final class SharedGeneralDriveDirectiveDropoff extends FuturePathDirective {
     final RoboTaxi robotaxi;
     final AVRequest currentRequest;
@@ -32,13 +32,15 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         this.dropoffDurationPerStop = dropoffDurationPerStop;
     }
 
+    // TODO make sure its clear what it means if the VrpRath is null or the start and end link are equal. only one case is better
     @Override
     void executeWithPath(final VrpPathWithTravelData vrpPathWithTravelData) {
         final Schedule schedule = robotaxi.getSchedule();
         final AVStayTask avStayTask = (AVStayTask) Schedules.getLastTask(schedule);
         final double scheduleEndTime = avStayTask.getEndTime();
         GlobalAssert.that(scheduleEndTime == schedule.getEndTime());
-        final double endTimeNextTask = (vrpPathWithTravelData != null) ? vrpPathWithTravelData.getArrivalTime() : getTimeNow + dropoffDurationPerStop;
+        final boolean moreRequestsToServe = (vrpPathWithTravelData != null);
+        final double endTimeNextTask = (moreRequestsToServe) ? vrpPathWithTravelData.getArrivalTime() : getTimeNow + dropoffDurationPerStop;
         GlobalAssert.that(avStayTask.getLink().equals(currentRequest.getToLink()));
 
         if (endTimeNextTask < scheduleEndTime) {
@@ -51,6 +53,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
                     currentRequest.getToLink(), // location of dropoff
                     Arrays.asList(currentRequest)));
 
+            // TODO can be done with less lines
             Link destLink = null;
             if (!vrpPathWithTravelData.getFromLink().equals(vrpPathWithTravelData.getToLink())) {
                 schedule.addTask(new AVDriveTask( //

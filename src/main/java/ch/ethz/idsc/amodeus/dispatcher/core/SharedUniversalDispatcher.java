@@ -373,6 +373,9 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
         GlobalAssert.that(schedule.getCurrentTask() == Schedules.getLastTask(schedule)); // instanceof AVDriveTask);
 
         // Update the Robo Taxi
+        // TODO cant this be done after the direction stuff? It should bo the same as the registers
+        // Answer: no as the future path planner needs to know what to do next.
+        // possible solution: check if the second course is present. this could give us the same information while waiting for the dropoff to take place
         roboTaxi.dropOffCustomer(); // This removes the dropoffCourse from the Menu
 
         // Assign Directive To roboTaxi
@@ -383,6 +386,9 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
         roboTaxi.assignDirective(new SharedGeneralDriveDirectiveDropoff(roboTaxi, avRequest, futurePathContainer, getTimeNow(), dropoffDurationPerStop));
 
         // Update Registers
+        // FIXME this should only be done as soon as the sroppoff took place. so after the dropoff duration.
+        // make sure the Robo Taxis last task is not dropoff anymore, (maybe even check if the task before was dropoff
+        
         requestRegister.remove(roboTaxi, avRequest);
         periodFulfilledRequests.put(avRequest, roboTaxi);
         reqStatuses.remove(avRequest);

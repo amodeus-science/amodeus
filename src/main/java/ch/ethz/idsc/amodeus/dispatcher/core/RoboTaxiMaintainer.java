@@ -70,12 +70,15 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
         private_now = now; // <- time available to derived class via getTimeNow()
         updateInfoLine();
+        
         // FIXME changed order of the tasks: before: notify, consistency, beforeStepTask()
         beforeStepTasks(); // <- if problems with RoboTaxi Status to Completed consider to set "simEndtimeInterpretation" to "null"
         // REALLY FIXME
+        
         notifySimulationSubscribers(Math.round(now), storageUtils);
         consistencyCheck();
-        
+          
+
         
         executePickups();
         executeDropoffs();

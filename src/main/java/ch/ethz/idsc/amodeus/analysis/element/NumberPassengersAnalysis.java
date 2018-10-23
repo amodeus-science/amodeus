@@ -93,10 +93,10 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
         Tensor numStatus = StaticHelper.getNumStatus(simulationObject);
         Scalar numWithCustomer = numStatus.Get(RoboTaxiStatus.DRIVEWITHCUSTOMER.ordinal());
 // TODO make sure this test holds as well with the single used Dispatchers
-//        if (!Total.of(numPassenger.extract(1, numPassenger.length())).equals(numWithCustomer)) {
-//            System.out.println("Hey there" + numStatus + ", " + numberPassengers);
-//        }
-//        GlobalAssert.that(Total.of(numPassenger.extract(1, numPassenger.length())).equals(numWithCustomer));
+        if (!Total.of(numPassenger.extract(1, numPassenger.length())).equals(numWithCustomer)) {
+            System.out.println("Hey there" + numStatus + ", " + numPassenger);
+        }
+        GlobalAssert.that(Total.of(numPassenger.extract(1, numPassenger.length())).equals(numWithCustomer));
 
         /** AV Request Sharing Rate */
         for (List<RequestContainer> requestsInVehicle : map.values()) {
