@@ -60,7 +60,7 @@ import ch.ethz.idsc.tensor.red.Quantile;
                 .collect(Collectors.groupingBy(reqcontainer -> reqcontainer.associatedVehicle));
         Tensor numberPassengers = Array.zeros(simulationObject.vehicles.size());
         for (VehicleContainer vehicleContainer : simulationObject.vehicles) {
-            int numberPassenger = (map.containsKey(vehicleContainer.vehicleIndex))? map.get(vehicleContainer.vehicleIndex).size() : 0;  
+            int numberPassenger = (map.containsKey(vehicleContainer.vehicleIndex)) ? map.get(vehicleContainer.vehicleIndex).size() : 0;
             numberPassengers.set(RealScalar.of(numberPassenger), vehicleContainer.vehicleIndex);
         }
         return BinCounts.of(numberPassengers);

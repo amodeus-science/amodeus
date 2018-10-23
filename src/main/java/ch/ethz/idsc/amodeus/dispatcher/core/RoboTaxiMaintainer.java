@@ -88,6 +88,10 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
         afterStepTasks();
         executeDirectives();
         consistencyCheck();
+        
+        
+        
+        
     }
 
     /** the info line is displayed in the console at every dispatching timestep and in the

@@ -75,9 +75,10 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
 
         time.append(RealScalar.of(simulationObject.now));
 
-        Map<Integer, List<RequestContainer>> map = simulationObject.requests.stream().filter(rc -> rc.requestStatus.contains(RequestStatus.PICKUP) || //
-                rc.requestStatus.contains(RequestStatus.DRIVING) //
-                || rc.requestStatus.contains(RequestStatus.DROPOFF)) //
+        Map<Integer, List<RequestContainer>> map = simulationObject.requests.stream()//
+                .filter(rc -> (rc.requestStatus.contains(RequestStatus.PICKUP) //
+                        || rc.requestStatus.contains(RequestStatus.DRIVING)) && //
+                        !rc.requestStatus.contains(RequestStatus.DROPOFF)) //
                 .collect(Collectors.groupingBy(reqcontainer -> reqcontainer.associatedVehicle));
 
         /** number Passenger Distribution over day */
@@ -92,7 +93,7 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
         // OLD Calculation
         Tensor numStatus = StaticHelper.getNumStatus(simulationObject);
         Scalar numWithCustomer = numStatus.Get(RoboTaxiStatus.DRIVEWITHCUSTOMER.ordinal());
-// TODO make sure this test holds as well with the single used Dispatchers
+        // TODO make sure this test holds as well with the single used Dispatchers
         if (!Total.of(numPassenger.extract(1, numPassenger.length())).equals(numWithCustomer)) {
             System.out.println("Hey there" + numStatus + ", " + numPassenger);
         }

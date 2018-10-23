@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 
@@ -12,7 +13,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import junit.framework.TestCase;
 
-public class SharedRoboTaxiTest extends TestCase {
+public class SharedRoboTaxiTestSimple extends TestCase {
     public void testSimple() {
         ArtificialScenarioCreator s = new ArtificialScenarioCreator();
 
@@ -37,7 +38,10 @@ public class SharedRoboTaxiTest extends TestCase {
             assertTrue(false);
         } catch (Exception e) {
         }
-
+        Optional<SharedCourse> secondcourse1 = RoboTaxiUtils.getSecondCourse(s.roboTaxi1);
+        assertTrue(secondcourse1.isPresent());
+        assertTrue(secondcourse1.get().equals(SharedCourse.dropoffCourse(s.avRequest1)));
+        
         s.roboTaxi1.cleanAndAbandonMenu();
         assertEquals(s.roboTaxi1.getUnmodifiableViewOfCourses(), new ArrayList<>());
 

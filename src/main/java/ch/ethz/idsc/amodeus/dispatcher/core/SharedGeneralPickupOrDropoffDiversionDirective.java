@@ -28,10 +28,9 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     @Override
     void executeWithPath(final VrpPathWithTravelData vrpPathWithTravelData) {
         final Schedule schedule = robotaxi.getSchedule();
-        final Task currentTask = schedule.getCurrentTask();
         final AVStayTask avStayTask = (AVStayTask) Schedules.getLastTask(schedule);
         final double scheduleEndTime = avStayTask.getEndTime();
-        final double endTaskTime = currentTask.getEndTime();
+        final double endTaskTime = vrpPathWithTravelData.getArrivalTime();
         GlobalAssert.that(scheduleEndTime == schedule.getEndTime());
 
         if (endTaskTime < scheduleEndTime) {

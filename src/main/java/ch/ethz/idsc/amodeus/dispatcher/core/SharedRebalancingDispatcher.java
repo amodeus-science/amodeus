@@ -36,6 +36,7 @@ public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatc
         cleanAndAbondon(roboTaxi);
         GlobalAssert.that(!RoboTaxiUtils.hasNextCourse(roboTaxi));
         setRoboTaxiDiversion(roboTaxi, destination, RoboTaxiStatus.REBALANCEDRIVE);
+        // TODO with Claudio: think about how to include the two functions together, 
         eventsManager.processEvent(RebalanceVehicleEvent.create(getTimeNow(), roboTaxi, destination));
     }
 

@@ -16,6 +16,10 @@ public enum RoboTaxiUtils {
     public static boolean canPickupNewCustomer(RoboTaxi roboTaxi) {
         // TODO why does the number of customers has to be larger for a pick up?
         int onBoard = RoboTaxiUtils.getNumberOnBoardRequests(roboTaxi);
+        if (!(onBoard >= 0 && onBoard < roboTaxi.getCapacity())) {
+            // might be removed
+            System.out.println("Can Not Pickup Customer. Currently " + onBoard + " Customers on Board, The capacity only allows" + roboTaxi.getCapacity() + "passengers" );
+        }
         return onBoard >= 0 && onBoard < roboTaxi.getCapacity();
     }
 
@@ -75,6 +79,10 @@ public enum RoboTaxiUtils {
             } else if (nextCourseOptional.get().getMealType().equals(SharedMealType.REDIRECT)) {
                 return RoboTaxiStatus.REBALANCEDRIVE;
             }
+        }
+        // TODO this is an ugly way of fixing the fact that for a robo taxi for which setRoboTaxiRebalance() was called no Course appears in the menu
+        if (roboTaxi.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE)) {
+            return RoboTaxiStatus.REBALANCEDRIVE;
         }
         return RoboTaxiStatus.STAY;
     }

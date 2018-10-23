@@ -9,12 +9,10 @@ import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifier;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.red.Total;
 
 public class StatusDistributionElement implements AnalysisElement, TotalValueAppender {
 
@@ -31,7 +29,7 @@ public class StatusDistributionElement implements AnalysisElement, TotalValueApp
         /** Get the Status Distribution per TimeStep */
         Tensor numStatus = StaticHelper.getNumStatus(simulationObject);
         statusTensor.append(numStatus);
-        
+
         /** Get the Occupancy Ratio per TimeStep */
         Scalar occupancyRatio = numStatus.Get(RoboTaxiStatus.DRIVEWITHCUSTOMER.ordinal()).//
                 divide(RealScalar.of(simulationObject.vehicles.size()));

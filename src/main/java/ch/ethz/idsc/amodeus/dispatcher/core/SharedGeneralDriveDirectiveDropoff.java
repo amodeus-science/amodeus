@@ -32,7 +32,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         this.dropoffDurationPerStop = dropoffDurationPerStop;
     }
 
-    // TODO make sure its clear what it means if the VrpRath is null or the start and end link are equal. only one case is better
+    // TODO mke sure its clear what it means if the VrpRath is null or the start and end link are equal. only one case is better
     @Override
     void executeWithPath(final VrpPathWithTravelData vrpPathWithTravelData) {
         final Schedule schedule = robotaxi.getSchedule();
