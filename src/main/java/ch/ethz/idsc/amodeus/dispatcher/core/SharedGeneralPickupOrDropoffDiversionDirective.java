@@ -10,13 +10,14 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.schedule.AVDriveTask;
 import ch.ethz.matsim.av.schedule.AVStayTask;
 
-/** for vehicles that are in stay task and should pickup a customer at the link:
- * 1) finish stay task 2) append pickup task 3) append drive task 4) append
- * dropoff task 5) append new stay task */
+/** for vehicles that are in dropoff or pickup task and new request is assigned.
+ * 1) finish pickup or dropoff task 2) append drive task 3) append new stay task */
 /* package */ final class SharedGeneralPickupOrDropoffDiversionDirective extends FuturePathDirective {
     final RoboTaxi robotaxi;
     final double getTimeNow;
 
+    /** for vehicles that are in dropoff or pickup task and new request is assigned.
+     * 1) finish pickup or dropoff task 2) append drive task 3) append new stay task */
     public SharedGeneralPickupOrDropoffDiversionDirective(RoboTaxi robotaxi, //
             FuturePathContainer futurePathContainer, final double getTimeNow) {
         super(futurePathContainer);

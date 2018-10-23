@@ -27,8 +27,16 @@ public enum RoboTaxiUtils {
         return SharedCourseListUtils.hasStarter(roboTaxi.getUnmodifiableViewOfCourses());
     }
 
+    public static boolean hasSecondCourse(RoboTaxi roboTaxi) {
+        return SharedCourseListUtils.hasSecondCourse(roboTaxi.getUnmodifiableViewOfCourses());
+    }
+
     public static Optional<SharedCourse> getStarterCourse(RoboTaxi roboTaxi) {
         return SharedCourseListUtils.getStarterCourse(roboTaxi.getUnmodifiableViewOfCourses());
+    }
+
+    public static Optional<SharedCourse> getSecondCourse(RoboTaxi roboTaxi) {
+        return SharedCourseListUtils.getSecondCourse(roboTaxi.getUnmodifiableViewOfCourses());
     }
 
     public static Link getStarterLink(RoboTaxi sRoboTaxi) {
@@ -57,4 +65,17 @@ public enum RoboTaxiUtils {
         return (int) SharedCourseListUtils.getNumberCustomersOnBoard(roboTaxi.getUnmodifiableViewOfCourses());
     }
 
+    /* package */ static RoboTaxiStatus getRoboTaxiStatusRebuilt(RoboTaxi roboTaxi) {
+        Optional<SharedCourse> nextCourseOptional = getStarterCourse(roboTaxi);
+        if (nextCourseOptional.isPresent()) {
+            if (getNumberOnBoardRequests(roboTaxi) > 0) {
+                return RoboTaxiStatus.DRIVEWITHCUSTOMER;
+            } else if (nextCourseOptional.get().getMealType().equals(SharedMealType.PICKUP)) {
+                return RoboTaxiStatus.DRIVETOCUSTOMER;
+            } else if (nextCourseOptional.get().getMealType().equals(SharedMealType.REDIRECT)) {
+                return RoboTaxiStatus.REBALANCEDRIVE;
+            }
+        }
+        return RoboTaxiStatus.STAY;
+    }
 }

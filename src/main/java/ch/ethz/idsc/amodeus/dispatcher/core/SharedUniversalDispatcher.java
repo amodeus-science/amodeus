@@ -59,6 +59,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
     // Registers for Simulation
     private final Set<AVRequest> pendingRequests = new LinkedHashSet<>();
+    private final Map<Double, Map<RoboTaxi, AVRequest>> dropOffTimes = new HashMap<>();
     // TODO might be done with robotaxis only?
     private final RequestRegister requestRegister = new RequestRegister();
 
@@ -191,8 +192,8 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
      * 
      * @param avRequest avRequest to abort */
     public final void abortAvRequest(AVRequest avRequest) {
-        GlobalAssert.that(requestRegister.contains(avRequest)); // Only already picked Up RoboTaxis are considered else you can not call this function
-        GlobalAssert.that(pendingRequests.contains(avRequest)); // only then a removal makes sense. else it was picked up by another robotaxi
+        GlobalAssert.that(requestRegister.contains(avRequest)); // Only already assigned RoboTaxis are considered else you can not call this function
+        GlobalAssert.that(pendingRequests.contains(avRequest)); // only if a request is not picked up it makes sense to abort it.
         Optional<RoboTaxi> oldRoboTaxi = requestRegister.getAssignedRoboTaxi(avRequest);
         if (oldRoboTaxi.isPresent()) {
             RoboTaxi roboTaxi = oldRoboTaxi.get();
@@ -298,8 +299,9 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
             }
 
             private void handlePickupAndDropoff(RoboTaxi sRoboTaxi, Task task) {
+                // TODO this has to be changed as soos the new way of registers is on
                 Link nextLink = RoboTaxiUtils.getStarterLink(sRoboTaxi); // We are already at next course in the menu although in
-                // matsim the pickup or dropoff is still happening
+                // matsim the pickup or dropoff is still happening // TODO not true anymore
                 GlobalAssert.that(nextLink.equals(destination));
                 FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer( //
                         sRoboTaxi.getDivertableLocation(), nextLink, task.getEndTime());
@@ -372,31 +374,21 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
         final Schedule schedule = roboTaxi.getSchedule();
         GlobalAssert.that(schedule.getCurrentTask() == Schedules.getLastTask(schedule)); // instanceof AVDriveTask);
 
-        // Update the Robo Taxi
-        // TODO cant this be done after the direction stuff? It should bo the same as the registers
-        // Answer: no as the future path planner needs to know what to do next.
-        // possible solution: check if the second course is present. this could give us the same information while waiting for the dropoff to take place
-        roboTaxi.dropOffCustomer(); // This removes the dropoffCourse from the Menu
-
         // Assign Directive To roboTaxi
         final double endDropOffTime = getTimeNow() + dropoffDurationPerStop;
-        FuturePathContainer futurePathContainer = (RoboTaxiUtils.hasNextCourse(roboTaxi))
-                ? futurePathFactory.createFuturePathContainer(avRequest.getToLink(), RoboTaxiUtils.getStarterLink(roboTaxi), endDropOffTime)
-                : futurePathFactory.createFuturePathContainer(avRequest.getToLink(), avRequest.getToLink(), endDropOffTime);
+        Optional<SharedCourse> secondCourse = RoboTaxiUtils.getStarterCourse(roboTaxi);
+        final Link endLink = (secondCourse.isPresent()) ? secondCourse.get().getLink() : avRequest.getToLink();
+        FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer(avRequest.getToLink(), endLink, endDropOffTime);
         roboTaxi.assignDirective(new SharedGeneralDriveDirectiveDropoff(roboTaxi, avRequest, futurePathContainer, getTimeNow(), dropoffDurationPerStop));
 
-        // Update Registers
-        // FIXME this should only be done as soon as the sroppoff took place. so after the dropoff duration.
-        // make sure the Robo Taxis last task is not dropoff anymore, (maybe even check if the task before was dropoff
-        
-        requestRegister.remove(roboTaxi, avRequest);
-        periodFulfilledRequests.put(avRequest, roboTaxi);
-        reqStatuses.remove(avRequest);
-        total_dropedOffRequests++;
+        if (dropOffTimes.containsKey(endDropOffTime)) {
+            dropOffTimes.put(endDropOffTime, new HashMap<>());
+        }
+        dropOffTimes.get(endDropOffTime).put(roboTaxi, avRequest);
 
-        // Checks after function
-        GlobalAssert.that(!requestRegister.contains(roboTaxi, avRequest));
-        GlobalAssert.that(!RoboTaxiUtils.getRequestsInMenu(roboTaxi).contains(avRequest));
+        // // Checks after function
+        // GlobalAssert.that(!requestRegister.contains(roboTaxi, avRequest));
+        // GlobalAssert.that(!RoboTaxiUtils.getRequestsInMenu(roboTaxi).contains(avRequest));
     }
 
     @Override
@@ -457,30 +449,57 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
      * of an {@link AVRequest} */
     @Override
     void executeDropoffs() {
+        /** First the Tasks are assigned. This makes sure the dropoff takes place */
         Map<RoboTaxi, Map<String, AVRequest>> requestRegisterCopy = new HashMap<>(requestRegister.getRegister());
         for (RoboTaxi dropoffVehicle : requestRegisterCopy.keySet()) {
             Link dropoffVehicleLink = dropoffVehicle.getDivertableLocation();
             // SHARED note that waiting for last staytask adds a one second staytask before
             // switching to dropoffTask
-            boolean isOk = dropoffVehicle.getSchedule().getCurrentTask() == Schedules.getLastTask(dropoffVehicle.getSchedule()); // instanceof AVDriveTask;
+            // This excludes as well that Requests are droped off a second time
+            if (dropoffVehicle.getSchedule().getCurrentTask() == Schedules.getLastTask(dropoffVehicle.getSchedule())) {
+                Optional<SharedCourse> currentCourse = RoboTaxiUtils.getStarterCourse(dropoffVehicle);
+                GlobalAssert.that(currentCourse.isPresent());
+                if (currentCourse.get().getMealType().equals(SharedMealType.DROPOFF)) {
+                    AVRequest avR = currentCourse.get().getAvRequest();
 
-            Optional<SharedCourse> currentCourse = RoboTaxiUtils.getStarterCourse(dropoffVehicle);
-            GlobalAssert.that(currentCourse.isPresent());
-            if (currentCourse.get().getMealType().equals(SharedMealType.DROPOFF)) {
-                AVRequest avR = currentCourse.get().getAvRequest();
+                    GlobalAssert.that(requestRegister.contains(dropoffVehicle, avR));
 
-                if (!requestRegister.contains(dropoffVehicle, avR)) {
-                    System.out.println("stiop");
-                }
-                GlobalAssert.that(requestRegister.contains(dropoffVehicle, avR));
-
-                if (avR.getToLink().equals(dropoffVehicleLink) && //
-                        dropoffVehicle.isWithoutDirective() && //
-                        isOk) {
-                    setPassengerDropoff(dropoffVehicle, avR);
+                    if (avR.getToLink().equals(dropoffVehicleLink) && //
+                            dropoffVehicle.isWithoutDirective()) {
+                        setPassengerDropoff(dropoffVehicle, avR);
+                    }
                 }
             }
         }
+        /** update all dropoffs which finished the task by now */
+        Set<Double> toRemoveTimes = new HashSet<>();
+        for (Double dropoffTime : dropOffTimes.keySet()) {
+            if (dropoffTime <= getTimeNow()) {
+                for (Entry<RoboTaxi, AVRequest> dropoffPair : dropOffTimes.get(dropoffTime).entrySet()) {
+                    RoboTaxi roboTaxi = dropoffPair.getKey();
+                    AVRequest avRequest = dropoffPair.getValue();
+                    roboTaxi.dropOffCustomer(); // This removes the dropoffCourse from the Menu
+                    requestRegister.remove(roboTaxi, avRequest);
+                    periodFulfilledRequests.put(avRequest, roboTaxi);
+                    reqStatuses.remove(avRequest);
+                    total_dropedOffRequests++;
+                    // TODO update RoboTaxi Status: The RoboTaxiStatus could be executed as well from the menu internally
+                    Optional<SharedCourse> nextCourse = RoboTaxiUtils.getStarterCourse(roboTaxi);
+                    if (nextCourse.isPresent()) {
+                        if (RoboTaxiUtils.getNumberOnBoardRequests(roboTaxi) > 0) {
+                            // This includes as well if the redirection is the next course but customers are on board
+                            roboTaxi.setStatus(RoboTaxiStatus.DRIVEWITHCUSTOMER);
+                        } else if (nextCourse.get().getMealType().equals(SharedMealType.PICKUP)) {
+                            roboTaxi.setStatus(RoboTaxiStatus.DRIVETOCUSTOMER);
+                        } else if (nextCourse.get().getMealType().equals(SharedMealType.REDIRECT)) {
+                            roboTaxi.setStatus(RoboTaxiStatus.REBALANCEDRIVE);
+                        }
+                    }
+                }
+                toRemoveTimes.add(dropoffTime);
+            }
+        }
+        toRemoveTimes.forEach(d -> dropOffTimes.remove(d));
     }
 
     /** ensures completed redirect tasks are removed from menu */
@@ -534,6 +553,16 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
      * {@linksRoboTaxiMaintainer.consistencyCheck} in each iteration. */
     @Override
     protected final void consistencySubCheck() {
+
+        for (RoboTaxi roboTaxi : getRoboTaxis()) {
+            if (!roboTaxi.getStatus().equals(RoboTaxiUtils.getRoboTaxiStatusRebuilt(roboTaxi))) {
+                System.out.println("Actual Robotaxi Status:" +  roboTaxi.getStatus());
+                System.out.println("Rebuilt Robotaxi Status:" +  RoboTaxiUtils.getRoboTaxiStatusRebuilt(roboTaxi));
+                System.out.println("STATUS ARE NOT EQUAL. CONSISTEnCY Failed");
+            }
+            GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiUtils.getRoboTaxiStatusRebuilt(roboTaxi)));
+        }
+        
         // TODO this is important to work through again as this can save a lot of computatioinal effort
 
         // check that each Request only appears once in the Request Register
