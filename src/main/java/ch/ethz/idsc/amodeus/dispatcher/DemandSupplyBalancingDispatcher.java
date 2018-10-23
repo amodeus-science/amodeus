@@ -20,6 +20,8 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.TreeMaintainer;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
+import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.framework.AVModule;
@@ -77,7 +79,9 @@ public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
                     /** undersupply case */
                 } else {
                     for (RoboTaxi robotaxi : robotaxisDivertable) {
-                        AVRequest closest = requestMaintainer.getClosest(robotaxi.getDivertableLocation().getFromNode().getCoord());
+                        Coord coord = robotaxi.getDivertableLocation().getFromNode().getCoord();
+                        Tensor tCoord = Tensors.vector(coord.getX(), coord.getY());
+                        AVRequest closest = requestMaintainer.getClosest(tCoord);
                         if (closest != null) {
                             setRoboTaxiPickup(robotaxi, closest);
                             unassignedRoboTaxis.remove(robotaxi);
@@ -91,14 +95,16 @@ public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
 
     /** @param request
      * @return {@link Coord} with {@link AVRequest} location */
-    /* package */ Coord getLocation(AVRequest request) {
-        return request.getFromLink().getFromNode().getCoord();
+    /* package */ Tensor getLocation(AVRequest request) {
+        Coord coord = request.getFromLink().getFromNode().getCoord();
+        return Tensors.vector(coord.getX(), coord.getY());
     }
 
     /** @param roboTaxi
      * @return {@link Coord} with {@link RoboTaxi} location */
-    /* package */ Coord getRoboTaxiLoc(RoboTaxi roboTaxi) {
-        return roboTaxi.getDivertableLocation().getCoord();
+    /* package */ Tensor getRoboTaxiLoc(RoboTaxi roboTaxi) {
+        Coord coord = roboTaxi.getDivertableLocation().getCoord();
+        return Tensors.vector(coord.getX(), coord.getY());
     }
 
     public static class Factory implements AVDispatcherFactory {
