@@ -31,16 +31,12 @@ public class TreeMaintainer<T> {
     /** For the Checks */
     private final Rect outerRect;
 
+    /** @param networkBounds is in format (minX, minY, maxX, maxY)
+     * @param location */
     public TreeMaintainer(double[] networkBounds, Function<T, Tensor> location) {
         this.location = location;
         this.outerRect = new Rect(networkBounds[0], networkBounds[1], networkBounds[2], networkBounds[3]);
         tree = new QuadTree<>(networkBounds[0], networkBounds[1], networkBounds[2], networkBounds[3]);
-    }
-
-    public TreeMaintainer(double minX, double minY, double maxX, double maxY, Function<T, Tensor> location) {
-        this.location = location;
-        this.outerRect = new Rect(minX, minY, maxX, maxY);
-        tree = new QuadTree<>(minX, minY, maxX, maxY);
     }
 
     /** @return closest {@link T} in tree from {@link Tensor} @param coord */
