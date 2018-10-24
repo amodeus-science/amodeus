@@ -10,9 +10,11 @@ import org.matsim.core.utils.collections.QuadTree;
 import org.matsim.core.utils.collections.QuadTree.Rect;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.net.TensorCoords;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Dimensions;
+import ch.ethz.idsc.tensor.alg.VectorQ;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** Maintains a list of {@link T}s in a {@link Set} and a
@@ -41,7 +43,7 @@ public class TreeMaintainer<T> {
 
     /** @return closest {@link T} in tree from {@link Tensor} @param coord */
     public T getClosest(Tensor coord) {
-        check(coord);
+        VectorQ.requireLength(coord, 2); // ensure that vector of length 2;
         return tree.getClosest(coord.Get(0).number().doubleValue(), coord.Get(1).number().doubleValue());
     }
 
@@ -77,16 +79,11 @@ public class TreeMaintainer<T> {
     }
 
     public boolean contains(Tensor coord) {
-        check(coord);
+        VectorQ.requireLength(coord, 2); // ensure that vector of length 2;
         return outerRect.contains(coord.Get(0).number().doubleValue(), coord.Get(1).number().doubleValue());
     }
 
     public Set<T> getValues() {
         return set;
-    }
-
-    private void check(Tensor t) {
-        GlobalAssert.that(Dimensions.of(t).size() == 1);
-        GlobalAssert.that(Dimensions.of(t).get(0) == 2);
     }
 }
