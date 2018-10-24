@@ -8,6 +8,7 @@ import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
+import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.router.util.TravelTime;
 
 import com.google.inject.Inject;
@@ -19,6 +20,8 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.TreeMaintainer;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
+import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.framework.AVModule;
@@ -41,8 +44,9 @@ public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
         super(config, avDispatcherConfig, travelTime, router, eventsManager, db);
         DispatcherConfig dispatcherConfig = DispatcherConfig.wrap(avDispatcherConfig);
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(10);
-        this.requestMaintainer = new TreeMaintainer<>(network, this::getLocation);
-        this.unassignedRoboTaxis = new TreeMaintainer<>(network, this::getRoboTaxiLoc);
+        double[] networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
+        this.requestMaintainer = new TreeMaintainer<>(networkBounds, this::getLocation);
+        this.unassignedRoboTaxis = new TreeMaintainer<>(networkBounds, this::getRoboTaxiLoc);
     }
 
     @Override
@@ -75,7 +79,9 @@ public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
                     /** undersupply case */
                 } else {
                     for (RoboTaxi robotaxi : robotaxisDivertable) {
-                        AVRequest closest = requestMaintainer.getClosest(robotaxi.getDivertableLocation().getFromNode().getCoord());
+                        Coord coord = robotaxi.getDivertableLocation().getFromNode().getCoord();
+                        Tensor tCoord = Tensors.vector(coord.getX(), coord.getY());
+                        AVRequest closest = requestMaintainer.getClosest(tCoord);
                         if (closest != null) {
                             setRoboTaxiPickup(robotaxi, closest);
                             unassignedRoboTaxis.remove(robotaxi);
@@ -89,14 +95,16 @@ public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
 
     /** @param request
      * @return {@link Coord} with {@link AVRequest} location */
-    /* package */ Coord getLocation(AVRequest request) {
-        return request.getFromLink().getFromNode().getCoord();
+    /* package */ Tensor getLocation(AVRequest request) {
+        Coord coord = request.getFromLink().getFromNode().getCoord();
+        return Tensors.vector(coord.getX(), coord.getY());
     }
 
     /** @param roboTaxi
      * @return {@link Coord} with {@link RoboTaxi} location */
-    /* package */ Coord getRoboTaxiLoc(RoboTaxi roboTaxi) {
-        return roboTaxi.getDivertableLocation().getCoord();
+    /* package */ Tensor getRoboTaxiLoc(RoboTaxi roboTaxi) {
+        Coord coord = roboTaxi.getDivertableLocation().getCoord();
+        return Tensors.vector(coord.getX(), coord.getY());
     }
 
     public static class Factory implements AVDispatcherFactory {
