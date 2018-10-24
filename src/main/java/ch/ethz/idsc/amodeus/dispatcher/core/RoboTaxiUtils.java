@@ -14,13 +14,12 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 public enum RoboTaxiUtils {
     ;
     public static boolean canPickupNewCustomer(RoboTaxi roboTaxi) {
-        // TODO why does the number of customers has to be larger for a pick up?
         int onBoard = RoboTaxiUtils.getNumberOnBoardRequests(roboTaxi);
-        if (!(onBoard >= 0 && onBoard < roboTaxi.getCapacity())) {
-            // might be removed
-            System.out.println("Can Not Pickup Customer. Currently " + onBoard + " Customers on Board, The capacity only allows" + roboTaxi.getCapacity() + "passengers" );
+        GlobalAssert.that(onBoard >= 0);
+        if (!(onBoard < roboTaxi.getCapacity())) {
+            System.out.println("Can Not Pickup Customer. Currently " + onBoard + " customers on Board, The capacity only allows" + roboTaxi.getCapacity() + "passengers");
         }
-        return onBoard >= 0 && onBoard < roboTaxi.getCapacity();
+        return onBoard < roboTaxi.getCapacity();
     }
 
     public static boolean checkMenuConsistency(RoboTaxi roboTaxi) {
@@ -80,7 +79,9 @@ public enum RoboTaxiUtils {
                 return RoboTaxiStatus.REBALANCEDRIVE;
             }
         }
-        // TODO this is an ugly way of fixing the fact that for a robo taxi for which setRoboTaxiRebalance() was called no Course appears in the menu
+        // this is an ugly way of fixing the fact that for a robo taxi for which setRoboTaxiRebalance() was called no Course appears in the menu
+        // TODO with Claudio: find a way to include the rebalancing in the menu like that we can remove the set status function from the robotaxi and save use troubles
+        // with the getting and setting of robotaxi status
         if (roboTaxi.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE)) {
             return RoboTaxiStatus.REBALANCEDRIVE;
         }

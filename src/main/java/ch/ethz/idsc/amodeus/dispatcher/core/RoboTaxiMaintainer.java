@@ -70,23 +70,12 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
         private_now = now; // <- time available to derived class via getTimeNow()
         updateInfoLine();
-        
-
         notifySimulationSubscribers(Math.round(now), storageUtils);
         consistencyCheck();
-          
-        // FIXME changed order of the tasks: before: notify, consistency, beforeStepTask()
         beforeStepTasks(); // <- if problems with RoboTaxi Status to Completed consider to set "simEndtimeInterpretation" to "null"
-        // REALLY FIXME
-        
-//        if (getTimeNow() > 4458) {
-//            System.out.println("Hey there i am using whatsapp");
-//        }
-        
-        // TODO pickups should be executed after dropoffs. This is because: 
+        // The Dropoff is before the pickup becase:
         // a) A robotaxi which picks up a customer should not dropoff one at the same time step
-        // b) in the shared case the internal dropoff should be able to finish a dropoff which enables the pickups to be executed 
-
+        // b) in the shared case the internal dropoff should be able to finish a dropoff which enables the pickups to be executed
         executeDropoffs();
         executePickups();
         executeRedirects();
@@ -95,10 +84,7 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
         afterStepTasks();
         executeDirectives();
         consistencyCheck();
-        
-        
-        
-        
+
     }
 
     /** the info line is displayed in the console at every dispatching timestep and in the
@@ -169,11 +155,6 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
     /* package */ abstract void redispatchInternal(double now);
 
     /* package */ abstract void executeRedirects();
-
-    // TODO these functions might be removed
-    /* package */ abstract boolean isInPickupRegister(RoboTaxi robotaxi);
-
-    /* package */ abstract boolean isInRequestRegister(RoboTaxi sRoboTaxi);
 
     @Override
     public final void onNextTaskStarted(AVVehicle task) {

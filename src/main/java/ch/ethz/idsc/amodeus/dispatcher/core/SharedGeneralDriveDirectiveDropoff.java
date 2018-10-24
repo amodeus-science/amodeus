@@ -32,7 +32,6 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         this.dropoffDurationPerStop = dropoffDurationPerStop;
     }
 
-    // TODO mke sure its clear what it means if the VrpRath is null or the start and end link are equal. only one case is better
     @Override
     void executeWithPath(final VrpPathWithTravelData vrpPathWithTravelData) {
         final Schedule schedule = robotaxi.getSchedule();
@@ -53,7 +52,6 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
                     currentRequest.getToLink(), // location of dropoff
                     Arrays.asList(currentRequest)));
 
-            // TODO can be done with less lines
             Link destLink = null;
             if (!vrpPathWithTravelData.getFromLink().equals(vrpPathWithTravelData.getToLink())) {
                 schedule.addTask(new AVDriveTask( //

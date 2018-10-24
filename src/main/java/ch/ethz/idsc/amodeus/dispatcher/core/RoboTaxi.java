@@ -157,7 +157,6 @@ public class RoboTaxi {
 
     /** @return true if robotaxi is without a customer */
     /* package */ boolean isWithoutCustomer() {
-        // TODO Check this comment
         // For now this works with universal dispatcher i.e. single used robotaxis as number of customers is never changed
         return !status.equals(RoboTaxiStatus.DRIVEWITHCUSTOMER) && RoboTaxiUtils.getNumberOnBoardRequests(this) == 0;
     }
@@ -317,7 +316,7 @@ public class RoboTaxi {
         GlobalAssert.that(RoboTaxiUtils.getNumberOnBoardRequests(this) > 0);
         GlobalAssert.that(RoboTaxiUtils.getNumberOnBoardRequests(this) <= getCapacity());
         GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.DROPOFF));
-        GlobalAssert.that(RoboTaxiUtils.getStarterLink(this).equals(getDivertableLocation())); // TODO think again about that
+        GlobalAssert.that(RoboTaxiUtils.getStarterLink(this).equals(getDivertableLocation()));
         setMenu(SharedMenuUtils.removeStarterCourse(menu));
     }
 

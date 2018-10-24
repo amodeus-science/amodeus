@@ -64,7 +64,6 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     /** Get Functions */
 
     /* package */ Set<AVRequest> getAssignedAvRequests() {
-        // TODO improve
         Set<AVRequest> avRequests = new HashSet<>();
         for (Map<String, AVRequest> avRequestsMap : register.values()) {
             avRequests.addAll(avRequestsMap.values());

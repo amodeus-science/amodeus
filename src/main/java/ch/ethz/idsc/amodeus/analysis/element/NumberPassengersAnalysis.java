@@ -37,41 +37,11 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
     private final Tensor sharedOthersPerRequest = Tensors.empty();
 
     /** Helper members */
-    // private boolean beforeFirstSimulation = true;
     private Scalar maxNumPassengers;
-    // private final Map<Integer, Integer> requestVehiclePickups = new HashMap<>();
     private final Map<Integer, Integer> sharedOthersMap = new HashMap<>();
 
     @Override
     public void register(SimulationObject simulationObject) {
-
-        // /** On first Timestep fill the Tensor for the Vehicles as well as the map with the current passengers */
-        // if (beforeFirstSimulation) {
-        // simulationObject.vehicles.forEach(vc -> currentPassengers.put(vc.vehicleIndex, new HashSet<>()));
-        // beforeFirstSimulation = false;
-        // }
-        //
-        // /** build the Number of Requests per Time Step */
-        // for (RequestContainer requestContainer : simulationObject.requests) {
-        // // In case a request was picked up in this timestep
-        // if (requestContainer.requestStatus.contains(RequestStatus.PICKUP)) {
-        // int vehicleId = requestContainer.associatedVehicle;
-        //
-        // // update the map which stores for each pickup which RoboTaxi serves this request
-        // requestVehiclePickups.put(requestContainer.requestIndex, vehicleId);
-        // // update the map which stores with how many other requests the trip was shared
-        // GlobalAssert.that(currentPassengers.get(vehicleId).add(requestContainer.requestIndex));
-        // }
-        // // In case a request was dropped off in this timestep
-        // if (requestContainer.requestStatus.contains(RequestStatus.DROPOFF)) {
-        // GlobalAssert.that(requestVehiclePickups.containsKey(requestContainer.requestIndex));
-        // int vehicleId = requestVehiclePickups.get(requestContainer.requestIndex);
-        // GlobalAssert.that(currentPassengers.get(vehicleId).remove(requestContainer.requestIndex));
-        // }
-        // }
-        //
-        // // Update the sharing graph for all the vehicles
-        // updateSharedWith();
 
         time.append(RealScalar.of(simulationObject.now));
 
@@ -89,14 +59,9 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
         }
         Tensor numPassenger = BinCounts.of(numberPassengers);
         passengerDistribution.append(numPassenger);
-        // Controll:
-        // OLD Calculation
+        // Controll: OLD Calculation
         Tensor numStatus = StaticHelper.getNumStatus(simulationObject);
         Scalar numWithCustomer = numStatus.Get(RoboTaxiStatus.DRIVEWITHCUSTOMER.ordinal());
-        // TODO make sure this test holds as well with the single used Dispatchers
-        if (!Total.of(numPassenger.extract(1, numPassenger.length())).equals(numWithCustomer)) {
-            System.out.println("Hey there" + numStatus + ", " + numPassenger);
-        }
         GlobalAssert.that(Total.of(numPassenger.extract(1, numPassenger.length())).equals(numWithCustomer));
 
         /** AV Request Sharing Rate */
@@ -114,21 +79,6 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
         }
     }
 
-    // private void updateSharedWith() {
-    // for (Set<Integer> requestsInVehicle : currentPassengers.values()) {
-    // int numberOtherPassengers = requestsInVehicle.size() - 1;
-    // for (Integer requestindex : requestsInVehicle) {
-    // if (sharedOthersMap.containsKey(requestindex)) {
-    // if (sharedOthersMap.get(requestindex) < numberOtherPassengers) {
-    // sharedOthersMap.put(requestindex, numberOtherPassengers);
-    // }
-    // } else {
-    // sharedOthersMap.put(requestindex, numberOtherPassengers);
-    // }
-    // }
-    // }
-    // }
-
     @Override
     public void consolidate() {
         /** calculate standard dropoff time. */
@@ -139,14 +89,6 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
             sharedOthersPerRequest.append(RealScalar.of(sharedOthersMap.get(index)));
         }
     }
-
-    // public Tensor getNumberPassengers() {
-    // return numberPassengers;
-    // }
-
-    // public Scalar getMaxNumPassengers() {
-    // return maxNumPassengers;
-    // }
 
     public Tensor getPassengerDistribution() {
         return passengerDistribution;
