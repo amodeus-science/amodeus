@@ -140,6 +140,8 @@ public class ScenarioPipeLineTest {
         /** distance and occupancy ratios */
         Scalar occupancyRatio = Mean.of(ate.getDistancElement().ratios).Get(0);
         Scalar distanceRatio = Mean.of(ate.getDistancElement().ratios).Get(1);
+        
+        // TODO CleanUps
 //        assertEquals(0.08269953703703704, occupancyRatio.number().doubleValue(), 0.0);
 //        assertEquals(0.6796628382756873, distanceRatio.number().doubleValue(), 0.0);
 //        
@@ -149,22 +151,22 @@ public class ScenarioPipeLineTest {
         
 
         /** fleet distances */
-//        assertTrue(ate.getDistancElement().totalDistance >= 0.0);
+        assertTrue(ate.getDistancElement().totalDistance >= 0.0);
 //        assertEquals(34429.271548560515, ate.getDistancElement().totalDistance, 0.0);
-//        assertTrue(ate.getDistancElement().totalDistanceWtCst >= 0.0);
+        assertTrue(ate.getDistancElement().totalDistanceWtCst >= 0.0);
 //        assertEquals(28980.70185154435, ate.getDistancElement().totalDistanceWtCst, 0.0);
-//        assertTrue(ate.getDistancElement().totalDistancePicku > 0.0);
+        assertTrue(ate.getDistancElement().totalDistancePicku > 0.0);
 //        assertEquals(5448.5696970161725, ate.getDistancElement().totalDistancePicku, 0.0);
-//        assertTrue(ate.getDistancElement().totalDistanceRebal >= 0.0);
+        assertTrue(ate.getDistancElement().totalDistanceRebal >= 0.0);
 //        assertEquals(0.0, ate.getDistancElement().totalDistanceRebal, 0.0);
-//        assertTrue(ate.getDistancElement().totalDistanceRatio >= 0.0);
+        assertTrue(ate.getDistancElement().totalDistanceRatio >= 0.0);
 //        assertEquals(0.8417460070471933, ate.getDistancElement().totalDistanceRatio, 0.0);
-//        ate.getDistancElement().totalDistancesPerVehicle.flatten(-1).forEach(s -> //
-//        assertTrue(Scalars.lessEquals(RealScalar.ZERO, (Scalar) s)));
-//        assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).number().doubleValue() //
-//        == ate.getDistancElement().totalDistance);
-//        assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).number().doubleValue() //
-//        == ate.getDistancElement().totalDistance);
+        ate.getDistancElement().totalDistancesPerVehicle.flatten(-1).forEach(s -> //
+        assertTrue(Scalars.lessEquals(RealScalar.ZERO, (Scalar) s)));
+        assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).number().doubleValue() //
+        == ate.getDistancElement().totalDistance);
+        assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).number().doubleValue() //
+        == ate.getDistancElement().totalDistance);
         
         
         scalarAssert.add(RealScalar.of(34429.271548560515), RealScalar.of(ate.getDistancElement().totalDistance));

@@ -77,7 +77,6 @@ import ch.ethz.matsim.av.passenger.AVRequest;
                 return Optional.of(requestRegisterEntry.getKey());
             }
         }
-        System.out.println("Check... Here we should not go");
         GlobalAssert.that(false);
         return Optional.ofNullable(null);
     }

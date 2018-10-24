@@ -140,6 +140,7 @@ public class SharedRoboTaxiTest {
         scalarAssert.add(RealScalar.of(0.204799537037037), RealScalar.of(occupancyRatio.number()));
         scalarAssert.add(RealScalar.of(0.31814836886458003), distanceRatio);
 
+        // TODO Shared Clean Up
 //        assertEquals(0.2048194444444444, occupancyRatio.number().doubleValue(), 0.0);
 //        assertEquals(0.3188073794232303, distanceRatio.number().doubleValue(), 0.0);
 

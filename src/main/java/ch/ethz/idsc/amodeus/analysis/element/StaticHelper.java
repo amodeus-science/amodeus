@@ -7,9 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import ch.ethz.idsc.amodeus.dispatcher.core.RequestStatus;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
-import ch.ethz.idsc.amodeus.net.RequestContainer;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.net.VehicleContainer;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -17,7 +15,6 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
-import ch.ethz.idsc.tensor.pdf.BinCounts;
 import ch.ethz.idsc.tensor.red.Mean;
 import ch.ethz.idsc.tensor.red.Quantile;
 
@@ -53,16 +50,4 @@ import ch.ethz.idsc.tensor.red.Quantile;
                 .toArray(String[]::new);
     }
 
-    public static Tensor getNumPassenger(SimulationObject simulationObject) {
-        Map<Integer, List<RequestContainer>> map = simulationObject.requests.stream().filter(rc -> rc.requestStatus.contains(RequestStatus.PICKUP) || //
-                rc.requestStatus.contains(RequestStatus.DRIVING) //
-                || rc.requestStatus.contains(RequestStatus.DROPOFF)) //
-                .collect(Collectors.groupingBy(reqcontainer -> reqcontainer.associatedVehicle));
-        Tensor numberPassengers = Array.zeros(simulationObject.vehicles.size());
-        for (VehicleContainer vehicleContainer : simulationObject.vehicles) {
-            int numberPassenger = (map.containsKey(vehicleContainer.vehicleIndex)) ? map.get(vehicleContainer.vehicleIndex).size() : 0;
-            numberPassengers.set(RealScalar.of(numberPassenger), vehicleContainer.vehicleIndex);
-        }
-        return BinCounts.of(numberPassengers);
-    }
 }

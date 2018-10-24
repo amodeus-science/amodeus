@@ -16,9 +16,6 @@ public enum RoboTaxiUtils {
     public static boolean canPickupNewCustomer(RoboTaxi roboTaxi) {
         int onBoard = RoboTaxiUtils.getNumberOnBoardRequests(roboTaxi);
         GlobalAssert.that(onBoard >= 0);
-        if (!(onBoard < roboTaxi.getCapacity())) {
-            System.out.println("Can Not Pickup Customer. Currently " + onBoard + " customers on Board, The capacity only allows" + roboTaxi.getCapacity() + "passengers");
-        }
         return onBoard < roboTaxi.getCapacity();
     }
 

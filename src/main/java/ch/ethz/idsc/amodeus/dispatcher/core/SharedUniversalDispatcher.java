@@ -128,15 +128,6 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
     }
 
     /** @return divertablesRoboTaxis which currently not on a pickup drive */
-    protected final Collection<RoboTaxi> getDivertableRoboTaxisWithoutCustomerOnBoard() {
-        Collection<RoboTaxi> roboTaxis = getDivertableRoboTaxis().stream() //
-                .filter(rt -> rt.isWithoutCustomer()) //
-                .collect(Collectors.toList());
-        GlobalAssert.that(roboTaxis.stream().allMatch(RoboTaxi::isWithoutCustomer));
-        return roboTaxis;
-    }
-
-    /** @return divertablesRoboTaxis which currently not on a pickup drive */
     protected final Collection<RoboTaxi> getDivertableUnassignedRoboTaxis() {
         Collection<RoboTaxi> divertableUnassignedRoboTaxis = getDivertableRoboTaxis().stream() //
                 .filter(rt -> !requestRegister.contains(rt)) //
@@ -563,11 +554,6 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
     protected final void consistencySubCheck() {
 
         for (RoboTaxi roboTaxi : getRoboTaxis()) {
-            if (!roboTaxi.getStatus().equals(RoboTaxiUtils.getRoboTaxiStatusRebuilt(roboTaxi))) {
-                System.out.println("Actual Robotaxi Status:" + roboTaxi.getStatus());
-                System.out.println("Rebuilt Robotaxi Status:" + RoboTaxiUtils.getRoboTaxiStatusRebuilt(roboTaxi));
-                System.out.println("STATUS ARE NOT EQUAL. CONSISTEnCY Failed");
-            }
             GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiUtils.getRoboTaxiStatusRebuilt(roboTaxi)));
         }
 

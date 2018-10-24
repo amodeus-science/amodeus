@@ -173,9 +173,6 @@ public class RoboTaxi {
      *            in the core package, directives will be issued automatically
      *            when setVehiclePickup, setVehicleRebalance are called. */
     /* package */ void assignDirective(AbstractDirective abstractDirective) {
-        if (!isWithoutDirective()) {
-            System.out.println("here");
-        }
         GlobalAssert.that(isWithoutDirective());
         this.directive = abstractDirective;
     }
