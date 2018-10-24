@@ -63,8 +63,19 @@ public class TreeMaintainer<T> {
     /** Removes the {@link T} @param t from the Tree Maintainer. */
     public void remove(T t) {
         Coord coord = location.apply(t);
+        GlobalAssert.that(tree.values().contains(t));
         boolean setok = set.remove(t);
         boolean treeok = tree.remove(coord.getX(), coord.getY(), t);
+        if (!(setok && treeok)) {
+            T t2 = tree.getClosest(coord.getX(), coord.getY());
+            System.out.println(t.equals(t2));
+            System.out.println(t.hashCode() == t2.hashCode());
+
+            System.out.println(location.apply(t2).equals(coord));
+            System.out.println(location.apply(t2).getX() ==coord.getX());
+            System.out.println(location.apply(t2).getY() == coord.getY());
+            System.out.println("Can not remove");
+        }
         GlobalAssert.that(setok && treeok);
     }
 

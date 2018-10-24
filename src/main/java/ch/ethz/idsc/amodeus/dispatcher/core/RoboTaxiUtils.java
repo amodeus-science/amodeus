@@ -23,6 +23,13 @@ public enum RoboTaxiUtils {
         return SharedCourseListUtils.checkMenuConsistency(roboTaxi.getUnmodifiableViewOfCourses(), roboTaxi.getCapacity());
     }
 
+    public static boolean plansPickupsOrDropoffs(RoboTaxi roboTaxi) {
+        if (hasNextCourse(roboTaxi)) {
+            return SharedCourseListUtils.getNumberDropoffs(roboTaxi.getUnmodifiableViewOfCourses()) > 0;
+        }
+        return false;
+    }
+    
     public static boolean hasNextCourse(RoboTaxi roboTaxi) {
         return SharedCourseListUtils.hasStarter(roboTaxi.getUnmodifiableViewOfCourses());
     }

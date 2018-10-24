@@ -253,6 +253,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
      *            the diversion, depends if used from {@link setRoboTaxiPickup} or
      *            {@link setRoboTaxiRebalance} */
     /* package */ final void setRoboTaxiDiversion(RoboTaxi sRoboTaxi, Link destination, RoboTaxiStatus status) {
+        GlobalAssert.that(RoboTaxiUtils.hasNextCourse(sRoboTaxi));
         // update Status Of Robo Taxi
         sRoboTaxi.setStatus(status);
 
@@ -296,6 +297,10 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
             }
 
             private void handlePickupAndDropoff(RoboTaxi sRoboTaxi, Task task) {
+                if (!RoboTaxiUtils.hasNextCourse(sRoboTaxi)) {
+                    System.out.println("Check how this happend");
+                }
+                GlobalAssert.that(RoboTaxiUtils.hasNextCourse(sRoboTaxi));
                 Set<RoboTaxi> dropoffSet = new HashSet<>();
                 dropOffTimes.values().forEach(m -> m.keySet().forEach(rt -> dropoffSet.add(rt)));
                 Link nextLink = null;
@@ -312,6 +317,11 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
                 sRoboTaxi.assignDirective(new SharedGeneralPickupOrDropoffDiversionDirective(sRoboTaxi, futurePathContainer, getTimeNow()));
             }
         };
+        
+        if (RoboTaxiUtils.getStarterCourse(sRoboTaxi).get().getMealType().equals(SharedMealType.REDIRECT)) {
+            eventsManager.processEvent(RebalanceVehicleEvent.create(getTimeNow(), sRoboTaxi, destination));
+        }
+        
     }
 
     /** Function called from {@link UniversalDispatcher.executePickups} if asRoboTaxi
@@ -343,9 +353,6 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
         reqStatuses.put(avRequest, RequestStatus.DRIVING);
         periodPickedUpRequests.add(avRequest);
         ++total_matchedRequests;
-
-        // CHECK the consistency of the menu
-        consistencySubCheck();
 
         // Assign Directive
         final double endPickupTime = getTimeNow() + pickupDurationPerStop;
