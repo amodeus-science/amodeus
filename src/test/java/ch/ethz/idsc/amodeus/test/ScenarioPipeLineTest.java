@@ -194,10 +194,10 @@ public class ScenarioPipeLineTest {
 //        assertEquals(892.875, ate.getTravelTimeAnalysis().getDrveAggrgte().Get(1).number().doubleValue(), 0);
 //        assertEquals(3670.0, ate.getTravelTimeAnalysis().getDrveAggrgte().Get(2).number().doubleValue(), 0);
 
-        scalarAssert.add(RealScalar.of(287.18), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1));
-        scalarAssert.add(RealScalar.of(3261.0), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(2));
-        scalarAssert.add(RealScalar.of(892.875), ate.getTravelTimeAnalysis().getDrveAggrgte().Get(1));
-        scalarAssert.add(RealScalar.of(3670.0), ate.getTravelTimeAnalysis().getDrveAggrgte().Get(2));
+        scalarAssert.add(Quantity.of(287.18, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1));
+        scalarAssert.add(Quantity.of(3261.0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(2));
+        scalarAssert.add(Quantity.of(893.155, SI.SECOND), ate.getTravelTimeAnalysis().getDrveAggrgte().Get(1));
+        scalarAssert.add(Quantity.of(3670.0, SI.SECOND), ate.getTravelTimeAnalysis().getDrveAggrgte().Get(2));
 
         scalarAssert.consolidate();
 

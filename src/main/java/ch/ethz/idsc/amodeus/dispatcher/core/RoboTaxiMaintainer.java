@@ -79,9 +79,16 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
         beforeStepTasks(); // <- if problems with RoboTaxi Status to Completed consider to set "simEndtimeInterpretation" to "null"
         // REALLY FIXME
         
+//        if (getTimeNow() > 4458) {
+//            System.out.println("Hey there i am using whatsapp");
+//        }
         
-        executePickups();
+        // TODO pickups should be executed after dropoffs. This is because: 
+        // a) A robotaxi which picks up a customer should not dropoff one at the same time step
+        // b) in the shared case the internal dropoff should be able to finish a dropoff which enables the pickups to be executed 
+
         executeDropoffs();
+        executePickups();
         executeRedirects();
         redispatch(now);
         redispatchInternal(now);

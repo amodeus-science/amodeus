@@ -306,7 +306,10 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
                 RoboTaxi dropoffVehicle = entry.getValue();
                 Link dropoffVehicleLink = dropoffVehicle.getDivertableLocation();
                 boolean isOk = dropoffVehicle.getSchedule().getCurrentTask() == Schedules.getLastTask(dropoffVehicle.getSchedule());
+                // TODO Added the is without directive argument to make sure a request which starts and ends at the same link waits until the pickup took place
+                // if (avRequest.getToLink().equals(dropoffVehicleLink) && isOk && dropoffVehicle.isWithoutDirective()) {
                 if (avRequest.getToLink().equals(dropoffVehicleLink) && isOk) {
+
                     setPassengerDropoff(dropoffVehicle, avRequest);
                 }
             }
