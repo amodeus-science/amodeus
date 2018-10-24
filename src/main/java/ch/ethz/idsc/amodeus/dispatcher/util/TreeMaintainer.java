@@ -45,7 +45,7 @@ public class TreeMaintainer<T> {
         return tree.getClosest(coord.Get(0).number().doubleValue(), coord.Get(1).number().doubleValue());
     }
 
-    /** Adds the {@link T} @param t to the Tree Maintainer. */
+    /** Adds the {@link T} @param t to the Tree Maintainer if it is not yet contained in the tree. */
     public void add(T t) {
         if (!set.contains(t)) {
             Tensor coord = location.apply(t);
@@ -59,7 +59,7 @@ public class TreeMaintainer<T> {
     public void remove(T t) {
         Tensor coord = location.apply(t);
         boolean setok = set.remove(t);
-        boolean treeok = tree.remove(coord.Get(0).number().doubleValue(), coord.Get(0).number().doubleValue(), t);
+        boolean treeok = tree.remove(coord.Get(0).number().doubleValue(), coord.Get(1).number().doubleValue(), t);
         GlobalAssert.that(setok && treeok);
     }
 
