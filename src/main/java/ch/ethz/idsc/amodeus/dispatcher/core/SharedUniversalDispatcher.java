@@ -212,21 +212,27 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
          * - are divertable */
         // Here we might save Some Energy in the future... why do we divert at each timeStep?
         for (RoboTaxi roboTaxi : getRoboTaxis()) {
-            GlobalAssert.that(RoboTaxiUtils.checkMenuConsistency(roboTaxi)); // superficial??
             Optional<SharedCourse> currentCourse = RoboTaxiUtils.getStarterCourse(roboTaxi);
+            final Schedule schedule = roboTaxi.getSchedule();
+            final Task currentTask = schedule.getCurrentTask();
+            boolean isOnLastTask = currentTask == Schedules.getLastTask(schedule);
             if (currentCourse.isPresent()) {
-                if (!roboTaxi.getDivertableLocation().equals(currentCourse.get().getLink())) {
-                    if (roboTaxi.isDivertable()) {
-                        Link destLink = RoboTaxiUtils.getStarterLink(roboTaxi);
-                        RoboTaxiStatus status = RoboTaxiStatus.REBALANCEDRIVE;
-                        if (RoboTaxiUtils.getNumberOnBoardRequests(roboTaxi) > 0) {
-                            status = RoboTaxiStatus.DRIVEWITHCUSTOMER;
-                        } else if (currentCourse.get().getMealType().equals(SharedMealType.PICKUP)) {
-                            status = RoboTaxiStatus.DRIVETOCUSTOMER;
-                        }
+                if (roboTaxi.isDivertable()) {
+                    Link destLink = RoboTaxiUtils.getStarterLink(roboTaxi);
+                    RoboTaxiStatus status = RoboTaxiStatus.REBALANCEDRIVE;
+                    if (RoboTaxiUtils.getNumberOnBoardRequests(roboTaxi) > 0) {
+                        status = RoboTaxiStatus.DRIVEWITHCUSTOMER;
+                    } else if (currentCourse.get().getMealType().equals(SharedMealType.PICKUP)) {
+                        status = RoboTaxiStatus.DRIVETOCUSTOMER;
+                    }
+                    if (isOnLastTask) { // This has to be added for cases where the RoboTaxi is already on the pickup link.
+                        setRoboTaxiDiversion(roboTaxi, destLink, status);
+                    } else if (!roboTaxi.getDivertableLocation().equals(currentCourse.get().getLink())) {
+                        // TODO Shared Lukas, This might be improved. It is carried Out at each time step
                         setRoboTaxiDiversion(roboTaxi, destLink, status);
                     }
                 }
+
             }
         }
     }
@@ -554,6 +560,11 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
     protected final void consistencySubCheck() {
 
         for (RoboTaxi roboTaxi : getRoboTaxis()) {
+            if (!roboTaxi.getStatus().equals(RoboTaxiUtils.getRoboTaxiStatusRebuilt(roboTaxi))) {
+                System.out.println("hey: Rebuilt: " + RoboTaxiUtils.getRoboTaxiStatusRebuilt(roboTaxi));
+                System.out.println("hey: Normal: " + roboTaxi.getStatus());
+
+            }
             GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiUtils.getRoboTaxiStatusRebuilt(roboTaxi)));
         }
 

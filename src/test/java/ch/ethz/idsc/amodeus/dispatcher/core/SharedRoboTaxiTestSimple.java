@@ -17,6 +17,12 @@ public class SharedRoboTaxiTestSimple extends TestCase {
     public void testSimple() {
         ArtificialScenarioCreator s = new ArtificialScenarioCreator();
 
+        assertTrue(RoboTaxiUtils.getRoboTaxiStatusRebuilt(s.roboTaxi1).equals(RoboTaxiStatus.STAY));
+        s.roboTaxi1.addRedirectCourseToMenu(SharedCourse.redirectCourse(s.linkUp, "redirect0"));
+        s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.linkUp, 1.0));
+        assertTrue(RoboTaxiUtils.getRoboTaxiStatusRebuilt(s.roboTaxi1).equals(RoboTaxiStatus.REBALANCEDRIVE));
+        s.roboTaxi1.finishRedirection();
+
         s.roboTaxi1.addAVRequestToMenu(s.avRequest1);
         try { // A request can only be added once to a robo Taxi
             s.roboTaxi1.addAVRequestToMenu(s.avRequest1);
@@ -41,7 +47,7 @@ public class SharedRoboTaxiTestSimple extends TestCase {
         Optional<SharedCourse> secondcourse1 = RoboTaxiUtils.getSecondCourse(s.roboTaxi1);
         assertTrue(secondcourse1.isPresent());
         assertTrue(secondcourse1.get().equals(SharedCourse.dropoffCourse(s.avRequest1)));
-        
+        assertTrue(RoboTaxiUtils.getRoboTaxiStatusRebuilt(s.roboTaxi1).equals(RoboTaxiStatus.DRIVETOCUSTOMER));
         s.roboTaxi1.cleanAndAbandonMenu();
         assertEquals(s.roboTaxi1.getUnmodifiableViewOfCourses(), new ArrayList<>());
 
@@ -81,6 +87,8 @@ public class SharedRoboTaxiTestSimple extends TestCase {
         }
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.linkRight, 1.0));
         s.roboTaxi1.pickupNewCustomerOnBoard();
+        assertTrue(RoboTaxiUtils.getRoboTaxiStatusRebuilt(s.roboTaxi1).equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
+
         assertEquals(RoboTaxiUtils.getNumberOnBoardRequests(s.roboTaxi1), 1);
         assertEquals(s.roboTaxi1.getUnmodifiableViewOfCourses().size(), numcourses - 1);
         try { // It should not be Possible to have a menu which plans to pick up more customers than capacity
@@ -121,6 +129,8 @@ public class SharedRoboTaxiTestSimple extends TestCase {
 
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.linkUp, 1.0));
         assertTrue(RoboTaxiUtils.nextCourseIsOfType(s.roboTaxi1, SharedMealType.REDIRECT));
+        assertTrue(RoboTaxiUtils.getRoboTaxiStatusRebuilt(s.roboTaxi1).equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
+
         s.roboTaxi1.finishRedirection();
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.avRequest1.getFromLink(), 1.0));
         s.roboTaxi1.pickupNewCustomerOnBoard();
