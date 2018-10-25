@@ -300,10 +300,6 @@ public class RoboTaxi {
     /* package */ void addRedirectCourseToMenu(SharedCourse redirectCourse) {
         GlobalAssert.that(redirectCourse.getMealType().equals(SharedMealType.REDIRECT));
         setMenu(SharedMenuUtils.addAVCoursesAsDessert(menu, redirectCourse));
-        if (RoboTaxiUtils.getStarterCourse(this).get().getMealType().equals(SharedMealType.REDIRECT)) {
-            GlobalAssert.that(RoboTaxiUtils.getNumberOnBoardRequests(this) == 0);
-            setStatus(RoboTaxiStatus.REBALANCEDRIVE);
-        }
     }
 
     /* package */ void pickupNewCustomerOnBoard() {
