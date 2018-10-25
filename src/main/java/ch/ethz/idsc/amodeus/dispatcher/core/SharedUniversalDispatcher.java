@@ -216,6 +216,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
             final Schedule schedule = roboTaxi.getSchedule();
             final Task currentTask = schedule.getCurrentTask();
             boolean isOnLastTask = currentTask == Schedules.getLastTask(schedule);
+            boolean currentTaskEndsNow = (currentTask.getEndTime() == getTimeNow() && ScheduleUtils.isNextToLastTask(schedule, currentTask));
             if (currentCourse.isPresent()) {
                 if (roboTaxi.isDivertable()) {
                     Link destLink = RoboTaxiUtils.getStarterLink(roboTaxi);
@@ -225,7 +226,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
                     } else if (currentCourse.get().getMealType().equals(SharedMealType.PICKUP)) {
                         status = RoboTaxiStatus.DRIVETOCUSTOMER;
                     }
-                    if (isOnLastTask) { // This has to be added for cases where the RoboTaxi is already on the pickup link.
+                    if (isOnLastTask || currentTaskEndsNow) { // This has to be added for cases where the RoboTaxi is already on the pickup link.
                         setRoboTaxiDiversion(roboTaxi, destLink, status);
                     } else if (!roboTaxi.getDivertableLocation().equals(currentCourse.get().getLink())) {
                         // TODO Shared Lukas, This might be improved. It is carried Out at each time step
@@ -288,12 +289,15 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
 
             @Override
             public void handle(AVPickupTask avPickupTask) {
-                handlePickupAndDropoff(sRoboTaxi, task);
+                if (!avPickupTask.getLink().equals(destination)) // ignore when vehicle is already going
+                    handlePickupAndDropoff(sRoboTaxi, task);
+
             }
 
             @Override
             public void handle(AVDropoffTask dropOffTask) {
-                handlePickupAndDropoff(sRoboTaxi, task);
+                if (!dropOffTask.getLink().equals(destination)) // ignore when vehicle is already going
+                    handlePickupAndDropoff(sRoboTaxi, task);
             }
 
             private void handlePickupAndDropoff(RoboTaxi sRoboTaxi, Task task) {
@@ -317,11 +321,11 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
                 sRoboTaxi.assignDirective(new SharedGeneralPickupOrDropoffDiversionDirective(sRoboTaxi, futurePathContainer, getTimeNow()));
             }
         };
-        
+
         if (RoboTaxiUtils.getStarterCourse(sRoboTaxi).get().getMealType().equals(SharedMealType.REDIRECT)) {
             eventsManager.processEvent(RebalanceVehicleEvent.create(getTimeNow(), sRoboTaxi, destination));
         }
-        
+
     }
 
     /** Function called from {@link UniversalDispatcher.executePickups} if asRoboTaxi
@@ -573,6 +577,19 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
 
             }
             GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiUtils.getRoboTaxiStatusRebuilt(roboTaxi)));
+            Optional<SharedCourse> nextCourseOptional = RoboTaxiUtils.getStarterCourse(roboTaxi);
+            if (nextCourseOptional.isPresent()) {
+                if (nextCourseOptional.get().getMealType().equals(SharedMealType.REDIRECT)) {
+                    if (RoboTaxiUtils.getNumberOnBoardRequests(roboTaxi) == 0) {
+
+                        if (!roboTaxi.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE)) {
+                            System.out.println("The redirect Courrse is not in line with the rebalancing");
+                        }
+                        GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE));
+
+                    }
+                }
+            }
         }
 
         for (AVRequest avRequest : requestRegister.getAssignedAvRequests()) {

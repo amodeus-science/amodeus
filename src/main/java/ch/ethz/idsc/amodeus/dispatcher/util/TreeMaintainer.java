@@ -60,7 +60,6 @@ public class TreeMaintainer<T> {
         Tensor coord = location.apply(t);
         boolean setok = set.remove(t);
         boolean treeok = tree.remove(coord.Get(0).number().doubleValue(), coord.Get(1).number().doubleValue(), t);
-
         GlobalAssert.that(setok && treeok);
     }
 
@@ -84,5 +83,12 @@ public class TreeMaintainer<T> {
 
     public Set<T> getValues() {
         return set;
+    }
+    /**
+     * Clears the whole tree. After this method is called no elements will rem
+     */
+    public void clear() {
+        set.forEach(t->GlobalAssert.that(tree.remove(location.apply(t).Get(0).number().doubleValue(), location.apply(t).Get(1).number().doubleValue(), t)));
+        set.clear();
     }
 }
