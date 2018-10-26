@@ -3,6 +3,7 @@ package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
@@ -106,6 +107,13 @@ public class RoboTaxi {
 
     /** @return RoboTaxiStatus of the vehicle */
     public RoboTaxiStatus getStatus() {
+        if (!RoboTaxiUtils.getRoboTaxiStatusRebuilt(this).equals(status)) {
+            System.out.println("output Status does not fit the menu");
+        }
+        GlobalAssert.that(RoboTaxiUtils.getRoboTaxiStatusRebuilt(this).equals(status));
+        return status;
+    }
+    public RoboTaxiStatus getStatusWithoutCheck() {
         return status;
     }
 
@@ -152,6 +160,11 @@ public class RoboTaxi {
      *            package, in dispatcher implementations, status will be adapted
      *            automatically. */
     /* package */ void setStatus(RoboTaxiStatus status) {
+        RoboTaxiStatus rTaxiStatus = RoboTaxiUtils.getRoboTaxiStatusRebuilt(this);
+        if (!rTaxiStatus.equals(status)) {
+            System.out.println("imported Status does not fit the menu");
+        }
+        GlobalAssert.that(RoboTaxiUtils.getRoboTaxiStatusRebuilt(this).equals(status));
         this.status = Objects.requireNonNull(status);
     }
 
@@ -298,6 +311,13 @@ public class RoboTaxi {
 
     /* package */ void addAVRequestToMenu(AVRequest avRequest) {
         if (getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE)) {
+            Optional<SharedCourse> starterOptional = RoboTaxiUtils.getStarterCourse(this);
+            if (!starterOptional.isPresent()) {
+                System.out.println("dd");
+            }
+            if (!RoboTaxiUtils.getStarterCourse(this).get().getMealType().equals(SharedMealType.REDIRECT)) {
+                System.out.println("hehehe");
+            }
             if (RoboTaxiUtils.getStarterCourse(this).get().getMealType().equals(SharedMealType.REDIRECT)) {
                 GlobalAssert.that(getUnmodifiableViewOfCourses().size() == 1);
                 finishRedirection();

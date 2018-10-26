@@ -79,15 +79,9 @@ public enum RoboTaxiUtils {
                 return RoboTaxiStatus.DRIVEWITHCUSTOMER;
             } else if (nextCourseOptional.get().getMealType().equals(SharedMealType.PICKUP)) {
                 return RoboTaxiStatus.DRIVETOCUSTOMER;
-            } else if (nextCourseOptional.get().getMealType().equals(SharedMealType.REDIRECT)) {
+            } else if (nextCourseOptional.get().getMealType().equals(SharedMealType.REDIRECT)) { // TODO include that it has to be size one the menu. if size is larger 1 then its drivetocustomer
                 return RoboTaxiStatus.REBALANCEDRIVE;
             }
-        }
-        // this is an ugly way of fixing the fact that for a robo taxi for which setRoboTaxiRebalance() was called no Course appears in the menu
-        // TODO with Claudio: find a way to include the rebalancing in the menu like that we can remove the set status function from the robotaxi and save use troubles
-        // with the getting and setting of robotaxi status
-        if (roboTaxi.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE)) {
-            return RoboTaxiStatus.REBALANCEDRIVE;
         }
         return RoboTaxiStatus.STAY;
     }
