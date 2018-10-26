@@ -37,6 +37,7 @@ public class AmodeusComponent extends JMapViewer {
         amodeusComponent.addLayer(new LoadLayer());
         amodeusComponent.addLayer(new HudLayer());
         amodeusComponent.addLayer(new ClockLayer());
+        amodeusComponent.addLayer(new VideoLayer());
         return amodeusComponent;
     }
 

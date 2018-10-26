@@ -148,7 +148,7 @@ public class JMapViewer extends JComponent implements TileLoaderListener {
      * currently displayed map area.
      *
      * @return latitude / longitude */
-    private ICoordinate getPosition() {
+    public ICoordinate getPosition() {
         return tileSource.xyToLatLon(center, zoom);
     }
 
