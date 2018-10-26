@@ -52,15 +52,19 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
                     currentRequest.getToLink(), // location of dropoff
                     Arrays.asList(currentRequest)));
 
-            Link destLink = null;
-            if (!vrpPathWithTravelData.getFromLink().equals(vrpPathWithTravelData.getToLink())) {
-                schedule.addTask(new AVDriveTask( //
-                        vrpPathWithTravelData));
-                destLink = vrpPathWithTravelData.getToLink();
-            } else {
-                destLink = avStayTask.getLink();
-            }
-            ScheduleUtils.makeWhole(robotaxi, endTimeNextTask, scheduleEndTime, destLink);
+            Link destLink = avStayTask.getLink();
+          ScheduleUtils.makeWhole(robotaxi, getTimeNow + dropoffDurationPerStop, scheduleEndTime, destLink);
+
+            
+//            Link destLink = null;
+//            if (!vrpPathWithTravelData.getFromLink().equals(vrpPathWithTravelData.getToLink())) {
+//                schedule.addTask(new AVDriveTask( //
+//                        vrpPathWithTravelData));
+//                destLink = vrpPathWithTravelData.getToLink();
+//            } else {
+//                destLink = avStayTask.getLink();
+//            }
+//            ScheduleUtils.makeWhole(robotaxi, endTimeNextTask, scheduleEndTime, destLink);
 
             // jan: following computation is mandatory for the internal scoring
             // function

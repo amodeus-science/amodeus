@@ -9,12 +9,12 @@ import org.matsim.contrib.dvrp.schedule.Schedules;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
-import ch.ethz.matsim.av.schedule.AVDriveTask;
 import ch.ethz.matsim.av.schedule.AVPickupTask;
 import ch.ethz.matsim.av.schedule.AVStayTask;
 
 /** for vehicles that are in stay task and should pickup a customer at the link:
  * 1) finish stay task 2) append pickup task 3) append drive task 4) append new stay task */
+// TODO Remane to General Pickup Directive
 /* package */ final class SharedGeneralDriveDirectivePickup extends FuturePathDirective {
     final RoboTaxi robotaxi;
     final AVRequest currentRequest;
@@ -40,16 +40,20 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
             avStayTask.setEndTime(getTimeNow); // finish the last task now
 
+            // TODO make it simpler as the vrpPath is not required
             schedule.addTask(new AVPickupTask( //
                     getTimeNow, // start of pickup
                     futurePathContainer.getStartTime(), // end of pickup
                     currentRequest.getFromLink(), // location of driving start
                     Arrays.asList(currentRequest))); // serving only one request at a time
 
-            schedule.addTask(new AVDriveTask( //
-                    vrpPathWithTravelData, Arrays.asList(currentRequest)));
+            // schedule.addTask(new AVDriveTask( //
+            // vrpPathWithTravelData, Arrays.asList(currentRequest)));
+            // ScheduleUtils.makeWhole(robotaxi, endTaskTime, scheduleEndTime, vrpPathWithTravelData.getToLink());
 
-            ScheduleUtils.makeWhole(robotaxi, endTaskTime, scheduleEndTime, vrpPathWithTravelData.getToLink());
+            System.out.println(scheduleEndTime);
+            GlobalAssert.that(futurePathContainer.getStartTime() < scheduleEndTime);
+            ScheduleUtils.makeWhole(robotaxi, futurePathContainer.getStartTime(), scheduleEndTime, currentRequest.getFromLink());
 
             // jan: following computation is mandatory for the internal scoring
             // // function
