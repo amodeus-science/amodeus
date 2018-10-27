@@ -62,6 +62,7 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
         eventsManager.processEvent(event);
     }
 
+    @Override
     public abstract void addVehicle(AVVehicle vehicle);
 
     /** functions called at every MATSim timestep, dispatching action happens in <b> redispatch <b> */

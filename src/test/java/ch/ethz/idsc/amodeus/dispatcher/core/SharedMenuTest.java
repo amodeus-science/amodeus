@@ -46,6 +46,7 @@ public class SharedMenuTest extends TestCase {
             SharedMenu.of(listInvalid);
             assertTrue(false);
         } catch (Exception e) {
+            // ---
         }
 
         System.out.println("");

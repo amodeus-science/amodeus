@@ -28,21 +28,25 @@ public class SharedRoboTaxiTestSimple extends TestCase {
             s.roboTaxi1.addAVRequestToMenu(s.avRequest1);
             assertTrue(false);
         } catch (Exception e) {
+            // ---
         }
         try { // The PickupCourse can not be after the dropoff
             s.roboTaxi1.moveAVCourseToNext(SharedCourse.pickupCourse(s.avRequest1));
             assertTrue(false);
         } catch (Exception e) {
+            // ---
         }
         try { // it can not be possible to dropoff a customer as there is none on board
             s.roboTaxi1.dropOffCustomer();
             assertTrue(false);
         } catch (Exception e) {
+            // ---
         }
         try { // can not move as long as the request is not in the menu
             s.roboTaxi1.moveAVCourseToPrev(SharedCourse.pickupCourse(s.avRequest2));
             assertTrue(false);
         } catch (Exception e) {
+            // ---
         }
         Optional<SharedCourse> secondcourse1 = RoboTaxiUtils.getSecondCourse(s.roboTaxi1);
         assertTrue(secondcourse1.isPresent());
@@ -59,6 +63,7 @@ public class SharedRoboTaxiTestSimple extends TestCase {
             courses.add(0, SharedCourse.pickupCourse(s.avRequest3));
             assertTrue(false);
         } catch (Exception e) {
+            // ---
         }
         List<SharedCourse> modifiableList = SharedCourseListUtils.copy(courses);
         modifiableList.add(0, SharedCourse.pickupCourse(s.avRequest3));
@@ -66,6 +71,7 @@ public class SharedRoboTaxiTestSimple extends TestCase {
             s.roboTaxi1.updateMenu(modifiableList);
             assertTrue(false);
         } catch (Exception e) {
+            // ---
         }
         modifiableList.add(SharedCourse.dropoffCourse(s.avRequest3));
         s.roboTaxi1.addAVRequestToMenu(s.avRequest3);
@@ -77,6 +83,7 @@ public class SharedRoboTaxiTestSimple extends TestCase {
             s.roboTaxi1.moveAVCourseToPrev(SharedCourse.pickupCourse(s.avRequest4));
             assertTrue(false);
         } catch (Exception e) {
+            // ---
         }
 
         int numcourses = s.roboTaxi1.getUnmodifiableViewOfCourses().size();
@@ -84,6 +91,7 @@ public class SharedRoboTaxiTestSimple extends TestCase {
             s.roboTaxi1.pickupNewCustomerOnBoard();
             assertTrue(false);
         } catch (Exception e) {
+            // ---
         }
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.linkRight, 1.0));
         s.roboTaxi1.pickupNewCustomerOnBoard();
@@ -95,16 +103,19 @@ public class SharedRoboTaxiTestSimple extends TestCase {
             s.roboTaxi1.moveAVCourseToPrev(SharedCourse.pickupCourse(s.avRequest4));
             assertTrue(false);
         } catch (Exception e) {
+            // ---
         }
         try { // The dropoff should only be allowed if the robotaxi has the customer on board and its the next course
             s.roboTaxi1.dropOffCustomer();
             assertTrue(false);
         } catch (Exception e) {
+            // ---
         }
         try { // because the next customer was picked up it is not allowed anymore to abort this request
             s.roboTaxi1.removeAVRequestFromMenu(s.avRequest3);
             assertTrue(false);
         } catch (Exception e) {
+            // ---
         }
 
         s.roboTaxi1.addRedirectCourseToMenu(SharedCourse.redirectCourse(s.linkUp, "redirect1"));
@@ -117,12 +128,13 @@ public class SharedRoboTaxiTestSimple extends TestCase {
             s.roboTaxi1.dropOffCustomer();
             assertTrue(false);
         } catch (Exception e) {
+            // ---
         }
         try { // pickup not possible because next course is redirect
             s.roboTaxi1.pickupNewCustomerOnBoard();
-            ;
             assertTrue(false);
         } catch (Exception e) {
+            // ---
         }
         assertEquals(RoboTaxiUtils.getNumberOnBoardRequests(s.roboTaxi1), 1);
         assertTrue(RoboTaxiUtils.canPickupNewCustomer(s.roboTaxi1));
@@ -153,6 +165,7 @@ public class SharedRoboTaxiTestSimple extends TestCase {
             s.roboTaxi1.cleanAndAbandonMenu();
             assertTrue(false);
         } catch (Exception e) {
+            // ---
         }
 
         System.out.println("Robo Taxi Test done");
