@@ -10,4 +10,5 @@ public class ViewerSettings implements Serializable {
     public int zoom = 12;
     public Dimension dimensions = new Dimension(900, 900);
     public Coord coord = null;  // gets replaced by db.getCenter() initially
+    public int fps = 25;
 }

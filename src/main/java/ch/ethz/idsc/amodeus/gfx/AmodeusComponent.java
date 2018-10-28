@@ -14,6 +14,7 @@ import java.util.Objects;
 
 import javax.swing.JLabel;
 
+import ch.ethz.idsc.amodeus.view.jmapviewer.Coordinate;
 import org.matsim.api.core.v01.Coord;
 
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
@@ -75,6 +76,13 @@ public class AmodeusComponent extends JMapViewer {
         // ---
         if (viewerLayer instanceof VirtualNetworkLayer) // wow such bad style
             virtualNetworkLayer = (VirtualNetworkLayer) viewerLayer;
+    }
+
+    public void reorientMap(ViewerConfig viewerConfig) {
+        setDisplayPosition( //
+                new Coordinate(viewerConfig.settings.coord.getY(), viewerConfig.settings.coord.getX()), //
+                viewerConfig.settings.zoom
+        );
     }
 
     /** @param coord

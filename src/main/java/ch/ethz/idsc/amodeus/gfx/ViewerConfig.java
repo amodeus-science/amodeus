@@ -20,8 +20,8 @@ public class ViewerConfig {
     }
 
     private ViewerConfig(MatsimAmodeusDatabase db) {
-        this.settings = new ViewerSettings();
-        this.settings.coord = db.getCenter();
+        settings = new ViewerSettings();
+        settings.coord = db.getCenter();
     }
 
     public static ViewerConfig fromDefaults(MatsimAmodeusDatabase db) {
@@ -47,10 +47,10 @@ public class ViewerConfig {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + ":\n" + Stream.of(this.settings.getClass().getFields()).map(f -> {
+        return this.getClass().getSimpleName() + ":\n" + Stream.of(settings.getClass().getFields()).map(f -> {
             Object value;
             try {
-                value = f.get(this.settings);
+                value = f.get(settings);
             } catch (IllegalAccessException e) {
                 value = "N/A";
             }
@@ -62,7 +62,7 @@ public class ViewerConfig {
         File settingsFile = new File(workingDirectory, defaultFileName);
         try {
             ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(settingsFile));
-            stream.writeObject(this.update(amodeusComponent).settings);
+            stream.writeObject(update(amodeusComponent).settings);
             stream.close();
             System.out.println("exporting viewer settings to " + settingsFile.getAbsolutePath());
         } catch (FileNotFoundException e) {
@@ -71,9 +71,13 @@ public class ViewerConfig {
     }
 
     public ViewerConfig update(AmodeusComponent amodeusComponent) {
-        this.settings.zoom = amodeusComponent.getZoom();
+        settings.zoom = amodeusComponent.getZoom();
         ICoordinate ic = amodeusComponent.getPosition();
-        this.settings.coord = new Coord(ic.getLon(), ic.getLat());
+        settings.coord = new Coord(ic.getLon(), ic.getLat());
+        // read additional settings from HUD
+        amodeusComponent.viewerLayers.stream().filter(v -> v instanceof VideoLayer).forEach(vl -> {
+            settings.fps = ((VideoLayer) vl).fps;
+        });
 
         return this;
     }
