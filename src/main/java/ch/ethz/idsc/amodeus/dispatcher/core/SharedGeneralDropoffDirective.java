@@ -10,20 +10,19 @@ import org.matsim.contrib.dvrp.schedule.Schedules;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
-import ch.ethz.matsim.av.schedule.AVDriveTask;
 import ch.ethz.matsim.av.schedule.AVDropoffTask;
 import ch.ethz.matsim.av.schedule.AVStayTask;
 
 /** for vehicles that are in stay task and should dropoff a customer at the link:
  * 1) finish stay task 2) append dropoff task 3) if more customers planned append drive task
  * 4) append new stay task */
-/* package */ final class SharedGeneralDriveDirectiveDropoff extends FuturePathDirective {
+/* package */ final class SharedGeneralDropoffDirective extends FuturePathDirective {
     final RoboTaxi robotaxi;
     final AVRequest currentRequest;
     final double getTimeNow;
     final double dropoffDurationPerStop;
 
-    public SharedGeneralDriveDirectiveDropoff(RoboTaxi robotaxi, AVRequest currentRequest, //
+    public SharedGeneralDropoffDirective(RoboTaxi robotaxi, AVRequest currentRequest, //
             FuturePathContainer futurePathContainer, final double getTimeNow, double dropoffDurationPerStop) {
         super(futurePathContainer);
         this.robotaxi = robotaxi;
@@ -53,18 +52,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
                     Arrays.asList(currentRequest)));
 
             Link destLink = avStayTask.getLink();
-          ScheduleUtils.makeWhole(robotaxi, getTimeNow + dropoffDurationPerStop, scheduleEndTime, destLink);
-
-            
-//            Link destLink = null;
-//            if (!vrpPathWithTravelData.getFromLink().equals(vrpPathWithTravelData.getToLink())) {
-//                schedule.addTask(new AVDriveTask( //
-//                        vrpPathWithTravelData));
-//                destLink = vrpPathWithTravelData.getToLink();
-//            } else {
-//                destLink = avStayTask.getLink();
-//            }
-//            ScheduleUtils.makeWhole(robotaxi, endTimeNextTask, scheduleEndTime, destLink);
+            ScheduleUtils.makeWhole(robotaxi, getTimeNow + dropoffDurationPerStop, scheduleEndTime, destLink);
 
             // jan: following computation is mandatory for the internal scoring
             // function

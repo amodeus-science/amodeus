@@ -14,13 +14,12 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
 /** for vehicles that are in stay task and should pickup a customer at the link:
  * 1) finish stay task 2) append pickup task 3) append drive task 4) append new stay task */
-// TODO Remane to General Pickup Directive
-/* package */ final class SharedGeneralDriveDirectivePickup extends FuturePathDirective {
+/* package */ final class SharedGeneralPickupDirective extends FuturePathDirective {
     final RoboTaxi robotaxi;
     final AVRequest currentRequest;
     final double getTimeNow;
 
-    public SharedGeneralDriveDirectivePickup(RoboTaxi robotaxi, AVRequest currentRequest, //
+    public SharedGeneralPickupDirective(RoboTaxi robotaxi, AVRequest currentRequest, //
             FuturePathContainer futurePathContainer, final double getTimeNow) {
         super(futurePathContainer);
         this.robotaxi = robotaxi;
@@ -34,6 +33,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         final AVStayTask avStayTask = (AVStayTask) Schedules.getLastTask(schedule);
         final double scheduleEndTime = avStayTask.getEndTime();
         GlobalAssert.that(scheduleEndTime == schedule.getEndTime());
+        // TODO remove this as not really required
         final double endTaskTime = vrpPathWithTravelData.getArrivalTime();
 
         if (endTaskTime < scheduleEndTime) {
@@ -51,12 +51,12 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
             // vrpPathWithTravelData, Arrays.asList(currentRequest)));
             // ScheduleUtils.makeWhole(robotaxi, endTaskTime, scheduleEndTime, vrpPathWithTravelData.getToLink());
 
-            System.out.println(scheduleEndTime);
             GlobalAssert.that(futurePathContainer.getStartTime() < scheduleEndTime);
             ScheduleUtils.makeWhole(robotaxi, futurePathContainer.getStartTime(), scheduleEndTime, currentRequest.getFromLink());
 
             // jan: following computation is mandatory for the internal scoring
             // // function
+            // TODO adapt to the required Value
             final double distance = VrpPathUtils.getDistance(vrpPathWithTravelData);
             currentRequest.getRoute().setDistance(distance);
 

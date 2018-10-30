@@ -218,9 +218,6 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
 
     private void removeRedirectionToDivertableLocationInBeginning(RoboTaxi roboTaxi) {
         while (nextCourseIsRedirectToCurrentLink(roboTaxi)) {
-            System.out.println("+++++++++++");
-            System.out.println("Finished REDIRECT:"+roboTaxi.getId().toString() + "  " +getTimeNow());
-            System.out.println("************");
             roboTaxi.finishRedirection();
         }
     }
@@ -345,11 +342,15 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
 
             }
 
+            // TODO Lukas remove
             if (!roboTaxi.getStatusWithoutCheck().equals(RoboTaxiUtils.getRoboTaxiStatusRebuilt(roboTaxi))) {
-                System.out.println("********************************");
-                System.out.println("STATUS : " + roboTaxi.getStatusWithoutCheck());
-                System.out.println("REBUILT:" + RoboTaxiUtils.getRoboTaxiStatusRebuilt(roboTaxi));
-                System.out.println("********************************");
+                
+//                System.out.println("********************************");
+//                System.out.println("STATUS : " + roboTaxi.getStatusWithoutCheck());
+//                System.out.println("REBUILT:" + RoboTaxiUtils.getRoboTaxiStatusRebuilt(roboTaxi));
+//                System.out.println("********************************");
+                GlobalAssert.that(false);
+
             }
         }
     }
@@ -358,9 +359,9 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
         SharedCourse redirectCourse = SharedCourse.redirectCourse(roboTaxi.getDivertableLocation(), Double.toString(getTimeNow()) + "_currentLink_" + roboTaxi.getId().toString());
         roboTaxi.addRedirectCourseToMenuAtBegining(redirectCourse);
         setRoboTaxiDiversion(roboTaxi, roboTaxi.getDivertableLocation(), RoboTaxiStatus.REBALANCEDRIVE);
-
     }
 
+    // TODO Lukas move to RTU
     private static RoboTaxiStatus getNextStatusBasedOnMenu(RoboTaxi roboTaxi) {
         Optional<SharedCourse> currentCourse = RoboTaxiUtils.getStarterCourse(roboTaxi);
         if (currentCourse.isPresent()) {
@@ -489,9 +490,6 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
             }
         }
 
-        if (!maxTwoMoreTaskAfterThisOneWhichEnds(schedule, task, getTimeNow(), SIMTIMESTEP)) {
-            System.out.println("STop Stop Stop");
-        }
         GlobalAssert.that(maxTwoMoreTaskAfterThisOneWhichEnds(schedule, task, getTimeNow(), SIMTIMESTEP));
     }
 
@@ -539,7 +537,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
         // Assign Directive
         final double endPickupTime = getTimeNow() + pickupDurationPerStop;
         FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer(avRequest.getFromLink(), RoboTaxiUtils.getStarterLink(roboTaxi), endPickupTime);
-        roboTaxi.assignDirective(new SharedGeneralDriveDirectivePickup(roboTaxi, avRequest, futurePathContainer, getTimeNow()));
+        roboTaxi.assignDirective(new SharedGeneralPickupDirective(roboTaxi, avRequest, futurePathContainer, getTimeNow()));
 
         GlobalAssert.that(!roboTaxi.isDivertable());
         System.out.println("EndTimeStay:" + roboTaxi.getSchedule().getCurrentTask().getEndTime());
@@ -575,7 +573,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
         Optional<SharedCourse> secondCourse = RoboTaxiUtils.getSecondCourse(roboTaxi);
         final Link endLink = (secondCourse.isPresent()) ? secondCourse.get().getLink() : avRequest.getToLink();
         FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer(avRequest.getToLink(), endLink, endDropOffTime);
-        roboTaxi.assignDirective(new SharedGeneralDriveDirectiveDropoff(roboTaxi, avRequest, futurePathContainer, getTimeNow(), dropoffDurationPerStop));
+        roboTaxi.assignDirective(new SharedGeneralDropoffDirective(roboTaxi, avRequest, futurePathContainer, getTimeNow(), dropoffDurationPerStop));
 
         if (!dropOffTimes.containsKey(endDropOffTime)) {
             dropOffTimes.put(endDropOffTime, new HashMap<>());
@@ -736,14 +734,6 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
                     reqStatuses.put(sc.getAvRequest(), RequestStatus.REQUESTED);
                     requestRegister.remove(roboTaxi, sc.getAvRequest());
                 });
-        // GlobalAssert.that(!requestRegister.contains(roboTaxi));
-        // if (requestRegister.contains(roboTaxi)) {
-        // requestRegister.get(roboTaxi).entrySet().stream().forEach(entry -> {
-        // pendingRequests.add(entry.getValue());
-        // reqStatuses.put(entry.getValue(), RequestStatus.REQUESTED);
-        // });
-        // requestRegister.remove(roboTaxi);
-        // }
         GlobalAssert.that(!RoboTaxiUtils.hasNextCourse(roboTaxi));
         GlobalAssert.that(!requestRegister.contains(roboTaxi));
     }

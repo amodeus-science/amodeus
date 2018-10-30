@@ -35,15 +35,8 @@ public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatc
         /** clear menu and put requests back to pending requests */
         cleanAndAbondon(roboTaxi);
         GlobalAssert.that(!RoboTaxiUtils.hasNextCourse(roboTaxi));
-
-        // proposed New Version:
         SharedCourse redirectCourse = SharedCourse.redirectCourse(destination, Double.toString(getTimeNow()) + roboTaxi.getId().toString());
         addSharedRoboTaxiRedirect(roboTaxi, redirectCourse);
-        // Calling Event Manager
-        // TODO with Claudio: think about how to include the two functions together,
-        // OLD Version
-//         setRoboTaxiDiversion(roboTaxi, destination, RoboTaxiStatus.REBALANCEDRIVE);
-//         eventsManager.processEvent(RebalanceVehicleEvent.create(getTimeNow(), roboTaxi, destination));
     }
 
     /** {@link RoboTaxi} @param roboTaxi is redirected to the {@link Link} of the {@link SharedCourse}
@@ -51,6 +44,14 @@ public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatc
     protected static void addSharedRoboTaxiRedirect(RoboTaxi roboTaxi, SharedCourse redirectCourse) {
         GlobalAssert.that(redirectCourse.getMealType().equals(SharedMealType.REDIRECT));
         roboTaxi.addRedirectCourseToMenu(redirectCourse);
+        if (RoboTaxiUtils.getNumberOnBoardRequests(roboTaxi) == 0) {
+            if (RoboTaxiUtils.hasNextCourse(roboTaxi)) {
+                if (RoboTaxiUtils.getStarterCourse(roboTaxi).get().getMealType().equals(SharedMealType.REDIRECT)) {
+                    roboTaxi.setStatus(RoboTaxiStatus.REBALANCEDRIVE);
+                }
+            }
+        }
+
     }
 
     /** @return {@link List } of all {@link RoboTaxi} which are currently rebalancing. */
