@@ -74,9 +74,9 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
         notifySimulationSubscribers(Math.round(now), storageUtils);
         consistencyCheck();
         beforeStepTasks(); // <- if problems with RoboTaxi Status to Completed consider to set "simEndtimeInterpretation" to "null"
-        // The Dropoff is before the pickup becase:
+        // The Dropoff is before the pickup because:
         // a) A robotaxi which picks up a customer should not dropoff one at the same time step
-        // b) in the shared case the internal dropoff should be able to finish a dropoff which enables the pickups to be executed
+        // b) but in the shared case the internal dropoff should be able to finish a dropoff which enables the pickups to be executed
         executeDropoffs();
         executePickups();
         executeRedirects();

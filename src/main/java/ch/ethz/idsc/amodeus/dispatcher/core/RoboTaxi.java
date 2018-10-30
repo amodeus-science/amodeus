@@ -113,10 +113,10 @@ public class RoboTaxi {
     /** @return RoboTaxiStatus of the vehicle */
     public RoboTaxiStatus getStatus() {
         if (usageType.equals(RoboTaxiUsageType.SHARED)) {
-            if (!RoboTaxiUtils.getRoboTaxiStatusRebuilt(this).equals(status)) {
+            if (!RoboTaxiUtils.calculateStatusFromMenu(this).equals(status)) {
                 System.out.println("output Status does not fit the menu");
             }
-            GlobalAssert.that(RoboTaxiUtils.getRoboTaxiStatusRebuilt(this).equals(status));
+            GlobalAssert.that(RoboTaxiUtils.calculateStatusFromMenu(this).equals(status));
             GlobalAssert.that(status.equals(statusNewFromMenu));
         }
 
@@ -169,11 +169,11 @@ public class RoboTaxi {
     /* package */ void setStatus(RoboTaxiStatus status) {
         if (usageType.equals(RoboTaxiUsageType.SHARED)) {
 
-            RoboTaxiStatus rTaxiStatus = RoboTaxiUtils.getRoboTaxiStatusRebuilt(this);
+            RoboTaxiStatus rTaxiStatus = RoboTaxiUtils.calculateStatusFromMenu(this);
             if (!rTaxiStatus.equals(status)) {
                 System.out.println("imported Status does not fit the menu");
             }
-            GlobalAssert.that(RoboTaxiUtils.getRoboTaxiStatusRebuilt(this).equals(status));
+            GlobalAssert.that(RoboTaxiUtils.calculateStatusFromMenu(this).equals(status));
         }
         this.status = Objects.requireNonNull(status);
     }
@@ -322,7 +322,7 @@ public class RoboTaxi {
         }
         GlobalAssert.that(SharedMenuUtils.checkMenuConsistencyWithRoboTaxi(menu, getCapacity()));
         this.menu = menu;
-        this.statusNewFromMenu = RoboTaxiUtils.getRoboTaxiStatusRebuilt(this);
+        this.statusNewFromMenu = RoboTaxiUtils.calculateStatusFromMenu(this);
     }
 
     /* package */ void addAVRequestToMenu(AVRequest avRequest) {

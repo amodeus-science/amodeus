@@ -72,7 +72,7 @@ public enum RoboTaxiUtils {
         return (int) SharedCourseListUtils.getNumberCustomersOnBoard(roboTaxi.getUnmodifiableViewOfCourses());
     }
 
-    /* package */ static RoboTaxiStatus getRoboTaxiStatusRebuilt(RoboTaxi roboTaxi) {
+    /* package */ static RoboTaxiStatus calculateStatusFromMenu(RoboTaxi roboTaxi) {
         Optional<SharedCourse> nextCourseOptional = getStarterCourse(roboTaxi);
         if (nextCourseOptional.isPresent()) {
             if (getNumberOnBoardRequests(roboTaxi) > 0) {
@@ -85,4 +85,5 @@ public enum RoboTaxiUtils {
         }
         return RoboTaxiStatus.STAY;
     }
+
 }
