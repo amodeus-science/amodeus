@@ -123,9 +123,6 @@ public class RoboTaxi {
         return status;
     }
 
-    public RoboTaxiStatus getStatusWithoutCheck() {
-        return status;
-    }
 
     /** Gets the capacity of the avVehicle. Now its an Integer and not a double as in Matsim
      * 
