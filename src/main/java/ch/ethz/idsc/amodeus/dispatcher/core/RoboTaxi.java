@@ -1,10 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import org.apache.log4j.Logger;
@@ -306,8 +303,9 @@ public class RoboTaxi {
         // TODO Lukas, with Claudio, Carl, what is the wanted behaviour? shouldnt the dispatcher take care of this
         if (status.equals(RoboTaxiStatus.REBALANCEDRIVE)) {
             GlobalAssert.that(RoboTaxiUtils.getStarterCourse(this).get().getMealType().equals(SharedMealType.REDIRECT));
-            GlobalAssert.that(getUnmodifiableViewOfCourses().size() == 1);
-            finishRedirection();
+            if (getUnmodifiableViewOfCourses().size() == 1) {
+                finishRedirection();
+            }
         }
         SharedCourse pickupCourse = SharedCourse.pickupCourse(avRequest);
         SharedCourse dropoffCourse = SharedCourse.dropoffCourse(avRequest);
