@@ -172,8 +172,6 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
         // update the registers
         requestRegister.add(roboTaxi, avRequest);
         roboTaxi.addAVRequestToMenu(avRequest);
-        // TODO make sure this is in correct and matches our needs and whishes of the behaviour of the redispatch
-        roboTaxi.setStatus(RoboTaxiUtils.calculateStatusFromMenu(roboTaxi));
         GlobalAssert.that(RoboTaxiUtils.getRequestsInMenu(roboTaxi).contains(avRequest));
         reqStatuses.put(avRequest, RequestStatus.ASSIGNED);
     }
@@ -196,7 +194,6 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
             RoboTaxi roboTaxi = oldRoboTaxi.get();
             requestRegister.remove(roboTaxi, avRequest);
             roboTaxi.removeAVRequestFromMenu(avRequest);
-            roboTaxi.setStatus(RoboTaxiUtils.calculateStatusFromMenu(roboTaxi));
             GlobalAssert.that(RoboTaxiUtils.checkMenuConsistency(roboTaxi));
         } else {
             System.out.println("This place should not be reached");
@@ -242,7 +239,6 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
 
         // Update the Robo Taxi
         roboTaxi.pickupNewCustomerOnBoard();
-        roboTaxi.setStatus(RoboTaxiStatus.DRIVEWITHCUSTOMER); // has to be done here as this is required in the is without customer check
         roboTaxi.setCurrentDriveDestination(currentCourse.get().getLink());
 
         // Update the registers
@@ -382,9 +378,6 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
                     periodFulfilledRequests.put(avRequest, roboTaxi);
                     reqStatuses.remove(avRequest);
                     total_dropedOffRequests++;
-                    // TODO Shared update RoboTaxi Status: The RoboTaxiStatus could be executed as well from the menu internally
-                    Optional<SharedCourse> nextCourse = RoboTaxiUtils.getStarterCourse(roboTaxi);
-                    roboTaxi.setStatus(RoboTaxiUtils.calculateStatusFromMenu(roboTaxi));
                 }
                 toRemoveTimes.add(dropoffTime);
             }
@@ -404,7 +397,6 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
                         /** search if arrived at redirect destination */
                         if (currentCourse.get().getLink().equals(roboTaxi.getDivertableLocation())) {
                             roboTaxi.finishRedirection();
-                            roboTaxi.setStatus(RoboTaxiUtils.calculateStatusFromMenu(roboTaxi));
                         }
                     }
                 }
@@ -639,7 +631,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
                         robotaxi.setDivertableLinkTime(new LinkTimePair(avStayTask.getLink(), getTimeNow()));
                         robotaxi.setCurrentDriveDestination(avStayTask.getLink());
                         if (!RoboTaxiUtils.hasNextCourse(robotaxi)) {
-                            robotaxi.setStatus(RoboTaxiStatus.STAY);
+                            GlobalAssert.that(robotaxi.getStatus().equals(RoboTaxiStatus.STAY));
                         }
                     }
                 }

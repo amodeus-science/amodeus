@@ -2,7 +2,6 @@ package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Optional;
 
 import org.matsim.api.core.v01.network.Link;
@@ -69,10 +68,12 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
                         if (!planedToLink.equals(roboTaxi.getDivertableLocation())) {
                             divert = true;
                         } else {
-                            roboTaxi.setStatus(RoboTaxiUtils.calculateStatusFromMenu(roboTaxi));
+                            // TODO remove soon if no errors
+                            GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiUtils.calculateStatusFromMenu(roboTaxi)));
                         }
                     } else {
-                        roboTaxi.setStatus(RoboTaxiUtils.calculateStatusFromMenu(roboTaxi));
+                        // TODO remove soon if no errors
+                        GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiUtils.calculateStatusFromMenu(roboTaxi)));
                     }
                     if (planedToLink.equals(roboTaxi.getDivertableLocation())) {
                         if (isOnLastTask) {
@@ -109,10 +110,12 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
                         roboTaxi.addRedirectCourseToMenuAtBegining(redirectCourse);
                         return Optional.of(new SimpleEntry<>(roboTaxi.getDivertableLocation(), RoboTaxiStatus.REBALANCEDRIVE));
                     } else {
-                        roboTaxi.setStatus(RoboTaxiStatus.STAY);
+                        // TODO remove soon if no errors
+                        GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.STAY));
                     }
                 } else if (avTask.getAVTaskType().equals(AVTaskType.DROPOFF)) {
-                    roboTaxi.setStatus(RoboTaxiStatus.STAY);
+                    // TODO remove soon if no errors
+                    GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.STAY));
                 } else {
                     System.out.println(" Stay Task:" + avTask.getAVTaskType().equals(AVTaskType.STAY));
                     System.out.println("PICKUP TASK" + avTask.getAVTaskType().equals(AVTaskType.PICKUP));
@@ -131,7 +134,8 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
                         roboTaxi.addRedirectCourseToMenuAtBegining(redirectCourse);
                         return Optional.of(new SimpleEntry<>(roboTaxi.getDivertableLocation(), RoboTaxiStatus.REBALANCEDRIVE));
                     } else {
-                        roboTaxi.setStatus(RoboTaxiStatus.STAY);
+                     // TODO remove soon if no errors
+                        GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.STAY));
                     }
                     // Here we might have a Stay case if we are already on the same link
                 } else {
@@ -156,7 +160,7 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
 
         Optional<Entry<Link, RoboTaxiStatus>> linkAndStatus = getToLinkAndStatus(roboTaxi, now);
         if (linkAndStatus.isPresent()) {
-            setRoboTaxiDiversion(roboTaxi, linkAndStatus.get().getKey(), Objects.requireNonNull(linkAndStatus.get().getValue()), futurePathFactory, now, eventsManager);
+            setRoboTaxiDiversion(roboTaxi, linkAndStatus.get().getKey(), futurePathFactory, now, eventsManager);
         }
 
     }
@@ -176,8 +180,7 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
      *            {@link} the {@link AVStatus} the {@link RoboTaxi} has after
      *            the diversion, depends if used from {@link setRoboTaxiPickup} or
      *            {@link setRoboTaxiRebalance} */
-    /* package */ final static void setRoboTaxiDiversion(RoboTaxi sRoboTaxi, Link destination, RoboTaxiStatus status, FuturePathFactory futurePathFactory, double now,
-            EventsManager eventsManager) {
+    /* package */ final static void setRoboTaxiDiversion(RoboTaxi sRoboTaxi, Link destination, FuturePathFactory futurePathFactory, double now, EventsManager eventsManager) {
         GlobalAssert.that(RoboTaxiUtils.hasNextCourse(sRoboTaxi));
         // update Status Of Robo Taxi
         // In Handle
@@ -194,7 +197,6 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
                             sRoboTaxi.getDivertableLocation(), destination, sRoboTaxi.getDivertableTime());
 
                     sRoboTaxi.assignDirective(new DriveVehicleDiversionDirective(sRoboTaxi, destination, futurePathContainer));
-                    sRoboTaxi.setStatus(status);
                 } else
                     sRoboTaxi.assignDirective(EmptyDirective.INSTANCE);
 
@@ -207,7 +209,6 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
                             sRoboTaxi.getDivertableLocation(), destination, sRoboTaxi.getDivertableTime());
 
                     sRoboTaxi.assignDirective(new SharedGeneralStayDirective(sRoboTaxi, destination, futurePathContainer, now));
-                    sRoboTaxi.setStatus(status);
 
                 } else {
                     sRoboTaxi.assignDirective(EmptyDirective.INSTANCE);
@@ -216,11 +217,9 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
                         GlobalAssert.that(avStayTask.getLink().equals(nextCourse.getLink()));
                         GlobalAssert.that(!sRoboTaxi.getDivertableLocation().equals(nextCourse.getLink()));
                         sRoboTaxi.finishRedirection();
-                        sRoboTaxi.setStatus(RoboTaxiUtils.calculateStatusFromMenu(sRoboTaxi));
                     } else if (nextCourse.getMealType().equals(SharedMealType.PICKUP)) {
                         GlobalAssert.that(avStayTask.getLink().equals(nextCourse.getLink()));
                         GlobalAssert.that(sRoboTaxi.getDivertableLocation().equals(nextCourse.getLink()));
-                        sRoboTaxi.setStatus(RoboTaxiStatus.DRIVETOCUSTOMER);
                         // } else if (nextCourse.getMealType().equals(SharedMealType.DROPOFF)) {
                         // GlobalAssert.that(avStayTask.getLink().equals(nextCourse.getLink()));
                         // GlobalAssert.that(sRoboTaxi.getDivertableLocation().equals(nextCourse.getLink()));
@@ -259,7 +258,6 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
             }
 
             private void handlePickupAndDropoff(RoboTaxi sRoboTaxi, Task task, Link nextLink, double now) {
-                sRoboTaxi.setStatus(status);
                 boolean isOnLastTask = thisIsLastTimeStep(task, now, SharedUniversalDispatcher.SIMTIMESTEP);
                 boolean isSecondLastTaskAndEndsNow = (task.getEndTime() == now && ScheduleUtils.isNextToLastTask(schedule, task));
                 GlobalAssert.that(isOnLastTask || isSecondLastTaskAndEndsNow);
@@ -292,7 +290,6 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
     private static void removeRedirectionToDivertableLocationInBeginning(RoboTaxi roboTaxi) {
         while (nextCourseIsRedirectToCurrentLink(roboTaxi)) {
             roboTaxi.finishRedirection();
-            roboTaxi.setStatus(RoboTaxiUtils.calculateStatusFromMenu(roboTaxi));
         }
     }
 

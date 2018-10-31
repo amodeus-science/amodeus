@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
@@ -36,6 +35,7 @@ public class RoboTaxi {
     static private final Logger logger = Logger.getLogger(RoboTaxi.class);
     private final AVVehicle avVehicle;
     private RoboTaxiStatus status;
+    // TODO remove soon
     private RoboTaxiStatus statusNewFromMenu;
     private final RoboTaxiUsageType usageType; // final might be removed if dispatchers can modify usage
 
@@ -112,14 +112,8 @@ public class RoboTaxi {
 
     /** @return RoboTaxiStatus of the vehicle */
     public RoboTaxiStatus getStatus() {
-        if (usageType.equals(RoboTaxiUsageType.SHARED)) {
-            GlobalAssert.that(RoboTaxiUtils.calculateStatusFromMenu(this).equals(status));
-            GlobalAssert.that(status.equals(statusNewFromMenu));
-        }
-
         return status;
     }
-
 
     /** Gets the capacity of the avVehicle. Now its an Integer and not a double as in Matsim
      * 
@@ -164,14 +158,7 @@ public class RoboTaxi {
      *            package, in dispatcher implementations, status will be adapted
      *            automatically. */
     /* package */ void setStatus(RoboTaxiStatus status) {
-        if (usageType.equals(RoboTaxiUsageType.SHARED)) {
-
-            RoboTaxiStatus rTaxiStatus = RoboTaxiUtils.calculateStatusFromMenu(this);
-            if (!rTaxiStatus.equals(status)) {
-                System.out.println("imported Status does not fit the menu");
-            }
-            GlobalAssert.that(RoboTaxiUtils.calculateStatusFromMenu(this).equals(status));
-        }
+        GlobalAssert.that(!usageType.equals(RoboTaxiUsageType.SHARED));
         this.status = Objects.requireNonNull(status);
     }
 
@@ -213,6 +200,7 @@ public class RoboTaxi {
         Task avT = getSchedule().getCurrentTask();
 
         // TODO Who? check why this appears often
+        // TODO Lukas check how to avoid this error message for the shared case
         if (avT instanceof AVStayTask) {
             // TODO MISC For now, this works, but probably needs fixing somewhere upfront /sh, apr 2018
             logger.warn("RoboTaxiStatus != STAY, but Schedule.getCurrentTask() == AVStayTask; probably needs fixing");
@@ -288,9 +276,6 @@ public class RoboTaxi {
      * 
      * @param menu */
     private void updateMenu(SharedMenu menu) {
-        if (!SharedMenuUtils.containSameCourses(this.menu, menu)) {
-            System.out.println("hey");
-        }
         GlobalAssert.that(SharedMenuUtils.containSameCourses(this.menu, menu));
         GlobalAssert.that(SharedCourseListUtils.checkMenuConsistency(getUnmodifiableViewOfCourses(), getCapacity()));
         setMenu(menu);
@@ -314,47 +299,35 @@ public class RoboTaxi {
     private final void setMenu(SharedMenu menu) {
         GlobalAssert.that(SharedMenuUtils.checkMenuConsistencyWithRoboTaxi(menu, getCapacity()));
         this.menu = menu;
-        this.statusNewFromMenu = RoboTaxiUtils.calculateStatusFromMenu(this);
+        this.status = RoboTaxiUtils.calculateStatusFromMenu(this);
     }
 
     /* package */ void addAVRequestToMenu(AVRequest avRequest) {
+        // TODO Lukas, with Claudio, Carl, what is the wanted behaviour? shouldnt the dispatcher take care of this
         if (status.equals(RoboTaxiStatus.REBALANCEDRIVE)) {
-            Optional<SharedCourse> starterOptional = RoboTaxiUtils.getStarterCourse(this);
             GlobalAssert.that(RoboTaxiUtils.getStarterCourse(this).get().getMealType().equals(SharedMealType.REDIRECT));
-            if (RoboTaxiUtils.getStarterCourse(this).get().getMealType().equals(SharedMealType.REDIRECT)) {
-                GlobalAssert.that(getUnmodifiableViewOfCourses().size() == 1);
-                finishRedirection();
-            }
+            GlobalAssert.that(getUnmodifiableViewOfCourses().size() == 1);
+            finishRedirection();
         }
         SharedCourse pickupCourse = SharedCourse.pickupCourse(avRequest);
         SharedCourse dropoffCourse = SharedCourse.dropoffCourse(avRequest);
         setMenu(SharedMenuUtils.addAVCoursesAsDessert(menu, pickupCourse, dropoffCourse));
-        allCoursesEverAdded.add(pickupCourse);
-        allCoursesEverAdded.add(dropoffCourse);
-
     }
-
-    public final List<SharedCourse> allCoursesEverAdded = new ArrayList<>();
-    public final Map<SharedCourse, String> allCoursesEverREMOVED = new HashMap<>();
 
     /* package */ void addRedirectCourseToMenu(SharedCourse redirectCourse) {
         GlobalAssert.that(redirectCourse.getMealType().equals(SharedMealType.REDIRECT));
         setMenu(SharedMenuUtils.addAVCoursesAsDessert(menu, redirectCourse));
-        allCoursesEverAdded.add(redirectCourse);
     }
 
     /* package */ void addRedirectCourseToMenuAtBegining(SharedCourse redirectCourse) {
         GlobalAssert.that(redirectCourse.getMealType().equals(SharedMealType.REDIRECT));
         setMenu(SharedMenuUtils.addAVCoursesAsStarter(menu, redirectCourse));
-        allCoursesEverAdded.add(redirectCourse);
     }
 
     /* package */ void pickupNewCustomerOnBoard() {
         GlobalAssert.that(RoboTaxiUtils.canPickupNewCustomer(this));
         GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.PICKUP));
         GlobalAssert.that(RoboTaxiUtils.getStarterLink(this).equals(getDivertableLocation()));
-        allCoursesEverREMOVED.put(RoboTaxiUtils.getStarterCourse(this).get(), "Pickup");
-
         setMenu(SharedMenuUtils.removeStarterCourse(menu));
     }
 
@@ -363,18 +336,12 @@ public class RoboTaxi {
         GlobalAssert.that(RoboTaxiUtils.getNumberOnBoardRequests(this) <= getCapacity());
         GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.DROPOFF));
         GlobalAssert.that(RoboTaxiUtils.getStarterLink(this).equals(getDivertableLocation()));
-
-        allCoursesEverREMOVED.put(RoboTaxiUtils.getStarterCourse(this).get(), "dropoff");
-
         setMenu(SharedMenuUtils.removeStarterCourse(menu));
     }
 
     /* package */ void finishRedirection() {
         GlobalAssert.that(RoboTaxiUtils.hasNextCourse(this));
         GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.REDIRECT));
-
-        allCoursesEverREMOVED.put(RoboTaxiUtils.getStarterCourse(this).get(), "finishRedirect");
-
         setMenu(SharedMenuUtils.removeStarterCourse(menu));
     }
 
@@ -385,9 +352,6 @@ public class RoboTaxi {
         SharedCourse pickupCourse = SharedCourse.pickupCourse(avRequest);
         SharedCourse dropoffCourse = SharedCourse.dropoffCourse(avRequest);
         GlobalAssert.that(menu.getRoboTaxiMenu().contains(pickupCourse) && menu.getRoboTaxiMenu().contains(dropoffCourse));
-        allCoursesEverREMOVED.put(pickupCourse, "removeAVREQuest");
-        allCoursesEverREMOVED.put(dropoffCourse, "removeAVREQuest");
-
         setMenu(SharedMenuUtils.removeAVCourses(menu, pickupCourse, dropoffCourse));
     }
 
@@ -397,7 +361,6 @@ public class RoboTaxi {
     /* package */ List<SharedCourse> cleanAndAbandonMenu() {
         GlobalAssert.that(RoboTaxiUtils.getNumberOnBoardRequests(this) == 0);
         GlobalAssert.that(isDivertable());
-        getUnmodifiableViewOfCourses().forEach(sc -> allCoursesEverREMOVED.put(sc, "cleanandAbandon"));
         List<SharedCourse> oldMenu = SharedCourseListUtils.copy(menu.getRoboTaxiMenu());
         setMenu(SharedMenu.empty());
         return oldMenu;

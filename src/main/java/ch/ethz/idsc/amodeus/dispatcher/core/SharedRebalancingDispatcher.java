@@ -44,14 +44,6 @@ public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatc
     protected static void addSharedRoboTaxiRedirect(RoboTaxi roboTaxi, SharedCourse redirectCourse) {
         GlobalAssert.that(redirectCourse.getMealType().equals(SharedMealType.REDIRECT));
         roboTaxi.addRedirectCourseToMenu(redirectCourse);
-        if (RoboTaxiUtils.getNumberOnBoardRequests(roboTaxi) == 0) {
-            if (RoboTaxiUtils.hasNextCourse(roboTaxi)) {
-                if (RoboTaxiUtils.getStarterCourse(roboTaxi).get().getMealType().equals(SharedMealType.REDIRECT)) {
-                    roboTaxi.setStatus(RoboTaxiStatus.REBALANCEDRIVE);
-                }
-            }
-        }
-
     }
 
     /** @return {@link List } of all {@link RoboTaxi} which are currently rebalancing. */
