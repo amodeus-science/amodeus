@@ -34,7 +34,7 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
         return task.getEndTime() < now + timeStep;
     }
 
-    /* package */ static Optional<Entry<Link, RoboTaxiStatus>> getToLinkAndStatus(RoboTaxi roboTaxi, double now) {
+    /* package */ static Optional<Link> getToLinkAndStatus(RoboTaxi roboTaxi, double now) {
 
         // Check that we are not already on the link of the redirectino (this can only happen if a command was given in redispatch to the current location)
         removeRedirectionToDivertableLocationInBeginning(roboTaxi);
@@ -87,7 +87,7 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
 
                 // THIRD AND FINAL: Divert If Required
                 if (divert) {
-                    return Optional.of(new SimpleEntry<>(currentCourse.get().getLink(), RoboTaxiUtils.calculateStatusFromMenu(roboTaxi)));
+                    return Optional.of(currentCourse.get().getLink());
                 }
             }
         } else {
@@ -108,7 +108,7 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
                         SharedCourse redirectCourse = SharedCourse.redirectCourse(roboTaxi.getDivertableLocation(),
                                 Double.toString(now) + "_currentLink_" + roboTaxi.getId().toString());
                         roboTaxi.addRedirectCourseToMenuAtBegining(redirectCourse);
-                        return Optional.of(new SimpleEntry<>(roboTaxi.getDivertableLocation(), RoboTaxiStatus.REBALANCEDRIVE));
+                        return Optional.of(roboTaxi.getDivertableLocation());
                     } else {
                         // TODO remove soon if no errors
                         GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.STAY));
@@ -132,7 +132,7 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
                         SharedCourse redirectCourse = SharedCourse.redirectCourse(roboTaxi.getDivertableLocation(),
                                 Double.toString(now) + "_currentLink_" + roboTaxi.getId().toString());
                         roboTaxi.addRedirectCourseToMenuAtBegining(redirectCourse);
-                        return Optional.of(new SimpleEntry<>(roboTaxi.getDivertableLocation(), RoboTaxiStatus.REBALANCEDRIVE));
+                        return Optional.of(roboTaxi.getDivertableLocation());
                     } else {
                      // TODO remove soon if no errors
                         GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.STAY));
@@ -158,9 +158,9 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
 
     /* package */ static void adaptMenuToDirective(RoboTaxi roboTaxi, FuturePathFactory futurePathFactory, double now, EventsManager eventsManager) {
 
-        Optional<Entry<Link, RoboTaxiStatus>> linkAndStatus = getToLinkAndStatus(roboTaxi, now);
-        if (linkAndStatus.isPresent()) {
-            setRoboTaxiDiversion(roboTaxi, linkAndStatus.get().getKey(), futurePathFactory, now, eventsManager);
+        Optional<Link> link = getToLinkAndStatus(roboTaxi, now);
+        if (link.isPresent()) {
+            setRoboTaxiDiversion(roboTaxi, link.get(), futurePathFactory, now, eventsManager);
         }
 
     }
