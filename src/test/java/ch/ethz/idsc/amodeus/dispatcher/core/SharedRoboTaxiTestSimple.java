@@ -167,7 +167,8 @@ public class SharedRoboTaxiTestSimple extends TestCase {
         } catch (Exception e) {
             // ---
         }
-
+        s.roboTaxi1.addRedirectCourseToMenuAtBegining(SharedCourse.redirectCourse(s.linkDepotIn, "backTodepot"));
+        assertEquals(RoboTaxiUtils.getStarterLink(s.roboTaxi1), s.linkDepotIn);
         System.out.println("Robo Taxi Test done");
 
     }

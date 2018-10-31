@@ -113,9 +113,6 @@ public class RoboTaxi {
     /** @return RoboTaxiStatus of the vehicle */
     public RoboTaxiStatus getStatus() {
         if (usageType.equals(RoboTaxiUsageType.SHARED)) {
-            if (!RoboTaxiUtils.calculateStatusFromMenu(this).equals(status)) {
-                System.out.println("output Status does not fit the menu");
-            }
             GlobalAssert.that(RoboTaxiUtils.calculateStatusFromMenu(this).equals(status));
             GlobalAssert.that(status.equals(statusNewFromMenu));
         }
@@ -315,11 +312,6 @@ public class RoboTaxi {
      * 
      * @param menu */
     private final void setMenu(SharedMenu menu) {
-        if (!SharedMenuUtils.checkMenuConsistencyWithRoboTaxi(menu, getCapacity())) {
-            System.out.println("Same Requests:" + SharedMenuUtils.containSameCourses(menu, this.menu));
-            System.out.println("NOt more Pickups than capacirty: " + SharedMenuUtils.checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(menu, getCapacity()));
-            System.out.println("not a consistent menu");
-        }
         GlobalAssert.that(SharedMenuUtils.checkMenuConsistencyWithRoboTaxi(menu, getCapacity()));
         this.menu = menu;
         this.statusNewFromMenu = RoboTaxiUtils.calculateStatusFromMenu(this);
@@ -328,12 +320,7 @@ public class RoboTaxi {
     /* package */ void addAVRequestToMenu(AVRequest avRequest) {
         if (status.equals(RoboTaxiStatus.REBALANCEDRIVE)) {
             Optional<SharedCourse> starterOptional = RoboTaxiUtils.getStarterCourse(this);
-            if (!starterOptional.isPresent()) {
-                System.out.println("dd");
-            }
-            if (!RoboTaxiUtils.getStarterCourse(this).get().getMealType().equals(SharedMealType.REDIRECT)) {
-                System.out.println("hehehe");
-            }
+            GlobalAssert.that(RoboTaxiUtils.getStarterCourse(this).get().getMealType().equals(SharedMealType.REDIRECT));
             if (RoboTaxiUtils.getStarterCourse(this).get().getMealType().equals(SharedMealType.REDIRECT)) {
                 GlobalAssert.that(getUnmodifiableViewOfCourses().size() == 1);
                 finishRedirection();
@@ -356,7 +343,6 @@ public class RoboTaxi {
         allCoursesEverAdded.add(redirectCourse);
     }
 
-    // TODO first redirect course can not be on divertable link... in that case we do not add it.
     /* package */ void addRedirectCourseToMenuAtBegining(SharedCourse redirectCourse) {
         GlobalAssert.that(redirectCourse.getMealType().equals(SharedMealType.REDIRECT));
         setMenu(SharedMenuUtils.addAVCoursesAsStarter(menu, redirectCourse));

@@ -7,12 +7,14 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
 import org.matsim.contrib.dvrp.data.Request;
 import org.matsim.contrib.dvrp.data.Vehicle;
+import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 import org.matsim.core.config.Config;
 import org.matsim.core.network.NetworkUtils;
 
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.passenger.AVRequest;
+import ch.ethz.matsim.av.schedule.AVStayTask;
 
 /*package*/ class ArtificialScenarioCreator {
     public final Node node1;
@@ -114,11 +116,20 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         Id<Vehicle> idAv1 = Id.create("av1", Vehicle.class);
         vehicle1 = new AVVehicle(idAv1, linkDepotOut, seats, 0.0, Double.POSITIVE_INFINITY);
         roboTaxi1 = new RoboTaxi(vehicle1, divertableLinkTime, linkDepotOut, RoboTaxiUsageType.SHARED);
-
+        setFirstStayTask(vehicle1);
+        
         Id<Vehicle> idAv2 = Id.create("av2", Vehicle.class);
         vehicle2 = new AVVehicle(idAv2, linkDepotOut, seats, 0.0, Double.POSITIVE_INFINITY);
         roboTaxi2 = new RoboTaxi(vehicle2, divertableLinkTime, linkDepotOut, RoboTaxiUsageType.SHARED);
-
+        setFirstStayTask(vehicle2);
+        System.out.println("ArtificialScenario Created");
+    }
+    
+    private static void setFirstStayTask(AVVehicle vehicle) {
+        Schedule schedule = vehicle.getSchedule();
+        schedule.addTask(new AVStayTask(vehicle.getServiceBeginTime(), vehicle.getServiceEndTime(), vehicle.getStartLink()));
+        schedule.nextTask();
+        
     }
 
 }
