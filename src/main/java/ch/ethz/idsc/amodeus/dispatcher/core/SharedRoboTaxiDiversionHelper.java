@@ -1,7 +1,5 @@
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
-import java.util.AbstractMap.SimpleEntry;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.matsim.api.core.v01.network.Link;
@@ -134,7 +132,7 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
                         roboTaxi.addRedirectCourseToMenuAtBegining(redirectCourse);
                         return Optional.of(roboTaxi.getDivertableLocation());
                     } else {
-                     // TODO remove soon if no errors
+                        // TODO remove soon if no errors
                         GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.STAY));
                     }
                     // Here we might have a Stay case if we are already on the same link
@@ -267,12 +265,8 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
             }
         };
 
-        // TODO this could be as well rebalance Status
-        Optional<SharedCourse> newNextCourse = RoboTaxiUtils.getStarterCourse(sRoboTaxi);
-        if (newNextCourse.isPresent()) {
-            if (newNextCourse.get().getMealType().equals(SharedMealType.REDIRECT)) {
-                eventsManager.processEvent(RebalanceVehicleEvent.create(now, sRoboTaxi, destination));
-            }
+        if (sRoboTaxi.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE)) {
+            eventsManager.processEvent(RebalanceVehicleEvent.create(now, sRoboTaxi, destination));
         }
 
         GlobalAssert.that(maxTwoMoreTaskAfterThisOneWhichEnds(schedule, task, now, SharedUniversalDispatcher.SIMTIMESTEP));

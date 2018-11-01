@@ -79,8 +79,9 @@ public enum RoboTaxiUtils {
                 return RoboTaxiStatus.DRIVEWITHCUSTOMER;
             } else if (nextCourseOptional.get().getMealType().equals(SharedMealType.PICKUP)) {
                 return RoboTaxiStatus.DRIVETOCUSTOMER;
-            } else if (nextCourseOptional.get().getMealType().equals(SharedMealType.REDIRECT)) { // TODO include that it has to be size one the menu. if size is larger 1 then its drivetocustomer,
-                // TODO it could as well be that no pickup is planed. 
+            } else if (nextCourseOptional.get().getMealType().equals(SharedMealType.REDIRECT)) {
+                // TODO Lukas include that it has to be size one the menu. if size is larger 1 then its drivetocustomer,
+                // it could as well be that no pickup is planed. 
                 // Check if this makes sense
                 if (SharedCourseListUtils.getNumberPickups(roboTaxi.getUnmodifiableViewOfCourses()) > 0) {
                     return RoboTaxiStatus.DRIVETOCUSTOMER;

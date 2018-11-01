@@ -1,6 +1,5 @@
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
-import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.junit.Test;

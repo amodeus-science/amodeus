@@ -33,14 +33,12 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         final AVStayTask avStayTask = (AVStayTask) Schedules.getLastTask(schedule);
         final double scheduleEndTime = avStayTask.getEndTime();
         GlobalAssert.that(scheduleEndTime == schedule.getEndTime());
-        // TODO remove this as not really required
         final double endTaskTime = vrpPathWithTravelData.getArrivalTime();
 
         if (endTaskTime < scheduleEndTime) {
 
             avStayTask.setEndTime(getTimeNow); // finish the last task now
 
-            // TODO make it simpler as the vrpPath is not required
             schedule.addTask(new AVPickupTask( //
                     getTimeNow, // start of pickup
                     futurePathContainer.getStartTime(), // end of pickup
@@ -56,7 +54,6 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
             // jan: following computation is mandatory for the internal scoring
             // // function
-            // TODO adapt to the required Value
             final double distance = VrpPathUtils.getDistance(vrpPathWithTravelData);
             currentRequest.getRoute().setDistance(distance);
 
