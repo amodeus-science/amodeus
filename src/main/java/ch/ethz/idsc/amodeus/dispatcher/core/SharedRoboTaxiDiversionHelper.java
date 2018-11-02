@@ -32,7 +32,7 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
         return task.getEndTime() < now + timeStep;
     }
 
-    /* package */ static Optional<Link> getToLinkAndStatus(RoboTaxi roboTaxi, double now) {
+    /* package */ static Optional<Link> getToLink(RoboTaxi roboTaxi, double now) {
 
         // Check that we are not already on the link of the redirectino (this can only happen if a command was given in redispatch to the current location)
         removeRedirectionToDivertableLocationInBeginning(roboTaxi);
@@ -156,7 +156,7 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
 
     /* package */ static void adaptMenuToDirective(RoboTaxi roboTaxi, FuturePathFactory futurePathFactory, double now, EventsManager eventsManager) {
 
-        Optional<Link> link = getToLinkAndStatus(roboTaxi, now);
+        Optional<Link> link = getToLink(roboTaxi, now);
         if (link.isPresent()) {
             setRoboTaxiDiversion(roboTaxi, link.get(), futurePathFactory, now, eventsManager);
         }

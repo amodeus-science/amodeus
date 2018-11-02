@@ -32,8 +32,6 @@ public class RoboTaxi {
     static private final Logger logger = Logger.getLogger(RoboTaxi.class);
     private final AVVehicle avVehicle;
     private RoboTaxiStatus status;
-    // TODO remove soon
-    private RoboTaxiStatus statusNewFromMenu;
     private final RoboTaxiUsageType usageType; // final might be removed if dispatchers can modify usage
 
     /** last known location of the RoboTaxi */
@@ -60,7 +58,6 @@ public class RoboTaxi {
         this.driveDestination = Objects.requireNonNull(driveDestination);
         this.directive = null;
         this.status = RoboTaxiStatus.STAY;
-        this.statusNewFromMenu = RoboTaxiStatus.STAY;
         this.usageType = usageType;
     }
 

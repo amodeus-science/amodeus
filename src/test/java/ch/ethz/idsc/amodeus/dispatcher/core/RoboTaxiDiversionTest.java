@@ -13,18 +13,18 @@ public class RoboTaxiDiversionTest extends TestCase {
     public void testStayTask() {
         ArtificialScenarioCreator s = new ArtificialScenarioCreator();
 
-        Optional<Link> entry = SharedRoboTaxiDiversionHelper.getToLinkAndStatus(s.roboTaxi1, 0.0);
+        Optional<Link> entry = SharedRoboTaxiDiversionHelper.getToLink(s.roboTaxi1, 0.0);
         assertFalse(entry.isPresent());
 
         s.roboTaxi1.addAVRequestToMenu(s.avRequest1);
-        Optional<Link> entry2 = SharedRoboTaxiDiversionHelper.getToLinkAndStatus(s.roboTaxi1, 0.0);
+        Optional<Link> entry2 = SharedRoboTaxiDiversionHelper.getToLink(s.roboTaxi1, 0.0);
         assertTrue(entry2.isPresent());
         assertTrue(entry2.get().equals(s.avRequest1.getFromLink()));
         assertEquals(s.roboTaxi1.getStatus(), RoboTaxiStatus.DRIVETOCUSTOMER);
         s.roboTaxi1.addRedirectCourseToMenu(SharedCourse.redirectCourse(s.linkDepotOut, "redirect0"));
 
         s.roboTaxi1.addRedirectCourseToMenuAtBegining(SharedCourse.redirectCourse(s.linkDepotIn, "redirect1"));
-        Optional<Link> entry3 = SharedRoboTaxiDiversionHelper.getToLinkAndStatus(s.roboTaxi1, 0.0);
+        Optional<Link> entry3 = SharedRoboTaxiDiversionHelper.getToLink(s.roboTaxi1, 0.0);
         assertTrue(entry3.isPresent());
         assertTrue(entry3.get().equals(s.linkDepotIn));
         assertEquals(s.roboTaxi1.getStatus(), RoboTaxiStatus.DRIVETOCUSTOMER);
@@ -38,7 +38,7 @@ public class RoboTaxiDiversionTest extends TestCase {
         s.roboTaxi1.moveAVCourseToPrev(SharedCourse.pickupCourse(s.avRequest2));
         s.roboTaxi1.moveAVCourseToPrev(SharedCourse.pickupCourse(s.avRequest2));
 
-        Optional<Link> entry4 = SharedRoboTaxiDiversionHelper.getToLinkAndStatus(s.roboTaxi1, 0.0);
+        Optional<Link> entry4 = SharedRoboTaxiDiversionHelper.getToLink(s.roboTaxi1, 0.0);
         assertTrue(entry4.isPresent());
         assertTrue(entry4.get().equals(s.avRequest2.getFromLink()));
         assertEquals(s.roboTaxi1.getStatus(), RoboTaxiStatus.DRIVETOCUSTOMER);
@@ -46,7 +46,7 @@ public class RoboTaxiDiversionTest extends TestCase {
         SharedCourse tocurrLoCourse = SharedCourse.redirectCourse(s.roboTaxi1.getDivertableLocation(), "redirecttoCurrentLoc");
         s.roboTaxi1.addRedirectCourseToMenuAtBegining(tocurrLoCourse);
         assertTrue(RoboTaxiUtils.getStarterCourse(s.roboTaxi1).get().equals(tocurrLoCourse));
-        Optional<Link> entrycurr = SharedRoboTaxiDiversionHelper.getToLinkAndStatus(s.roboTaxi1, 0.0);
+        Optional<Link> entrycurr = SharedRoboTaxiDiversionHelper.getToLink(s.roboTaxi1, 0.0);
         assertFalse(RoboTaxiUtils.getStarterCourse(s.roboTaxi1).get().equals(tocurrLoCourse));
         assertTrue(entrycurr.isPresent());
         assertTrue(entrycurr.get().equals(entry4.get()));

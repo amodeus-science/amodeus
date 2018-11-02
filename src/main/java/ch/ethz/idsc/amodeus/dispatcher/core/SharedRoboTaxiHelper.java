@@ -46,12 +46,12 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
         // Update the Robo Taxi
         roboTaxi.pickupNewCustomerOnBoard();
-        roboTaxi.setCurrentDriveDestination(currentCourse.get().getLink());
+        roboTaxi.setCurrentDriveDestination(currentCourse.get().getLink()); // TODO why is that required?
 
         // Assign Directive
-        final double endPickupTime = now + pickupDurationPerStop;
-        FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer(avRequest.getFromLink(), RoboTaxiUtils.getStarterLink(roboTaxi), endPickupTime);
-        roboTaxi.assignDirective(new SharedGeneralPickupDirective(roboTaxi, avRequest, futurePathContainer, now));
+//        final double endPickupTime = now + pickupDurationPerStop;
+//        FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer(avRequest.getFromLink(), RoboTaxiUtils.getStarterLink(roboTaxi), endPickupTime);
+        roboTaxi.assignDirective(new SharedPickupDirective(roboTaxi, avRequest, now, pickupDurationPerStop));
 
         GlobalAssert.that(!roboTaxi.isDivertable());
 
@@ -95,12 +95,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         GlobalAssert.that(schedule.getCurrentTask() == Schedules.getLastTask(schedule)); // instanceof AVDriveTask);
 
         // Assign Directive To roboTaxi
-        final double endDropOffTime = now + dropoffDurationPerStop;
-        Optional<SharedCourse> secondCourse = RoboTaxiUtils.getSecondCourse(roboTaxi);
-        final Link endLink = (secondCourse.isPresent()) ? secondCourse.get().getLink() : avRequest.getToLink();
-        FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer(avRequest.getToLink(), endLink, endDropOffTime);
-        roboTaxi.assignDirective(new SharedGeneralDropoffDirective(roboTaxi, avRequest, futurePathContainer, now, dropoffDurationPerStop));
-
+        roboTaxi.assignDirective(new SharedDropoffDirective(roboTaxi, avRequest, now, dropoffDurationPerStop));
     }
 
     /* package */ static final void finishRedirectionIfOnLastLink(RoboTaxi roboTaxi) {
