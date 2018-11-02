@@ -106,5 +106,11 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     /* package */ Map<RoboTaxi, Map<String, AVRequest>> getRegister() {
         return Collections.unmodifiableMap(register);
     }
+    
+    /* package*/ Map<AVRequest, RoboTaxi> getRequestVehicleAssociation(){
+        Map<AVRequest, RoboTaxi> flatMap = new HashMap<>();
+        register.forEach((rt, map)-> map.values().forEach(avr->flatMap.put(avr, rt)));
+        return flatMap;
+    }
 
 }

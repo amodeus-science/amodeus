@@ -49,5 +49,4 @@ import ch.ethz.idsc.tensor.red.Quantile;
                 .map(RoboTaxiStatus::description) //
                 .toArray(String[]::new);
     }
-
 }
