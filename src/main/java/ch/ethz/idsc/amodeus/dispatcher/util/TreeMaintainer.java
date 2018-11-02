@@ -6,14 +6,13 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
 
-import org.matsim.api.core.v01.Coord;
-import org.matsim.api.core.v01.network.Network;
-import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.utils.collections.QuadTree;
 import org.matsim.core.utils.collections.QuadTree.Rect;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.alg.VectorQ;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** Maintains a list of {@link T}s in a {@link Set} and a
@@ -27,44 +26,40 @@ public class TreeMaintainer<T> {
     private final QuadTree<T> tree;
     /** data structures are used to enable fast "contains" searching */
     private final Set<T> set = new HashSet<>();
-    private final Function<T, Coord> location;
+    private final Function<T, Tensor> location;
 
     /** For the Checks */
     private final Rect outerRect;
 
-    public TreeMaintainer(Network network, Function<T, Coord> location) {
+    /** @param networkBounds is in format (minX, minY, maxX, maxY)
+     * @param location */
+    public TreeMaintainer(double[] networkBounds, Function<T, Tensor> location) {
         this.location = location;
-        double[] networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
         this.outerRect = new Rect(networkBounds[0], networkBounds[1], networkBounds[2], networkBounds[3]);
         tree = new QuadTree<>(networkBounds[0], networkBounds[1], networkBounds[2], networkBounds[3]);
     }
 
-    public TreeMaintainer(double minX, double minY, double maxX, double maxY, Function<T, Coord> location) {
-        this.location = location;
-        this.outerRect = new Rect(minX, minY, maxX, maxY);
-        tree = new QuadTree<>(minX, minY, maxX, maxY);
+    /** @return closest {@link T} in tree from {@link Tensor} @param coord */
+    public T getClosest(Tensor coord) {
+        VectorQ.requireLength(coord, 2); // ensure that vector of length 2;
+        return tree.getClosest(coord.Get(0).number().doubleValue(), coord.Get(1).number().doubleValue());
     }
 
-    /** @return closest {@link T} in tree from {@link Coord} @param coord */
-    public T getClosest(Coord coord) {
-        return tree.getClosest(coord.getX(), coord.getY());
-    }
-
-    /** Adds the {@link T} @param t to the Tree Maintainer. */
+    /** Adds the {@link T} @param t to the Tree Maintainer if it is not yet contained in the tree. */
     public void add(T t) {
         if (!set.contains(t)) {
-            Coord coord = location.apply(t);
+            Tensor coord = location.apply(t);
             boolean setok = set.add(t);
-            boolean treeok = tree.put(coord.getX(), coord.getY(), t);
+            boolean treeok = tree.put(coord.Get(0).number().doubleValue(), coord.Get(1).number().doubleValue(), t);
             GlobalAssert.that(setok && treeok);
         }
     }
 
     /** Removes the {@link T} @param t from the Tree Maintainer. */
     public void remove(T t) {
-        Coord coord = location.apply(t);
+        Tensor coord = location.apply(t);
         boolean setok = set.remove(t);
-        boolean treeok = tree.remove(coord.getX(), coord.getY(), t);
+        boolean treeok = tree.remove(coord.Get(0).number().doubleValue(), coord.Get(1).number().doubleValue(), t);
         GlobalAssert.that(setok && treeok);
     }
 
@@ -81,12 +76,12 @@ public class TreeMaintainer<T> {
         return tree.getRectangle(bounds, new HashSet<>());
     }
 
-    public boolean contains(Coord coord) {
-        return outerRect.contains(coord.getX(), coord.getY());
+    public boolean contains(Tensor coord) {
+        VectorQ.requireLength(coord, 2); // ensure that vector of length 2;
+        return outerRect.contains(coord.Get(0).number().doubleValue(), coord.Get(1).number().doubleValue());
     }
 
     public Set<T> getValues() {
         return set;
     }
-
 }
