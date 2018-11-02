@@ -29,7 +29,7 @@ public enum RoboTaxiUtils {
         }
         return false;
     }
-    
+
     public static boolean hasNextCourse(RoboTaxi roboTaxi) {
         return SharedCourseListUtils.hasStarter(roboTaxi.getUnmodifiableViewOfCourses());
     }
@@ -81,12 +81,12 @@ public enum RoboTaxiUtils {
                 return RoboTaxiStatus.DRIVETOCUSTOMER;
             } else if (nextCourseOptional.get().getMealType().equals(SharedMealType.REDIRECT)) {
                 // TODO Lukas include that it has to be size one the menu. if size is larger 1 then its drivetocustomer,
-                // it could as well be that no pickup is planed. 
+                // it could as well be that no pickup is planed.
                 // Check if this makes sense
                 if (SharedCourseListUtils.getNumberPickups(roboTaxi.getUnmodifiableViewOfCourses()) > 0) {
                     return RoboTaxiStatus.DRIVETOCUSTOMER;
-                }else {
-                    return RoboTaxiStatus.REBALANCEDRIVE;  
+                } else {
+                    return RoboTaxiStatus.REBALANCEDRIVE;
                 }
             } else {
                 System.out.println("We have a not Covered Status of the Robotaxi");

@@ -39,14 +39,13 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
                 schedule.removeLastTask();
                 counter++;
             }
-            GlobalAssert.that(counter == 1); // WE make sure that there was only the stay Task at the end removed. 
+            GlobalAssert.that(counter == 1); // WE make sure that there was only the stay Task at the end removed.
 
             // Add new drive task
             schedule.addTask(new AVDriveTask( //
                     vrpPathWithTravelData));
 
             ScheduleUtils.makeWhole(robotaxi, endTaskTime, scheduleEndTime, vrpPathWithTravelData.getToLink());
-
 
             // jan: following computation is mandatory for the internal scoring
             // function
