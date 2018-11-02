@@ -18,7 +18,7 @@ public class TestDispatcherShared extends SharedUniversalDispatcher {
 
     @Override
     protected void redispatch(double now) {
-
+        // ---
     }
 
     public void setUp(ArtificialScenarioCreator s) {
