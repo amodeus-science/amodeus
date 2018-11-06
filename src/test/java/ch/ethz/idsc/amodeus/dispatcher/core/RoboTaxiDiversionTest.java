@@ -52,7 +52,7 @@ public class RoboTaxiDiversionTest extends TestCase {
         assertTrue(entrycurr.get().equals(entry4.get()));
 
         // TODO here we need many more Tests to make sure we cover all cases which are possible!
-        
+       
         System.out.println("Robo Taxi diversion Test done");
 
     }

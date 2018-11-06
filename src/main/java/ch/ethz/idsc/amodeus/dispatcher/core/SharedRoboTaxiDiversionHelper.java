@@ -20,7 +20,18 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
 
 /*package*/ enum SharedRoboTaxiDiversionHelper {
     ;
+    
+    /* package */ static void adaptMenuToDirective(RoboTaxi roboTaxi, FuturePathFactory futurePathFactory, double now, EventsManager eventsManager) {
+        // Check that we are not already on the link of the redirectino (this can only happen if a command was given in redispatch to the current location)
+        removeRedirectionToDivertableLocationInBeginning(roboTaxi);
+        
+        Optional<Link> link = getToLink(roboTaxi, now);
+        if (link.isPresent()) {
+            setRoboTaxiDiversion(roboTaxi, link.get(), futurePathFactory, now, eventsManager);
+        }
 
+    }
+    
     /* package */static boolean maxTwoMoreTaskAfterThisOneWhichEnds(Schedule schedule, Task task, double now, double timeStep) {
         if (thisIsLastTimeStep(task, now, timeStep)) {
             return task.getTaskIdx() >= schedule.getTaskCount() - 3;
@@ -32,10 +43,9 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
         return task.getEndTime() < now + timeStep;
     }
 
-    /* package */ static Optional<Link> getToLink(RoboTaxi roboTaxi, double now) {
+    /*package*/ static Optional<Link> getToLink(RoboTaxi roboTaxi, double now) {
 
-        // Check that we are not already on the link of the redirectino (this can only happen if a command was given in redispatch to the current location)
-        removeRedirectionToDivertableLocationInBeginning(roboTaxi);
+        GlobalAssert.that(!nextCourseIsRedirectToCurrentLink(roboTaxi));
 
         Optional<SharedCourse> currentCourse = RoboTaxiUtils.getStarterCourse(roboTaxi);
         final Schedule schedule = roboTaxi.getSchedule();
@@ -154,14 +164,7 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
 
     }
 
-    /* package */ static void adaptMenuToDirective(RoboTaxi roboTaxi, FuturePathFactory futurePathFactory, double now, EventsManager eventsManager) {
 
-        Optional<Link> link = getToLink(roboTaxi, now);
-        if (link.isPresent()) {
-            setRoboTaxiDiversion(roboTaxi, link.get(), futurePathFactory, now, eventsManager);
-        }
-
-    }
 
     /** For UniversalDispatcher, VehicleMaintainer internal use only. Use
      * {@link UniveralDispatcher.setRoboTaxiPickup} or {@link setRoboTaxiRebalance}
@@ -178,7 +181,7 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
      *            {@link} the {@link AVStatus} the {@link RoboTaxi} has after
      *            the diversion, depends if used from {@link setRoboTaxiPickup} or
      *            {@link setRoboTaxiRebalance} */
-    /* package */ final static void setRoboTaxiDiversion(RoboTaxi sRoboTaxi, Link destination, FuturePathFactory futurePathFactory, double now, EventsManager eventsManager) {
+    /*package*/ final static void setRoboTaxiDiversion(RoboTaxi sRoboTaxi, Link destination, FuturePathFactory futurePathFactory, double now, EventsManager eventsManager) {
         GlobalAssert.that(RoboTaxiUtils.hasNextCourse(sRoboTaxi));
         // update Status Of Robo Taxi
         // In Handle

@@ -194,11 +194,12 @@ public class RoboTaxi {
         Task avT = getSchedule().getCurrentTask();
 
         // TODO Who? check why this appears often
-        // TODO Lukas check how to avoid this error message for the shared case
         if (avT instanceof AVStayTask) {
             // TODO MISC For now, this works, but probably needs fixing somewhere upfront /sh, apr 2018
-            logger.warn("RoboTaxiStatus != STAY, but Schedule.getCurrentTask() == AVStayTask; probably needs fixing");
-            System.out.println("status: " + status);
+            if (!usageType.equals(RoboTaxiUsageType.SHARED)) { // for shared this is allowed e.g. when a new course is added but the it has not been executed yet
+                logger.warn("RoboTaxiStatus != STAY, but Schedule.getCurrentTask() == AVStayTask; probably needs fixing");
+                System.out.println("status: " + status);
+            }
             return true;
         }
 
@@ -298,6 +299,7 @@ public class RoboTaxi {
 
     /* package */ void addAVRequestToMenu(AVRequest avRequest) {
         // TODO Lukas, with Claudio, Carl, what is the wanted behaviour? shouldnt the dispatcher take care of this
+        // We could bring it into the rebalancing dispatcher, there we can add a function which is called: addAVrequestandRemoveFirstRebalancing(AVrequest)
         if (status.equals(RoboTaxiStatus.REBALANCEDRIVE)) {
             GlobalAssert.that(RoboTaxiUtils.getStarterCourse(this).get().getMealType().equals(SharedMealType.REDIRECT));
             if (getUnmodifiableViewOfCourses().size() == 1) {

@@ -106,8 +106,6 @@ public enum SharedCourseListUtils {
         for (SharedCourse course : courses) {
             if (course.getMealType().equals(SharedMealType.PICKUP)) {
                 int pickupIndex = courses.indexOf(course);
-                // This has always to be true as the menu has to contain a dropoff for each pick up
-                // TODO Lukas might be removed soon or changed to global Assert
                 SharedCourse dropoffCourse = SharedCourse.dropoffCourse(course.getAvRequest());
                 GlobalAssert.that(courses.contains(dropoffCourse));
                 int dropofIndex = courses.indexOf(dropoffCourse);
