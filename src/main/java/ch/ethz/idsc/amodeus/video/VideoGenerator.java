@@ -1,6 +1,7 @@
 package ch.ethz.idsc.amodeus.video;
 
 import ch.ethz.idsc.amodeus.data.ReferenceFrame;
+import ch.ethz.idsc.amodeus.ext.Static;
 import ch.ethz.idsc.amodeus.gfx.*;
 import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
 import ch.ethz.idsc.amodeus.net.*;
@@ -18,8 +19,6 @@ import org.matsim.core.config.ConfigUtils;
 
 import java.awt.*;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintStream;
 import java.util.Objects;
 
 public class VideoGenerator implements Runnable {
@@ -37,19 +36,7 @@ public class VideoGenerator implements Runnable {
     }
 
     public void run() {
-        /* problematic: prints from all threads go to file
-        try {
-            PrintStream console = System.out;
-            File logFile = new File(workingDirectory, "video.log");
-            System.setOut(new PrintStream(logFile));
-            // ---------------------------------------------------------------------------
-            ---
-            // ---------------------------------------------------------------------------
-            System.setOut(console);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } */
-        Static.setup();  // TODO move Static from amod to amodeus or find alternative to Static.setup()
+        Static.setup();
         try {
             // load options
             ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
@@ -143,13 +130,14 @@ public class VideoGenerator implements Runnable {
         int count = 0;
         int base = 1;
         try (SimulationObjectsVideo simulationObjectsVideo = new SimulationObjectsVideo( //
-                "video.mp4", resolution, viewerConfig.settings.fps, amodeusComponent //
+                String.format("%s_%s.mp4", java.time.LocalDate.now(), network.getName()), // TODO proper date_location_population
+                resolution, viewerConfig.settings.fps, amodeusComponent //
         )) {
             simulationObjectsVideo.millis = 20000;
             int intervalEstimate = storageSupplier.getIntervalEstimate(); // 10
             int hrs = 60 * 60 / intervalEstimate;
-            final int start = 5 * hrs;
-            final int end = Math.min((int) (24.0 * hrs), storageSupplier.size());
+            final int start = viewerConfig.settings.startTime * hrs;
+            final int end = Math.min(viewerConfig.settings.endTime * hrs, storageSupplier.size());
             for (int index = start; index < end; index += 1) {
                 SimulationObject simulationObject = storageSupplier.getSimulationObject(index);
                 simulationObjectsVideo.append(simulationObject);
@@ -161,6 +149,5 @@ public class VideoGenerator implements Runnable {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        System.out.println("after finally block");
     }
 }

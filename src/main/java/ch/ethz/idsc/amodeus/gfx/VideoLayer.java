@@ -1,10 +1,11 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.gfx;
 
-import ch.ethz.idsc.amodeus.net.SimulationObject;
+import ch.ethz.idsc.amodeus.net.*;
 import ch.ethz.idsc.amodeus.util.gui.RowPanel;
 import ch.ethz.idsc.amodeus.util.gui.SpinnerLabel;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.video.VideoGenerator;
 
 import javax.swing.*;
@@ -18,6 +19,9 @@ public class VideoLayer extends ViewerLayer {
 
     public boolean show = true;
     public int fps;
+    public int startTime;
+    public int endTime;
+    public ViewerConfig viewerConfig;
 
     @Override
     protected void paint(Graphics2D graphics, SimulationObject ref) {
@@ -26,11 +30,11 @@ public class VideoLayer extends ViewerLayer {
 
     @Override
     protected void createPanel(RowPanel rowPanel) {
+        viewerConfig = ViewerConfig.fromDefaults(amodeusComponent.db);
         {
             JButton jButton = new JButton("export");
             jButton.setToolTipText("export viewer settings to file in working directory");
             jButton.addActionListener(event -> {
-                ViewerConfig viewerConfig = ViewerConfig.fromDefaults(amodeusComponent.db);
                 try {
                     viewerConfig.save(amodeusComponent, MultiFileTools.getWorkingDirectory());
                     System.out.println(viewerConfig);
@@ -56,11 +60,37 @@ public class VideoLayer extends ViewerLayer {
             SpinnerLabel<Integer> spinnerLabel = new SpinnerLabel<>();
             spinnerLabel.setStream(IntStream.rangeClosed(10, 100).boxed().filter(i -> i % 5 == 0));
             spinnerLabel.setMenuHover(true);
-            spinnerLabel.setValueSafe(amodeusComponent.getFontSize());
+            spinnerLabel.setValueSafe(viewerConfig.settings.fps);
             spinnerLabel.addSpinnerListener(i -> fps = i);
             spinnerLabel.getLabelComponent().setPreferredSize(new Dimension(55, DEFAULT_HEIGHT));
             spinnerLabel.getLabelComponent().setToolTipText("frames per second");
             rowPanel.add(spinnerLabel.getLabelComponent());
+        }
+        {
+            JPanel jPanel = new JPanel(new FlowLayout(1, 2, 2));
+            {
+                SpinnerLabel<Integer> spinnerLabel = new SpinnerLabel<>();
+                spinnerLabel.setStream(IntStream.rangeClosed(0, viewerConfig.settings.endTime - 1).boxed());
+                spinnerLabel.setMenuHover(true);
+                spinnerLabel.setValueSafe(viewerConfig.settings.startTime);
+                spinnerLabel.addSpinnerListener(i -> startTime = i);
+                spinnerLabel.getLabelComponent().setPreferredSize(new Dimension(55, DEFAULT_HEIGHT));
+                spinnerLabel.getLabelComponent().setToolTipText("video start time [hrs]");
+                jPanel.add(spinnerLabel.getLabelComponent());
+
+            }
+            {
+                SpinnerLabel<Integer> spinnerLabel = new SpinnerLabel<>();
+                spinnerLabel.setStream(IntStream.rangeClosed(1, 30).boxed());
+                spinnerLabel.setMenuHover(true);
+                spinnerLabel.setValueSafe(viewerConfig.settings.endTime);
+                spinnerLabel.addSpinnerListener(i -> endTime = Math.max(i, startTime + 1));
+                spinnerLabel.getLabelComponent().setPreferredSize(new Dimension(55, DEFAULT_HEIGHT));
+                spinnerLabel.getLabelComponent().setToolTipText("video end time [hrs]");
+                jPanel.add(spinnerLabel.getLabelComponent());
+
+            }
+            rowPanel.add(jPanel);
         }
     }
 

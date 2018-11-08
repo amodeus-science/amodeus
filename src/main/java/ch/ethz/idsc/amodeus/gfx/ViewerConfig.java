@@ -77,6 +77,8 @@ public class ViewerConfig {
         // read additional settings from HUD
         amodeusComponent.viewerLayers.stream().filter(v -> v instanceof VideoLayer).forEach(vl -> {
             settings.fps = ((VideoLayer) vl).fps;
+            settings.startTime = ((VideoLayer) vl).startTime;
+            settings.endTime = Math.max(((VideoLayer) vl).endTime, settings.startTime + 1);
         });
 
         return this;
