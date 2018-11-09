@@ -81,4 +81,8 @@ public abstract class ViewerLayer {
         }
     }
 
+    public void updateSettings(ViewerSettings settings) {
+        // ---
+    }
+
 }

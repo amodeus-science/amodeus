@@ -28,6 +28,10 @@ public class ViewerConfig {
         return new ViewerConfig(db);
     }
 
+    public static ViewerConfig from(AmodeusComponent amodeusComponent) {
+        return new ViewerConfig(amodeusComponent.db).update(amodeusComponent);
+    }
+
     public static ViewerConfig from(MatsimAmodeusDatabase db, File workingDirectory) throws IOException {
         File settingsFile = new File(workingDirectory, defaultFileName);
         try {
@@ -74,13 +78,7 @@ public class ViewerConfig {
         settings.zoom = amodeusComponent.getZoom();
         ICoordinate ic = amodeusComponent.getPosition();
         settings.coord = new Coord(ic.getLon(), ic.getLat());
-        // read additional settings from HUD
-        amodeusComponent.viewerLayers.stream().filter(v -> v instanceof VideoLayer).forEach(vl -> {
-            settings.fps = ((VideoLayer) vl).fps;
-            settings.startTime = ((VideoLayer) vl).startTime;
-            settings.endTime = Math.max(((VideoLayer) vl).endTime, settings.startTime + 1);
-        });
-
+        amodeusComponent.viewerLayers.forEach(viewerLayer -> viewerLayer.updateSettings(settings));
         return this;
     }
 }

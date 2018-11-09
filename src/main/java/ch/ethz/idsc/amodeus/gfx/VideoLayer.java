@@ -94,4 +94,10 @@ public class VideoLayer extends ViewerLayer {
         }
     }
 
+    public void updateSettings(ViewerSettings settings) {
+        settings.fps = fps;
+        settings.startTime = startTime;
+        settings.endTime = Math.max(endTime, settings.startTime + 1);
+    }
+
 }
