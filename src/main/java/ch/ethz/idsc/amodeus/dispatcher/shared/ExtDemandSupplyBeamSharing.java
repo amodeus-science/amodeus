@@ -44,7 +44,7 @@ import ch.ethz.matsim.av.router.AVRouter;
  * 
  * It extends the {@link DemandSupplyBalancingDispatcher}. At each pickup it is checked if around this Robotaxi there exist other
  * Open requests with the same direction. Those are then picked up. */
-public class DemandSupplyBeamSharingExt extends SharedRebalancingDispatcher {
+public class ExtDemandSupplyBeamSharing extends SharedRebalancingDispatcher {
 
     private final int dispatchPeriod;
 
@@ -58,7 +58,7 @@ public class DemandSupplyBeamSharingExt extends SharedRebalancingDispatcher {
     private final TreeMaintainer<AVRequest> requestMaintainer;
     private final TreeMaintainer<RoboTaxi> unassignedRoboTaxis;
 
-    protected DemandSupplyBeamSharingExt(Network network, //
+    protected ExtDemandSupplyBeamSharing(Network network, //
             Config config, AVDispatcherConfig avDispatcherConfig, //
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, //
             MatsimAmodeusDatabase db) {
@@ -186,7 +186,7 @@ public class DemandSupplyBeamSharingExt extends SharedRebalancingDispatcher {
             @SuppressWarnings("unused")
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceFunction.INSTANCE);
 
-            return new DemandSupplyBeamSharingExt(network, config, avconfig, travelTime, router, eventsManager, db);
+            return new ExtDemandSupplyBeamSharing(network, config, avconfig, travelTime, router, eventsManager, db);
         }
     }
 }
