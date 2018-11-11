@@ -17,7 +17,7 @@ public class CustomColorDataCreator {
     public ColorDataIndexed getColorDataIndexed() {
         return StrictColorDataIndexed.create(tensor);
     }
-    
+
     public int size() {
         return tensor.length();
     }

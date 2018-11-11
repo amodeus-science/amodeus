@@ -52,12 +52,10 @@ public enum NumberPassengerStatusDistribution implements AnalysisExport {
         notWithCustomer.append(statusesTensor.get(RoboTaxiStatus.OFFSERVICE.ordinal()));
         Tensor values = Reverse.of(Transpose.of(nPA.getPassengerDistribution()));
         Tensor withCustomer = values.extract(0, values.length() - 1);
-        int vlen = values.length();
         Tensor valuesComplet = Transpose.of(Join.of(withCustomer, notWithCustomer));
 
         /** check that all the timesteps contain all the Robo Taxis */
         Tensor testTensor = Total.of(Transpose.of(valuesComplet));
-        // System.out.println(Pretty.of(testTensor));
         testTensor.forEach(t -> GlobalAssert.that(t.Get().number().intValue() == numberVehicles));
 
         /** create status Labels */
