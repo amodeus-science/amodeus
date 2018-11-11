@@ -102,9 +102,6 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
             // HERE WE MAKE SURE THE STATUS IS SET CORRECT AFTER THE FINISH OF THE LAST TASK
             // FIRST a): if there is no curse and we are on the last task then All is fine as long as we are in Stay Status
             if (isOnLastTask) {
-                if (!roboTaxi.getStatus().equals(RoboTaxiStatus.STAY)) {
-                    System.out.println("s");
-                }
                 GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.STAY));
             } else if (isSecondLastTask && taskEndsNow) {
                 // FIRST b): if we will finish the second last task now then the next status will be stay. As we have nothing to do.
