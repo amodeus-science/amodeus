@@ -37,7 +37,6 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
     private final Tensor sharedOthersPerRequest = Tensors.empty();
 
     /** Helper members */
-    private Scalar maxNumPassengers;
     private final Map<Integer, Integer> sharedOthersMap = new HashMap<>();
 
     @Override
@@ -82,8 +81,8 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
     @Override
     public void consolidate() {
         /** calculate standard dropoff time. */
-        maxNumPassengers = Tensor.of(passengerDistribution.stream().map(t -> RealScalar.of(t.length()))).flatten(-1).reduce(Max::of).get().Get();
-        passengerDistribution = PadRight.zeros(passengerDistribution.length(), maxNumPassengers.number().intValue() + 1).apply(passengerDistribution);
+        Scalar maxLengthNumberPassengers = Tensor.of(passengerDistribution.stream().map(t -> RealScalar.of(t.length()))).flatten(-1).reduce(Max::of).get().Get();
+        passengerDistribution = PadRight.zeros(passengerDistribution.length(), maxLengthNumberPassengers.number().intValue()).apply(passengerDistribution);
 
         for (Integer index : sharedOthersMap.keySet()) {
             sharedOthersPerRequest.append(RealScalar.of(sharedOthersMap.get(index)));
