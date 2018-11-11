@@ -39,6 +39,10 @@ public class LoadLayer extends ViewerLayer {
     public volatile int historyLength = 4;
     public volatile int loadScale = 5;
 
+    public LoadLayer(AmodeusComponent amodeusComponent) {
+        super(amodeusComponent);
+    }
+
     @Override
     protected void paint(Graphics2D graphics, SimulationObject ref) {
         if (Objects.isNull(ref))

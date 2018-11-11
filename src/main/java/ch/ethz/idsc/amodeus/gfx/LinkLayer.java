@@ -63,6 +63,10 @@ public class LinkLayer extends ViewerLayer {
     private final JTextArea jTextArea = new JTextArea(2, 10);
     private int count = 0;
 
+    public LinkLayer(AmodeusComponent amodeusComponent) {
+        super(amodeusComponent);
+    }
+
     @Override
     protected void paint(Graphics2D graphics, SimulationObject ref) {
 

@@ -17,11 +17,13 @@ import java.util.stream.IntStream;
 /** Head Up Display */
 public class VideoLayer extends ViewerLayer {
 
-    public boolean show = true;
-    public int fps;
-    public int startTime;
-    public int endTime;
-    public ViewerConfig viewerConfig;
+    private int fps;
+    private int startTime;
+    private int endTime;
+
+    public VideoLayer(AmodeusComponent amodeusComponent) {
+        super(amodeusComponent);
+    }
 
     @Override
     protected void paint(Graphics2D graphics, SimulationObject ref) {
@@ -30,12 +32,12 @@ public class VideoLayer extends ViewerLayer {
 
     @Override
     protected void createPanel(RowPanel rowPanel) {
-        viewerConfig = ViewerConfig.fromDefaults(amodeusComponent.db);
         {
             JButton jButton = new JButton("export");
             jButton.setToolTipText("export viewer settings to file in working directory");
             jButton.addActionListener(event -> {
                 try {
+                    ViewerConfig viewerConfig = ViewerConfig.fromDefaults(amodeusComponent.db);
                     viewerConfig.save(amodeusComponent, MultiFileTools.getWorkingDirectory());
                     System.out.println(viewerConfig);
                 } catch (IOException e) {
@@ -60,7 +62,7 @@ public class VideoLayer extends ViewerLayer {
             SpinnerLabel<Integer> spinnerLabel = new SpinnerLabel<>();
             spinnerLabel.setStream(IntStream.rangeClosed(10, 100).boxed().filter(i -> i % 5 == 0));
             spinnerLabel.setMenuHover(true);
-            spinnerLabel.setValueSafe(viewerConfig.settings.fps);
+            spinnerLabel.setValueSafe(fps);
             spinnerLabel.addSpinnerListener(i -> fps = i);
             spinnerLabel.getLabelComponent().setPreferredSize(new Dimension(55, DEFAULT_HEIGHT));
             spinnerLabel.getLabelComponent().setToolTipText("frames per second");
@@ -70,9 +72,9 @@ public class VideoLayer extends ViewerLayer {
             JPanel jPanel = new JPanel(new FlowLayout(1, 2, 2));
             {
                 SpinnerLabel<Integer> spinnerLabel = new SpinnerLabel<>();
-                spinnerLabel.setStream(IntStream.rangeClosed(0, viewerConfig.settings.endTime - 1).boxed());
+                spinnerLabel.setStream(IntStream.rangeClosed(0, endTime - 1).boxed());
                 spinnerLabel.setMenuHover(true);
-                spinnerLabel.setValueSafe(viewerConfig.settings.startTime);
+                spinnerLabel.setValueSafe(startTime);
                 spinnerLabel.addSpinnerListener(i -> startTime = i);
                 spinnerLabel.getLabelComponent().setPreferredSize(new Dimension(55, DEFAULT_HEIGHT));
                 spinnerLabel.getLabelComponent().setToolTipText("video start time [hrs]");
@@ -83,7 +85,7 @@ public class VideoLayer extends ViewerLayer {
                 SpinnerLabel<Integer> spinnerLabel = new SpinnerLabel<>();
                 spinnerLabel.setStream(IntStream.rangeClosed(1, 30).boxed());
                 spinnerLabel.setMenuHover(true);
-                spinnerLabel.setValueSafe(viewerConfig.settings.endTime);
+                spinnerLabel.setValueSafe(endTime);
                 spinnerLabel.addSpinnerListener(i -> endTime = Math.max(i, startTime + 1));
                 spinnerLabel.getLabelComponent().setPreferredSize(new Dimension(55, DEFAULT_HEIGHT));
                 spinnerLabel.getLabelComponent().setToolTipText("video end time [hrs]");
@@ -98,6 +100,12 @@ public class VideoLayer extends ViewerLayer {
         settings.fps = fps;
         settings.startTime = startTime;
         settings.endTime = Math.max(endTime, settings.startTime + 1);
+    }
+
+    public void loadSettings(ViewerSettings settings) {
+        fps = settings.fps;
+        startTime = settings.startTime;
+        endTime = settings.endTime;
     }
 
 }

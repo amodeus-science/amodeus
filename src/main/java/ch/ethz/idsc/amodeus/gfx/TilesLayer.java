@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.util.gui.RowPanel;
 import ch.ethz.idsc.amodeus.util.gui.SpinnerLabel;
+import ch.ethz.idsc.amodeus.view.jmapviewer.Tile;
 import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.TileSource;
 
 public class TilesLayer extends ViewerLayer {
@@ -21,6 +22,10 @@ public class TilesLayer extends ViewerLayer {
         private Blend(int rgb) {
             this.rgb = rgb;
         }
+    }
+
+    public TilesLayer(AmodeusComponent amodeusComponent) {
+        super(amodeusComponent);
     }
 
     @Override
@@ -63,6 +68,18 @@ public class TilesLayer extends ViewerLayer {
     @Override
     protected void paint(Graphics2D graphics, SimulationObject ref) {
         // nothing to do here
+    }
+
+    public void updateSettings(ViewerSettings settings) {
+        settings.mapAlphaCover = amodeusComponent.mapAlphaCover;
+        settings.mapGrayCover = amodeusComponent.mapGrayCover;
+        // TODO tile source
+    }
+
+    public void loadSettings(ViewerSettings settings) {
+        amodeusComponent.mapAlphaCover = settings.mapAlphaCover;
+        amodeusComponent.mapGrayCover = settings.mapGrayCover;
+        // TODO tile source
     }
 
 }

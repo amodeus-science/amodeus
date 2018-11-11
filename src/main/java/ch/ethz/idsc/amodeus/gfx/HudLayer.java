@@ -13,6 +13,10 @@ public class HudLayer extends ViewerLayer {
 
     public boolean show = true;
 
+    public HudLayer(AmodeusComponent amodeusComponent) {
+        super(amodeusComponent);
+    }
+
     @Override
     protected void paint(Graphics2D graphics, SimulationObject ref) {
         // ---

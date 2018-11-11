@@ -37,7 +37,8 @@ public class RequestsLayer extends ViewerLayer {
 
     private double maxWaitTime;
 
-    public RequestsLayer() {
+    public RequestsLayer(AmodeusComponent amodeusComponent) {
+        super(amodeusComponent);
         requestDestMap.setShow(false); // default: don't show distrib of request dest
     }
 

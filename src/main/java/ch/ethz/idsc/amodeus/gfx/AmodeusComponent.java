@@ -30,15 +30,15 @@ public class AmodeusComponent extends JMapViewer {
      * @return instance of MatsimMapComponent with default sequence of {@link ViewerLayer}s */
     public static AmodeusComponent createDefault(MatsimAmodeusDatabase db) {
         AmodeusComponent amodeusComponent = new AmodeusComponent(db);
-        amodeusComponent.addLayer(new TilesLayer());
-        amodeusComponent.addLayer(new VirtualNetworkLayer());
-        amodeusComponent.addLayer(new VehiclesLayer());
-        amodeusComponent.addLayer(new RequestsLayer());
-        amodeusComponent.addLayer(new LinkLayer());
-        amodeusComponent.addLayer(new LoadLayer());
-        amodeusComponent.addLayer(new HudLayer());
-        amodeusComponent.addLayer(new ClockLayer());
-        amodeusComponent.addLayer(new VideoLayer());
+        amodeusComponent.addLayer(new TilesLayer(amodeusComponent));
+        amodeusComponent.addLayer(new VirtualNetworkLayer(amodeusComponent));
+        amodeusComponent.addLayer(new VehiclesLayer(amodeusComponent));
+        amodeusComponent.addLayer(new RequestsLayer(amodeusComponent));
+        amodeusComponent.addLayer(new LinkLayer(amodeusComponent));
+        amodeusComponent.addLayer(new LoadLayer(amodeusComponent));
+        amodeusComponent.addLayer(new HudLayer(amodeusComponent));
+        amodeusComponent.addLayer(new ClockLayer(amodeusComponent));
+        amodeusComponent.addLayer(new VideoLayer(amodeusComponent));
         return amodeusComponent;
     }
 
@@ -56,6 +56,8 @@ public class AmodeusComponent extends JMapViewer {
     public final JLabel jLabel = new JLabel(" ");
     final AmodeusComponentMouse amodeusComponentMouse = new AmodeusComponentMouse(this);
 
+    final ViewerConfig defaultConfig;
+
     /** constructs an component without any {@link ViewerLayer}s
      * 
      * use the function {@link #addLayer(ViewerLayer)} to append layers
@@ -63,19 +65,16 @@ public class AmodeusComponent extends JMapViewer {
      * @param db */
     public AmodeusComponent(MatsimAmodeusDatabase db) {
         this.db = db;
+        defaultConfig = ViewerConfig.fromDefaults(db);
         // ---
         addMouseListener(amodeusComponentMouse);
         addMouseMotionListener(amodeusComponentMouse);
     }
 
     public void addLayer(ViewerLayer viewerLayer) {
-        viewerLayer.amodeusComponent = this; // wow such bad style
         viewerLayers.add(viewerLayer);
         for (AmodeusHeatMap m : viewerLayer.getHeatmaps())
             matsimHeatmaps.add(m);
-        // ---
-        if (viewerLayer instanceof VirtualNetworkLayer) // wow such bad style
-            virtualNetworkLayer = (VirtualNetworkLayer) viewerLayer;
     }
 
     public void reorientMap(ViewerConfig viewerConfig) {

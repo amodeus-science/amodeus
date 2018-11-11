@@ -27,6 +27,11 @@ public abstract class ViewerLayer {
      * OOP skills are insufficient */
     protected AmodeusComponent amodeusComponent;
 
+    public ViewerLayer(AmodeusComponent amodeusComponent) {
+        this.amodeusComponent = amodeusComponent;
+        loadSettings(amodeusComponent.defaultConfig.settings);
+    }
+
     protected abstract void createPanel(RowPanel rowPanel);
 
     public final JPanel createPanel() {
@@ -82,6 +87,10 @@ public abstract class ViewerLayer {
     }
 
     public void updateSettings(ViewerSettings settings) {
+        // ---
+    }
+
+    public void loadSettings(ViewerSettings settings) {
         // ---
     }
 

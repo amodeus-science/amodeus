@@ -28,7 +28,8 @@ public class VehiclesLayer extends ViewerLayer {
     public RoboTaxiStatusColors statusColors = RoboTaxiStatusColors.Pop;
     public boolean showLocation = true;
 
-    public VehiclesLayer() {
+    public VehiclesLayer(AmodeusComponent amodeusComponent) {
+        super(amodeusComponent);
         bitSet(RoboTaxiStatus.DRIVETOCUSTOMER);
         bitSet(RoboTaxiStatus.REBALANCEDRIVE);
     }
