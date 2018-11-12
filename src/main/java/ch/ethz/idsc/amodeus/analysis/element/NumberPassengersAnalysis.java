@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifier;
+import ch.ethz.idsc.amodeus.analysis.report.TtlValIdent;
 import ch.ethz.idsc.amodeus.dispatcher.core.RequestStatus;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.net.RequestContainer;
@@ -23,6 +24,7 @@ import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.PadRight;
 import ch.ethz.idsc.tensor.pdf.BinCounts;
 import ch.ethz.idsc.tensor.red.Max;
+import ch.ethz.idsc.tensor.red.Mean;
 import ch.ethz.idsc.tensor.red.Total;
 
 public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppender {
@@ -108,8 +110,12 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
 
     @Override // from TotalValueAppender
     public Map<TotalValueIdentifier, String> getTotalValues() {
-        // in case a map with a single entry is required, use Collections.singletonMap(...)
-        // totalValues.put(TtlValIdent.AVERAGEJOURNEYTIMEROBOTAXI, String.valueOf(Mean.of(getTotalJourneyTimes()).Get().number().doubleValue()));
-        return Collections.emptyMap();
+        Map<TotalValueIdentifier, String> totalValues= new HashMap<>();
+        String sharedRateString = "";
+        for (Tensor tensor : getSharedOthersDistribution()) {
+            sharedRateString += String.valueOf(tensor.Get().number().intValue()) + " ";
+        }
+        totalValues.put(TtlValIdent.SHAREDREQUESTSNUMBERS, sharedRateString);
+        return totalValues;
     }
 }

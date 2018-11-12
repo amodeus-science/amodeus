@@ -24,11 +24,21 @@ public enum TtlValIdent implements TotalValueIdentifier {
     WAITTQU1("WaitTimeQuantile1"), //
     WAITTQU2("WaitTimeQuantile2"), //
     WAITTQU3("WaitTimeQuantile3"), //
-    WAITTMAX("waitTimeMax"), //
+    WAITTMAX("WaitTimeMax"), //
 
     // Drive Times
-    // MEANDRIVETIME("MeanDriveTime"), //
-    // TOTALROBOTAXIDRIVETIME("TotalRoboTaxiDriveTime"), //
+    DRIVETMEA("MeanDriveTime"), //
+    DRIVETQU1("DriveTimeQuantile1"), //
+    DRIVETQU2("DriveTimeQuantile2"), //
+    DRIVETQU3("DriveTimeQuantile3"), //
+    DRIVETMAX("DriveTimeMax"), //
+    
+    // Total Travel Times
+    TRAVELTMEA("MeanTTravelTime"), //
+    TRAVELTQU1("TTravelTimeQuantile1"), //
+    TRAVELTQU2("TTravelTimeQuantile2"), //
+    TRAVELTQU3("TTravelTimeQuantile3"), //
+    TRAVELTMAX("TTravelTimeMax"), //
 
     // Distances
     TOTALROBOTAXIDISTANCE("TotalRoboTaxiDistance"), //
@@ -39,14 +49,8 @@ public enum TtlValIdent implements TotalValueIdentifier {
     DISTANCERATIO("distanceRatio"), //
     OCCUPANCYRATIO("occupancyRatio"), //
 
-    AVERAGEJOURNEYTIMEROBOTAXI("AverageJourneyTimeRoboTaxi"), //
-    // // MEANPEAKWAITTIME("MeanPeakWaitTime"), //
-    // // MEANOFFPEAKWAITTIME("MeanOffPeakWaitTime"), //
-    //
-    MEANDRIVETIME("MeanDriveTime"), //
-
     // SHARED Values
-    REQUESTSHAREDRATE("RequestShareRate")
+    SHAREDREQUESTSNUMBERS("RequestShareRate")
     ;
 
     private final String identifier;

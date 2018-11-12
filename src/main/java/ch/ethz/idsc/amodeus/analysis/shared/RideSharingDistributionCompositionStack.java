@@ -18,7 +18,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.red.Total;
 
-public enum RideSharingDistributionCompositionStack implements AnalysisExport, TotalValueAppender {
+public enum RideSharingDistributionCompositionStack implements AnalysisExport {
     INSTANCE;
 
     public static final String FILENAME = "SharedDistributionTotal";
@@ -57,10 +57,4 @@ public enum RideSharingDistributionCompositionStack implements AnalysisExport, T
         }
     }
 
-    @Override
-    public Map<TotalValueIdentifier, String> getTotalValues() {
-        Map<TotalValueIdentifier, String> map = new HashMap<>();
-        map.put(TtlValIdent.REQUESTSHAREDRATE, String.valueOf(requestSharedRate));
-        return map;
-    }
 }
