@@ -85,6 +85,9 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
                     travelHistory.getDropOffTime()));
         }
 
+        
+        
+        
         /** aggregate information {quantile1, quantile2, quantile3, mean, maximum} */
         waitTAgg = Tensors.of(StaticHelper.quantiles(getWaitTimes(), Quantiles.SET), //
                 Mean.of(getWaitTimes()), //
