@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.omg.CORBA.PRIVATE_MEMBER;
+
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifier;
 import ch.ethz.idsc.amodeus.analysis.report.TtlValIdent;
@@ -37,6 +39,11 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
     private Tensor totJTAgg;
     private Scalar tLast = Quantity.of(0, SI.SECOND);
 
+    /** max values */
+    private Scalar maxWaitTime;
+    private Scalar maxDrveTime;
+    private Scalar maxTravelTime;
+    
     /** time series during day */
     public final Tensor time = Tensors.empty();
     public final Tensor waitTimePlotValues = Tensors.empty();
@@ -85,16 +92,20 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
                     travelHistory.getDropOffTime()));
         }
 
+        /** calculate maximum values */
+        maxWaitTime  = getWaitTimes().flatten(-1).reduce(Max::of).get().Get();
+        maxDrveTime = getDriveTimes().flatten(-1).reduce(Max::of).get().Get();
+        maxTravelTime = getTotalJourneyTimes().flatten(-1).reduce(Max::of).get().Get();
         /** aggregate information {quantile1, quantile2, quantile3, mean, maximum} */
         waitTAgg = Tensors.of(StaticHelper.quantiles(getWaitTimes(), Quantiles.SET), //
                 Mean.of(getWaitTimes()), //
-                getWaitTimes().flatten(-1).reduce(Max::of).get().Get());
+                maxWaitTime);
         drveAgg = Tensors.of(StaticHelper.quantiles(getDriveTimes(), Quantiles.SET), //
                 Mean.of(getDriveTimes()), //
-                getDriveTimes().flatten(-1).reduce(Max::of).get().Get());
+                maxDrveTime);
         totJTAgg = Tensors.of(StaticHelper.quantiles(getTotalJourneyTimes(), Quantiles.SET), //
                 Mean.of(getTotalJourneyTimes()), //
-                getTotalJourneyTimes().flatten(-1).reduce(Max::of).get().Get());
+                maxTravelTime);
 
     }
 
@@ -137,19 +148,33 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
     @Override
     public Map<TotalValueIdentifier, String> getTotalValues() {
         Map<TotalValueIdentifier, String> map = new HashMap<>();
-        map.put(TtlValIdent.AVERAGEJOURNEYTIMEROBOTAXI, String.valueOf(Mean.of(getTotalJourneyTimes()).Get().number().doubleValue()));
-
+        /** Wait Times */
         double meanWaitTime = Mean.of(getWaitTimes()).get().Get().number().doubleValue();
         map.put(TtlValIdent.WAITTMEA, String.valueOf(meanWaitTime));
-
         Tensor quantils = Quantile.of(getWaitTimes(), Quantiles.SET);
         map.put(TtlValIdent.WAITTQU1, String.valueOf(quantils.get(0).Get().number().doubleValue()));
         map.put(TtlValIdent.WAITTQU2, String.valueOf(quantils.get(1).Get().number().doubleValue()));
         map.put(TtlValIdent.WAITTQU3, String.valueOf(quantils.get(2).Get().number().doubleValue()));
+        map.put(TtlValIdent.WAITTMAX, String.valueOf(maxWaitTime.number().doubleValue()));
 
+        /** Drive Times */
         double meanDriveTime = Mean.of(getDriveTimes()).get().Get().number().doubleValue();
-        map.put(TtlValIdent.MEANDRIVETIME, String.valueOf(meanDriveTime));
-
+        map.put(TtlValIdent.DRIVETMEA, String.valueOf(meanDriveTime));
+        Tensor quantilsDriveTime = Quantile.of(getDriveTimes(), Quantiles.SET);
+        map.put(TtlValIdent.DRIVETQU1, String.valueOf(quantilsDriveTime.get(0).Get().number().doubleValue()));
+        map.put(TtlValIdent.DRIVETQU2, String.valueOf(quantilsDriveTime.get(1).Get().number().doubleValue()));
+        map.put(TtlValIdent.DRIVETQU3, String.valueOf(quantilsDriveTime.get(2).Get().number().doubleValue()));
+        map.put(TtlValIdent.DRIVETMAX, String.valueOf(maxDrveTime.number().doubleValue()));
+        
+        /** Travel Times*/
+        double meanTravelTime = Mean.of(getTotalJourneyTimes()).get().Get().number().doubleValue();
+        map.put(TtlValIdent.TRAVELTMEA, String.valueOf(meanTravelTime));
+        Tensor quantilstravelTime = Quantile.of(getTotalJourneyTimes(), Quantiles.SET);
+        map.put(TtlValIdent.TRAVELTQU1, String.valueOf(quantilstravelTime.get(0).Get().number().doubleValue()));
+        map.put(TtlValIdent.TRAVELTQU2, String.valueOf(quantilstravelTime.get(1).Get().number().doubleValue()));
+        map.put(TtlValIdent.TRAVELTQU3, String.valueOf(quantilstravelTime.get(2).Get().number().doubleValue()));
+        map.put(TtlValIdent.TRAVELTMAX, String.valueOf(maxTravelTime.number().doubleValue()));
+        
         return map;
     }
 }

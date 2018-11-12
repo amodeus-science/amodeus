@@ -221,6 +221,8 @@ public class Analysis {
         totalValues.append(analysisSummary.getStatusDistribution());
         totalValues.append(analysisSummary.getTravelTimeAnalysis());
         totalValues.append(analysisSummary.getDistanceElement());
+        totalValues.append(analysisSummary.getNumberPassengersAnalysis());
+
         analysisReports.add(totalValues);
 
     }
