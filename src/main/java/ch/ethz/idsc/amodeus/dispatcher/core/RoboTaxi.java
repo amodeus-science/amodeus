@@ -153,12 +153,12 @@ public class RoboTaxi {
      *            package, in dispatcher implementations, status will be adapted
      *            automatically. */
     /* package */ void setStatus(RoboTaxiStatus status) {
+        GlobalAssert.that(!usageType.equals(RoboTaxiUsageType.SHARED));
         this.status = Objects.requireNonNull(status);
     }
 
     /** @return true if robotaxi is without a customer */
     /* package */ boolean isWithoutCustomer() {
-        // TODO Check this comment
         // For now this works with universal dispatcher i.e. single used robotaxis as number of customers is never changed
         return !status.equals(RoboTaxiStatus.DRIVEWITHCUSTOMER) && RoboTaxiUtils.getNumberOnBoardRequests(this) == 0;
     }
@@ -175,9 +175,6 @@ public class RoboTaxi {
      *            in the core package, directives will be issued automatically
      *            when setVehiclePickup, setVehicleRebalance are called. */
     /* package */ void assignDirective(AbstractDirective abstractDirective) {
-        if (!isWithoutDirective()) {
-            System.out.println("here");
-        }
         GlobalAssert.that(isWithoutDirective());
         this.directive = abstractDirective;
     }
@@ -200,8 +197,10 @@ public class RoboTaxi {
         // TODO Who? check why this appears often
         if (avT instanceof AVStayTask) {
             // TODO MISC For now, this works, but probably needs fixing somewhere upfront /sh, apr 2018
-            logger.warn("RoboTaxiStatus != STAY, but Schedule.getCurrentTask() == AVStayTask; probably needs fixing");
-            System.out.println("status: " + status);
+            if (!usageType.equals(RoboTaxiUsageType.SHARED)) { // for shared this is allowed e.g. when a new course is added but the it has not been executed yet
+                logger.warn("RoboTaxiStatus != STAY, but Schedule.getCurrentTask() == AVStayTask; probably needs fixing");
+                System.out.println("status: " + status);
+            }
             return true;
         }
 
@@ -296,14 +295,31 @@ public class RoboTaxi {
     private final void setMenu(SharedMenu menu) {
         GlobalAssert.that(SharedMenuUtils.checkMenuConsistencyWithRoboTaxi(menu, getCapacity()));
         this.menu = menu;
+        this.status = RoboTaxiUtils.calculateStatusFromMenu(this);
     }
 
     /* package */ void addAVRequestToMenu(AVRequest avRequest) {
-        setMenu(SharedMenuUtils.addAVCoursesAsDessert(menu, SharedCourse.pickupCourse(avRequest), SharedCourse.dropoffCourse(avRequest)));
+        // TODO Lukas, with Claudio, Carl, what is the wanted behaviour? shouldnt the dispatcher take care of this
+        // We could bring it into the rebalancing dispatcher, there we can add a function which is called: addAVrequestandRemoveFirstRebalancing(AVrequest)
+        if (status.equals(RoboTaxiStatus.REBALANCEDRIVE)) {
+            GlobalAssert.that(RoboTaxiUtils.getStarterCourse(this).get().getMealType().equals(SharedMealType.REDIRECT));
+            if (getUnmodifiableViewOfCourses().size() == 1) {
+                finishRedirection();
+            }
+        }
+        SharedCourse pickupCourse = SharedCourse.pickupCourse(avRequest);
+        SharedCourse dropoffCourse = SharedCourse.dropoffCourse(avRequest);
+        setMenu(SharedMenuUtils.addAVCoursesAsDessert(menu, pickupCourse, dropoffCourse));
     }
 
     /* package */ void addRedirectCourseToMenu(SharedCourse redirectCourse) {
+        GlobalAssert.that(redirectCourse.getMealType().equals(SharedMealType.REDIRECT));
         setMenu(SharedMenuUtils.addAVCoursesAsDessert(menu, redirectCourse));
+    }
+
+    /* package */ void addRedirectCourseToMenuAtBegining(SharedCourse redirectCourse) {
+        GlobalAssert.that(redirectCourse.getMealType().equals(SharedMealType.REDIRECT));
+        setMenu(SharedMenuUtils.addAVCoursesAsStarter(menu, redirectCourse));
     }
 
     /* package */ void pickupNewCustomerOnBoard() {
@@ -324,7 +340,6 @@ public class RoboTaxi {
     /* package */ void finishRedirection() {
         GlobalAssert.that(RoboTaxiUtils.hasNextCourse(this));
         GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.REDIRECT));
-        GlobalAssert.that(RoboTaxiUtils.getStarterLink(this).equals(getDivertableLocation()));
         setMenu(SharedMenuUtils.removeStarterCourse(menu));
     }
 
@@ -343,6 +358,7 @@ public class RoboTaxi {
      * @return all the courses which have been removed */
     /* package */ List<SharedCourse> cleanAndAbandonMenu() {
         GlobalAssert.that(RoboTaxiUtils.getNumberOnBoardRequests(this) == 0);
+        GlobalAssert.that(isDivertable());
         List<SharedCourse> oldMenu = SharedCourseListUtils.copy(menu.getRoboTaxiMenu());
         setMenu(SharedMenu.empty());
         return oldMenu;

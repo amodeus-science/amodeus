@@ -18,9 +18,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
 /** All dispatchers wich perform rebalancing and use a virtualNetwork dividing the city into zones are derived from {@link PartitionedDispatcher}.
- * A {@link PartitionedDispatcher} always has a {@link VirtualNetwork}
- *
- * @author Nicolo Ormezzano, Lukas Sieber */
+ * A {@link PartitionedDispatcher} always has a {@link VirtualNetwork} */
 public abstract class SharedPartitionedDispatcher extends SharedRebalancingDispatcher {
     protected final VirtualNetwork<Link> virtualNetwork; //
 

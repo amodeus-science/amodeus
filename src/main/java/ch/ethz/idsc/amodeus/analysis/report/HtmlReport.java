@@ -76,6 +76,7 @@ public class HtmlReport implements AnalysisReport {
 
         /** report footer elements **/
         htmlGenerator.footer();
+        htmlGenerator.insertLink("https://www.amodeus.science/", "www.amodeus.science");
         htmlGenerator.insertLink("http://www.idsc.ethz.ch/", "www.idsc.ethz.ch");
         htmlGenerator.footer();
         htmlGenerator.body();
