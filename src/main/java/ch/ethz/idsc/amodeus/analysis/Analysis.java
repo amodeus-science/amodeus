@@ -38,6 +38,8 @@ import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifier;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValues;
 import ch.ethz.idsc.amodeus.analysis.report.TtlValIdent;
+import ch.ethz.idsc.amodeus.analysis.shared.NumberPassengerStatusDistribution;
+import ch.ethz.idsc.amodeus.analysis.shared.RideSharingDistributionCompositionStack;
 import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
@@ -186,6 +188,8 @@ public class Analysis {
         analysisExports.add(OccupancyDistanceRatiosImage.INSTANCE);
         analysisExports.add(StackedDistanceChartImage.INSTANCE);
         analysisExports.add(StatusDistributionImage.INSTANCE);
+        analysisExports.add(NumberPassengerStatusDistribution.INSTANCE);
+        analysisExports.add(RideSharingDistributionCompositionStack.INSTANCE);
         analysisExports.add(ScenarioParametersExport.INSTANCE);
         analysisExports.add(WaitTimeHistoImage.INSTANCE);
         analysisExports.add(DriveTimeImages.INSTANCE);

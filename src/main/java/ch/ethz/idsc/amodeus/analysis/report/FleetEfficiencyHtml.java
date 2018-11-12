@@ -7,7 +7,9 @@ import java.util.Map;
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.element.DistanceDistributionOverDayImage;
 import ch.ethz.idsc.amodeus.analysis.element.OccupancyDistanceRatiosImage;
-import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionImage;
+import ch.ethz.idsc.amodeus.analysis.plot.CompositionStack;
+import ch.ethz.idsc.amodeus.analysis.shared.NumberPassengerStatusDistribution;
+import ch.ethz.idsc.amodeus.analysis.shared.RideSharingDistributionCompositionStack;
 
 public enum FleetEfficiencyHtml implements HtmlReportElement {
     INSTANCE;
@@ -22,7 +24,8 @@ public enum FleetEfficiencyHtml implements HtmlReportElement {
         HtmlBodyElement fEElement = new HtmlBodyElement();
         fEElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + DistanceDistributionOverDayImage.FILENAME + ".png", 800, 600);
         fEElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + OccupancyDistanceRatiosImage.FILENAME + ".png", 800, 600);
-        fEElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + StatusDistributionImage.FILENAME + ".png", 800, 600);
+        fEElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + NumberPassengerStatusDistribution.FILENAME + ".png", 800, 600);
+        fEElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + RideSharingDistributionCompositionStack.FILENAME + ".png", CompositionStack.WIDTH, CompositionStack.HEIGHT);
         bodyElements.put(BodyElementKeys.FLEETEFFICIENCY, fEElement);
         return bodyElements;
     }

@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public enum TtlValIdent implements TotalValueIdentifier {
-
+    // TODO Lukas, clean this up such that only the relevant parts are present
     // General, Dispatchers, Generators
     TIMESTAMP("timeStamp"), //
     DISPATCHER("dispatcher"), //
@@ -45,11 +45,8 @@ public enum TtlValIdent implements TotalValueIdentifier {
     //
     MEANDRIVETIME("MeanDriveTime"), //
 
-    // Velocities
-    // AVERAGEROBOTAXIVELOCITY("AverageRobotaxiVelocity"), //
-
-    // COSTS
-    ANNUALFLEETCOST("annualFleetCost"), //
+    // SHARED Values
+    REQUESTSHAREDRATE("RequestShareRate")
     ;
 
     private final String identifier;

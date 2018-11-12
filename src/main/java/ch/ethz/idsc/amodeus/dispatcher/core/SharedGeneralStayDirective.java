@@ -13,7 +13,6 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 /** for vehicles that are currently driving, but should go to a new destination:
  * 1) change path of current drive task 2) remove former stay task with old
  * destination 3) append new stay task */
-/** @author Nicolo Ormezzano, Lukas Sieber */
 /* package */ final class SharedGeneralStayDirective extends VehicleDiversionDirective {
     final RoboTaxi robotaxi;
     final double getTimeNow;

@@ -15,6 +15,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
 /* package */ enum SharedMenuUtils {
     ;
 
+    // TODO Lukas Rmove this file as it is not really required. use the list utils directly
     // **************************************************
     // Get Functions
     // **************************************************
