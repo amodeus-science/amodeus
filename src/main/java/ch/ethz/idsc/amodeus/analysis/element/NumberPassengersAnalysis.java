@@ -111,7 +111,11 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
     @Override // from TotalValueAppender
     public Map<TotalValueIdentifier, String> getTotalValues() {
         Map<TotalValueIdentifier, String> totalValues= new HashMap<>();
-        totalValues.put(TtlValIdent.REQUESTSHAREDRATE, String.valueOf(sharedOthersPerRequest.Get(0).number().doubleValue()/sharedOthersMap.size()));
+        String sharedRateString = "";
+        for (Tensor tensor : getSharedOthersDistribution()) {
+            sharedRateString += String.valueOf(tensor.Get().number().intValue()) + " ";
+        }
+        totalValues.put(TtlValIdent.SHAREDREQUESTSNUMBERS, sharedRateString);
         return totalValues;
     }
 }
