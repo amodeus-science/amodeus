@@ -27,7 +27,7 @@ public class SharedCourse {
      * @param courseId is an unique identifier for an Redirect Course
      * @return */
     public static SharedCourse redirectCourse(Link link, String courseId) {
-        // TODO Claudio, Lukas. What would be a good solution for this id? might it be a possibility to at a new AV Request here? new AVRequest()
+        // TODO with Claudio. What would be a good solution for this id? might it be a possibility to at a new AV Request here? new AVRequest()
         return new SharedCourse(STANDARD_REDIRECT_AVREQUEST, link, courseId, SharedMealType.REDIRECT);
     }
 
@@ -70,7 +70,8 @@ public class SharedCourse {
     public boolean equals(Object object) {
         if (object instanceof SharedCourse) {
             SharedCourse sharedAVCourse = (SharedCourse) object;
-            // TODO LUKAS REV why is avRequest not used in the comparison?
+            // TODO with Jan. LUKAS REV why is avRequest not used in the comparison?
+            // Answer: As the AV Request can be null as well. In the Redirect Case. 
             return sharedAVCourse.getCourseId().equals(courseID) && //
                     sharedAVCourse.getLink().equals(link) && //
                     sharedAVCourse.getMealType().equals(sharedRoboTaxiMealType);

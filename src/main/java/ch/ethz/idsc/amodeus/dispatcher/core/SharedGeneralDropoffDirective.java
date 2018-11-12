@@ -10,21 +10,19 @@ import org.matsim.contrib.dvrp.schedule.Schedules;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
-import ch.ethz.matsim.av.schedule.AVDriveTask;
 import ch.ethz.matsim.av.schedule.AVDropoffTask;
 import ch.ethz.matsim.av.schedule.AVStayTask;
 
-/** for vehicles that are in stay task and should pickup a customer at the link:
- * 1) finish stay task 2) append pickup task 3) append drive task 4) append
- * dropoff task 5) append new stay task */
-/** @author Nicolo Ormezzano, Lukas Sieber */
-/* package */ final class SharedGeneralDriveDirectiveDropoff extends FuturePathDirective {
+/** for vehicles that are in stay task and should dropoff a customer at the link:
+ * 1) finish stay task 2) append dropoff task 3) if more customers planned append drive task
+ * 4) append new stay task */
+/* package */ final class SharedGeneralDropoffDirective extends FuturePathDirective {
     final RoboTaxi robotaxi;
     final AVRequest currentRequest;
     final double getTimeNow;
     final double dropoffDurationPerStop;
 
-    public SharedGeneralDriveDirectiveDropoff(RoboTaxi robotaxi, AVRequest currentRequest, //
+    public SharedGeneralDropoffDirective(RoboTaxi robotaxi, AVRequest currentRequest, //
             FuturePathContainer futurePathContainer, final double getTimeNow, double dropoffDurationPerStop) {
         super(futurePathContainer);
         this.robotaxi = robotaxi;
@@ -39,7 +37,8 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         final AVStayTask avStayTask = (AVStayTask) Schedules.getLastTask(schedule);
         final double scheduleEndTime = avStayTask.getEndTime();
         GlobalAssert.that(scheduleEndTime == schedule.getEndTime());
-        final double endTimeNextTask = (vrpPathWithTravelData != null) ? vrpPathWithTravelData.getArrivalTime() : getTimeNow + dropoffDurationPerStop;
+        final boolean moreRequestsToServe = (vrpPathWithTravelData != null);
+        final double endTimeNextTask = (moreRequestsToServe) ? vrpPathWithTravelData.getArrivalTime() : getTimeNow + dropoffDurationPerStop;
         GlobalAssert.that(avStayTask.getLink().equals(currentRequest.getToLink()));
 
         if (endTimeNextTask < scheduleEndTime) {
@@ -52,15 +51,8 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
                     currentRequest.getToLink(), // location of dropoff
                     Arrays.asList(currentRequest)));
 
-            Link destLink = null;
-            if (!vrpPathWithTravelData.getFromLink().equals(vrpPathWithTravelData.getToLink())) {
-                schedule.addTask(new AVDriveTask( //
-                        vrpPathWithTravelData));
-                destLink = vrpPathWithTravelData.getToLink();
-            } else {
-                destLink = avStayTask.getLink();
-            }
-            ScheduleUtils.makeWhole(robotaxi, endTimeNextTask, scheduleEndTime, destLink);
+            Link destLink = avStayTask.getLink();
+            ScheduleUtils.makeWhole(robotaxi, getTimeNow + dropoffDurationPerStop, scheduleEndTime, destLink);
 
             // jan: following computation is mandatory for the internal scoring
             // function

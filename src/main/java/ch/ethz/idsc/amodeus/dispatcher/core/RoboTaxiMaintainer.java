@@ -68,19 +68,24 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
     /** functions called at every MATSim timestep, dispatching action happens in <b> redispatch <b> */
     @Override
     public final void onNextTimestep(double now) {
+
         private_now = now; // <- time available to derived class via getTimeNow()
         updateInfoLine();
         notifySimulationSubscribers(Math.round(now), storageUtils);
         consistencyCheck();
         beforeStepTasks(); // <- if problems with RoboTaxi Status to Completed consider to set "simEndtimeInterpretation" to "null"
-        executePickups();
+        // The Dropoff is before the pickup because:
+        // a) A robotaxi which picks up a customer should not dropoff one at the same time step
+        // b) but in the shared case the internal dropoff should be able to finish a dropoff which enables the pickups to be executed
         executeDropoffs();
+        executePickups();
         executeRedirects();
         redispatch(now);
         redispatchInternal(now);
         afterStepTasks();
         executeDirectives();
         consistencyCheck();
+
     }
 
     /** the info line is displayed in the console at every dispatching timestep and in the
@@ -151,11 +156,6 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
     /* package */ abstract void redispatchInternal(double now);
 
     /* package */ abstract void executeRedirects();
-
-    // TODO these functions might be removed
-    /* package */ abstract boolean isInPickupRegister(RoboTaxi robotaxi);
-
-    /* package */ abstract boolean isInRequestRegister(RoboTaxi sRoboTaxi);
 
     @Override
     public final void onNextTaskStarted(AVVehicle task) {
