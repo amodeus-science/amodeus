@@ -50,7 +50,7 @@ public enum TtlValIdent implements TotalValueIdentifier {
     OCCUPANCYRATIO("occupancyRatio"), //
 
     // SHARED Values
-    REQUESTSHAREDRATE("RequestShareRate")
+    SHAREDREQUESTSNUMBERS("RequestShareRate")
     ;
 
     private final String identifier;
