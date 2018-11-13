@@ -275,7 +275,7 @@ public class StandardMATSimScenarioTest {
                 LPOptions lpOptions = new LPOptions(MultiFileTools.getWorkingDirectory(), LPOptionsBase.getDefault());
                 lpOptions.setProperty(LPOptionsBase.LPSOLVER, "timeInvariant");
                 lpOptions.saveAndOverwriteLPOptions();
-                TravelData travelData = TravelDataCreator.create(virtualNetwork, network, population, scenarioOptions, (int) generatorConfig.getNumberOfVehicles(), endTime);
+                TravelData travelData = TravelDataCreator.create(virtualNetwork, network, population, scenarioOptions.getdtTravelData(), (int) generatorConfig.getNumberOfVehicles(), endTime);
                 return travelData;
             }
         });
