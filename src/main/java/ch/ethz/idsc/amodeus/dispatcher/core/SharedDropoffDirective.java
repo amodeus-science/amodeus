@@ -11,7 +11,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.schedule.AVDropoffTask;
 import ch.ethz.matsim.av.schedule.AVStayTask;
 
-/*package*/ class SharedDropoffDirective extends SharedFixedLocationDirective{
+/*package*/ class SharedDropoffDirective extends SharedFixedLocationDirective {
 
     public SharedDropoffDirective(RoboTaxi robotaxi, AVRequest avRequest, double getTimeNow, double durationOfTask) {
         super(robotaxi, avRequest, getTimeNow, durationOfTask);
