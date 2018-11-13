@@ -32,7 +32,7 @@ public enum TtlValIdent implements TotalValueIdentifier {
     DRIVETQU2("DriveTimeQuantile2"), //
     DRIVETQU3("DriveTimeQuantile3"), //
     DRIVETMAX("DriveTimeMax"), //
-    
+
     // Total Travel Times
     TRAVELTMEA("MeanTTravelTime"), //
     TRAVELTQU1("TTravelTimeQuantile1"), //
@@ -50,8 +50,7 @@ public enum TtlValIdent implements TotalValueIdentifier {
     OCCUPANCYRATIO("occupancyRatio"), //
 
     // SHARED Values
-    SHAREDREQUESTSNUMBERS("RequestShareRate")
-    ;
+    SHAREDREQUESTSNUMBERS("RequestShareRate");
 
     private final String identifier;
 

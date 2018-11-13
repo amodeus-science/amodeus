@@ -77,14 +77,15 @@ public enum RoboTaxiUtils {
         if (nextCourseOptional.isPresent()) {
             if (getNumberOnBoardRequests(roboTaxi) > 0) {
                 return RoboTaxiStatus.DRIVEWITHCUSTOMER;
-            } else if (nextCourseOptional.get().getMealType().equals(SharedMealType.PICKUP)) {
+            } else //
+            if (nextCourseOptional.get().getMealType().equals(SharedMealType.PICKUP)) {
                 return RoboTaxiStatus.DRIVETOCUSTOMER;
-            } else if (nextCourseOptional.get().getMealType().equals(SharedMealType.REDIRECT)) {
+            } else //
+            if (nextCourseOptional.get().getMealType().equals(SharedMealType.REDIRECT)) {
                 if (SharedCourseListUtils.getNumberPickups(roboTaxi.getUnmodifiableViewOfCourses()) > 0) {
                     return RoboTaxiStatus.DRIVETOCUSTOMER;
-                } else {
-                    return RoboTaxiStatus.REBALANCEDRIVE;
                 }
+                return RoboTaxiStatus.REBALANCEDRIVE;
             } else {
                 System.out.println("We have a not Covered Status of the Robotaxi");
                 GlobalAssert.that(false);

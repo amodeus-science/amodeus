@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import org.matsim.api.core.v01.Coord;
@@ -8,7 +9,6 @@ import org.matsim.api.core.v01.network.Node;
 import org.matsim.contrib.dvrp.data.Request;
 import org.matsim.contrib.dvrp.data.Vehicle;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
-import org.matsim.contrib.dvrp.path.VrpPathWithTravelDataImpl;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 import org.matsim.core.config.Config;
@@ -118,7 +118,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         avRequest6 = new AVRequest(Id.create("p6", Request.class), null, linkUp, linkLeft, 0.0, 0.0, null, null, null);
         avRequest7 = new AVRequest(Id.create("p7", Request.class), null, linkRight, linkLeft, 0.0, 0.0, null, null, null);
         avRequestDepotOut = new AVRequest(Id.create("depotRequestOut", Request.class), null, linkDepotOut, linkDepotOut, 0.0, 0.0, null, null, null);
-        avRequestDepotIn= new AVRequest(Id.create("depotRequestIn", Request.class), null, linkDepotIn, linkDepotIn, 0.0, 0.0, null, null, null);
+        avRequestDepotIn = new AVRequest(Id.create("depotRequestIn", Request.class), null, linkDepotIn, linkDepotIn, 0.0, 0.0, null, null, null);
 
         LinkTimePair divertableLinkTime = new LinkTimePair(linkDepotOut, 0.0);
 
@@ -126,42 +126,44 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         vehicle1 = new AVVehicle(idAv1, linkDepotOut, seats, 0.0, Double.POSITIVE_INFINITY);
         roboTaxi1 = new RoboTaxi(vehicle1, divertableLinkTime, linkDepotOut, RoboTaxiUsageType.SHARED);
         setFirstStayTask(vehicle1);
-        
+
         Id<Vehicle> idAv2 = Id.create("av2", Vehicle.class);
         vehicle2 = new AVVehicle(idAv2, linkDepotOut, seats, 0.0, Double.POSITIVE_INFINITY);
         roboTaxi2 = new RoboTaxi(vehicle2, divertableLinkTime, linkDepotOut, RoboTaxiUsageType.SHARED);
         setFirstStayTask(vehicle2);
         System.out.println("ArtificialScenario Created");
     }
-    
+
     private static void changeRoboTaxiLinks(RoboTaxi roboTaxi, Link divertableLocation, Link courseLink) {
-        
+        // TODO is function empty on purpose?
     }
-    
+
     private static void setFirstStayTask(AVVehicle vehicle) {
         Schedule schedule = vehicle.getSchedule();
         schedule.addTask(new AVStayTask(vehicle.getServiceBeginTime(), vehicle.getServiceEndTime(), vehicle.getStartLink()));
         schedule.nextTask();
     }
-    
+
     private static void setFirstDriveTask(AVVehicle vehicle) {
         Schedule schedule = vehicle.getSchedule();
         VrpPathWithTravelData vrpPathWithTravelData = null;
         schedule.addTask(new AVDriveTask(vrpPathWithTravelData));
         schedule.nextTask();
-        
+
     }
+
     private static void setFirstPickupTask(AVVehicle vehicle) {
         Schedule schedule = vehicle.getSchedule();
         schedule.addTask(new AVPickupTask(vehicle.getServiceBeginTime(), vehicle.getServiceEndTime(), vehicle.getStartLink()));
         schedule.nextTask();
-        
-    }    
+
+    }
+
     private static void setFirstDropoffTask(AVVehicle vehicle) {
         Schedule schedule = vehicle.getSchedule();
         schedule.addTask(new AVDropoffTask(vehicle.getServiceBeginTime(), vehicle.getServiceEndTime(), vehicle.getStartLink()));
         schedule.nextTask();
-        
+
     }
 
 }

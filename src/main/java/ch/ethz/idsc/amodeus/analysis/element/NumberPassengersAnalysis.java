@@ -1,7 +1,6 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.analysis.element;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +23,6 @@ import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.PadRight;
 import ch.ethz.idsc.tensor.pdf.BinCounts;
 import ch.ethz.idsc.tensor.red.Max;
-import ch.ethz.idsc.tensor.red.Mean;
 import ch.ethz.idsc.tensor.red.Total;
 
 public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppender {
@@ -110,7 +108,7 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
 
     @Override // from TotalValueAppender
     public Map<TotalValueIdentifier, String> getTotalValues() {
-        Map<TotalValueIdentifier, String> totalValues= new HashMap<>();
+        Map<TotalValueIdentifier, String> totalValues = new HashMap<>();
         String sharedRateString = "";
         for (Tensor tensor : getSharedOthersDistribution()) {
             sharedRateString += String.valueOf(tensor.Get().number().intValue()) + " ";

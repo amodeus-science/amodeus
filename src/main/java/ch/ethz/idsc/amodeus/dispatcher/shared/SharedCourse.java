@@ -71,7 +71,7 @@ public class SharedCourse {
         if (object instanceof SharedCourse) {
             SharedCourse sharedAVCourse = (SharedCourse) object;
             // TODO with Jan. LUKAS REV why is avRequest not used in the comparison?
-            // Answer: As the AV Request can be null as well. In the Redirect Case. 
+            // Answer: As the AV Request can be null as well. In the Redirect Case.
             return sharedAVCourse.getCourseId().equals(courseID) && //
                     sharedAVCourse.getLink().equals(link) && //
                     sharedAVCourse.getMealType().equals(sharedRoboTaxiMealType);

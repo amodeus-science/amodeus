@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.omg.CORBA.PRIVATE_MEMBER;
-
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifier;
 import ch.ethz.idsc.amodeus.analysis.report.TtlValIdent;
@@ -43,7 +41,7 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
     private Scalar maxWaitTime;
     private Scalar maxDrveTime;
     private Scalar maxTravelTime;
-    
+
     /** time series during day */
     public final Tensor time = Tensors.empty();
     public final Tensor waitTimePlotValues = Tensors.empty();
@@ -93,7 +91,7 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
         }
 
         /** calculate maximum values */
-        maxWaitTime  = getWaitTimes().flatten(-1).reduce(Max::of).get().Get();
+        maxWaitTime = getWaitTimes().flatten(-1).reduce(Max::of).get().Get();
         maxDrveTime = getDriveTimes().flatten(-1).reduce(Max::of).get().Get();
         maxTravelTime = getTotalJourneyTimes().flatten(-1).reduce(Max::of).get().Get();
         /** aggregate information {quantile1, quantile2, quantile3, mean, maximum} */
@@ -165,8 +163,8 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
         map.put(TtlValIdent.DRIVETQU2, String.valueOf(quantilsDriveTime.get(1).Get().number().doubleValue()));
         map.put(TtlValIdent.DRIVETQU3, String.valueOf(quantilsDriveTime.get(2).Get().number().doubleValue()));
         map.put(TtlValIdent.DRIVETMAX, String.valueOf(maxDrveTime.number().doubleValue()));
-        
-        /** Travel Times*/
+
+        /** Travel Times */
         double meanTravelTime = Mean.of(getTotalJourneyTimes()).get().Get().number().doubleValue();
         map.put(TtlValIdent.TRAVELTMEA, String.valueOf(meanTravelTime));
         Tensor quantilstravelTime = Quantile.of(getTotalJourneyTimes(), Quantiles.SET);
@@ -174,7 +172,7 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
         map.put(TtlValIdent.TRAVELTQU2, String.valueOf(quantilstravelTime.get(1).Get().number().doubleValue()));
         map.put(TtlValIdent.TRAVELTQU3, String.valueOf(quantilstravelTime.get(2).Get().number().doubleValue()));
         map.put(TtlValIdent.TRAVELTMAX, String.valueOf(maxTravelTime.number().doubleValue()));
-        
+
         return map;
     }
 }

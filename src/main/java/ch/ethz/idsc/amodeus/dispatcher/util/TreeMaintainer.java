@@ -84,11 +84,10 @@ public class TreeMaintainer<T> {
     public Set<T> getValues() {
         return set;
     }
-    /**
-     * Clears the whole tree. After this method is called no elements will rem
-     */
+
+    /** Clears the whole tree. After this method is called no elements will rem */
     public void clear() {
-        set.forEach(t->GlobalAssert.that(tree.remove(location.apply(t).Get(0).number().doubleValue(), location.apply(t).Get(1).number().doubleValue(), t)));
+        set.forEach(t -> GlobalAssert.that(tree.remove(location.apply(t).Get(0).number().doubleValue(), location.apply(t).Get(1).number().doubleValue(), t)));
         set.clear();
     }
 }
