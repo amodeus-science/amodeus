@@ -21,7 +21,7 @@ public enum SharedCourseListUtils {
     }
 
     // **************************************************
-    // Get Funcitons
+    // Get Functions
     // **************************************************
 
     public static Set<AVRequest> getOnBoardRequests(List<? extends SharedCourse> courses) {
