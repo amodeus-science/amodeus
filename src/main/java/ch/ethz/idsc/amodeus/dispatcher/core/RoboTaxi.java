@@ -334,8 +334,8 @@ public class RoboTaxi {
 
     /* package */ void dropOffCustomer() {
         checkAbilityToDropOff();
-        setMenu(SharedMenuUtils.removeStarterCourse(menu));
         dropoffInProgress = false;
+        setMenu(SharedMenuUtils.removeStarterCourse(menu));
     }
 
     private void checkAbilityToDropOff() {
