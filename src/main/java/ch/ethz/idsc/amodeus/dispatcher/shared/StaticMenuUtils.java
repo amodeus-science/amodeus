@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared;
 
 import java.util.ArrayList;
@@ -10,15 +11,11 @@ import java.util.stream.Collectors;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.core.network.NetworkUtils;
 
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 public enum StaticMenuUtils {
     ;
 
-    // TODO Move To Amodeus?
     /** Changes Order of the Menue such that first all Pickups and then All Dropoffs occur. The order is kept. The Redirect Courses are put at the end */
     public static List<SharedCourse> firstAllPickupsThenDropoffs(List<SharedCourse> roboTaxiMenu) {
         // TODO Computationally improve

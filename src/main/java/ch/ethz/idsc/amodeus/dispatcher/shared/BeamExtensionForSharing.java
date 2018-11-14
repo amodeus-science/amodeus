@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared;
 
 import java.util.Collection;
@@ -16,8 +17,6 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiUtils;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedUniversalDispatcher;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -31,12 +30,12 @@ public class BeamExtensionForSharing {
 
     private Double phiMax;
     private double rMax;
-    
+
     public BeamExtensionForSharing(double rMax, double phiMax) {
         this.phiMax = phiMax;
         this.rMax = rMax;
     }
-    
+
     public Map<AVRequest, RoboTaxi> findAssignementAndExecute(Collection<RoboTaxi> roboTaxis, Collection<AVRequest> openRideSharingRequests, SharedUniversalDispatcher sud) {
         getSharingAssignements(roboTaxis, openRideSharingRequests);
         assignTo(sud);
@@ -44,20 +43,19 @@ public class BeamExtensionForSharing {
         return addedAvRequests;
     }
 
-    /**
-     * This function finds potential assignements for ride sharing. It compares which Robotaxis changed their status to Drive with customer
-     * compared to the last call of this funciton. This are Taxis which did just pick up their first customer. For all these taxis it 
-     * is then checked if one or multiple of the given avRequests are within radius rMax and have a similar direction than the current one. 
-     * This is checked with the maximum angle between the two request. 
+    /** This function finds potential assignements for ride sharing. It compares which Robotaxis changed their status to Drive with customer
+     * compared to the last call of this funciton. This are Taxis which did just pick up their first customer. For all these taxis it
+     * is then checked if one or multiple of the given avRequests are within radius rMax and have a similar direction than the current one.
+     * This is checked with the maximum angle between the two request.
+     * 
      * @param allRoboTaxis the whole fleet of Robotaxis
      * @param avRequests all the requests which are still not picked up and should be considered for ride sharing
-     * @return
-     */
-    
+     * @return */
+
     public Map<AVRequest, RoboTaxi> getSharingAssignements(Collection<RoboTaxi> allRoboTaxis, Collection<AVRequest> avRequests) {
         addedAvRequests.clear();
-        Set<RoboTaxi> driveWithCustomerRoboTaxis = allRoboTaxis.stream().filter(rt->rt.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER)).collect(Collectors.toSet()); 
-        
+        Set<RoboTaxi> driveWithCustomerRoboTaxis = allRoboTaxis.stream().filter(rt -> rt.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER)).collect(Collectors.toSet());
+
         for (RoboTaxi roboTaxi : driveWithCustomerRoboTaxis) {
             GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
             if (previouslyNotWithCustomerTaxis.contains(roboTaxi)) {
@@ -67,26 +65,24 @@ public class BeamExtensionForSharing {
                         addedAvRequests.put(avRequest, roboTaxi);
                     }
                 }
-               
+
             }
         }
-        previouslyNotWithCustomerTaxis = allRoboTaxis.stream().filter(rt->!rt.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER)).collect(Collectors.toSet()); 
-        
+        previouslyNotWithCustomerTaxis = allRoboTaxis.stream().filter(rt -> !rt.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER)).collect(Collectors.toSet());
+
         return addedAvRequests;
     }
-    
-    /**
-     * Assigns the internatly stored assignment from the last call of {@link getSharingAssignement} 
+
+    /** Assigns the internatly stored assignment from the last call of {@link getSharingAssignement}
      * to the shared Universal dispatcher
-     * @param sud
-     */
+     * 
+     * @param sud */
     public void assignTo(SharedUniversalDispatcher sud) {
-        addedAvRequests.forEach((avr, rt)-> sud.addSharedRoboTaxiPickup(rt, avr));
+        addedAvRequests.forEach((avr, rt) -> sud.addSharedRoboTaxiPickup(rt, avr));
     }
-    /**
-     * Once the reorders the menu of each robotaxi in the last assignment which was produced from the {@link getSharingAssignement()}
-     * It creates first a fast pickup tour of all the requests and goies afterwards for a fast dropoff tour.  
-     */
+
+    /** Once the reorders the menu of each robotaxi in the last assignment which was produced from the {@link getSharingAssignement()}
+     * It creates first a fast pickup tour of all the requests and goies afterwards for a fast dropoff tour. */
     public void reorderMenus() {
         for (RoboTaxi roboTaxi : addedAvRequests.values()) {
             roboTaxi.updateMenu(StaticMenuUtils.firstAllPickupsThenDropoffs(roboTaxi.getUnmodifiableViewOfCourses()));
@@ -101,7 +97,7 @@ public class BeamExtensionForSharing {
             }
         }
     }
-    
+
     private boolean checkIfPossibleSharing(RoboTaxi roboTaxi, AVRequest request2) {
         if (!oneMorePickupPossible(roboTaxi)) {
             return false;
@@ -112,12 +108,11 @@ public class BeamExtensionForSharing {
         Double angleDouble = directionAngle(roboTaxi, request2);
         return (angleDouble == null) ? false : angleDouble < phiMax;
     }
-    
-    /**
-     * As we plan to make the order of pickups and dropoffs such that first all pickups then all dropoffs it makes sense that not dropoffs are planed than capacity
+
+    /** As we plan to make the order of pickups and dropoffs such that first all pickups then all dropoffs it makes sense that not dropoffs are planed than capacity
+     * 
      * @param roboTaxi
-     * @return
-     */
+     * @return */
     private static boolean oneMorePickupPossible(RoboTaxi roboTaxi) {
         return SharedCourseListUtils.getNumberDropoffs(roboTaxi.getUnmodifiableViewOfCourses()) < roboTaxi.getCapacity();
     }

@@ -9,7 +9,6 @@ import org.matsim.api.core.v01.population.Population;
 
 import ch.ethz.idsc.amodeus.lp.LPPreparer;
 import ch.ethz.idsc.amodeus.lp.LPSolver;
-import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.prep.PopulationTools;
 import ch.ethz.idsc.amodeus.prep.Request;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
@@ -18,9 +17,8 @@ import ch.ethz.idsc.tensor.Tensor;
 public enum TravelDataCreator {
     ;
     /** Creates the travel data by counting all travel requests and solving an LP depending on this request information */
-    public static TravelData create(VirtualNetwork<Link> virtualNetwork, Network network, Population population, ScenarioOptions scenarioOptions, int numberOfVehicles, int endTime)
-            throws Exception {
-        Tensor lambdaAbsolute = getLambdaAbsolute(network, virtualNetwork, population, scenarioOptions.getdtTravelData(), endTime);
+    public static TravelData create(VirtualNetwork<Link> virtualNetwork, Network network, Population population, int interval, int numberOfVehicles, int endTime) throws Exception {
+        Tensor lambdaAbsolute = getLambdaAbsolute(network, virtualNetwork, population, interval, endTime);
 
         LPSolver lp = LPPreparer.run(virtualNetwork, network, lambdaAbsolute, numberOfVehicles, endTime);
 

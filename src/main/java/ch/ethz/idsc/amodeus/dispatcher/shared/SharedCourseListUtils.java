@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public enum SharedCourseListUtils {
     }
 
     // **************************************************
-    // Get Funcitons
+    // Get Functions
     // **************************************************
 
     public static Set<AVRequest> getOnBoardRequests(List<? extends SharedCourse> courses) {
@@ -68,7 +69,7 @@ public enum SharedCourseListUtils {
     public static Optional<SharedCourse> getStarterCourse(List<? extends SharedCourse> courses) {
         return Optional.ofNullable((hasStarter(courses)) ? courses.get(0) : null);
     }
-    
+
     public static Optional<SharedCourse> getSecondCourse(List<SharedCourse> courses) {
         return Optional.ofNullable((hasSecondCourse(courses)) ? courses.get(1) : null);
     }
@@ -197,7 +198,5 @@ public enum SharedCourseListUtils {
         GlobalAssert.that(courses.contains(sharedAVCourse));
         courses.remove(sharedAVCourse);
     }
-
-
 
 }

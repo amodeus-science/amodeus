@@ -69,7 +69,7 @@ public enum NumberPassengerStatusDistribution implements AnalysisExport {
         int numBins = withCustomer.length();
         IntStream.range(0, numBins).forEach(i -> passengerLabels[i] = numBins - i + " Passenger");
 
-        String[] statusLabels = (String[]) ArrayUtils.addAll(passengerLabels, statusLablesOnly);
+        String[] statusLabels = ArrayUtils.addAll(passengerLabels, statusLablesOnly);
 
         /** create Colors */
         NumberPassengerColorScheme nPCS = new NumberPassengerColorScheme(COLOR_DATA_GRADIENT_DEFAULT, colorDataIndexed);

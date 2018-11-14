@@ -2,17 +2,12 @@
 package ch.ethz.idsc.amodeus.analysis.shared;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.IntStream;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.amodeus.analysis.element.NumberPassengersAnalysis;
 import ch.ethz.idsc.amodeus.analysis.plot.CompositionStack;
-import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
-import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifier;
-import ch.ethz.idsc.amodeus.analysis.report.TtlValIdent;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;

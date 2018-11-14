@@ -7,12 +7,6 @@ import org.matsim.core.controler.listener.IterationStartsListener;
 import com.google.inject.Inject;
 
 /* package */ class DatabaseIterationStartsListener implements IterationStartsListener {
-    // private final MatsimStaticDatabase db;
-    //
-    // public DatabaseIterationStartsListener(MatsimStaticDatabase db) {
-    // this.db = db;
-    // }
-
     @Inject
     private MatsimAmodeusDatabase db;
 

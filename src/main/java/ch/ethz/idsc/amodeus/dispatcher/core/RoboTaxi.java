@@ -46,6 +46,7 @@ public class RoboTaxi {
      * The Shared menu contains a lot of information. These can be extracted with the Utils functions
      * in RoboTaxiUtils and SharedCourseLItsUtils */
     private SharedMenu menu = SharedMenu.empty();
+    private boolean dropoffInProgress = false;
 
     /** Standard constructor
      * 
@@ -294,6 +295,9 @@ public class RoboTaxi {
      * @param menu */
     private final void setMenu(SharedMenu menu) {
         GlobalAssert.that(SharedMenuUtils.checkMenuConsistencyWithRoboTaxi(menu, getCapacity()));
+        if (dropoffInProgress) {
+            GlobalAssert.that(this.menu.getRoboTaxiMenu().get(0).equals(menu.getRoboTaxiMenu().get(0)));
+        }
         this.menu = menu;
         this.status = RoboTaxiUtils.calculateStatusFromMenu(this);
     }
@@ -330,13 +334,21 @@ public class RoboTaxi {
     }
 
     /* package */ void dropOffCustomer() {
+        checkAbilityToDropOff();
+        dropoffInProgress = false;
+        setMenu(SharedMenuUtils.removeStarterCourse(menu));
+    }
+
+    private void checkAbilityToDropOff() {
         GlobalAssert.that(RoboTaxiUtils.getNumberOnBoardRequests(this) > 0);
         GlobalAssert.that(RoboTaxiUtils.getNumberOnBoardRequests(this) <= getCapacity());
         GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.DROPOFF));
         GlobalAssert.that(RoboTaxiUtils.getStarterLink(this).equals(getDivertableLocation()));
-        setMenu(SharedMenuUtils.removeStarterCourse(menu));
     }
-
+    /* package */ void startDropoff() {
+        checkAbilityToDropOff();
+        dropoffInProgress = true;
+    }
     /* package */ void finishRedirection() {
         GlobalAssert.that(RoboTaxiUtils.hasNextCourse(this));
         GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.REDIRECT));

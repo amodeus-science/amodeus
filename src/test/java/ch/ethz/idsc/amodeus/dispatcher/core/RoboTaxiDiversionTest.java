@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.Arrays;
@@ -289,8 +290,6 @@ public class RoboTaxiDiversionTest extends TestCase {
         StaticRoboTaxiCreator.cleanRTMenu(roboTaxi);
     }
 
-    
-    
     @Test
     public void testDriveTask() {
         ArtificialScenarioCreator s = new ArtificialScenarioCreator();

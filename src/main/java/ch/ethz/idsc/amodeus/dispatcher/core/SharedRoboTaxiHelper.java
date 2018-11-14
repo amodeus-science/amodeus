@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.Optional;
@@ -32,9 +33,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         }
         return Optional.empty();
     }
-    
-    private static final void pickupAndAssignDirective(RoboTaxi roboTaxi, AVRequest avRequest, double now, double pickupDurationPerStop,
-            FuturePathFactory futurePathFactory) {
+
+    private static final void pickupAndAssignDirective(RoboTaxi roboTaxi, AVRequest avRequest, double now, double pickupDurationPerStop, FuturePathFactory futurePathFactory) {
         GlobalAssert.that(RoboTaxiUtils.canPickupNewCustomer(roboTaxi));
         Optional<SharedCourse> currentCourse = RoboTaxiUtils.getStarterCourse(roboTaxi);
         GlobalAssert.that(currentCourse.isPresent());

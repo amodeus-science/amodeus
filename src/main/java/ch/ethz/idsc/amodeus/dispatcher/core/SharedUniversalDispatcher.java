@@ -255,6 +255,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
             Optional<AVRequest> avRequest = SharedRoboTaxiHelper.assignDropoffDirectiveIfOnLink(roboTaxi, getTimeNow(), dropoffDurationPerStop, futurePathFactory);
             if (avRequest.isPresent()) {
                 GlobalAssert.that(requestRegister.contains(roboTaxi, avRequest.get()));
+                roboTaxi.startDropoff();
                 Double endDropOffTime = getTimeNow() + dropoffDurationPerStop;
                 if (!dropOffTimes.containsKey(endDropOffTime)) {
                     dropOffTimes.put(endDropOffTime, new HashMap<>());
