@@ -10,7 +10,6 @@ import javax.swing.JPanel;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.util.gui.RowPanel;
 import ch.ethz.idsc.amodeus.util.gui.SpinnerLabel;
-import ch.ethz.idsc.amodeus.view.jmapviewer.Tile;
 import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.TileSource;
 
 public class TilesLayer extends ViewerLayer {
@@ -73,13 +72,13 @@ public class TilesLayer extends ViewerLayer {
     public void updateSettings(ViewerSettings settings) {
         settings.mapAlphaCover = amodeusComponent.mapAlphaCover;
         settings.mapGrayCover = amodeusComponent.mapGrayCover;
-        // TODO tile source
+        settings.tileSourceName = amodeusComponent.getTileSource().getName();
     }
 
     public void loadSettings(ViewerSettings settings) {
         amodeusComponent.mapAlphaCover = settings.mapAlphaCover;
         amodeusComponent.mapGrayCover = settings.mapGrayCover;
-        // TODO tile source
+        amodeusComponent.setTileSource(MapSource.valueOf(settings.tileSourceName).getTileSource());
     }
 
 }

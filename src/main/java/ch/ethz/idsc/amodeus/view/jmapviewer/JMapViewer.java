@@ -447,6 +447,10 @@ public class JMapViewer extends JComponent implements TileLoaderListener {
         repaint();
     }
 
+    public TileSource getTileSource() {
+        return tileSource;
+    }
+
     @Override
     public void tileLoadingFinished(Tile tile, boolean success) {
         tile.setLoaded(success);

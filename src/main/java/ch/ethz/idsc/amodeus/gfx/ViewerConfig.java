@@ -2,6 +2,8 @@ package ch.ethz.idsc.amodeus.gfx;
 
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.ICoordinate;
+import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.TileSource;
+import ch.ethz.idsc.amodeus.view.jmapviewer.tilesources.MapnikTileSource;
 import org.matsim.api.core.v01.Coord;
 
 import java.io.*;
@@ -80,5 +82,14 @@ public class ViewerConfig {
         settings.coord = new Coord(ic.getLon(), ic.getLat());
         amodeusComponent.viewerLayers.forEach(viewerLayer -> viewerLayer.updateSettings(settings));
         return this;
+    }
+
+    public TileSource getTileSource() {
+        try {
+            return MapSource.valueOf(settings.tileSourceName).getTileSource();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            return MapnikTileSource.INSTANCE;
+        }
     }
 }

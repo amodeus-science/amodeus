@@ -71,23 +71,18 @@ public class VideoGenerator implements Runnable {
         AmodeusComponent amodeusComponent = new AmodeusComponent(db);
         ViewerConfig viewerConfig = ViewerConfig.from(db, workingDirectory);
 
-        amodeusComponent.setTileSource(GrayMapnikTileSource.INSTANCE);
+        amodeusComponent.setTileSource(viewerConfig.getTileSource());
 
         TilesLayer tilesLayer = new TilesLayer(amodeusComponent);
         tilesLayer.loadSettings(viewerConfig.settings);
         amodeusComponent.addLayer(tilesLayer);
 
         VehiclesLayer vehiclesLayer = new VehiclesLayer(amodeusComponent);
-        vehiclesLayer.showLocation = true;
-        vehiclesLayer.statusColors = RoboTaxiStatusColors.Standard;
+        vehiclesLayer.loadSettings(viewerConfig.settings);
         amodeusComponent.addLayer(vehiclesLayer);
 
         RequestsLayer requestsLayer = new RequestsLayer(amodeusComponent);
-        requestsLayer.drawNumber = false;
-        requestsLayer.requestHeatMap.setShow(false);
-        requestsLayer.requestHeatMap.setColorSchemes(ColorSchemes.Jet);
-        requestsLayer.requestDestMap.setShow(true);
-        requestsLayer.requestDestMap.setColorSchemes(ColorSchemes.Sunset);
+        requestsLayer.loadSettings(viewerConfig.settings);
         amodeusComponent.addLayer(requestsLayer);
 
         // LinkLayer linkLayer = new LinkLayer();
@@ -113,10 +108,7 @@ public class VideoGenerator implements Runnable {
         VirtualNetwork<Link> virtualNetwork = VirtualNetworkGet.readDefault(network); // may be null
         System.out.println("has vn: " + (virtualNetwork != null));
         amodeusComponent.virtualNetworkLayer.setVirtualNetwork(virtualNetwork);
-        amodeusComponent.virtualNetworkLayer.drawVNodes = viewerConfig.settings.drawVNodes;
-        amodeusComponent.virtualNetworkLayer.drawVLinks = viewerConfig.settings.drawVLinks;
-        amodeusComponent.virtualNetworkLayer.virtualNodeShader = viewerConfig.settings.virtualNodeShader;
-        amodeusComponent.virtualNetworkLayer.colorSchemes = viewerConfig.settings.colorSchemes;
+        amodeusComponent.virtualNetworkLayer.loadSettings(viewerConfig.settings);
 
         Dimension resolution = SimulationObjectsVideo.RESOLUTION_FullHD;
         amodeusComponent.setSize(resolution);
