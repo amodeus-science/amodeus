@@ -51,7 +51,7 @@ public class AmodeusComponent extends JMapViewer {
 
     public final List<ViewerLayer> viewerLayers = new ArrayList<>();
     private final List<InfoString> infoStrings = new LinkedList<>();
-    private int infoFontSize = 13;
+    private int infoFontSize;
 
     public final JLabel jLabel = new JLabel(" ");
     final AmodeusComponentMouse amodeusComponentMouse = new AmodeusComponentMouse(this);
@@ -66,6 +66,7 @@ public class AmodeusComponent extends JMapViewer {
     public AmodeusComponent(MatsimAmodeusDatabase db) {
         this.db = db;
         defaultConfig = ViewerConfig.fromDefaults(db);
+        infoFontSize = defaultConfig.settings.infoFontSize;
         // ---
         addMouseListener(amodeusComponentMouse);
         addMouseMotionListener(amodeusComponentMouse);

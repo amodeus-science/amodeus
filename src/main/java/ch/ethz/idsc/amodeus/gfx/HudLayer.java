@@ -39,4 +39,12 @@ public class HudLayer extends ViewerLayer {
 
     }
 
+    public void updateSettings(ViewerSettings settings) {
+        settings.infoFontSize = amodeusComponent.getFontSize();
+    }
+
+    public void loadSettings(ViewerSettings settings) {
+        amodeusComponent.setFontSize(settings.infoFontSize);
+    }
+
 }

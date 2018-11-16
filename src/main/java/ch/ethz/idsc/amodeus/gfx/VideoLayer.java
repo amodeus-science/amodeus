@@ -71,26 +71,35 @@ public class VideoLayer extends ViewerLayer {
         {
             JPanel jPanel = new JPanel(new FlowLayout(1, 2, 2));
             {
-                SpinnerLabel<Integer> spinnerLabel = new SpinnerLabel<>();
-                spinnerLabel.setStream(IntStream.rangeClosed(0, endTime - 1).boxed());
-                spinnerLabel.setMenuHover(true);
-                spinnerLabel.setValueSafe(startTime);
-                spinnerLabel.addSpinnerListener(i -> startTime = i);
-                spinnerLabel.getLabelComponent().setPreferredSize(new Dimension(55, DEFAULT_HEIGHT));
-                spinnerLabel.getLabelComponent().setToolTipText("video start time [hrs]");
-                jPanel.add(spinnerLabel.getLabelComponent());
+                SpinnerLabel<Integer> spinnerLabelStart = new SpinnerLabel<>();
+                spinnerLabelStart.setStream(IntStream.rangeClosed(0, endTime - 1).boxed());
+                spinnerLabelStart.setMenuHover(true);
+                spinnerLabelStart.setValueSafe(startTime);
+                spinnerLabelStart.getLabelComponent().setPreferredSize(new Dimension(55, DEFAULT_HEIGHT));
+                spinnerLabelStart.getLabelComponent().setToolTipText("video start time [hrs]");
 
-            }
-            {
-                SpinnerLabel<Integer> spinnerLabel = new SpinnerLabel<>();
-                spinnerLabel.setStream(IntStream.rangeClosed(1, 30).boxed());
-                spinnerLabel.setMenuHover(true);
-                spinnerLabel.setValueSafe(endTime);
-                spinnerLabel.addSpinnerListener(i -> endTime = Math.max(i, startTime + 1));
-                spinnerLabel.getLabelComponent().setPreferredSize(new Dimension(55, DEFAULT_HEIGHT));
-                spinnerLabel.getLabelComponent().setToolTipText("video end time [hrs]");
-                jPanel.add(spinnerLabel.getLabelComponent());
+                SpinnerLabel<Integer> spinnerLabelEnd = new SpinnerLabel<>();
+                spinnerLabelEnd.setStream(IntStream.rangeClosed(startTime + 1, 30).boxed());
+                spinnerLabelEnd.setMenuHover(true);
+                spinnerLabelEnd.setValueSafe(endTime);
+                spinnerLabelEnd.getLabelComponent().setPreferredSize(new Dimension(55, DEFAULT_HEIGHT));
+                spinnerLabelEnd.getLabelComponent().setToolTipText("video end time [hrs]");
 
+                spinnerLabelStart.addSpinnerListener(i -> {
+                    startTime = i;
+                    spinnerLabelEnd.setStream(IntStream.rangeClosed(startTime + 1, 30).boxed());
+                    endTime = Math.max(startTime + 1, endTime);
+                    spinnerLabelEnd.setValue(endTime);
+                });
+                spinnerLabelEnd.addSpinnerListener(i -> {
+                    endTime = i;
+                    spinnerLabelStart.setStream(IntStream.rangeClosed(0, endTime - 1).boxed());
+                    startTime = Math.min(endTime - 1, startTime);
+                    spinnerLabelStart.setValue(startTime);
+                });
+
+                jPanel.add(spinnerLabelStart.getLabelComponent());
+                jPanel.add(spinnerLabelEnd.getLabelComponent());
             }
             rowPanel.add(jPanel);
         }

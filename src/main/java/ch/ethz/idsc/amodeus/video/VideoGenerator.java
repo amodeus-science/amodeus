@@ -85,30 +85,31 @@ public class VideoGenerator implements Runnable {
         requestsLayer.loadSettings(viewerConfig.settings);
         amodeusComponent.addLayer(requestsLayer);
 
-        // LinkLayer linkLayer = new LinkLayer();
-        // linkLayer.linkLimit = 16384;
-        // amodeusComponent.addLayer(linkLayer);
+        LinkLayer linkLayer = new LinkLayer(amodeusComponent);
+        // linkLayer.linkLimit = 16384; // might wanna increase link limit to compensate dimensions
+        linkLayer.loadSettings(viewerConfig.settings);
+        amodeusComponent.addLayer(linkLayer);
 
         LoadLayer loadLayer = new LoadLayer(amodeusComponent);
-        loadLayer.drawLoad = true;
-        loadLayer.historyLength = 5;
-        loadLayer.loadScale = 15;
+        loadLayer.loadSettings(viewerConfig.settings);
         amodeusComponent.addLayer(loadLayer);
 
-        amodeusComponent.addLayer(new HudLayer(amodeusComponent));
-        amodeusComponent.setFontSize(0);
+        HudLayer hudLayer = new HudLayer(amodeusComponent);
+        hudLayer.loadSettings(viewerConfig.settings);
+        amodeusComponent.addLayer(hudLayer);
+
         ClockLayer clockLayer = new ClockLayer(amodeusComponent);
-        clockLayer.alpha = 128;
+        clockLayer.loadSettings(viewerConfig.settings);
         amodeusComponent.addLayer(clockLayer);
 
         /** this is optional and should not cause problems if file does not
          * exist. temporary solution */
-        VirtualNetworkLayer virtualNetworkLayer = new VirtualNetworkLayer(amodeusComponent);
-        amodeusComponent.addLayer(virtualNetworkLayer);
         VirtualNetwork<Link> virtualNetwork = VirtualNetworkGet.readDefault(network); // may be null
         System.out.println("has vn: " + (virtualNetwork != null));
-        amodeusComponent.virtualNetworkLayer.setVirtualNetwork(virtualNetwork);
-        amodeusComponent.virtualNetworkLayer.loadSettings(viewerConfig.settings);
+        VirtualNetworkLayer virtualNetworkLayer = new VirtualNetworkLayer(amodeusComponent);
+        virtualNetworkLayer.setVirtualNetwork(virtualNetwork);
+        virtualNetworkLayer.loadSettings(viewerConfig.settings);
+        amodeusComponent.addLayer(virtualNetworkLayer);
 
         Dimension resolution = SimulationObjectsVideo.RESOLUTION_FullHD;
         amodeusComponent.setSize(resolution);

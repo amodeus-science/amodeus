@@ -45,4 +45,14 @@ public class ClockLayer extends ViewerLayer {
         show = selected;
         amodeusComponent.repaint();
     }
+
+    public void updateSettings(ViewerSettings settings) {
+        settings.show = show;
+        settings.alpha = alpha;
+    }
+
+    public void loadSettings(ViewerSettings settings) {
+        setShow(settings.show);
+        alpha = settings.alpha;
+    }
 }

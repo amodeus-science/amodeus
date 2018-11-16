@@ -23,7 +23,7 @@ import ch.ethz.idsc.amodeus.view.jmapviewer.tilesources.OpenCycleTileSource;
 import ch.ethz.idsc.amodeus.view.jmapviewer.tilesources.WatercolorTileSource;
 import ch.ethz.idsc.amodeus.view.jmapviewer.tilesources.WikimediaTileSource;
 
-enum MapSource {
+/* package */ enum MapSource {
     Mapnik(MapnikTileSource.INSTANCE), //
     GrayMapnik(GrayMapnikTileSource.INSTANCE), //
     Wikimedia(WikimediaTileSource.INSTANCE), //

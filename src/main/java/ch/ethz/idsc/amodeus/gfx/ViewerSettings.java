@@ -43,4 +43,20 @@ public class ViewerSettings implements Serializable {
     public ColorSchemes sourceColorSchemes = ColorSchemes.OrangeContour;
     public boolean sinkShow = false;
     public ColorSchemes sinkColorSchemes = ColorSchemes.GreenContour;
+
+    // LinkLayer
+    public boolean drawLinks = true;
+    public boolean drawLabel = true; // is this really needed in the video?
+
+    // LoadLayer
+    public boolean drawLoad = false;
+    public int historyLength = 4;
+    public int loadScale = 5;
+
+    // HudLayer
+    public int infoFontSize = 13;
+
+    // ClockLayer
+    public boolean show = true;
+    public int alpha = 255;
 }
