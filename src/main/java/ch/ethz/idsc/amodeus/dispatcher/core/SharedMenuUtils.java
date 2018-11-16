@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.List;
@@ -15,6 +16,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
 /* package */ enum SharedMenuUtils {
     ;
 
+    // TODO Lukas Rmove this file as it is not really required. use the list utils directly
     // **************************************************
     // Get Functions
     // **************************************************

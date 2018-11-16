@@ -1,9 +1,11 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 
@@ -12,9 +14,15 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import junit.framework.TestCase;
 
-public class SharedRoboTaxiTest extends TestCase {
+public class SharedRoboTaxiTestSimple extends TestCase {
     public void testSimple() {
         ArtificialScenarioCreator s = new ArtificialScenarioCreator();
+
+        assertTrue(RoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1).equals(RoboTaxiStatus.STAY));
+        s.roboTaxi1.addRedirectCourseToMenu(SharedCourse.redirectCourse(s.linkUp, "redirect0"));
+        s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.linkUp, 1.0));
+        assertTrue(RoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1).equals(RoboTaxiStatus.REBALANCEDRIVE));
+        s.roboTaxi1.finishRedirection();
 
         s.roboTaxi1.addAVRequestToMenu(s.avRequest1);
         try { // A request can only be added once to a robo Taxi
@@ -41,7 +49,10 @@ public class SharedRoboTaxiTest extends TestCase {
         } catch (Exception e) {
             // ---
         }
-
+        Optional<SharedCourse> secondcourse1 = RoboTaxiUtils.getSecondCourse(s.roboTaxi1);
+        assertTrue(secondcourse1.isPresent());
+        assertTrue(secondcourse1.get().equals(SharedCourse.dropoffCourse(s.avRequest1)));
+        assertTrue(RoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1).equals(RoboTaxiStatus.DRIVETOCUSTOMER));
         s.roboTaxi1.cleanAndAbandonMenu();
         assertEquals(s.roboTaxi1.getUnmodifiableViewOfCourses(), new ArrayList<>());
 
@@ -85,6 +96,8 @@ public class SharedRoboTaxiTest extends TestCase {
         }
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.linkRight, 1.0));
         s.roboTaxi1.pickupNewCustomerOnBoard();
+        assertTrue(RoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1).equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
+
         assertEquals(RoboTaxiUtils.getNumberOnBoardRequests(s.roboTaxi1), 1);
         assertEquals(s.roboTaxi1.getUnmodifiableViewOfCourses().size(), numcourses - 1);
         try { // It should not be Possible to have a menu which plans to pick up more customers than capacity
@@ -129,6 +142,8 @@ public class SharedRoboTaxiTest extends TestCase {
 
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.linkUp, 1.0));
         assertTrue(RoboTaxiUtils.nextCourseIsOfType(s.roboTaxi1, SharedMealType.REDIRECT));
+        assertTrue(RoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1).equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
+
         s.roboTaxi1.finishRedirection();
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.avRequest1.getFromLink(), 1.0));
         s.roboTaxi1.pickupNewCustomerOnBoard();
@@ -153,7 +168,20 @@ public class SharedRoboTaxiTest extends TestCase {
         } catch (Exception e) {
             // ---
         }
-
+        s.roboTaxi1.addRedirectCourseToMenuAtBegining(SharedCourse.redirectCourse(s.linkDepotIn, "backTodepot"));
+        assertEquals(RoboTaxiUtils.getStarterLink(s.roboTaxi1), s.linkDepotIn);
+        s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.linkDepotIn, 1.0));
+        s.roboTaxi1.finishRedirection();
+        
+        s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.linkLeft, 1.0));
+        s.roboTaxi1.startDropoff();
+        s.roboTaxi1.addAVRequestToMenu(s.avRequest5);
+        try {
+            s.roboTaxi1.moveAVCourseToNext(RoboTaxiUtils.getStarterCourse(s.roboTaxi1).get());
+            assertTrue(false);
+        } catch (Exception e) {
+            // ---
+        }
         System.out.println("Robo Taxi Test done");
 
     }

@@ -76,7 +76,7 @@ public class TestPreparer {
 
         // 4) create TravelData
         /** reading the customer requests */
-        TravelData travelData = TravelDataCreator.create(virtualNetwork, networkPrepared, populationPrepared, scenarioOptions, numRt, endTime);
+        TravelData travelData = TravelDataCreator.create(virtualNetwork, networkPrepared, populationPrepared, scenarioOptions.getdtTravelData(), numRt, endTime);
         File travelDataFile = new File(scenarioOptions.getVirtualNetworkName(), scenarioOptions.getTravelDataName());
         TravelDataIO.write(travelDataFile, travelData);
 

@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.Collections;
@@ -64,7 +65,6 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     /** Get Functions */
 
     /* package */ Set<AVRequest> getAssignedAvRequests() {
-        // TODO improve
         Set<AVRequest> avRequests = new HashSet<>();
         for (Map<String, AVRequest> avRequestsMap : register.values()) {
             avRequests.addAll(avRequestsMap.values());
@@ -78,7 +78,6 @@ import ch.ethz.matsim.av.passenger.AVRequest;
                 return Optional.of(requestRegisterEntry.getKey());
             }
         }
-        System.out.println("Check... Here we should not go");
         GlobalAssert.that(false);
         return Optional.ofNullable(null);
     }

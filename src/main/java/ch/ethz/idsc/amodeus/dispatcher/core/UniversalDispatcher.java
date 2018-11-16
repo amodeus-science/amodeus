@@ -262,14 +262,12 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
         GlobalAssert.that(schedule.getCurrentTask() == Schedules.getLastTask(schedule));
     }
 
-    @Override
-    /* package */ final boolean isInPickupRegister(RoboTaxi robotaxi) {
+    protected final boolean isInPickupRegister(RoboTaxi robotaxi) {
         return pickupRegister.containsValue(robotaxi);
     }
 
     /* package */ final boolean removeFromPickupRegisters(AVRequest avRequest) {
         RoboTaxi rt1 = pickupRegister.remove(avRequest);
-        // RoboTaxi rt2 = rqstDrvRegister.remove(avRequest);
         return Objects.isNull(rt1);
     }
 
@@ -369,9 +367,6 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
             simulationObjectCompiler.insertRequests(periodAssignedRequests, RequestStatus.ASSIGNED);
             simulationObjectCompiler.insertRequests(periodPickedUpRequests, RequestStatus.PICKUP);
             simulationObjectCompiler.insertRequests(periodFulfilledRequests.keySet(), RequestStatus.DROPOFF);
-            periodFulfilledRequests.clear();
-            periodAssignedRequests.clear();
-            periodPickedUpRequests.clear();
 
             /** insert {@link RoboTaxi}s */
             simulationObjectCompiler.insertVehicles(getRoboTaxis());
@@ -379,6 +374,11 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
             /** insert information of association of {@link RoboTaxi}s and {@link AVRequest}s */
             simulationObjectCompiler.addRequestRoboTaxiAssoc(pickupRegister);
             simulationObjectCompiler.addRequestRoboTaxiAssoc(rqstDrvRegister);
+            simulationObjectCompiler.addRequestRoboTaxiAssoc(periodFulfilledRequests);
+
+            periodFulfilledRequests.clear();
+            periodAssignedRequests.clear();
+            periodPickedUpRequests.clear();
 
             /** first pass vehicles typically empty, then no storage / communication of {@link SimulationObject}s */
             SimulationObject simulationObject = simulationObjectCompiler.compile();
@@ -413,12 +413,6 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
         RoboTaxi roboTaxi = new RoboTaxi(vehicle, new LinkTimePair(vehicle.getStartLink(), 0.0), vehicle.getStartLink(), RoboTaxiUsageType.SINGLEUSED);
         Event event = new AVVehicleAssignmentEvent(vehicle, 0);
         addRoboTaxi(roboTaxi, event);
-    }
-
-    @Override
-    /* package */ boolean isInRequestRegister(RoboTaxi roboTaxi) {
-        // TODO make sure nobody uses this and it has no effect, only necessary for shared dispatchers so far.
-        return true;
     }
 
     /** updates the divertable locations, i.e., locations from which a {@link RoboTaxi} can deviate

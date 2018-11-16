@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public enum SharedCourseListUtils {
     }
 
     // **************************************************
-    // Get Funcitons
+    // Get Functions
     // **************************************************
 
     public static Set<AVRequest> getOnBoardRequests(List<? extends SharedCourse> courses) {
@@ -69,12 +70,23 @@ public enum SharedCourseListUtils {
         return Optional.ofNullable((hasStarter(courses)) ? courses.get(0) : null);
     }
 
+    public static Optional<SharedCourse> getSecondCourse(List<SharedCourse> courses) {
+        return Optional.ofNullable((hasSecondCourse(courses)) ? courses.get(1) : null);
+    }
+
     // **************************************************
     // Check Shared Course List
     // **************************************************
 
     public static boolean hasStarter(List<? extends SharedCourse> courses) {
         return !courses.isEmpty();
+    }
+
+    public static boolean hasSecondCourse(List<SharedCourse> courses) {
+        if (hasStarter(courses)) {
+            return courses.size() >= 2;
+        }
+        return false;
     }
 
     public static boolean consistencyCheck(List<? extends SharedCourse> courses) {
@@ -95,8 +107,6 @@ public enum SharedCourseListUtils {
         for (SharedCourse course : courses) {
             if (course.getMealType().equals(SharedMealType.PICKUP)) {
                 int pickupIndex = courses.indexOf(course);
-                // This has always to be true as the menu has to contain a dropoff for each pick up
-                // TODO Lukas might be removed soon or changed to global Assert
                 SharedCourse dropoffCourse = SharedCourse.dropoffCourse(course.getAvRequest());
                 GlobalAssert.that(courses.contains(dropoffCourse));
                 int dropofIndex = courses.indexOf(dropoffCourse);

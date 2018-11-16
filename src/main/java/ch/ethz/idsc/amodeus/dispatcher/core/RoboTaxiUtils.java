@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.Optional;
@@ -14,21 +15,36 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 public enum RoboTaxiUtils {
     ;
     public static boolean canPickupNewCustomer(RoboTaxi roboTaxi) {
-        // TODO why does the number of customers has to be larger for a pick up?
         int onBoard = RoboTaxiUtils.getNumberOnBoardRequests(roboTaxi);
-        return onBoard >= 0 && onBoard < roboTaxi.getCapacity();
+        GlobalAssert.that(onBoard >= 0);
+        return onBoard < roboTaxi.getCapacity();
     }
 
     public static boolean checkMenuConsistency(RoboTaxi roboTaxi) {
         return SharedCourseListUtils.checkMenuConsistency(roboTaxi.getUnmodifiableViewOfCourses(), roboTaxi.getCapacity());
     }
 
+    public static boolean plansPickupsOrDropoffs(RoboTaxi roboTaxi) {
+        if (hasNextCourse(roboTaxi)) {
+            return SharedCourseListUtils.getNumberDropoffs(roboTaxi.getUnmodifiableViewOfCourses()) > 0;
+        }
+        return false;
+    }
+
     public static boolean hasNextCourse(RoboTaxi roboTaxi) {
         return SharedCourseListUtils.hasStarter(roboTaxi.getUnmodifiableViewOfCourses());
     }
 
+    public static boolean hasSecondCourse(RoboTaxi roboTaxi) {
+        return SharedCourseListUtils.hasSecondCourse(roboTaxi.getUnmodifiableViewOfCourses());
+    }
+
     public static Optional<SharedCourse> getStarterCourse(RoboTaxi roboTaxi) {
         return SharedCourseListUtils.getStarterCourse(roboTaxi.getUnmodifiableViewOfCourses());
+    }
+
+    public static Optional<SharedCourse> getSecondCourse(RoboTaxi roboTaxi) {
+        return SharedCourseListUtils.getSecondCourse(roboTaxi.getUnmodifiableViewOfCourses());
     }
 
     public static Link getStarterLink(RoboTaxi sRoboTaxi) {
@@ -55,6 +71,28 @@ public enum RoboTaxiUtils {
 
     public static int getNumberOnBoardRequests(RoboTaxi roboTaxi) {
         return (int) SharedCourseListUtils.getNumberCustomersOnBoard(roboTaxi.getUnmodifiableViewOfCourses());
+    }
+
+    /* package */ static RoboTaxiStatus calculateStatusFromMenu(RoboTaxi roboTaxi) {
+        Optional<SharedCourse> nextCourseOptional = getStarterCourse(roboTaxi);
+        if (nextCourseOptional.isPresent()) {
+            if (getNumberOnBoardRequests(roboTaxi) > 0) {
+                return RoboTaxiStatus.DRIVEWITHCUSTOMER;
+            } else //
+            if (nextCourseOptional.get().getMealType().equals(SharedMealType.PICKUP)) {
+                return RoboTaxiStatus.DRIVETOCUSTOMER;
+            } else //
+            if (nextCourseOptional.get().getMealType().equals(SharedMealType.REDIRECT)) {
+                if (SharedCourseListUtils.getNumberPickups(roboTaxi.getUnmodifiableViewOfCourses()) > 0) {
+                    return RoboTaxiStatus.DRIVETOCUSTOMER;
+                }
+                return RoboTaxiStatus.REBALANCEDRIVE;
+            } else {
+                System.out.println("We have a not Covered Status of the Robotaxi");
+                GlobalAssert.that(false);
+            }
+        }
+        return RoboTaxiStatus.STAY;
     }
 
 }

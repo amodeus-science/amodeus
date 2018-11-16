@@ -10,6 +10,7 @@ import ch.ethz.idsc.amodeus.dispatcher.FeedforwardFluidicRebalancingPolicy;
 import ch.ethz.idsc.amodeus.dispatcher.FeedforwardFluidicTimeVaryingRebalancingPolicy;
 import ch.ethz.idsc.amodeus.dispatcher.GlobalBipartiteMatchingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.SQMDispatcher;
+import ch.ethz.idsc.amodeus.dispatcher.shared.ExtDemandSupplyBeamSharing;
 import ch.ethz.idsc.amodeus.dispatcher.shared.NorthPoleSharedDispatcher;
 import ch.ethz.matsim.av.framework.AVUtils;
 
@@ -42,8 +43,12 @@ public class AmodeusDispatcherModule extends AbstractModule {
         bind(SQMDispatcher.Factory.class);
         AVUtils.bindDispatcherFactory(binder(), SQMDispatcher.class.getSimpleName()).to(SQMDispatcher.Factory.class);
 
+        /** ride sharing dispatchers */
         bind(NorthPoleSharedDispatcher.Factory.class);
         AVUtils.bindDispatcherFactory(binder(), NorthPoleSharedDispatcher.class.getSimpleName()).to(NorthPoleSharedDispatcher.Factory.class);
+
+        bind(ExtDemandSupplyBeamSharing.Factory.class);
+        AVUtils.bindDispatcherFactory(binder(), ExtDemandSupplyBeamSharing.class.getSimpleName()).to(ExtDemandSupplyBeamSharing.Factory.class);
 
     }
 }
