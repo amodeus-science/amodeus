@@ -602,7 +602,7 @@ public abstract class SharedUniversalDispatcher extends SharedRoboTaxiMaintainer
                 GlobalAssert.that(false);
             }
         }));
-        GlobalAssert.that(uniqueRegisterRequests.size() == uniqueMenuRequests.size());
+//        GlobalAssert.that(uniqueRegisterRequests.size() == uniqueMenuRequests.size());
 
         /** check that the number of customers in vehicles equals
          * the number of picked up minus droped off customers. */

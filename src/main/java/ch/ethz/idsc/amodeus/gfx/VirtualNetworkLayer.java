@@ -49,7 +49,8 @@ public class VirtualNetworkLayer extends ViewerLayer {
 
         if (drawVNodes) {
             if (virtualNodeShader.renderBoundary()) {
-                graphics.setColor(new Color(128, 128, 128, 128 + 16));
+                //graphics.setColor(new Color(128, 128, 128, 128 + 16));
+                graphics.setColor(Color.BLACK);
                 for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet())
                     graphics.draw(entry.getValue());
             }
