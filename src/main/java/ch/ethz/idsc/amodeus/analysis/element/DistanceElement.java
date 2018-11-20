@@ -2,6 +2,7 @@
 package ch.ethz.idsc.amodeus.analysis.element;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -40,7 +41,7 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
     public final Tensor occupancyTensor = Tensors.empty();
     public final Set<Integer> requestIndices = new HashSet<>();
 
-    // fields assigned in compile
+    /** fields assigned in compile */
     public Tensor totalDistancesPerVehicle;
     public Tensor distancesOverDay;
     public double totalDistance;
@@ -51,8 +52,11 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
     private double avgTripDistance;
     public double avgOccupancy;
 
-    // distRatio;
+    /** distRatio */
     public Tensor ratios;
+
+    /** variable to check for other classes if the consolidatioin already happend */
+    public boolean consolidated = false;
 
     public DistanceElement(int numVehicles, int size, MatsimAmodeusDatabase db) {
         IntStream.range(0, numVehicles).forEach(i -> list.add(new VehicleStatistic(size, db)));
@@ -103,6 +107,7 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
         totalDistanceRatio = totalDistanceWtCst / totalDistance;
         avgTripDistance = totalDistanceWtCst / requestIndices.size();
         ratios = Transpose.of(Join.of(Tensors.of(occupancyTensor), Tensors.of(distRatio)));
+        consolidated = true;
     }
 
     /** @return newest distances available {distTotal,distWtCst} */
@@ -114,6 +119,11 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
                 .orElse(Array.zeros(2));
     }
 
+    /** @return An unmodifiable List of all the Vehicle Statistics for all Vehicles in the fleet. */
+    public List<VehicleStatistic> getVehicleStatistics() {
+        return Collections.unmodifiableList(list);
+    }
+    
     @Override // from TotalValueAppender
     public Map<TotalValueIdentifier, String> getTotalValues() {
         Map<TotalValueIdentifier, String> map = new HashMap<>();
