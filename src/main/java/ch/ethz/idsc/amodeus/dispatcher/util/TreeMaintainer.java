@@ -44,7 +44,7 @@ public class TreeMaintainer<T> {
         VectorQ.requireLength(coord, 2); // ensure that vector of length 2;
         return tree.getClosest(coord.Get(0).number().doubleValue(), coord.Get(1).number().doubleValue());
     }
-
+    
     /** Adds the {@link T} @param t to the Tree Maintainer if it is not yet contained in the tree. */
     public void add(T t) {
         if (!set.contains(t)) {
