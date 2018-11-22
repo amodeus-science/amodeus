@@ -18,6 +18,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 public final class TheApocalypse {
     /** the seed is deliberately public */
     public static final long DEFAULT_SEED = 7582456789l;
+//    public static final long DEFAULT_SEED = 200000l;
 
     public static TheApocalypse reducesThe(Population population) {
         return new TheApocalypse(population);
