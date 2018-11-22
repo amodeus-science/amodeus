@@ -34,10 +34,13 @@ public class LoadLayer extends ViewerLayer {
     private static final int HISTORY_MAX = 10;
 
     private final Map<Long, SimulationObject> lruCache = LruCache.create(HISTORY_MAX);
-    public volatile boolean drawLoad = false;
+    public volatile boolean drawLoad;
+    public volatile int historyLength;
+    public volatile int loadScale;
 
-    public volatile int historyLength = 4;
-    public volatile int loadScale = 5;
+    public LoadLayer(AmodeusComponent amodeusComponent) {
+        super(amodeusComponent);
+    }
 
     @Override
     protected void paint(Graphics2D graphics, SimulationObject ref) {
@@ -136,6 +139,18 @@ public class LoadLayer extends ViewerLayer {
             }
             rowPanel.add(jPanel);
         }
+    }
+
+    public void updateSettings(ViewerSettings settings) {
+        settings.drawLoad = drawLoad;
+        settings.historyLength = historyLength;
+        settings.loadScale = loadScale;
+    }
+
+    public void loadSettings(ViewerSettings settings) {
+        drawLoad = settings.drawLoad;
+        historyLength = settings.historyLength;
+        loadScale = settings.loadScale;
     }
 
 }
