@@ -55,5 +55,4 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         return new RebalancingDirectives(blocks.getRebalancingDirectives(network, timeDb, now));
     }
 
-
 }

@@ -44,7 +44,7 @@ public class TreeMaintainer<T> {
         VectorQ.requireLength(coord, 2); // ensure that vector of length 2;
         return tree.getClosest(coord.Get(0).number().doubleValue(), coord.Get(1).number().doubleValue());
     }
-    
+
     /** Adds the {@link T} @param t to the Tree Maintainer if it is not yet contained in the tree. */
     public void add(T t) {
         if (!set.contains(t)) {
@@ -74,6 +74,18 @@ public class TreeMaintainer<T> {
 
     public Collection<T> inFrame(Rect bounds) {
         return tree.getRectangle(bounds, new HashSet<>());
+    }
+
+    /**
+     * Gets all objects within a certain distance around x/y
+     *
+     * @param x left-right location, longitude
+     * @param y up-down location, latitude
+     * @param distance the maximal distance returned objects can be away from x/y
+     * @return the objects found within distance to x/y
+     */
+    public Collection<T> disk(double x, double y, double distance) {
+        return tree.getDisk(x, y, distance);
     }
 
     public boolean contains(Tensor coord) {

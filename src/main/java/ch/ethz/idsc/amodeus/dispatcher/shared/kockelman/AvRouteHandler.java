@@ -15,7 +15,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
     NavigableMap<Double, Map<RoboTaxi, Set<SharedAvRoute>>> routes = new TreeMap<>();
 
-    /*package*/ void add(RoboTaxi roboTaxi, SharedAvRoute sharedAvRoute) {
+    /* package */ void add(RoboTaxi roboTaxi, SharedAvRoute sharedAvRoute) {
         Double endTime = sharedAvRoute.getEndTime();
         if (!routes.containsKey(endTime)) {
             routes.put(endTime, new HashMap<>());
@@ -26,11 +26,11 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         routes.get(endTime).get(roboTaxi).add(sharedAvRoute);
     }
 
-    /*package*/ void remove(Double doubleValue) {
+    /* package */ void remove(Double doubleValue) {
         routes.remove(doubleValue);
     }
 
-    /*package*/ void remove(RoboTaxi roboTaxi, SharedAvRoute sharedAvRoute) {
+    /* package */ void remove(RoboTaxi roboTaxi, SharedAvRoute sharedAvRoute) {
         Double endTime = sharedAvRoute.getEndTime();
         GlobalAssert.that(routes.containsKey(endTime));
         GlobalAssert.that(routes.get(endTime).containsKey(roboTaxi));
@@ -44,23 +44,23 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         }
     }
 
-    /*package*/ boolean contains(Double containingValue) {
+    /* package */ boolean contains(Double containingValue) {
         return routes.containsKey(containingValue);
     }
 
-    /*package*/ Map<RoboTaxi, Set<SharedAvRoute>> getCopyOfNext() {
+    /* package */ Map<RoboTaxi, Set<SharedAvRoute>> getCopyOfNext() {
         return new HashMap<>(routes.firstEntry().getValue());
     }
 
-    /*package*/ int getNumbervalues() {
+    /* package */ int getNumbervalues() {
         return routes.size();
     }
 
-    /*package*/ double getNextvalue() {
+    /* package */ double getNextvalue() {
         return routes.firstKey();
     }
 
-    /*package*/ boolean isEmpty() {
+    /* package */ boolean isEmpty() {
         return routes.isEmpty();
     }
 

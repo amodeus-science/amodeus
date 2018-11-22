@@ -1,10 +1,11 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared.kockelman;
 
+import java.util.Collection;
 import java.util.NavigableMap;
 import java.util.Optional;
-import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.matsim.api.core.v01.network.Link;
 
@@ -22,7 +23,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param timeDb
      * @param maxTime
      * @return */
-    /* package */ static NavigableMap<Double, RoboTaxi> getRoboTaxisWithinMaxTime(Link link, Set<RoboTaxi> robotaxis, TravelTimeCalculatorCached timeDb, double maxTime) {
+    /* package */ static NavigableMap<Double, RoboTaxi> getRoboTaxisWithinMaxTime(Link link, Collection<RoboTaxi> robotaxis, TravelTimeCalculatorCached timeDb, double maxTime) {
         NavigableMap<Double, RoboTaxi> map = new TreeMap<>();
         for (RoboTaxi roboTaxi : robotaxis) {
             double travelTimeToLink = timeDb.timeFromTo(link, roboTaxi.getDivertableLocation()).number().doubleValue();
@@ -38,15 +39,18 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * The Optional RoboTaxi is present if there exists a Robotaxi in the set which can reach the AV Request location within {@link maxTime}. It is Empty if no Robo
      * Taxi in the Set fulfills this constraint.
      * 
-     * @param unassignedRoboTaxis
+     * @param roboTaxiMaintainer
      * @param avRequest
      * @param maxTime
      * @param now
      * @param timeDb
      * @return */
-    /* package */ static Optional<RoboTaxi> getClosestRoboTaxiWithinMaxTime(Set<RoboTaxi> unassignedRoboTaxis, AVRequest avRequest, double maxTime, double now,
+    /* package */ static Optional<RoboTaxi> getClosestUnassignedRoboTaxiWithinMaxTime(RoboTaxiMaintainer roboTaxiMaintainer, AVRequest avRequest, double maxTime, double now,
             TravelTimeCalculatorCached timeDb) {
-        NavigableMap<Double, RoboTaxi> roboTaxis = RoboTaxiUtilsFagnant.getRoboTaxisWithinMaxTime(avRequest.getFromLink(), unassignedRoboTaxis, timeDb, maxTime);
+        Collection<RoboTaxi> roboTaxisWithinMaxTimedisk = roboTaxiMaintainer.getRoboTaxisWithinFreeSpeedDisk(avRequest.getFromLink().getCoord(), maxTime);
+        Collection<RoboTaxi> roboTaxisOndiskAndUnassigned = roboTaxisWithinMaxTimedisk.stream().filter(rt -> roboTaxiMaintainer.getUnassignedRoboTaxis().contains(rt))
+                .collect(Collectors.toSet());
+        NavigableMap<Double, RoboTaxi> roboTaxis = RoboTaxiUtilsFagnant.getRoboTaxisWithinMaxTime(avRequest.getFromLink(), roboTaxisOndiskAndUnassigned, timeDb, maxTime);
         if (roboTaxis.isEmpty()) {
             return Optional.empty();
         }

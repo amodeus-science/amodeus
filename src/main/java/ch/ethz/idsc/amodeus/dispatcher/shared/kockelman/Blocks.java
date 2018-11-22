@@ -31,7 +31,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     private final int minNumberForRebalance;
     private final Rect outerBoundsRect;
 
-    /*package*/ Blocks(Network network, double blockLengthX, double BlockLengthY, int minNumberRobotaxisForRebalance, double historicalDataTime, double predictedTime) {
+    /* package */ Blocks(Network network, double blockLengthX, double BlockLengthY, int minNumberRobotaxisForRebalance, double historicalDataTime, double predictedTime) {
         this.minNumberForRebalance = minNumberRobotaxisForRebalance;
         outerBoundsRect = BlockUtils.getOuterBoundsOf(network);
         int nX = BlockUtils.calcNumberBlocksInDirection(outerBoundsRect.minX, outerBoundsRect.maxX, blockLengthX);
@@ -125,7 +125,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         return null;
     }
 
-    /*package*/ void setNewRoboTaxis(Set<RoboTaxi> allAvailableRobotaxisforRebalance) {
+    /* package */ void setNewRoboTaxis(Set<RoboTaxi> allAvailableRobotaxisforRebalance) {
         blocks.forEach((k, v) -> v.removeAllRobotaxis());
         numberFreeRoboTaxis = allAvailableRobotaxisforRebalance.size();
         for (RoboTaxi roboTaxi : allAvailableRobotaxisforRebalance) {
@@ -133,7 +133,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         }
     }
 
-    /*package*/ void setNewUnassignedRequests(Set<AVRequest> allUnassignedAVRequests) {
+    /* package */ void setNewUnassignedRequests(Set<AVRequest> allUnassignedAVRequests) {
         blocks.forEach((k, v) -> v.removeAllUnassignedRequests());
         numberUnassignedRequests = allUnassignedAVRequests.size();
         for (AVRequest avRequest : allUnassignedAVRequests) {
@@ -141,7 +141,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         }
     }
 
-    /*package*/ void setAllRequestCoordsLastHour(Set<Link> allRequestCoordsLastHour) {
+    /* package */ void setAllRequestCoordsLastHour(Set<Link> allRequestCoordsLastHour) {
         blocks.forEach((k, v) -> v.removeAllRequestCoordsLastHour());
         for (Link requestLinkLastHour : allRequestCoordsLastHour) {
             blocks.get(linkBlockLookup.get(requestLinkLastHour).getId()).addRequestCoordLastHour(requestLinkLastHour.getCoord());
@@ -174,7 +174,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         }
     }
 
-    /*package*/ Map<RoboTaxi, Link> getRebalancingDirectives(Network network, TravelTimeCalculatorCached timeDb, double now) {
+    /* package */ Map<RoboTaxi, Link> getRebalancingDirectives(Network network, TravelTimeCalculatorCached timeDb, double now) {
         calculateBlockBalances();
         calculateRebalancing();
 
