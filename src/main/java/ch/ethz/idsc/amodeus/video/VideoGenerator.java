@@ -1,25 +1,36 @@
 package ch.ethz.idsc.amodeus.video;
 
-import ch.ethz.idsc.amodeus.data.ReferenceFrame;
-import ch.ethz.idsc.amodeus.ext.Static;
-import ch.ethz.idsc.amodeus.gfx.*;
-import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
-import ch.ethz.idsc.amodeus.net.*;
-import ch.ethz.idsc.amodeus.options.ScenarioOptions;
-import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.amodeus.view.gheat.gui.ColorSchemes;
-import ch.ethz.idsc.amodeus.view.jmapviewer.tilesources.GrayMapnikTileSource;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkGet;
+import java.awt.Dimension;
+import java.io.File;
+import java.util.Objects;
+
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 
-import java.awt.*;
-import java.io.File;
-import java.util.Objects;
+import ch.ethz.idsc.amodeus.data.ReferenceFrame;
+import ch.ethz.idsc.amodeus.gfx.AmodeusComponent;
+import ch.ethz.idsc.amodeus.gfx.ClockLayer;
+import ch.ethz.idsc.amodeus.gfx.HudLayer;
+import ch.ethz.idsc.amodeus.gfx.LinkLayer;
+import ch.ethz.idsc.amodeus.gfx.LoadLayer;
+import ch.ethz.idsc.amodeus.gfx.RequestsLayer;
+import ch.ethz.idsc.amodeus.gfx.TilesLayer;
+import ch.ethz.idsc.amodeus.gfx.VehiclesLayer;
+import ch.ethz.idsc.amodeus.gfx.ViewerConfig;
+import ch.ethz.idsc.amodeus.gfx.VirtualNetworkLayer;
+import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
+import ch.ethz.idsc.amodeus.net.IterationFolder;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
+import ch.ethz.idsc.amodeus.net.SimulationObject;
+import ch.ethz.idsc.amodeus.net.StorageSupplier;
+import ch.ethz.idsc.amodeus.net.StorageUtils;
+import ch.ethz.idsc.amodeus.options.ScenarioOptions;
+import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
+import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkGet;
 
 public class VideoGenerator implements Runnable {
     Thread thread;
@@ -36,7 +47,6 @@ public class VideoGenerator implements Runnable {
     }
 
     public void run() {
-        Static.setup();
         try {
             // load options
             ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
@@ -58,7 +68,7 @@ public class VideoGenerator implements Runnable {
     }
 
     public void export(Network network, ReferenceFrame referenceFrame, //
-                              ScenarioOptions scenarioOptions, File outputSubDirectory) throws Exception {
+            ScenarioOptions scenarioOptions, File outputSubDirectory) throws Exception {
 
         GlobalAssert.that(Objects.nonNull(network));
 
