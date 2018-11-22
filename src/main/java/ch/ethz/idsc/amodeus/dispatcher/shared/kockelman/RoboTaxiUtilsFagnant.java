@@ -23,9 +23,10 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param timeDb
      * @param maxTime
      * @return */
-    /* package */ static NavigableMap<Double, RoboTaxi> getRoboTaxisWithinMaxTime(Link link, Collection<RoboTaxi> robotaxis, TravelTimeCalculatorCached timeDb, double maxTime) {
+    /* package */ static NavigableMap<Double, RoboTaxi> getRoboTaxisWithinMaxTime(Link link, Collection<RoboTaxi> robotaxis, TravelTimeCalculatorCached timeDb, double maxTime, RoboTaxiMaintainer roboTaxiMaintainer) {
+        Collection<RoboTaxi> closeRoboTaxis =roboTaxiMaintainer.getRoboTaxisWithinFreeSpeedDisk(link.getCoord(), maxTime).stream().filter(rt->robotaxis.contains(rt)).collect(Collectors.toSet());
         NavigableMap<Double, RoboTaxi> map = new TreeMap<>();
-        for (RoboTaxi roboTaxi : robotaxis) {
+        for (RoboTaxi roboTaxi : closeRoboTaxis) {
             double travelTimeToLink = timeDb.timeFromTo(link, roboTaxi.getDivertableLocation()).number().doubleValue();
             if (travelTimeToLink < maxTime) {
                 map.put(travelTimeToLink, roboTaxi);
@@ -47,10 +48,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @return */
     /* package */ static Optional<RoboTaxi> getClosestUnassignedRoboTaxiWithinMaxTime(RoboTaxiMaintainer roboTaxiMaintainer, AVRequest avRequest, double maxTime, double now,
             TravelTimeCalculatorCached timeDb) {
-        Collection<RoboTaxi> roboTaxisWithinMaxTimedisk = roboTaxiMaintainer.getRoboTaxisWithinFreeSpeedDisk(avRequest.getFromLink().getCoord(), maxTime);
-        Collection<RoboTaxi> roboTaxisOndiskAndUnassigned = roboTaxisWithinMaxTimedisk.stream().filter(rt -> roboTaxiMaintainer.getUnassignedRoboTaxis().contains(rt))
-                .collect(Collectors.toSet());
-        NavigableMap<Double, RoboTaxi> roboTaxis = RoboTaxiUtilsFagnant.getRoboTaxisWithinMaxTime(avRequest.getFromLink(), roboTaxisOndiskAndUnassigned, timeDb, maxTime);
+        NavigableMap<Double, RoboTaxi> roboTaxis = RoboTaxiUtilsFagnant.getRoboTaxisWithinMaxTime(avRequest.getFromLink(), roboTaxiMaintainer.getUnassignedRoboTaxis(), timeDb,
+                maxTime, roboTaxiMaintainer);
         if (roboTaxis.isEmpty()) {
             return Optional.empty();
         }

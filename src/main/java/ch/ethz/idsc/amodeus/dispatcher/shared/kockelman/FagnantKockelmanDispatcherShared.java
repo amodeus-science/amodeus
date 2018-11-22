@@ -58,7 +58,7 @@ public class FagnantKockelmanDispatcherShared extends SharedRebalancingDispatche
 
     /** Dispatcher Settings Identifiers */
     private static final String MAXWAITTIMEIDENTIFIER = "maxWaitTime";
-    private static final String MAXDRIVETIMEINCREASEIDENTIFIER = "maxDrieveTimeIncrease";
+    private static final String MAXDRIVETIMEINCREASEIDENTIFIER = "maxDriveTimeIncrease";
     private static final String MAXREMAININGTIMEINCREASEIDENTIFIER = "maxRemainingTimeIncrease";
     private static final String MAXABSOLUTETRAVELTIMEINCREASEIDENTIFIER = "maxAbsolutDriveTimeIncrease";
 
@@ -126,8 +126,6 @@ public class FagnantKockelmanDispatcherShared extends SharedRebalancingDispatche
     @Override
     protected void redispatch(double now) {
         final long round_now = Math.round(now);
-        Long time = System.nanoTime();
-
         requestMaintainer.updatePickupTimes(getAVRequests(), now);
 
         if (round_now % dispatchPeriod == 0) {
@@ -135,7 +133,6 @@ public class FagnantKockelmanDispatcherShared extends SharedRebalancingDispatche
 
             /** prepare the registers for the dispatching */
             roboTaxiMaintainer.update(getRoboTaxis(), getDivertableUnassignedRoboTaxis());
-
             requestMaintainer.addUnassignedRequests(getUnassignedAVRequests(), timeDb);
             requestMaintainer.updateLastHourRequests(now, BINSIZETRAVELDEMAND);
 
@@ -145,15 +142,9 @@ public class FagnantKockelmanDispatcherShared extends SharedRebalancingDispatche
                     roboTaxiMaintainer.getUnassignedRoboTaxis(), //
                     requestMaintainer.getCopyOfUnassignedAVRequests(), lastHourRequests);
 
-            System.err.println("1 Rebalancing: " + (System.nanoTime() - time) / 1000000);
-            time = System.nanoTime();
-            Long timeSharing = Long.valueOf(0);
-            kockelmanRouteValidation.setCalculationTimeTo0();
             /** for all AV Requests in the order of their submision, try to find the closest
              * vehicle and assign */
             for (AVRequest avRequest : requestMaintainer.getInOrderOffSubmissionTime()) {
-                Long time2 = System.nanoTime();
-
                 Set<RoboTaxi> robotaxisWithMenu = getRoboTaxis().stream().filter(rt -> RoboTaxiUtils.plansPickupsOrDropoffs(rt)).collect(Collectors.toSet());
 
                 /** THIS IS WHERE WE CALCULATE THE SHARING POSSIBILITIES */
@@ -168,6 +159,7 @@ public class FagnantKockelmanDispatcherShared extends SharedRebalancingDispatche
                     requestMaintainer.removeFromUnasignedRequests(avRequest);
                     rebalanceDirectives.removefromDirectives(roboTaxi);
                     roboTaxi.updateMenu(rideSharingRoboTaxi.get().getValue());
+
                 } else {
                     /** in Case No sharing possibility is present, try to find a close enough vehicle */
                     Optional<RoboTaxi> emptyRoboTaxi = RoboTaxiUtilsFagnant.getClosestUnassignedRoboTaxiWithinMaxTime(roboTaxiMaintainer, avRequest,
@@ -187,15 +179,8 @@ public class FagnantKockelmanDispatcherShared extends SharedRebalancingDispatche
                         }
                     }
                 }
-                timeSharing += System.nanoTime() - time2;
 
             }
-
-            System.err.println("2 Calculate Sharing: " + (System.nanoTime() - time) / 1000000);
-            time = System.nanoTime();
-
-            System.err.println("2a Sharing Finding: " + timeSharing / 1000000);
-            System.err.println("2b route Validation " + kockelmanRouteValidation.calculationTime / 1000000);
 
             /** execute New Rebalance Directives */
             for (Entry<RoboTaxi, Link> entry : rebalanceDirectives.getDirectives().entrySet()) {
@@ -210,7 +195,7 @@ public class FagnantKockelmanDispatcherShared extends SharedRebalancingDispatche
                     forEach(rt -> {
                         setRoboTaxiRebalance(rt, rt.getDivertableLocation());
                     });
-
+            roboTaxiMaintainer.clear();
         }
     }
 

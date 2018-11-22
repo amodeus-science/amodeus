@@ -49,6 +49,8 @@ import ch.ethz.idsc.tensor.qty.Quantity;
             Link fromLink = (i == 0) ? currentLink : list.get(i - 1).getLink();
             Link toLink = list.get(i).getLink();
             Scalar driveTime = timeDb.timeFromTo(fromLink, toLink);
+            // TODO If the speed becomes to low in the future, here we could improve it by checking the constraints here already to abort a route generation if the
+            // constraints are not fulfilled.
             SharedRoutePoint sharedRoutePoint = new SharedRoutePoint(list.get(i), departureTime.add(driveTime).number().doubleValue(), stopDuration);
             routePoints.add(sharedRoutePoint);
             departureTime = Quantity.of(sharedRoutePoint.getEndTime(), SI.SECOND);

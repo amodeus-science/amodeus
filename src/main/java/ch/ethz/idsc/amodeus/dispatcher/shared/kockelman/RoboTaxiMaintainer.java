@@ -10,7 +10,6 @@ import org.matsim.core.network.NetworkUtils;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.util.TreeMaintainer;
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
@@ -27,7 +26,6 @@ import ch.ethz.idsc.tensor.Tensors;
     }
 
     public void update(Collection<RoboTaxi> newAllRoboTaxis, Collection<RoboTaxi> unassignedRoboTaxis) {
-        GlobalAssert.that(unassignedRoboTaxis.isEmpty() && allRoboTaxis.size() == 0);
         newAllRoboTaxis.forEach(rt -> allRoboTaxis.add(rt));
         unassignedRoboTaxis.stream().forEach(rt -> this.unassignedRoboTaxis.add(rt));
     }
