@@ -10,16 +10,16 @@ import org.matsim.core.network.NetworkUtils;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.amodeus.util.math.SI;
-import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 /* package */ class GridRebalancing {
     private final Blocks blocks;
     private final Network network;
-    private LeastCostCalculatorDatabaseOneTime timeDb;
+    private final TravelTimeCalculatorCached timeDb;
 
-    /* package */ GridRebalancing(Network network, double gridDistance, int minNumberRobotaxis) {
+    /* package */ GridRebalancing(Network network, TravelTimeCalculatorCached timeDb, double gridDistance, int minNumberRobotaxis, double historicalDataTime,
+            double predictedTime) {
+        this.timeDb = timeDb;
         double[] networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
         Coord southWestCoord = new Coord(networkBounds[0], networkBounds[1]);
         Coord southEastCoord = new Coord(networkBounds[2], networkBounds[1]);
@@ -41,23 +41,19 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         double yDistCoord = Math.abs(southWestCoord.getY() - northEastCoord.getY());
         double blockLengthY = yDistCoord / nY;
 
-        this.blocks = new Blocks(network, blockLengthX, blockLengthY, minNumberRobotaxis);
+        this.blocks = new Blocks(network, blockLengthX, blockLengthY, minNumberRobotaxis, historicalDataTime, predictedTime);
         this.network = network;
-    }
-
-    /* package */ void setTimeCalculator(LeastCostCalculatorDatabaseOneTime timeDb) {
-        this.timeDb = timeDb;
     }
 
     /* package */ RebalancingDirectives getRebalancingDirectives(double now, Set<RoboTaxi> allAvailableRobotaxisforRebalance, Set<AVRequest> allUnassignedAVRequests,
             Set<Link> allRequestLinksLastHour) {
-        GlobalAssert.that(timeDb.isForNow(Quantity.of(now, SI.SECOND)));
+        GlobalAssert.that(timeDb.isForNow(now));
         blocks.setAllRequestCoordsLastHour(allRequestLinksLastHour);
         blocks.setNewUnassignedRequests(allUnassignedAVRequests);
         blocks.setNewRoboTaxis(allAvailableRobotaxisforRebalance);
 
         return new RebalancingDirectives(blocks.getRebalancingDirectives(network, timeDb, now));
-
     }
+
 
 }

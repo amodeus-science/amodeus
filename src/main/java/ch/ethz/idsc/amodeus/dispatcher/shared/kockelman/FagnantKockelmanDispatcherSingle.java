@@ -28,12 +28,9 @@ import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.TreeMaintainer;
 import ch.ethz.idsc.amodeus.dispatcher.util.TreeMultipleItems;
-import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
-import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.config.AVGeneratorConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
@@ -47,7 +44,6 @@ import ch.ethz.matsim.av.router.AVRouter;
 public class FagnantKockelmanDispatcherSingle extends RebalancingDispatcher {
 
     private final int dispatchPeriod = 300;
-    private final int rebalancingPeriod = 300;
 
     /** ride sharing parameters */
     private static final int WAITLISTTIME = 300;
@@ -66,9 +62,8 @@ public class FagnantKockelmanDispatcherSingle extends RebalancingDispatcher {
     private final Set<AVRequest> waitList = new HashSet<>();
     private final Set<AVRequest> extremWaitList = new HashSet<>();
 
-    // private final AVRouter avRouter;
-    private final LeastCostPathCalculator calculator;
-    private final Network network;
+    private static final double MAXLAGTRAVELTIMECALCULATION = 1800.0;
+    private final TravelTimeCalculatorCached timeDb;
 
     private final GridRebalancing kockelmanRebalancing;
 
@@ -76,21 +71,17 @@ public class FagnantKockelmanDispatcherSingle extends RebalancingDispatcher {
             Config config, AVDispatcherConfig avDispatcherConfig, //
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, MatsimAmodeusDatabase db) {
         super(config, avDispatcherConfig, travelTime, router, eventsManager, db);
-        SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
-        // dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 300);
-        // rebalancingPeriod = safeConfig.getInteger("rebalancePeriod", 300);
 
-        this.network = network;
-        // this.avRouter = router;
         double[] networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
         this.unassignedRoboTaxis = new TreeMaintainer<>(networkBounds, this::getRoboTaxiLoc);
         this.unassignedRequests = new TreeMultipleItems<>(this::getSubmissionTime);
         this.requestsLastHour = new TreeMultipleItems<>(this::getSubmissionTime);
 
         FastAStarLandmarksFactory factory = new FastAStarLandmarksFactory();
-        calculator = EasyPathCalculator.prepPathCalculator(network, factory);
-        this.kockelmanRebalancing = new GridRebalancing(network, REBALANCINGGRIDDISTANCE, MINNUMBERROBOTAXISINBLOCKTOREBALANCE);
+        LeastCostPathCalculator calculator = EasyPathCalculator.prepPathCalculator(network, factory);
+        timeDb = TravelTimeCalculatorCached.of(calculator, MAXLAGTRAVELTIMECALCULATION);
 
+        this.kockelmanRebalancing = new GridRebalancing(network, timeDb, REBALANCINGGRIDDISTANCE, MINNUMBERROBOTAXISINBLOCKTOREBALANCE, BINSIZETRAVELDEMAND, dispatchPeriod);
     }
 
     @Override
@@ -98,8 +89,7 @@ public class FagnantKockelmanDispatcherSingle extends RebalancingDispatcher {
         final long round_now = Math.round(now);
 
         if (round_now % dispatchPeriod == 0) {
-            LeastCostCalculatorDatabaseOneTime timeDb = LeastCostCalculatorDatabaseOneTime.of(calculator, Quantity.of(now, SI.SECOND));
-            kockelmanRebalancing.setTimeCalculator(timeDb);
+            timeDb.update(now);
 
             /** get open requests and available vehicles and put them into the desired
              * structures. Furthermore add all the requests to the one hour bin which is

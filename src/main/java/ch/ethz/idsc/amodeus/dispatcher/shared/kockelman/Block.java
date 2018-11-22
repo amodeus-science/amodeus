@@ -45,11 +45,10 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     private int totalUnassignedRequests;
 
     /** Properties of the Rebalancing */
-    // TODO should come from OUtside
-    private static final double TIMEOFAVERAGE = 3600.0;
-    private static final double PERDICTEDTIME = 300.0;
+    private final double historicalDataTime;
+    private final double predictedTime;
 
-    public Block(Rect bounds, Network network, int id) {
+    public Block(Rect bounds, Network network, int id, double historicalDataTime, double predictedTime) {
         this.bounds = bounds;
 
         this.id = id;
@@ -57,6 +56,8 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         centerLink = NetworkUtils.getNearestLink(network, centerCoord);
         unassignedRequests = 0;
         freeRoboTaxis = new HashSet<>();
+        this.historicalDataTime = historicalDataTime;
+        this.predictedTime = predictedTime;
     }
 
     public void addRoboTaxi(RoboTaxi roboTaxi) {
@@ -78,7 +79,6 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         blockFrom.adjacentBlocks.get(blockTo).incrementAndGet();
         blockFrom.freeRobotaxiInRebalancing -= 1;
         blockTo.freeRobotaxiInRebalancing += 1;
-        // TODO Check if its valid to update both block balances
         blockFrom.calculateBlockBalanceInternal();
         blockTo.calculateBlockBalanceInternal();
     }
@@ -110,7 +110,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
      * @param avRouter
      * @param now
      * @return */
-    public Map<RoboTaxi, Block> executeRebalance(Network network, LeastCostCalculatorDatabaseOneTime timeDb, double now) {
+    public Map<RoboTaxi, Block> executeRebalance(Network network, TravelTimeCalculatorCached timeDb, double now) {
         Map<RoboTaxi, Block> rebalanceDirectives = new HashMap<>();
         int numRebalancings = getNumberPushingVehicles();
         GlobalAssert.that(numRebalancings <= freeRoboTaxis.size());
@@ -263,17 +263,12 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     }
 
     public int getNumberOfExpectedRequests() {
-        return (int) Math.round(allRequestCoordsLastHour.size() / TIMEOFAVERAGE * PERDICTEDTIME);
-        // return expectedRequests;
+        return (int) Math.round(allRequestCoordsLastHour.size() / historicalDataTime * predictedTime);
     }
 
     public Set<RoboTaxi> getFreeRoboTaxis() {
         return freeRoboTaxis;
     }
-
-    // public int getNumberOfFreeRoboTaxisReal() {
-    // return freeRoboTaxis.size();
-    // }
 
     public void calculateBlockBalance(int savTotal, int demandTotal) {
         totalFreeRoboTaxis = savTotal;
@@ -308,12 +303,6 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
     @Override
     public int hashCode() {
-        // double hash = 17;
-        // hash = hash * 31 + this.bounds.minX;
-        // hash = hash * 31 + this.bounds.maxX;
-        // hash = hash * 31 + this.bounds.minY;
-        // hash = hash * 31 + this.bounds.maxY;
-        // return (int) hash;
         return super.hashCode();
     }
 

@@ -46,7 +46,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         this.waitListTime = waitListTime;
     }
 
-    /* package */ void addUnassignedRequests(Collection<AVRequest> unassignedAVRequests, LeastCostCalculatorDatabaseOneTime timeDb) {
+    /* package */ void addUnassignedRequests(Collection<AVRequest> unassignedAVRequests, TravelTimeCalculatorCached timeDb) {
         unassignedAVRequests.stream().forEach(r -> {
             unassignedRequests.add(r);
             requestsLastHour.add(r);

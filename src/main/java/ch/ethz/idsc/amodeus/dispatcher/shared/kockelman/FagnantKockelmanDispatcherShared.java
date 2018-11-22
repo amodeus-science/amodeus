@@ -33,8 +33,6 @@ import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.amodeus.util.math.SI;
-import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.config.AVGeneratorConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
@@ -89,31 +87,34 @@ public class FagnantKockelmanDispatcherShared extends SharedRebalancingDispatche
     private final GridRebalancing kockelmanRebalancing;
     private final RouteValidation kockelmanRouteValidation;
 
+    private static final double MAXLAGTRAVELTIMECALCULATION = 1800.0;
+    private final TravelTimeCalculatorCached timeDb;
+
     protected FagnantKockelmanDispatcherShared(Network network, //
             Config config, AVDispatcherConfig avDispatcherConfig, //
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, //
             MatsimAmodeusDatabase db) {
         super(config, avDispatcherConfig, travelTime, router, eventsManager, db);
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
-        dispatchPeriod = safeConfig.getInteger(ScenarioParameters.DISPATCHPERIODSTRING, 60);
+        dispatchPeriod = safeConfig.getInteger(ScenarioParameters.DISPATCHPERIODSTRING, 300);
 
         FastAStarLandmarksFactory factory = new FastAStarLandmarksFactory();
         calculator = EasyPathCalculator.prepPathCalculator(network, factory);
-        this.kockelmanRebalancing = new GridRebalancing(network, REBALANCINGGRIDDISTANCE, MINNUMBERROBOTAXISINBLOCKTOREBALANCE);
-        kockelmanRouteValidation = new RouteValidation(MAXPICKUPTIME, MAXDRIVETIMEINCREASE, MAXREMAININGINCREASE, DROPOFFDURATION, PICKUPDURATION,
-                NEWTRAVELERMININCREASEALLOWED);
+        timeDb = TravelTimeCalculatorCached.of(calculator, MAXLAGTRAVELTIMECALCULATION);
+        this.kockelmanRebalancing = new GridRebalancing(network, timeDb, REBALANCINGGRIDDISTANCE, MINNUMBERROBOTAXISINBLOCKTOREBALANCE, BINSIZETRAVELDEMAND, dispatchPeriod);
+        kockelmanRouteValidation = new RouteValidation(MAXPICKUPTIME, MAXDRIVETIMEINCREASE, MAXREMAININGINCREASE, DROPOFFDURATION, PICKUPDURATION, NEWTRAVELERMININCREASEALLOWED);
     }
 
     @Override
     protected void redispatch(double now) {
         final long round_now = Math.round(now);
 
+        Long time = System.nanoTime();
+
         requestMaintainer.updatePickupTimes(getAVRequests(), now);
 
         if (round_now % dispatchPeriod == 0) {
-            // TODO DB Over longer Time bins
-            LeastCostCalculatorDatabaseOneTime timeDb = LeastCostCalculatorDatabaseOneTime.of(calculator, Quantity.of(now, SI.SECOND));
-            kockelmanRebalancing.setTimeCalculator(timeDb);
+            timeDb.update(now);
 
             /** prepare the registers for the dispatching */
             getDivertableUnassignedRoboTaxis().stream().forEach(rt -> unassignedRoboTaxis.add(rt));
@@ -126,16 +127,24 @@ public class FagnantKockelmanDispatcherShared extends SharedRebalancingDispatche
                     unassignedRoboTaxis, //
                     requestMaintainer.getCopyOfUnassignedAVRequests(), lastHourRequests);
 
+            System.err.println("1 Rebalancing: " + (System.nanoTime() - time)/1000000);
+            time = System.nanoTime();
+            Long timeSharing = Long.valueOf(0);
+
             /** for all AV Requests in the order of their submision, try to find the closest
              * vehicle and assign */
             for (AVRequest avRequest : requestMaintainer.getInOrderOffSubmissionTime()) {
+                Long time2 = System.nanoTime();
+
                 Set<RoboTaxi> robotaxisWithMenu = getRoboTaxis().stream().filter(rt -> RoboTaxiUtils.plansPickupsOrDropoffs(rt)).collect(Collectors.toSet());
+
 
                 /** THIS IS WHERE WE CALCULATE THE SHARING POSSIBILITIES */
                 Optional<Entry<RoboTaxi, List<SharedCourse>>> rideSharingRoboTaxi = kockelmanRouteValidation.getClosestValidSharingRoboTaxi(robotaxisWithMenu, avRequest, now,
                         timeDb, requestMaintainer);
 
                 if (rideSharingRoboTaxi.isPresent()) {
+
                     /** in Case we have a sharing possibility we assign */
                     RoboTaxi roboTaxi = rideSharingRoboTaxi.get().getKey();
                     GlobalAssert.that(kockelmanRouteValidation.menuFulfillsConstraints(roboTaxi, rideSharingRoboTaxi.get().getValue(), avRequest, now, timeDb, requestMaintainer));
@@ -162,7 +171,15 @@ public class FagnantKockelmanDispatcherShared extends SharedRebalancingDispatche
                         }
                     }
                 }
+                timeSharing += System.nanoTime() - time2;
+
             }
+
+            System.err.println("2 Calculate Sharing: " + (System.nanoTime() - time)/1000000);
+            time = System.nanoTime();
+
+            System.err.println("2a Sharing Finding: " + timeSharing/1000000);
+            System.err.println("2a route Validation " + kockelmanRouteValidation.calculationTime/1000000);
 
             /** execute New Rebalance Directives */
             for (Entry<RoboTaxi, Link> entry : rebalanceDirectives.getDirectives().entrySet()) {
@@ -179,6 +196,9 @@ public class FagnantKockelmanDispatcherShared extends SharedRebalancingDispatche
                     });
 
             unassignedRoboTaxis.clear();
+
+            System.err.println("3 Assignement: " + (System.nanoTime() - time));
+            time =System.nanoTime();
 
         }
     }

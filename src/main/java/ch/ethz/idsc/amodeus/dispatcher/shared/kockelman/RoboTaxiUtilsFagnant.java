@@ -22,7 +22,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param timeDb
      * @param maxTime
      * @return */
-    /* package */ static NavigableMap<Double, RoboTaxi> getRoboTaxisWithinMaxTime(Link link, Set<RoboTaxi> robotaxis, LeastCostCalculatorDatabaseOneTime timeDb, double maxTime) {
+    /* package */ static NavigableMap<Double, RoboTaxi> getRoboTaxisWithinMaxTime(Link link, Set<RoboTaxi> robotaxis, TravelTimeCalculatorCached timeDb, double maxTime) {
         NavigableMap<Double, RoboTaxi> map = new TreeMap<>();
         for (RoboTaxi roboTaxi : robotaxis) {
             double travelTimeToLink = timeDb.timeFromTo(link, roboTaxi.getDivertableLocation()).number().doubleValue();
@@ -45,7 +45,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param timeDb
      * @return */
     /* package */ static Optional<RoboTaxi> getClosestRoboTaxiWithinMaxTime(Set<RoboTaxi> unassignedRoboTaxis, AVRequest avRequest, double maxTime, double now,
-            LeastCostCalculatorDatabaseOneTime timeDb) {
+            TravelTimeCalculatorCached timeDb) {
         NavigableMap<Double, RoboTaxi> roboTaxis = RoboTaxiUtilsFagnant.getRoboTaxisWithinMaxTime(avRequest.getFromLink(), unassignedRoboTaxis, timeDb, maxTime);
         if (roboTaxis.isEmpty()) {
             return Optional.empty();

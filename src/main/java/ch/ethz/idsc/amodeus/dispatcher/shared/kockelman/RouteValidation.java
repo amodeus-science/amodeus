@@ -21,6 +21,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
 /*package*/ class RouteValidation {
 
+    public long calculationTime = 0;
+
     private final double pickupDuration;
     private final double dropoffDuration;
     private final double maxPickupTime;
@@ -70,27 +72,29 @@ import ch.ethz.matsim.av.passenger.AVRequest;
             if (sharedRoutePoint.getMealType().equals(SharedMealType.DROPOFF)) {
                 if (thisPickupTimes.containsKey(sharedRoutePoint.getAvRequest())) {
                     // TODO does it include the dropoff or not?
-                    driveTimes.put(sharedRoutePoint.getAvRequest(), sharedRoutePoint.getArrivalTime() - thisPickupTimes.get(sharedRoutePoint.getAvRequest()));
+                    driveTimes.put(sharedRoutePoint.getAvRequest(), sharedRoutePoint.getEndTime() - thisPickupTimes.get(sharedRoutePoint.getAvRequest()));
                 } else {
-                    driveTimes.put(sharedRoutePoint.getAvRequest(), sharedRoutePoint.getArrivalTime() - requestMaintainer.getPickupTime(sharedRoutePoint.getAvRequest()));
+                    driveTimes.put(sharedRoutePoint.getAvRequest(), sharedRoutePoint.getEndTime() - requestMaintainer.getPickupTime(sharedRoutePoint.getAvRequest()));
                 }
             }
         }
         return driveTimes;
     }
 
-
-
     /** @param robotaxisWithMenu
      * @param avRequest
      * @param now
      * @param timeDb
+     * @param timeSharing
      * @return The Closest RoboTaxi with a Shared Menu associated with it. */
     /* package */ Optional<Entry<RoboTaxi, List<SharedCourse>>> getClosestValidSharingRoboTaxi(Set<RoboTaxi> robotaxisWithMenu, AVRequest avRequest, double now,
-            LeastCostCalculatorDatabaseOneTime timeDb, RequestMaintainer requestMaintainer) {
+            TravelTimeCalculatorCached timeDb, RequestMaintainer requestMaintainer) {
+        Long time2 = System.nanoTime();
+
         GlobalAssert.that(robotaxisWithMenu.stream().allMatch(r -> RoboTaxiUtils.hasNextCourse(r)));
-        NavigableMap<Double, RoboTaxi> robotaxisWithinMaxPickup = RoboTaxiUtilsFagnant.getRoboTaxisWithinMaxTime(avRequest.getFromLink(), robotaxisWithMenu, timeDb,
-                maxPickupTime);
+        NavigableMap<Double, RoboTaxi> robotaxisWithinMaxPickup = RoboTaxiUtilsFagnant.getRoboTaxisWithinMaxTime(avRequest.getFromLink(), robotaxisWithMenu, timeDb, maxPickupTime);
+        calculationTime += System.nanoTime() - time2;
+
         AvRouteHandler avRouteHandler = new AvRouteHandler();
         SharedCourse pickupCourse = SharedCourse.pickupCourse(avRequest);
         SharedCourse dropoffCourse = SharedCourse.dropoffCourse(avRequest);
@@ -106,13 +110,17 @@ import ch.ethz.matsim.av.passenger.AVRequest;
                     List<SharedCourse> newMenu = new ArrayList<>(currentMenu);
                     newMenu.add(i, pickupCourse);
                     newMenu.add(j, dropoffCourse);
+
                     SharedAvRoute sharedAvRoute = SharedAvRoute.of(newMenu, roboTaxi.getDivertableLocation(), now, pickupDuration, dropoffDuration, timeDb);
+
                     avRouteHandler.add(roboTaxi, sharedAvRoute);
                 }
             }
             oldRoutes.put(roboTaxi, SharedAvRoute.of(roboTaxi.getUnmodifiableViewOfCourses(), roboTaxi.getDivertableLocation(), now, pickupDuration, dropoffDuration, timeDb));
         }
+
         return getFastestValidEntry(avRouteHandler, avRequest, oldRoutes, now, requestMaintainer);
+
     }
 
     private Optional<Entry<RoboTaxi, List<SharedCourse>>> getFastestValidEntry(AvRouteHandler avRouteHandler, AVRequest avRequest, Map<RoboTaxi, SharedAvRoute> oldRoutes,
@@ -135,12 +143,16 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         return Optional.ofNullable(null);
     }
 
-    /* package */ boolean menuFulfillsConstraints(RoboTaxi roboTaxi, List<SharedCourse> newRoute, AVRequest avRequest, double now, LeastCostCalculatorDatabaseOneTime timeDb,
+    /* package */ boolean menuFulfillsConstraints(RoboTaxi roboTaxi, List<SharedCourse> newRoute, AVRequest avRequest, double now, TravelTimeCalculatorCached timeDb,
             RequestMaintainer requestMaintainer) {
         Set<AVRequest> currentRequests = RoboTaxiUtils.getRequestsInMenu(roboTaxi);
         GlobalAssert.that(SharedCourseListUtils.getUniqueAVRequests(newRoute).containsAll(currentRequests));
         SharedAvRoute sharedAvRoute = SharedAvRoute.of(newRoute, roboTaxi.getDivertableLocation(), now, pickupDuration, dropoffDuration, timeDb);
         SharedAvRoute oldRoute = SharedAvRoute.of(roboTaxi.getUnmodifiableViewOfCourses(), roboTaxi.getDivertableLocation(), now, pickupDuration, dropoffDuration, timeDb);
         return isValidRoute(sharedAvRoute, oldRoute, requestMaintainer.getRequestWrap(avRequest), now, requestMaintainer);
+    }
+
+    public void setCalculationTimeTo0() {
+        calculationTime = 0;
     }
 }

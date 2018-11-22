@@ -31,7 +31,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     private final int minNumberForRebalance;
     private final Rect outerBoundsRect;
 
-    /*package*/ Blocks(Network network, double blockLengthX, double BlockLengthY, int minNumberRobotaxisForRebalance) {
+    /*package*/ Blocks(Network network, double blockLengthX, double BlockLengthY, int minNumberRobotaxisForRebalance, double historicalDataTime, double predictedTime) {
         this.minNumberForRebalance = minNumberRobotaxisForRebalance;
         outerBoundsRect = BlockUtils.getOuterBoundsOf(network);
         int nX = BlockUtils.calcNumberBlocksInDirection(outerBoundsRect.minX, outerBoundsRect.maxX, blockLengthX);
@@ -60,7 +60,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         for (int i = 0; i < nX; i++) {
             for (int j = 0; j < nY; j++) {
                 Rect rect = new Rect(xLimits[i], yLimits[j], xLimits[i + 1], yLimits[j + 1]);
-                blockBounds[i][j] = new Block(rect, network, id);
+                blockBounds[i][j] = new Block(rect, network, id, historicalDataTime, predictedTime);
                 id++;
                 // printRect(rect);
             }
@@ -174,7 +174,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         }
     }
 
-    /*package*/ Map<RoboTaxi, Link> getRebalancingDirectives(Network network, LeastCostCalculatorDatabaseOneTime timeDb, double now) {
+    /*package*/ Map<RoboTaxi, Link> getRebalancingDirectives(Network network, TravelTimeCalculatorCached timeDb, double now) {
         calculateBlockBalances();
         calculateRebalancing();
 

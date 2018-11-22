@@ -41,8 +41,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
         return castToCourseList(route);
     }
 
-    // TODO include PickupTime
-    /* package */ static SharedAvRoute of(List<SharedCourse> list, Link currentLink, double now, double pickupTime, double dropofftime, LeastCostCalculatorDatabaseOneTime timeDb) {
+    /* package */ static SharedAvRoute of(List<SharedCourse> list, Link currentLink, double now, double pickupTime, double dropofftime, TravelTimeCalculatorCached timeDb) {
         List<SharedRoutePoint> routePoints = new ArrayList<>();
         Scalar departureTime = Quantity.of(now, SI.SECOND);
         for (int i = 0; i < list.size(); i++) {
@@ -73,8 +72,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
     }
 
     /* package */ Double getEndTime() {
-        // TODO check this arrival time. migth as well be plus dropoff time
-        return route.get(route.size() - 1).getArrivalTime();
+        return route.get(route.size() - 1).getEndTime();
     }
 
 }
