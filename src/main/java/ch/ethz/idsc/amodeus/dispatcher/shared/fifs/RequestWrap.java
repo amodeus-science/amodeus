@@ -22,10 +22,6 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         return avRequest;
     }
 
-    public double getSubmissionTime() {
-        return avRequest.getSubmissionTime();
-    }
-
     public void putToWaitList() {
         isOnWaitList = true;
     }

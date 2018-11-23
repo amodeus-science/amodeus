@@ -246,16 +246,4 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         return id;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Rect) {
-            Rect rect = (Rect) obj;
-            return (rect.minX == this.bounds.minX && //
-                    rect.minY == this.bounds.minY && //
-                    rect.maxX == this.bounds.maxX && //
-                    rect.maxY == this.bounds.maxY);
-        }
-        return super.equals(obj);
-    }
-
 }

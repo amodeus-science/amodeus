@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 /*package*/ class AvRouteHandler {
 
@@ -28,20 +27,6 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
     /* package */ void remove(Double doubleValue) {
         routes.remove(doubleValue);
-    }
-
-    /* package */ void remove(RoboTaxi roboTaxi, SharedAvRoute sharedAvRoute) {
-        Double endTime = sharedAvRoute.getEndTime();
-        GlobalAssert.that(routes.containsKey(endTime));
-        GlobalAssert.that(routes.get(endTime).containsKey(roboTaxi));
-        GlobalAssert.that(routes.get(endTime).get(roboTaxi).contains(sharedAvRoute));
-        routes.get(endTime).get(roboTaxi).remove(sharedAvRoute);
-        if (routes.get(endTime).get(roboTaxi).isEmpty()) {
-            routes.get(endTime).remove(roboTaxi);
-        }
-        if (routes.get(endTime).isEmpty()) {
-            routes.remove(endTime);
-        }
     }
 
     /* package */ boolean contains(Double containingValue) {
