@@ -86,8 +86,8 @@ public enum NetworkPreparer {
         modifiedNetwork.setEffectiveCellSize(network.getEffectiveCellSize());
         modifiedNetwork.setEffectiveLaneWidth(network.getEffectiveLaneWidth());
         
-        
-        
+        modifiedNetwork.getLinks().values().forEach(link -> link.setFreespeed(link.getFreespeed()*0.6));
+                        
         final File fileExportGz = new File(scenOptions.getPreparedNetworkName() + ".xml.gz");
         final File fileExport = new File(scenOptions.getPreparedNetworkName() + ".xml");
         {
