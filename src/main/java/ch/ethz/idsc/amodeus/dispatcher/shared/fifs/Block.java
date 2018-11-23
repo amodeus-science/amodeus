@@ -67,7 +67,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     public void pushRobotaxiTo(Block block) {
         pushFromBlockToBlock(this, block);
     }
-    
+
     /* package */ static void pushFromBlockToBlock(Block blockFrom, Block blockTo) {
         GlobalAssert.that(blockFrom.getAdjacentBlocks().contains(blockTo));
         GlobalAssert.that(blockTo.getBlockBalance() < blockFrom.getBlockBalance() - 1);
@@ -175,8 +175,6 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         return rebalanceDirectives;
     }
 
-
-
     public Link getCenterLink() {
         return centerLink;
     }
@@ -221,7 +219,6 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         return adjacentBlocks.keySet();
     }
 
-
     public int getNumberOfUnassignedRequests() {
         return numberUnassignedRequests;
     }
@@ -229,7 +226,6 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     public int getNumberOfExpectedRequests() {
         return (int) Math.round(numberRequestsHistorical / historicalDataTime * predictedTime);
     }
-    
 
     public void calculateBlockBalance(int savTotal, int demandTotal) {
         scenarioFreeRoboTaxis = savTotal;
@@ -261,6 +257,5 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         }
         return super.equals(obj);
     }
-
 
 }

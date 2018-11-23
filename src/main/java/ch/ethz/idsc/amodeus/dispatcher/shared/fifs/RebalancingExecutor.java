@@ -19,7 +19,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 /*package*/ class RebalancingExecutor {
     private final Network network;
     private final TravelTimeCalculatorCached timeDb;
-    
+
     /** in this Set All the operations are made. */
     private final Map<Integer, Block> blocks;
     /** this tree is only used as an lookup to quickly find the corresponding block */
@@ -30,11 +30,12 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     private int numberUnassignedRequests = 0;
     private int numberFreeRoboTaxis = 0;
 
-    /* package */ RebalancingExecutor(Network network,TravelTimeCalculatorCached timeDb, int minNumberRobotaxisForRebalance, double historicalDataTime, double predictedTime, double gridDistance) {
+    /* package */ RebalancingExecutor(Network network, TravelTimeCalculatorCached timeDb, int minNumberRobotaxisForRebalance, double historicalDataTime, double predictedTime,
+            double gridDistance) {
         this.minNumberForRebalance = minNumberRobotaxisForRebalance;
         this.network = network;
         this.timeDb = timeDb;
-        
+
         blocks = BlocksGenerator.of(network, historicalDataTime, predictedTime, gridDistance);
 
         /** Fill the Lookup Map for the Link to Block */
@@ -80,7 +81,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         }
     }
 
-    /* package */ RebalancingDirectives getRebalancingDirectives(double now, Set<Link> allRequestLinksLastHour, Set<AVRequest> allUnassignedAVRequests, Set<RoboTaxi> allAvailableRobotaxisforRebalance) {
+    /* package */ RebalancingDirectives getRebalancingDirectives(double now, Set<Link> allRequestLinksLastHour, Set<AVRequest> allUnassignedAVRequests,
+            Set<RoboTaxi> allAvailableRobotaxisforRebalance) {
         GlobalAssert.that(timeDb.isForNow(now));
         setAllRequestCoordsLastHour(allRequestLinksLastHour);
         setNewUnassignedRequests(allUnassignedAVRequests);
