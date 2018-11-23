@@ -1,5 +1,5 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.dispatcher.shared.kockelman;
+package ch.ethz.idsc.amodeus.dispatcher.shared.fifs;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -15,7 +15,7 @@ import org.matsim.api.core.v01.network.Link;
 import ch.ethz.idsc.amodeus.dispatcher.util.TreeMultipleItems;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-/* package */class RequestMaintainer {
+/* package */class RequestHandler {
     // Structure for the Track of Wait times and so on
     private final Map<AVRequest, RequestWrap> requests = new HashMap<>();
     // unnassigned Requests Sorted in a Navigable Map such that the earliest Request can be found easily
@@ -34,13 +34,13 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     private final double maxWaitTime;
     private final double waitListTime;
 
-    /* package */ RequestMaintainer(double maxWaitTime, double waitListTime) {
+    /* package */ RequestHandler(double maxWaitTime, double waitListTime) {
         this.maxWaitTime = maxWaitTime;
         this.waitListTime = waitListTime;
         this.extremWaitListTime = Optional.empty();
     }
 
-    /* package */ RequestMaintainer(double maxWaitTime, double waitListTime, Double extremWaitListTime) {
+    /* package */ RequestHandler(double maxWaitTime, double waitListTime, Double extremWaitListTime) {
         this.extremWaitListTime = Optional.of(extremWaitListTime);
         this.maxWaitTime = maxWaitTime;
         this.waitListTime = waitListTime;

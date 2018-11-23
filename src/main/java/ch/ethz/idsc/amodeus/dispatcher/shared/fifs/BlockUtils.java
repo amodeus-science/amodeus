@@ -1,12 +1,15 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.dispatcher.shared.kockelman;
+package ch.ethz.idsc.amodeus.dispatcher.shared.fifs;
 
+import java.util.Map;
+import java.util.NavigableMap;
 import java.util.Set;
 
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.utils.collections.QuadTree.Rect;
 
+import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 /* package */ enum BlockUtils {
@@ -55,6 +58,30 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
             }
         }
         return lowestBalanceBlock;
+    }
+
+    /* package */ static void removeRoboTaxiFromMap(NavigableMap<Double, Map<Block, Set<RoboTaxi>>> travelTimesSorted, double travelTime, Block block, RoboTaxi roboTaxi) {
+        if (travelTimesSorted.containsKey(travelTime)) {
+            if (travelTimesSorted.get(travelTime).containsKey(block)) {
+                if (travelTimesSorted.get(travelTime).get(block).contains(roboTaxi)) {
+                    travelTimesSorted.get(travelTime).get(block).remove(roboTaxi);
+                    if (travelTimesSorted.get(travelTime).get(block).isEmpty()) {
+                        removeBlockFromMap(travelTimesSorted, travelTime, block);
+                    }
+                }
+            }
+        }
+    }
+
+    /* package */ static void removeBlockFromMap(NavigableMap<Double, Map<Block, Set<RoboTaxi>>> travelTimesSorted, double travelTime, Block block) {
+        if (travelTimesSorted.containsKey(travelTime)) {
+            if (travelTimesSorted.get(travelTime).containsKey(block)) {
+                travelTimesSorted.get(travelTime).remove(block);
+                if (travelTimesSorted.get(travelTime).isEmpty()) {
+                    travelTimesSorted.remove(travelTime);
+                }
+            }
+        }
     }
 
 }

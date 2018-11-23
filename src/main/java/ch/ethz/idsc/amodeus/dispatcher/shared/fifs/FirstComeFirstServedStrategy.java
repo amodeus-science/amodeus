@@ -1,5 +1,5 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.dispatcher.shared.kockelman;
+package ch.ethz.idsc.amodeus.dispatcher.shared.fifs;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -41,7 +41,7 @@ import ch.ethz.matsim.av.router.AVRouter;
 /** Implementation of the Algorithm presented in:
  * Fagnant, D. J., Kockelman, K. M., & Bansal, P. (2015). Operations of shared autonomous vehicle fleet for austin, texas, market. Transportation Research
  * Record: Journal of the Transportation Research Board, (2536), 98-106. */
-public class FagnantKockelmanDispatcherSingle extends RebalancingDispatcher {
+public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
 
     private final int dispatchPeriod = 300;
 
@@ -65,9 +65,9 @@ public class FagnantKockelmanDispatcherSingle extends RebalancingDispatcher {
     private static final double MAXLAGTRAVELTIMECALCULATION = 1800.0;
     private final TravelTimeCalculatorCached timeDb;
 
-    private final GridRebalancing kockelmanRebalancing;
+    private final RebalancingExecutor kockelmanRebalancing;
 
-    protected FagnantKockelmanDispatcherSingle(Network network, //
+    protected FirstComeFirstServedStrategy(Network network, //
             Config config, AVDispatcherConfig avDispatcherConfig, //
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, MatsimAmodeusDatabase db) {
         super(config, avDispatcherConfig, travelTime, router, eventsManager, db);
@@ -81,7 +81,7 @@ public class FagnantKockelmanDispatcherSingle extends RebalancingDispatcher {
         LeastCostPathCalculator calculator = EasyPathCalculator.prepPathCalculator(network, factory);
         timeDb = TravelTimeCalculatorCached.of(calculator, MAXLAGTRAVELTIMECALCULATION);
 
-        this.kockelmanRebalancing = new GridRebalancing(network, timeDb, REBALANCINGGRIDDISTANCE, MINNUMBERROBOTAXISINBLOCKTOREBALANCE, BINSIZETRAVELDEMAND, dispatchPeriod);
+        this.kockelmanRebalancing = new RebalancingExecutor(network, timeDb, MINNUMBERROBOTAXISINBLOCKTOREBALANCE, BINSIZETRAVELDEMAND, dispatchPeriod, REBALANCINGGRIDDISTANCE);
     }
 
     @Override
@@ -106,8 +106,8 @@ public class FagnantKockelmanDispatcherSingle extends RebalancingDispatcher {
             /** calculate Rebalance before dispatching */
             Set<Link> lastHourRequests = requestsLastHour.getValues().stream().map(avr -> avr.getFromLink()).collect(Collectors.toSet());
             RebalancingDirectives rebalanceDirectives = kockelmanRebalancing.getRebalancingDirectives(round_now, //
-                    unassignedRoboTaxis.getValues(), //
-                    unassignedRequests.getValues(), lastHourRequests);
+                    lastHourRequests, //
+                    unassignedRequests.getValues(), unassignedRoboTaxis.getValues());
 
             /** for all AV Requests in the order of their submision, try to find the closest
              * vehicle and assign */
@@ -200,7 +200,7 @@ public class FagnantKockelmanDispatcherSingle extends RebalancingDispatcher {
             @SuppressWarnings("unused")
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceFunction.INSTANCE);
 
-            return new FagnantKockelmanDispatcherSingle(network, config, avconfig, travelTime, router, eventsManager, db);
+            return new FirstComeFirstServedStrategy(network, config, avconfig, travelTime, router, eventsManager, db);
         }
     }
 }

@@ -1,5 +1,5 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.dispatcher.shared.kockelman;
+package ch.ethz.idsc.amodeus.dispatcher.shared.fifs;
 
 import java.util.List;
 import java.util.Map.Entry;
@@ -40,7 +40,7 @@ import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.router.AVRouter;
 
-/** Implementation of the ride sharing strategy proposed by:
+/** Implementation of the ride sharing strategy used ind:
  * Fagnant, D. J., & Kockelman, K. M. (2015). Dynamic ride-sharing and optimal fleet sizing for a system of shared autonomous vehicles (No. 15-1962).
  * 
  * The strategy goes through the Requests in the order of the submission time. For each request it is first checked if a valid ride sharing possibility is
@@ -54,7 +54,7 @@ import ch.ethz.matsim.av.router.AVRouter;
  * 4. New travelers will be picked up at least within the next 5 minutes;
  * 5. Total planned trip time to serve all passengers ≤ remaining time to serve the current trips + time to serve the new trip + drop-off time, if
  * not pooled. */
-public class FagnantKockelmanDispatcherShared extends SharedRebalancingDispatcher {
+public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
 
     /** Dispatcher Settings Identifiers */
     private static final String MAXWAITTIMEIDENTIFIER = "maxWaitTime";
@@ -87,19 +87,19 @@ public class FagnantKockelmanDispatcherShared extends SharedRebalancingDispatche
     /** data structures for a fast search and simpler calulations */
     // unassigned Robo Taxis in the Scenario sorted by its coordinates in a Tree Structure
     // private final Set<RoboTaxi> unassignedRoboTaxis = new HashSet<>();
-    private final RoboTaxiMaintainer roboTaxiMaintainer;
+    private final RoboTaxiHandler roboTaxiMaintainer;
     // Maintains All the Information about the Requests. keeps track of Assignements, Pickups, ...
-    private final RequestMaintainer requestMaintainer = new RequestMaintainer(MAXWAITTIME, WAITLISTTIME, EXTREEMWAITTIME);
+    private final RequestHandler requestMaintainer = new RequestHandler(MAXWAITTIME, WAITLISTTIME, EXTREEMWAITTIME);
     // Calulator for fastest travel times in the newtwork
     private final LeastCostPathCalculator calculator;
     // Rebalancing Executor
-    private final GridRebalancing kockelmanRebalancing;
+    private final RebalancingExecutor kockelmanRebalancing;
     private final RouteValidation kockelmanRouteValidation;
 
     private static final double MAXLAGTRAVELTIMECALCULATION = 180000.0;
     private final TravelTimeCalculatorCached timeDb;
 
-    protected FagnantKockelmanDispatcherShared(Network network, //
+    protected DynamicRideSharingStrategy(Network network, //
             Config config, AVConfig avConfig, AVDispatcherConfig avDispatcherConfig, //
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, //
             MatsimAmodeusDatabase db) {
@@ -114,12 +114,12 @@ public class FagnantKockelmanDispatcherShared extends SharedRebalancingDispatche
         dropoffDuration = avConfig.getTimingParameters().getDropoffDurationPerStop();
         pickupDuration = avConfig.getTimingParameters().getDropoffDurationPerStop();
 
-        roboTaxiMaintainer = new RoboTaxiMaintainer(network);
+        roboTaxiMaintainer = new RoboTaxiHandler(network);
 
         FastAStarLandmarksFactory factory = new FastAStarLandmarksFactory();
         calculator = EasyPathCalculator.prepPathCalculator(network, factory);
         timeDb = TravelTimeCalculatorCached.of(calculator, MAXLAGTRAVELTIMECALCULATION);
-        this.kockelmanRebalancing = new GridRebalancing(network, timeDb, REBALANCINGGRIDDISTANCE, MINNUMBERROBOTAXISINBLOCKTOREBALANCE, BINSIZETRAVELDEMAND, dispatchPeriod);
+        this.kockelmanRebalancing = new RebalancingExecutor(network, timeDb, MINNUMBERROBOTAXISINBLOCKTOREBALANCE, BINSIZETRAVELDEMAND, dispatchPeriod, REBALANCINGGRIDDISTANCE);
         kockelmanRouteValidation = new RouteValidation(maxWaitTime, maxDriveTimeIncrease, maxRemainingTimeIncrease, dropoffDuration, pickupDuration, newTravelTimeIncreaseAllowed);
     }
 
@@ -138,9 +138,8 @@ public class FagnantKockelmanDispatcherShared extends SharedRebalancingDispatche
 
             /** calculate Rebalance before (!) dispatching */
             Set<Link> lastHourRequests = requestMaintainer.getRequestLinksLastHour();
-            RebalancingDirectives rebalanceDirectives = kockelmanRebalancing.getRebalancingDirectives(round_now, //
-                    roboTaxiMaintainer.getUnassignedRoboTaxis(), //
-                    requestMaintainer.getCopyOfUnassignedAVRequests(), lastHourRequests);
+            RebalancingDirectives rebalanceDirectives = kockelmanRebalancing.getRebalancingDirectives(round_now, lastHourRequests,
+                    requestMaintainer.getCopyOfUnassignedAVRequests(), roboTaxiMaintainer.getUnassignedRoboTaxis());
 
             /** for all AV Requests in the order of their submision, try to find the closest
              * vehicle and assign */
@@ -230,7 +229,7 @@ public class FagnantKockelmanDispatcherShared extends SharedRebalancingDispatche
             @SuppressWarnings("unused")
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceFunction.INSTANCE);
 
-            return new FagnantKockelmanDispatcherShared(network, config, avConfig, avDispatcherConfig, travelTime, router, eventsManager, db);
+            return new DynamicRideSharingStrategy(network, config, avConfig, avDispatcherConfig, travelTime, router, eventsManager, db);
         }
     }
 }

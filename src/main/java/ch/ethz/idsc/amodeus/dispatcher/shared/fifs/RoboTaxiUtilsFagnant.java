@@ -1,5 +1,5 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.dispatcher.shared.kockelman;
+package ch.ethz.idsc.amodeus.dispatcher.shared.fifs;
 
 import java.util.Collection;
 import java.util.NavigableMap;
@@ -23,7 +23,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param timeDb
      * @param maxTime
      * @return */
-    /* package */ static NavigableMap<Double, RoboTaxi> getRoboTaxisWithinMaxTime(Link link, Collection<RoboTaxi> robotaxis, TravelTimeCalculatorCached timeDb, double maxTime, RoboTaxiMaintainer roboTaxiMaintainer) {
+    /* package */ static NavigableMap<Double, RoboTaxi> getRoboTaxisWithinMaxTime(Link link, Collection<RoboTaxi> robotaxis, TravelTimeCalculatorCached timeDb, double maxTime, RoboTaxiHandler roboTaxiMaintainer) {
         Collection<RoboTaxi> closeRoboTaxis =roboTaxiMaintainer.getRoboTaxisWithinFreeSpeedDisk(link.getCoord(), maxTime).stream().filter(rt->robotaxis.contains(rt)).collect(Collectors.toSet());
         NavigableMap<Double, RoboTaxi> map = new TreeMap<>();
         for (RoboTaxi roboTaxi : closeRoboTaxis) {
@@ -46,7 +46,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param now
      * @param timeDb
      * @return */
-    /* package */ static Optional<RoboTaxi> getClosestUnassignedRoboTaxiWithinMaxTime(RoboTaxiMaintainer roboTaxiMaintainer, AVRequest avRequest, double maxTime, double now,
+    /* package */ static Optional<RoboTaxi> getClosestUnassignedRoboTaxiWithinMaxTime(RoboTaxiHandler roboTaxiMaintainer, AVRequest avRequest, double maxTime, double now,
             TravelTimeCalculatorCached timeDb) {
         NavigableMap<Double, RoboTaxi> roboTaxis = RoboTaxiUtilsFagnant.getRoboTaxisWithinMaxTime(avRequest.getFromLink(), roboTaxiMaintainer.getUnassignedRoboTaxis(), timeDb,
                 maxTime, roboTaxiMaintainer);

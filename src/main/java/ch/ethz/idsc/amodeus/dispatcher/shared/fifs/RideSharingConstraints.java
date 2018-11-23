@@ -1,4 +1,4 @@
-package ch.ethz.idsc.amodeus.dispatcher.shared.kockelman;
+package ch.ethz.idsc.amodeus.dispatcher.shared.fifs;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +33,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param newAvRequest
      * @param requestMaintainer
      * @return */
-    /* package */ boolean driveTimeCurrentPassengersExceeded(Map<AVRequest, Double> driveTimes, AVRequest newAvRequest, RequestMaintainer requestMaintainer) {
+    /* package */ boolean driveTimeCurrentPassengersExceeded(Map<AVRequest, Double> driveTimes, AVRequest newAvRequest, RequestHandler requestMaintainer) {
         for (AVRequest avRequest : driveTimes.keySet()) {
             if (!avRequest.equals(newAvRequest)) {
                 if (driveTimes.get(avRequest) > maxDriveTimeIncrease * requestMaintainer.getDriveTimeDirectUnitCap(avRequest)) {

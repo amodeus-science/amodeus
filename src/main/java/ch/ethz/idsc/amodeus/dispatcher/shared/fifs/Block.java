@@ -1,4 +1,4 @@
-package ch.ethz.idsc.amodeus.dispatcher.shared.kockelman;
+package ch.ethz.idsc.amodeus.dispatcher.shared.fifs;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,16 +33,16 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
      * RebalancingVehicles negative if sending and positiv if receiving. */
     private final Map<Block, AtomicInteger> adjacentBlocks = new HashMap<>();
 
-    /** Requests and Taxis in Block */
-    private int unassignedRequests;
-    private final Set<RoboTaxi> freeRoboTaxis;
+    /** RoboTaxis and Requests in the Block */
+    private final Set<RoboTaxi> freeRoboTaxis = new HashSet<>();
     private int freeRobotaxiInRebalancing;
-    private final Set<Coord> allRequestCoordsLastHour = new HashSet<>();
+    private int numberRequestsHistorical = 0;
+    private int numberUnassignedRequests = 0;
     private long blockBalance;
 
     /** Total Properties in Scenario */
-    private int totalFreeRoboTaxis;
-    private int totalUnassignedRequests;
+    private int scenarioFreeRoboTaxis;
+    private int scenarioUnassignedRequests;
 
     /** Properties of the Rebalancing */
     private final double historicalDataTime;
@@ -50,12 +50,9 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
     public Block(Rect bounds, Network network, int id, double historicalDataTime, double predictedTime) {
         this.bounds = bounds;
-
         this.id = id;
         centerCoord = new Coord(bounds.centerX, bounds.centerY);
         centerLink = NetworkUtils.getNearestLink(network, centerCoord);
-        unassignedRequests = 0;
-        freeRoboTaxis = new HashSet<>();
         this.historicalDataTime = historicalDataTime;
         this.predictedTime = predictedTime;
     }
@@ -70,9 +67,9 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     public void pushRobotaxiTo(Block block) {
         pushFromBlockToBlock(this, block);
     }
-
-    private static void pushFromBlockToBlock(Block blockFrom, Block blockTo) {
-        GlobalAssert.that(blockFrom.adjacentBlocks.containsKey(blockTo));
+    
+    /* package */ static void pushFromBlockToBlock(Block blockFrom, Block blockTo) {
+        GlobalAssert.that(blockFrom.getAdjacentBlocks().contains(blockTo));
         GlobalAssert.that(blockTo.getBlockBalance() < blockFrom.getBlockBalance() - 1);
         GlobalAssert.that(blockFrom.freeRobotaxiInRebalancing > 0);
         GlobalAssert.that(blockFrom.hasAvailableRobotaxisToRebalance());
@@ -157,7 +154,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
                 // remove All The entries where the just added RoboTaxi Occured
                 for (Entry<Block, Double> entry : allTravelTimesForRoboTaxis.get(roboTaxi).entrySet()) {
-                    removeRoboTaxiFromMap(travelTimesSorted, entry.getValue(), entry.getKey(), roboTaxi);
+                    BlockUtils.removeRoboTaxiFromMap(travelTimesSorted, entry.getValue(), entry.getKey(), roboTaxi);
                 }
 
                 // If the adjacent block has received all the required Taxis, remove it from all travel times
@@ -165,7 +162,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
                 if (updatedPushing == 0) {
                     for (double travelTimeBlock : blocktravelTimes.get(block)) {
                         if (travelTimeBlock >= travelTime) {
-                            removeBlockFromMap(travelTimesSorted, travelTimeBlock, block);
+                            BlockUtils.removeBlockFromMap(travelTimesSorted, travelTimeBlock, block);
                         }
                     }
                 }
@@ -178,35 +175,11 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         return rebalanceDirectives;
     }
 
-    private static void removeRoboTaxiFromMap(NavigableMap<Double, Map<Block, Set<RoboTaxi>>> travelTimesSorted, double travelTime, Block block, RoboTaxi roboTaxi) {
-        if (travelTimesSorted.containsKey(travelTime)) {
-            if (travelTimesSorted.get(travelTime).containsKey(block)) {
-                if (travelTimesSorted.get(travelTime).get(block).contains(roboTaxi)) {
-                    travelTimesSorted.get(travelTime).get(block).remove(roboTaxi);
-                    if (travelTimesSorted.get(travelTime).get(block).isEmpty()) {
-                        removeBlockFromMap(travelTimesSorted, travelTime, block);
-                    }
-                }
-            }
-        }
-    }
 
-    private static void removeBlockFromMap(NavigableMap<Double, Map<Block, Set<RoboTaxi>>> travelTimesSorted, double travelTime, Block block) {
-        if (travelTimesSorted.containsKey(travelTime)) {
-            if (travelTimesSorted.get(travelTime).containsKey(block)) {
-                travelTimesSorted.get(travelTime).remove(block);
-                if (travelTimesSorted.get(travelTime).isEmpty()) {
-                    travelTimesSorted.remove(travelTime);
-                }
-            }
-        }
-    }
 
     public Link getCenterLink() {
         return centerLink;
     }
-
-    /** Normal getter and Setter fucntions */
 
     public boolean hasAvailableRobotaxisToRebalance() {
         return freeRoboTaxis.size() > getNumberPushingVehicles();
@@ -225,20 +198,19 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     }
 
     public void addUnassignedRequest() {
-        unassignedRequests++;
+        numberUnassignedRequests++;
     }
 
-    public void addRequestCoordLastHour(Coord requestCoordLastHour) {
-        GlobalAssert.that(contains(requestCoordLastHour));
-        allRequestCoordsLastHour.add(requestCoordLastHour);
+    public void addRequestLastHour() {
+        numberRequestsHistorical += 1;
     }
 
-    public void removeAllRequestCoordsLastHour() {
-        allRequestCoordsLastHour.clear();
+    public void removeAllRequestsLastHour() {
+        numberRequestsHistorical = 0;
     }
 
     public void removeAllUnassignedRequests() {
-        unassignedRequests = 0;
+        numberUnassignedRequests = 0;
     }
 
     public void addAdjacentBlock(Block block) {
@@ -249,35 +221,24 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         return adjacentBlocks.keySet();
     }
 
-    public void removeAdjacentblock(Block block) {
-        GlobalAssert.that(adjacentBlocks.containsKey(block));
-        adjacentBlocks.remove(block);
-    }
-
-    public Rect getBounds() {
-        return bounds;
-    }
 
     public int getNumberOfUnassignedRequests() {
-        return unassignedRequests;
+        return numberUnassignedRequests;
     }
 
     public int getNumberOfExpectedRequests() {
-        return (int) Math.round(allRequestCoordsLastHour.size() / historicalDataTime * predictedTime);
+        return (int) Math.round(numberRequestsHistorical / historicalDataTime * predictedTime);
     }
-
-    public Set<RoboTaxi> getFreeRoboTaxis() {
-        return freeRoboTaxis;
-    }
+    
 
     public void calculateBlockBalance(int savTotal, int demandTotal) {
-        totalFreeRoboTaxis = savTotal;
-        totalUnassignedRequests = demandTotal;
+        scenarioFreeRoboTaxis = savTotal;
+        scenarioUnassignedRequests = demandTotal;
         calculateBlockBalanceInternal();
     }
 
     private void calculateBlockBalanceInternal() {
-        blockBalance = Math.round(BlockUtils.calculateBlockBalance(totalFreeRoboTaxis, freeRobotaxiInRebalancing, totalUnassignedRequests,
+        blockBalance = Math.round(BlockUtils.calculateBlockBalance(scenarioFreeRoboTaxis, freeRobotaxiInRebalancing, scenarioUnassignedRequests,
                 getNumberOfUnassignedRequests() + getNumberOfExpectedRequests()));
     }
 
@@ -301,15 +262,5 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         return super.equals(obj);
     }
 
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
-
-    /** @param roboTaxi
-     * @return {@link Coord} with {@link RoboTaxi} location */
-    /* package */ Coord getRoboTaxiLoc(RoboTaxi roboTaxi) {
-        return roboTaxi.getDivertableLocation().getCoord();
-    }
 
 }

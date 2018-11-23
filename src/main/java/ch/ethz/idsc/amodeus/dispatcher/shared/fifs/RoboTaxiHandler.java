@@ -1,4 +1,4 @@
-package ch.ethz.idsc.amodeus.dispatcher.shared.kockelman;
+package ch.ethz.idsc.amodeus.dispatcher.shared.fifs;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -13,13 +13,13 @@ import ch.ethz.idsc.amodeus.dispatcher.util.TreeMaintainer;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-/*package*/ class RoboTaxiMaintainer {
+/*package*/ class RoboTaxiHandler {
 
     private final TreeMaintainer<RoboTaxi> allRoboTaxis;
     private final Set<RoboTaxi> unassignedRoboTaxis = new HashSet<>();
     private final double maxSpeed;
 
-    public RoboTaxiMaintainer(Network network) {
+    public RoboTaxiHandler(Network network) {
         maxSpeed = maxSpeed(network);
         double[] networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
         this.allRoboTaxis = new TreeMaintainer<>(networkBounds, this::getRoboTaxiLoc);

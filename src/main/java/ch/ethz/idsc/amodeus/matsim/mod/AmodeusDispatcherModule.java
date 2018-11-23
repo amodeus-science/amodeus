@@ -12,8 +12,8 @@ import ch.ethz.idsc.amodeus.dispatcher.GlobalBipartiteMatchingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.SQMDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.ExtDemandSupplyBeamSharing;
 import ch.ethz.idsc.amodeus.dispatcher.shared.NorthPoleSharedDispatcher;
-import ch.ethz.idsc.amodeus.dispatcher.shared.kockelman.FagnantKockelmanDispatcherShared;
-import ch.ethz.idsc.amodeus.dispatcher.shared.kockelman.FagnantKockelmanDispatcherSingle;
+import ch.ethz.idsc.amodeus.dispatcher.shared.fifs.DynamicRideSharingStrategy;
+import ch.ethz.idsc.amodeus.dispatcher.shared.fifs.FirstComeFirstServedStrategy;
 import ch.ethz.matsim.av.framework.AVUtils;
 
 public class AmodeusDispatcherModule extends AbstractModule {
@@ -30,8 +30,8 @@ public class AmodeusDispatcherModule extends AbstractModule {
         bind(GlobalBipartiteMatchingDispatcher.Factory.class);
         AVUtils.bindDispatcherFactory(binder(), GlobalBipartiteMatchingDispatcher.class.getSimpleName()).to(GlobalBipartiteMatchingDispatcher.Factory.class);
 
-        bind(FagnantKockelmanDispatcherSingle.Factory.class);
-        AVUtils.bindDispatcherFactory(binder(), FagnantKockelmanDispatcherSingle.class.getSimpleName()).to(FagnantKockelmanDispatcherSingle.Factory.class);
+        bind(FirstComeFirstServedStrategy.Factory.class);
+        AVUtils.bindDispatcherFactory(binder(), FirstComeFirstServedStrategy.class.getSimpleName()).to(FirstComeFirstServedStrategy.Factory.class);
 
         /** dispatchers for PartitionedDispatcher */
 
@@ -55,8 +55,8 @@ public class AmodeusDispatcherModule extends AbstractModule {
         bind(ExtDemandSupplyBeamSharing.Factory.class);
         AVUtils.bindDispatcherFactory(binder(), ExtDemandSupplyBeamSharing.class.getSimpleName()).to(ExtDemandSupplyBeamSharing.Factory.class);
 
-        bind(FagnantKockelmanDispatcherShared.Factory.class);
-        AVUtils.bindDispatcherFactory(binder(), FagnantKockelmanDispatcherShared.class.getSimpleName()).to(FagnantKockelmanDispatcherShared.Factory.class);
+        bind(DynamicRideSharingStrategy.Factory.class);
+        AVUtils.bindDispatcherFactory(binder(), DynamicRideSharingStrategy.class.getSimpleName()).to(DynamicRideSharingStrategy.Factory.class);
 
     }
 }
