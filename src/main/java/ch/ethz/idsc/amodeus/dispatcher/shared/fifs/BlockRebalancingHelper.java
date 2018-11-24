@@ -54,10 +54,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         }
     }
 
-    /* package */ ShortestTrip getShortestTrip() {
-        GlobalAssert.that(!travelTimesSorted.isEmpty());
-        return new ShortestTrip();
-    }
+
 
     private static void removeRoboTaxiFromMap(NavigableMap<Double, Map<Block, Set<RoboTaxi>>> travelTimesSorted, double travelTime, Block block, RoboTaxi roboTaxi) {
         if (travelTimesSorted.containsKey(travelTime)) {
@@ -82,7 +79,10 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
             }
         }
     }
-
+    /* package */ ShortestTrip getShortestTrip() {
+        GlobalAssert.that(!travelTimesSorted.isEmpty());
+        return new ShortestTrip();
+    }
     /* package */ class ShortestTrip {
         /* package */ final Double travelTime;
         /* package */ final Block block;

@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared.fifs;
 
 import java.util.HashMap;
@@ -7,7 +8,7 @@ import java.util.Map.Entry;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-/*package*/ class RideSharingConstraints {
+/* package */ class RideSharingConstraints {
 
     private final double dropoffDuration;
     private final double maxPickupTime;

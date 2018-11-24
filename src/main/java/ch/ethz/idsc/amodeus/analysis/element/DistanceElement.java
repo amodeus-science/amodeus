@@ -123,7 +123,7 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
     public List<VehicleStatistic> getVehicleStatistics() {
         return Collections.unmodifiableList(list);
     }
-    
+
     @Override // from TotalValueAppender
     public Map<TotalValueIdentifier, String> getTotalValues() {
         Map<TotalValueIdentifier, String> map = new HashMap<>();

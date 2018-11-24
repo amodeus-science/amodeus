@@ -28,14 +28,21 @@ import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNode;
 import ch.ethz.idsc.tensor.Tensor;
 
 public class VirtualNetworkLayer extends ViewerLayer {
+
     public static final Color COLOR = new Color(128, 153 / 2, 0, 128);
     // ---
     private VirtualNetwork<Link> virtualNetwork = null;
-    public boolean drawVNodes = true;
-    public boolean drawVLinks = false;
     private VirtualNodeGeometry virtualNodeGeometry = null;
-    public VirtualNodeShader virtualNodeShader = VirtualNodeShader.None;
-    public ColorSchemes colorSchemes = ColorSchemes.Jet;
+
+    public boolean drawVNodes;
+    public boolean drawVLinks;
+    public VirtualNodeShader virtualNodeShader;
+    public ColorSchemes colorSchemes;
+
+    public VirtualNetworkLayer(AmodeusComponent amodeusComponent) {
+        super(amodeusComponent);
+        amodeusComponent.virtualNetworkLayer = this;
+    }
 
     public void setVirtualNetwork(VirtualNetwork<Link> virtualNetwork) {
         this.virtualNetwork = virtualNetwork;
@@ -214,5 +221,19 @@ public class VirtualNetworkLayer extends ViewerLayer {
         int rgb = color.getRGB() & 0xffffff;
         int alpha = color.getAlpha() / 2;
         return new Color(rgb | (alpha << 24), true);
+    }
+
+    public void updateSettings(ViewerSettings settings) {
+        settings.drawVNodes = drawVNodes;
+        settings.drawVLinks = drawVLinks;
+        settings.virtualNodeShader = virtualNodeShader;
+        settings.colorSchemes = colorSchemes;
+    }
+
+    public void loadSettings(ViewerSettings settings) {
+        drawVNodes = settings.drawVNodes;
+        drawVLinks = settings.drawVLinks;
+        virtualNodeShader = settings.virtualNodeShader;
+        colorSchemes = settings.colorSchemes;
     }
 }

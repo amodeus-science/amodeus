@@ -9,7 +9,7 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.utils.collections.QuadTree.Rect;
 
-/*package*/ enum BlocksGenerator {
+/* package */ enum BlocksGenerator {
     ;
     /* package */ static Map<Integer, Block> of(Network network, double historicalDataTime, double predictedTime, double gridDistance) {
 

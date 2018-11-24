@@ -3,12 +3,10 @@ package ch.ethz.idsc.amodeus.analysis.shared;
 
 import java.awt.Color;
 
-import ch.ethz.idsc.amodeus.analysis.plot.ColorDataAmodeusSpecific;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.img.ColorDataGradients;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.img.ColorFormat;
 import ch.ethz.idsc.tensor.opt.ScalarTensorFunction;

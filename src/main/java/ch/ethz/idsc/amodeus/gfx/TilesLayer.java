@@ -23,6 +23,10 @@ public class TilesLayer extends ViewerLayer {
         }
     }
 
+    public TilesLayer(AmodeusComponent amodeusComponent) {
+        super(amodeusComponent);
+    }
+
     @Override
     protected void createPanel(RowPanel rowPanel) {
         {
@@ -63,6 +67,18 @@ public class TilesLayer extends ViewerLayer {
     @Override
     protected void paint(Graphics2D graphics, SimulationObject ref) {
         // nothing to do here
+    }
+
+    public void updateSettings(ViewerSettings settings) {
+        settings.mapAlphaCover = amodeusComponent.mapAlphaCover;
+        settings.mapGrayCover = amodeusComponent.mapGrayCover;
+        settings.tileSourceName = amodeusComponent.getTileSource().getName();
+    }
+
+    public void loadSettings(ViewerSettings settings) {
+        amodeusComponent.mapAlphaCover = settings.mapAlphaCover;
+        amodeusComponent.mapGrayCover = settings.mapGrayCover;
+        amodeusComponent.setTileSource(MapSource.valueOf(settings.tileSourceName).getTileSource());
     }
 
 }

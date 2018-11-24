@@ -344,10 +344,12 @@ public class RoboTaxi {
         GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.DROPOFF));
         GlobalAssert.that(RoboTaxiUtils.getStarterLink(this).equals(getDivertableLocation()));
     }
+
     /* package */ void startDropoff() {
         checkAbilityToDropOff();
         dropoffInProgress = true;
     }
+
     /* package */ void finishRedirection() {
         GlobalAssert.that(RoboTaxiUtils.hasNextCourse(this));
         GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.REDIRECT));
