@@ -15,7 +15,7 @@ import ch.ethz.idsc.amodeus.dispatcher.util.TreeMultipleItems;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-public class RebalancingGridExecutor {
+public class BlockRebalancing {
 
     /** General Settings */
     private final int minNumberForRebalance;
@@ -26,7 +26,7 @@ public class RebalancingGridExecutor {
     /** this tree is only used as an lookup to quickly find the corresponding block */
     private final HashMap<Link, Block> linkBlockLookup = new HashMap<>();
 
-    public RebalancingGridExecutor(Network network, TravelTimeCalculator timeDb, int minNumberRobotaxisForRebalance, double historicalDataTime, double predictedTime,
+    public BlockRebalancing(Network network, TravelTimeCalculator timeDb, int minNumberRobotaxisForRebalance, double historicalDataTime, double predictedTime,
             double gridDistance) {
         this.minNumberForRebalance = minNumberRobotaxisForRebalance;
         this.timeDb = timeDb;

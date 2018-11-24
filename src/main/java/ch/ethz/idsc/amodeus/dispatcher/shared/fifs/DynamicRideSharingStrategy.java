@@ -56,48 +56,41 @@ import ch.ethz.matsim.av.router.AVRouter;
  * not pooled. */
 public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
 
-    /** Dispatcher Settings Identifiers */
+    /** general Dispatcher Settings */
+    private final int dispatchPeriod; // [s]
+    private final double dropoffDuration;// [s]
+    private final double pickupDuration;// [s]
+
+    /** unassigned Robo Taxis in the Scenario sorted by its coordinates in a Tree Structure */
+    private final RoboTaxiHandler roboTaxiHandler;
+
+    /** Maintains All the Information about the Requests. keeps track of Assignements, Pickups, ... */
+    private final RequestHandler requestHandler = new RequestHandler(MAXWAITTIME, WAITLISTTIME, EXTREEMWAITTIME);
+    private static final double WAITLISTTIME = 300.0;// [s] Normal: 300, Time after which a request is put on to the wait list
+    private static final double MAXWAITTIME = 600.0; // [s] Normal is 600
+    private static final double EXTREEMWAITTIME = 3600.0 * 24; // [s] The extrem wait list is used here as in AMoDeus requests can not be rejected. This list guarantees for
+                                                               // requests waiting for more than MaxWaitTime that a taxi can be found
+
+    /** Rebalancing Class to make use of a Grid Rebalancing. And its Parameters */
+    private final BlockRebalancing rebalancing;
+    private static final double BINSIZETRAVELDEMAND = 3600.0; // Assumption made for the Request records required for rebalancing
+    private static final double REBALANCINGGRIDDISTANCE = 3218.69; // 2.0 miles in [m]
+    private static final int MINNUMBERROBOTAXISINBLOCKTOREBALANCE = 5;
+
+    /** Class which handles The Validation of routes. Afterwards The Constraints */
+    private final RouteValidation routeValidation;
+    private final double maxWaitTime;
+    private final double maxDriveTimeIncrease;
+    private final double maxRemainingTimeIncrease;
+    private final double newTravelTimeIncreaseAllowed;
     private static final String MAXWAITTIMEIDENTIFIER = "maxWaitTime";
     private static final String MAXDRIVETIMEINCREASEIDENTIFIER = "maxDriveTimeIncrease";
     private static final String MAXREMAININGTIMEINCREASEIDENTIFIER = "maxRemainingTimeIncrease";
     private static final String MAXABSOLUTETRAVELTIMEINCREASEIDENTIFIER = "maxAbsolutDriveTimeIncrease";
 
-    /** general Dispatcher Settings */
-    private final int dispatchPeriod;
-
-    /** ride sharing parameters */
-    private static final double WAITLISTTIME = 300.0;// Normal: 300, Time after which a request is put on to the wait list
-    private static final double MAXWAITTIME = 600.0; // Normal is 600
-    private static final double EXTREEMWAITTIME = 3600.0 * 24; // The extrem wait list is used here as in AMoDeus requests can not be rejected. This list guarantees for requests
-                                                               // waiting for more than MaxWaitTime that a taxi can be found
-    /** rebalancing Parameters */
-    private static final double BINSIZETRAVELDEMAND = 3600.0; // Assumption made for the Request records required for rebalancing
-    private static final double REBALANCINGGRIDDISTANCE = 3218.69; // 2.0 miles in [m]
-    private static final int MINNUMBERROBOTAXISINBLOCKTOREBALANCE = 5;
-
-    /** Ride Sharing Constraints */
-    private final double maxWaitTime;
-    private final double maxDriveTimeIncrease;
-    private final double maxRemainingTimeIncrease;
-    private final double newTravelTimeIncreaseAllowed;
-
-    private final double dropoffDuration;
-    private final double pickupDuration;
-
-    /** data structures for a fast search and simpler calulations */
-    // unassigned Robo Taxis in the Scenario sorted by its coordinates in a Tree Structure
-    // private final Set<RoboTaxi> unassignedRoboTaxis = new HashSet<>();
-    private final RoboTaxiHandler roboTaxiMaintainer;
-    // Maintains All the Information about the Requests. keeps track of Assignements, Pickups, ...
-    private final RequestHandler requestMaintainer = new RequestHandler(MAXWAITTIME, WAITLISTTIME, EXTREEMWAITTIME);
-    // Calulator for fastest travel times in the newtwork
-    private final LeastCostPathCalculator calculator;
-    // Rebalancing Executor
-    private final RebalancingGridExecutor kockelmanRebalancing;
-    private final RouteValidation kockelmanRouteValidation;
-
-    private static final double MAXLAGTRAVELTIMECALCULATION = 180000.0;
+    /** Travel Time Calculation */
     private final TravelTimeCalculatorCached timeDb;
+    private static final double MAXLAGTRAVELTIMECALCULATION = 180000.0;
 
     protected DynamicRideSharingStrategy(Network network, //
             Config config, AVConfig avConfig, AVDispatcherConfig avDispatcherConfig, //
@@ -106,75 +99,77 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
         super(config, avDispatcherConfig, travelTime, router, eventsManager, db);
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
         dispatchPeriod = safeConfig.getInteger(ScenarioParameters.DISPATCHPERIODSTRING, 300);
+        dropoffDuration = avConfig.getTimingParameters().getDropoffDurationPerStop();
+        pickupDuration = avConfig.getTimingParameters().getDropoffDurationPerStop();
+
         maxWaitTime = safeConfig.getInteger(MAXWAITTIMEIDENTIFIER, 300);// Normal is 300
         maxDriveTimeIncrease = safeConfig.getDouble(MAXDRIVETIMEINCREASEIDENTIFIER, 1.2);// Normal is 1.2
         maxRemainingTimeIncrease = safeConfig.getDouble(MAXREMAININGTIMEINCREASEIDENTIFIER, 1.4);// Normal is 1.4
         newTravelTimeIncreaseAllowed = safeConfig.getInteger(MAXABSOLUTETRAVELTIMEINCREASEIDENTIFIER, 180); // Normal is 180= (3min);
 
-        dropoffDuration = avConfig.getTimingParameters().getDropoffDurationPerStop();
-        pickupDuration = avConfig.getTimingParameters().getDropoffDurationPerStop();
-
-        roboTaxiMaintainer = new RoboTaxiHandler(network);
+        roboTaxiHandler = new RoboTaxiHandler(network);
 
         FastAStarLandmarksFactory factory = new FastAStarLandmarksFactory();
-        calculator = EasyPathCalculator.prepPathCalculator(network, factory);
+        LeastCostPathCalculator calculator = EasyPathCalculator.prepPathCalculator(network, factory);
         timeDb = TravelTimeCalculatorCached.of(calculator, MAXLAGTRAVELTIMECALCULATION);
-        this.kockelmanRebalancing = new RebalancingGridExecutor(network, timeDb, MINNUMBERROBOTAXISINBLOCKTOREBALANCE, BINSIZETRAVELDEMAND, dispatchPeriod, REBALANCINGGRIDDISTANCE);
-        kockelmanRouteValidation = new RouteValidation(maxWaitTime, maxDriveTimeIncrease, maxRemainingTimeIncrease, dropoffDuration, pickupDuration, newTravelTimeIncreaseAllowed);
+
+        rebalancing = new BlockRebalancing(network, timeDb, MINNUMBERROBOTAXISINBLOCKTOREBALANCE, BINSIZETRAVELDEMAND, dispatchPeriod, REBALANCINGGRIDDISTANCE);
+
+        routeValidation = new RouteValidation(maxWaitTime, maxDriveTimeIncrease, maxRemainingTimeIncrease, dropoffDuration, pickupDuration, newTravelTimeIncreaseAllowed);
     }
 
     @Override
     protected void redispatch(double now) {
         final long round_now = Math.round(now);
-        requestMaintainer.updatePickupTimes(getAVRequests(), now);
+        requestHandler.updatePickupTimes(getAVRequests(), now);
 
         if (round_now % dispatchPeriod == 0) {
             timeDb.update(now);
 
             /** prepare the registers for the dispatching */
-            roboTaxiMaintainer.update(getRoboTaxis(), getDivertableUnassignedRoboTaxis());
-            requestMaintainer.addUnassignedRequests(getUnassignedAVRequests(), timeDb);
-            requestMaintainer.updateLastHourRequests(now, BINSIZETRAVELDEMAND);
+            roboTaxiHandler.update(getRoboTaxis(), getDivertableUnassignedRoboTaxis());
+            requestHandler.addUnassignedRequests(getUnassignedAVRequests(), timeDb);
+            requestHandler.updateLastHourRequests(now, BINSIZETRAVELDEMAND);
 
             /** calculate Rebalance before (!) dispatching */
-            Set<Link> lastHourRequests = requestMaintainer.getRequestLinksLastHour();
-            RebalancingDirectives rebalanceDirectives = kockelmanRebalancing.getRebalancingDirectives(round_now, lastHourRequests,
-                    requestMaintainer.getCopyOfUnassignedAVRequests(), roboTaxiMaintainer.getUnassignedRoboTaxis());
+            Set<Link> lastHourRequests = requestHandler.getRequestLinksLastHour();
+            RebalancingDirectives rebalanceDirectives = rebalancing.getRebalancingDirectives(round_now, lastHourRequests, requestHandler.getCopyOfUnassignedAVRequests(),
+                    roboTaxiHandler.getUnassignedRoboTaxis());
 
             /** for all AV Requests in the order of their submision, try to find the closest
              * vehicle and assign */
-            for (AVRequest avRequest : requestMaintainer.getInOrderOffSubmissionTime()) {
+            for (AVRequest avRequest : requestHandler.getInOrderOffSubmissionTime()) {
                 Set<RoboTaxi> robotaxisWithMenu = getRoboTaxis().stream().filter(rt -> RoboTaxiUtils.plansPickupsOrDropoffs(rt)).collect(Collectors.toSet());
 
                 /** THIS IS WHERE WE CALCULATE THE SHARING POSSIBILITIES */
-                Optional<Entry<RoboTaxi, List<SharedCourse>>> rideSharingRoboTaxi = kockelmanRouteValidation.getClosestValidSharingRoboTaxi(robotaxisWithMenu, avRequest, now,
-                        timeDb, requestMaintainer, roboTaxiMaintainer, maxWaitTime);
+                Optional<Entry<RoboTaxi, List<SharedCourse>>> rideSharingRoboTaxi = routeValidation.getClosestValidSharingRoboTaxi(robotaxisWithMenu, avRequest, now, timeDb,
+                        requestHandler, roboTaxiHandler, maxWaitTime);
 
                 if (rideSharingRoboTaxi.isPresent()) {
                     /** in Case we have a sharing possibility we assign */
                     RoboTaxi roboTaxi = rideSharingRoboTaxi.get().getKey();
-                    GlobalAssert.that(kockelmanRouteValidation.menuFulfillsConstraints(roboTaxi, rideSharingRoboTaxi.get().getValue(), avRequest, now, timeDb, requestMaintainer));
+                    GlobalAssert.that(routeValidation.menuFulfillsConstraints(roboTaxi, rideSharingRoboTaxi.get().getValue(), avRequest, now, timeDb, requestHandler));
                     addSharedRoboTaxiPickup(roboTaxi, avRequest);
-                    requestMaintainer.removeFromUnasignedRequests(avRequest);
+                    requestHandler.removeFromUnasignedRequests(avRequest);
                     rebalanceDirectives.removefromDirectives(roboTaxi);
                     roboTaxi.updateMenu(rideSharingRoboTaxi.get().getValue());
 
                 } else {
                     /** in Case No sharing possibility is present, try to find a close enough vehicle */
-                    Optional<RoboTaxi> emptyRoboTaxi = RoboTaxiUtilsFagnant.getClosestUnassignedRoboTaxiWithinMaxTime(roboTaxiMaintainer, avRequest,
-                            requestMaintainer.calculateWaitTime(avRequest), now, timeDb);
+                    Optional<RoboTaxi> emptyRoboTaxi = RoboTaxiUtilsFagnant.getClosestUnassignedRoboTaxiWithinMaxTime(roboTaxiHandler, avRequest,
+                            requestHandler.calculateWaitTime(avRequest), now, timeDb);
                     if (emptyRoboTaxi.isPresent()) {
                         /** In case we have a close vehicle which is free lets assign it */
                         addSharedRoboTaxiPickup(emptyRoboTaxi.get(), avRequest); // give directive
-                        roboTaxiMaintainer.assign(emptyRoboTaxi.get()); // the assigned Robotaxi is not unasigned anymore
+                        roboTaxiHandler.assign(emptyRoboTaxi.get()); // the assigned Robotaxi is not unasigned anymore
                         rebalanceDirectives.removefromDirectives(emptyRoboTaxi.get()); // this taxi can not be rebalanced anymore
-                        requestMaintainer.removeFromUnasignedRequests(avRequest); // the request is not unassigned anymore
+                        requestHandler.removeFromUnasignedRequests(avRequest); // the request is not unassigned anymore
                     } else {
                         /** Assignement was not possible as no Taxi was able to fulfil the constraints -> wait list! */
-                        if (!requestMaintainer.isOnWaitList(avRequest)) {
-                            requestMaintainer.addToWaitList(avRequest);
+                        if (!requestHandler.isOnWaitList(avRequest)) {
+                            requestHandler.addToWaitList(avRequest);
                         } else { // and if it was already on the wait list put it to the extrem wait list
-                            requestMaintainer.addToExtreemWaitList(avRequest);
+                            requestHandler.addToExtreemWaitList(avRequest);
                         }
                     }
                 }
@@ -183,7 +178,7 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
 
             /** execute New Rebalance Directives */
             for (Entry<RoboTaxi, Link> entry : rebalanceDirectives.getDirectives().entrySet()) {
-                roboTaxiMaintainer.assign(entry.getKey());
+                roboTaxiHandler.assign(entry.getKey());
                 setRoboTaxiRebalance(entry.getKey(), entry.getValue());
             }
 
@@ -194,7 +189,7 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
                     forEach(rt -> {
                         setRoboTaxiRebalance(rt, rt.getDivertableLocation());
                     });
-            roboTaxiMaintainer.clear();
+            roboTaxiHandler.clear();
         }
     }
 
