@@ -115,12 +115,8 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
     /** This function iterates over the four adjacent Blocks and sends to each the closest n vehicles which are needed
      * By Definition we have to push if the Integer Value in the adjacent Block Map is positiv
-     * 
-     * @param network
-     * @param avRouter
-     * @param now
-     * @return */
-    /* package */ Map<RoboTaxi, Block> executeRebalance(TravelTimeCalculatorCached timeDb) {
+     */
+    /* package */ Map<RoboTaxi, Block> executeRebalance(TravelTimeCalculator timeDb) {
         Map<RoboTaxi, Block> rebalanceDirectives = new HashMap<>();
         int numRebalancings = getNumberPushingVehicles();
         GlobalAssert.that(numRebalancings <= freeRoboTaxis.size());

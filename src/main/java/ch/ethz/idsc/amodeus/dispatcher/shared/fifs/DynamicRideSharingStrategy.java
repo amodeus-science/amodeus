@@ -93,7 +93,7 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
     // Calulator for fastest travel times in the newtwork
     private final LeastCostPathCalculator calculator;
     // Rebalancing Executor
-    private final RebalancingExecutor kockelmanRebalancing;
+    private final RebalancingGridExecutor kockelmanRebalancing;
     private final RouteValidation kockelmanRouteValidation;
 
     private static final double MAXLAGTRAVELTIMECALCULATION = 180000.0;
@@ -119,7 +119,7 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
         FastAStarLandmarksFactory factory = new FastAStarLandmarksFactory();
         calculator = EasyPathCalculator.prepPathCalculator(network, factory);
         timeDb = TravelTimeCalculatorCached.of(calculator, MAXLAGTRAVELTIMECALCULATION);
-        this.kockelmanRebalancing = new RebalancingExecutor(network, timeDb, MINNUMBERROBOTAXISINBLOCKTOREBALANCE, BINSIZETRAVELDEMAND, dispatchPeriod, REBALANCINGGRIDDISTANCE);
+        this.kockelmanRebalancing = new RebalancingGridExecutor(network, timeDb, MINNUMBERROBOTAXISINBLOCKTOREBALANCE, BINSIZETRAVELDEMAND, dispatchPeriod, REBALANCINGGRIDDISTANCE);
         kockelmanRouteValidation = new RouteValidation(maxWaitTime, maxDriveTimeIncrease, maxRemainingTimeIncrease, dropoffDuration, pickupDuration, newTravelTimeIncreaseAllowed);
     }
 

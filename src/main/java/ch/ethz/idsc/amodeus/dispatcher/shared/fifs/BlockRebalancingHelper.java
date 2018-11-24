@@ -17,7 +17,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     private final Map<Block, Set<Double>> blocktravelTimes = new HashMap<>();
     private final Map<RoboTaxi, Map<Block, Double>> allTravelTimesForRoboTaxis = new HashMap<>();
 
-    /* package */ BlockRebalancingHelper(Set<Block> blocks, Set<RoboTaxi> freeRoboTaxis, TravelTimeCalculatorCached timeDb) {
+    /* package */ BlockRebalancingHelper(Set<Block> blocks, Set<RoboTaxi> freeRoboTaxis, TravelTimeCalculator timeDb) {
         GlobalAssert.that(!freeRoboTaxis.isEmpty());
 
         blocks.forEach(b -> blocktravelTimes.put(b, new HashSet<>()));
@@ -41,35 +41,33 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     /* package */ void update(ShortestTrip shortestTrip, int updatedPushing) {
         // remove All The entries where the just added RoboTaxi Occured
         for (Entry<Block, Double> entry : allTravelTimesForRoboTaxis.get(shortestTrip.roboTaxi).entrySet()) {
-            removeRoboTaxiFromMap(travelTimesSorted, entry.getValue(), entry.getKey(), shortestTrip.roboTaxi);
+            removeRoboTaxiFromMap(entry.getValue(), entry.getKey(), shortestTrip.roboTaxi);
         }
 
         // If the adjacent block has received all the required Taxis, remove it from all travel times
         if (updatedPushing == 0) {
             for (double travelTimeBlock : blocktravelTimes.get(shortestTrip.block)) {
                 if (travelTimeBlock >= shortestTrip.travelTime) {
-                    removeBlockFromMap(travelTimesSorted, travelTimeBlock, shortestTrip.block);
+                    removeBlockFromMap(travelTimeBlock, shortestTrip.block);
                 }
             }
         }
     }
 
-
-
-    private static void removeRoboTaxiFromMap(NavigableMap<Double, Map<Block, Set<RoboTaxi>>> travelTimesSorted, double travelTime, Block block, RoboTaxi roboTaxi) {
+    private void removeRoboTaxiFromMap(double travelTime, Block block, RoboTaxi roboTaxi) {
         if (travelTimesSorted.containsKey(travelTime)) {
             if (travelTimesSorted.get(travelTime).containsKey(block)) {
                 if (travelTimesSorted.get(travelTime).get(block).contains(roboTaxi)) {
                     travelTimesSorted.get(travelTime).get(block).remove(roboTaxi);
                     if (travelTimesSorted.get(travelTime).get(block).isEmpty()) {
-                        removeBlockFromMap(travelTimesSorted, travelTime, block);
+                        removeBlockFromMap(travelTime, block);
                     }
                 }
             }
         }
     }
 
-    private static void removeBlockFromMap(NavigableMap<Double, Map<Block, Set<RoboTaxi>>> travelTimesSorted, double travelTime, Block block) {
+    private void removeBlockFromMap(double travelTime, Block block) {
         if (travelTimesSorted.containsKey(travelTime)) {
             if (travelTimesSorted.get(travelTime).containsKey(block)) {
                 travelTimesSorted.get(travelTime).remove(block);
@@ -79,10 +77,12 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
             }
         }
     }
+
     /* package */ ShortestTrip getShortestTrip() {
         GlobalAssert.that(!travelTimesSorted.isEmpty());
         return new ShortestTrip();
     }
+
     /* package */ class ShortestTrip {
         /* package */ final Double travelTime;
         /* package */ final Block block;

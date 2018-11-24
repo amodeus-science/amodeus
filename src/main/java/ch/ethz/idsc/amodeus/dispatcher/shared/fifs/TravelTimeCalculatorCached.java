@@ -18,7 +18,7 @@ import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.qty.Quantity;
 
-/* package */ class TravelTimeCalculatorCached {
+/* package */ class TravelTimeCalculatorCached implements TravelTimeCalculator {
 
     /* package */ static TravelTimeCalculatorCached of(LeastCostPathCalculator calculator, Double now) {
         return new TravelTimeCalculatorCached(calculator, now);
@@ -49,7 +49,8 @@ import ch.ethz.idsc.tensor.qty.Quantity;
         timestoRemove.forEach(time -> calculationTimes.remove(time));
     }
 
-    /* package */ Scalar timeFromTo(Link from, Link to) {
+    @Override
+    public Scalar timeFromTo(Link from, Link to) {
         if (!db.containsKey(from))
             db.put(from, new HashMap<>());
         if (db.get(from).containsKey(to))
@@ -82,7 +83,9 @@ import ch.ethz.idsc.tensor.qty.Quantity;
         calculationTimes.get(now).get(from).add(to);
     }
 
-    /* package */ boolean isForNow(Double now) {
+    @Override
+    public boolean isForNow(double now) {
         return this.now.equals(now);
     }
+
 }

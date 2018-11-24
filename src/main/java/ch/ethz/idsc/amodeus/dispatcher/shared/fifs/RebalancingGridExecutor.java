@@ -15,18 +15,18 @@ import ch.ethz.idsc.amodeus.dispatcher.util.TreeMultipleItems;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-/*package*/ class RebalancingExecutor {
+public class RebalancingGridExecutor {
 
     /** General Settings */
     private final int minNumberForRebalance;
-    private final TravelTimeCalculatorCached timeDb;
+    private final TravelTimeCalculator timeDb;
 
     /** in this Set All the operations are made. */
     private final Map<Integer, Block> blocks;
     /** this tree is only used as an lookup to quickly find the corresponding block */
     private final HashMap<Link, Block> linkBlockLookup = new HashMap<>();
 
-    /* package */ RebalancingExecutor(Network network, TravelTimeCalculatorCached timeDb, int minNumberRobotaxisForRebalance, double historicalDataTime, double predictedTime,
+    public RebalancingGridExecutor(Network network, TravelTimeCalculator timeDb, int minNumberRobotaxisForRebalance, double historicalDataTime, double predictedTime,
             double gridDistance) {
         this.minNumberForRebalance = minNumberRobotaxisForRebalance;
         this.timeDb = timeDb;
@@ -46,7 +46,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         return null;
     }
 
-    /* package */ RebalancingDirectives getRebalancingDirectives(double now, Set<Link> allRequestLinksLastHour, Set<AVRequest> allUnassignedAVRequests,
+    public RebalancingDirectives getRebalancingDirectives(double now, Set<Link> allRequestLinksLastHour, Set<AVRequest> allUnassignedAVRequests,
             Set<RoboTaxi> allAvailableRobotaxisforRebalance) {
 
         /** First we have to update all the blocks with the new values of requests and RoboTaxis */
