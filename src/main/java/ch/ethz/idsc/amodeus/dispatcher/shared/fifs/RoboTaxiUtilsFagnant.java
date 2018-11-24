@@ -13,7 +13,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-/*package*/ enum RoboTaxiUtilsFagnant {
+/* package */ enum RoboTaxiUtilsFagnant {
     ;
 
     /** Finds all the robotaxis which can reach a specific link within the maximal Time specified

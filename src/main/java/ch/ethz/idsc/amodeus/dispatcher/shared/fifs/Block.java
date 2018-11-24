@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared.fifs;
 
 import java.util.HashMap;
@@ -20,7 +21,7 @@ import org.matsim.core.utils.collections.QuadTree.Rect;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
-/*package*/ class Block {
+/* package */ class Block {
     /** block ID */
     private final int id;
 
