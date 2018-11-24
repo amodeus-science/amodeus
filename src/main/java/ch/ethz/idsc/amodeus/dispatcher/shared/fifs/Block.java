@@ -3,11 +3,7 @@ package ch.ethz.idsc.amodeus.dispatcher.shared.fifs;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.NavigableMap;
-import java.util.Objects;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -18,6 +14,7 @@ import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.utils.collections.QuadTree.Rect;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.shared.fifs.BlockRebalancingHelper.ShortestTrip;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 /*package*/ class Block {
@@ -45,59 +42,74 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     private int scenarioUnassignedRequests;
 
     /** Properties of the Rebalancing */
-    private final double historicalDataTime;
-    private final double predictedTime;
+    private final double predictionFraction;
 
-    public Block(Rect bounds, Network network, int id, double historicalDataTime, double predictedTime) {
+    // *******************************************************************/
+    // * INITIALISATION FUNCTIONS only called once */
+    // *******************************************************************/
+
+    /* package */ Block(Rect bounds, Network network, int id, double historicalDataTime, double predictedTime) {
         this.bounds = bounds;
         this.id = id;
         centerCoord = new Coord(bounds.centerX, bounds.centerY);
         centerLink = NetworkUtils.getNearestLink(network, centerCoord);
-        this.historicalDataTime = historicalDataTime;
-        this.predictedTime = predictedTime;
+        this.predictionFraction = predictedTime / historicalDataTime;
     }
 
-    public void addRoboTaxi(RoboTaxi roboTaxi) {
+    /* package */ void addAdjacentBlock(Block block) {
+        adjacentBlocks.put(block, new AtomicInteger(0));
+    }
+
+    // *******************************************************************/
+    // * UPDATE FUNCTIONS called once in each time step before push pull */
+    // *******************************************************************/
+
+    /* package */ void clear() {
+        freeRoboTaxis.clear();
+        numberRequestsHistorical = 0;
+        numberUnassignedRequests = 0;
+    }
+
+    /* package */ void addRoboTaxi(RoboTaxi roboTaxi) {
         GlobalAssert.that(contains(roboTaxi.getDivertableLocation().getCoord()));
         freeRoboTaxis.add(roboTaxi);
         freeRobotaxiInRebalancing = freeRoboTaxis.size();
     }
 
-    /** REBALANCING CALCULATION FUNCTIONS */
-    public void pushRobotaxiTo(Block block) {
-        pushFromBlockToBlock(this, block);
+    /* package */ void addUnassignedRequest() {
+        numberUnassignedRequests++;
     }
 
-    /* package */ static void pushFromBlockToBlock(Block blockFrom, Block blockTo) {
-        GlobalAssert.that(blockFrom.getAdjacentBlocks().contains(blockTo));
-        GlobalAssert.that(blockTo.getBlockBalance() < blockFrom.getBlockBalance() - 1);
-        GlobalAssert.that(blockFrom.freeRobotaxiInRebalancing > 0);
-        GlobalAssert.that(blockFrom.hasAvailableRobotaxisToRebalance());
-        blockFrom.adjacentBlocks.get(blockTo).incrementAndGet();
-        blockFrom.freeRobotaxiInRebalancing -= 1;
-        blockTo.freeRobotaxiInRebalancing += 1;
-        blockFrom.calculateBlockBalanceInternal();
-        blockTo.calculateBlockBalanceInternal();
+    /* package */ void addRequestLastHour(Link link) {
+        GlobalAssert.that(contains(link.getCoord()));
+        numberRequestsHistorical += 1;
     }
 
-    public Block getAdjacentBlockWithLowestBalance() {
-        return BlockUtils.getBlockwithLowestBalance(getAdjacentBlocks());
+    // *******************************************************************/
+    // * PUSH PuLL FUNCTIONS to execute rebalancing based on the balance */
+    // *******************************************************************/
+    /* package */ void calculateInitialBlockBalance(int savTotal, int demandTotal) {
+        GlobalAssert.that(freeRoboTaxis.isEmpty() && numberRequestsHistorical == 0 && numberUnassignedRequests == 0);
+        scenarioFreeRoboTaxis = savTotal;
+        scenarioUnassignedRequests = demandTotal;
+        calculateBlockBalanceInternal();
     }
 
-    public Block getAdjacentBlockWithHighestBalanceAndAvailableRobotaxi() {
-        return BlockUtils.getBlockwithHighestBalanceAndAvailableRobotaxi(getAdjacentBlocks());
+    private void calculateBlockBalanceInternal() {
+        blockBalance = Math.round(BlockUtils.calculateBlockBalance(scenarioFreeRoboTaxis, freeRobotaxiInRebalancing, scenarioUnassignedRequests,
+                numberUnassignedRequests + (int) Math.round(numberRequestsHistorical * predictionFraction)));
     }
 
-    public boolean lowerBalancesPresentInNeighbourhood() {
-        return (getAdjacentBlockWithLowestBalance().blockBalance < this.blockBalance - 1);
-    }
-
-    public boolean higherBalancesPresentInNeighbourhood() {
-        Block block = getAdjacentBlockWithHighestBalanceAndAvailableRobotaxi();
-        if (Objects.isNull(block)) {
-            return false;
-        }
-        return (getAdjacentBlockWithHighestBalanceAndAvailableRobotaxi().blockBalance > this.blockBalance + 1);
+    /* package */ void pushRobotaxiTo(Block block) {
+        GlobalAssert.that(this.getAdjacentBlocks().contains(block));
+        GlobalAssert.that(block.getBlockBalance() < this.getBlockBalance() - 1);
+        GlobalAssert.that(this.freeRobotaxiInRebalancing > 0);
+        GlobalAssert.that(this.hasAvailableRobotaxisToRebalance());
+        this.adjacentBlocks.get(block).incrementAndGet();
+        this.freeRobotaxiInRebalancing -= 1;
+        block.freeRobotaxiInRebalancing += 1;
+        this.calculateBlockBalanceInternal();
+        block.calculateBlockBalanceInternal();
     }
 
     /** This function iterates over the four adjacent Blocks and sends to each the closest n vehicles which are needed
@@ -107,142 +119,65 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
      * @param avRouter
      * @param now
      * @return */
-    public Map<RoboTaxi, Block> executeRebalance(Network network, TravelTimeCalculatorCached timeDb, double now) {
+    /* package */ Map<RoboTaxi, Block> executeRebalance(TravelTimeCalculatorCached timeDb) {
         Map<RoboTaxi, Block> rebalanceDirectives = new HashMap<>();
         int numRebalancings = getNumberPushingVehicles();
         GlobalAssert.that(numRebalancings <= freeRoboTaxis.size());
+
         if (numRebalancings > 0) {
-            GlobalAssert.that(!freeRoboTaxis.isEmpty());
-
             Set<Block> blocks = adjacentBlocks.keySet().stream().filter(b -> adjacentBlocks.get(b).intValue() > 0).collect(Collectors.toSet());
-            NavigableMap<Double, Map<Block, Set<RoboTaxi>>> travelTimesSorted = new TreeMap<>();
-            Map<Block, Set<Double>> blocktravelTimes = new HashMap<>();
-            blocks.forEach(b -> blocktravelTimes.put(b, new HashSet<>()));
-
-            Map<RoboTaxi, Map<Block, Double>> allTravelTimesForRoboTaxis = new HashMap<>();
-            freeRoboTaxis.forEach(rt -> allTravelTimesForRoboTaxis.put(rt, new HashMap<>()));
-
-            for (RoboTaxi roboTaxi : freeRoboTaxis) {
-                for (Block block : blocks) {
-                    double travelTime = timeDb.timeFromTo(roboTaxi.getDivertableLocation(), block.centerLink).number().doubleValue();
-                    if (!travelTimesSorted.containsKey(travelTime)) {
-                        travelTimesSorted.put(travelTime, new HashMap<>());
-                    }
-                    if (!travelTimesSorted.get(travelTime).containsKey(block)) {
-                        travelTimesSorted.get(travelTime).put(block, new HashSet<>());
-                    }
-                    travelTimesSorted.get(travelTime).get(block).add(roboTaxi);
-                    blocktravelTimes.get(block).add(travelTime);
-                    allTravelTimesForRoboTaxis.get(roboTaxi).put(block, travelTime);
-                }
-            }
-
-            Map<Block, Set<RoboTaxi>> addedRoboTaxisPerBlock = new HashMap<>();
-            blocks.forEach(b -> addedRoboTaxisPerBlock.put(b, new HashSet<>()));
+            BlockRebalancingHelper blockHelper = new BlockRebalancingHelper(blocks, freeRoboTaxis, timeDb);
 
             for (int i = 0; i < numRebalancings; i++) {
+                ShortestTrip shortestTrip = blockHelper.getShortestTrip();
 
-                GlobalAssert.that(!travelTimesSorted.isEmpty());
-                Entry<Double, Map<Block, Set<RoboTaxi>>> nearestTrips = travelTimesSorted.firstEntry();
-                Double travelTime = nearestTrips.getKey();
-                Block block = nearestTrips.getValue().keySet().iterator().next();
-                RoboTaxi roboTaxi = nearestTrips.getValue().get(block).iterator().next();
+                rebalanceDirectives.put(shortestTrip.roboTaxi, shortestTrip.block);
+                freeRoboTaxis.remove(shortestTrip.roboTaxi);
+                int updatedPushing = adjacentBlocks.get(shortestTrip.block).decrementAndGet();
 
-                rebalanceDirectives.put(roboTaxi, block);
-                addedRoboTaxisPerBlock.get(block).add(roboTaxi);
-                freeRoboTaxis.remove(roboTaxi);
-
-                // remove All The entries where the just added RoboTaxi Occured
-                for (Entry<Block, Double> entry : allTravelTimesForRoboTaxis.get(roboTaxi).entrySet()) {
-                    BlockUtils.removeRoboTaxiFromMap(travelTimesSorted, entry.getValue(), entry.getKey(), roboTaxi);
-                }
-
-                // If the adjacent block has received all the required Taxis, remove it from all travel times
-                int updatedPushing = adjacentBlocks.get(block).decrementAndGet();
-                if (updatedPushing == 0) {
-                    for (double travelTimeBlock : blocktravelTimes.get(block)) {
-                        if (travelTimeBlock >= travelTime) {
-                            BlockUtils.removeBlockFromMap(travelTimesSorted, travelTimeBlock, block);
-                        }
-                    }
-                }
+                blockHelper.update(shortestTrip, updatedPushing);
             }
         }
 
-        adjacentBlocks.forEach((b, ai) -> GlobalAssert.that(ai.intValue() == 0));
+        adjacentBlocks.values().forEach(ai -> GlobalAssert.that(ai.intValue() == 0));
         GlobalAssert.that(rebalanceDirectives.size() == numRebalancings);
 
         return rebalanceDirectives;
     }
 
-    public Link getCenterLink() {
-        return centerLink;
+    // *******************************************************************/
+    // * HELPER Functions */
+    // *******************************************************************/
+
+    /* package */ boolean hasAvailableRobotaxisToRebalance() {
+        return freeRoboTaxis.size() > getNumberPushingVehicles();
     }
 
-    public boolean hasAvailableRobotaxisToRebalance() {
-        return freeRoboTaxis.size() > getNumberPushingVehicles();
+    /* package */ boolean contains(Coord coord) {
+        return bounds.contains(coord.getX(), coord.getY());
     }
 
     private int getNumberPushingVehicles() {
         return adjacentBlocks.values().stream().mapToInt(aI -> aI.intValue()).filter(aI -> aI > 0).sum();
     }
 
-    public boolean contains(Coord coord) {
-        return bounds.contains(coord.getX(), coord.getY());
+    // *******************************************************************/
+    // * GETTERS and SETTERS */
+    // *******************************************************************/
+
+    /* package */ Link getCenterLink() {
+        return centerLink;
     }
 
-    public void removeAllRobotaxis() {
-        freeRoboTaxis.clear();
-    }
-
-    public void addUnassignedRequest() {
-        numberUnassignedRequests++;
-    }
-
-    public void addRequestLastHour() {
-        numberRequestsHistorical += 1;
-    }
-
-    public void removeAllRequestsLastHour() {
-        numberRequestsHistorical = 0;
-    }
-
-    public void removeAllUnassignedRequests() {
-        numberUnassignedRequests = 0;
-    }
-
-    public void addAdjacentBlock(Block block) {
-        adjacentBlocks.put(block, new AtomicInteger(0));
-    }
-
-    public Set<Block> getAdjacentBlocks() {
+    /* package */ Set<Block> getAdjacentBlocks() {
         return adjacentBlocks.keySet();
     }
 
-    public int getNumberOfUnassignedRequests() {
-        return numberUnassignedRequests;
-    }
-
-    public int getNumberOfExpectedRequests() {
-        return (int) Math.round(numberRequestsHistorical / historicalDataTime * predictedTime);
-    }
-
-    public void calculateBlockBalance(int savTotal, int demandTotal) {
-        scenarioFreeRoboTaxis = savTotal;
-        scenarioUnassignedRequests = demandTotal;
-        calculateBlockBalanceInternal();
-    }
-
-    private void calculateBlockBalanceInternal() {
-        blockBalance = Math.round(BlockUtils.calculateBlockBalance(scenarioFreeRoboTaxis, freeRobotaxiInRebalancing, scenarioUnassignedRequests,
-                getNumberOfUnassignedRequests() + getNumberOfExpectedRequests()));
-    }
-
-    public long getBlockBalance() {
+    /* package */ long getBlockBalance() {
         return blockBalance;
     }
 
-    public int getId() {
+    /* package */ int getId() {
         return id;
     }
 
