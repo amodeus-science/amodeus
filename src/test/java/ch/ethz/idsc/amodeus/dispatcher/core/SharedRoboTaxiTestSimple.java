@@ -172,7 +172,7 @@ public class SharedRoboTaxiTestSimple extends TestCase {
         assertEquals(RoboTaxiUtils.getStarterLink(s.roboTaxi1), s.linkDepotIn);
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.linkDepotIn, 1.0));
         s.roboTaxi1.finishRedirection();
-        
+
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.linkLeft, 1.0));
         s.roboTaxi1.startDropoff();
         s.roboTaxi1.addAVRequestToMenu(s.avRequest5);

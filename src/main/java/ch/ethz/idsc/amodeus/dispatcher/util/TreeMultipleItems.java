@@ -34,7 +34,7 @@ public class TreeMultipleItems<T> {
         tree.values().forEach(ts -> list.addAll(ts)); // is asscending order ?!
         return list;
     }
-    
+
     public List<T> getTsInOrderOfValueDescending() {
         List<T> list = new ArrayList<>();
         tree.descendingMap().values().forEach(ts -> list.addAll(ts)); // is asscending order ?!
@@ -75,8 +75,8 @@ public class TreeMultipleItems<T> {
     public void removeAllElementsWithValueSmaller(Double minValue) {
         if (!tree.isEmpty()) {
             // TODO make use of allready sorted Navigable Map
-            Set<T> toRemoveSet = getTsInOrderOfValue().stream().filter(t-> time.apply(t) <= minValue).collect(Collectors.toSet());
-            toRemoveSet.forEach(t-> remove(t));
+            Set<T> toRemoveSet = getTsInOrderOfValue().stream().filter(t -> time.apply(t) <= minValue).collect(Collectors.toSet());
+            toRemoveSet.forEach(t -> remove(t));
         }
 
     }

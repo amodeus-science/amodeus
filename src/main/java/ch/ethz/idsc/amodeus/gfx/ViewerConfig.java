@@ -1,14 +1,21 @@
 package ch.ethz.idsc.amodeus.gfx;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.matsim.api.core.v01.Coord;
+
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.ICoordinate;
 import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.TileSource;
 import ch.ethz.idsc.amodeus.view.jmapviewer.tilesources.MapnikTileSource;
-import org.matsim.api.core.v01.Coord;
-
-import java.io.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ViewerConfig {
     private static String defaultFileName = "viewerSettings";

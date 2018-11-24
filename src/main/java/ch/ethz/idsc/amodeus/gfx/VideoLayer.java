@@ -1,18 +1,20 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.gfx;
 
-import ch.ethz.idsc.amodeus.net.*;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Graphics2D;
+import java.io.IOException;
+import java.util.stream.IntStream;
+
+import javax.swing.JButton;
+import javax.swing.JPanel;
+
+import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.util.gui.RowPanel;
 import ch.ethz.idsc.amodeus.util.gui.SpinnerLabel;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.video.VideoGenerator;
-
-import javax.swing.*;
-import java.awt.*;
-import java.io.IOException;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /** Head Up Display */
 public class VideoLayer extends ViewerLayer {

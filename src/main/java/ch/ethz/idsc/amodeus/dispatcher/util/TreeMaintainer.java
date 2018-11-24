@@ -76,14 +76,12 @@ public class TreeMaintainer<T> {
         return tree.getRectangle(bounds, new HashSet<>());
     }
 
-    /**
-     * Gets all objects within a certain distance around x/y
+    /** Gets all objects within a certain distance around x/y
      *
      * @param x left-right location, longitude
      * @param y up-down location, latitude
      * @param distance the maximal distance returned objects can be away from x/y
-     * @return the objects found within distance to x/y
-     */
+     * @return the objects found within distance to x/y */
     public Collection<T> disk(double x, double y, double distance) {
         return tree.getDisk(x, y, distance);
     }
