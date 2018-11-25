@@ -3,7 +3,9 @@ package ch.ethz.idsc.amodeus.dispatcher.util;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.NavigableMap;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Function;
@@ -24,14 +26,20 @@ public class TreeMultipleItems<T> {
 
     /** @return Set of {@link T} associated with the lowest value obtained from the function */
     public Set<T> getFirst() {
-        return tree.firstEntry().getValue();
+        return returnIfPossible(tree.firstEntry());
     }
 
     /** @return Set of {@link T} associated with the highest value obtained from the function */
     public Set<T> getLast() {
-        return tree.lastEntry().getValue();
+        return returnIfPossible(tree.lastEntry());
     }
 
+    private Set<T> returnIfPossible(Entry<Double, Set<T>> entry) {
+        if (Objects.isNull(entry)) {
+            return null;
+        }
+        return entry.getValue();
+    }
     public List<T> getTsInOrderOfValue() {
         List<T> list = new ArrayList<>();
         tree.values().forEach(ts -> list.addAll(ts)); // is asscending order ?!

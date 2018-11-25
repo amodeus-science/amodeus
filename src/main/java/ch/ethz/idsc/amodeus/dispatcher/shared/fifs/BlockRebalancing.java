@@ -4,6 +4,7 @@ package ch.ethz.idsc.amodeus.dispatcher.shared.fifs;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
@@ -123,7 +124,11 @@ public class BlockRebalancing {
             // allBlocks.remove(block);
             block.getAdjacentBlocks().stream().filter(b -> !calculatedBlocks.contains(b)).forEach(b -> blockBalances.add(b));
             /** update the current block */
-            block = blockBalances.getLast().iterator().next();
+            Set<Block> set = blockBalances.getLast();
+            if (Objects.isNull(set)) {
+                break;
+            }
+            block = set.iterator().next();
             // block2 = BlockUtils.getBlockWithHighestAbsolutBalance(allBlocks);
 
         }
