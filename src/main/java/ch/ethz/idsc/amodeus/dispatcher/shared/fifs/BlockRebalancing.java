@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 
@@ -29,6 +28,20 @@ public class BlockRebalancing {
     /** this tree is only used as an lookup to quickly find the corresponding block */
     private final HashMap<Link, Block> linkBlockLookup = new HashMap<>();
 
+    /** The {@link BlockRebalancing} enables calculations of a Grid based Rebalancing strategy. It generates a grid of Blocks over the network and then calculates
+     * at each call of {@link getRebalancingDirectives()} for each of this cells a block balance which is a measure for the need or surplus of robotaxis. Based on
+     * that measure Rebalancing directives are returned. That is a List of directives for Robotaxis to drive to certain links.
+     * 
+     * Implementation based on: Fagnant, D. J., Kockelman, K. M., & Bansal, P. (2015). Operations of shared autonomous vehicle fleet for austin, texas, market.
+     * Transportation Research
+     * Record: Journal of the Transportation Research Board, (2536), 98-106.
+     * 
+     * @param network over which the Grid should be laied
+     * @param timeDb travel Time Calculator to efficiently calculate the travel time between links
+     * @param minNumberRobotaxisForRebalance The minimal Threshold from which on robotaxis are rebalanced
+     * @param historicalDataTime duration in seconds over which past requests are collected to predict future requests
+     * @param predictedTime duration in seconds for which the future request should be predicted
+     * @param gridDistance distance in meter which corresponds to the length of a block */
     public BlockRebalancing(Network network, TravelTimeCalculator timeDb, int minNumberRobotaxisForRebalance, double historicalDataTime, double predictedTime,
             double gridDistance) {
         this.minNumberForRebalance = minNumberRobotaxisForRebalance;
@@ -41,6 +54,8 @@ public class BlockRebalancing {
         network.getLinks().values().forEach(l -> linkBlockLookup.put(l, getCorespondingBlock(l.getCoord())));
     }
 
+    /** @param coord
+     * @return the corresponding block based oon the given coordinate */
     private Block getCorespondingBlock(Coord coord) {
         for (Block block : blocks.values())
             if (block.contains(coord))
@@ -49,7 +64,15 @@ public class BlockRebalancing {
         return null;
     }
 
-    public RebalancingDirectives getRebalancingDirectives(double now, Set<Link> allRequestLinksLastHour, Set<AVRequest> allUnassignedAVRequests,
+    /** Calculates rebalancing directives based on the current state of the robotaxis and requests
+     * 
+     * @param now the current time
+     * @param historicalRequestLinks historical request link data. should correspond to the historicalDataTime entered in the constructor. Can come from a
+     *            collection of the data in the simulation or from historical data like a taxi company could have it.
+     * @param allUnassignedAVRequests all currently unassigned {@link AvRequest}s
+     * @param allAvailableRobotaxisforRebalance all {@link RoboTaxi}s which should be considered for Rebalancing
+     * @return */
+    public RebalancingDirectives getRebalancingDirectives(double now, Set<Link> historicalRequestLinks, Set<AVRequest> allUnassignedAVRequests,
             Set<RoboTaxi> allAvailableRobotaxisforRebalance) {
 
         /** First we have to update all the blocks with the new values of requests and RoboTaxis */
@@ -57,7 +80,7 @@ public class BlockRebalancing {
 
         allAvailableRobotaxisforRebalance.forEach(rt -> blocks.get(linkBlockLookup.get(rt.getDivertableLocation()).getId()).addRoboTaxi(rt));
         allUnassignedAVRequests.forEach(req -> blocks.get(linkBlockLookup.get(req.getFromLink()).getId()).addUnassignedRequest());
-        allRequestLinksLastHour.forEach(l -> blocks.get(linkBlockLookup.get(l).getId()).addRequestLastHour(l));
+        historicalRequestLinks.forEach(l -> blocks.get(linkBlockLookup.get(l).getId()).addRequestLastHour(l));
 
         /** Calculate the initial Block Balances for each block */
         blocks.values().forEach(v -> v.calculateInitialBlockBalance(allAvailableRobotaxisforRebalance.size(), allUnassignedAVRequests.size()));
@@ -66,37 +89,24 @@ public class BlockRebalancing {
         calculateRebalancing();
 
         /** Calculate for each block which vehicles will move to which link based on the results of the calculated rebalancing numbers above */
-        return getDirectivesFromBlocks(now);
-    }
-
-    private RebalancingDirectives getDirectivesFromBlocks(double now) {
         GlobalAssert.that(timeDb.isForNow(now));
-
-        Map<RoboTaxi, Link> directives = new HashMap<>();
-        for (Block block : blocks.values()) {
-            for (Entry<RoboTaxi, Block> entry : block.executeRebalance(timeDb).entrySet()) {
-                GlobalAssert.that(!directives.containsKey(entry.getKey()));
-                directives.put(entry.getKey(), entry.getValue().getCenterLink());
-            }
-        }
-        return new RebalancingDirectives(directives);
-
+        RebalancingDirectives directives = new RebalancingDirectives(new HashMap<>());
+        blocks.values().forEach(b -> directives.addOtherDirectives(b.executeRebalance(timeDb)));
+        return directives;
     }
 
+    /** Plans pushing and pullin gof Robotaxis between the blocks. */
     private void calculateRebalancing() {
 
         /** Store the Blocks in the Order of their Block Balance */
         TreeMultipleItems<Block> blockBalances = new TreeMultipleItems<>(this::getAbsOfBlockBalance);
         blocks.forEach((k, v) -> blockBalances.add(v));
-        // Collection<Block> allBlocks = new HashSet<>(blocks.values());
         Set<Block> calculatedBlocks = new HashSet<>();
 
         /** Get the block with the largest absolut value of the block Balance */
-        // Block block2 = BlockUtils.getBlockWithHighestAbsolutBalance(allBlocks);
         Block block = blockBalances.getLast().iterator().next();
 
         while (getAbsOfBlockBalance(block) > minNumberForRebalance) {
-            // GlobalAssert.that(getAbsOfBlockBalance(block) == getAbsOfBlockBalance(block2));
             /** remove the block and its adjacent blocks from the tree, will be added with the updated balance afterwards */
             block.getAdjacentBlocks().forEach(b -> blockBalances.remove(b));
             blockBalances.remove(block);
@@ -121,7 +131,6 @@ public class BlockRebalancing {
             /** add the adjacent blocks back to the block balance tree with the updated balance. Btw The current block is not added Anymore as all possible rebalncings have
              * been carried out. It could well be that this block still has the highest balance but we have to move on to the next block. */
             calculatedBlocks.add(block);
-            // allBlocks.remove(block);
             block.getAdjacentBlocks().stream().filter(b -> !calculatedBlocks.contains(b)).forEach(b -> blockBalances.add(b));
             /** update the current block */
             Set<Block> set = blockBalances.getLast();
@@ -129,8 +138,6 @@ public class BlockRebalancing {
                 break;
             }
             block = set.iterator().next();
-            // block2 = BlockUtils.getBlockWithHighestAbsolutBalance(allBlocks);
-
         }
     }
 

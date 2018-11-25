@@ -18,6 +18,9 @@ import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.qty.Quantity;
 
+/** A{@link TravelTimeCalculatorCached} stores all the calculated travel times which were calculated within the specified Timelag duration.
+ * Like that a very efficient travel time calculation can be guaranteed such that the computationaly expensive rouing has only to be done once for a given link
+ * to link pair. */
 /* package */ class TravelTimeCalculatorCached implements TravelTimeCalculator {
 
     /* package */ static TravelTimeCalculatorCached of(LeastCostPathCalculator calculator, Double now) {

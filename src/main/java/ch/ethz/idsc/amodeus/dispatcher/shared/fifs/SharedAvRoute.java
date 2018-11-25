@@ -11,11 +11,14 @@ import org.matsim.api.core.v01.network.Link;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.qty.Quantity;
 
+/** A {@link SharedAvRoute} is a list of {@link SharedRoutePoint}s. It is simmilar to a {@link SharedMenu} in the Robotaxi. But it has more information
+ * stored such as the predicted travel time. */
 /* package */ class SharedAvRoute {
     private final List<SharedRoutePoint> route;
 

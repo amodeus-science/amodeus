@@ -8,6 +8,9 @@ import java.util.Map.Entry;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
+/**
+ * In this class the constraints of ride sharing are defined. 
+ */
 /* package */ class RideSharingConstraints {
 
     private final double dropoffDuration;

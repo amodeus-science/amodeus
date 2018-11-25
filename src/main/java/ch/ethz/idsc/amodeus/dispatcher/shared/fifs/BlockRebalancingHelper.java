@@ -11,12 +11,20 @@ import java.util.TreeMap;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
+/** helper Class for a Block to translate planned pushes and pulls into directives of Robotaxis to Links.
+ * calculates all travel times of all robotaxis to all the blocks to which pushes and pulls are planned. */
 /* package */ class BlockRebalancingHelper {
 
     private final NavigableMap<Double, Map<Block, Set<RoboTaxi>>> travelTimesSorted = new TreeMap<>();
     private final Map<Block, Set<Double>> blocktravelTimes = new HashMap<>();
     private final Map<RoboTaxi, Map<Block, Double>> allTravelTimesForRoboTaxis = new HashMap<>();
 
+    /** Initialisatzin of the helper class.
+     * calculation of all travel times of robotaxis to the center of the given Blocks.
+     * 
+     * @param blocks all the adjactent blocks to which pushes are planned
+     * @param freeRoboTaxis all the robotaxis which should be considered
+     * @param timeDb Travel time calculator */
     /* package */ BlockRebalancingHelper(Set<Block> blocks, Set<RoboTaxi> freeRoboTaxis, TravelTimeCalculator timeDb) {
         GlobalAssert.that(!freeRoboTaxis.isEmpty());
 
@@ -38,6 +46,10 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         }
     }
 
+    /** remove the shortest trip and all the trips which are associated with this trip.
+     * 
+     * @param shortestTrip shortest Trip which was used outside
+     * @param updatedPushing value of how many pushes are still required to the block in shortest trip. */
     /* package */ void update(ShortestTrip shortestTrip, int updatedPushing) {
         // remove All The entries where the just added RoboTaxi Occured
         for (Entry<Block, Double> entry : allTravelTimesForRoboTaxis.get(shortestTrip.roboTaxi).entrySet()) {
@@ -78,11 +90,15 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         }
     }
 
+    /** gets the currently shortest trip in the data structure. If some trips have equal length a random choice is made.
+     * 
+     * @return */
     /* package */ ShortestTrip getShortestTrip() {
         GlobalAssert.that(!travelTimesSorted.isEmpty());
         return new ShortestTrip();
     }
 
+    /** Helper class to wrap the three elements Travel Time, Block and roboTaxi */
     /* package */ class ShortestTrip {
         /* package */ final Double travelTime;
         /* package */ final Block block;

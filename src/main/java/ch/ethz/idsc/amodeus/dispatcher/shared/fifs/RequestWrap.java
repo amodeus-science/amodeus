@@ -6,6 +6,9 @@ import java.util.Optional;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
+/** 
+ * A {@link RequestWrap} contains more Information about the Request. for example the drive time in the unit capacity case
+ */
 /* package */ class RequestWrap {
     private final AVRequest avRequest;
     // private Optional<Double> assignementTime = Optional.empty();
