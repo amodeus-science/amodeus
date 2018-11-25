@@ -2,8 +2,10 @@
 package ch.ethz.idsc.amodeus.dispatcher.shared.fifs;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 
 import org.matsim.api.core.v01.Coord;
@@ -51,12 +53,13 @@ public class BlockRebalancing {
 
         /** First we have to update all the blocks with the new values of requests and RoboTaxis */
         blocks.values().forEach(v -> v.clear());
+
         allAvailableRobotaxisforRebalance.forEach(rt -> blocks.get(linkBlockLookup.get(rt.getDivertableLocation()).getId()).addRoboTaxi(rt));
         allUnassignedAVRequests.forEach(req -> blocks.get(linkBlockLookup.get(req.getFromLink()).getId()).addUnassignedRequest());
         allRequestLinksLastHour.forEach(l -> blocks.get(linkBlockLookup.get(l).getId()).addRequestLastHour(l));
 
         /** Calculate the initial Block Balances for each block */
-        blocks.forEach((k, v) -> v.calculateInitialBlockBalance(allAvailableRobotaxisforRebalance.size(), allUnassignedAVRequests.size()));
+        blocks.values().forEach(v -> v.calculateInitialBlockBalance(allAvailableRobotaxisforRebalance.size(), allUnassignedAVRequests.size()));
 
         /** By using push and pull between the Blocks Lets determine which block sends how many robotaxis to which other block */
         calculateRebalancing();
@@ -84,12 +87,15 @@ public class BlockRebalancing {
         /** Store the Blocks in the Order of their Block Balance */
         TreeMultipleItems<Block> blockBalances = new TreeMultipleItems<>(this::getAbsOfBlockBalance);
         blocks.forEach((k, v) -> blockBalances.add(v));
+        // Collection<Block> allBlocks = new HashSet<>(blocks.values());
+        Set<Block> calculatedBlocks = new HashSet<>();
 
         /** Get the block with the largest absolut value of the block Balance */
+        // Block block2 = BlockUtils.getBlockWithHighestAbsolutBalance(allBlocks);
         Block block = blockBalances.getLast().iterator().next();
 
-        /** Calculate the Rabalancing Needs for each block */
         while (getAbsOfBlockBalance(block) > minNumberForRebalance) {
+            // GlobalAssert.that(getAbsOfBlockBalance(block) == getAbsOfBlockBalance(block2));
             /** remove the block and its adjacent blocks from the tree, will be added with the updated balance afterwards */
             block.getAdjacentBlocks().forEach(b -> blockBalances.remove(b));
             blockBalances.remove(block);
@@ -101,21 +107,25 @@ public class BlockRebalancing {
                 }
                 /** If the Block has not enough free Robotaxis it pulls from other blocks (block balance < -minNumberForRebalancing) */
             } else if (block.getBlockBalance() < 0 - minNumberForRebalance) {
-                Block blockWithHighestBalance = BlockUtils.getBlockwithHighestBalanceAndAvailableRobotaxi(block.getAdjacentBlocks());
-                while (block.getBlockBalance() < 0 - minNumberForRebalance && BlockUtils.higherBalancesPresentInNeighbourhood(block)
-                        && blockWithHighestBalance.hasAvailableRobotaxisToRebalance()) {
-                    blockWithHighestBalance.pushRobotaxiTo(block);
+                Optional<Block> blockWithHighestBalance = BlockUtils.getBlockwithHighestBalanceAndAvailableRobotaxi(block.getAdjacentBlocks());
+                while (block.getBlockBalance() < 0 - minNumberForRebalance && blockWithHighestBalance.isPresent()
+                        && blockWithHighestBalance.get().hasAvailableRobotaxisToRebalance() && BlockUtils.balance1HigherThanBalance2(blockWithHighestBalance.get(), block)) {
+                    blockWithHighestBalance.get().pushRobotaxiTo(block);
                     blockWithHighestBalance = BlockUtils.getBlockwithHighestBalanceAndAvailableRobotaxi(block.getAdjacentBlocks());
                 }
             } else {
                 GlobalAssert.that(false);
             }
 
-            /** add the block and its adjacent blocks back to the block balance tree with the updated balance */
-            block.getAdjacentBlocks().forEach(b -> blockBalances.add(b));
-            blockBalances.add(block);
+            /** add the adjacent blocks back to the block balance tree with the updated balance. Btw The current block is not added Anymore as all possible rebalncings have
+             * been carried out. It could well be that this block still has the highest balance but we have to move on to the next block. */
+            calculatedBlocks.add(block);
+            // allBlocks.remove(block);
+            block.getAdjacentBlocks().stream().filter(b -> !calculatedBlocks.contains(b)).forEach(b -> blockBalances.add(b));
             /** update the current block */
             block = blockBalances.getLast().iterator().next();
+            // block2 = BlockUtils.getBlockWithHighestAbsolutBalance(allBlocks);
+
         }
     }
 

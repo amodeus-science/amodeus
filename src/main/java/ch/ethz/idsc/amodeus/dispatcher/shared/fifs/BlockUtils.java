@@ -1,7 +1,8 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared.fifs;
 
-import java.util.Objects;
+import java.util.Collection;
+import java.util.Optional;
 import java.util.Set;
 
 import org.matsim.api.core.v01.network.Network;
@@ -26,7 +27,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         return (int) Math.ceil((max - min) / blockLength);
     }
 
-    /* package */ static Block getBlockwithHighestBalanceAndAvailableRobotaxi(Set<Block> blocks) {
+    /* package */ static Optional<Block> getBlockwithHighestBalanceAndAvailableRobotaxi(Set<Block> blocks) {
         GlobalAssert.that(!blocks.isEmpty());
         Block highestBalanceBlock = null;
         for (Block block : blocks) {
@@ -40,7 +41,22 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
                 }
             }
         }
-        return highestBalanceBlock;
+        return Optional.ofNullable(highestBalanceBlock);
+    }
+
+    /* package */ static Block getBlockWithHighestAbsolutBalance(Collection<Block> blocks) {
+        GlobalAssert.that(!blocks.isEmpty());
+        Block highestAbsBalanceBlock = null;
+        for (Block block : blocks) {
+            if (highestAbsBalanceBlock == null) {
+                highestAbsBalanceBlock = block;
+            } else {
+                if (Math.abs(highestAbsBalanceBlock.getBlockBalance()) < Math.abs(block.getBlockBalance())) {
+                    highestAbsBalanceBlock = block;
+                }
+            }
+        }
+        return highestAbsBalanceBlock;
     }
 
     /* package */ static Block getBlockwithLowestBalance(Set<Block> blocks) {
@@ -63,11 +79,14 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     }
 
     /* package */ static boolean higherBalancesPresentInNeighbourhood(Block block) {
-        Block adjacentBlock = BlockUtils.getBlockwithHighestBalanceAndAvailableRobotaxi(block.getAdjacentBlocks());
-        if (Objects.isNull(adjacentBlock)) {
-            return false;
+        Optional<Block> adjacentBlock = BlockUtils.getBlockwithHighestBalanceAndAvailableRobotaxi(block.getAdjacentBlocks());
+        if (adjacentBlock.isPresent()) {
+            return balance1HigherThanBalance2(adjacentBlock.get(), block);
         }
-        return (adjacentBlock.getBlockBalance() > block.getBlockBalance() + 1);
+        return false;
     }
 
+    /*package*/ static boolean balance1HigherThanBalance2(Block block1, Block block2) {
+        return (block1.getBlockBalance() > block2.getBlockBalance() + 1);
+    }
 }

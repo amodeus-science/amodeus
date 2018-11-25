@@ -90,7 +90,6 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     // * PUSH PuLL FUNCTIONS to execute rebalancing based on the balance */
     // *******************************************************************/
     /* package */ void calculateInitialBlockBalance(int savTotal, int demandTotal) {
-        GlobalAssert.that(freeRoboTaxis.isEmpty() && numberRequestsHistorical == 0 && numberUnassignedRequests == 0);
         scenarioFreeRoboTaxis = savTotal;
         scenarioUnassignedRequests = demandTotal;
         calculateBlockBalanceInternal();
@@ -114,8 +113,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     }
 
     /** This function iterates over the four adjacent Blocks and sends to each the closest n vehicles which are needed
-     * By Definition we have to push if the Integer Value in the adjacent Block Map is positiv
-     */
+     * By Definition we have to push if the Integer Value in the adjacent Block Map is positiv */
     /* package */ Map<RoboTaxi, Block> executeRebalance(TravelTimeCalculator timeDb) {
         Map<RoboTaxi, Block> rebalanceDirectives = new HashMap<>();
         int numRebalancings = getNumberPushingVehicles();
