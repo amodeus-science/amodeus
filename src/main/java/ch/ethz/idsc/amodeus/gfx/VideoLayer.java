@@ -107,12 +107,14 @@ public class VideoLayer extends ViewerLayer {
         }
     }
 
+    @Override
     public void updateSettings(ViewerSettings settings) {
         settings.fps = fps;
         settings.startTime = startTime;
         settings.endTime = Math.max(endTime, settings.startTime + 1);
     }
 
+    @Override
     public void loadSettings(ViewerSettings settings) {
         fps = settings.fps;
         startTime = settings.startTime;

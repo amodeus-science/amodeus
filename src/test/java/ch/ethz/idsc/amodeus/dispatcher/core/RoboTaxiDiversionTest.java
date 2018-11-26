@@ -39,9 +39,10 @@ public class RoboTaxiDiversionTest extends TestCase {
 
         StaticRoboTaxiCreator.updateRoboTaxiMenuTo(roboTaxi, Arrays.asList(SharedCourse.redirectCourse(s.linkDepotOut, "depotRed")));
         try {
-            Optional<Link> link = SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, 0.0);
+            SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, 0.0);
             assertTrue(false);
-        } catch (Exception e) {
+        } catch (Exception exception) {
+            // ---
         }
         StaticRoboTaxiCreator.cleanRTMenu(roboTaxi);
 
@@ -81,7 +82,8 @@ public class RoboTaxiDiversionTest extends TestCase {
         try {
             SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, 0.0);
             assertTrue(false);
-        } catch (Exception e) {
+        } catch (Exception exception) {
+            // ---
         }
         StaticRoboTaxiCreator.cleanRTMenu(roboTaxi);
 
@@ -122,9 +124,9 @@ public class RoboTaxiDiversionTest extends TestCase {
 
     @Test
     public void testPickupTask() {
-        ArtificialScenarioCreator s = new ArtificialScenarioCreator();
+        ArtificialScenarioCreator artificialScenarioCreator = new ArtificialScenarioCreator();
 
-        Link divertableLink = s.linkDepotOut;
+        Link divertableLink = artificialScenarioCreator.linkDepotOut;
         RoboTaxi roboTaxi = StaticRoboTaxiCreator.createPickUpRoboTaxi(divertableLink);
 
         // ***************************************************
@@ -135,32 +137,34 @@ public class RoboTaxiDiversionTest extends TestCase {
         try { // Impossible because if a pickup task is going on there has always to be a dropoff course
             SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now);
             assertTrue(false);
-        } catch (Exception e) {
+        } catch (Exception exception) {
+            // ---
         }
 
         // Case 1b) Next course is on same link
-        roboTaxi.addAVRequestToMenu(s.avRequestDepotOut);
+        roboTaxi.addAVRequestToMenu(artificialScenarioCreator.avRequestDepotOut);
         assertFalse(SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now).isPresent()); // case pickup course
 
         roboTaxi.pickupNewCustomerOnBoard();
         assertFalse(SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now).isPresent()); // case dropoff course
 
-        StaticRoboTaxiCreator.updateRoboTaxiMenuTo(roboTaxi, Arrays.asList(SharedCourse.redirectCourse(s.linkDepotOut, "depotRed")));
+        StaticRoboTaxiCreator.updateRoboTaxiMenuTo(roboTaxi, Arrays.asList(SharedCourse.redirectCourse(artificialScenarioCreator.linkDepotOut, "depotRed")));
         try {
             SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now);
             assertTrue(false);
-        } catch (Exception e) {
+        } catch (Exception exception) {
+            // ---
         }
         StaticRoboTaxiCreator.cleanRTMenu(roboTaxi);
 
         // Case 1c) Next course is on other link
-        roboTaxi.addAVRequestToMenu(s.avRequest1);
+        roboTaxi.addAVRequestToMenu(artificialScenarioCreator.avRequest1);
         assertFalse(SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now).isPresent()); // case pickup course
 
-        StaticRoboTaxiCreator.updateRoboTaxiMenuTo(roboTaxi, Arrays.asList(SharedCourse.dropoffCourse(s.avRequest1)));
+        StaticRoboTaxiCreator.updateRoboTaxiMenuTo(roboTaxi, Arrays.asList(SharedCourse.dropoffCourse(artificialScenarioCreator.avRequest1)));
         assertFalse(SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now).isPresent()); // case dropoff course
 
-        StaticRoboTaxiCreator.updateRoboTaxiMenuTo(roboTaxi, Arrays.asList(SharedCourse.redirectCourse(s.linkUp, "RedirectionUp")));
+        StaticRoboTaxiCreator.updateRoboTaxiMenuTo(roboTaxi, Arrays.asList(SharedCourse.redirectCourse(artificialScenarioCreator.linkUp, "RedirectionUp")));
         assertFalse(SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now).isPresent()); // case dropoff course
         StaticRoboTaxiCreator.cleanRTMenu(roboTaxi);
 
@@ -172,38 +176,40 @@ public class RoboTaxiDiversionTest extends TestCase {
         try { // Impossible because if a pickup task is going on there has always to be a dropoff course
             SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now);
             assertTrue(false);
-        } catch (Exception e) {
+        } catch (Exception exception) {
+            // ---
         }
 
         // Case 2b) Next course is on same link
-        roboTaxi.addAVRequestToMenu(s.avRequestDepotOut);
+        roboTaxi.addAVRequestToMenu(artificialScenarioCreator.avRequestDepotOut);
         assertTrue(SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now).isPresent()); // case pickup course
-        assertTrue(SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now).get().equals(s.linkDepotOut)); // case pickup course
+        assertTrue(SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now).get().equals(artificialScenarioCreator.linkDepotOut)); // case pickup course
 
         roboTaxi.pickupNewCustomerOnBoard();
         assertTrue(SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now).isPresent()); // case dropoff course
-        assertTrue(SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now).get().equals(s.linkDepotOut)); // case dropoff course
+        assertTrue(SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now).get().equals(artificialScenarioCreator.linkDepotOut)); // case dropoff course
 
-        StaticRoboTaxiCreator.updateRoboTaxiMenuTo(roboTaxi, Arrays.asList(SharedCourse.redirectCourse(s.linkDepotOut, "depotRed")));
+        StaticRoboTaxiCreator.updateRoboTaxiMenuTo(roboTaxi, Arrays.asList(SharedCourse.redirectCourse(artificialScenarioCreator.linkDepotOut, "depotRed")));
         try {
             SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now);
             assertTrue(false);
-        } catch (Exception e) {
+        } catch (Exception exception) {
+            // ---
         }
         StaticRoboTaxiCreator.cleanRTMenu(roboTaxi);
 
         // Case 2c) Next course is on other link
-        roboTaxi.addAVRequestToMenu(s.avRequest1);
+        roboTaxi.addAVRequestToMenu(artificialScenarioCreator.avRequest1);
         assertTrue(SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now).isPresent()); // case pickup course
-        assertTrue(SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now).get().equals(s.linkUp)); // case pickup course
+        assertTrue(SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now).get().equals(artificialScenarioCreator.linkUp)); // case pickup course
 
-        StaticRoboTaxiCreator.updateRoboTaxiMenuTo(roboTaxi, Arrays.asList(SharedCourse.dropoffCourse(s.avRequest1)));
+        StaticRoboTaxiCreator.updateRoboTaxiMenuTo(roboTaxi, Arrays.asList(SharedCourse.dropoffCourse(artificialScenarioCreator.avRequest1)));
         assertTrue(SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now).isPresent()); // case dropoff course
-        assertTrue(SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now).get().equals(s.linkDown)); // case pickup course
+        assertTrue(SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now).get().equals(artificialScenarioCreator.linkDown)); // case pickup course
 
-        StaticRoboTaxiCreator.updateRoboTaxiMenuTo(roboTaxi, Arrays.asList(SharedCourse.redirectCourse(s.linkUp, "RedirectionUp")));
+        StaticRoboTaxiCreator.updateRoboTaxiMenuTo(roboTaxi, Arrays.asList(SharedCourse.redirectCourse(artificialScenarioCreator.linkUp, "RedirectionUp")));
         assertTrue(SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now).isPresent()); // case dropoff course
-        assertTrue(SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now).get().equals(s.linkUp)); // case pickup course
+        assertTrue(SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now).get().equals(artificialScenarioCreator.linkUp)); // case pickup course
         StaticRoboTaxiCreator.cleanRTMenu(roboTaxi);
     }
 
@@ -222,7 +228,8 @@ public class RoboTaxiDiversionTest extends TestCase {
         try { // Impossible because if a pickup task is going on there has always to be a dropoff course
             SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now);
             assertTrue(false);
-        } catch (Exception e) {
+        } catch (Exception exception) {
+            // ---
         }
 
         // Case 1b) Next course is on same link
@@ -236,7 +243,8 @@ public class RoboTaxiDiversionTest extends TestCase {
         try {
             SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now);
             assertTrue(false);
-        } catch (Exception e) {
+        } catch (Exception exception) {
+            // ---
         }
         StaticRoboTaxiCreator.cleanRTMenu(roboTaxi);
 
@@ -271,7 +279,8 @@ public class RoboTaxiDiversionTest extends TestCase {
         try {
             SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now);
             assertTrue(false);
-        } catch (Exception e) {
+        } catch (Exception exception) {
+            // ---
         }
         StaticRoboTaxiCreator.cleanRTMenu(roboTaxi);
 
@@ -325,7 +334,8 @@ public class RoboTaxiDiversionTest extends TestCase {
         try {
             SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now);
             assertTrue(false);
-        } catch (Exception e) {
+        } catch (Exception exception) {
+            // ---
         }
         StaticRoboTaxiCreator.cleanRTMenu(roboTaxi);
 
@@ -386,7 +396,8 @@ public class RoboTaxiDiversionTest extends TestCase {
         try {
             SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now);
             assertTrue(false);
-        } catch (Exception e) {
+        } catch (Exception exception) {
+            // ---
         }
         StaticRoboTaxiCreator.cleanRTMenu(roboTaxi);
 

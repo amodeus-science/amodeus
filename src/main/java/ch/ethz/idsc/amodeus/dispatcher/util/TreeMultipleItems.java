@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.util;
 
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ public class TreeMultipleItems<T> {
         }
         return entry.getValue();
     }
+
     public List<T> getTsInOrderOfValue() {
         List<T> list = new ArrayList<>();
         tree.values().forEach(ts -> list.addAll(ts)); // is asscending order ?!

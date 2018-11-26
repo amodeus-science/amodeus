@@ -36,7 +36,7 @@ public class BlockRebalancing {
      * Transportation Research
      * Record: Journal of the Transportation Research Board, (2536), 98-106.
      * 
-     * @param network over which the Grid should be laied
+     * @param network over which the Grid should be laid
      * @param timeDb travel Time Calculator to efficiently calculate the travel time between links
      * @param minNumberRobotaxisForRebalance The minimal Threshold from which on robotaxis are rebalanced
      * @param historicalDataTime duration in seconds over which past requests are collected to predict future requests
@@ -95,7 +95,7 @@ public class BlockRebalancing {
         return directives;
     }
 
-    /** Plans pushing and pullin gof Robotaxis between the blocks. */
+    /** Plans pushing and pulling of Robotaxis between the blocks. */
     private void calculateRebalancing() {
 
         /** Store the Blocks in the Order of their Block Balance */

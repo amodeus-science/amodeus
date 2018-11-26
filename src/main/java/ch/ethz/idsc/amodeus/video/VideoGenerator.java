@@ -46,6 +46,7 @@ public class VideoGenerator implements Runnable {
         thread.start();
     }
 
+    @Override
     public void run() {
         try {
             // load options

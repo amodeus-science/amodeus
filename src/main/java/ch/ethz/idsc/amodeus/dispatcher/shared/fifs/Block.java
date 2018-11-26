@@ -26,17 +26,20 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     /** block ID */
     private final int id;
 
-    /** geometrical Properties */
+    /** geometrical properties */
     private final Rect bounds;
     private final Coord centerCoord;
     private final Link centerLink;
 
-    /** All the adjacent Blocks with an Interger for the number of Planed
-     * RebalancingVehicles negative if sending and positiv if receiving. */
+    /** All the adjacent Blocks with an Integer for the number of Planed
+     * RebalancingVehicles negative if sending and positive if receiving. */
     private final Map<Block, AtomicInteger> adjacentBlocks = new HashMap<>();
 
     /** RoboTaxis and Requests in the Block */
     private final Set<RoboTaxi> freeRoboTaxis = new HashSet<>();
+    /** Properties of the Rebalancing */
+    private final double predictionFraction;
+    // ---
     private int freeRobotaxiInRebalancing;
     private int numberRequestsHistorical = 0;
     private int numberUnassignedRequests = 0;
@@ -46,9 +49,6 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     private int scenarioFreeRoboTaxis;
     private int scenarioUnassignedRequests;
 
-    /** Properties of the Rebalancing */
-    private final double predictionFraction;
-
     // *******************************************************************/
     // * INITIALISATION FUNCTIONS only called once */
     // *******************************************************************/
@@ -56,10 +56,10 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
      * 
      * @param bounds defines the bounds of the Block
      * @param network is used to find the center LInk
-     * @param id is the identfier for this Block
+     * @param id is the identifier for this Block
      * @param historicalDataTime Time over how long requests are stored. Is used for balance calculation
      * @param predictedTime what is the time for which the future requests are predicted. Normally this value should be in the order of the dispatch period */
-    /* package */ Block(Rect bounds, Network network, int id, double historicalDataTime, double predictedTime) {
+    Block(Rect bounds, Network network, int id, double historicalDataTime, double predictedTime) {
         this.bounds = bounds;
         this.id = id;
         centerCoord = new Coord(bounds.centerX, bounds.centerY);
@@ -70,7 +70,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     /** adds a Block as an adjacent block to this block. This function should only be called if the Block grid is set up.
      * 
      * @param block new adjacent {@link Block} */
-    /* package */ void addAdjacentBlock(Block block) {
+    void addAdjacentBlock(Block block) {
         adjacentBlocks.put(block, new AtomicInteger(0));
     }
 
@@ -79,43 +79,43 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     // *******************************************************************/
 
     /** clears all values for the current robotaxis and sets the current number of unassigned and historical Requests to zero. */
-    /* package */ void clear() {
+    void clear() {
         freeRoboTaxis.clear();
         numberRequestsHistorical = 0;
         numberUnassignedRequests = 0;
     }
 
-    /** adds a Robotaxi to the free robotaxi set in this blck
+    /** adds a Robotaxi to the free robotaxi set in this block
      * 
      * @param roboTaxi */
-    /* package */ void addRoboTaxi(RoboTaxi roboTaxi) {
+    void addRoboTaxi(RoboTaxi roboTaxi) {
         GlobalAssert.that(contains(roboTaxi.getDivertableLocation().getCoord()));
         freeRoboTaxis.add(roboTaxi);
         freeRobotaxiInRebalancing = freeRoboTaxis.size();
     }
 
     /** increases the number of unassigned Requests by one */
-    /* package */ void addUnassignedRequest() {
-        numberUnassignedRequests++;
+    void addUnassignedRequest() {
+        ++numberUnassignedRequests;
     }
 
     /** increases the number of historical Requests in this block by one. checks if the given link is in the block.
      * 
      * @param link */
-    /* package */ void addRequestLastHour(Link link) {
+    void addRequestLastHour(Link link) {
         GlobalAssert.that(contains(link.getCoord()));
         numberRequestsHistorical += 1;
     }
 
     // *******************************************************************/
-    // * PUSH PuLL FUNCTIONS to execute rebalancing based on the balance */
+    // * PUSH PULL FUNCTIONS to execute rebalancing based on the balance */
     // *******************************************************************/
 
     /** calculates the initial Block balances for based on the total free Robotaxis and the total demand in the scenario for a given timestep.
      * 
      * @param savTotal number of free roboTaxis in the Scenario
      * @param demandTotal number of unassigned Requests in the scenario */
-    /* package */ void calculateInitialBlockBalance(int savTotal, int demandTotal) {
+    void calculateInitialBlockBalance(int savTotal, int demandTotal) {
         scenarioFreeRoboTaxis = savTotal;
         scenarioUnassignedRequests = demandTotal;
         calculateBlockBalanceInternal();
@@ -128,16 +128,16 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     }
 
     /** Plans to push a robotaxi from this block into the given Block.
-     * Throws Exeption if:
+     * Throws Exception if:
      * - the Block is not a adjacent block.
      * - the two blocks have not at least a difference in the block balance of 1
      * - this block has no free robotaxis to rebalance
-     * - this block plans allready to move all availabe robotaxis
+     * - this block plans already to move all available robotaxis
      * 
      * After the call of this function both block balances are updated.
      * 
      * @param block */
-    /* package */ void pushRobotaxiTo(Block block) {
+    void pushRobotaxiTo(Block block) {
         GlobalAssert.that(this.getAdjacentBlocks().contains(block));
         GlobalAssert.that(block.getBlockBalance() < this.getBlockBalance() - 1);
         GlobalAssert.that(this.freeRobotaxiInRebalancing > 0);
@@ -151,7 +151,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
     /** This function gives back the rebalance directives based on all the planed Movements of Robotaxis which were done with the {@link pushRobotaxiTo()}
      * method. */
-    /* package */ RebalancingDirectives executeRebalance(TravelTimeCalculator timeDb) {
+    RebalancingDirectives executeRebalance(TravelTimeCalculator timeDb) {
         Map<RoboTaxi, Link> rebalanceDirectives = new HashMap<>();
         /** calculate the number of pushes from this block */
         int numRebalancings = getNumberPushingVehicles();
@@ -186,7 +186,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     /** checks if the Block has more Robotaxis which can be rebalanced
      * 
      * @return */
-    /* package */ boolean hasAvailableRobotaxisToRebalance() {
+    boolean hasAvailableRobotaxisToRebalance() {
         return freeRoboTaxis.size() > getNumberPushingVehicles();
     }
 
@@ -194,7 +194,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
      * 
      * @param coord
      * @return */
-    /* package */ boolean contains(Coord coord) {
+    boolean contains(Coord coord) {
         return bounds.contains(coord.getX(), coord.getY());
     }
 
@@ -208,22 +208,22 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     // *******************************************************************/
 
     /** @return the closest Link in the Network to the center coordinate */
-    /* package */ Link getCenterLink() {
+    Link getCenterLink() {
         return centerLink;
     }
 
     /** @return a Set of all the adjacent Blocks */
-    /* package */ Set<Block> getAdjacentBlocks() {
+    Set<Block> getAdjacentBlocks() {
         return adjacentBlocks.keySet();
     }
 
     /** @return the current Block balance */
-    /* package */ long getBlockBalance() {
+    long getBlockBalance() {
         return blockBalance;
     }
 
-    /** @return the Identifier defined in the constructor of this Block */
-    /* package */ int getId() {
+    /** @return the identifier defined in the constructor of this Block */
+    int getId() {
         return id;
     }
 

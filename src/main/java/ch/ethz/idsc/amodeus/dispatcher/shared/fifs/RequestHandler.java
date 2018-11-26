@@ -16,8 +16,8 @@ import ch.ethz.idsc.amodeus.dispatcher.util.TreeMultipleItems;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** A {@link RequestHandler} takes care of all the requests in the scenario. It allows to quickly access the desired subgoups such as unassigned Requests or
- * allows to find the earliest requests computaionaly efiicient. */
-/* package */class RequestHandler {
+ * allows to find the earliest requests computationally efficient. */
+/* package */ class RequestHandler {
     /** Structure for the Track of Wait times and so on */
     private final Map<AVRequest, RequestWrap> requests = new HashMap<>();
     /** unnassigned Requests Sorted in a Navigable Map such that the earliest Request can be found easily */
@@ -36,19 +36,19 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     private final double maxWaitTime;
     private final double waitListTime;
 
-    /* package */ RequestHandler(double maxWaitTime, double waitListTime) {
+    RequestHandler(double maxWaitTime, double waitListTime) {
         this.maxWaitTime = maxWaitTime;
         this.waitListTime = waitListTime;
         this.extremWaitListTime = Optional.empty();
     }
 
-    /* package */ RequestHandler(double maxWaitTime, double waitListTime, Double extremWaitListTime) {
+    RequestHandler(double maxWaitTime, double waitListTime, Double extremWaitListTime) {
         this.extremWaitListTime = Optional.of(extremWaitListTime);
         this.maxWaitTime = maxWaitTime;
         this.waitListTime = waitListTime;
     }
 
-    /* package */ void addUnassignedRequests(Collection<AVRequest> unassignedAVRequests, TravelTimeCalculatorCached timeDb) {
+    void addUnassignedRequests(Collection<AVRequest> unassignedAVRequests, TravelTimeCalculatorCached timeDb) {
         unassignedAVRequests.stream().forEach(r -> {
             unassignedRequests.add(r);
             requestsLastHour.add(r);
@@ -59,58 +59,58 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         unassignedAVRequests.forEach(avr -> requests.get(avr).setUnitCapDriveTime(timeDb.timeFromTo(avr.getFromLink(), avr.getToLink()).number().doubleValue()));
     }
 
-    /* package */ void updatePickupTimes(Collection<AVRequest> avRequests, double now) {
+    void updatePickupTimes(Collection<AVRequest> avRequests, double now) {
         lastStepPending.stream().filter(r -> !avRequests.contains(r)).forEach(r -> requests.get(r).setPickupTime(now));
         lastStepPending.stream().filter(r -> !avRequests.contains(r)).forEach(r -> pickupTimes.put(r, now));
         lastStepPending.clear();
         lastStepPending.addAll(avRequests);
     }
 
-    /* package */ void updateLastHourRequests(double now, double binsizetraveldemand) {
+    void updateLastHourRequests(double now, double binsizetraveldemand) {
         requestsLastHour.removeAllElementsWithValueSmaller(now - binsizetraveldemand);
     }
 
-    /* package */ Set<Link> getRequestLinksLastHour() {
+    Set<Link> getRequestLinksLastHour() {
         return requestsLastHour.getValues().stream().map(avr -> avr.getFromLink()).collect(Collectors.toSet());
     }
 
-    /* package */ void removeFromUnasignedRequests(AVRequest avRequest) {
+    void removeFromUnasignedRequests(AVRequest avRequest) {
         unassignedRequests.remove(avRequest);
     }
 
-    /* package */ List<AVRequest> getInOrderOffSubmissionTime() {
+    List<AVRequest> getInOrderOffSubmissionTime() {
         return unassignedRequests.getTsInOrderOfValue();
     }
 
-    /* package */ boolean isOnWaitList(AVRequest avRequest) {
+    boolean isOnWaitList(AVRequest avRequest) {
         return requests.get(avRequest).isOnWaitList();
     }
 
-    /* package */ void addToWaitList(AVRequest avRequest) {
+    void addToWaitList(AVRequest avRequest) {
         requests.get(avRequest).putToWaitList();
     }
 
-    /* package */ boolean isOnExtreemWaitList(AVRequest avRequest) {
+    boolean isOnExtreemWaitList(AVRequest avRequest) {
         return requests.get(avRequest).isOnExtreemWaitList();
     }
 
-    /* package */ void addToExtreemWaitList(AVRequest avRequest) {
+    void addToExtreemWaitList(AVRequest avRequest) {
         requests.get(avRequest).putToExtreemWaitList();
     }
 
-    /* package */ double getDriveTimeDirectUnitCap(AVRequest avRequest) {
+    double getDriveTimeDirectUnitCap(AVRequest avRequest) {
         return driveTimesSingle.get(avRequest);
     }
 
-    /* package */ double getPickupTime(AVRequest avRequest) {
+    double getPickupTime(AVRequest avRequest) {
         return requests.get(avRequest).getPickupTime();
     }
 
-    /* package */ RequestWrap getRequestWrap(AVRequest avRequest) {
+    RequestWrap getRequestWrap(AVRequest avRequest) {
         return requests.get(avRequest);
     }
 
-    /* package */ double calculateWaitTime(AVRequest avRequest) {
+    double calculateWaitTime(AVRequest avRequest) {
         if (!extremWaitListTime.isPresent())
             return calculateInternal(avRequest);
         return (isOnExtreemWaitList(avRequest)) ? extremWaitListTime.get() : calculateInternal(avRequest);
@@ -120,7 +120,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         return (isOnWaitList(avRequest)) ? maxWaitTime : waitListTime;
     }
 
-    /* package */ Set<AVRequest> getCopyOfUnassignedAVRequests() {
+    Set<AVRequest> getCopyOfUnassignedAVRequests() {
         return unassignedRequests.getValues();
     }
 

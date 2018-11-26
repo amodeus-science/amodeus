@@ -17,7 +17,6 @@ import org.matsim.core.network.NetworkUtils;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.schedule.AVDriveTask;
-import ch.ethz.matsim.av.schedule.AVDropoffTask;
 import ch.ethz.matsim.av.schedule.AVPickupTask;
 import ch.ethz.matsim.av.schedule.AVStayTask;
 
@@ -155,13 +154,6 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     private static void setFirstPickupTask(AVVehicle vehicle) {
         Schedule schedule = vehicle.getSchedule();
         schedule.addTask(new AVPickupTask(vehicle.getServiceBeginTime(), vehicle.getServiceEndTime(), vehicle.getStartLink()));
-        schedule.nextTask();
-
-    }
-
-    private static void setFirstDropoffTask(AVVehicle vehicle) {
-        Schedule schedule = vehicle.getSchedule();
-        schedule.addTask(new AVDropoffTask(vehicle.getServiceBeginTime(), vehicle.getServiceEndTime(), vehicle.getStartLink()));
         schedule.nextTask();
 
     }
