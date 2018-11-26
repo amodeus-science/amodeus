@@ -27,7 +27,7 @@ It provides standard autonomous mobility-on-demand dispatching algorithms and an
 Fleet for Austin, Texas, Market* by Fagnant, D. J., Kockelman, K. M., and Bansal, P., 2015.
 
 ### Available Ride Sharing Dispatching Algorithms
-* **Demand-supply-balancing with Beam Extension for Ride Sharing** Demand Supply Balancing heuristic from *Large-scale microscopic simulation of taxi services* by Maciejewski, M., and Bischoff J., 2015 extended with ride sharing if a two requests start close to each other and have a similar direction.
+* **Demand-supply-balancing with Beam Extension for Ride Sharing** Demand Supply Balancing heuristic from *Large-scale microscopic simulation of taxi services* by Maciejewski, M., and Bischoff J., 2015 extended with ride sharing if two requests start close to each other and have a similar direction.
 * **Dynamic Ride Sharing Strategy** from *Dynamic ride-sharing and optimal fleet sizing for a system of shared autonomous vehicles* by Fagnant, D. J., and Kockelman, K. M., 2015.
 
 ## Gallery
