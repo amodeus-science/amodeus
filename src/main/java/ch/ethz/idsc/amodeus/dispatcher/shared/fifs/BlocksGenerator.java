@@ -11,6 +11,14 @@ import org.matsim.core.utils.collections.QuadTree.Rect;
 
 /* package */ enum BlocksGenerator {
     ;
+    /**
+     * Generates a Block grid based on the network and the grid distance. it is equally spaced in each direction. 
+     * @param network
+     * @param historicalDataTime
+     * @param predictedTime
+     * @param gridDistance
+     * @return
+     */
     /* package */ static Map<Integer, Block> of(Network network, double historicalDataTime, double predictedTime, double gridDistance) {
 
         double[] xy = getXYLength(network, gridDistance);

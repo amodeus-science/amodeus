@@ -15,18 +15,20 @@ import org.matsim.api.core.v01.network.Link;
 import ch.ethz.idsc.amodeus.dispatcher.util.TreeMultipleItems;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
+/** A {@link RequestHandler} takes care of all the requests in the scenario. It allows to quickly access the desired subgoups such as unassigned Requests or
+ * allows to find the earliest requests computaionaly efiicient. */
 /* package */class RequestHandler {
-    // Structure for the Track of Wait times and so on
+    /** Structure for the Track of Wait times and so on */
     private final Map<AVRequest, RequestWrap> requests = new HashMap<>();
-    // unnassigned Requests Sorted in a Navigable Map such that the earliest Request can be found easily
+    /** unnassigned Requests Sorted in a Navigable Map such that the earliest Request can be found easily */
     private final TreeMultipleItems<AVRequest> unassignedRequests = new TreeMultipleItems<>(this::getSubmissionTime);
-    // All requests submitted in the last hour. This is used for the Rebalancing.
+    /** All requests submitted in the last hour. This is used for the Rebalancing. */
     private final TreeMultipleItems<AVRequest> requestsLastHour = new TreeMultipleItems<>(this::getSubmissionTime);
-    // All the drive Times for each requests if this request would be served directely with a unit capacity robo taxi
+    /** All the drive Times for each requests if this request would be served directely with a unit capacity robo taxi */
     private final Map<AVRequest, Double> driveTimesSingle = new HashMap<>();
-    // All the effective Pickupe Times for each Requests. needed for the Constraints
+    /** All the effective Pickupe Times for each Requests. needed for the Constraints */
     private final Map<AVRequest, Double> pickupTimes = new HashMap<>();
-    // All the Requests which were Pending in the last time Step
+    /** All the Requests which were Pending in the last time Step */
     private final Set<AVRequest> lastStepPending = new HashSet<>();
 
     /** Time Constants for wait list times */
@@ -59,7 +61,6 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
     /* package */ void updatePickupTimes(Collection<AVRequest> avRequests, double now) {
         lastStepPending.stream().filter(r -> !avRequests.contains(r)).forEach(r -> requests.get(r).setPickupTime(now));
-
         lastStepPending.stream().filter(r -> !avRequests.contains(r)).forEach(r -> pickupTimes.put(r, now));
         lastStepPending.clear();
         lastStepPending.addAll(avRequests);

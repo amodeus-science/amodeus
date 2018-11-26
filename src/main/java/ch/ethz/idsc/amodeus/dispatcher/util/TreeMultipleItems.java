@@ -3,13 +3,13 @@ package ch.ethz.idsc.amodeus.dispatcher.util;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.NavigableMap;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import org.matsim.api.core.v01.Coord;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
@@ -18,17 +18,28 @@ public class TreeMultipleItems<T> {
     private final NavigableMap<Double, Set<T>> tree = new TreeMap<>();
     /** data structures are used to enable fast "contains" searching */
     private final Set<T> set = new HashSet<>();
-    private final Function<T, Double> time;
+    private final Function<T, Double> function;
 
-    public TreeMultipleItems(Function<T, Double> time) {
-        this.time = time;
+    public TreeMultipleItems(Function<T, Double> function) {
+        this.function = function;
     }
 
-    /** @return closest {@link T} in tree from {@link Coord} @param coord */
+    /** @return Set of {@link T} associated with the lowest value obtained from the function */
     public Set<T> getFirst() {
-        return tree.firstEntry().getValue();
+        return returnIfPossible(tree.firstEntry());
     }
 
+    /** @return Set of {@link T} associated with the highest value obtained from the function */
+    public Set<T> getLast() {
+        return returnIfPossible(tree.lastEntry());
+    }
+
+    private Set<T> returnIfPossible(Entry<Double, Set<T>> entry) {
+        if (Objects.isNull(entry)) {
+            return null;
+        }
+        return entry.getValue();
+    }
     public List<T> getTsInOrderOfValue() {
         List<T> list = new ArrayList<>();
         tree.values().forEach(ts -> list.addAll(ts)); // is asscending order ?!
@@ -44,7 +55,7 @@ public class TreeMultipleItems<T> {
     /** Adds the {@link T} @param t to the Tree Maintainer. */
     public void add(T t) {
         if (!set.contains(t)) {
-            Double submission = time.apply(t);
+            Double submission = function.apply(t);
             boolean setok = set.add(t);
             if (tree.containsKey(submission)) {
                 tree.get(submission).add(t);
@@ -61,12 +72,12 @@ public class TreeMultipleItems<T> {
     /** Removes the {@link T} @param t from the Tree Maintainer. */
     public void remove(T t) {
         if (contains(t)) {
-            Double submission = time.apply(t);
+            Double value = function.apply(t);
             boolean setok = set.remove(t);
-            boolean treeok = tree.get(submission).remove(t);
+            boolean treeok = tree.get(value).remove(t);
             GlobalAssert.that(setok && treeok);
-            if (tree.get(submission).isEmpty()) {
-                tree.remove(submission);
+            if (tree.get(value).isEmpty()) {
+                tree.remove(value);
             }
         }
 
@@ -75,7 +86,7 @@ public class TreeMultipleItems<T> {
     public void removeAllElementsWithValueSmaller(Double minValue) {
         if (!tree.isEmpty()) {
             // TODO make use of allready sorted Navigable Map
-            Set<T> toRemoveSet = getTsInOrderOfValue().stream().filter(t -> time.apply(t) <= minValue).collect(Collectors.toSet());
+            Set<T> toRemoveSet = getTsInOrderOfValue().stream().filter(t -> function.apply(t) <= minValue).collect(Collectors.toSet());
             toRemoveSet.forEach(t -> remove(t));
         }
 

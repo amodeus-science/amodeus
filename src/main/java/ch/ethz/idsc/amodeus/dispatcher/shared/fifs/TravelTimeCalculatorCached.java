@@ -18,7 +18,10 @@ import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.qty.Quantity;
 
-/* package */ class TravelTimeCalculatorCached {
+/** A{@link TravelTimeCalculatorCached} stores all the calculated travel times which were calculated within the specified Timelag duration.
+ * Like that a very efficient travel time calculation can be guaranteed such that the computationaly expensive rouing has only to be done once for a given link
+ * to link pair. */
+/* package */ class TravelTimeCalculatorCached implements TravelTimeCalculator {
 
     /* package */ static TravelTimeCalculatorCached of(LeastCostPathCalculator calculator, Double now) {
         return new TravelTimeCalculatorCached(calculator, now);
@@ -49,7 +52,8 @@ import ch.ethz.idsc.tensor.qty.Quantity;
         timestoRemove.forEach(time -> calculationTimes.remove(time));
     }
 
-    /* package */ Scalar timeFromTo(Link from, Link to) {
+    @Override
+    public Scalar timeFromTo(Link from, Link to) {
         if (!db.containsKey(from))
             db.put(from, new HashMap<>());
         if (db.get(from).containsKey(to))
@@ -82,7 +86,9 @@ import ch.ethz.idsc.tensor.qty.Quantity;
         calculationTimes.get(now).get(from).add(to);
     }
 
-    /* package */ boolean isForNow(Double now) {
+    @Override
+    public boolean isForNow(double now) {
         return this.now.equals(now);
     }
+
 }

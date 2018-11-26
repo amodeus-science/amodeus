@@ -1,15 +1,14 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared.fifs;
 
-import java.util.Map;
-import java.util.NavigableMap;
+import java.util.Collection;
+import java.util.Optional;
 import java.util.Set;
 
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.utils.collections.QuadTree.Rect;
 
-import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 /* package */ enum BlockUtils {
@@ -28,7 +27,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         return (int) Math.ceil((max - min) / blockLength);
     }
 
-    /* package */ static Block getBlockwithHighestBalanceAndAvailableRobotaxi(Set<Block> blocks) {
+    /* package */ static Optional<Block> getBlockwithHighestBalanceAndAvailableRobotaxi(Set<Block> blocks) {
         GlobalAssert.that(!blocks.isEmpty());
         Block highestBalanceBlock = null;
         for (Block block : blocks) {
@@ -42,7 +41,22 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
                 }
             }
         }
-        return highestBalanceBlock;
+        return Optional.ofNullable(highestBalanceBlock);
+    }
+
+    /* package */ static Block getBlockWithHighestAbsolutBalance(Collection<Block> blocks) {
+        GlobalAssert.that(!blocks.isEmpty());
+        Block highestAbsBalanceBlock = null;
+        for (Block block : blocks) {
+            if (highestAbsBalanceBlock == null) {
+                highestAbsBalanceBlock = block;
+            } else {
+                if (Math.abs(highestAbsBalanceBlock.getBlockBalance()) < Math.abs(block.getBlockBalance())) {
+                    highestAbsBalanceBlock = block;
+                }
+            }
+        }
+        return highestAbsBalanceBlock;
     }
 
     /* package */ static Block getBlockwithLowestBalance(Set<Block> blocks) {
@@ -60,28 +74,19 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         return lowestBalanceBlock;
     }
 
-    /* package */ static void removeRoboTaxiFromMap(NavigableMap<Double, Map<Block, Set<RoboTaxi>>> travelTimesSorted, double travelTime, Block block, RoboTaxi roboTaxi) {
-        if (travelTimesSorted.containsKey(travelTime)) {
-            if (travelTimesSorted.get(travelTime).containsKey(block)) {
-                if (travelTimesSorted.get(travelTime).get(block).contains(roboTaxi)) {
-                    travelTimesSorted.get(travelTime).get(block).remove(roboTaxi);
-                    if (travelTimesSorted.get(travelTime).get(block).isEmpty()) {
-                        removeBlockFromMap(travelTimesSorted, travelTime, block);
-                    }
-                }
-            }
-        }
+    /* package */ static boolean lowerBalancesPresentInNeighbourhood(Block block) {
+        return (BlockUtils.getBlockwithLowestBalance(block.getAdjacentBlocks()).getBlockBalance() < block.getBlockBalance() - 1);
     }
 
-    /* package */ static void removeBlockFromMap(NavigableMap<Double, Map<Block, Set<RoboTaxi>>> travelTimesSorted, double travelTime, Block block) {
-        if (travelTimesSorted.containsKey(travelTime)) {
-            if (travelTimesSorted.get(travelTime).containsKey(block)) {
-                travelTimesSorted.get(travelTime).remove(block);
-                if (travelTimesSorted.get(travelTime).isEmpty()) {
-                    travelTimesSorted.remove(travelTime);
-                }
-            }
+    /* package */ static boolean higherBalancesPresentInNeighbourhood(Block block) {
+        Optional<Block> adjacentBlock = BlockUtils.getBlockwithHighestBalanceAndAvailableRobotaxi(block.getAdjacentBlocks());
+        if (adjacentBlock.isPresent()) {
+            return balance1HigherThanBalance2(adjacentBlock.get(), block);
         }
+        return false;
     }
 
+    /*package*/ static boolean balance1HigherThanBalance2(Block block1, Block block2) {
+        return (block1.getBlockBalance() > block2.getBlockBalance() + 1);
+    }
 }

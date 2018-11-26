@@ -65,7 +65,7 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
     private static final double MAXLAGTRAVELTIMECALCULATION = 1800.0;
     private final TravelTimeCalculatorCached timeDb;
 
-    private final RebalancingExecutor kockelmanRebalancing;
+    private final BlockRebalancing kockelmanRebalancing;
 
     protected FirstComeFirstServedStrategy(Network network, //
             Config config, AVDispatcherConfig avDispatcherConfig, //
@@ -81,7 +81,7 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
         LeastCostPathCalculator calculator = EasyPathCalculator.prepPathCalculator(network, factory);
         timeDb = TravelTimeCalculatorCached.of(calculator, MAXLAGTRAVELTIMECALCULATION);
 
-        this.kockelmanRebalancing = new RebalancingExecutor(network, timeDb, MINNUMBERROBOTAXISINBLOCKTOREBALANCE, BINSIZETRAVELDEMAND, dispatchPeriod, REBALANCINGGRIDDISTANCE);
+        this.kockelmanRebalancing = new BlockRebalancing(network, timeDb, MINNUMBERROBOTAXISINBLOCKTOREBALANCE, BINSIZETRAVELDEMAND, dispatchPeriod, REBALANCINGGRIDDISTANCE);
     }
 
     @Override

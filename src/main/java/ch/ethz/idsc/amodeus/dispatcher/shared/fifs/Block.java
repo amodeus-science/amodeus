@@ -4,11 +4,7 @@ package ch.ethz.idsc.amodeus.dispatcher.shared.fifs;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.NavigableMap;
-import java.util.Objects;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -19,8 +15,13 @@ import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.utils.collections.QuadTree.Rect;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.shared.fifs.BlockRebalancingHelper.ShortestTrip;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
+/** A {@link Block} is the central Element for the Block Rebalancing- It is a virtual rectangular zone placed in a grid. Thus it has four adjacent blocks.
+ * Within a Block there are free RoboTaxis, open Requests and historical Requests. This is the amount of requests in a predefined time duration in the past.
+ * Each Block can push robo Taxis to its adjacent Blocks or receive roboTaxis from them. First it is assigned how many Robotaxis should be pushed and then in a
+ * second step it is calculated which is the best assignment of robotaxi to rebalance link. */
 /* package */ class Block {
     /** block ID */
     private final int id;
@@ -46,204 +47,183 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     private int scenarioUnassignedRequests;
 
     /** Properties of the Rebalancing */
-    private final double historicalDataTime;
-    private final double predictedTime;
+    private final double predictionFraction;
 
-    public Block(Rect bounds, Network network, int id, double historicalDataTime, double predictedTime) {
+    // *******************************************************************/
+    // * INITIALISATION FUNCTIONS only called once */
+    // *******************************************************************/
+    /** generates a new {@link Block}.
+     * 
+     * @param bounds defines the bounds of the Block
+     * @param network is used to find the center LInk
+     * @param id is the identfier for this Block
+     * @param historicalDataTime Time over how long requests are stored. Is used for balance calculation
+     * @param predictedTime what is the time for which the future requests are predicted. Normally this value should be in the order of the dispatch period */
+    /* package */ Block(Rect bounds, Network network, int id, double historicalDataTime, double predictedTime) {
         this.bounds = bounds;
         this.id = id;
         centerCoord = new Coord(bounds.centerX, bounds.centerY);
         centerLink = NetworkUtils.getNearestLink(network, centerCoord);
-        this.historicalDataTime = historicalDataTime;
-        this.predictedTime = predictedTime;
+        this.predictionFraction = predictedTime / historicalDataTime;
     }
 
-    public void addRoboTaxi(RoboTaxi roboTaxi) {
+    /** adds a Block as an adjacent block to this block. This function should only be called if the Block grid is set up.
+     * 
+     * @param block new adjacent {@link Block} */
+    /* package */ void addAdjacentBlock(Block block) {
+        adjacentBlocks.put(block, new AtomicInteger(0));
+    }
+
+    // *******************************************************************/
+    // * UPDATE FUNCTIONS called once in each time step before push pull */
+    // *******************************************************************/
+
+    /** clears all values for the current robotaxis and sets the current number of unassigned and historical Requests to zero. */
+    /* package */ void clear() {
+        freeRoboTaxis.clear();
+        numberRequestsHistorical = 0;
+        numberUnassignedRequests = 0;
+    }
+
+    /** adds a Robotaxi to the free robotaxi set in this blck
+     * 
+     * @param roboTaxi */
+    /* package */ void addRoboTaxi(RoboTaxi roboTaxi) {
         GlobalAssert.that(contains(roboTaxi.getDivertableLocation().getCoord()));
         freeRoboTaxis.add(roboTaxi);
         freeRobotaxiInRebalancing = freeRoboTaxis.size();
     }
 
-    /** REBALANCING CALCULATION FUNCTIONS */
-    public void pushRobotaxiTo(Block block) {
-        pushFromBlockToBlock(this, block);
-    }
-
-    /* package */ static void pushFromBlockToBlock(Block blockFrom, Block blockTo) {
-        GlobalAssert.that(blockFrom.getAdjacentBlocks().contains(blockTo));
-        GlobalAssert.that(blockTo.getBlockBalance() < blockFrom.getBlockBalance() - 1);
-        GlobalAssert.that(blockFrom.freeRobotaxiInRebalancing > 0);
-        GlobalAssert.that(blockFrom.hasAvailableRobotaxisToRebalance());
-        blockFrom.adjacentBlocks.get(blockTo).incrementAndGet();
-        blockFrom.freeRobotaxiInRebalancing -= 1;
-        blockTo.freeRobotaxiInRebalancing += 1;
-        blockFrom.calculateBlockBalanceInternal();
-        blockTo.calculateBlockBalanceInternal();
-    }
-
-    public Block getAdjacentBlockWithLowestBalance() {
-        return BlockUtils.getBlockwithLowestBalance(getAdjacentBlocks());
-    }
-
-    public Block getAdjacentBlockWithHighestBalanceAndAvailableRobotaxi() {
-        return BlockUtils.getBlockwithHighestBalanceAndAvailableRobotaxi(getAdjacentBlocks());
-    }
-
-    public boolean lowerBalancesPresentInNeighbourhood() {
-        return (getAdjacentBlockWithLowestBalance().blockBalance < this.blockBalance - 1);
-    }
-
-    public boolean higherBalancesPresentInNeighbourhood() {
-        Block block = getAdjacentBlockWithHighestBalanceAndAvailableRobotaxi();
-        if (Objects.isNull(block)) {
-            return false;
-        }
-        return (getAdjacentBlockWithHighestBalanceAndAvailableRobotaxi().blockBalance > this.blockBalance + 1);
-    }
-
-    /** This function iterates over the four adjacent Blocks and sends to each the closest n vehicles which are needed
-     * By Definition we have to push if the Integer Value in the adjacent Block Map is positiv
-     * 
-     * @param network
-     * @param avRouter
-     * @param now
-     * @return */
-    public Map<RoboTaxi, Block> executeRebalance(Network network, TravelTimeCalculatorCached timeDb, double now) {
-        Map<RoboTaxi, Block> rebalanceDirectives = new HashMap<>();
-        int numRebalancings = getNumberPushingVehicles();
-        GlobalAssert.that(numRebalancings <= freeRoboTaxis.size());
-        if (numRebalancings > 0) {
-            GlobalAssert.that(!freeRoboTaxis.isEmpty());
-
-            Set<Block> blocks = adjacentBlocks.keySet().stream().filter(b -> adjacentBlocks.get(b).intValue() > 0).collect(Collectors.toSet());
-            NavigableMap<Double, Map<Block, Set<RoboTaxi>>> travelTimesSorted = new TreeMap<>();
-            Map<Block, Set<Double>> blocktravelTimes = new HashMap<>();
-            blocks.forEach(b -> blocktravelTimes.put(b, new HashSet<>()));
-
-            Map<RoboTaxi, Map<Block, Double>> allTravelTimesForRoboTaxis = new HashMap<>();
-            freeRoboTaxis.forEach(rt -> allTravelTimesForRoboTaxis.put(rt, new HashMap<>()));
-
-            for (RoboTaxi roboTaxi : freeRoboTaxis) {
-                for (Block block : blocks) {
-                    double travelTime = timeDb.timeFromTo(roboTaxi.getDivertableLocation(), block.centerLink).number().doubleValue();
-                    if (!travelTimesSorted.containsKey(travelTime)) {
-                        travelTimesSorted.put(travelTime, new HashMap<>());
-                    }
-                    if (!travelTimesSorted.get(travelTime).containsKey(block)) {
-                        travelTimesSorted.get(travelTime).put(block, new HashSet<>());
-                    }
-                    travelTimesSorted.get(travelTime).get(block).add(roboTaxi);
-                    blocktravelTimes.get(block).add(travelTime);
-                    allTravelTimesForRoboTaxis.get(roboTaxi).put(block, travelTime);
-                }
-            }
-
-            Map<Block, Set<RoboTaxi>> addedRoboTaxisPerBlock = new HashMap<>();
-            blocks.forEach(b -> addedRoboTaxisPerBlock.put(b, new HashSet<>()));
-
-            for (int i = 0; i < numRebalancings; i++) {
-
-                GlobalAssert.that(!travelTimesSorted.isEmpty());
-                Entry<Double, Map<Block, Set<RoboTaxi>>> nearestTrips = travelTimesSorted.firstEntry();
-                Double travelTime = nearestTrips.getKey();
-                Block block = nearestTrips.getValue().keySet().iterator().next();
-                RoboTaxi roboTaxi = nearestTrips.getValue().get(block).iterator().next();
-
-                rebalanceDirectives.put(roboTaxi, block);
-                addedRoboTaxisPerBlock.get(block).add(roboTaxi);
-                freeRoboTaxis.remove(roboTaxi);
-
-                // remove All The entries where the just added RoboTaxi Occured
-                for (Entry<Block, Double> entry : allTravelTimesForRoboTaxis.get(roboTaxi).entrySet()) {
-                    BlockUtils.removeRoboTaxiFromMap(travelTimesSorted, entry.getValue(), entry.getKey(), roboTaxi);
-                }
-
-                // If the adjacent block has received all the required Taxis, remove it from all travel times
-                int updatedPushing = adjacentBlocks.get(block).decrementAndGet();
-                if (updatedPushing == 0) {
-                    for (double travelTimeBlock : blocktravelTimes.get(block)) {
-                        if (travelTimeBlock >= travelTime) {
-                            BlockUtils.removeBlockFromMap(travelTimesSorted, travelTimeBlock, block);
-                        }
-                    }
-                }
-            }
-        }
-
-        adjacentBlocks.forEach((b, ai) -> GlobalAssert.that(ai.intValue() == 0));
-        GlobalAssert.that(rebalanceDirectives.size() == numRebalancings);
-
-        return rebalanceDirectives;
-    }
-
-    public Link getCenterLink() {
-        return centerLink;
-    }
-
-    public boolean hasAvailableRobotaxisToRebalance() {
-        return freeRoboTaxis.size() > getNumberPushingVehicles();
-    }
-
-    private int getNumberPushingVehicles() {
-        return adjacentBlocks.values().stream().mapToInt(aI -> aI.intValue()).filter(aI -> aI > 0).sum();
-    }
-
-    public boolean contains(Coord coord) {
-        return bounds.contains(coord.getX(), coord.getY());
-    }
-
-    public void removeAllRobotaxis() {
-        freeRoboTaxis.clear();
-    }
-
-    public void addUnassignedRequest() {
+    /** increases the number of unassigned Requests by one */
+    /* package */ void addUnassignedRequest() {
         numberUnassignedRequests++;
     }
 
-    public void addRequestLastHour() {
+    /** increases the number of historical Requests in this block by one. checks if the given link is in the block.
+     * 
+     * @param link */
+    /* package */ void addRequestLastHour(Link link) {
+        GlobalAssert.that(contains(link.getCoord()));
         numberRequestsHistorical += 1;
     }
 
-    public void removeAllRequestsLastHour() {
-        numberRequestsHistorical = 0;
-    }
+    // *******************************************************************/
+    // * PUSH PuLL FUNCTIONS to execute rebalancing based on the balance */
+    // *******************************************************************/
 
-    public void removeAllUnassignedRequests() {
-        numberUnassignedRequests = 0;
-    }
-
-    public void addAdjacentBlock(Block block) {
-        adjacentBlocks.put(block, new AtomicInteger(0));
-    }
-
-    public Set<Block> getAdjacentBlocks() {
-        return adjacentBlocks.keySet();
-    }
-
-    public int getNumberOfUnassignedRequests() {
-        return numberUnassignedRequests;
-    }
-
-    public int getNumberOfExpectedRequests() {
-        return (int) Math.round(numberRequestsHistorical / historicalDataTime * predictedTime);
-    }
-
-    public void calculateBlockBalance(int savTotal, int demandTotal) {
+    /** calculates the initial Block balances for based on the total free Robotaxis and the total demand in the scenario for a given timestep.
+     * 
+     * @param savTotal number of free roboTaxis in the Scenario
+     * @param demandTotal number of unassigned Requests in the scenario */
+    /* package */ void calculateInitialBlockBalance(int savTotal, int demandTotal) {
         scenarioFreeRoboTaxis = savTotal;
         scenarioUnassignedRequests = demandTotal;
         calculateBlockBalanceInternal();
     }
 
+    /** updates the block balance internally */
     private void calculateBlockBalanceInternal() {
         blockBalance = Math.round(BlockUtils.calculateBlockBalance(scenarioFreeRoboTaxis, freeRobotaxiInRebalancing, scenarioUnassignedRequests,
-                getNumberOfUnassignedRequests() + getNumberOfExpectedRequests()));
+                numberUnassignedRequests + (int) Math.round(numberRequestsHistorical * predictionFraction)));
     }
 
-    public long getBlockBalance() {
+    /** Plans to push a robotaxi from this block into the given Block.
+     * Throws Exeption if:
+     * - the Block is not a adjacent block.
+     * - the two blocks have not at least a difference in the block balance of 1
+     * - this block has no free robotaxis to rebalance
+     * - this block plans allready to move all availabe robotaxis
+     * 
+     * After the call of this function both block balances are updated.
+     * 
+     * @param block */
+    /* package */ void pushRobotaxiTo(Block block) {
+        GlobalAssert.that(this.getAdjacentBlocks().contains(block));
+        GlobalAssert.that(block.getBlockBalance() < this.getBlockBalance() - 1);
+        GlobalAssert.that(this.freeRobotaxiInRebalancing > 0);
+        GlobalAssert.that(this.hasAvailableRobotaxisToRebalance());
+        this.adjacentBlocks.get(block).incrementAndGet();
+        this.freeRobotaxiInRebalancing -= 1;
+        block.freeRobotaxiInRebalancing += 1;
+        this.calculateBlockBalanceInternal();
+        block.calculateBlockBalanceInternal();
+    }
+
+    /** This function gives back the rebalance directives based on all the planed Movements of Robotaxis which were done with the {@link pushRobotaxiTo()}
+     * method. */
+    /* package */ RebalancingDirectives executeRebalance(TravelTimeCalculator timeDb) {
+        Map<RoboTaxi, Link> rebalanceDirectives = new HashMap<>();
+        /** calculate the number of pushes from this block */
+        int numRebalancings = getNumberPushingVehicles();
+        GlobalAssert.that(numRebalancings <= freeRoboTaxis.size());
+
+        if (numRebalancings > 0) {
+            Set<Block> blocks = adjacentBlocks.keySet().stream().filter(b -> adjacentBlocks.get(b).intValue() > 0).collect(Collectors.toSet());
+            BlockRebalancingHelper blockHelper = new BlockRebalancingHelper(blocks, freeRoboTaxis, timeDb);
+            /** for all planed pushes */
+            for (int i = 0; i < numRebalancings; i++) {
+                /** find the shortest possible trip for all Robotaxis and blocks which need roboTaxis from this blcok */
+                ShortestTrip shortestTrip = blockHelper.getShortestTrip();
+
+                rebalanceDirectives.put(shortestTrip.roboTaxi, shortestTrip.block.centerLink);
+                freeRoboTaxis.remove(shortestTrip.roboTaxi);
+                int updatedPushing = adjacentBlocks.get(shortestTrip.block).decrementAndGet();
+
+                blockHelper.update(shortestTrip, updatedPushing);
+            }
+        }
+
+        adjacentBlocks.values().forEach(ai -> GlobalAssert.that(ai.intValue() == 0));
+        GlobalAssert.that(rebalanceDirectives.size() == numRebalancings);
+
+        return new RebalancingDirectives(rebalanceDirectives);
+    }
+
+    // *******************************************************************/
+    // * HELPER Functions */
+    // *******************************************************************/
+
+    /** checks if the Block has more Robotaxis which can be rebalanced
+     * 
+     * @return */
+    /* package */ boolean hasAvailableRobotaxisToRebalance() {
+        return freeRoboTaxis.size() > getNumberPushingVehicles();
+    }
+
+    /** checks if a coordinate lies in this Block
+     * 
+     * @param coord
+     * @return */
+    /* package */ boolean contains(Coord coord) {
+        return bounds.contains(coord.getX(), coord.getY());
+    }
+
+    /** calcualtes the number of planned pushes to the adjacent blocks */
+    private int getNumberPushingVehicles() {
+        return adjacentBlocks.values().stream().mapToInt(aI -> aI.intValue()).filter(aI -> aI > 0).sum();
+    }
+
+    // *******************************************************************/
+    // * GETTERS and SETTERS */
+    // *******************************************************************/
+
+    /** @return the closest Link in the Network to the center coordinate */
+    /* package */ Link getCenterLink() {
+        return centerLink;
+    }
+
+    /** @return a Set of all the adjacent Blocks */
+    /* package */ Set<Block> getAdjacentBlocks() {
+        return adjacentBlocks.keySet();
+    }
+
+    /** @return the current Block balance */
+    /* package */ long getBlockBalance() {
         return blockBalance;
     }
 
-    public int getId() {
+    /** @return the Identifier defined in the constructor of this Block */
+    /* package */ int getId() {
         return id;
     }
 
