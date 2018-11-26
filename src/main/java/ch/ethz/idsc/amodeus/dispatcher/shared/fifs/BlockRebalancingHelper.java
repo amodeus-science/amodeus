@@ -19,13 +19,13 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     private final Map<Block, Set<Double>> blocktravelTimes = new HashMap<>();
     private final Map<RoboTaxi, Map<Block, Double>> allTravelTimesForRoboTaxis = new HashMap<>();
 
-    /** Initialisatzin of the helper class.
+    /** Initialisation of the helper class.
      * calculation of all travel times of robotaxis to the center of the given Blocks.
      * 
-     * @param blocks all the adjactent blocks to which pushes are planned
+     * @param blocks all the adjacent blocks to which pushes are planned
      * @param freeRoboTaxis all the robotaxis which should be considered
      * @param timeDb Travel time calculator */
-    /* package */ BlockRebalancingHelper(Set<Block> blocks, Set<RoboTaxi> freeRoboTaxis, TravelTimeCalculator timeDb) {
+    BlockRebalancingHelper(Set<Block> blocks, Set<RoboTaxi> freeRoboTaxis, TravelTimeCalculator timeDb) {
         GlobalAssert.that(!freeRoboTaxis.isEmpty());
 
         blocks.forEach(b -> blocktravelTimes.put(b, new HashSet<>()));
@@ -50,7 +50,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
      * 
      * @param shortestTrip shortest Trip which was used outside
      * @param updatedPushing value of how many pushes are still required to the block in shortest trip. */
-    /* package */ void update(ShortestTrip shortestTrip, int updatedPushing) {
+    void update(ShortestTrip shortestTrip, int updatedPushing) {
         // remove All The entries where the just added RoboTaxi Occured
         for (Entry<Block, Double> entry : allTravelTimesForRoboTaxis.get(shortestTrip.roboTaxi).entrySet()) {
             removeRoboTaxiFromMap(entry.getValue(), entry.getKey(), shortestTrip.roboTaxi);
@@ -93,18 +93,18 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     /** gets the currently shortest trip in the data structure. If some trips have equal length a random choice is made.
      * 
      * @return */
-    /* package */ ShortestTrip getShortestTrip() {
+    ShortestTrip getShortestTrip() {
         GlobalAssert.that(!travelTimesSorted.isEmpty());
         return new ShortestTrip();
     }
 
     /** Helper class to wrap the three elements Travel Time, Block and roboTaxi */
-    /* package */ class ShortestTrip {
-        /* package */ final Double travelTime;
-        /* package */ final Block block;
-        /* package */ final RoboTaxi roboTaxi;
+    class ShortestTrip {
+        final Double travelTime;
+        final Block block;
+        final RoboTaxi roboTaxi;
 
-        /* package */ ShortestTrip() {
+        ShortestTrip() {
             Entry<Double, Map<Block, Set<RoboTaxi>>> nearestTrips = travelTimesSorted.firstEntry();
             this.travelTime = nearestTrips.getKey();
             this.block = nearestTrips.getValue().keySet().iterator().next();

@@ -2,32 +2,29 @@
 package ch.ethz.idsc.amodeus.dispatcher.shared.fifs;
 
 import java.util.Map;
+import java.util.Objects;
 
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 
-/**
- * Helper Class to wrap rebalancing Directives.
- */
+/** Helper Class to wrap rebalancing Directives. */
 /* package */ class RebalancingDirectives {
     private final Map<RoboTaxi, Link> directives;
 
-    /* package */ RebalancingDirectives(Map<RoboTaxi, Link> directives) {
+    RebalancingDirectives(Map<RoboTaxi, Link> directives) {
         this.directives = directives;
     }
 
-    /* package */ Map<RoboTaxi, Link> getDirectives() {
+    Map<RoboTaxi, Link> getDirectives() {
         return directives;
     }
 
-    /* package */ void addOtherDirectives(RebalancingDirectives rebalancingDirectives) {
+    void addOtherDirectives(RebalancingDirectives rebalancingDirectives) {
         directives.putAll(rebalancingDirectives.getDirectives());
     }
 
-    /* package */ void removefromDirectives(RoboTaxi roboTaxi) {
-        if (directives.containsKey(roboTaxi)) {
-            directives.remove(roboTaxi);
-        }
+    void removefromDirectives(RoboTaxi roboTaxi) {
+        directives.remove(Objects.requireNonNull(roboTaxi));
     }
 }

@@ -184,11 +184,13 @@ public class LinkLayer extends ViewerLayer {
         lazyMouse.addListenersTo(amodeusComponent);
     }
 
+    @Override
     public void updateSettings(ViewerSettings settings) {
         settings.drawLinks = drawLinks;
         settings.drawLabel = drawLabel;
     }
 
+    @Override
     public void loadSettings(ViewerSettings settings) {
         setDrawLinks(settings.drawLinks);
         setDrawLabel(settings.drawLabel);

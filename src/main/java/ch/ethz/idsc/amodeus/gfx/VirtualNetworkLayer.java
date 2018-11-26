@@ -223,6 +223,7 @@ public class VirtualNetworkLayer extends ViewerLayer {
         return new Color(rgb | (alpha << 24), true);
     }
 
+    @Override
     public void updateSettings(ViewerSettings settings) {
         settings.drawVNodes = drawVNodes;
         settings.drawVLinks = drawVLinks;
@@ -230,6 +231,7 @@ public class VirtualNetworkLayer extends ViewerLayer {
         settings.colorSchemes = colorSchemes;
     }
 
+    @Override
     public void loadSettings(ViewerSettings settings) {
         drawVNodes = settings.drawVNodes;
         drawVLinks = settings.drawVLinks;

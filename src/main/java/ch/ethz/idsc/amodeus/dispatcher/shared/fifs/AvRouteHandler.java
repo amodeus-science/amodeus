@@ -14,13 +14,13 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
  * routes for different RoboTaxis. If one of the Routes is for example invalid it is easy to remove it. */
 /* package */ class AvRouteHandler {
 
-    NavigableMap<Double, Map<RoboTaxi, Set<SharedAvRoute>>> routes = new TreeMap<>();
+    private final NavigableMap<Double, Map<RoboTaxi, Set<SharedAvRoute>>> routes = new TreeMap<>();
 
     /** Adds a @{@link SharedAvRoute} associated with a RoboTaxi {@link RoboTaxi} to the Tree Structure sorted by its end time and the RoboTaxi.
      * 
      * @param roboTaxi
      * @param sharedAvRoute */
-    /* package */ void add(RoboTaxi roboTaxi, SharedAvRoute sharedAvRoute) {
+    void add(RoboTaxi roboTaxi, SharedAvRoute sharedAvRoute) {
         Double endTime = sharedAvRoute.getEndTime();
         if (!routes.containsKey(endTime)) {
             routes.put(endTime, new HashMap<>());
@@ -34,7 +34,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
     /** Removes all {@link SharedAvRoutes} where {@link getEndTime()} equals the given {@link endTime};
      * 
      * @param endTime */
-    /* package */ void remove(Double endTime) {
+    void remove(Double endTime) {
         routes.remove(endTime);
     }
 
@@ -42,31 +42,31 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
      * 
      * @param endTime
      * @return true if it exists, false else. */
-    /* package */ boolean contains(Double endTime) {
+    boolean contains(Double endTime) {
         return routes.containsKey(endTime);
     }
 
     /** get the routes with the earliest End Time.
      * 
-     * @returna a Deep Copy of the Key Value Mapping of RoboTaxis to a Set of SharedAvRoutes all with the earliest end time currently present in the internal Tree
-     *          struchtur */
-    /* package */ Map<RoboTaxi, Set<SharedAvRoute>> getCopyOfNext() {
+     * @return a Deep Copy of the Key Value Mapping of RoboTaxis to a Set of SharedAvRoutes all with the earliest end time currently present in the internal Tree
+     *         structure */
+    Map<RoboTaxi, Set<SharedAvRoute>> getCopyOfNext() {
         return new HashMap<>(routes.firstEntry().getValue());
     }
 
     /** get the number of Route end times stored
      * 
-     * @returna a Key Value Mapping of RoboTaxis to a Set of SharedAvRoutes all with the earliest end time currently present in the internal Tree struchtur */
-    /* package */ int getNumbervalues() {
+     * @return a Key Value Mapping of RoboTaxis to a Set of SharedAvRoutes all with the earliest end time currently present in the internal Tree struchtur */
+    int getNumbervalues() {
         return routes.size();
     }
 
     /** get the routes with the earliest End Time. */
-    /* package */ double getNextvalue() {
+    double getNextvalue() {
         return routes.firstKey();
     }
 
-    /* package */ boolean isEmpty() {
+    boolean isEmpty() {
         return routes.isEmpty();
     }
 

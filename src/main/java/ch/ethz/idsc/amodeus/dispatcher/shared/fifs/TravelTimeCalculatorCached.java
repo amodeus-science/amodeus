@@ -18,21 +18,24 @@ import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.qty.Quantity;
 
-/** A{@link TravelTimeCalculatorCached} stores all the calculated travel times which were calculated within the specified Timelag duration.
- * Like that a very efficient travel time calculation can be guaranteed such that the computationaly expensive rouing has only to be done once for a given link
+/** A TravelTimeCalculatorCached stores all the calculated travel times
+ * which were calculated within the specified Timelag duration.
+ * Like that a very efficient travel time calculation can be guaranteed such that
+ * the computationally expensive routing has only to be done once for a given link
  * to link pair. */
 /* package */ class TravelTimeCalculatorCached implements TravelTimeCalculator {
 
-    /* package */ static TravelTimeCalculatorCached of(LeastCostPathCalculator calculator, Double now) {
-        return new TravelTimeCalculatorCached(calculator, now);
+    static TravelTimeCalculatorCached of(LeastCostPathCalculator calculator, double maxLag) {
+        return new TravelTimeCalculatorCached(calculator, maxLag);
     }
 
+    // ---
     private final LeastCostPathCalculator calculator;
-
     private final Map<Link, Map<Link, Scalar>> db = new HashMap<>();
     private final NavigableMap<Double, Map<Link, Set<Link>>> calculationTimes = new TreeMap<>();
-    private final Double maxLag;
-    private Double now = 0.0;
+    private final double maxLag;
+    // ---
+    private double now = 0.0;
 
     private TravelTimeCalculatorCached(LeastCostPathCalculator calculator, Double maxLag) {
         this.calculator = calculator;
@@ -65,30 +68,23 @@ import ch.ethz.idsc.tensor.qty.Quantity;
     }
 
     private static Scalar timeFromTo(Link from, Link to, Double now, LeastCostPathCalculator calculator) {
-        Path path = calculator.calcLeastCostPath(from.getFromNode(), to.getToNode(), now, //
-                null, null);
-        Double travelTime = null;
-        try {
-            travelTime = path.travelTime;
-        } catch (Exception e) {
-            System.err.println("Calculation of expected arrival failed.");
-        }
-        return Quantity.of(travelTime, SI.SECOND);
+        Path path = calculator.calcLeastCostPath(from.getFromNode(), to.getToNode(), now, null, null);
+        return Quantity.of(path.travelTime, SI.SECOND);
     }
 
     private void addToCalculationTime(Double now, Link from, Link to) {
-        if (!calculationTimes.containsKey(now)) {
+        if (!calculationTimes.containsKey(now))
             calculationTimes.put(now, new HashMap<>());
-        }
-        if (!calculationTimes.get(now).containsKey(from)) {
+
+        if (!calculationTimes.get(now).containsKey(from))
             calculationTimes.get(now).put(from, new HashSet<>());
-        }
+
         calculationTimes.get(now).get(from).add(to);
     }
 
     @Override
     public boolean isForNow(double now) {
-        return this.now.equals(now);
+        return this.now == now;
     }
 
 }
