@@ -88,7 +88,7 @@ public class JMapViewer extends JComponent implements TileLoaderListener {
      *            specified coordinate
      * @param zoom
      *            {@link #MIN_ZOOM} &lt;= zoom level &lt;= {@link #MAX_ZOOM} */
-    private void setDisplayPosition(ICoordinate to, int zoom) {
+    public void setDisplayPosition(ICoordinate to, int zoom) {
         setDisplayPosition(new Point(getWidth() / 2, getHeight() / 2), to, zoom);
     }
 
@@ -148,7 +148,7 @@ public class JMapViewer extends JComponent implements TileLoaderListener {
      * currently displayed map area.
      *
      * @return latitude / longitude */
-    private ICoordinate getPosition() {
+    public ICoordinate getPosition() {
         return tileSource.xyToLatLon(center, zoom);
     }
 
@@ -445,6 +445,10 @@ public class JMapViewer extends JComponent implements TileLoaderListener {
         attribution.initialize(tileSource);
         setDisplayPosition(position, zoom);
         repaint();
+    }
+
+    public TileSource getTileSource() {
+        return tileSource;
     }
 
     @Override
