@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +17,7 @@ import com.google.inject.name.Named;
 import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
 import ch.ethz.idsc.amodeus.dispatcher.core.PartitionedDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatchingUtils;
@@ -126,9 +128,17 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
                  * v_i excess = vi_own - c_i = v_i + sum_j (v_ji) - c_i */
                 Map<VirtualNode<Link>, List<RoboTaxi>> v_ij_reb = getVirtualNodeRebalancingToRoboTaxis();
                 Map<VirtualNode<Link>, List<RoboTaxi>> v_ij_cust = getVirtualNodeArrivingWithCustomerRoboTaxis();
+
+                /** this was necessary for some scenarios resulting in undivertable vehicles to ensure
+                 * LP feasibility, will not be triggered in most cases */
+                double diffDueUnDivertable = (getRoboTaxiSubset(RoboTaxiStatus.STAY).size() + //
+                        getRoboTaxiSubset(RoboTaxiStatus.DRIVETOCUSTOMER).size() - //
+                        getDivertableNotRebalancingRoboTaxis().size()) / ((double) virtualNetwork.getvNodesCount());
+                int diffCeil = (int) Math.ceil(diffDueUnDivertable);
+
                 Tensor vi_excessT = Array.zeros(virtualNetwork.getvNodesCount());
                 for (VirtualNode<Link> virtualNode : availableVehicles.keySet()) {
-                    int viExcessVal = availableVehicles.get(virtualNode).size() + v_ij_reb.get(virtualNode).size() + v_ij_cust.get(virtualNode).size()
+                    int viExcessVal = availableVehicles.get(virtualNode).size() + v_ij_reb.get(virtualNode).size() + v_ij_cust.get(virtualNode).size() + diffCeil
                             - requests.get(virtualNode).size();
                     vi_excessT.set(RealScalar.of(viExcessVal), virtualNode.getIndex());
                 }
