@@ -23,7 +23,7 @@ import ch.ethz.matsim.av.schedule.AVDropoffTask;
 import ch.ethz.matsim.av.schedule.AVPickupTask;
 import ch.ethz.matsim.av.schedule.AVStayTask;
 
-/*package*/ enum StaticRoboTaxiCreator {
+/* package */ enum StaticRoboTaxiCreator {
     ;
 
     private static final int seats = 100; // just a large number as we are not testing capacity with that
