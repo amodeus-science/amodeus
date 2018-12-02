@@ -21,6 +21,7 @@ import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Array;
+import ch.ethz.idsc.tensor.io.Pretty;
 import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.Sign;
 
@@ -105,6 +106,12 @@ public class LPMinFlow {
         GlobalAssert.that(minFlow.length() == nvNodes);
         minFlow = LPUtils.getRounded(minFlow);
         // the problem is only feasible when the sum of minFlow is less or equal zero
+        if (!Sign.isNegativeOrZero(Total.of(minFlow).Get())) {
+            System.out.println("Total Value: "+Total.of(minFlow).Get());
+            System.out.println("Min Flow tensor");
+            System.out.println(Pretty.of(minFlow));
+            
+        }
         GlobalAssert.that(Sign.isNegativeOrZero(Total.of(minFlow).Get()));
         for (int i = 0; i < nvNodes; ++i) {
             GLPK.glp_set_row_bnds(lp, i + 1, GLPK.GLP_LO, minFlow.Get(i).number().doubleValue(), 0.0); // Lower bound: second number irrelevant
