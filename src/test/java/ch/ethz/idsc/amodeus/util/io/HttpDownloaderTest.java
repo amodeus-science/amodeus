@@ -38,7 +38,7 @@ public class HttpDownloaderTest extends TestCase {
             HttpDownloader.download( //
                     "https://polybox.ethz.ch/index.php/s/C3QUuk3cuWWS1Gmy/download123", //
                     ContentType.APPLICATION_ZIP).to(file);
-            assertTrue(false);
+            fail();
         } catch (Exception exception) {
             // ---
         }
