@@ -201,7 +201,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     /* package */ abstract boolean isInPickupRegister(RoboTaxi robotaxi);
 
     /* package */ abstract boolean isInRequestRegister(RoboTaxi robotaxi);
-    
+
     /* package */ abstract void executeWaiting();
 
     @Override

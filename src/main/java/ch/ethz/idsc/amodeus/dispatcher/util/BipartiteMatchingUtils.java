@@ -51,7 +51,7 @@ public class BipartiteMatchingUtils {
             Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
             DistanceFunction distanceFunction, Network network) {
 
-        Tensor infoLine = Tensors.empty();
+        // Tensor infoLine = Tensors.empty();
         Map<RoboTaxi, AVRequest> gbpMatch;
 
         gbpMatch = ((new GlobalBipartiteMatching(distanceFunction)).match(roboTaxis, requests));

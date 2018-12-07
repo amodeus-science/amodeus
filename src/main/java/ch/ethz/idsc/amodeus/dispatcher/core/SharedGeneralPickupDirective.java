@@ -9,20 +9,17 @@ import org.matsim.contrib.dvrp.schedule.Schedules;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
-import ch.ethz.matsim.av.schedule.AVDriveTask;
 import ch.ethz.matsim.av.schedule.AVPickupTask;
 import ch.ethz.matsim.av.schedule.AVStayTask;
 
 /** for vehicles that are in stay task and should pickup a customer at the link:
- * 1) finish stay task 2) append pickup task 3) append drive task 4) append
- * dropoff task 5) append new stay task */
-/** @author Nicolo Ormezzano, Lukas Sieber */
-/* package */ final class SharedGeneralDriveDirectivePickup extends FuturePathDirective {
+ * 1) finish stay task 2) append pickup task 3) append drive task 4) append new stay task */
+/* package */ final class SharedGeneralPickupDirective extends FuturePathDirective {
     final RoboTaxi robotaxi;
     final AVRequest currentRequest;
     final double getTimeNow;
 
-    public SharedGeneralDriveDirectivePickup(RoboTaxi robotaxi, AVRequest currentRequest, //
+    public SharedGeneralPickupDirective(RoboTaxi robotaxi, AVRequest currentRequest, //
             FuturePathContainer futurePathContainer, final double getTimeNow) {
         super(futurePathContainer);
         this.robotaxi = robotaxi;
@@ -48,10 +45,12 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
                     currentRequest.getFromLink(), // location of driving start
                     Arrays.asList(currentRequest))); // serving only one request at a time
 
-            schedule.addTask(new AVDriveTask( //
-                    vrpPathWithTravelData, Arrays.asList(currentRequest)));
+            // schedule.addTask(new AVDriveTask( //
+            // vrpPathWithTravelData, Arrays.asList(currentRequest)));
+            // ScheduleUtils.makeWhole(robotaxi, endTaskTime, scheduleEndTime, vrpPathWithTravelData.getToLink());
 
-            ScheduleUtils.makeWhole(robotaxi, endTaskTime, scheduleEndTime, vrpPathWithTravelData.getToLink());
+            GlobalAssert.that(futurePathContainer.getStartTime() < scheduleEndTime);
+            ScheduleUtils.makeWhole(robotaxi, futurePathContainer.getStartTime(), scheduleEndTime, currentRequest.getFromLink());
 
             // jan: following computation is mandatory for the internal scoring
             // // function

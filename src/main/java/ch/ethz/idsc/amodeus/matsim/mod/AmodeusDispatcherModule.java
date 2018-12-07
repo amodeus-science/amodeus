@@ -10,8 +10,10 @@ import ch.ethz.idsc.amodeus.dispatcher.FeedforwardFluidicRebalancingPolicy;
 import ch.ethz.idsc.amodeus.dispatcher.FeedforwardFluidicTimeVaryingRebalancingPolicy;
 import ch.ethz.idsc.amodeus.dispatcher.GlobalBipartiteMatchingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.SQMDispatcher;
+import ch.ethz.idsc.amodeus.dispatcher.shared.ExtDemandSupplyBeamSharing;
 import ch.ethz.idsc.amodeus.dispatcher.shared.NorthPoleSharedDispatcher;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedHeuristicDispatcher;
+import ch.ethz.idsc.amodeus.dispatcher.shared.fifs.DynamicRideSharingStrategy;
+import ch.ethz.idsc.amodeus.dispatcher.shared.fifs.FirstComeFirstServedStrategy;
 import ch.ethz.matsim.av.framework.AVUtils;
 
 public class AmodeusDispatcherModule extends AbstractModule {
@@ -28,6 +30,9 @@ public class AmodeusDispatcherModule extends AbstractModule {
         bind(GlobalBipartiteMatchingDispatcher.Factory.class);
         AVUtils.bindDispatcherFactory(binder(), GlobalBipartiteMatchingDispatcher.class.getSimpleName()).to(GlobalBipartiteMatchingDispatcher.Factory.class);
 
+        bind(FirstComeFirstServedStrategy.Factory.class);
+        AVUtils.bindDispatcherFactory(binder(), FirstComeFirstServedStrategy.class.getSimpleName()).to(FirstComeFirstServedStrategy.Factory.class);
+
         /** dispatchers for PartitionedDispatcher */
 
         bind(AdaptiveRealTimeRebalancingPolicy.Factory.class);
@@ -43,11 +48,15 @@ public class AmodeusDispatcherModule extends AbstractModule {
         bind(SQMDispatcher.Factory.class);
         AVUtils.bindDispatcherFactory(binder(), SQMDispatcher.class.getSimpleName()).to(SQMDispatcher.Factory.class);
 
+        /** ride sharing dispatchers */
         bind(NorthPoleSharedDispatcher.Factory.class);
         AVUtils.bindDispatcherFactory(binder(), NorthPoleSharedDispatcher.class.getSimpleName()).to(NorthPoleSharedDispatcher.Factory.class);
 
-        bind(SharedHeuristicDispatcher.Factory.class);
-        AVUtils.bindDispatcherFactory(binder(), SharedHeuristicDispatcher.class.getSimpleName()).to(SharedHeuristicDispatcher.Factory.class);
+        bind(ExtDemandSupplyBeamSharing.Factory.class);
+        AVUtils.bindDispatcherFactory(binder(), ExtDemandSupplyBeamSharing.class.getSimpleName()).to(ExtDemandSupplyBeamSharing.Factory.class);
+
+        bind(DynamicRideSharingStrategy.Factory.class);
+        AVUtils.bindDispatcherFactory(binder(), DynamicRideSharingStrategy.class.getSimpleName()).to(DynamicRideSharingStrategy.Factory.class);
 
     }
 }

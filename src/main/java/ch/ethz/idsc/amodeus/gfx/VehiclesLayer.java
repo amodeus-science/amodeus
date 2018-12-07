@@ -13,8 +13,6 @@ import java.util.stream.Collectors;
 
 import javax.swing.JCheckBox;
 
-import org.matsim.contrib.dvrp.data.Vehicles;
-
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.net.OsmLink;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
@@ -27,12 +25,12 @@ public class VehiclesLayer extends ViewerLayer {
     private final BitSet bits = new BitSet();
 
     // during development standard colors are a better default
-    public RoboTaxiStatusColors statusColors = RoboTaxiStatusColors.Pop;
-    public boolean showLocation = true;
+    public RoboTaxiStatusColors statusColors;
+    public boolean showLocation;
 
-    public VehiclesLayer() {
-//        bitSet(RoboTaxiStatus.DRIVETOCUSTOMER);
-        bitSet(RoboTaxiStatus.REBALANCEDRIVE);
+    public VehiclesLayer(AmodeusComponent amodeusComponent) {
+        super(amodeusComponent);
+        loadBitSet(amodeusComponent.defaultConfig.settings);
     }
 
     @Override
@@ -79,12 +77,12 @@ public class VehiclesLayer extends ViewerLayer {
         int[] count = new int[RoboTaxiStatus.values().length];
         if (ref != null) {
             ref.vehicles.forEach(v -> ++count[v.roboTaxiStatus.ordinal()]);
-            
+
             for (RoboTaxiStatus avStatus : RoboTaxiStatus.values()) {
                 InfoString infoString = new InfoString(String.format("%5d %s", count[avStatus.ordinal()], avStatus.description() + " RoboTaxi"));
                 infoString.color = statusColors.of(avStatus);
-                if(avStatus == RoboTaxiStatus.OFFSERVICE) {
-                	continue;
+                if (avStatus == RoboTaxiStatus.OFFSERVICE) {
+                    continue;
                 }
                 amodeusComponent.append(infoString);
             }
@@ -92,8 +90,8 @@ public class VehiclesLayer extends ViewerLayer {
             infoString.color = Color.BLACK;
             amodeusComponent.append(infoString);
             amodeusComponent.appendSeparator();
-            
-            InfoString infoStringDestLine = new InfoString(String.format("%s","  - destination line"));
+
+            InfoString infoStringDestLine = new InfoString(String.format("%s", "  - destination line"));
             infoStringDestLine.color = statusColors.of(RoboTaxiStatus.REBALANCEDRIVE);
             amodeusComponent.append(infoStringDestLine);
             amodeusComponent.appendSeparator();
@@ -145,5 +143,34 @@ public class VehiclesLayer extends ViewerLayer {
             bits.set(roboTaxiStatus.ordinal());
         else
             System.err.println("cannot visualize dest link");
+    }
+
+    @Override
+    public void updateSettings(ViewerSettings settings) {
+        settings.bits = bits;
+        settings.statusColors = statusColors;
+        settings.showLocation = showLocation;
+    }
+
+    @Override
+    public void loadSettings(ViewerSettings settings) {
+        try {
+            loadBitSet(settings);
+        } catch (NullPointerException e) {
+            // ---
+        }
+        statusColors = settings.statusColors;
+        showLocation = settings.showLocation;
+    }
+
+    private void loadBitSet(ViewerSettings settings) {
+        if (settings.bits == null) {
+            bitSet(RoboTaxiStatus.DRIVETOCUSTOMER);
+            bitSet(RoboTaxiStatus.REBALANCEDRIVE);
+            settings.bits = bits;
+        } else {
+            bits.clear();
+            settings.bits.stream().forEach(bits::set);
+        }
     }
 }

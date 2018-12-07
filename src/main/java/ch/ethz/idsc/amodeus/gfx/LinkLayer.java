@@ -57,11 +57,15 @@ import ch.ethz.idsc.tensor.sca.ArcTan;
 public class LinkLayer extends ViewerLayer {
     // ---
     private static final Color LINKCOLOR = new Color(153, 153, 102, 64);
-    private boolean drawLinks = true; // false;
+    private boolean drawLinks;
     public int linkLimit = 8192;
-    private boolean drawLabel = true; // false;
+    private boolean drawLabel;
     private final JTextArea jTextArea = new JTextArea(2, 10);
     private int count = 0;
+
+    public LinkLayer(AmodeusComponent amodeusComponent) {
+        super(amodeusComponent);
+    }
 
     @Override
     protected void paint(Graphics2D graphics, SimulationObject ref) {
@@ -133,8 +137,8 @@ public class LinkLayer extends ViewerLayer {
             if (0 < count)
                 amodeusComponent.append("%5d/%5d streets", count, amodeusComponent.db.getOsmLinksSize());
             else
-//                amodeusComponent.append("too many streets");
-            amodeusComponent.appendSeparator();
+                // amodeusComponent.append("too many streets");
+                amodeusComponent.appendSeparator();
         }
     }
 
@@ -178,5 +182,17 @@ public class LinkLayer extends ViewerLayer {
         };
         LazyMouse lazyMouse = new LazyMouse(lazyMouseListener);
         lazyMouse.addListenersTo(amodeusComponent);
+    }
+
+    @Override
+    public void updateSettings(ViewerSettings settings) {
+        settings.drawLinks = drawLinks;
+        settings.drawLabel = drawLabel;
+    }
+
+    @Override
+    public void loadSettings(ViewerSettings settings) {
+        setDrawLinks(settings.drawLinks);
+        setDrawLabel(settings.drawLabel);
     }
 }
