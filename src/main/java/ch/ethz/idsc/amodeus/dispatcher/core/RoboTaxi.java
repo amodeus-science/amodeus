@@ -240,6 +240,16 @@ public class RoboTaxi {
     // Shared Functionalities, needed here because of capacity
     // **********************************************
 
+    /**
+     * Checks if a Robotaxi is currently hanlding a customer by picking Up or Dropping off
+     * @return true if the robotaxi is in Status Stay or if it is currently handling a customer, false else. 
+     */
+    public boolean pickupOrDroppingOffCustomers() {
+        Task avT = getSchedule().getCurrentTask();
+        if (avT instanceof AVPickupTask || avT instanceof AVDropoffTask)
+            return true;
+        return false;
+    }
     /** Gives full information of the future menu (i.e. plans) of the {@link RoboTaxi}.
      * This Information contains for example the number of customers on Board or the possibility to pick up new customers.
      * To get all this Information the {@link SharedCourseListUtils} class offers some of the standard functionalities.
