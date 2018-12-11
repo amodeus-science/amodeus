@@ -134,7 +134,6 @@ public class BeamExtensionForSharing {
         if (phiOptional.isPresent()) {
             return phiOptional.get().number().doubleValue();
         }
-        GlobalAssert.that(false);
         return null;
     }
 
