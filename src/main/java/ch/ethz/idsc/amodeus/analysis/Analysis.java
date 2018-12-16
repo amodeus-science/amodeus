@@ -174,7 +174,7 @@ public class Analysis {
         System.out.println("Found files: " + size);
         int numVehicles = storageSupplier.getSimulationObject(1).vehicles.size();
 
-        analysisSummary = new AnalysisSummary(numVehicles, size, Objects.requireNonNull(db));
+        analysisSummary = new AnalysisSummary(numVehicles, size, db);
 
         // default List of Analysis Elements which will be loaded
         analysisElements.add(analysisSummary.getSimulationInformationElement());

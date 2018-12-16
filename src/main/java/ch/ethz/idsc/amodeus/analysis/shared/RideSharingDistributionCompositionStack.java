@@ -17,7 +17,7 @@ public enum RideSharingDistributionCompositionStack implements AnalysisExport {
     INSTANCE;
 
     public static final String FILENAME = "SharedDistributionTotal";
-    private double requestSharedRate = -1;
+    // private double requestSharedRate = -1;
 
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
@@ -27,7 +27,7 @@ public enum RideSharingDistributionCompositionStack implements AnalysisExport {
         Tensor sharedDistribution = nPA.getSharedOthersDistribution();
         double totalNumberPassengers = Total.of(sharedDistribution).Get().number().doubleValue();
         double[] values = sharedDistribution.stream().mapToDouble(s -> s.Get().number().doubleValue() / totalNumberPassengers).toArray();
-        requestSharedRate = 1 - values[0];
+        // requestSharedRate = 1 - values[0];
 
         /** Create Labels */
         String[] labels = new String[values.length];
