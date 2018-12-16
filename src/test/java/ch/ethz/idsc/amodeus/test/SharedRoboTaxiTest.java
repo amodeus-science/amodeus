@@ -27,7 +27,6 @@ import ch.ethz.idsc.amodeus.testutils.TestUtils;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.util.math.SI;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkGet;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkIO;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -43,8 +42,8 @@ public class SharedRoboTaxiTest {
 
     private static TestPreparer testPreparer;
     private static SharedTestServer testServer;
-    private static VirtualNetwork<Link> vNCreated;
-    private static VirtualNetwork<Link> vNSaved;
+    // private static VirtualNetwork<Link> vNCreated;
+    // private static VirtualNetwork<Link> vNSaved;
 
     @BeforeClass
     public static void setUpOnce() throws Exception {
@@ -64,10 +63,12 @@ public class SharedRoboTaxiTest {
         testServer = SharedTestServer.run().on(workingDirectory);
 
         // prepare travel data test
-        vNCreated = VirtualNetworkGet.readDefault(testPreparer.getPreparedNetwork());
+        // vNCreated =
+        VirtualNetworkGet.readDefault(testPreparer.getPreparedNetwork());
         Map<String, Link> map = new HashMap<>();
         testPreparer.getPreparedNetwork().getLinks().entrySet().forEach(e -> map.put(e.getKey().toString(), e.getValue()));
-        vNSaved = VirtualNetworkIO.fromByte(map, new File("resources/testComparisonFiles/virtualNetwork"));
+        // vNSaved =
+        VirtualNetworkIO.fromByte(map, new File("resources/testComparisonFiles/virtualNetwork"));
     }
 
     @Test
