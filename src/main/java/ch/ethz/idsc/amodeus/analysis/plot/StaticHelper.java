@@ -20,14 +20,10 @@ import ch.ethz.idsc.tensor.img.MeanFilter;
 
     public static Second toTime(double time) {
         long timeL = (long) time;
-        int day = 1;
         int hours = (int) TimeUnit.SECONDS.toHours(timeL);
         int minutes = (int) (TimeUnit.SECONDS.toMinutes(timeL) - 60.0 * hours);
         int seconds = (int) (TimeUnit.SECONDS.toSeconds(timeL) - minutes * 60.0 - hours * 3600.0);
-
-        int year = Calendar.getInstance().get(Calendar.YEAR);
-        int month = Calendar.getInstance().get(Calendar.MONTH) + 1; // Month are 0 based, thus it is nesscessary to add 1
-        Second second = new Second(seconds, minutes, hours, day, month, year); // month and year can not be zero
+        Second second = new Second(seconds, minutes, hours, 1, 1, 1900); // month and year can not be zero
         return second;
     }
 
