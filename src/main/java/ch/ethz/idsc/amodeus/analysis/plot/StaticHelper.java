@@ -23,8 +23,7 @@ import ch.ethz.idsc.tensor.img.MeanFilter;
         int hours = (int) TimeUnit.SECONDS.toHours(timeL);
         int minutes = (int) (TimeUnit.SECONDS.toMinutes(timeL) - 60.0 * hours);
         int seconds = (int) (TimeUnit.SECONDS.toSeconds(timeL) - minutes * 60.0 - hours * 3600.0);
-        Second second = new Second(seconds, minutes, hours, 1, 1, 1900); // month and year can not be zero
-        return second;
+        return new Second(seconds, minutes, hours, 1, 1, 1900); // month and year can not be zero
     }
 
     public static String fileTitle(String diagramTitle) {
