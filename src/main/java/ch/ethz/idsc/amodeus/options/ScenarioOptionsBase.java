@@ -12,7 +12,6 @@ import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreators;
 import ch.ethz.idsc.amodeus.util.io.FileLines;
 
 public enum ScenarioOptionsBase {
-    
     ;
 
     static final String OPTIONSFILENAME = "AmodeusOptions.properties";
@@ -29,7 +28,7 @@ public enum ScenarioOptionsBase {
     static final String POPULATIONUPDATEDNAMEIDENTIFIER = "PopulationUpdateName";
     static final String LOCATIONSPECIDENTIFIER = "LocationSpec";
     static final String SHAPEFILEIDENTIFIER = "shapeFile";
-    
+
     // ---
     public static final String PARKINGGENERATORIDENTIFIER = "parkingCapacityGenerator";
     public static final String PARKINGSPOTSTAGIDENTIFIER = "parkingSpotsTagInNetwork";

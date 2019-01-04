@@ -113,15 +113,15 @@ public class ScenarioOptions {
     public void setMaxPopulationSize(int maxNumberPeople) {
         properties.setProperty(ScenarioOptionsBase.MAXPOPULATIONSIZEIDENTIFIER, String.valueOf(maxNumberPeople));
     }
-    
+
     public AVSpatialCapacityGenerator getParkingCapacityGenerator() {
         return AVSpatialCapacityGenerators.valueOf(getString(ScenarioOptionsBase.PARKINGGENERATORIDENTIFIER)).setScenarioOptions(this);
     }
-    
+
     public String getParkingSpaceTagInNetwork() {
         return getString(ScenarioOptionsBase.PARKINGSPOTSTAGIDENTIFIER);
     }
-    
+
     public File getShapeFile() {
         File shapeFile = new File(getString(ScenarioOptionsBase.SHAPEFILEIDENTIFIER));
         System.out.println("shapeFile = " + shapeFile.getAbsolutePath());

@@ -78,7 +78,8 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
         sharingPeriod = safeConfig.getInteger("sharingPeriod", 10); // makes sense to choose this value similar to the
                                                                     // pickup duration
         double rMax = safeConfig.getDouble("rMax", 1000.0);
-        double phiMax = Pi.in(100).multiply(RealScalar.of(safeConfig.getDouble("phiMaxDeg", 5.0) / 180.0)).number().doubleValue();
+        // because we can
+        double phiMax = Pi.in(1000).multiply(RealScalar.of(safeConfig.getDouble("phiMaxDeg", 5.0) / 180.0)).number().doubleValue();
         beamExtensionForSharing = new BeamExtensionForSharing(rMax, phiMax);
         this.networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
         this.requestMaintainer = new TreeMaintainer<>(networkBounds, this::getLocation);
@@ -111,15 +112,13 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
             Collection<RoboTaxi> robotaxisDivertable = getDivertableUnassignedRoboTaxis();
             TreeMaintainer<RoboTaxi> unassignedRoboTaxis = new TreeMaintainer<>(networkBounds, this::getRoboTaxiLoc);
 
-            robotaxisDivertable.stream().forEach(rt -> unassignedRoboTaxis.add(rt));
+            robotaxisDivertable.stream().forEach(unassignedRoboTaxis::add);
 
             List<AVRequest> requests = getUnassignedAVRequests();
-            requests.stream().forEach(r -> requestMaintainer.add(r));
+            requests.stream().forEach(requestMaintainer::add);
 
             /** distinguish over- and undersupply cases */
-            boolean oversupply = false;
-            if (unassignedRoboTaxis.size() >= requests.size())
-                oversupply = true;
+            boolean oversupply = unassignedRoboTaxis.size() >= requests.size();
 
             if (unassignedRoboTaxis.size() > 0 && requests.size() > 0) {
                 /** oversupply case */
@@ -151,13 +150,11 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
 
             Collection<RoboTaxi> unassignedRoboTaxisNow = new HashSet<>(unassignedRoboTaxis.getValues());
 
-            for (RoboTaxi robotaxi : unassignedRoboTaxisNow) {
-                if (!robotaxi.getStatus().equals(RoboTaxiStatus.STAY)) {
-                    if (unassignedRoboTaxis.contains(robotaxi)) {
+            for (RoboTaxi robotaxi : unassignedRoboTaxisNow)
+                if (!robotaxi.getStatus().equals(RoboTaxiStatus.STAY))
+                    if (unassignedRoboTaxis.contains(robotaxi)) // TODO <- check should be obsolete
                         unassignedRoboTaxis.remove(robotaxi);
-                    }
-                }
-            }
+
         }
 
         // ADDITIONAL SHARING POSSIBILITY AT EACH PICKUP

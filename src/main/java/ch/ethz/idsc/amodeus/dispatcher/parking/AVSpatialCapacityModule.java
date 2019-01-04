@@ -18,6 +18,7 @@ public class AVSpatialCapacityModule extends AbstractModule {
 
     @Override
     public void install() {
+        // ---
     }
 
     @Provides
@@ -25,9 +26,9 @@ public class AVSpatialCapacityModule extends AbstractModule {
     public AVSpatialCapacityAmodeus provideAVSpatialCapacity(Network network) {
         try {
             return loadSpatialCapacity(network);
-        } catch (IOException e) {
+        } catch (IOException ioException) {
             System.err.println("We could not load the Spatial Capacity of all the Links");
-            e.printStackTrace();
+            ioException.printStackTrace();
             new RuntimeException();
         }
         return null;
@@ -37,7 +38,6 @@ public class AVSpatialCapacityModule extends AbstractModule {
         File workingDirectory = MultiFileTools.getWorkingDirectory();
         ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
         return scenarioOptions.getParkingCapacityGenerator().generate(network);
-
     }
 
 }

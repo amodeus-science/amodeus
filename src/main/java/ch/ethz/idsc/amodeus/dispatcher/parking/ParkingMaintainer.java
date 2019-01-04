@@ -3,7 +3,6 @@ package ch.ethz.idsc.amodeus.dispatcher.parking;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -27,35 +26,33 @@ public class ParkingMaintainer {
         Map<Link, Set<RoboTaxi>> currCount = new HashMap<>();
 
         /** count current robotaxis */
-        stayingRobotaxis.forEach(rt -> {
-            Link link = rt.getDivertableLocation();
+        stayingRobotaxis.forEach(roboTaxi -> {
+            Link link = roboTaxi.getDivertableLocation();
             if (currCount.containsKey(link)) {
-                currCount.get(link).add(rt);
+                currCount.get(link).add(roboTaxi);
             } else {
                 Set<RoboTaxi> set = new HashSet<>();
-                set.add(rt);
+                set.add(roboTaxi);
                 currCount.put(link, set);
             }
         });
 
         /** if above flush threshold, then flush the entire link */
+        // TODO very inefficient since getRandomLink (which builds a list) is called quite often...
         Map<RoboTaxi, Link> directives = new HashMap<>();
-        currCount.entrySet().stream().forEach(e -> {
-            if (e.getValue().size() > spatialCapacity.getSpatialCapacity(e.getKey().getId()) * 0.5) {
-                e.getValue().stream().//
-                limit((long) Math.round(e.getValue().size() * 0.5)).//
-                forEach(rt -> {
-                    directives.put(rt, getRandomLink(e.getKey()));
-                });
+        currCount.entrySet().stream().forEach(entry -> {
+            if (entry.getValue().size() > spatialCapacity.getSpatialCapacity(entry.getKey().getId()) * 0.5) {
+                entry.getValue().stream() //
+                        .limit(Math.round(entry.getValue().size() * 0.5)) //
+                        .forEach(rt -> directives.put(rt, getRandomLink(entry.getKey())));
             }
         });
         return directives;
     }
 
-    private Link getRandomLink(Link link) {
-        Random random = new Random();
+    private static Link getRandomLink(Link link) {
         List<Link> links = new ArrayList<>(link.getToNode().getOutLinks().values());
-        Collections.shuffle(links, random);
-        return links.get(0);
+        Random random = new Random();
+        return links.get(random.nextInt(links.size()));
     }
 }

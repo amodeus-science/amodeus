@@ -8,12 +8,15 @@ import java.util.Map;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 
-public class AVSpatialCapacityAbstract implements AVSpatialCapacityAmodeus {
+public class AVSpatialCapacityAdapter implements AVSpatialCapacityAmodeus {
 
-    protected Map<Id<Link>, Long> capacities = new HashMap<>();
+    protected final Map<Id<Link>, Long> capacities = new HashMap<>();
 
+    @Override
     public long getSpatialCapacity(Id<Link> linkId) {
-        return capacities.containsKey(linkId) ? capacities.get(linkId) : 0;
+        return capacities.containsKey(linkId) //
+                ? capacities.get(linkId)
+                : 0;
     }
 
     public Collection<Id<Link>> getAvaiableLinks() {

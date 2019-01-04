@@ -6,6 +6,9 @@ import org.matsim.api.core.v01.network.Link;
 
 public interface AVSpatialCapacityAmodeus {
 
+    /** @param id
+     * @return */
+    // TODO document function
     long getSpatialCapacity(Id<Link> id);
 
 }

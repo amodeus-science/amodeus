@@ -4,5 +4,8 @@ package ch.ethz.idsc.amodeus.dispatcher.parking;
 import org.matsim.api.core.v01.network.Network;
 
 public interface AVSpatialCapacityGenerator {
-    public AVSpatialCapacityAmodeus generate(Network network);
+
+    // TODO document function
+    AVSpatialCapacityAmodeus generate(Network network);
+
 }
