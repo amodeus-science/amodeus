@@ -31,7 +31,8 @@ public enum ScenarioOptionsBase {
     static final String SHAPEFILEIDENTIFIER = "shapeFile";
     
     // ---
-    public static final String AVSPATIALCAPACITYGENERATORIDENTIFIER = "spatialCapacityGenerator";
+    public static final String PARKINGGENERATORIDENTIFIER = "parkingCapacityGenerator";
+    public static final String PARKINGSPOTSTAGIDENTIFIER = "parkingSpotsTagInNetwork";
     // ---
     public static final String COMPLETEGRAPHIDENTIFIER = "completeGraph";
     public static final String POPULATIONCUTTERIDENTIFIER = "populationCutter";
@@ -63,7 +64,8 @@ public enum ScenarioOptionsBase {
         properties.setProperty(VIRTUALNETWORKCREATORIDENTIFIER, VirtualNetworkCreators.KMEANS.name());
         properties.setProperty(POPULATIONCUTTERIDENTIFIER, PopulationCutters.NETWORKBASED.name());
         properties.setProperty(SHAPEFILEIDENTIFIER, "AbsoluteShapeFileName");
-        properties.setProperty(AVSPATIALCAPACITYGENERATORIDENTIFIER, AVSpatialCapacityGenerators.NETWORKBASED.name());
+        properties.setProperty(PARKINGGENERATORIDENTIFIER, AVSpatialCapacityGenerators.NETWORKBASED.name());
+        properties.setProperty(PARKINGSPOTSTAGIDENTIFIER, "spatialAvCapacity");
         return properties;
     }
 
