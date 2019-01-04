@@ -84,13 +84,6 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
         this.requestMaintainer = new TreeMaintainer<>(networkBounds, this::getLocation);
 
         /** PARKING EXTENSION */
-        // Here you can change how the link restriction is generated. if it is taken from the Network or created otherwhise.
-        // Options:
-        // AVSpatialCapacityIDSC avSpatialCapacityIDSC = new AVSpatialCapacityIDSCFromNetwork(network); // takes the number for each link from the network
-        // AVSpatialCapacityIDSC avSpatialCapacityIDSC = new AVSpatialCapacityIDSCUniform(network, 4); // the number defines globaly how many parking spaces per link
-        // are available per length unit
-
-        // This sets up the parking Maintainer
         parkingMaintainer = new ParkingMaintainer(avSpatialCapacityAmodeus);
         /** PARKING EXTENSION */
     }
