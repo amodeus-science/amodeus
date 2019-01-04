@@ -29,9 +29,12 @@ public enum PopulationPreparer {
         PopulationCutter populationCutter = scenOptions.getPopulationCutter();
         populationCutter.cut(population, network, config);
         System.out.println("Population size after cutting: " + population.getPersons().values().size());
+        
+        int endTime = (int) config.qsim().getEndTime();
+        double minDistance = 1500;
 
-        TheApocalypse.reducesThe(population).toNoMoreThan(scenOptions.getMaxPopulationSize()).people();
-        TheApocalypse.reducesThe(population).toNoMoreThan(scenOptions.getMaxPopulationSize(), seed);
+        TheApocalypse.reducesThe(population, network, endTime, minDistance).toNoMoreThan(scenOptions.getMaxPopulationSize()).people();
+        TheApocalypse.reducesThe(population, network, endTime, minDistance).toNoMoreThan(scenOptions.getMaxPopulationSize(), seed);
         System.out.println("Population after decimation:" + population.getPersons().values().size());
         GlobalAssert.that(0 < population.getPersons().size());
 
