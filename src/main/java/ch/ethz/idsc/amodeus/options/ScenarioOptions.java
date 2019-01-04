@@ -7,6 +7,9 @@ import java.util.Properties;
 
 import ch.ethz.idsc.amodeus.data.LocationSpec;
 import ch.ethz.idsc.amodeus.data.LocationSpecDatabase;
+import ch.ethz.idsc.amodeus.dispatcher.parking.AVSpatialCapacityAmodeus;
+import ch.ethz.idsc.amodeus.dispatcher.parking.AVSpatialCapacityGenerator;
+import ch.ethz.idsc.amodeus.dispatcher.parking.AVSpatialCapacityGenerators;
 import ch.ethz.idsc.amodeus.prep.PopulationCutter;
 import ch.ethz.idsc.amodeus.prep.PopulationCutters;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;
@@ -111,7 +114,11 @@ public class ScenarioOptions {
     public void setMaxPopulationSize(int maxNumberPeople) {
         properties.setProperty(ScenarioOptionsBase.MAXPOPULATIONSIZEIDENTIFIER, String.valueOf(maxNumberPeople));
     }
-
+    
+    public AVSpatialCapacityGenerator getParkingCapacityGenerator() {
+        return AVSpatialCapacityGenerators.valueOf(getString(ScenarioOptionsBase.AVSPATIALCAPACITYGENERATORIDENTIFIER));
+    }
+    
     public File getShapeFile() {
         File shapeFile = new File(getString(ScenarioOptionsBase.SHAPEFILEIDENTIFIER));
         System.out.println("shapeFile = " + shapeFile.getAbsolutePath());
