@@ -1,3 +1,4 @@
+// ---
 package ch.ethz.idsc.amodeus.view.gheat.gui;
 
 import java.awt.Composite;
