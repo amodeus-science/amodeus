@@ -16,6 +16,7 @@ public class RebalancingDirectives {
     public RebalancingDirectives() {
         this(new HashMap<>());
     }
+
     public RebalancingDirectives(Map<RoboTaxi, Link> directives) {
         this.directives = directives;
     }
@@ -27,6 +28,7 @@ public class RebalancingDirectives {
     public void add(RoboTaxi roboTaxi, Link link) {
         directives.put(roboTaxi, link);
     }
+
     public void addOtherDirectives(RebalancingDirectives rebalancingDirectives) {
         directives.putAll(rebalancingDirectives.getDirectives());
     }
