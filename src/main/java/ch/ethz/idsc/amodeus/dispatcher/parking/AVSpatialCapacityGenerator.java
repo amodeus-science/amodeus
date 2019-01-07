@@ -5,7 +5,11 @@ import org.matsim.api.core.v01.network.Network;
 
 public interface AVSpatialCapacityGenerator {
 
-    // TODO document function
+    /** Generates a {@link AVSpatialCapacityAmodeus} for a given Network. This could for example be by searching for a given link attribute in the network or by
+     * using the length of the link as a indication of its capacity.
+     * 
+     * @param network The Network for which the {@link AVSpatialCapacityAmodeus} should be generated
+     * @return */
     AVSpatialCapacityAmodeus generate(Network network);
 
 }

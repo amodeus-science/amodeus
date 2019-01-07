@@ -4,10 +4,14 @@ package ch.ethz.idsc.amodeus.dispatcher.parking;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 
+/** A {@link AVSpatialCapacityAmodeus} is a storage for the spacial capacity (i.e. parking spaces) on a Collection of links (e.g. the network). */
 public interface AVSpatialCapacityAmodeus {
 
-    /** @param id
-     * @return */
+    /** An AVSpatialCapacity gives back the Number of Spaces on the Link with the given Id back. It is designed for the usage of parking spaces such that for each
+     * link the corresponing parking capacity can be found
+     * 
+     * @param id link id
+     * @return the total capacity on this link */
     // TODO document function
     long getSpatialCapacity(Id<Link> id);
 

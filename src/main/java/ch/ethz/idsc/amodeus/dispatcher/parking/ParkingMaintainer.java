@@ -18,6 +18,10 @@ public class ParkingMaintainer {
 
     private final AVSpatialCapacityAmodeus spatialCapacity;
 
+    private final Map<Link, List<Link>> alternativeLinks = new HashMap<>();
+
+    private final Random random = new Random();
+
     public ParkingMaintainer(AVSpatialCapacityAmodeus spatialCapacity) {
         this.spatialCapacity = spatialCapacity;
     }
@@ -39,6 +43,7 @@ public class ParkingMaintainer {
 
         /** if above flush threshold, then flush the entire link */
         // TODO very inefficient since getRandomLink (which builds a list) is called quite often...
+        // TODO Jan: does it help enough to store the list in a map and draw from that list instead of building it all the time? What would be anther option?
         Map<RoboTaxi, Link> directives = new HashMap<>();
         currCount.entrySet().stream().forEach(entry -> {
             if (entry.getValue().size() > spatialCapacity.getSpatialCapacity(entry.getKey().getId()) * 0.5) {
@@ -50,9 +55,11 @@ public class ParkingMaintainer {
         return directives;
     }
 
-    private static Link getRandomLink(Link link) {
-        List<Link> links = new ArrayList<>(link.getToNode().getOutLinks().values());
-        Random random = new Random();
+    private Link getRandomLink(Link link) {
+        if (!alternativeLinks.containsKey(link)) {
+            alternativeLinks.put(link, new ArrayList<>(link.getToNode().getOutLinks().values()));
+        }
+        List<Link> links = alternativeLinks.get(link);
         return links.get(random.nextInt(links.size()));
     }
 }

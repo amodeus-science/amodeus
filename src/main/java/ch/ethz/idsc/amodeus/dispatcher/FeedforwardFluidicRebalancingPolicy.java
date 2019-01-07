@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
@@ -23,8 +24,10 @@ import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
 import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.FeasibleRebalanceCreator;
+import ch.ethz.idsc.amodeus.dispatcher.util.FeedForwardTravelData;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
+import ch.ethz.idsc.amodeus.lp.LPCreator;
 import ch.ethz.idsc.amodeus.lp.LPTimeInvariant;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
@@ -85,7 +88,6 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
         super(config, avDispatcherConfig, travelTime, router, eventsManager, virtualNetwork, db);
         virtualNodeDest = abstractVirtualNodeDest;
         vehicleDestMatcher = abstractVehicleDestMatcher;
-        this.travelData = travelData;
 
         this.network = network;
         nVNodes = virtualNetwork.getvNodesCount();
@@ -99,9 +101,13 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
         this.bipartiteMatchingEngine = new BipartiteMatchingUtils(network);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
-        System.out.println(travelData.getLPName());
-        System.out.println(LPTimeInvariant.class.getSimpleName());
-        GlobalAssert.that(travelData.getLPName().equals(LPTimeInvariant.class.getSimpleName()));
+
+        FeedForwardTravelData.overwriteIfRequired(LPCreator.TIMEINVARIANT, travelData, virtualNetwork);
+        // System.out.println(travelData.getLPName());
+        // System.out.println(LPTimeInvariant.class.getSimpleName());
+         GlobalAssert.that(travelData.getLPName().equals(LPTimeInvariant.class.getSimpleName()));
+         this.travelData = travelData;
+
     }
 
     @Override

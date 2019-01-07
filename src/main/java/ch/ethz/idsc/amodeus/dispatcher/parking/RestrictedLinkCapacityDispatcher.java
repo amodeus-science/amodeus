@@ -78,20 +78,12 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
         sharingPeriod = safeConfig.getInteger("sharingPeriod", 10); // makes sense to choose this value similar to the
                                                                     // pickup duration
         double rMax = safeConfig.getDouble("rMax", 1000.0);
-        // because we can
         double phiMax = Pi.in(1000).multiply(RealScalar.of(safeConfig.getDouble("phiMaxDeg", 5.0) / 180.0)).number().doubleValue();
         beamExtensionForSharing = new BeamExtensionForSharing(rMax, phiMax);
         this.networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
         this.requestMaintainer = new TreeMaintainer<>(networkBounds, this::getLocation);
 
         /** PARKING EXTENSION */
-        // Here you can change how the link restriction is generated. if it is taken from the Network or created otherwhise.
-        // Options:
-        // AVSpatialCapacityIDSC avSpatialCapacityIDSC = new AVSpatialCapacityIDSCFromNetwork(network); // takes the number for each link from the network
-        // AVSpatialCapacityIDSC avSpatialCapacityIDSC = new AVSpatialCapacityIDSCUniform(network, 4); // the number defines globaly how many parking spaces per link
-        // are available per length unit
-
-        // This sets up the parking Maintainer
         parkingMaintainer = new ParkingMaintainer(avSpatialCapacityAmodeus);
         /** PARKING EXTENSION */
     }
