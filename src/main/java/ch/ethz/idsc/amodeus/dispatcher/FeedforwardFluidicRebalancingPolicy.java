@@ -26,9 +26,7 @@ import ch.ethz.idsc.amodeus.dispatcher.util.FeasibleRebalanceCreator;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.lp.LPCreator;
-import ch.ethz.idsc.amodeus.lp.LPSolver;
 import ch.ethz.idsc.amodeus.lp.LPTimeInvariant;
-import ch.ethz.idsc.amodeus.lp.LPTimeVariant;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
@@ -88,7 +86,6 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
         super(config, avDispatcherConfig, travelTime, router, eventsManager, virtualNetwork, db);
         virtualNodeDest = abstractVirtualNodeDest;
         vehicleDestMatcher = abstractVehicleDestMatcher;
-        this.travelData = travelData;
 
         this.network = network;
         nVNodes = virtualNetwork.getvNodesCount();
@@ -102,6 +99,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
         this.bipartiteMatchingEngine = new BipartiteMatchingUtils(network);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
+        this.travelData = travelData;
         System.out.println(travelData.getLPName());
         System.out.println(LPTimeInvariant.class.getSimpleName());
         if (!travelData.getLPName().equals(LPTimeInvariant.class.getSimpleName())) {
