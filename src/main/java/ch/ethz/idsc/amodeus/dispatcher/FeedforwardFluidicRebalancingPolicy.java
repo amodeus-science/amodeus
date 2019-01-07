@@ -108,7 +108,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
             System.err.println("Running the " + this.getClass().getSimpleName() + " requires precomputed data that must be\n"
                     + "computed in the ScenarioPreparer. Currently the file LPOptions.properties is set to compute the feedforward\n" + "rebalancing data with: ");
             System.err.println(travelData.getLPName());
-            System.err.println("The correct choice to run this dispatcher is:  " + LPCreator.TIMEINVARIANT.name());
+            System.err.println("The correct setting in LPOptions.properties to run this dispatcher is:  " + LPCreator.TIMEINVARIANT.name());
             GlobalAssert.that(false);
         }
     }
