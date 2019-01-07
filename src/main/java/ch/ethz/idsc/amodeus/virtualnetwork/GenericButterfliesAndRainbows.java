@@ -14,7 +14,7 @@ import java.util.Set;
 /** class helps to detect adjacency between VirtualNodes based on a topological criterion. For every
  * VirtualNode a list of elements is supplied, if an element is contained in two virtualNodes, they
  * share a virtual Link. */
-/* package */ class GenericButterfliesAndRainbows<T, U> {
+public class GenericButterfliesAndRainbows<T, U> {
     private final Map<U, Set<VirtualNode<T>>> map = new HashMap<>();
 
     public void add(U node, VirtualNode<T> virtualNode) {
