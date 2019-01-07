@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
-import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
@@ -105,8 +104,8 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
         FeedForwardTravelData.overwriteIfRequired(LPCreator.TIMEINVARIANT, travelData, virtualNetwork);
         // System.out.println(travelData.getLPName());
         // System.out.println(LPTimeInvariant.class.getSimpleName());
-         GlobalAssert.that(travelData.getLPName().equals(LPTimeInvariant.class.getSimpleName()));
-         this.travelData = travelData;
+        GlobalAssert.that(travelData.getLPName().equals(LPTimeInvariant.class.getSimpleName()));
+        this.travelData = travelData;
 
     }
 

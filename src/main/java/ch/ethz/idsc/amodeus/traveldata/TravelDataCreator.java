@@ -20,18 +20,19 @@ public enum TravelDataCreator {
     public static TravelData create(VirtualNetwork<Link> virtualNetwork, Network network, Population population, int interval, int numberOfVehicles, int endTime) throws Exception {
         Tensor lambdaAbsolute = getLambdaAbsolute(network, virtualNetwork, population, interval, endTime);
 
-        LPSolver lp = LPPreparer.run(virtualNetwork, network, lambdaAbsolute, numberOfVehicles, endTime);
+        LPSolver lpSolver = LPPreparer.run(virtualNetwork, network, lambdaAbsolute, numberOfVehicles, endTime);
 
-        String lpName = lp.getClass().getSimpleName();
-        Tensor alphaAbsolute = lp.getAlphaAbsolute_ij();
-        Tensor v0_i = lp.getV0_i();
-        Tensor fAbsolute = lp.getFAbsolute_ij();
+        String lpName = lpSolver.getClass().getSimpleName();
+        Tensor alphaAbsolute = lpSolver.getAlphaAbsolute_ij();
+        Tensor v0_i = lpSolver.getV0_i();
+        Tensor fAbsolute = lpSolver.getFAbsolute_ij();
 
         return new TravelData(virtualNetwork.getvNetworkID(), lambdaAbsolute, alphaAbsolute, fAbsolute, v0_i, lpName, endTime);
     }
 
-    /** returns the lambdaAbsolute {@link Tensor} that represents all requests in the population. E.g. lambdaAbsolute(k,i,j)=n means that n requests appear at
-     * timeInterval k with departure in virtual node i and destination in virtual node j */
+    /** returns the lambdaAbsolute {@link Tensor} that represents all requests in the population.
+     * E.g. lambdaAbsolute(k,i,j)=n means that n requests appear at timeInterval k
+     * with departure in virtual node i and destination in virtual node j */
     public static Tensor getLambdaAbsolute(Network network, VirtualNetwork<Link> virtualNetwork, Population population, int timeIntervalLength, int endTime) {
         Set<Request> avRequests = PopulationTools.getAVRequests(population, network, endTime);
         return PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(avRequests, virtualNetwork, timeIntervalLength, endTime);
