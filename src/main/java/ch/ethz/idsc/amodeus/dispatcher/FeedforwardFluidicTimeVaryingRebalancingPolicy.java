@@ -25,6 +25,7 @@ import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.FeasibleRebalanceCreator;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
+import ch.ethz.idsc.amodeus.lp.LPCreator;
 import ch.ethz.idsc.amodeus.lp.LPTimeVariant;
 import ch.ethz.idsc.amodeus.matsim.mod.VehicleToVSGenerator;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
@@ -93,8 +94,14 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
         this.bipartiteMatchingEngine = new BipartiteMatchingUtils(network);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
-
-        GlobalAssert.that(travelData.getLPName().equals(LPTimeVariant.class.getSimpleName()));
+        if(!travelData.getLPName().equals(LPTimeVariant.class.getSimpleName())){
+            System.err.println("Running the " + this.getClass().getSimpleName()+ " requires precomputed data that must be\n"
+                    + "computed in the ScenarioPreparer. Currently the file LPOptions.properties is set to compute the feedforward\n"
+                    + "rebalcing data with: ");
+            System.err.println(travelData.getLPName());
+            System.err.println("The correct setting in LPOptions.properties to run this dispatcher is:  " +  LPCreator.TIMEVARIANT.name());
+            GlobalAssert.that(false);            
+        }
         GlobalAssert.that(generatorConfig.getStrategyName().equals(VehicleToVSGenerator.class.getSimpleName()));
     }
 
