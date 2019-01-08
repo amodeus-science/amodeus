@@ -109,9 +109,9 @@ public class BeamExtensionForSharing {
         if (NetworkUtils.getEuclideanDistance(roboTaxi.getDivertableLocation().getCoord(), request2.getFromLink().getCoord()) > rMax) {
             return false;
         }
-        Double angleDouble = directionAngle(roboTaxi, request2);
-        /** check if teh direction of the Request is similar */
-        return (angleDouble == null) ? false : angleDouble < phiMax;
+        Optional<Scalar> angleDouble = directionAngle(roboTaxi, request2);
+        /** check if the direction of the Request is similar */
+        return (angleDouble.isPresent()) ? angleDouble.get().number().doubleValue() < phiMax: false;
     }
 
     /** As we plan to make the order of pickups and dropoffs such that first all pickups then all dropoffs it makes sense that not dropoffs are planed than capacity
@@ -123,18 +123,14 @@ public class BeamExtensionForSharing {
         return SharedCourseListUtils.getNumberDropoffs(roboTaxi.getUnmodifiableViewOfCourses()) + numberAdded.get() < roboTaxi.getCapacity();
     }
 
-    private static Double directionAngle(RoboTaxi roboTaxi, AVRequest request2) {
+    private static Optional<Scalar> directionAngle(RoboTaxi roboTaxi, AVRequest request2) {
         return phiof(roboTaxi.getDivertableLocation().getCoord(), getDirectionOfTrip(roboTaxi), request2.getFromLink().getCoord(), request2.getToLink().getCoord());
     }
 
-    private static Double phiof(Coord po, Coord pd, Coord ro, Coord rd) {
+    private static  Optional<Scalar> phiof(Coord po, Coord pd, Coord ro, Coord rd) {
         Tensor a = Tensors.vector(po.getX(), po.getY()).subtract(Tensors.vector(pd.getX(), pd.getY()));
         Tensor b = Tensors.vector(ro.getX(), ro.getY()).subtract(Tensors.vector(rd.getX(), rd.getY()));
-        Optional<Scalar> phiOptional = VectorAngle.of(a, b);
-        if (phiOptional.isPresent()) {
-            return phiOptional.get().number().doubleValue();
-        }
-        return null;
+        return VectorAngle.of(a, b);
     }
 
     private static Coord getDirectionOfTrip(RoboTaxi roboTaxi) {
