@@ -36,6 +36,11 @@ public class BeamExtensionForSharing {
         this.rMax = rMax;
     }
 
+    /** This is the fast way of assigning potential sharing possibilities. It 
+     * 1. finds potential Assignements
+     * 2. assignes them directly to the robotaxis
+     * 3. reorders the menu of the RoboTaxis
+     * @return the newly added Requests */
     public Map<AVRequest, RoboTaxi> findAssignementAndExecute(Collection<RoboTaxi> roboTaxis, Collection<AVRequest> openRideSharingRequests, SharedUniversalDispatcher sud) {
         getSharingAssignements(roboTaxis, openRideSharingRequests);
         assignTo(sud);
