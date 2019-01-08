@@ -1,7 +1,6 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
