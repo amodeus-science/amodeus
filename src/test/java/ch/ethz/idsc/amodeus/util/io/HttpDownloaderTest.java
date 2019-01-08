@@ -4,12 +4,12 @@ package ch.ethz.idsc.amodeus.util.io;
 import java.io.File;
 import java.io.IOException;
 
-import ch.ethz.idsc.amodeus.util.math.UserHome;
+import ch.ethz.idsc.tensor.io.HomeDirectory;
 import junit.framework.TestCase;
 
 public class HttpDownloaderTest extends TestCase {
     public void testSimple() throws IOException {
-        File file = UserHome.file("favicon.ico");
+        File file = HomeDirectory.file("favicon.ico");
         assertFalse(file.exists());
 
         HttpDownloader.download("http://www.djtascha.de/favicon.ico", ContentType.IMAGE_XICON).to(file);
@@ -19,7 +19,7 @@ public class HttpDownloaderTest extends TestCase {
     }
 
     public void testHttps() throws IOException {
-        File file = UserHome.file("scenario.zip");
+        File file = HomeDirectory.file("scenario.zip");
         assertFalse(file.exists());
 
         HttpDownloader.download("https://polybox.ethz.ch/index.php/s/AP9zPPk8wT4KWit/download", ContentType.APPLICATION_ZIP).to(file);
@@ -32,7 +32,7 @@ public class HttpDownloaderTest extends TestCase {
     }
 
     public void testFail() {
-        File file = UserHome.file("scenario-does-not-exist.zip");
+        File file = HomeDirectory.file("scenario-does-not-exist.zip");
         assertFalse(file.exists());
         try {
             HttpDownloader.download( //
