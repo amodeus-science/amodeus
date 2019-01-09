@@ -5,11 +5,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
-import ch.ethz.idsc.amodeus.util.math.UserHome;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Dimensions;
 import ch.ethz.idsc.tensor.io.Export;
+import ch.ethz.idsc.tensor.io.HomeDirectory;
 import ch.ethz.idsc.tensor.io.Import;
 import junit.framework.TestCase;
 
@@ -18,7 +18,7 @@ import junit.framework.TestCase;
  * the file. */
 public class ImportTest extends TestCase {
     public void testCsvClosed() throws IOException {
-        File file = UserHome.file("tensorTest" + ImportTest.class.getSimpleName() + ".csv");
+        File file = HomeDirectory.file("tensorTest" + ImportTest.class.getSimpleName() + ".csv");
         assertFalse(file.exists());
         Export.of(file, Tensors.fromString("{{1, 2}, {3, 4}}"));
         assertTrue(file.exists());
@@ -30,7 +30,7 @@ public class ImportTest extends TestCase {
 
     public void testImageClose() throws Exception {
         Tensor tensor = Tensors.fromString("{{1, 2}, {3, 4}}");
-        File file = UserHome.file("tensorTest" + ImportTest.class.getSimpleName() + ".png");
+        File file = HomeDirectory.file("tensorTest" + ImportTest.class.getSimpleName() + ".png");
         Export.of(file, tensor);
         assertTrue(file.exists());
         Tensor in = Import.of(file);
@@ -40,7 +40,7 @@ public class ImportTest extends TestCase {
     }
 
     public void testFolderCsvClosed() throws IOException {
-        File dir = UserHome.file("tensorTest" + System.currentTimeMillis());
+        File dir = HomeDirectory.file("tensorTest" + System.currentTimeMillis());
         assertFalse(dir.exists());
         dir.mkdir();
         assertTrue(dir.isDirectory());
