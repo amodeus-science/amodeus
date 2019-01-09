@@ -10,11 +10,11 @@ import java.io.IOException;
 import java.util.Random;
 
 import ch.ethz.idsc.amodeus.util.io.FileDelete;
-import ch.ethz.idsc.amodeus.util.math.UserHome;
+import ch.ethz.idsc.tensor.io.HomeDirectory;
 import junit.framework.TestCase;
 
 public class Mp4AnimationWriterTest extends TestCase {
-    private final static File MP4_FILE = new File(UserHome.file("filename.mp4").toString());
+    private final static File MP4_FILE = new File(HomeDirectory.file("filename.mp4").toString());
 
     /** test generates short video of 50 frames with random colors per pixel at 10 fps */
     public void testSimple() throws InterruptedException, IOException, Exception {

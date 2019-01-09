@@ -40,7 +40,7 @@ public class RoboTaxiDiversionTest extends TestCase {
         StaticRoboTaxiCreator.updateRoboTaxiMenuTo(roboTaxi, Arrays.asList(SharedCourse.redirectCourse(s.linkDepotOut, "depotRed")));
         try {
             SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, 0.0);
-            assertTrue(false);
+            fail();
         } catch (Exception exception) {
             // ---
         }
@@ -81,7 +81,7 @@ public class RoboTaxiDiversionTest extends TestCase {
         // assertTrue(SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, 0.0).get().equals(s.linkDepotOut)); // case pickup course
         try {
             SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, 0.0);
-            assertTrue(false);
+            fail();
         } catch (Exception exception) {
             // ---
         }
@@ -136,7 +136,7 @@ public class RoboTaxiDiversionTest extends TestCase {
         // Case 1a) No course present
         try { // Impossible because if a pickup task is going on there has always to be a dropoff course
             SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now);
-            assertTrue(false);
+            fail();
         } catch (Exception exception) {
             // ---
         }
@@ -151,7 +151,7 @@ public class RoboTaxiDiversionTest extends TestCase {
         StaticRoboTaxiCreator.updateRoboTaxiMenuTo(roboTaxi, Arrays.asList(SharedCourse.redirectCourse(artificialScenarioCreator.linkDepotOut, "depotRed")));
         try {
             SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now);
-            assertTrue(false);
+            fail();
         } catch (Exception exception) {
             // ---
         }
@@ -175,7 +175,7 @@ public class RoboTaxiDiversionTest extends TestCase {
         // Case 2a) No course present
         try { // Impossible because if a pickup task is going on there has always to be a dropoff course
             SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now);
-            assertTrue(false);
+            fail();
         } catch (Exception exception) {
             // ---
         }
@@ -192,7 +192,7 @@ public class RoboTaxiDiversionTest extends TestCase {
         StaticRoboTaxiCreator.updateRoboTaxiMenuTo(roboTaxi, Arrays.asList(SharedCourse.redirectCourse(artificialScenarioCreator.linkDepotOut, "depotRed")));
         try {
             SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now);
-            assertTrue(false);
+            fail();
         } catch (Exception exception) {
             // ---
         }
@@ -227,7 +227,7 @@ public class RoboTaxiDiversionTest extends TestCase {
         // Case 1a) No course present
         try { // Impossible because if a pickup task is going on there has always to be a dropoff course
             SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now);
-            assertTrue(false);
+            fail();
         } catch (Exception exception) {
             // ---
         }
@@ -242,7 +242,7 @@ public class RoboTaxiDiversionTest extends TestCase {
         StaticRoboTaxiCreator.updateRoboTaxiMenuTo(roboTaxi, Arrays.asList(SharedCourse.redirectCourse(s.linkDepotOut, "depotRed")));
         try {
             SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now);
-            assertTrue(false);
+            fail();
         } catch (Exception exception) {
             // ---
         }
@@ -278,7 +278,7 @@ public class RoboTaxiDiversionTest extends TestCase {
         StaticRoboTaxiCreator.updateRoboTaxiMenuTo(roboTaxi, Arrays.asList(SharedCourse.redirectCourse(s.linkDepotOut, "depotRed")));
         try {
             SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now);
-            assertTrue(false);
+            fail();
         } catch (Exception exception) {
             // ---
         }
@@ -333,7 +333,7 @@ public class RoboTaxiDiversionTest extends TestCase {
         StaticRoboTaxiCreator.updateRoboTaxiMenuTo(roboTaxi, Arrays.asList(SharedCourse.redirectCourse(s.linkDepotOut, "depotRed")));
         try {
             SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now);
-            assertTrue(false);
+            fail();
         } catch (Exception exception) {
             // ---
         }
@@ -395,7 +395,7 @@ public class RoboTaxiDiversionTest extends TestCase {
         StaticRoboTaxiCreator.updateRoboTaxiMenuTo(roboTaxi, Arrays.asList(SharedCourse.redirectCourse(s.linkDepotOut, "depotRed")));
         try {
             SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now);
-            assertTrue(false);
+            fail();
         } catch (Exception exception) {
             // ---
         }

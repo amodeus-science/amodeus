@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.matsim.api.core.v01.Coord;
@@ -27,7 +28,6 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 public class BeamExtensionForSharing {
     private Collection<RoboTaxi> previouslyNotWithCustomerTaxis = new HashSet<>();
     Map<AVRequest, RoboTaxi> addedAvRequests = new HashMap<>();
-
     private Double phiMax;
     private double rMax;
 
@@ -57,12 +57,14 @@ public class BeamExtensionForSharing {
         Set<RoboTaxi> driveWithCustomerRoboTaxis = allRoboTaxis.stream().filter(rt -> rt.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER)).collect(Collectors.toSet());
 
         for (RoboTaxi roboTaxi : driveWithCustomerRoboTaxis) {
+            AtomicInteger numberAdded = new AtomicInteger(0);
             GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
             if (previouslyNotWithCustomerTaxis.contains(roboTaxi)) {
                 /** The RoboTaxi just picked up a customer! Lets see if we find close requests with similar direction */
                 for (AVRequest avRequest : avRequests) {
-                    if (checkIfPossibleSharing(roboTaxi, avRequest) && !addedAvRequests.containsKey(avRequest)) {
+                    if (checkIfPossibleSharing(roboTaxi, avRequest, numberAdded) && !addedAvRequests.containsKey(avRequest)) {
                         addedAvRequests.put(avRequest, roboTaxi);
+                        numberAdded.incrementAndGet();
                     }
                 }
 
@@ -98,38 +100,37 @@ public class BeamExtensionForSharing {
         }
     }
 
-    private boolean checkIfPossibleSharing(RoboTaxi roboTaxi, AVRequest request2) {
-        if (!oneMorePickupPossible(roboTaxi)) {
+    private boolean checkIfPossibleSharing(RoboTaxi roboTaxi, AVRequest request2, AtomicInteger numberAdded) {
+        /** Check if the Robotaxi can Pickup a new customer on board or if it is allready full */
+        if (!oneMorePickupPossible(roboTaxi, numberAdded)) {
             return false;
         }
+        /** Check if the distance of the Robotaxi to the customer is within a Radius rMax */
         if (NetworkUtils.getEuclideanDistance(roboTaxi.getDivertableLocation().getCoord(), request2.getFromLink().getCoord()) > rMax) {
             return false;
         }
-        Double angleDouble = directionAngle(roboTaxi, request2);
-        return (angleDouble == null) ? false : angleDouble < phiMax;
+        Optional<Scalar> angle = directionAngle(roboTaxi, request2);
+        /** check if the direction of the Request is similar */
+        return (angle.isPresent()) ? angle.get().number().doubleValue() < phiMax: false;
     }
 
     /** As we plan to make the order of pickups and dropoffs such that first all pickups then all dropoffs it makes sense that not dropoffs are planed than capacity
      * 
      * @param roboTaxi
+     * @param numberAdded
      * @return */
-    private static boolean oneMorePickupPossible(RoboTaxi roboTaxi) {
-        return SharedCourseListUtils.getNumberDropoffs(roboTaxi.getUnmodifiableViewOfCourses()) < roboTaxi.getCapacity();
+    private static boolean oneMorePickupPossible(RoboTaxi roboTaxi, AtomicInteger numberAdded) {
+        return SharedCourseListUtils.getNumberDropoffs(roboTaxi.getUnmodifiableViewOfCourses()) + numberAdded.get() < roboTaxi.getCapacity();
     }
 
-    private static Double directionAngle(RoboTaxi roboTaxi, AVRequest request2) {
+    private static Optional<Scalar> directionAngle(RoboTaxi roboTaxi, AVRequest request2) {
         return phiof(roboTaxi.getDivertableLocation().getCoord(), getDirectionOfTrip(roboTaxi), request2.getFromLink().getCoord(), request2.getToLink().getCoord());
     }
 
-    private static Double phiof(Coord po, Coord pd, Coord ro, Coord rd) {
+    private static  Optional<Scalar> phiof(Coord po, Coord pd, Coord ro, Coord rd) {
         Tensor a = Tensors.vector(po.getX(), po.getY()).subtract(Tensors.vector(pd.getX(), pd.getY()));
         Tensor b = Tensors.vector(ro.getX(), ro.getY()).subtract(Tensors.vector(rd.getX(), rd.getY()));
-        Optional<Scalar> phiOptional = VectorAngle.of(a, b);
-        if (phiOptional.isPresent()) {
-            return phiOptional.get().number().doubleValue();
-        }
-        GlobalAssert.that(false);
-        return null;
+        return VectorAngle.of(a, b);
     }
 
     private static Coord getDirectionOfTrip(RoboTaxi roboTaxi) {
