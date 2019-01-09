@@ -63,7 +63,7 @@ public enum ScenarioOptionsBase {
         properties.setProperty(VIRTUALNETWORKCREATORIDENTIFIER, VirtualNetworkCreators.KMEANS.name());
         properties.setProperty(POPULATIONCUTTERIDENTIFIER, PopulationCutters.NETWORKBASED.name());
         properties.setProperty(SHAPEFILEIDENTIFIER, "AbsoluteShapeFileName");
-        properties.setProperty(PARKINGGENERATORIDENTIFIER, AVSpatialCapacityGenerators.NETWORKBASED.name());
+        properties.setProperty(PARKINGGENERATORIDENTIFIER, AVSpatialCapacityGenerators.NONE.name());
         properties.setProperty(PARKINGSPOTSTAGIDENTIFIER, "spatialAvCapacity");
         return properties;
     }

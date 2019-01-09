@@ -125,7 +125,11 @@ import ch.ethz.matsim.av.passenger.AVRequest;
             }
             oldRoutes.put(roboTaxi, SharedAvRoute.of(roboTaxi.getUnmodifiableViewOfCourses(), roboTaxi.getDivertableLocation(), now, pickupDuration, dropoffDuration, timeDb));
         }
-        return getFastestValidEntry(avRouteHandler, avRequest, oldRoutes, now, requestMaintainer);
+        Optional<Entry<RoboTaxi, List<SharedCourse>>> rt = getFastestValidEntry(avRouteHandler, avRequest, oldRoutes, now, requestMaintainer);
+        if (rt.isPresent()) {
+            GlobalAssert.that(SharedCourseListUtils.checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(rt.get().getValue(), rt.get().getKey().getCapacity()));
+        }
+        return rt;
     }
 
     private Optional<Entry<RoboTaxi, List<SharedCourse>>> getFastestValidEntry(AvRouteHandler avRouteHandler, AVRequest avRequest, Map<RoboTaxi, SharedAvRoute> oldRoutes,
@@ -138,7 +142,9 @@ import ch.ethz.matsim.av.passenger.AVRequest;
             for (Entry<RoboTaxi, Set<SharedAvRoute>> entry : map.entrySet()) {
                 for (SharedAvRoute sharedAvRoute : entry.getValue()) {
                     if (isValidRoute(sharedAvRoute, oldRoutes.get(entry.getKey()), requestMaintainer.getRequestWrap(avRequest), now, requestMaintainer)) {
-                        return Optional.of(new SimpleEntry<>(entry.getKey(), sharedAvRoute.getRoboTaxiMenu()));
+                        if (SharedCourseListUtils.checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(sharedAvRoute.getRoboTaxiMenu(),entry.getKey().getCapacity())) {
+                            return Optional.of(new SimpleEntry<>(entry.getKey(), sharedAvRoute.getRoboTaxiMenu()));
+                        }
                     }
                 }
             }
