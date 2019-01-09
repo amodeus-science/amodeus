@@ -56,10 +56,10 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
  * supersedes {@link AbstractDispatcher}. */
 public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
     // Registers for Simulation
-    private final Set<AVRequest> pendingRequests = new LinkedHashSet<>();
+    private final Set<AVRequest> pendingRequests = new LinkedHashSet<>(); /** contains all Requests which are not picked Up Yet */
     private final Map<Double, Map<RoboTaxi, AVRequest>> dropOffTimes = new HashMap<>();
     // TODO Shared might be done with robotaxis only?
-    private final RequestRegister requestRegister = new RequestRegister();
+    private final RequestRegister requestRegister = new RequestRegister(); /** contains all Requests which are assigned to a RoboTaxi */
 
     // Registers for Simulation Objects
     private final Set<AVRequest> periodPickedUpRequests = new HashSet<>();
@@ -113,6 +113,11 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
         return pendingRequests.stream() //
                 .filter(r -> !requestRegister.contains(r)) //
                 .collect(Collectors.toList());
+    }
+
+    /** @return Map of AVRequests which have an assigned Robotaxi but are not Picked up yet. The value is the corresponding RoboTaxi */
+    protected final Map<AVRequest, RoboTaxi> getCurrentPickupAssignements() {
+        return requestRegister.getPickupRegister(pendingRequests);
     }
 
     /** Example call: getRoboTaxiSubset(AVStatus.STAY, AVStatus.DRIVEWITHCUSTOMER)
