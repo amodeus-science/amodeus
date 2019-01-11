@@ -38,6 +38,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
                     /** reassignment is prevented when the new taxi is not closer in terms of network distance */
                     if (distNew >= distOld) {
                         assgnmt.remove(newTaxi);
+                        /** ensure that old assignment is still not divertable */
+                        assgnmt.put(prvTaxi, entry.getValue());
                     }
                 }
             }
