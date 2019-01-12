@@ -56,10 +56,12 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
  * supersedes {@link AbstractDispatcher}. */
 public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
     // Registers for Simulation
-    private final Set<AVRequest> pendingRequests = new LinkedHashSet<>(); /** contains all Requests which are not picked Up Yet */
+    private final Set<AVRequest> pendingRequests = new LinkedHashSet<>();
+    /** contains all Requests which are not picked Up Yet */
     private final Map<Double, Map<RoboTaxi, AVRequest>> dropOffTimes = new HashMap<>();
     // TODO Shared might be done with robotaxis only?
-    private final RequestRegister requestRegister = new RequestRegister(); /** contains all Requests which are assigned to a RoboTaxi */
+    private final RequestRegister requestRegister = new RequestRegister();
+    /** contains all Requests which are assigned to a RoboTaxi */
 
     // Registers for Simulation Objects
     private final Set<AVRequest> periodPickedUpRequests = new HashSet<>();
