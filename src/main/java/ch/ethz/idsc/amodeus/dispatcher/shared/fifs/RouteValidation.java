@@ -72,19 +72,20 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     private static Map<AVRequest, Double> getDriveTimes(SharedAvRoute route, RequestHandler requestMaintainer) {
         // Preparation
         Map<AVRequest, Double> thisPickupTimes = new HashMap<>();
-        route.getRoute().stream().filter(srp -> srp.getMealType().equals(SharedMealType.PICKUP)).forEach(srp -> thisPickupTimes.put(srp.getAvRequest(), srp.getArrivalTime()));
+        route.getRoute().stream() //
+                .filter(srp -> srp.getMealType().equals(SharedMealType.PICKUP)) //
+                .forEach(srp -> thisPickupTimes.put(srp.getAvRequest(), srp.getArrivalTime()));
         //
         Map<AVRequest, Double> driveTimes = new HashMap<>();
-        for (SharedRoutePoint sharedRoutePoint : route.getRoute()) {
-            if (sharedRoutePoint.getMealType().equals(SharedMealType.DROPOFF)) {
+        for (SharedRoutePoint sharedRoutePoint : route.getRoute())
+            if (sharedRoutePoint.getMealType().equals(SharedMealType.DROPOFF))
                 if (thisPickupTimes.containsKey(sharedRoutePoint.getAvRequest())) {
                     // TODO does it include the dropoff or not?
                     driveTimes.put(sharedRoutePoint.getAvRequest(), sharedRoutePoint.getEndTime() - thisPickupTimes.get(sharedRoutePoint.getAvRequest()));
                 } else {
                     driveTimes.put(sharedRoutePoint.getAvRequest(), sharedRoutePoint.getEndTime() - requestMaintainer.getPickupTime(sharedRoutePoint.getAvRequest()));
                 }
-            }
-        }
+
         return driveTimes;
     }
 
@@ -125,7 +126,11 @@ import ch.ethz.matsim.av.passenger.AVRequest;
             }
             oldRoutes.put(roboTaxi, SharedAvRoute.of(roboTaxi.getUnmodifiableViewOfCourses(), roboTaxi.getDivertableLocation(), now, pickupDuration, dropoffDuration, timeDb));
         }
-        return getFastestValidEntry(avRouteHandler, avRequest, oldRoutes, now, requestMaintainer);
+        Optional<Entry<RoboTaxi, List<SharedCourse>>> rt = getFastestValidEntry(avRouteHandler, avRequest, oldRoutes, now, requestMaintainer);
+        if (rt.isPresent()) {
+            GlobalAssert.that(SharedCourseListUtils.checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(rt.get().getValue(), rt.get().getKey().getCapacity()));
+        }
+        return rt;
     }
 
     private Optional<Entry<RoboTaxi, List<SharedCourse>>> getFastestValidEntry(AvRouteHandler avRouteHandler, AVRequest avRequest, Map<RoboTaxi, SharedAvRoute> oldRoutes,
@@ -135,17 +140,17 @@ import ch.ethz.matsim.av.passenger.AVRequest;
             GlobalAssert.that(!avRouteHandler.isEmpty());
             double nextValue = avRouteHandler.getNextvalue();
             Map<RoboTaxi, Set<SharedAvRoute>> map = avRouteHandler.getCopyOfNext();
-            for (Entry<RoboTaxi, Set<SharedAvRoute>> entry : map.entrySet()) {
-                for (SharedAvRoute sharedAvRoute : entry.getValue()) {
-                    if (isValidRoute(sharedAvRoute, oldRoutes.get(entry.getKey()), requestMaintainer.getRequestWrap(avRequest), now, requestMaintainer)) {
-                        return Optional.of(new SimpleEntry<>(entry.getKey(), sharedAvRoute.getRoboTaxiMenu()));
-                    }
-                }
-            }
+            for (Entry<RoboTaxi, Set<SharedAvRoute>> entry : map.entrySet())
+                for (SharedAvRoute sharedAvRoute : entry.getValue())
+                    if (isValidRoute(sharedAvRoute, oldRoutes.get(entry.getKey()), requestMaintainer.getRequestWrap(avRequest), now, requestMaintainer))
+                        if (SharedCourseListUtils.checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(sharedAvRoute.getRoboTaxiMenu(), entry.getKey().getCapacity())) {
+                            return Optional.of(new SimpleEntry<>(entry.getKey(), sharedAvRoute.getRoboTaxiMenu()));
+                        }
+
             avRouteHandler.remove(nextValue);
             GlobalAssert.that(!avRouteHandler.contains(nextValue));
         }
-        return Optional.ofNullable(null);
+        return Optional.empty();
     }
 
     boolean menuFulfillsConstraints( //
