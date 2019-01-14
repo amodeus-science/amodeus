@@ -113,7 +113,7 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
         for (Tensor tensor : getSharedOthersDistribution()) {
             sharedRateString += String.valueOf(tensor.Get().number().intValue()) + " ";
         }
-        totalValues.put(TtlValIdent.SHAREDREQUESTSNUMBERS, sharedRateString);
+        totalValues.put(TtlValIdent.REQUESTSSHAREDNUMBERS, sharedRateString);
         return totalValues;
     }
 }

@@ -26,8 +26,10 @@ import ch.ethz.idsc.tensor.red.VectorAngle;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 public class BeamExtensionForSharing {
+    // TODO code/api style is bad: previouslyNotWithCustomerTaxis
     private Collection<RoboTaxi> previouslyNotWithCustomerTaxis = new HashSet<>();
-    Map<AVRequest, RoboTaxi> addedAvRequests = new HashMap<>();
+    // TODO code/api style is bad: addedAvRequests
+    final Map<AVRequest, RoboTaxi> addedAvRequests = new HashMap<>();
     private Double phiMax;
     private double rMax;
 
@@ -36,6 +38,12 @@ public class BeamExtensionForSharing {
         this.rMax = rMax;
     }
 
+    /** This is the fast way of assigning potential sharing possibilities. It
+     * 1. finds potential Assignements
+     * 2. assignes them directly to the robotaxis
+     * 3. reorders the menu of the RoboTaxis
+     * 
+     * @return the newly added Requests */
     public Map<AVRequest, RoboTaxi> findAssignementAndExecute(Collection<RoboTaxi> roboTaxis, Collection<AVRequest> openRideSharingRequests, SharedUniversalDispatcher sud) {
         getSharingAssignements(roboTaxis, openRideSharingRequests);
         assignTo(sud);
@@ -43,12 +51,12 @@ public class BeamExtensionForSharing {
         return addedAvRequests;
     }
 
-    /** This function finds potential assignements for ride sharing. It compares which Robotaxis changed their status to Drive with customer
-     * compared to the last call of this funciton. This are Taxis which did just pick up their first customer. For all these taxis it
+    /** This function finds potential assignments for ride sharing. It compares which RoboTaxis changed their status to Drive with customer
+     * compared to the last call of this function. This are Taxis which did just pick up their first customer. For all these taxis it
      * is then checked if one or multiple of the given avRequests are within radius rMax and have a similar direction than the current one.
      * This is checked with the maximum angle between the two request.
      * 
-     * @param allRoboTaxis the whole fleet of Robotaxis
+     * @param allRoboTaxis the whole fleet of RoboTaxis
      * @param avRequests all the requests which are still not picked up and should be considered for ride sharing
      * @return */
 
@@ -111,7 +119,9 @@ public class BeamExtensionForSharing {
         }
         Optional<Scalar> angle = directionAngle(roboTaxi, request2);
         /** check if the direction of the Request is similar */
-        return (angle.isPresent()) ? angle.get().number().doubleValue() < phiMax: false;
+        return angle.isPresent() //
+                ? angle.get().number().doubleValue() < phiMax
+                : false;
     }
 
     /** As we plan to make the order of pickups and dropoffs such that first all pickups then all dropoffs it makes sense that not dropoffs are planed than capacity
@@ -127,7 +137,7 @@ public class BeamExtensionForSharing {
         return phiof(roboTaxi.getDivertableLocation().getCoord(), getDirectionOfTrip(roboTaxi), request2.getFromLink().getCoord(), request2.getToLink().getCoord());
     }
 
-    private static  Optional<Scalar> phiof(Coord po, Coord pd, Coord ro, Coord rd) {
+    private static Optional<Scalar> phiof(Coord po, Coord pd, Coord ro, Coord rd) {
         Tensor a = Tensors.vector(po.getX(), po.getY()).subtract(Tensors.vector(pd.getX(), pd.getY()));
         Tensor b = Tensors.vector(ro.getX(), ro.getY()).subtract(Tensors.vector(rd.getX(), rd.getY()));
         return VectorAngle.of(a, b);
