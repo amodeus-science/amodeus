@@ -1,8 +1,6 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
-import org.matsim.contrib.dvrp.util.LinkTimePair;
-
 import junit.framework.TestCase;
 
 public class RoboTaxiStatusTest extends TestCase {
