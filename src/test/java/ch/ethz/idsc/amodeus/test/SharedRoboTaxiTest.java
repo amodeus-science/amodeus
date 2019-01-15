@@ -189,23 +189,23 @@ public class SharedRoboTaxiTest {
         assertTrue(Scalars.lessEquals(Quantity.of(0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1)));
 
         /** presence of plot files */
-        assertTrue((new File("output/001/data/binnedWaitingTimes.png")).exists());
-        assertTrue((new File("output/001/data/distanceDistribution.png")).exists());
-        assertTrue((new File("output/001/data/occAndDistRatios.png")).exists());
-        assertTrue((new File("output/001/data/stackedDistance.png")).exists());
-        assertTrue((new File("output/001/data/statusDistribution.png")).exists());
-        assertTrue((new File("output/001/data", ScenarioParametersExport.FILENAME)).exists());
-        assertTrue((new File("output/001/data/WaitingTimes")).isDirectory());
-        assertTrue((new File("output/001/data/WaitingTimes/WaitingTimes.mathematica")).exists());
-        assertTrue((new File("output/001/data/StatusDistribution")).isDirectory());
-        assertTrue((new File("output/001/data/StatusDistribution/StatusDistribution.mathematica")).exists());
-        assertTrue((new File("output/001/data/DistancesOverDay")).isDirectory());
-        assertTrue((new File("output/001/data/DistancesOverDay/DistancesOverDay.mathematica")).exists());
-        assertTrue((new File("output/001/data/DistanceRatios")).isDirectory());
-        assertTrue((new File("output/001/data/DistanceRatios/DistanceRatios.mathematica")).exists());
-        assertTrue((new File("output/001/report/report.html")).exists());
-        assertTrue((new File("output/001/report/av.xml")).exists());
-        assertTrue((new File("output/001/report/config.xml")).exists());
+        assertTrue(new File("output/001/data/binnedWaitingTimes.png").exists());
+        assertTrue(new File("output/001/data/distanceDistribution.png").exists());
+        assertTrue(new File("output/001/data/occAndDistRatios.png").exists());
+        assertTrue(new File("output/001/data/stackedDistance.png").exists());
+        assertTrue(new File("output/001/data/statusDistribution.png").exists());
+        assertTrue(new File("output/001/data", ScenarioParametersExport.FILENAME).exists());
+        assertTrue(new File("output/001/data/WaitingTimes").isDirectory());
+        assertTrue(new File("output/001/data/WaitingTimes/WaitingTimes.mathematica").exists());
+        assertTrue(new File("output/001/data/StatusDistribution").isDirectory());
+        assertTrue(new File("output/001/data/StatusDistribution/StatusDistribution.mathematica").exists());
+        assertTrue(new File("output/001/data/DistancesOverDay").isDirectory());
+        assertTrue(new File("output/001/data/DistancesOverDay/DistancesOverDay.mathematica").exists());
+        assertTrue(new File("output/001/data/DistanceRatios").isDirectory());
+        assertTrue(new File("output/001/data/DistanceRatios/DistanceRatios.mathematica").exists());
+        assertTrue(new File("output/001/report/report.html").exists());
+        assertTrue(new File("output/001/report/av.xml").exists());
+        assertTrue(new File("output/001/report/config.xml").exists());
     }
 
     @AfterClass

@@ -1,5 +1,5 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.vehiclesGenerator;
+package ch.ethz.idsc.amodeus.matsim.mod;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -18,7 +18,6 @@ import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.scenario.ScenarioUtils;
 
-import ch.ethz.idsc.amodeus.matsim.mod.VehicleToVSGenerator;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;
@@ -36,7 +35,7 @@ import ch.ethz.matsim.av.config.AVGeneratorConfig;
 import ch.ethz.matsim.av.config.AVOperatorConfig;
 import ch.ethz.matsim.av.framework.AVConfigGroup;
 
-public class VehicleToVSGeneratorTester {
+public class VehicleToVSGeneratorTest {
     private static final int TRIALS = 1000;
     // ---
     private static VirtualNetwork<Link> virtualNetwork;
