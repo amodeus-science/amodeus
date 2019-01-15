@@ -31,9 +31,9 @@ public class SharedCourse {
         return new SharedCourse(STANDARD_REDIRECT_AVREQUEST, link, courseId, SharedMealType.REDIRECT);
     }
     
-    public static SharedCourse waitingCourse(Link link, String id) {
-        return new SharedCourse(id, link, SharedMealType.WAITFORCUSTOMER);
-    }
+//    public static SharedCourse waitingCourse(Link link, String id) {
+//        return new SharedCourse(id, link, SharedMealType.WAITFORCUSTOMER);
+//    }
 
     // ---
     /** class implementation */

@@ -316,23 +316,23 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
     }
     
     /** ensures completed redirect tasks are removed from menu */
-    @Override
-    void executeWaiting() {
-        for (RoboTaxi roboTaxi : getRoboTaxis()) {
-            SharedCourse currentCourse = roboTaxi.getMenu().getStarterCourse();
-            /** search redirect courses */
-            if (Objects.nonNull(currentCourse)) {
-                if (currentCourse.getMealType().equals(SharedMealType.WAITFORCUSTOMER)) {
-                    /** search if arrived at redirect destination */
-                    if (currentCourse.getLink().equals(roboTaxi.getDivertableLocation())) {
-                        if(getTimeNow() > roboTaxi.getSchedule().getCurrentTask().getBeginTime() + 600 ) {
-                            roboTaxi.getMenu().removeAVCourse(0);
-                        }
-                    }
-                }
-            }
-        }
-    }
+//    @Override
+//    void executeWaiting() {
+//        for (RoboTaxi roboTaxi : getRoboTaxis()) {
+//            SharedCourse currentCourse = roboTaxi.getMenu().getStarterCourse();
+//            /** search redirect courses */
+//            if (Objects.nonNull(currentCourse)) {
+//                if (currentCourse.getMealType().equals(SharedMealType.WAITFORCUSTOMER)) {
+//                    /** search if arrived at redirect destination */
+//                    if (currentCourse.getLink().equals(roboTaxi.getDivertableLocation())) {
+//                        if(getTimeNow() > roboTaxi.getSchedule().getCurrentTask().getBeginTime() + 600 ) {
+//                            roboTaxi.getMenu().removeAVCourse(0);
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     /** called when a new request enters the system, adds request to
      * {@link pendingRequests}, needs to be public because called from other not
