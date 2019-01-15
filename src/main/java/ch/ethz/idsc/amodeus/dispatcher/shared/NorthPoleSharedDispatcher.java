@@ -18,6 +18,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiUtils;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedRebalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
@@ -58,7 +59,7 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
         this.equatorLinks = getEquator(network);
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
-        rebalancePeriod = safeConfig.getInteger("rebalancePeriod", 1800);
+        rebalancePeriod = safeConfig.getInteger("rebalancingPeriod", 1800);
         links = new ArrayList<>(network.getLinks().values());
         Collections.shuffle(links, randGen);
     }
@@ -84,30 +85,29 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
                     /** add pickup for request 2 and move to first location */
                     addSharedRoboTaxiPickup(sharedRoboTaxi, secondRequest);
                     SharedCourse sharedAVCourse = SharedCourse.pickupCourse(secondRequest);
-                    sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse);
+                    sharedRoboTaxi.moveAVCourseToPrev(sharedAVCourse);
 
                     /** add pickup for request 3 and move to first location */
                     addSharedRoboTaxiPickup(sharedRoboTaxi, thirdRequest);
                     SharedCourse sharedAVCourse3 = SharedCourse.pickupCourse(thirdRequest);
-                    sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse3);
-                    sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse3);
+                    sharedRoboTaxi.moveAVCourseToPrev(sharedAVCourse3);
+                    sharedRoboTaxi.moveAVCourseToPrev(sharedAVCourse3);
 
-                    /** add pickup for request 4 and move to first location */
+                    /** add pickup for request 4 and reorder the menu based on a list of Shared Courses */
+                    List<SharedCourse> courses = SharedCourseListUtils.copy(sharedRoboTaxi.getUnmodifiableViewOfCourses());
+                    courses.add(3, SharedCourse.pickupCourse(fourthRequest));
+                    courses.add(SharedCourse.dropoffCourse(fourthRequest));
                     addSharedRoboTaxiPickup(sharedRoboTaxi, fourthRequest);
-                    SharedCourse sharedAVCourse4 = SharedCourse.pickupCourse(fourthRequest);
-                    sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse4);
-                    sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse4);
-                    sharedRoboTaxi.getMenu().moveAVCourseToPrev(sharedAVCourse4);
+                    sharedRoboTaxi.updateMenu(courses);
 
                     /** add a redirect task (to the north pole) and move to prev */
                     Link redirectLink = cityNorthPole;
-                    SharedCourse redirectCourse = SharedCourse.redirectCourse(redirectLink, //
-                            Double.toString(now) + sharedRoboTaxi.getId().toString());
+                    SharedCourse redirectCourse = SharedCourse.redirectCourse(redirectLink, Double.toString(now) + sharedRoboTaxi.getId().toString());
                     addSharedRoboTaxiRedirect(sharedRoboTaxi, redirectCourse);
-                    sharedRoboTaxi.getMenu().moveAVCourseToPrev(redirectCourse);
+                    sharedRoboTaxi.moveAVCourseToPrev(redirectCourse);
 
                     /** check consistency and end */
-                    sharedRoboTaxi.checkMenuConsistency();
+                    GlobalAssert.that(RoboTaxiUtils.checkMenuConsistency(sharedRoboTaxi));
                 } else {
                     break;
                 }

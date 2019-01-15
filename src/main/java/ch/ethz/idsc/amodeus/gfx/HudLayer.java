@@ -13,6 +13,10 @@ public class HudLayer extends ViewerLayer {
 
     public boolean show = true;
 
+    public HudLayer(AmodeusComponent amodeusComponent) {
+        super(amodeusComponent);
+    }
+
     @Override
     protected void paint(Graphics2D graphics, SimulationObject ref) {
         // ---
@@ -33,6 +37,16 @@ public class HudLayer extends ViewerLayer {
         spinnerLabel.getLabelComponent().setToolTipText("font size of info");
         rowPanel.add(spinnerLabel.getLabelComponent());
 
+    }
+
+    @Override
+    public void updateSettings(ViewerSettings settings) {
+        settings.infoFontSize = amodeusComponent.getFontSize();
+    }
+
+    @Override
+    public void loadSettings(ViewerSettings settings) {
+        amodeusComponent.setFontSize(settings.infoFontSize);
     }
 
 }

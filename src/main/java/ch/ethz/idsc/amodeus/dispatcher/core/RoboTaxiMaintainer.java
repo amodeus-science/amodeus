@@ -6,27 +6,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.matsim.api.core.v01.events.Event;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.schedule.Schedule;
-import org.matsim.contrib.dvrp.tracker.TaskTracker;
-import org.matsim.contrib.dvrp.util.LinkTimePair;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
-import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDriveTaskTracker;
 import ch.ethz.idsc.amodeus.net.StorageUtils;
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
-import ch.ethz.matsim.av.dispatcher.AVVehicleAssignmentEvent;
-import ch.ethz.matsim.av.generator.AVGenerator;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
-import ch.ethz.matsim.av.schedule.AVDriveTask;
-import ch.ethz.matsim.av.schedule.AVDropoffTask;
-import ch.ethz.matsim.av.schedule.AVPickupTask;
-import ch.ethz.matsim.av.schedule.AVStayTask;
 
 /** The purpose of RoboTaxiMaintainer is to register {@link AVVehicle} and provide the collection of
  * available vehicles to derived class.
@@ -64,73 +55,37 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         return Collections.unmodifiableList(roboTaxis);
     }
 
-    /** updates the divertable locations, i.e., locations from which a {@link RoboTaxi} can deviate
-     * its path according to the current Tasks in the MATSim engine */
-    private void updateDivertableLocations() {
-        for (RoboTaxi robotaxi : getRoboTaxis()) {
-            GlobalAssert.that(robotaxi.isWithoutDirective());
-            Schedule schedule = robotaxi.getSchedule();
-            new RoboTaxiTaskAdapter(schedule.getCurrentTask()) {
-                @Override
-                public void handle(AVDriveTask avDriveTask) {
-                    // for empty cars the drive task is second to last task
-                    if (ScheduleUtils.isNextToLastTask(schedule, avDriveTask)) {
-                        TaskTracker taskTracker = avDriveTask.getTaskTracker();
-                        AmodeusDriveTaskTracker onlineDriveTaskTracker = (AmodeusDriveTaskTracker) taskTracker;
-                        LinkTimePair linkTimePair = onlineDriveTaskTracker.getSafeDiversionPoint();
-                        robotaxi.setDivertableLinkTime(linkTimePair); // contains null check
-                        robotaxi.setCurrentDriveDestination(avDriveTask.getPath().getToLink());
-                        GlobalAssert.that(!robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
-                    } else
-                        GlobalAssert.that(robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
-                }
+    protected abstract void updateDivertableLocations();
 
-                @Override
-                public void handle(AVPickupTask avPickupTask) {
-                    GlobalAssert.that(robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
-                }
-
-                @Override
-                public void handle(AVDropoffTask avDropOffTask) {
-                    GlobalAssert.that(robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
-                }
-
-                @Override
-                public void handle(AVStayTask avStayTask) {
-                    // for empty vehicles the current task has to be the last task
-                    if (ScheduleUtils.isLastTask(schedule, avStayTask) && !isInPickupRegister(robotaxi)) {
-                        GlobalAssert.that(avStayTask.getBeginTime() <= getTimeNow());
-                        GlobalAssert.that(avStayTask.getLink() != null);
-                        robotaxi.setDivertableLinkTime(new LinkTimePair(avStayTask.getLink(), getTimeNow()));
-                        robotaxi.setCurrentDriveDestination(avStayTask.getLink());
-                        robotaxi.setStatus(RoboTaxiStatus.STAY);
-                    }
-                }
-            };
-        }
+    public final void addRoboTaxi(RoboTaxi roboTaxi, Event event) {
+        roboTaxis.add(roboTaxi);
+        eventsManager.processEvent(event);
     }
 
-    /** adding a vehicle during setup of simulation, handeled by {@link AVGenerator} */
     @Override
-    public final void addVehicle(AVVehicle vehicle) {
-        roboTaxis.add(new RoboTaxi(vehicle, new LinkTimePair(vehicle.getStartLink(), 0.0), vehicle.getStartLink(), RoboTaxiUsageType.SINGLEUSED));
-        eventsManager.processEvent(new AVVehicleAssignmentEvent(vehicle, 0));
-    }
+    public abstract void addVehicle(AVVehicle vehicle);
 
     /** functions called at every MATSim timestep, dispatching action happens in <b> redispatch <b> */
     @Override
     public final void onNextTimestep(double now) {
+
         private_now = now; // <- time available to derived class via getTimeNow()
         updateInfoLine();
         notifySimulationSubscribers(Math.round(now), storageUtils);
         consistencyCheck();
         beforeStepTasks(); // <- if problems with RoboTaxi Status to Completed consider to set "simEndtimeInterpretation" to "null"
-        executePickups();
+        // The Dropoff is before the pickup because:
+        // a) A robotaxi which picks up a customer should not dropoff one at the same time step
+        // b) but in the shared case the internal dropoff should be able to finish a dropoff which enables the pickups to be executed
         executeDropoffs();
+        executePickups();
+        executeRedirects();
         redispatch(now);
+        redispatchInternal(now);
         afterStepTasks();
         executeDirectives();
         consistencyCheck();
+
     }
 
     /** the info line is displayed in the console at every dispatching timestep and in the
@@ -198,7 +153,9 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
     /* package */ abstract void notifySimulationSubscribers(long round_now, StorageUtils storageUtils);
 
-    /* package */ abstract boolean isInPickupRegister(RoboTaxi robotaxi);
+    /* package */ abstract void redispatchInternal(double now);
+
+    /* package */ abstract void executeRedirects();
 
     @Override
     public final void onNextTaskStarted(AVVehicle task) {

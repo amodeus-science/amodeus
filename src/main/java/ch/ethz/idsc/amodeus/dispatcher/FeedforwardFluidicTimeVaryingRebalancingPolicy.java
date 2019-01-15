@@ -25,20 +25,20 @@ import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.FeasibleRebalanceCreator;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
+import ch.ethz.idsc.amodeus.lp.LPCreator;
 import ch.ethz.idsc.amodeus.lp.LPTimeVariant;
 import ch.ethz.idsc.amodeus.matsim.mod.VehicleToVSGenerator;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.amodeus.util.math.TotalAll;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualLink;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNode;
 import ch.ethz.idsc.tensor.RealScalar;
-import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
-import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.Floor;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.config.AVGeneratorConfig;
@@ -93,8 +93,13 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
         this.bipartiteMatchingEngine = new BipartiteMatchingUtils(network);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
-
-        GlobalAssert.that(travelData.getLPName().equals(LPTimeVariant.class.getSimpleName()));
+        if (!travelData.getLPName().equals(LPTimeVariant.class.getSimpleName())) {
+            System.err.println("Running the " + this.getClass().getSimpleName() + " requires precomputed data that must be\n"
+                    + "computed in the ScenarioPreparer. Currently the file LPOptions.properties is set to compute the feedforward\n" + "rebalcing data with: ");
+            System.err.println(travelData.getLPName());
+            System.err.println("The correct setting in LPOptions.properties to run this dispatcher is:  " + LPCreator.TIMEVARIANT.name());
+            GlobalAssert.that(false);
+        }
         GlobalAssert.that(generatorConfig.getStrategyName().equals(VehicleToVSGenerator.class.getSimpleName()));
     }
 
@@ -122,7 +127,8 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
             /** ensure that not more vehicles are sent away than available */
             Map<VirtualNode<Link>, List<RoboTaxi>> availableVehicles = getVirtualNodeDivertableNotRebalancingRoboTaxis();
             Tensor feasibleRebalanceCount = FeasibleRebalanceCreator.returnFeasibleRebalance(rebalanceCountInteger.unmodifiable(), availableVehicles);
-            total_rebalanceCount += (Integer) ((Scalar) Total.of(Tensor.of(feasibleRebalanceCount.flatten(-1)))).number();
+
+            total_rebalanceCount += (Integer) TotalAll.of(feasibleRebalanceCount).number();
 
             /** generate routing instructions for rebalancing vehicles */
             Map<VirtualNode<Link>, List<Link>> destinationLinks = virtualNetwork.createVNodeTypeMap();

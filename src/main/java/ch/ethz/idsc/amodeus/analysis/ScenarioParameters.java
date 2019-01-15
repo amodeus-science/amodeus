@@ -26,6 +26,7 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkGet;
+import ch.ethz.idsc.tensor.io.UserName;
 import ch.ethz.matsim.av.config.AVConfig;
 import ch.ethz.matsim.av.config.AVConfigReader;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
@@ -37,6 +38,10 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
     public static final String UNDEFINED_STRING = "";
     public static final DateFormat DATEFORMAT = new SimpleDateFormat("yyyy/MM/dd - HH:mm:ss");
     // ---
+    public static final String DISPATCHPERIODSTRING = "dispatchPeriod";
+    public static final String REBALANCINGPERIODSTRING = "rebalancingPeriod";
+    public static final String DISTANCEHEURISTICSTRING = "distanceHeuristics";
+
     public final int populationSize;
     public final int iterations;
     public final int redispatchPeriod;
@@ -48,8 +53,8 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
     public final String virtualNetworkCreator;
     public final String vehicleGenerator;
     public final String networkName;
-    public final String user;
-    public final String date;
+    public final String user = UserName.get();
+    public final String date = DATEFORMAT.format(new Date());
 
     public ScenarioParameters() {
         File workingDirectory = null;
@@ -63,9 +68,6 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
         File configFile = new File(workingDirectory, scenOptions.getSimulationConfigName());
         Config config = ConfigUtils.loadConfig(configFile.toString());
 
-        user = System.getProperty("user.name");
-        date = DATEFORMAT.format(new Date());
-
         File basePath = new File(config.getContext().getPath()).getParentFile();
         File configPath = new File(basePath, "av.xml");
         AVConfig avConfig = new AVConfig();
@@ -76,13 +78,13 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
         SafeConfig safeConfig = SafeConfig.wrap(avdispatcherconfig);
         AVGeneratorConfig avgeneratorconfig = oc.getGeneratorConfig();
 
-        redispatchPeriod = safeConfig.getInteger("dispatchPeriod", UNDEFINED_INT);
-        rebalancingPeriod = safeConfig.getInteger("rebalancingPeriod", UNDEFINED_INT);
+        redispatchPeriod = safeConfig.getInteger(DISPATCHPERIODSTRING, UNDEFINED_INT);
+        rebalancingPeriod = safeConfig.getInteger(REBALANCINGPERIODSTRING, UNDEFINED_INT);
         dispatcher = avdispatcherconfig.getStrategyName();
         vehicleGenerator = avgeneratorconfig.getStrategyName();
         Scenario scenario = ScenarioUtils.loadScenario(config);
 
-        distanceHeuristic = safeConfig.getString("distanceHeuristics", UNDEFINED_STRING);
+        distanceHeuristic = safeConfig.getString(DISTANCEHEURISTICSTRING, UNDEFINED_STRING);
         populationSize = scenario.getPopulation().getPersons().values().size();
         virtualNetworkCreator = scenOptions.getString(ScenarioOptionsBase.VIRTUALNETWORKCREATORIDENTIFIER);
 

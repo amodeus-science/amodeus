@@ -32,13 +32,14 @@ public class RequestsLayer extends ViewerLayer {
     public final AmodeusHeatMap requestDestMap = new AmodeusHeatMapImpl(ColorSchemes.GreenContour);
 
     public volatile boolean maxWaitTimeInHud = true;
-    public volatile boolean drawNumber = true;
-    public volatile boolean drawRequestDestinations = false;
+    public volatile boolean drawNumber;
+    public volatile boolean drawRequestDestinations;
 
     private double maxWaitTime;
 
-    public RequestsLayer() {
-        requestDestMap.setShow(false); // default: don't show distrib of request dest
+    public RequestsLayer(AmodeusComponent amodeusComponent) {
+        super(amodeusComponent);
+        adjustHeatMaps(amodeusComponent.defaultConfig.settings);
     }
 
     @Override
@@ -207,6 +208,34 @@ public class RequestsLayer extends ViewerLayer {
     @Override
     public List<AmodeusHeatMap> getHeatmaps() {
         return Arrays.asList(requestHeatMap, requestDestMap);
+    }
+
+    @Override
+    public void updateSettings(ViewerSettings settings) {
+        settings.drawNumber = drawNumber;
+        settings.drawRequestDestinations = drawRequestDestinations;
+        settings.sourceShow = requestHeatMap.getShow();
+        settings.sourceColorSchemes = requestHeatMap.getColorSchemes();
+        settings.sinkShow = requestDestMap.getShow();
+        settings.sinkColorSchemes = requestDestMap.getColorSchemes();
+    }
+
+    @Override
+    public void loadSettings(ViewerSettings settings) {
+        drawNumber = settings.drawNumber;
+        drawRequestDestinations = settings.drawRequestDestinations;
+        try {
+            adjustHeatMaps(settings);
+        } catch (NullPointerException e) {
+            // ---
+        }
+    }
+
+    private void adjustHeatMaps(ViewerSettings settings) {
+        requestHeatMap.setShow(settings.sourceShow);
+        requestHeatMap.setColorSchemes(settings.sourceColorSchemes);
+        requestDestMap.setShow(settings.sinkShow);
+        requestDestMap.setColorSchemes(settings.sinkColorSchemes);
     }
 
 }
