@@ -45,7 +45,6 @@ public class LPTimeVariantTest {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        System.out.println(LPTimeVariant.class.getName());
         // copy scenario data into main directory
         File scenarioDirectory = new File(TestUtils.getSuperFolder("amodeus"), "resources/testScenario");
         File workingDirectory = MultiFileTools.getWorkingDirectory();
