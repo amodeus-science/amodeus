@@ -53,7 +53,7 @@ public class SharedRoboTaxiTest {
         // copy scenario data into main directory
         File scenarioDirectory = new File(TestUtils.getSuperFolder("amodeus"), "resources/testScenario");
         File workingDirectory = MultiFileTools.getWorkingDirectory();
-        GlobalAssert.that(workingDirectory.exists());
+        GlobalAssert.that(workingDirectory.isDirectory());
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
 
         // run scenario preparer

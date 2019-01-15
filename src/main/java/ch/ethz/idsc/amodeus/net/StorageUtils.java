@@ -102,7 +102,7 @@ public class StorageUtils {
         long floor = (simulationObject.now / 1000) * 1000;
         File folder = new File(iter, String.format("%07d", floor));
         folder.mkdir();
-        GlobalAssert.that(folder.exists());
+        GlobalAssert.that(folder.isDirectory());
         return new File(folder, String.format("%07d.bin", simulationObject.now));
     }
 
