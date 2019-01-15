@@ -369,7 +369,7 @@ public class RoboTaxi {
     /** This function deletes all the current Courses from the menu.
      * 
      * @return all the courses which have been removed */
-    /* package */ List<SharedCourse> cleanAndAbandonMenu() {
+    /* package */ public List<SharedCourse> cleanAndAbandonMenu() {
         GlobalAssert.that(RoboTaxiUtils.getNumberOnBoardRequests(this) == 0);
         GlobalAssert.that(isDivertable());
         List<SharedCourse> oldMenu = SharedCourseListUtils.copy(menu.getRoboTaxiMenu());
