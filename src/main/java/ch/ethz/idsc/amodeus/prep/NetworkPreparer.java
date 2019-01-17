@@ -35,58 +35,57 @@ public enum NetworkPreparer {
         Network modifiedNetwork = network;
 
         /** put any network modifications, e.g., cutting, here */
-        List<Coord> coordList = new ArrayList<>();
-        for(Node node: modifiedNetwork.getNodes().values()) {
-            coordList.add(node.getCoord());
-        }
         
-        double xsum = 0;
-        double ysum = 0;
+        System.out.println("Reducing network: " + !scenOptions.isCompleteGraph());
         
-        for(Coord coord: coordList) {
-            xsum = coord.getX() + xsum;
-            ysum = coord.getY() + ysum;
-        }
-        
-        double xCoord = xsum / coordList.size();
-        double yCoord = ysum / coordList.size();
-
-        Coord coord = new Coord(xCoord, yCoord);
-        double distance = 6000;
-
-        Collection<Node> reducedNodes = NetworkUtils.getNearestNodes(modifiedNetwork, coord, distance);
-        
-        HashMap<Id<Node>, Node> nodeMap = new HashMap<Id<Node>, Node>();
-        
-        
-//        for(Node node: modifiedNetwork.getNodes().values()) {
-//            if(!reducedNodes.contains(node)) {
-//                modifiedNetwork.removeNode(node.getId());
-//                
-//            }
-//        }
-        
-        List<Node> deleteNodes = new ArrayList<>();
-        for(Node node: modifiedNetwork.getNodes().values()) {
-            if(!reducedNodes.contains(node)) {
-                 deleteNodes.add(node);      
+        if(!scenOptions.isCompleteGraph()) {
+            List<Coord> coordList = new ArrayList<>();
+            for(Node node: modifiedNetwork.getNodes().values()) {
+                coordList.add(node.getCoord());
             }
+            
+            double xsum = 0;
+            double ysum = 0;
+            
+            for(Coord coord: coordList) {
+                xsum = coord.getX() + xsum;
+                ysum = coord.getY() + ysum;
+            }
+            
+            double xCoord = xsum / coordList.size();
+            double yCoord = ysum / coordList.size();
+
+            Coord coord = new Coord(xCoord, yCoord);
+            double distance = 6000;
+
+            Collection<Node> reducedNodes = NetworkUtils.getNearestNodes(modifiedNetwork, coord, distance);
+            
+            List<Node> deleteNodes = new ArrayList<>();
+            for(Node node: modifiedNetwork.getNodes().values()) {
+                if(!reducedNodes.contains(node)) {
+                     deleteNodes.add(node);      
+                }
+            }
+            
+            for(Node node: deleteNodes) {
+                modifiedNetwork.removeNode(node.getId());
+            }
+            
+            Map<Id<Node>, Node> mapNode = new NetworkCleaner().searchBiggestCluster(modifiedNetwork);
+            
+            NetworkCleaner.reduceToBiggestCluster(modifiedNetwork,mapNode);
+            
+            System.out.println("Reduced network to: " + modifiedNetwork.getLinks().values().size());
         }
-        
-        for(Node node: deleteNodes) {
-            modifiedNetwork.removeNode(node.getId());
-        }
-        
-        Map<Id<Node>, Node> mapNode = new NetworkCleaner().searchBiggestCluster(modifiedNetwork);
-        
-        NetworkCleaner.reduceToBiggestCluster(modifiedNetwork,mapNode);
-        
+
         modifiedNetwork.setName(network.getName() + "_prepared");
         modifiedNetwork.setCapacityPeriod(network.getCapacityPeriod());
         modifiedNetwork.setEffectiveCellSize(network.getEffectiveCellSize());
         modifiedNetwork.setEffectiveLaneWidth(network.getEffectiveLaneWidth());
         
-        modifiedNetwork.getLinks().values().forEach(link -> link.setFreespeed(link.getFreespeed()*0.6));
+        System.out.println("Modify link free speed (times): " + scenOptions.getModifierLinkFreeSpeed());
+        
+        modifiedNetwork.getLinks().values().forEach(link -> link.setFreespeed(link.getFreespeed()*scenOptions.getModifierLinkFreeSpeed()));
                         
         final File fileExportGz = new File(scenOptions.getPreparedNetworkName() + ".xml.gz");
         final File fileExport = new File(scenOptions.getPreparedNetworkName() + ".xml");

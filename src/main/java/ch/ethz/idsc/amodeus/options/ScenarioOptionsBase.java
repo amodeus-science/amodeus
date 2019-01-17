@@ -28,6 +28,8 @@ public enum ScenarioOptionsBase {
     static final String POPULATIONUPDATEDNAMEIDENTIFIER = "PopulationUpdateName";
     static final String LOCATIONSPECIDENTIFIER = "LocationSpec";
     static final String SHAPEFILEIDENTIFIER = "shapeFile";
+    
+    static final String MODFYLINKFREESPEEDIDENTIFIER = "modifyLinkFreeSpeed";
 
     // ---
     public static final String PARKINGGENERATORIDENTIFIER = "parkingCapacityGenerator";
@@ -39,16 +41,23 @@ public enum ScenarioOptionsBase {
     public static final String WAITFORCLIENTSIDENTIFIER = "waitForClients";
     public static final String NUMVNODESIDENTIFIER = "numVirtualNodes";
     public static final String MAXPOPULATIONSIZEIDENTIFIER = "maxPopulationSize";
+    public static final String MAXNUMBERREQUESTSIDENTIFIER = "maxNumberRequets";
     public static final String DTTRAVELDATAIDENTIFIER = "dtTravelData";
     public static final String LPSOLVER = "LPSolver";
     public static final String LPWEIGHTQ = "LPWeightQ";
     public static final String LPWEIGHTR = "LPWeightR";
+    
+    public static final String MPCPLANNINGHORIZONIDENTIFIER = "planningHorizon";
+    public static final String MPCTIMESTEPIDENTIFIER = "timeStep";
+    public static final String MPCMILPFLAGIDENTIFIER = "milpFlag";
+    public static final String MPCASSISTANCEIDENTIFIER = "allowAssistance";
 
     public static Properties getDefault() {
         Properties properties = new Properties();
         properties.setProperty(FULLCONFIGIDENTIFIER, "av_config_full.xml");
         properties.setProperty(SIMUCONFIGIDENTIFIER, "av_config.xml");
         properties.setProperty(MAXPOPULATIONSIZEIDENTIFIER, "2000");
+        properties.setProperty(MAXNUMBERREQUESTSIDENTIFIER, "2000");
         properties.setProperty(NUMVNODESIDENTIFIER, "10");
         properties.setProperty(DTTRAVELDATAIDENTIFIER, "3600");
         properties.setProperty(COMPLETEGRAPHIDENTIFIER, "true");
@@ -65,6 +74,11 @@ public enum ScenarioOptionsBase {
         properties.setProperty(SHAPEFILEIDENTIFIER, "AbsoluteShapeFileName");
         properties.setProperty(PARKINGGENERATORIDENTIFIER, AVSpatialCapacityGenerators.NONE.name());
         properties.setProperty(PARKINGSPOTSTAGIDENTIFIER, "spatialAvCapacity");
+        properties.setProperty(MODFYLINKFREESPEEDIDENTIFIER, "1");
+        properties.setProperty(MPCPLANNINGHORIZONIDENTIFIER, "8");
+        properties.setProperty(MPCTIMESTEPIDENTIFIER, "10");
+        properties.setProperty(MPCMILPFLAGIDENTIFIER, "false");
+        properties.setProperty(MPCASSISTANCEIDENTIFIER, "true");
         return properties;
     }
 

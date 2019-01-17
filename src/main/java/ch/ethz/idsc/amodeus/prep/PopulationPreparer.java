@@ -12,6 +12,8 @@ import org.matsim.core.population.io.PopulationWriter;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.util.io.GZHandler;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.tensor.RationalScalar;
+import ch.ethz.idsc.tensor.RealScalar;
 
 public enum PopulationPreparer {
     ;
@@ -32,9 +34,11 @@ public enum PopulationPreparer {
         
         int endTime = (int) config.qsim().getEndTime();
         double minDistance = 1500;
+//        double minDistance = 0;
 
         TheApocalypse.reducesThe(population, network, endTime, minDistance).toNoMoreThan(scenOptions.getMaxPopulationSize()).people();
         TheApocalypse.reducesThe(population, network, endTime, minDistance).toNoMoreThan(scenOptions.getMaxPopulationSize(), seed);
+        TheRequestApocalypse.reducesThe(population).toNoMoreThan(RealScalar.of(scenOptions.getMaxNumberRequests()), seed).requests();
         System.out.println("Population after decimation:" + population.getPersons().values().size());
         GlobalAssert.that(0 < population.getPersons().size());
 

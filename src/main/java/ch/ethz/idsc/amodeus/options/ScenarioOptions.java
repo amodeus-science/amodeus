@@ -113,6 +113,54 @@ public class ScenarioOptions {
     public void setMaxPopulationSize(int maxNumberPeople) {
         properties.setProperty(ScenarioOptionsBase.MAXPOPULATIONSIZEIDENTIFIER, String.valueOf(maxNumberPeople));
     }
+    
+    public int getMaxNumberRequests() {
+        return getInt(ScenarioOptionsBase.MAXNUMBERREQUESTSIDENTIFIER);
+    }
+
+    public void setMaxNumberRequests(int maxNumberRequests) {
+        properties.setProperty(ScenarioOptionsBase.MAXNUMBERREQUESTSIDENTIFIER, String.valueOf(maxNumberRequests));
+    }
+    
+    public double getModifierLinkFreeSpeed() {
+        return getDouble(ScenarioOptionsBase.MODFYLINKFREESPEEDIDENTIFIER);
+    }
+
+    public void setModifierLinkFreeSpeed(double modifier) {
+        properties.setProperty(ScenarioOptionsBase.MODFYLINKFREESPEEDIDENTIFIER, String.valueOf(modifier));
+    }
+    
+    public int getMPCplanningHorizon() {
+        return getInt(ScenarioOptionsBase.MPCPLANNINGHORIZONIDENTIFIER);
+    }
+
+    public void setMPCplanningHorizon(int planningHorizon) {
+        properties.setProperty(ScenarioOptionsBase.MPCPLANNINGHORIZONIDENTIFIER, String.valueOf(planningHorizon));
+    }
+    
+    public int getMPCtimeStep() {
+        return getInt(ScenarioOptionsBase.MPCTIMESTEPIDENTIFIER);
+    }
+
+    public void setMPCtimeStep(int timeStep) {
+        properties.setProperty(ScenarioOptionsBase.MPCTIMESTEPIDENTIFIER, String.valueOf(timeStep));
+    }
+    
+    public boolean isMPCmilp() {
+        return getBoolean(ScenarioOptionsBase.MPCMILPFLAGIDENTIFIER);
+    }
+
+    public void setMPCmilp(boolean milpFlag) {
+        properties.setProperty(ScenarioOptionsBase.MPCMILPFLAGIDENTIFIER, String.valueOf(milpFlag));
+    }
+    
+    public boolean allowAssistance() {
+        return getBoolean(ScenarioOptionsBase.MPCASSISTANCEIDENTIFIER);
+    }
+
+    public void setAssistance(boolean assistanceFlag) {
+        properties.setProperty(ScenarioOptionsBase.MPCASSISTANCEIDENTIFIER, String.valueOf(assistanceFlag));
+    }
 
     public AVSpatialCapacityGenerator getParkingCapacityGenerator() {
         return AVSpatialCapacityGenerators.valueOf(getString(ScenarioOptionsBase.PARKINGGENERATORIDENTIFIER)).setScenarioOptions(this);
