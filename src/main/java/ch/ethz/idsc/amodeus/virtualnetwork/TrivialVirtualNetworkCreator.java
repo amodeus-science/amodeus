@@ -10,7 +10,15 @@ import java.util.Set;
 import java.util.function.Function;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualLinkBuilder;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkCheck;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkCreatorUtils;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkImpl;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNodes;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.red.Mean;
 
 /** builds a trivial {@link VirtualNetwork} in which all elements T are
  * associated to one central {@link VirtualNode}
@@ -39,7 +47,7 @@ public class TrivialVirtualNetworkCreator<T> {
 
         int id = 0;
         String indexStr = VirtualNodes.getIdString(id);
-        Tensor centroid = StaticHelper.meanOf(elements, locationOf);
+        Tensor centroid = meanOf(elements, locationOf);
         final VirtualNode<T> virtualNode = //
                 new VirtualNode<>(id, indexStr, new HashMap<>(), centroid);
 
@@ -61,6 +69,10 @@ public class TrivialVirtualNetworkCreator<T> {
 
         return virtualNetwork;
 
+    }
+
+    public static <T> Tensor meanOf(Collection<T> elements, Function<T, Tensor> locationOf) {
+        return Mean.of(Tensor.of(elements.stream().map(locationOf::apply)));
     }
 
     public VirtualNetwork<T> getVirtualNetwork() {

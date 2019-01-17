@@ -13,6 +13,13 @@ import java.util.Set;
 import java.util.function.Function;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualLinkBuilder;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkCheck;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkCreatorUtils;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkImpl;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNodes;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import de.lmu.ifi.dbs.elki.algorithm.clustering.kmeans.KMeansLloyd;
@@ -119,7 +126,7 @@ public class KMeansVirtualNetworkCreator<T, U> {
         }
 
         // 2) ASSIGN network links to closest nodes with a quadtree structure
-        VirtualNetworkCreatorUtils.addByProximity(vNMap, lbounds, ubounds, elements, locationOf);
+        VNodeAdd.byProximity(vNMap, lbounds, ubounds, elements, locationOf);
 
         VirtualNetworkCreatorUtils.addToVNodes(vNMap, nameOf, virtualNetwork);
 

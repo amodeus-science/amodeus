@@ -15,6 +15,13 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.MultiPolygon;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualLinkBuilder;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkCheck;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkCreatorUtils;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkImpl;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNodes;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
@@ -28,12 +35,12 @@ public class MultiPolygonsVirtualNetworkCreator<T, U> {
             Function<T, Tensor> locationOf, Function<T, String> nameOf, Map<U, HashSet<T>> uElements, //
             Tensor lbounds, Tensor ubounds, boolean completeGraph) {
         this.virtualNetwork = createVirtualNetwork( //
-                multipolygons, elements, locationOf, nameOf, uElements, lbounds, ubounds, completeGraph);
+                multipolygons, elements, locationOf, nameOf, uElements, completeGraph);
     }
 
     private VirtualNetwork<T> createVirtualNetwork(MultiPolygons multipolygons, //
             Collection<T> elements, Function<T, Tensor> locationOf, Function<T, String> nameOf, //
-            Map<U, HashSet<T>> uElements, Tensor lbounds, Tensor ubounds, boolean completeGraph) {
+            Map<U, HashSet<T>> uElements, boolean completeGraph) {
 
         System.out.println("creating a virtual network with " + multipolygons.getPolygons().size() //
                 + " multipolygons");

@@ -1,5 +1,5 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.virtualnetwork;
+package ch.ethz.idsc.amodeus.virtualnetwork.core;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -39,19 +39,5 @@ public enum VirtualNetworkCreatorUtils {
         virtualNetwork.fillVNodeMapRAWVERYPRIVATE(map);
     }
 
-    public static <T> void addByProximity(Map<VirtualNode<T>, Set<T>> vNMap, //
-            Tensor lbounds, Tensor ubounds, Collection<T> elements, Function<T, Tensor> locationOf) {
 
-        NdMap<VirtualNode<T>> ndMap = new NdTreeMap<>(lbounds, ubounds, 10, 24);
-
-        for (VirtualNode<T> virtualNode : vNMap.keySet())
-            ndMap.add(virtualNode.getCoord(), virtualNode);
-
-        // associate link to virtual node based on proximity to voronoi center
-        for (T t : elements) {
-            NdCluster<VirtualNode<T>> closestNodeC = ndMap.buildCluster(NdCenterInterface.euclidean(locationOf.apply(t)), 1);
-            VirtualNode<T> closestNode = closestNodeC.stream().findAny().get().value();
-            vNMap.get(closestNode).add(t);
-        }
-    }
 }

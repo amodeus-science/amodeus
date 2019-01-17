@@ -8,8 +8,8 @@ import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.dispatcher.util.TensorLocation;
 import ch.ethz.idsc.amodeus.virtualnetwork.TrivialVirtualNetworkCreator;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNode;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 
 /* package */ enum TrivialMatsimVirtualNetwork {
     ;
