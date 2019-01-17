@@ -29,9 +29,7 @@ public enum MatsimKMeansVirtualNetworkCreator {
         Tensor ubounds = bounds.get(1);
 
         Map<Node, HashSet<Link>> uElements = new HashMap<>();
-
         network.getNodes().values().forEach(n -> uElements.put(n, new HashSet<>()));
-
         network.getLinks().values().forEach(l -> uElements.get(l.getFromNode()).add(l));
         network.getLinks().values().forEach(l -> uElements.get(l.getToNode()).add(l));
 

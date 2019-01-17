@@ -1,4 +1,4 @@
-package ch.ethz.idsc.amodeus.virtualnetwork;
+package ch.ethz.idsc.amodeus.virtualnetwork.core;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -7,12 +7,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualLinkBuilder;
-import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
-import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkCheck;
-import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkCreatorUtils;
-import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkImpl;
-import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
+import ch.ethz.idsc.amodeus.virtualnetwork.VNodeAdd;
 
 public abstract class AbstractVirtualNetworkCreator<T, U> {
 
@@ -35,6 +30,10 @@ public abstract class AbstractVirtualNetworkCreator<T, U> {
         VirtualNetworkCreatorUtils.fillSerializationInfo(elements, virtualNetwork, nameOf);
 
         return virtualNetwork;
+
     }
 
+    public VirtualNetwork<T> getVirtualNetwork() {
+        return virtualNetwork;
+    }
 }

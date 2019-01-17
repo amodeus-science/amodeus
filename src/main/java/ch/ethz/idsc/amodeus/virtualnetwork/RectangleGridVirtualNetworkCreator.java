@@ -12,6 +12,7 @@ import java.util.function.Function;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
+import ch.ethz.idsc.amodeus.virtualnetwork.core.AbstractVirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNodes;

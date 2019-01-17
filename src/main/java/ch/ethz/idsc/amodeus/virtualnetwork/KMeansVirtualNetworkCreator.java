@@ -12,11 +12,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualLinkBuilder;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.AbstractVirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
-import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkCheck;
-import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkCreatorUtils;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkImpl;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNodes;
@@ -35,10 +32,9 @@ import de.lmu.ifi.dbs.elki.datasource.DatabaseConnection;
 import de.lmu.ifi.dbs.elki.distance.distancefunction.minkowski.SquaredEuclideanDistanceFunction;
 import de.lmu.ifi.dbs.elki.math.random.RandomFactory;
 
-public class KMeansVirtualNetworkCreator<T, U> {
+public class KMeansVirtualNetworkCreator<T, U> extends AbstractVirtualNetworkCreator<T, U> {
     private static final SquaredEuclideanDistanceFunction DISTANCE_FUNCTION = SquaredEuclideanDistanceFunction.STATIC;
 
-    private final VirtualNetwork<T> virtualNetwork;
     // ---
     // private RandomlyGeneratedInitialMeans init = new RandomlyGeneratedInitialMeans(RandomFactory.DEFAULT);
 
@@ -69,8 +65,13 @@ public class KMeansVirtualNetworkCreator<T, U> {
         int iterations = 0;
         while (iterations < tryIterations) {
             System.out.println("trying to create K-means virtual network, attempt: " + iterations);
-            VirtualNetwork<T> virtualNetwork = createVirtualNetwork(data, elements, uElements, locationOf, nameOf, //
+
+            Map<VirtualNode<T>, Set<T>> vNodeTMap = createAssignmentMap(data, elements, uElements, locationOf, nameOf, //
                     lbounds, ubounds, numVNodes, completeGraph, initSeed);
+
+            /** create */
+            virtualNetwork = createVirtualNetwork(vNodeTMap, elements, uElements, nameOf, completeGraph);
+
             if (virtualNetwork.getVirtualNodes().size() == numVNodes) {
                 return virtualNetwork;
             }
@@ -82,7 +83,7 @@ public class KMeansVirtualNetworkCreator<T, U> {
 
     }
 
-    private VirtualNetwork<T> createVirtualNetwork( //
+    private Map<VirtualNode<T>, Set<T>> createAssignmentMap( //
             double data[][], Collection<T> elements, Map<U, HashSet<T>> uElements, Function<T, Tensor> locationOf, //
             Function<T, String> nameOf, Tensor lbounds, Tensor ubounds, int numVNodes, boolean completeGraph, long initSeed) {
 
@@ -127,21 +128,8 @@ public class KMeansVirtualNetworkCreator<T, U> {
 
         // 2) ASSIGN network links to closest nodes with a quadtree structure
         VNodeAdd.byProximity(vNMap, lbounds, ubounds, elements, locationOf);
+        return vNMap;
 
-        VirtualNetworkCreatorUtils.addToVNodes(vNMap, nameOf, virtualNetwork);
-
-        // create virtualLinks for complete or neighboring graph
-        VirtualLinkBuilder.build(virtualNetwork, completeGraph, uElements);
-        GlobalAssert.that(VirtualNetworkCheck.virtualLinkConsistencyCheck(virtualNetwork));
-
-        // fill information for serialization
-        VirtualNetworkCreatorUtils.fillSerializationInfo(elements, virtualNetwork, nameOf);
-
-        return virtualNetwork;
-    }
-
-    public VirtualNetwork<T> getVirtualNetwork() {
-        return virtualNetwork;
     }
 
     public Clustering<KMeansModel> getClustering() {
