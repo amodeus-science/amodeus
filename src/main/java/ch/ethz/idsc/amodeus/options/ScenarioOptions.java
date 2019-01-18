@@ -175,6 +175,22 @@ public class ScenarioOptions {
         System.out.println("shapeFile = " + shapeFile.getAbsolutePath());
         return shapeFile.exists() ? shapeFile : null;
     }
+    
+    public int getNumberVehicles() {
+        return getInt(ScenarioOptionsBase.NUMBEROFVEHICLESIDENTIFIER);
+    }
+
+    public void setNumberVehicles(int numberVehicles) {
+        properties.setProperty(ScenarioOptionsBase.NUMBEROFVEHICLESIDENTIFIER, String.valueOf(numberVehicles));
+    }
+    
+    public String getDispatcher() {
+        return getString(ScenarioOptionsBase.DISPATCHERSTRATEGYIDENTIFIER);
+    }
+
+    public void setDispatcher(String dispatcher) {
+        properties.setProperty(ScenarioOptionsBase.DISPATCHERSTRATEGYIDENTIFIER, dispatcher);
+    }
 
     // base access functions ==================================================
     public final String getString(String key) {

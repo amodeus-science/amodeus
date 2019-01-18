@@ -51,6 +51,9 @@ public enum ScenarioOptionsBase {
     public static final String MPCTIMESTEPIDENTIFIER = "timeStep";
     public static final String MPCMILPFLAGIDENTIFIER = "milpFlag";
     public static final String MPCASSISTANCEIDENTIFIER = "allowAssistance";
+    
+    public static final String NUMBEROFVEHICLESIDENTIFIER = "numberVehicles";
+    public static final String DISPATCHERSTRATEGYIDENTIFIER = "dispatchStrategy";
 
     public static Properties getDefault() {
         Properties properties = new Properties();
@@ -79,6 +82,8 @@ public enum ScenarioOptionsBase {
         properties.setProperty(MPCTIMESTEPIDENTIFIER, "10");
         properties.setProperty(MPCMILPFLAGIDENTIFIER, "false");
         properties.setProperty(MPCASSISTANCEIDENTIFIER, "true");
+        properties.setProperty(NUMBEROFVEHICLESIDENTIFIER, "100");
+        properties.setProperty(DISPATCHERSTRATEGYIDENTIFIER, "RemoteControllerDispatcher");
         return properties;
     }
 
