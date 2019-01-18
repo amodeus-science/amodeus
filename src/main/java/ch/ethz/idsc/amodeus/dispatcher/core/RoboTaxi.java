@@ -24,7 +24,7 @@ import ch.ethz.matsim.av.schedule.AVDropoffTask;
 import ch.ethz.matsim.av.schedule.AVPickupTask;
 import ch.ethz.matsim.av.schedule.AVStayTask;
 
-/** RoboTaxi is central classs to be used in all dispatchers. Dispatchers control
+/** RoboTaxi is central class to be used in all dispatchers. Dispatchers control
  * a fleet of RoboTaxis, each is uniquely associated to an AVVehicle object in
  * MATSim. */
 public class RoboTaxi {
@@ -197,7 +197,8 @@ public class RoboTaxi {
         // TODO Who? check why this appears often
         if (avT instanceof AVStayTask) {
             // TODO MISC For now, this works, but probably needs fixing somewhere upfront /sh, apr 2018
-            if (!usageType.equals(RoboTaxiUsageType.SHARED)) { // for shared this is allowed e.g. when a new course is added but the it has not been executed yet
+            if (!usageType.equals(RoboTaxiUsageType.SHARED)) { // for shared this is allowed e.g. when a new course is added but the it has not been executed
+                                                               // yet
                 logger.warn("RoboTaxiStatus != STAY, but Schedule.getCurrentTask() == AVStayTask; probably needs fixing");
                 System.out.println("status: " + status);
             }

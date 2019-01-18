@@ -1,6 +1,7 @@
 package ch.ethz.idsc.amodeus.dispatcher.shared.tshare;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
@@ -34,11 +35,22 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
         int i = 1;
         boolean withinLimit = true;
         while (withinLimit && i < virtualNetwork.getvNodesCount()) {
-            closeEnough = gridCell.getTimeClosest(i);
+            closeEnough = gridCell.getTimeNClosest(i);
             if (gridCell.timeTo(closeEnough.get(i - 1)) >= time){
                 withinLimit = false;                
             }
         }
         return closeEnough;
+    }
+    
+    
+    
+    public static <T> Collection<T> intersection(Collection<T> c1, Collection<T> c2){
+        Collection<T> intersection = new ArrayList<>();
+        c1.stream().forEach(t->{
+            if(c2.contains(t))
+                intersection.add(t);
+        });
+        return intersection;        
     }
 }

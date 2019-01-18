@@ -14,6 +14,7 @@ import org.matsim.core.utils.collections.QuadTree;
 import ch.ethz.idsc.amodeus.dispatcher.util.NetworkDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.NetworkMinDistDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.NetworkMinTimeDistanceFunction;
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 
@@ -48,11 +49,24 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
         }
     }
 
-    public List<VirtualNode<Link>> getDistClosest(int n) {
+    public List<VirtualNode<Link>> getDistNClosest(int n) {
         return StaticHelper.getSortedClosest(n, distanceSortedMap);
     }
+    
+    public VirtualNode<Link> getDistAt(int n) {
+        GlobalAssert.that(n>0);
+        int i =0;
+        VirtualNode<Link> vNodeN = null;
+        for(VirtualNode<Link> vNode : distanceSortedMap.values()){
+            vNodeN = vNode;
+            ++i;
+            if(i==n)
+                break;                        
+        }
+        return vNodeN;
+    }
 
-    public List<VirtualNode<Link>> getTimeClosest(int n) {
+    public List<VirtualNode<Link>> getTimeNClosest(int n) {
         return StaticHelper.getSortedClosest(n, temporalSortedMap);
     }
 

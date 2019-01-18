@@ -2,12 +2,14 @@
 package ch.ethz.idsc.amodeus.dispatcher.shared.tshare;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.Random;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.matsim.api.core.v01.network.Link;
@@ -55,7 +57,9 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
     private final Link cityNorthPole;
     private final List<Link> equatorLinks;
     private final Map<VirtualNode<Link>, GridCell> gridCells = new HashMap<>();
-    private final double delayMax;
+    private final double pickupDelayMax;
+    private final double drpoffDelayMax;
+    private final DualSideSearch dualSideSearch;
 
     protected TShareDispatcher(Network network, //
             Config config, AVDispatcherConfig avDispatcherConfig, //
@@ -67,8 +71,9 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
         rebalancePeriod = safeConfig.getInteger("rebalancingPeriod", 1800);
-        delayMax = safeConfig.getInteger("delayMax", 10 * 60);
-        
+        pickupDelayMax = safeConfig.getInteger("pickupDelayMax", 10 * 60);
+        drpoffDelayMax = safeConfig.getInteger("drpoffDelayMax", 30 * 60);
+
         /** initialize grid with T-cells */
         NetworkDistanceFunction minDist = new NetworkMinDistDistanceFunction(network, new FastAStarLandmarksFactory());
         NetworkDistanceFunction minTime = new NetworkMinTimeDistanceFunction(network, new FastAStarLandmarksFactory());
@@ -77,22 +82,36 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
             gridCells.put(virtualNode, new GridCell(virtualNode, virtualNetwork, network, minDist, minTime, linkTree));
         }
 
+        dualSideSearch = new DualSideSearch(gridCells, virtualNetwork, pickupDelayMax, drpoffDelayMax, network);
+
         System.exit(1);
 
         this.cityNorthPole = getNorthPole(network);
         this.equatorLinks = getEquator(network);
         links = new ArrayList<>(network.getLinks().values());
         Collections.shuffle(links, randGen);
-        
-        
+
         // TODO ensure that rectangular grid was used
     }
 
     @Override
     protected void redispatch(double now) {
         final long round_now = Math.round(now);
-
         if (round_now % dispatchPeriod == 0) {
+
+            /** unit capacity dispatching for all divertable vehicles with zero passengers on board */
+
+            /** update the roboTaxi planned locations */
+            Map<VirtualNode<Link>, Set<RoboTaxi>> plannedLocations = //
+                    RoboTaxiPlannedLocations.of(getDivertableRoboTaxis(), virtualNetwork);
+
+            /** do T-share ridesharing */
+            for (AVRequest avr : getAVRequests()) {
+                Collection<RoboTaxi> potentialTaxis = dualSideSearch.apply(avr, plannedLocations);
+            }
+
+            /** potentially rebalancing? */
+
             /** assignment of {@link RoboTaxi}s */
             for (RoboTaxi sharedRoboTaxi : getDivertableUnassignedRoboTaxis()) {
                 if (getUnassignedAVRequests().size() >= 4) {

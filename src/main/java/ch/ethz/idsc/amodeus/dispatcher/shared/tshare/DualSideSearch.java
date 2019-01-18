@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
@@ -33,7 +34,7 @@ public class DualSideSearch {
         this.maxDrpoffDelay = maxDrpoffDelay;
     }
 
-    public Collection<RoboTaxi> apply(AVRequest request) {
+    public Collection<RoboTaxi> apply(AVRequest request, Map<VirtualNode<Link>, Set<RoboTaxi>> plannedLocations) {
         double latestPickup = request.getSubmissionTime() + maxPickupDelay;
         double latestArrval = distance.getTravelTime(request.getFromLink(), request.getToLink())//
                 + maxDrpoffDelay;
@@ -45,10 +46,34 @@ public class DualSideSearch {
         Collection<RoboTaxi> dTaxis = new ArrayList<>();
         Collection<RoboTaxi> potentialTaxis = new ArrayList<>();
 
-        List<VirtualNode<Link>> oCloseCells = StaticHelper.getAllWithinLessThan(latestPickup, oCell, virtualNetwork);
-        List<VirtualNode<Link>> dCloseCells = StaticHelper.getAllWithinLessThan(latestArrval, dCell, virtualNetwork);
+        Collection<VirtualNode<Link>> oCloseCells = StaticHelper.getAllWithinLessThan(latestPickup, oCell, virtualNetwork);
+        Collection<VirtualNode<Link>> dCloseCells = StaticHelper.getAllWithinLessThan(latestArrval, dCell, virtualNetwork);
 
-        // FIXME continue here 
-        return null;
+        boolean stop0 = false;
+        boolean stopD = false;
+
+        int i0 = 0;
+        int iD = 0;
+        while (potentialTaxis.isEmpty() && (stop0 == false || stopD == false)) {
+            if (i0 < oCloseCells.size()) {
+                VirtualNode<Link> vNode = oCell.getDistAt(i0);
+                if(oCloseCells.contains(vNode)){
+                    oTaxis.addAll(plannedLocations.get(vNode));
+                }
+                ++i0;
+            } else
+                stop0 = true;
+
+            if (iD < dCloseCells.size()) {
+                VirtualNode<Link> vNode = dCell.getDistAt(iD);
+                if(dCloseCells.contains(vNode)){
+                    dTaxis.addAll(plannedLocations.get(vNode));
+                }
+                ++iD;
+            } else
+                stopD = true;            
+            potentialTaxis = StaticHelper.intersection(oTaxis, dTaxis);            
+        }
+        return potentialTaxis;
     }
 }
