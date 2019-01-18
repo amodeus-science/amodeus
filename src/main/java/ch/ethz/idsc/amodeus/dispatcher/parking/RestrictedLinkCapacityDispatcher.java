@@ -49,7 +49,7 @@ import ch.ethz.matsim.av.router.AVRouter;
 public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatcher {
 
     private final int dispatchPeriod;
-    private long freeParkingPeriod = 60;
+    private long freeParkingPeriod = 10;
 
     /** ride sharing parameters */
     /** the sharing period says every how many seconds the dispatcher should chekc if
