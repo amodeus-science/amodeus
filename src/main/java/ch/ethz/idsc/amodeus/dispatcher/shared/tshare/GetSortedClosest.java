@@ -12,10 +12,10 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 
-/* package */ enum StaticHelper {
+/* package */ enum GetSortedClosest {
     ;
 
-    public static List<VirtualNode<Link>> getSortedClosest(int n, NavigableMap<Double, VirtualNode<Link>> map) {
+    public static List<VirtualNode<Link>> elem(int n, NavigableMap<Double, VirtualNode<Link>> map) {
         GlobalAssert.that(n >= 1);
         GlobalAssert.that(n <= map.size());
         List<VirtualNode<Link>> closest = new ArrayList<>();
@@ -29,17 +29,5 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
         return closest;
     }
 
-    public static List<VirtualNode<Link>> getAllWithinLessThan(double time, GridCell gridCell, //
-            VirtualNetwork<Link> virtualNetwork) {
-        List<VirtualNode<Link>> closeEnough = new ArrayList<>();
-        int i = 1;
-        boolean withinLimit = true;
-        while (withinLimit && i < virtualNetwork.getvNodesCount()) {
-            closeEnough = gridCell.getTimeNClosest(i);
-            if (gridCell.timeTo(closeEnough.get(i - 1)) >= time) {
-                withinLimit = false;
-            }
-        }
-        return closeEnough;
-    }
+
 }

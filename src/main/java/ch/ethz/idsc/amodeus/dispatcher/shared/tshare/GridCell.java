@@ -50,11 +50,11 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
     }
 
     public List<VirtualNode<Link>> getDistNClosest(int n) {
-        return StaticHelper.getSortedClosest(n, distanceSortedMap);
+        return GetSortedClosest.elem(n, distanceSortedMap);
     }
     
     public VirtualNode<Link> getDistAt(int n) {
-        GlobalAssert.that(n>0);
+        GlobalAssert.that(n>=0);
         int i =0;
         VirtualNode<Link> vNodeN = null;
         for(VirtualNode<Link> vNode : distanceSortedMap.values()){
@@ -67,7 +67,7 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
     }
 
     public List<VirtualNode<Link>> getTimeNClosest(int n) {
-        return StaticHelper.getSortedClosest(n, temporalSortedMap);
+        return GetSortedClosest.elem(n, temporalSortedMap);
     }
 
     public Double timeTo(VirtualNode<Link> virtualNode) {

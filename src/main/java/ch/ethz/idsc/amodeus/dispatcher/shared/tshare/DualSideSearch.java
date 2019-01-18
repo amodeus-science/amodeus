@@ -30,6 +30,8 @@ public class DualSideSearch {
     public Collection<RoboTaxi> apply(AVRequest request, Map<VirtualNode<Link>, Set<RoboTaxi>> plannedLocations, //
             double latestPickup, double latestArrval) {
 
+        System.err.println("dual side ");
+
         GridCell oCell = gridCells.get(virtualNetwork.getVirtualNode(request.getToLink()));
         GridCell dCell = gridCells.get(virtualNetwork.getVirtualNode(request.getFromLink()));
 
@@ -37,8 +39,10 @@ public class DualSideSearch {
         Collection<RoboTaxi> dTaxis = new ArrayList<>();
         Collection<RoboTaxi> potentialTaxis = new ArrayList<>();
 
-        Collection<VirtualNode<Link>> oCloseCells = StaticHelper.getAllWithinLessThan(latestPickup, oCell, virtualNetwork);
-        Collection<VirtualNode<Link>> dCloseCells = StaticHelper.getAllWithinLessThan(latestArrval, dCell, virtualNetwork);
+        Collection<VirtualNode<Link>> oCloseCells = GetAllWithinLess.than(latestPickup, oCell, virtualNetwork);
+        Collection<VirtualNode<Link>> dCloseCells = GetAllWithinLess.than(latestArrval, dCell, virtualNetwork);
+
+        System.err.println("arhargard ");
 
         boolean stop0 = false;
         boolean stopD = false;
@@ -46,6 +50,7 @@ public class DualSideSearch {
         int i0 = 0;
         int iD = 0;
         while (potentialTaxis.isEmpty() && (stop0 == false || stopD == false)) {
+
             if (i0 < oCloseCells.size()) {
                 VirtualNode<Link> vNode = oCell.getDistAt(i0);
                 if (oCloseCells.contains(vNode)) {

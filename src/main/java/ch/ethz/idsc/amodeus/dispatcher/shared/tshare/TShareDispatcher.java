@@ -112,7 +112,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
 
             /** unit capacity dispatching for all divertable vehicles with zero passengers on board,
              * for now global bipartite matching is used */
-            printVals = bipartiteMatchingUtils.executePickup(this, null, getDivertableRoboTaxis(), //
+            printVals = bipartiteMatchingUtils.executePickup(this, this::getCurrentPickupTaxi, getDivertableRoboTaxis(), //
                     getAVRequests(), distanceFunction, network);
 
             /** update the roboTaxi planned locations */
@@ -125,6 +125,8 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
             /** do T-share ridesharing */
             // TODO sorted according to submission time.
             for (AVRequest avr : getAVRequests()) {
+                if (getCurrentPickupAssignements().keySet().contains(avr))
+                    continue;
 
                 double latestPickup = avr.getSubmissionTime() + pickupDelayMax;
                 double latestArrval = distance.getTravelTime(avr.getFromLink(), avr.getToLink())//
@@ -134,7 +136,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
                         dualSideSearch.apply(avr, plannedLocations, latestPickup, latestArrval);
                 NavigableMap<Double, InsertionCheck> insertions = new TreeMap<>();
                 for (RoboTaxi roboTaxi : potentialTaxis) {
-                    InsertionCheck check = new InsertionCheck(distance,//
+                    InsertionCheck check = new InsertionCheck(distance, //
                             roboTaxi, avr, pickupDelayMax, drpoffDelayMax);
                     if (Objects.nonNull(check.getAddDistance()))
                         insertions.put(check.getAddDistance(), check);
