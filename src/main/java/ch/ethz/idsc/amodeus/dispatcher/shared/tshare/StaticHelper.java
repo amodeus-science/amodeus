@@ -36,21 +36,10 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
         boolean withinLimit = true;
         while (withinLimit && i < virtualNetwork.getvNodesCount()) {
             closeEnough = gridCell.getTimeNClosest(i);
-            if (gridCell.timeTo(closeEnough.get(i - 1)) >= time){
-                withinLimit = false;                
+            if (gridCell.timeTo(closeEnough.get(i - 1)) >= time) {
+                withinLimit = false;
             }
         }
         return closeEnough;
-    }
-    
-    
-    
-    public static <T> Collection<T> intersection(Collection<T> c1, Collection<T> c2){
-        Collection<T> intersection = new ArrayList<>();
-        c1.stream().forEach(t->{
-            if(c2.contains(t))
-                intersection.add(t);
-        });
-        return intersection;        
     }
 }
