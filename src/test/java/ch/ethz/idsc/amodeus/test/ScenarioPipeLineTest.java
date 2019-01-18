@@ -55,7 +55,7 @@ public class ScenarioPipeLineTest {
         // copy scenario data into main directory
         File scenarioDirectory = new File(TestUtils.getSuperFolder("amodeus"), "resources/testScenario");
         File workingDirectory = MultiFileTools.getWorkingDirectory();
-        GlobalAssert.that(workingDirectory.exists());
+        GlobalAssert.that(workingDirectory.isDirectory());
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
 
         // run scenario preparer
@@ -74,13 +74,13 @@ public class ScenarioPipeLineTest {
 
         // creation of files
         File preparedPopulationFile = new File("preparedPopulation.xml");
-        assertTrue(preparedPopulationFile.exists());
+        assertTrue(preparedPopulationFile.isFile());
 
         File preparedNetworkFile = new File("preparedNetwork.xml");
-        assertTrue(preparedNetworkFile.exists());
+        assertTrue(preparedNetworkFile.isFile());
 
         File config = new File("config.xml");
-        assertTrue(config.exists());
+        assertTrue(config.isFile());
 
         // consistency of network (here no cutting)
         Network originalNetwork = NetworkLoader.fromConfigFile(testServer.getConfigFile());
@@ -201,29 +201,29 @@ public class ScenarioPipeLineTest {
         scalarAssert.consolidate();
 
         /** presence of plot files */
-        assertTrue((new File("output/001/data/binnedWaitingTimes.png")).exists());
-        assertTrue((new File("output/001/data/distanceDistribution.png")).exists());
-        assertTrue((new File("output/001/data/occAndDistRatios.png")).exists());
-        assertTrue((new File("output/001/data/stackedDistance.png")).exists());
-        assertTrue((new File("output/001/data/statusDistribution.png")).exists());
+        assertTrue(new File("output/001/data/binnedWaitingTimes.png").isFile());
+        assertTrue(new File("output/001/data/distanceDistribution.png").isFile());
+        assertTrue(new File("output/001/data/occAndDistRatios.png").isFile());
+        assertTrue(new File("output/001/data/stackedDistance.png").isFile());
+        assertTrue(new File("output/001/data/statusDistribution.png").isFile());
 
-        assertTrue((new File("output/001/data", ScenarioParametersExport.FILENAME)).exists());
+        assertTrue(new File("output/001/data", ScenarioParametersExport.FILENAME).exists());
 
-        assertTrue((new File("output/001/data/WaitingTimes")).isDirectory());
-        assertTrue((new File("output/001/data/WaitingTimes/WaitingTimes.mathematica")).exists());
+        assertTrue(new File("output/001/data/WaitingTimes").isDirectory());
+        assertTrue(new File("output/001/data/WaitingTimes/WaitingTimes.mathematica").isFile());
 
-        assertTrue((new File("output/001/data/StatusDistribution")).isDirectory());
-        assertTrue((new File("output/001/data/StatusDistribution/StatusDistribution.mathematica")).exists());
+        assertTrue(new File("output/001/data/StatusDistribution").isDirectory());
+        assertTrue(new File("output/001/data/StatusDistribution/StatusDistribution.mathematica").isFile());
 
-        assertTrue((new File("output/001/data/DistancesOverDay")).isDirectory());
-        assertTrue((new File("output/001/data/DistancesOverDay/DistancesOverDay.mathematica")).exists());
+        assertTrue(new File("output/001/data/DistancesOverDay").isDirectory());
+        assertTrue(new File("output/001/data/DistancesOverDay/DistancesOverDay.mathematica").isFile());
 
-        assertTrue((new File("output/001/data/DistanceRatios")).isDirectory());
-        assertTrue((new File("output/001/data/DistanceRatios/DistanceRatios.mathematica")).exists());
+        assertTrue(new File("output/001/data/DistanceRatios").isDirectory());
+        assertTrue(new File("output/001/data/DistanceRatios/DistanceRatios.mathematica").isFile());
 
-        assertTrue(new File("output/001/report/report.html").exists());
-        assertTrue(new File("output/001/report/av.xml").exists());
-        assertTrue(new File("output/001/report/config.xml").exists());
+        assertTrue(new File("output/001/report/report.html").isFile());
+        assertTrue(new File("output/001/report/av.xml").isFile());
+        assertTrue(new File("output/001/report/config.xml").isFile());
     }
 
     @AfterClass

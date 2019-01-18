@@ -9,6 +9,7 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
 
+@FunctionalInterface
 public interface VirtualNetworkCreator {
     // TODO Joel document interface function
     /** @param network

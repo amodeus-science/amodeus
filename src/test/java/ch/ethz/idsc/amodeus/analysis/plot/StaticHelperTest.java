@@ -7,9 +7,9 @@ import org.jfree.data.time.Second;
 
 import junit.framework.TestCase;
 
-public class DiagramUtilTest extends TestCase {
+public class StaticHelperTest extends TestCase {
 
-    public void test() {
+    public void testSimple() {
 
         double time = 150.2;
         int year = Calendar.getInstance().get(Calendar.YEAR);
