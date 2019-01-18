@@ -18,7 +18,7 @@ public class StaticHelperTest extends TestCase {
         collection.add(new Coord(0, 1));
         collection.add(new Coord(0, 0));
 
-        Tensor meanOf = StaticHelper.meanOf(collection, StaticHelperTest::ofCoord);
+        Tensor meanOf = TrivialVirtualNetworkCreator.meanOf(collection, StaticHelperTest::ofCoord);
         assertEquals(meanOf, Tensors.vector(0.5, 0.5));
     }
 

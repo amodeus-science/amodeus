@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.matsim.api.core.v01.network.Link;
 
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNode;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 
 @FunctionalInterface
 public interface AbstractVirtualNodeDest {

@@ -9,7 +9,7 @@ import java.util.Random;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNode;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 
 public class RandomVirtualNodeDest implements AbstractVirtualNodeDest {
     private static final long DEFAULT_RANDOM_SEED = 4711;

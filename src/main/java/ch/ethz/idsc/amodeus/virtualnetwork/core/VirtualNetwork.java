@@ -1,5 +1,5 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.virtualnetwork;
+package ch.ethz.idsc.amodeus.virtualnetwork.core;
 
 import java.util.Collection;
 import java.util.List;
