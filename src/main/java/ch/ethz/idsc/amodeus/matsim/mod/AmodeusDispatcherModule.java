@@ -14,11 +14,13 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.ExtDemandSupplyBeamSharing;
 import ch.ethz.idsc.amodeus.dispatcher.shared.NorthPoleSharedDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.fifs.DynamicRideSharingStrategy;
 import ch.ethz.idsc.amodeus.dispatcher.shared.fifs.FirstComeFirstServedStrategy;
+import ch.ethz.idsc.amodeus.dispatcher.shared.tshare.TShareDispatcher;
 import ch.ethz.matsim.av.framework.AVUtils;
 
 public class AmodeusDispatcherModule extends AbstractModule {
     @Override
     public void install() {
+
         /** dispatchers for UniversalDispatcher */
 
         bind(DriveByDispatcher.Factory.class);
@@ -49,6 +51,7 @@ public class AmodeusDispatcherModule extends AbstractModule {
         AVUtils.bindDispatcherFactory(binder(), SQMDispatcher.class.getSimpleName()).to(SQMDispatcher.Factory.class);
 
         /** ride sharing dispatchers */
+
         bind(NorthPoleSharedDispatcher.Factory.class);
         AVUtils.bindDispatcherFactory(binder(), NorthPoleSharedDispatcher.class.getSimpleName()).to(NorthPoleSharedDispatcher.Factory.class);
 
@@ -58,5 +61,11 @@ public class AmodeusDispatcherModule extends AbstractModule {
         bind(DynamicRideSharingStrategy.Factory.class);
         AVUtils.bindDispatcherFactory(binder(), DynamicRideSharingStrategy.class.getSimpleName()).to(DynamicRideSharingStrategy.Factory.class);
 
+        bind(DynamicRideSharingStrategy.Factory.class);
+        AVUtils.bindDispatcherFactory(binder(), DynamicRideSharingStrategy.class.getSimpleName()).to(DynamicRideSharingStrategy.Factory.class);
+        
+        bind(TShareDispatcher.Factory.class);
+        AVUtils.bindDispatcherFactory(binder(), TShareDispatcher.class.getSimpleName()).to(TShareDispatcher.Factory.class);
+        
     }
 }

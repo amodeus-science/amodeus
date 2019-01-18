@@ -14,7 +14,9 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
+import org.matsim.core.router.FastAStarLandmarksFactory;
 import org.matsim.core.router.util.TravelTime;
+import org.matsim.core.utils.collections.QuadTree;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -22,13 +24,15 @@ import com.google.inject.name.Named;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiUtils;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedPartitionedDispatcher;
-import ch.ethz.idsc.amodeus.dispatcher.core.SharedRebalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
+import ch.ethz.idsc.amodeus.dispatcher.util.NetworkDistanceFunction;
+import ch.ethz.idsc.amodeus.dispatcher.util.NetworkMinDistDistanceFunction;
+import ch.ethz.idsc.amodeus.dispatcher.util.NetworkMinTimeDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
@@ -42,7 +46,7 @@ import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.router.AVRouter;
 
-public class TShare extends SharedPartitionedDispatcher {
+public class TShareDispatcher extends SharedPartitionedDispatcher {
 
     private final int dispatchPeriod;
     private final int rebalancePeriod;
@@ -51,28 +55,37 @@ public class TShare extends SharedPartitionedDispatcher {
     private final Link cityNorthPole;
     private final List<Link> equatorLinks;
     private final Map<VirtualNode<Link>, GridCell> gridCells = new HashMap<>();
+    private final double delayMax;
 
-    protected TShare(Network network, //
+    protected TShareDispatcher(Network network, //
             Config config, AVDispatcherConfig avDispatcherConfig, //
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, //
             MatsimAmodeusDatabase db, //
             VirtualNetwork<Link> virtualNetwork) {
         super(config, avDispatcherConfig, travelTime, router, eventsManager, virtualNetwork, db);
-        // TODO ensure that rectangular grid was used
-        /** initialize grid with T-cells */
-        for (VirtualNode<Link> virtualNode : virtualNetwork.getVirtualNodes()) {
-            gridCells.put(virtualNode, new GridCell(virtualNode, virtualNetwork, network));
-        }
+        /** parameters */
+        SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
+        dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
+        rebalancePeriod = safeConfig.getInteger("rebalancingPeriod", 1800);
+        delayMax = safeConfig.getInteger("delayMax", 10 * 60);
         
+        /** initialize grid with T-cells */
+        NetworkDistanceFunction minDist = new NetworkMinDistDistanceFunction(network, new FastAStarLandmarksFactory());
+        NetworkDistanceFunction minTime = new NetworkMinTimeDistanceFunction(network, new FastAStarLandmarksFactory());
+        QuadTree<Link> linkTree = FastQuadTree.of(network);
+        for (VirtualNode<Link> virtualNode : virtualNetwork.getVirtualNodes()) {
+            gridCells.put(virtualNode, new GridCell(virtualNode, virtualNetwork, network, minDist, minTime, linkTree));
+        }
+
         System.exit(1);
 
         this.cityNorthPole = getNorthPole(network);
         this.equatorLinks = getEquator(network);
-        SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
-        dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
-        rebalancePeriod = safeConfig.getInteger("rebalancingPeriod", 1800);
         links = new ArrayList<>(network.getLinks().values());
         Collections.shuffle(links, randGen);
+        
+        
+        // TODO ensure that rectangular grid was used
     }
 
     @Override
@@ -205,7 +218,7 @@ public class TShare extends SharedPartitionedDispatcher {
             @SuppressWarnings("unused")
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceFunction.INSTANCE);
 
-            return new TShare(network, config, avconfig, travelTime, router, eventsManager, db, virtualNetwork);
+            return new TShareDispatcher(network, config, avconfig, travelTime, router, eventsManager, db, virtualNetwork);
         }
     }
 }

@@ -1,6 +1,8 @@
 package ch.ethz.idsc.amodeus.dispatcher.shared.tshare;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
@@ -18,19 +20,19 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 /* package */ class GridCell {
 
     private final VirtualNode<Link> myVNode;
-    private final NavigableMap<Double, VirtualNode<Link>> temporalMap = new TreeMap<>();
-    private final NavigableMap<Double, VirtualNode<Link>> distanceMap = new TreeMap<>();
-    private final NetworkDistanceFunction minDist;
-    private final NetworkDistanceFunction minTime;
+    private final NavigableMap<Double, VirtualNode<Link>> temporalSortedMap = new TreeMap<>();
+    private final NavigableMap<Double, VirtualNode<Link>> distanceSortedMap = new TreeMap<>();
 
-    public GridCell(VirtualNode<Link> virtualNode, VirtualNetwork<Link> virtualNetwork, Network network) {
+    private final Map<VirtualNode<Link>, Double> temporalLookupMap = new HashMap<>();
+
+    public GridCell(VirtualNode<Link> virtualNode, VirtualNetwork<Link> virtualNetwork, Network network, //
+            NetworkDistanceFunction minDist, NetworkDistanceFunction minTime, QuadTree<Link> linkTree) {
         this.myVNode = virtualNode;
-        this.minTime = new NetworkMinTimeDistanceFunction(network, new FastAStarLandmarksFactory());
-        this.minDist = new NetworkMinDistDistanceFunction(network, new FastAStarLandmarksFactory());
-        computeMaps(virtualNetwork, FastQuadTree.of(network));
+        computeMaps(virtualNetwork, linkTree, minTime, minDist);
     }
 
-    private void computeMaps(VirtualNetwork<Link> virtualNetwork, QuadTree<Link> links) {
+    private void computeMaps(VirtualNetwork<Link> virtualNetwork, QuadTree<Link> links, //
+            NetworkDistanceFunction minTime, NetworkDistanceFunction minDist) {
         for (VirtualNode<Link> toNode : virtualNetwork.getVirtualNodes()) {
             Link fromLink = links.getClosest(//
                     myVNode.getCoord().Get(0).number().doubleValue(), //
@@ -40,16 +42,21 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
                     toNode.getCoord().Get(1).number().doubleValue());
             double time = minTime.getTravelTime(fromLink, toLink);
             double distance = minDist.getDistance(fromLink, toLink);
-            temporalMap.put(time, toNode);
-            distanceMap.put(distance, toNode);
+            temporalSortedMap.put(time, toNode);
+            temporalLookupMap.put(toNode, time);
+            distanceSortedMap.put(distance, toNode);
         }
     }
 
     public List<VirtualNode<Link>> getDistClosest(int n) {
-        return StaticHelper.getSortedClosest(n, distanceMap);
+        return StaticHelper.getSortedClosest(n, distanceSortedMap);
     }
 
     public List<VirtualNode<Link>> getTimeClosest(int n) {
-        return StaticHelper.getSortedClosest(n, temporalMap);
+        return StaticHelper.getSortedClosest(n, temporalSortedMap);
+    }
+
+    public Double timeTo(VirtualNode<Link> virtualNode) {
+        return temporalLookupMap.get(virtualNode);
     }
 }

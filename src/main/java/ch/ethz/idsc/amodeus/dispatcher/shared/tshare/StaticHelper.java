@@ -8,6 +8,7 @@ import java.util.NavigableMap;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 
 /* package */ enum StaticHelper {
@@ -25,5 +26,19 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
             closest.add(entry.getValue());
         }
         return closest;
+    }
+
+    public static List<VirtualNode<Link>> getAllWithinLessThan(double time, GridCell gridCell, //
+            VirtualNetwork<Link> virtualNetwork) {
+        List<VirtualNode<Link>> closeEnough = new ArrayList<>();
+        int i = 1;
+        boolean withinLimit = true;
+        while (withinLimit && i < virtualNetwork.getvNodesCount()) {
+            closeEnough = gridCell.getTimeClosest(i);
+            if (gridCell.timeTo(closeEnough.get(i - 1)) >= time){
+                withinLimit = false;                
+            }
+        }
+        return closeEnough;
     }
 }
