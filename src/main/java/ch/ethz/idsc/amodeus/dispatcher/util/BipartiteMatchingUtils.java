@@ -20,7 +20,7 @@ public class BipartiteMatchingUtils {
     private final DistanceFunction accDstFctn;
 
     public BipartiteMatchingUtils(Network network) {
-        accDstFctn = new NetworkDistanceFunction(network, new FastAStarLandmarksFactory());
+        accDstFctn = new NetworkMinTimeDistanceFunction(network, new FastAStarLandmarksFactory());
     }
 
     public Tensor executePickup(UniversalDispatcher universalDispatcher, //
