@@ -25,7 +25,7 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 /* package */ enum RoboTaxiPlannedLocations {
     ;
 
-    public static Map<VirtualNode<Link>, Set<RoboTaxi>> of(Collection<RoboTaxi> divertableTaxis, //
+    public static Map<VirtualNode<Link>, Set<RoboTaxi>> of(Collection<RoboTaxi> customerCarrying, //
             VirtualNetwork<Link> virtualNetwork) {
 
         /** initialize list */
@@ -33,8 +33,12 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
         for (VirtualNode<Link> virtualNode : virtualNetwork.getVirtualNodes())
             locationMap.put(virtualNode, new HashSet<>());
 
+        /** no potential vehicles for sharing */
+        if (customerCarrying.size() == 0)
+            return locationMap;
+
         /** for all {@link RoboTaxi}s add to list */
-        for (RoboTaxi roboTaxi : divertableTaxis) {
+        for (RoboTaxi roboTaxi : customerCarrying) {
             Link loc = roboTaxi.getDivertableLocation();
 
             /** get current location and add */
@@ -47,6 +51,7 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
                     .map(VirtualLink::getTo).collect(Collectors.toList());
             neighbors.stream().forEach(vn -> locationMap.get(vn).add(roboTaxi));
         }
+
         return locationMap;
     }
 }

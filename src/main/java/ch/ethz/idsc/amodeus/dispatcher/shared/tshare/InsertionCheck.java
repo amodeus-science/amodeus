@@ -28,11 +28,15 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         /** get robotaxi menu */
         List<SharedCourse> menu = roboTaxi.getUnmodifiableViewOfCourses();
         int num = menu.size();
+
         /** we should only be here if the {@link RoboTaxi} has a {@link AVRequest} on board */
-        GlobalAssert.that(num >= 2);
+        if (num < 1) {
+            System.err.println("menu size of " + roboTaxi.getId().toString() + " is: " + num);
+            System.err.println("aborting.");
+            GlobalAssert.that(false);
+        }
 
         /** original length */
-        
         System.err.println("length ok? ");
         originalLength = Length.of(roboTaxi, menu, distance);
 
@@ -44,7 +48,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
          * times the Course was moved forward from the end of the menu */
 
         System.err.println("now this could be difficult");
-        
+
         NavigableMap<Double, List<SharedCourse>> menuOptions = new TreeMap<>();
         for (int pckInsrtIndex = 0; pckInsrtIndex < num + 1; ++pckInsrtIndex) {
             for (int drpInsrtIndex = 0; drpInsrtIndex < (num + 1) - pckInsrtIndex; drpInsrtIndex++) {

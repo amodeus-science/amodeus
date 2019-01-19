@@ -23,6 +23,7 @@ import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiUtils;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedPartitionedDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
@@ -110,15 +111,28 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
         final long round_now = Math.round(now);
         if (round_now % dispatchPeriod == 0) {
 
-            /** unit capacity dispatching for all divertable vehicles with zero passengers on board,
-             * for now global bipartite matching is used */
-            printVals = bipartiteMatchingUtils.executePickup(this, this::getCurrentPickupTaxi, getDivertableRoboTaxis(), //
-                    getAVRequests(), distanceFunction, network);
+            // TODO previously I have put bipartite matching here, now trying with a more simple strategy
+            // /** unit capacity dispatching for all divertable vehicles with zero passengers on board,
+            // * for now global bipartite matching is used */
+            // printVals = bipartiteMatchingUtils.executePickup(this, this::getCurrentPickupTaxi, getDivertableRoboTaxis(), //
+            // getAVRequests(), distanceFunction, network);
+
+            if (getRoboTaxiSubset(RoboTaxiStatus.STAY).size() > 0) {
+                RoboTaxi roboTaxi = getRoboTaxiSubset(RoboTaxiStatus.STAY).iterator().next();
+                if (getAVRequests().size() > 0) {
+                    AVRequest avr = getAVRequests().iterator().next();
+                    if (!getCurrentPickupAssignements().keySet().contains(avr))
+                        addSharedRoboTaxiPickup(roboTaxi, avr);
+                }
+
+            }
 
             /** update the roboTaxi planned locations */
             Collection<RoboTaxi> customerCarrying = getDivertableRoboTaxis().stream()//
-                    .filter(rt -> RoboTaxiUtils.getNumberOnBoardRequests(rt) > 1)//
+                    .filter(rt -> RoboTaxiUtils.getNumberOnBoardRequests(rt) >= 1)//
+                    .filter(RoboTaxiUtils::canPickupNewCustomer)//
                     .collect(Collectors.toList());
+
             Map<VirtualNode<Link>, Set<RoboTaxi>> plannedLocations = //
                     RoboTaxiPlannedLocations.of(customerCarrying, virtualNetwork);
 
@@ -136,6 +150,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
                         dualSideSearch.apply(avr, plannedLocations, latestPickup, latestArrval);
                 NavigableMap<Double, InsertionCheck> insertions = new TreeMap<>();
                 for (RoboTaxi roboTaxi : potentialTaxis) {
+                    System.out.println("made insertion check");
                     InsertionCheck check = new InsertionCheck(distance, //
                             roboTaxi, avr, pickupDelayMax, drpoffDelayMax);
                     if (Objects.nonNull(check.getAddDistance()))

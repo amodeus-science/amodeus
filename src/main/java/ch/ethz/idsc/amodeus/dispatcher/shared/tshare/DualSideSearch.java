@@ -3,15 +3,13 @@ package ch.ethz.idsc.amodeus.dispatcher.shared.tshare;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
-import org.matsim.core.router.FastAStarLandmarksFactory;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.dispatcher.util.NetworkDistanceFunction;
-import ch.ethz.idsc.amodeus.dispatcher.util.NetworkMinTimeDistanceFunction;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 import ch.ethz.matsim.av.passenger.AVRequest;
@@ -30,7 +28,13 @@ public class DualSideSearch {
     public Collection<RoboTaxi> apply(AVRequest request, Map<VirtualNode<Link>, Set<RoboTaxi>> plannedLocations, //
             double latestPickup, double latestArrval) {
 
-        System.err.println("dual side ");
+        System.out.println("planned locations: ");
+        for (Entry<VirtualNode<Link>, Set<RoboTaxi>> entry : plannedLocations.entrySet()) {
+            if (entry.getValue().size() > 0) {
+                System.out.println(entry.getKey().getId() + ":  ");
+                entry.getValue().stream().forEach(rt -> System.out.println(rt.getId().toString()));
+            }
+        }
 
         GridCell oCell = gridCells.get(virtualNetwork.getVirtualNode(request.getToLink()));
         GridCell dCell = gridCells.get(virtualNetwork.getVirtualNode(request.getFromLink()));
@@ -41,8 +45,6 @@ public class DualSideSearch {
 
         Collection<VirtualNode<Link>> oCloseCells = GetAllWithinLess.than(latestPickup, oCell, virtualNetwork);
         Collection<VirtualNode<Link>> dCloseCells = GetAllWithinLess.than(latestArrval, dCell, virtualNetwork);
-
-        System.err.println("arhargard ");
 
         boolean stop0 = false;
         boolean stopD = false;
@@ -70,6 +72,7 @@ public class DualSideSearch {
                 stopD = true;
             potentialTaxis = Intersection.of(oTaxis, dTaxis);
         }
+
         return potentialTaxis;
     }
 }
