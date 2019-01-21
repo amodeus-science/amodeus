@@ -11,7 +11,7 @@ import ch.ethz.idsc.amodeus.lp.LPPreparer;
 import ch.ethz.idsc.amodeus.lp.LPSolver;
 import ch.ethz.idsc.amodeus.prep.PopulationTools;
 import ch.ethz.idsc.amodeus.prep.Request;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.tensor.Tensor;
 
 public enum TravelDataCreator {
