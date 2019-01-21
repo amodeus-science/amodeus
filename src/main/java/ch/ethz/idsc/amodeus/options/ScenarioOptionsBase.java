@@ -54,6 +54,8 @@ public enum ScenarioOptionsBase {
     
     public static final String NUMBEROFVEHICLESIDENTIFIER = "numberVehicles";
     public static final String DISPATCHERSTRATEGYIDENTIFIER = "dispatchStrategy";
+    
+    public static final String MAKEVIDEOIDENTIFIER = "makeVideo";
 
     public static Properties getDefault() {
         Properties properties = new Properties();
@@ -84,6 +86,7 @@ public enum ScenarioOptionsBase {
         properties.setProperty(MPCASSISTANCEIDENTIFIER, "true");
         properties.setProperty(NUMBEROFVEHICLESIDENTIFIER, "100");
         properties.setProperty(DISPATCHERSTRATEGYIDENTIFIER, "RemoteControllerDispatcher");
+        properties.setProperty(MAKEVIDEOIDENTIFIER, "true");
         return properties;
     }
 

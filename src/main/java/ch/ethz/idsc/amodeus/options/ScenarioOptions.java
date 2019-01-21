@@ -191,6 +191,14 @@ public class ScenarioOptions {
     public void setDispatcher(String dispatcher) {
         properties.setProperty(ScenarioOptionsBase.DISPATCHERSTRATEGYIDENTIFIER, dispatcher);
     }
+    
+    public boolean getMakeVideo() {
+        return getBoolean(ScenarioOptionsBase.MAKEVIDEOIDENTIFIER);
+    }
+
+    public void setMakeVideo(boolean makeVideo) {
+        properties.setProperty(ScenarioOptionsBase.DISPATCHERSTRATEGYIDENTIFIER, String.valueOf(makeVideo));
+    }
 
     // base access functions ==================================================
     public final String getString(String key) {
