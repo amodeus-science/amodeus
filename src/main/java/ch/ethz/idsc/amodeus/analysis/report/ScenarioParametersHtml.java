@@ -20,7 +20,9 @@ public enum ScenarioParametersHtml implements HtmlReportElement {
         HtmlGenerator htmlUtils = bodyElement.getHTMLGenerator();
         htmlUtils.insertTextLeft("User:" + //
                 "\nTimestamp:");
-        htmlUtils.insertTextLeft(scenarioParameters.user + //
+//        htmlUtils.insertTextLeft(scenarioParameters.user + //
+//                "\n" + scenarioParameters.date);
+        htmlUtils.insertTextLeft("Ree" + //
                 "\n" + scenarioParameters.date);
         htmlUtils.newLine();
         htmlUtils.insertTextLeft("Iterations:");
