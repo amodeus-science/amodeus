@@ -8,12 +8,9 @@ import java.util.TreeMap;
 
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
-import org.matsim.core.router.FastAStarLandmarksFactory;
 import org.matsim.core.utils.collections.QuadTree;
 
 import ch.ethz.idsc.amodeus.dispatcher.util.NetworkDistanceFunction;
-import ch.ethz.idsc.amodeus.dispatcher.util.NetworkMinDistDistanceFunction;
-import ch.ethz.idsc.amodeus.dispatcher.util.NetworkMinTimeDistanceFunction;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
