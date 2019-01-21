@@ -76,7 +76,6 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
     private final Scalar drpoffDelayMax;
     private final double menuHorizon;
     private final DualSideSearch dualSideSearch;
-    private final NetworkDistanceFunction distance;
     private final CashedDistanceCalculator distanceCashed;
     private final TravelTimeCalculatorCached travelTimeCashed;
 
@@ -107,7 +106,6 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
         pickupDelayMax = Quantity.of(safeConfig.getInteger("pickupDelayMax", 10 * 60), "s");
         drpoffDelayMax = Quantity.of(safeConfig.getInteger("drpoffDelayMax", 30 * 60), "s");
         menuHorizon = safeConfig.getDouble("menuHorizon", 1.2);
-        this.distance = new NetworkMinTimeDistanceFunction(network, new FastAStarLandmarksFactory());
 
         /** initialize grid with T-cells */
         QuadTree<Link> linkTree = FastQuadTree.of(network);
