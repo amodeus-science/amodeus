@@ -8,6 +8,7 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.Config;
 
+@FunctionalInterface
 public interface PopulationCutter {
     // TODO Lukas document
     // TODO Lukas my suggestion is that this function does not throw any exception ...
