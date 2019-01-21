@@ -29,6 +29,8 @@ Fleet for Austin, Texas, Market* by Fagnant, D. J., Kockelman, K. M., and Bansal
 ### Available Ride Sharing Dispatching Algorithms
 * **Demand-supply-balancing with Beam Extension for Ride Sharing** Demand Supply Balancing heuristic from *Large-scale microscopic simulation of taxi services* by Maciejewski, M., and Bischoff J., 2015 extended with ride sharing if two requests start close to each other and have a similar direction.
 * **Dynamic Ride Sharing Strategy** from *Dynamic ride-sharing and optimal fleet sizing for a system of shared autonomous vehicles* by Fagnant, D. J., and Kockelman, K. M., 2015.
+* **T-Share** from Ma, Shuo, Yu Zheng, and Ouri Wolfson. "T-share: A large-scale dynamic taxi ridesharing service."
+ * Data Engineering (ICDE), 2013 IEEE 29th International Conference on. IEEE, 2013.
 
 ## Gallery
 

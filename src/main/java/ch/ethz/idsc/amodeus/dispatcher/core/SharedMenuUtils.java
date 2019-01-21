@@ -34,6 +34,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
     // **************************************************
     // Check Menus
     // **************************************************
+    // TODO naming is wrong, this is only a one-sided inclusion check. Name accordingly.
     public static boolean containSameCourses(SharedMenu sharedMenu1, SharedMenu sharedMenu2) {
         return sharedMenu1.getRoboTaxiMenu().size() == sharedMenu2.getRoboTaxiMenu().size() && //
                 sharedMenu1.getRoboTaxiMenu().containsAll(sharedMenu2.getRoboTaxiMenu());

@@ -13,7 +13,7 @@ import org.matsim.vehicles.Vehicle;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
-public enum EasyPathCalculator {
+public enum EasyMinDistPathCalculator {
     ;
 
     public static LeastCostPathCalculator prepPathCalculator(Network network, LeastCostPathCalculatorFactory calcFactory) {
@@ -25,7 +25,7 @@ public enum EasyPathCalculator {
 
             @Override
             public double getLinkMinimumTravelDisutility(Link link) {
-                return link.getLength() / link.getFreespeed();
+                return link.getLength();
             }
         };
         TravelTime travelTime = new TravelTime() {

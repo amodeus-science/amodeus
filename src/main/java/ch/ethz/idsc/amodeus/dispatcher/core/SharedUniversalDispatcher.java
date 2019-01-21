@@ -65,7 +65,8 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
 
     // Registers for Simulation Objects
     private final Set<AVRequest> periodPickedUpRequests = new HashSet<>();
-    private final Map<AVRequest, RoboTaxi> periodFulfilledRequests = new HashMap<>(); // A request is removed from the requestRegister at dropoff. So here we store the information
+    private final Map<AVRequest, RoboTaxi> periodFulfilledRequests = new HashMap<>(); // A request is removed from the requestRegister at dropoff. So here we
+                                                                                      // store the information
                                                                                       // from which Robotaxi it was droped off
     private final Set<AVRequest> periodAssignedRequests = new HashSet<>();
     private final Set<AVRequest> periodSubmittdRequests = new HashSet<>();
@@ -120,6 +121,12 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
     /** @return Map of AVRequests which have an assigned Robotaxi but are not Picked up yet. The value is the corresponding RoboTaxi */
     protected final Map<AVRequest, RoboTaxi> getCurrentPickupAssignements() {
         return requestRegister.getPickupRegister(pendingRequests);
+    }
+
+    /** @return {@link RoboTaxi} curently scheduled to pickup @param request or null if no {@link RoboTaxi}
+     *         is scheduled to pickup the {@link AVRequest} */
+    protected final RoboTaxi getCurrentPickupTaxi(AVRequest request) {
+        return requestRegister.getPickupRegister(pendingRequests).get(request);
     }
 
     /** Example call: getRoboTaxiSubset(AVStatus.STAY, AVStatus.DRIVEWITHCUSTOMER)
