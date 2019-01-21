@@ -26,19 +26,19 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         this.request = request;
 
         /** get robotaxi menu */
-        List<SharedCourse> menu = roboTaxi.getUnmodifiableViewOfCourses();
-        int num = menu.size();
+        List<SharedCourse> originalMenu = roboTaxi.getUnmodifiableViewOfCourses();
+        int length = originalMenu.size();
 
         /** we should only be here if the {@link RoboTaxi} has a {@link AVRequest} on board */
-        if (num < 1) {
-            System.err.println("menu size of " + roboTaxi.getId().toString() + " is: " + num);
+        if (length < 1) {
+            System.err.println("menu size of " + roboTaxi.getId().toString() + " is: " + length);
+            System.err.println("this part of the method should only be reached to insert additional requests.");
             System.err.println("aborting.");
             GlobalAssert.that(false);
         }
 
         /** original length */
-        System.err.println("length ok? ");
-        originalLength = Length.of(roboTaxi, menu, distance);
+        originalLength = Length.of(roboTaxi, originalMenu, distance);
 
         /** add new requests to end of menu */
         SharedCourse pickupCourse = SharedCourse.pickupCourse(request);
@@ -46,27 +46,28 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
         /** calculate length of each modification, two indices show how many
          * times the Course was moved forward from the end of the menu */
-
-        System.err.println("now this could be difficult");
-
         NavigableMap<Double, List<SharedCourse>> menuOptions = new TreeMap<>();
-        for (int pckInsrtIndex = 0; pckInsrtIndex < num + 1; ++pckInsrtIndex) {
-            for (int drpInsrtIndex = 0; drpInsrtIndex < (num + 1) - pckInsrtIndex; drpInsrtIndex++) {
-                List<SharedCourse> copy = new ArrayList<>();
-                for (int k = 0; k < num; ++k) {
-                    if (pckInsrtIndex == k)
-                        copy.add(pickupCourse);
-                    if (drpInsrtIndex == k) {
-                        copy.add(drpoffCourse);
+        for (int i = 0; i <= length; ++i) {
+            for (int j = length; j >= i; j--) {
+                List<SharedCourse> newMenu = new ArrayList<>();
+                for (int k = 0; k <= length; ++k) {
+                    if (i == k)
+                        newMenu.add(pickupCourse);
+                    if (j == k) {
+                        newMenu.add(drpoffCourse);
                     }
-                    copy.add(menu.get(k));
-                    menuOptions.put(Length.of(roboTaxi, copy, distance), copy);
+                    if (k < length)
+                        newMenu.add(originalMenu.get(k));
+                    /** the line below is computationally expensive and calculates the
+                     * path length of the option. */
+                    menuOptions.put(Length.of(roboTaxi, newMenu, distance), newMenu);
                 }
             }
         }
 
         /** save the optimal menu */
         optimalMenu = menuOptions.firstEntry().getValue();
+        GlobalAssert.that(optimalMenu.size() == originalMenu.size() + 2);
         optimalLength = menuOptions.firstEntry().getKey();
     }
 
