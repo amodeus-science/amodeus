@@ -26,11 +26,13 @@ import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiUtils;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedPartitionedDispatcher;
+import ch.ethz.idsc.amodeus.dispatcher.shared.fifs.TravelTimeCalculatorCached;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
 import ch.ethz.idsc.amodeus.dispatcher.util.EasyMinDistPathCalculator;
+import ch.ethz.idsc.amodeus.dispatcher.util.EasyMinTimePathCalculator;
 import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.NetworkDistanceFunction;
@@ -72,6 +74,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
     private final DualSideSearch dualSideSearch;
     private final NetworkDistanceFunction distance;
     private final CashedDistanceCalculator distanceCashed;
+    private final TravelTimeCalculatorCached travelTimeCashed;
 
     protected TShareDispatcher(Network network, //
             Config config, AVDispatcherConfig avDispatcherConfig, //
@@ -91,6 +94,8 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
         distanceFunction = distanceHeuristics.getDistanceFunction(network);
         distanceCashed = CashedDistanceCalculator//
                 .of(EasyMinDistPathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0);
+        travelTimeCashed = TravelTimeCalculatorCached//
+                .of(EasyMinTimePathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0);
 
         bipartiteMatchingUtils = new SharedBipartiteMatchingUtils(network);
 
@@ -101,11 +106,10 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
         this.distance = new NetworkMinTimeDistanceFunction(network, new FastAStarLandmarksFactory());
 
         /** initialize grid with T-cells */
-        NetworkDistanceFunction minDist = new NetworkMinDistDistanceFunction(network, new FastAStarLandmarksFactory());
-        NetworkDistanceFunction minTime = new NetworkMinTimeDistanceFunction(network, new FastAStarLandmarksFactory());
         QuadTree<Link> linkTree = FastQuadTree.of(network);
         for (VirtualNode<Link> virtualNode : virtualNetwork.getVirtualNodes()) {
-            gridCells.put(virtualNode, new GridCell(virtualNode, virtualNetwork, network, minDist, minTime, linkTree));
+            System.out.println("preparing grid cell: " +  virtualNode.getIndex());
+            gridCells.put(virtualNode, new GridCell(virtualNode, virtualNetwork, network, distanceCashed, travelTimeCashed, linkTree));
         }
         dualSideSearch = new DualSideSearch(gridCells, virtualNetwork, pickupDelayMax, drpoffDelayMax, network);
         System.out.println("According to the reference, a rectangular {@link VirtualNetwork} should be used.");
@@ -136,12 +140,15 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
             /** do T-share ridesharing */
             List<AVRequest> sortedRequests = getAVRequests().stream().sorted(RequestWaitTimeComparator.INSTANCE)//
                     .collect(Collectors.toList());
+            System.out.println("sortedRequests to consider: " + sortedRequests.size());
             for (AVRequest avr : sortedRequests) {
                 if (getCurrentPickupAssignements().keySet().contains(avr))
                     continue;
 
                 double latestPickup = avr.getSubmissionTime() + pickupDelayMax;
-                double latestArrval = distance.getTravelTime(avr.getFromLink(), avr.getToLink())//
+                // TODO possibly in publication, the simplified grid-cell travel time is used, check and
+                // adapt if needed.
+                double latestArrval = travelTimeCashed.timeFromTo(avr.getFromLink(), avr.getToLink()).number().doubleValue()//
                         + drpoffDelayMax;
 
                 Collection<RoboTaxi> potentialTaxis = //
