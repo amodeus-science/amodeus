@@ -21,7 +21,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     private final Scalar originalLength;
 
     public InsertionCheck(CashedDistanceCalculator distance, //
-            RoboTaxi roboTaxi, AVRequest request, double latestPickup, double latestArrval) {
+            RoboTaxi roboTaxi, AVRequest request) {
         this.roboTaxi = roboTaxi;
         this.request = request;
 

@@ -11,6 +11,7 @@ import org.matsim.api.core.v01.network.Network;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
+import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 public class DualSideSearch {
@@ -18,14 +19,13 @@ public class DualSideSearch {
     private final Map<VirtualNode<Link>, GridCell> gridCells;
     private final VirtualNetwork<Link> virtualNetwork;
 
-    public DualSideSearch(Map<VirtualNode<Link>, GridCell> gridCells, VirtualNetwork<Link> virtualNetwork, //
-            double maxPickupDelay, double maxDrpoffDelay, Network network) {
+    public DualSideSearch(Map<VirtualNode<Link>, GridCell> gridCells, VirtualNetwork<Link> virtualNetwork, Network network) {
         this.virtualNetwork = virtualNetwork;
         this.gridCells = gridCells;
     }
 
     public Collection<RoboTaxi> apply(AVRequest request, Map<VirtualNode<Link>, Set<RoboTaxi>> plannedLocations, //
-            double latestPickup, double latestArrval) {
+            Scalar latestPickup, Scalar latestArrval) {
 
         GridCell oCell = gridCells.get(virtualNetwork.getVirtualNode(request.getToLink()));
         GridCell dCell = gridCells.get(virtualNetwork.getVirtualNode(request.getFromLink()));
