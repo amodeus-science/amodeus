@@ -3,6 +3,7 @@ package ch.ethz.idsc.amodeus.dispatcher.shared.tshare;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.Objects;
@@ -23,13 +24,13 @@ import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiUtils;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedPartitionedDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
+import ch.ethz.idsc.amodeus.dispatcher.util.EasyMinDistPathCalculator;
 import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.NetworkDistanceFunction;
@@ -41,6 +42,7 @@ import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
+import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
@@ -66,8 +68,10 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
     private final Map<VirtualNode<Link>, GridCell> gridCells = new HashMap<>();
     private final double pickupDelayMax;
     private final double drpoffDelayMax;
+    private final double menuHorizon;
     private final DualSideSearch dualSideSearch;
     private final NetworkDistanceFunction distance;
+    private final CashedDistanceCalculator distanceCashed;
 
     protected TShareDispatcher(Network network, //
             Config config, AVDispatcherConfig avDispatcherConfig, //
@@ -85,12 +89,15 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
                 dispatcherConfig.getDistanceHeuristics(DistanceHeuristics.EUCLIDEAN);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         distanceFunction = distanceHeuristics.getDistanceFunction(network);
+        distanceCashed = CashedDistanceCalculator//
+                .of(EasyMinDistPathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0);
 
         bipartiteMatchingUtils = new SharedBipartiteMatchingUtils(network);
 
         /** T-Share specific */
         pickupDelayMax = safeConfig.getInteger("pickupDelayMax", 10 * 60);
         drpoffDelayMax = safeConfig.getInteger("drpoffDelayMax", 30 * 60);
+        menuHorizon = safeConfig.getDouble("menuHorizon", 1.2);
         this.distance = new NetworkMinTimeDistanceFunction(network, new FastAStarLandmarksFactory());
 
         /** initialize grid with T-cells */
@@ -100,10 +107,9 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
         for (VirtualNode<Link> virtualNode : virtualNetwork.getVirtualNodes()) {
             gridCells.put(virtualNode, new GridCell(virtualNode, virtualNetwork, network, minDist, minTime, linkTree));
         }
-
         dualSideSearch = new DualSideSearch(gridCells, virtualNetwork, pickupDelayMax, drpoffDelayMax, network);
-
-        // TODO ensure that rectangular grid was used to be in accordance with reference.
+        System.out.println("According to the reference, a rectangular {@link VirtualNetwork} should be used.");
+        System.out.println("Ensure that VirtualNetworkCreators.RECTANGULAR is used.");
     }
 
     @Override
@@ -111,21 +117,12 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
         final long round_now = Math.round(now);
         if (round_now % dispatchPeriod == 0) {
 
-            // TODO previously I have put bipartite matching here, now trying with a more simple strategy
-            // /** unit capacity dispatching for all divertable vehicles with zero passengers on board,
-            // * for now global bipartite matching is used */
-            // printVals = bipartiteMatchingUtils.executePickup(this, this::getCurrentPickupTaxi, getDivertableRoboTaxis(), //
-            // getAVRequests(), distanceFunction, network);
-
-            if (getRoboTaxiSubset(RoboTaxiStatus.STAY).size() > 0) {
-                RoboTaxi roboTaxi = getRoboTaxiSubset(RoboTaxiStatus.STAY).iterator().next();
-                if (getAVRequests().size() > 0) {
-                    AVRequest avr = getAVRequests().iterator().next();
-                    if (!getCurrentPickupAssignements().keySet().contains(avr))
-                        addSharedRoboTaxiPickup(roboTaxi, avr);
-                }
-
-            }
+            /** unit capacity dispatching for all divertable vehicles with zero passengers on board,
+             * for now global bipartite matching is used */
+            Collection<RoboTaxi> divertableAndEmpty = getDivertableRoboTaxis().stream().filter(rt -> (rt.getUnmodifiableViewOfCourses().size() == 0))//
+                    .collect(Collectors.toList());
+            printVals = bipartiteMatchingUtils.executePickup(this, this::getCurrentPickupTaxi, divertableAndEmpty, //
+                    getAVRequests(), distanceFunction, network);
 
             /** update the roboTaxi planned locations */
             Collection<RoboTaxi> customerCarrying = getDivertableRoboTaxis().stream()//
@@ -137,8 +134,9 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
                     RoboTaxiPlannedLocations.of(customerCarrying, virtualNetwork);
 
             /** do T-share ridesharing */
-            // TODO sorted according to submission time.
-            for (AVRequest avr : getAVRequests()) {
+            List<AVRequest> sortedRequests = getAVRequests().stream().sorted(RequestWaitTimeComparator.INSTANCE)//
+                    .collect(Collectors.toList());
+            for (AVRequest avr : sortedRequests) {
                 if (getCurrentPickupAssignements().keySet().contains(avr))
                     continue;
 
@@ -148,13 +146,14 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
 
                 Collection<RoboTaxi> potentialTaxis = //
                         dualSideSearch.apply(avr, plannedLocations, latestPickup, latestArrval);
-                NavigableMap<Double, InsertionCheck> insertions = new TreeMap<>();
+                NavigableMap<Scalar, InsertionCheck> insertions = new TreeMap<>();
                 for (RoboTaxi roboTaxi : potentialTaxis) {
-                    System.out.println("made insertion check");
-                    InsertionCheck check = new InsertionCheck(distance, //
-                            roboTaxi, avr, pickupDelayMax, drpoffDelayMax);
-                    if (Objects.nonNull(check.getAddDistance()))
-                        insertions.put(check.getAddDistance(), check);
+                    if (roboTaxi.getUnmodifiableViewOfCourses().size() < roboTaxi.getCapacity() * 2 * menuHorizon) {
+                        InsertionCheck check = new InsertionCheck(distanceCashed, //
+                                roboTaxi, avr, pickupDelayMax, drpoffDelayMax);
+                        if (Objects.nonNull(check.getAddDistance()))
+                            insertions.put(check.getAddDistance(), check);
+                    }
                 }
 
                 if (Objects.nonNull(insertions.firstEntry())) {
@@ -171,7 +170,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
 
         /** dispatching of available {@link RoboTaxi}s to the equator */
         if (round_now % rebalancePeriod == 0) {
-            /** potentially rebalancing? TODO maybe rebalancing makes sense, however not stated in paper. */
+            /** potentially rebalancing? Possibly rebalancing makes sense, however not stated in paper. */
         }
     }
 

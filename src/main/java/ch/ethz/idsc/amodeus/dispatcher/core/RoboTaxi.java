@@ -110,7 +110,9 @@ public class RoboTaxi {
         return status;
     }
 
-    /** Gets the capacity of the avVehicle. Now its an Integer and not a double as in Matsim
+    /** Gets the capacity of the avVehicle. Now its an Integer and not a double as in MATSim,
+     * the current number of people on board can be accessed with
+     * {@link RoboTaxiUtils.getNumberOnBoardRequests(roboTaxi)}
      * 
      * @return */
     public int getCapacity() {

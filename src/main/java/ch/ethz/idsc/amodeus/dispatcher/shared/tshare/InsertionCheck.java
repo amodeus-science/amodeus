@@ -10,6 +10,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.util.NetworkDistanceFunction;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 /* package */ class InsertionCheck {
@@ -17,10 +18,10 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     private final RoboTaxi roboTaxi;
     private final AVRequest request;
     private List<SharedCourse> optimalMenu;
-    private final double optimalLength;
-    private final double originalLength;
+    private final Scalar optimalLength;
+    private final Scalar originalLength;
 
-    public InsertionCheck(NetworkDistanceFunction distance, //
+    public InsertionCheck(CashedDistanceCalculator distance, //
             RoboTaxi roboTaxi, AVRequest request, double latestPickup, double latestArrval) {
         this.roboTaxi = roboTaxi;
         this.request = request;
@@ -46,7 +47,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
         /** calculate length of each modification, two indices show how many
          * times the Course was moved forward from the end of the menu */
-        NavigableMap<Double, List<SharedCourse>> menuOptions = new TreeMap<>();
+        NavigableMap<Scalar, List<SharedCourse>> menuOptions = new TreeMap<>();
         for (int i = 0; i <= length; ++i) {
             for (int j = length; j >= i; j--) {
                 List<SharedCourse> newMenu = new ArrayList<>();
@@ -74,8 +75,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     /** @return null if the request cannot be reached before maxPickupDelay or
      *         the request cannot be dropped of before reaching maxDrpoffDelay. Otherwise
      *         returns the additional necessary distance to pickup the request. */
-    public Double getAddDistance() {
-        return optimalLength - originalLength;
+    public Scalar getAddDistance() {
+        return optimalLength.subtract(originalLength);
     }
 
     public void insert(BiConsumer<RoboTaxi, AVRequest> addSharedPickup) {

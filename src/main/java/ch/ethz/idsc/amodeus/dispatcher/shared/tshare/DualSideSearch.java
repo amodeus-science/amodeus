@@ -3,7 +3,6 @@ package ch.ethz.idsc.amodeus.dispatcher.shared.tshare;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.matsim.api.core.v01.network.Link;
@@ -27,14 +26,6 @@ public class DualSideSearch {
 
     public Collection<RoboTaxi> apply(AVRequest request, Map<VirtualNode<Link>, Set<RoboTaxi>> plannedLocations, //
             double latestPickup, double latestArrval) {
-
-        System.out.println("planned locations: ");
-        for (Entry<VirtualNode<Link>, Set<RoboTaxi>> entry : plannedLocations.entrySet()) {
-            if (entry.getValue().size() > 0) {
-                System.out.println(entry.getKey().getId() + ":  ");
-                entry.getValue().stream().forEach(rt -> System.out.println(rt.getId().toString()));
-            }
-        }
 
         GridCell oCell = gridCells.get(virtualNetwork.getVirtualNode(request.getToLink()));
         GridCell dCell = gridCells.get(virtualNetwork.getVirtualNode(request.getFromLink()));
