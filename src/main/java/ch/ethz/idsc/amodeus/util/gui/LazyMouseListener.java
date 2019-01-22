@@ -6,6 +6,7 @@ package ch.ethz.idsc.amodeus.util.gui;
 import java.awt.event.MouseEvent;
 
 /** interface with callback functions for use with LayzMouse */
+@FunctionalInterface
 public interface LazyMouseListener {
     /** @param mouseEvent where the pressed and clicked happened sufficiently close together */
     void lazyClicked(MouseEvent mouseEvent);

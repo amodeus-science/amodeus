@@ -5,6 +5,7 @@ import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.tensor.Scalar;
 
+@FunctionalInterface
 public interface TravelTimeCalculator {
 
     Scalar timeFromTo(Link divertableLocation, Link centerLink);

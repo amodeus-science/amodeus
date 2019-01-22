@@ -35,7 +35,7 @@ public enum VirtualNetworkExport implements AnalysisExport {
             File virtualNetworkFile = new File(virtualNetworkFolder, scenOptions.getVirtualNetworkName());
             File copyTo = new File(relativeDirectory, scenOptions.getVirtualNetworkName());
             GlobalAssert.that(virtualNetworkFile.exists());
-            GlobalAssert.that(copyTo.getParentFile().exists());
+            GlobalAssert.that(copyTo.getParentFile().isDirectory());
             try {
                 System.out.println(virtualNetworkFile);
                 System.out.println(copyTo);

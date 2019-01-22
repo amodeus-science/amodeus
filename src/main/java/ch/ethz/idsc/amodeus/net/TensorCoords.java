@@ -4,7 +4,7 @@ package ch.ethz.idsc.amodeus.net;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Link;
 
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNode;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.VectorQ;

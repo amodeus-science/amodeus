@@ -16,19 +16,19 @@ public enum DistanceHeuristics {
     DIJKSTRA {
         @Override
         public DistanceFunction getDistanceFunction(Network network) {
-            return new NetworkDistanceFunction(network, new FastDijkstraFactory());
+            return new NetworkMinTimeDistanceFunction(network, new FastDijkstraFactory());
         }
     },
     ASTAR {
         @Override
         public DistanceFunction getDistanceFunction(Network network) {
-            return new NetworkDistanceFunction(network, new FastAStarEuclideanFactory());
+            return new NetworkMinTimeDistanceFunction(network, new FastAStarEuclideanFactory());
         }
     },
     ASTARLANDMARKS {
         @Override
         public DistanceFunction getDistanceFunction(Network network) {
-            return new NetworkDistanceFunction(network, new FastAStarLandmarksFactory());
+            return new NetworkMinTimeDistanceFunction(network, new FastAStarLandmarksFactory());
         }
     };
 

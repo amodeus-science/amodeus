@@ -27,8 +27,8 @@ import ch.ethz.idsc.amodeus.testutils.TestUtils;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.util.math.SI;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkGet;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkIO;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkGet;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkIO;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
@@ -53,7 +53,7 @@ public class SharedRoboTaxiTest {
         // copy scenario data into main directory
         File scenarioDirectory = new File(TestUtils.getSuperFolder("amodeus"), "resources/testScenario");
         File workingDirectory = MultiFileTools.getWorkingDirectory();
-        GlobalAssert.that(workingDirectory.exists());
+        GlobalAssert.that(workingDirectory.isDirectory());
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
 
         // run scenario preparer
