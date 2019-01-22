@@ -20,6 +20,7 @@ import ch.ethz.idsc.tensor.Scalars;
 
 /* package */ class GridCell {
 
+    private final VirtualNetwork<Link> virtualNetwork;
     private final VirtualNode<Link> myVNode;
     private final NavigableMap<Scalar, VirtualNode<Link>> temporalSortedMap = new TreeMap<>();
     private final NavigableMap<Scalar, VirtualNode<Link>> distanceSortedMap = new TreeMap<>();
@@ -29,6 +30,7 @@ import ch.ethz.idsc.tensor.Scalars;
     public GridCell(VirtualNode<Link> virtualNode, VirtualNetwork<Link> virtualNetwork, Network network, //
             CashedDistanceCalculator minDist, TravelTimeCalculatorCached minTime, QuadTree<Link> linkTree) {            
         this.myVNode = virtualNode;
+        this.virtualNetwork = virtualNetwork;
         computeMaps(virtualNetwork, linkTree, minDist,minTime);
     }
 
@@ -70,19 +72,19 @@ import ch.ethz.idsc.tensor.Scalars;
         return GetSortedClosest.elem(n, temporalSortedMap);
     }
     
-//    public List<VirtualNode<Link>> than(Scalar time, VirtualNetwork<Link> virtualNetwork) {
-//        List<VirtualNode<Link>> closeEnough = new ArrayList<>();
-//        int i = 1;
-//        boolean withinLimit = true;
-//        while (withinLimit && i < virtualNetwork.getvNodesCount()) {
-//            closeEnough = getTimeNClosest(i);
-//            if (Scalars.lessEquals(time, timeTo(closeEnough.get(i - 1)))) {
-//                withinLimit = false;
-//            }
-//            ++i;
-//        }
-//        return closeEnough;
-//    }
+    public List<VirtualNode<Link>> nodesWithinLessthan(Scalar time) {
+        List<VirtualNode<Link>> closeEnough = new ArrayList<>();
+        int i = 1;
+        boolean withinLimit = true;
+        while (withinLimit && i < virtualNetwork.getvNodesCount()) {
+            closeEnough = getTimeNClosest(i);
+            if (Scalars.lessEquals(time, timeTo(closeEnough.get(i - 1)))) {
+                withinLimit = false;
+            }
+            ++i;
+        }
+        return closeEnough;
+    }
     
 
     public Scalar timeTo(VirtualNode<Link> virtualNode) {
