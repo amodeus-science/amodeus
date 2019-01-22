@@ -9,7 +9,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
 import junit.framework.TestCase;
 
-public class SharedMenuTest extends TestCase {
+public class SharedCourseTest extends TestCase {
     public void testSimple() {
         ArtificialScenarioCreator s = new ArtificialScenarioCreator();
         SharedCourse pickupCourse1 = SharedCourse.pickupCourse(s.avRequest1);

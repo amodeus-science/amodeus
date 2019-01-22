@@ -11,7 +11,7 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 
 public enum TravelDataGet {
     ;

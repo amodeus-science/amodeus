@@ -4,6 +4,7 @@
 package ch.ethz.idsc.amodeus.util.gui;
 
 /** callback function for use with SpinnerLabel */
+@FunctionalInterface
 public interface SpinnerListener<Type> {
     /** @param value of selected entry in spinner label */
     void actionPerformed(Type value);

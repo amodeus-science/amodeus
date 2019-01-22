@@ -6,6 +6,7 @@ import org.matsim.api.core.v01.network.Link;
 
 /** A {@link AVSpatialCapacityAmodeus} is a storage for the spatial capacity
  * (i.e. parking spaces) on a Collection of links (e.g. the network). */
+@FunctionalInterface
 public interface AVSpatialCapacityAmodeus {
 
     /** An AVSpatialCapacity gives back the Number of Spaces on the Link with

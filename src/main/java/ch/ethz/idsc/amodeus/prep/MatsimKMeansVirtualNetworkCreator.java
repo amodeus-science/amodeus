@@ -14,7 +14,7 @@ import org.matsim.api.core.v01.population.Population;
 import ch.ethz.idsc.amodeus.dispatcher.util.NetworkBounds;
 import ch.ethz.idsc.amodeus.dispatcher.util.TensorLocation;
 import ch.ethz.idsc.amodeus.virtualnetwork.KMeansVirtualNetworkCreator;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.tensor.Tensor;
 
 public enum MatsimKMeansVirtualNetworkCreator {
@@ -29,9 +29,7 @@ public enum MatsimKMeansVirtualNetworkCreator {
         Tensor ubounds = bounds.get(1);
 
         Map<Node, HashSet<Link>> uElements = new HashMap<>();
-
         network.getNodes().values().forEach(n -> uElements.put(n, new HashSet<>()));
-
         network.getLinks().values().forEach(l -> uElements.get(l.getFromNode()).add(l));
         network.getLinks().values().forEach(l -> uElements.get(l.getToNode()).add(l));
 

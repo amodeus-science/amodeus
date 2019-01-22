@@ -3,6 +3,7 @@ package ch.ethz.idsc.amodeus.dispatcher.parking;
 
 import org.matsim.api.core.v01.network.Network;
 
+@FunctionalInterface
 public interface AVSpatialCapacityGenerator {
 
     /** Generates a {@link AVSpatialCapacityAmodeus} for a given Network. This could for example be by searching for a given link attribute in the network or by

@@ -22,14 +22,14 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.testutils.TestUtils;
 import ch.ethz.idsc.amodeus.util.io.ProvideAVConfig;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.matsim.av.config.AVConfig;
 import ch.ethz.matsim.av.config.AVGeneratorConfig;
 import ch.ethz.matsim.av.framework.AVConfigGroup;
 
-public class LPMinFlowTester {
+public class LPMinFlowTest {
     private static VirtualNetwork<Link> virtualNetwork2;
     private static VirtualNetwork<Link> virtualNetwork3;
     private static VirtualNetwork<Link> virtualNetwork3incomplete; // the virtual links are: 0<->1, 0<->2
@@ -39,7 +39,7 @@ public class LPMinFlowTester {
 
     @BeforeClass
     public static void setup() throws IOException {
-
+        System.out.println(LPTimeInvariant.class.getName());
         /* input data */
         File scenarioDirectory = new File(TestUtils.getSuperFolder("amodeus"), "resources/testScenario");
         scenarioOptions = new ScenarioOptions(scenarioDirectory, ScenarioOptionsBase.getDefault());

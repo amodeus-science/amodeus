@@ -14,8 +14,8 @@ import ch.ethz.idsc.amodeus.traveldata.TravelDataCreator;
 import ch.ethz.idsc.amodeus.traveldata.TravelDataIO;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkIO;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkIO;
 
 public enum VirtualNetworkPreparer implements VirtualNetworkCreator {
     INSTANCE;

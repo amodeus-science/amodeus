@@ -21,7 +21,7 @@ import ch.ethz.idsc.amodeus.traveldata.TravelDataCreator;
 import ch.ethz.idsc.amodeus.traveldata.TravelDataIO;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.io.ProvideAVConfig;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.matsim.av.config.AVConfig;
 import ch.ethz.matsim.av.config.AVGeneratorConfig;

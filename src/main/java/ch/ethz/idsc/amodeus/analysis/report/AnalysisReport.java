@@ -3,6 +3,7 @@ package ch.ethz.idsc.amodeus.analysis.report;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 
+@FunctionalInterface
 public interface AnalysisReport {
     // TODO Joel document
     /** @param analysisSummary */
