@@ -58,7 +58,7 @@
 		<dependency>
 			<groupId>io.humble</groupId>
 			<artifactId>humble-video-all</artifactId>
-			<version>0.2.1</version>
+			<version>0.3.0</version>
 		</dependency>
 
 		<dependency><!-- workaround since jaxb api is not part of java 9 -->
