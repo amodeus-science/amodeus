@@ -63,7 +63,6 @@ public class DualSideSearch {
                 stopD = true;
             potentialTaxis = Intersection.of(oTaxis, dTaxis);
         }
-
         return potentialTaxis;
     }
 }

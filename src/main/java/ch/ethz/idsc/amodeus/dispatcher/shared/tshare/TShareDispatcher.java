@@ -11,8 +11,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import javax.measure.unit.SI;
-
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -37,16 +35,12 @@ import ch.ethz.idsc.amodeus.dispatcher.util.EasyMinDistPathCalculator;
 import ch.ethz.idsc.amodeus.dispatcher.util.EasyMinTimePathCalculator;
 import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
-import ch.ethz.idsc.amodeus.dispatcher.util.NetworkDistanceFunction;
-import ch.ethz.idsc.amodeus.dispatcher.util.NetworkMinDistDistanceFunction;
-import ch.ethz.idsc.amodeus.dispatcher.util.NetworkMinTimeDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.SharedBipartiteMatchingUtils;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -124,7 +118,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
         if (round_now % dispatchPeriod == 0) {
 
             /** unit capacity dispatching for all divertable vehicles with zero passengers on board,
-             * for now global bipartite matching is used */
+             * in this implementation, global bipartite matching is used */
             Collection<RoboTaxi> divertableAndEmpty = getDivertableRoboTaxis().stream().filter(rt -> (rt.getUnmodifiableViewOfCourses().size() == 0))//
                     .collect(Collectors.toList());
             printVals = bipartiteMatchingUtils.executePickup(this, this::getCurrentPickupTaxi, divertableAndEmpty, //
@@ -133,27 +127,35 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
             /** update the roboTaxi planned locations */
             Collection<RoboTaxi> customerCarrying = getDivertableRoboTaxis().stream()//
                     .filter(rt -> RoboTaxiUtils.getNumberOnBoardRequests(rt) >= 1)//
+                    .filter(rt -> (rt.getCapacity() - RoboTaxiUtils.getNumberOnBoardRequests(rt)) >= 1)//
                     .filter(RoboTaxiUtils::canPickupNewCustomer)//
                     .collect(Collectors.toList());
+            System.out.println("number of relevant vehicles: " + customerCarrying.size());
 
             Map<VirtualNode<Link>, Set<RoboTaxi>> plannedLocations = //
                     RoboTaxiPlannedLocations.of(customerCarrying, virtualNetwork);
 
             /** do T-share ridesharing */
-            List<AVRequest> sortedRequests = getAVRequests().stream().sorted(RequestWaitTimeComparator.INSTANCE)//
+            List<AVRequest> sortedRequests = getAVRequests().stream()//
+                    .filter(avr -> !getCurrentPickupAssignements().keySet().contains(avr))//
+                    .sorted(RequestWaitTimeComparator.INSTANCE)//
                     .collect(Collectors.toList());
-            System.out.println("sortedRequests to consider: " + sortedRequests.size());
+            System.out.println("sortedRequests to consider for insertion: " + sortedRequests.size());
             for (AVRequest avr : sortedRequests) {
-                if (getCurrentPickupAssignements().keySet().contains(avr))
-                    continue;
 
                 Scalar latestPickup = Quantity.of(avr.getSubmissionTime(), "s").add(pickupDelayMax);
                 // TODO possibly in publication, the simplified grid-cell travel time is used, check and
                 // adapt if needed.
                 Scalar latestArrval = travelTimeCashed.timeFromTo(avr.getFromLink(), avr.getToLink()).add(drpoffDelayMax);
 
+                /** dual side search */
+                long time0 = System.currentTimeMillis();
                 Collection<RoboTaxi> potentialTaxis = //
                         dualSideSearch.apply(avr, plannedLocations, latestPickup, latestArrval);
+                System.out.println("dual side search:  " + (System.currentTimeMillis() - time0));
+
+                /** insertion feasibility check */
+                time0 = System.currentTimeMillis();
                 NavigableMap<Scalar, InsertionCheck> insertions = new TreeMap<>();
                 for (RoboTaxi roboTaxi : potentialTaxis) {
                     if (roboTaxi.getUnmodifiableViewOfCourses().size() < roboTaxi.getCapacity() * 2 * menuHorizon) {
@@ -162,7 +164,9 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
                             insertions.put(check.getAddDistance(), check);
                     }
                 }
-
+                System.out.println("insertion feasibility check:  " + (System.currentTimeMillis() - time0));
+                time0 = System.currentTimeMillis();
+                /** plan update */
                 if (Objects.nonNull(insertions.firstEntry())) {
                     /** insert the request into the plan of the {@link RoboTaxi} */
                     insertions.firstEntry().getValue().insert(this::addSharedRoboTaxiPickup);
@@ -172,6 +176,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
                         rtc.remove(sentTaxi);
                     });
                 }
+                System.out.println("plan update:  " + (System.currentTimeMillis() - time0));
             }
         }
 

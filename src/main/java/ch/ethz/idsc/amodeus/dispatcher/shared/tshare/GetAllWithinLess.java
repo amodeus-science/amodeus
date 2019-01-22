@@ -27,6 +27,4 @@ import ch.ethz.idsc.tensor.Scalars;
         }
         return closeEnough;
     }
-    
-
 }

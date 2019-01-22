@@ -1,5 +1,6 @@
 package ch.ethz.idsc.amodeus.dispatcher.shared.tshare;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Scalars;
 
 /* package */ class GridCell {
 
@@ -67,6 +69,21 @@ import ch.ethz.idsc.tensor.Scalar;
     public List<VirtualNode<Link>> getTimeNClosest(int n) {
         return GetSortedClosest.elem(n, temporalSortedMap);
     }
+    
+//    public List<VirtualNode<Link>> than(Scalar time, VirtualNetwork<Link> virtualNetwork) {
+//        List<VirtualNode<Link>> closeEnough = new ArrayList<>();
+//        int i = 1;
+//        boolean withinLimit = true;
+//        while (withinLimit && i < virtualNetwork.getvNodesCount()) {
+//            closeEnough = getTimeNClosest(i);
+//            if (Scalars.lessEquals(time, timeTo(closeEnough.get(i - 1)))) {
+//                withinLimit = false;
+//            }
+//            ++i;
+//        }
+//        return closeEnough;
+//    }
+    
 
     public Scalar timeTo(VirtualNode<Link> virtualNode) {
         return temporalLookupMap.get(virtualNode);
