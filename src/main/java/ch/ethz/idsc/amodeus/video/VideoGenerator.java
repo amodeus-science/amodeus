@@ -36,6 +36,7 @@ import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkGet;
 public class VideoGenerator implements Runnable {
     Thread thread;
     File workingDirectory;
+    private Boolean stop = false;
 
     public VideoGenerator(File workingDirectory) {
         this.workingDirectory = workingDirectory;
@@ -49,23 +50,34 @@ public class VideoGenerator implements Runnable {
 
     @Override
     public void run() {
-        try {
-            // load options
-            ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
-            Config config = ConfigUtils.loadConfig(scenarioOptions.getSimulationConfigName());
-            final File outputSubDirectory = new File(config.controler().getOutputDirectory()).getAbsoluteFile();
-            GlobalAssert.that(outputSubDirectory.isDirectory());
+        while (!stop) {
+            try {
 
-            ReferenceFrame referenceFrame = scenarioOptions.getLocationSpec().referenceFrame();
-            /** reference frame needs to be set manually in IDSCOptions.properties file */
+                // load options
+                ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory,
+                        ScenarioOptionsBase.getDefault());
+                Config config = ConfigUtils.loadConfig(scenarioOptions.getSimulationConfigName());
+                final File outputSubDirectory = new File(config.controler().getOutputDirectory()).getAbsoluteFile();
+                GlobalAssert.that(outputSubDirectory.isDirectory());
 
-            Network network = NetworkLoader.fromNetworkFile(new File(workingDirectory, config.network().getInputFile()));
+                ReferenceFrame referenceFrame = scenarioOptions.getLocationSpec().referenceFrame();
+                /**
+                 * reference frame needs to be set manually in
+                 * IDSCOptions.properties file
+                 */
 
-            export(network, referenceFrame, scenarioOptions, outputSubDirectory);
+                Network network = NetworkLoader
+                        .fromNetworkFile(new File(workingDirectory, config.network().getInputFile()));
 
-            System.out.println("successfully finished video generation");
-        } catch (Exception e) {
-            e.printStackTrace();
+                export(network, referenceFrame, scenarioOptions, outputSubDirectory);
+
+                System.out.println("successfully finished video generation");
+                
+                setStop(true);
+
+            } catch (Exception e) {
+                Thread.currentThread().isInterrupted();
+            }
         }
     }
 
@@ -98,7 +110,8 @@ public class VideoGenerator implements Runnable {
         amodeusComponent.addLayer(requestsLayer);
 
         LinkLayer linkLayer = new LinkLayer(amodeusComponent);
-        // linkLayer.linkLimit = 16384; // might wanna increase link limit to compensate dimensions
+        // linkLayer.linkLimit = 16384; // might wanna increase link limit to
+        // compensate dimensions
         linkLayer.loadSettings(viewerConfig.settings);
         amodeusComponent.addLayer(linkLayer);
 
@@ -114,9 +127,13 @@ public class VideoGenerator implements Runnable {
         clockLayer.loadSettings(viewerConfig.settings);
         amodeusComponent.addLayer(clockLayer);
 
-        /** this is optional and should not cause problems if file does not
-         * exist. temporary solution */
-        VirtualNetwork<Link> virtualNetwork = VirtualNetworkGet.readDefault(network); // may be null
+        /**
+         * this is optional and should not cause problems if file does not
+         * exist. temporary solution
+         */
+        VirtualNetwork<Link> virtualNetwork = VirtualNetworkGet.readDefault(network); // may
+                                                                                      // be
+                                                                                      // null
         System.out.println("has vn: " + (virtualNetwork != null));
         VirtualNetworkLayer virtualNetworkLayer = new VirtualNetworkLayer(amodeusComponent);
         virtualNetworkLayer.setVirtualNetwork(virtualNetwork);
@@ -136,7 +153,9 @@ public class VideoGenerator implements Runnable {
         int count = 0;
         int base = 1;
         try (SimulationObjectsVideo simulationObjectsVideo = new SimulationObjectsVideo( //
-                String.format("%s_%s.mp4", java.time.LocalDate.now(), network.getName()), // TODO meaningful naming
+                String.format("%s_%s.mp4", java.time.LocalDate.now(), network.getName()), // TODO
+                                                                                          // meaningful
+                                                                                          // naming
                 resolution, viewerConfig.settings.fps, amodeusComponent //
         )) {
             simulationObjectsVideo.millis = 20000;
@@ -156,4 +175,12 @@ public class VideoGenerator implements Runnable {
             ex.printStackTrace();
         }
     }
+    
+    public Boolean getStop() {
+        return stop;
+    }
+
+    public void setStop(Boolean stop) {
+        this.stop = stop;
+    }      
 }
