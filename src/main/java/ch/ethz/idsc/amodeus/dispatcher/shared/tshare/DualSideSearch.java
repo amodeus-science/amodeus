@@ -34,8 +34,8 @@ public class DualSideSearch {
         Collection<RoboTaxi> dTaxis = new ArrayList<>();
         Collection<RoboTaxi> potentialTaxis = new ArrayList<>();
 
-        Collection<VirtualNode<Link>> oCloseCells = oCell.nodesWithinLessthan(latestPickup);
-        Collection<VirtualNode<Link>> dCloseCells = dCell.nodesWithinLessthan(latestArrval);
+        Collection<VirtualNode<Link>> oCloseCells = oCell.nodesReachableWithin(latestPickup);
+        Collection<VirtualNode<Link>> dCloseCells = dCell.nodesReachableWithin(latestArrval);
 
         boolean stop0 = false;
         boolean stopD = false;

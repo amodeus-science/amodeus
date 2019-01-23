@@ -130,7 +130,6 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
                     .filter(rt -> (rt.getCapacity() - RoboTaxiUtils.getNumberOnBoardRequests(rt)) >= 1)//
                     .filter(RoboTaxiUtils::canPickupNewCustomer)//
                     .collect(Collectors.toList());
-            System.out.println("number of relevant vehicles: " + customerCarrying.size());
 
             Map<VirtualNode<Link>, Set<RoboTaxi>> plannedLocations = //
                     RoboTaxiPlannedLocations.of(customerCarrying, virtualNetwork);
@@ -140,7 +139,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
                     .filter(avr -> !getCurrentPickupAssignements().keySet().contains(avr))//
                     .sorted(RequestWaitTimeComparator.INSTANCE)//
                     .collect(Collectors.toList());
-            System.out.println("sortedRequests to consider for insertion: " + sortedRequests.size());
+
             for (AVRequest avr : sortedRequests) {
 
                 Scalar latestPickup = Quantity.of(avr.getSubmissionTime(), "s").add(pickupDelayMax);
@@ -149,13 +148,10 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
                 Scalar latestArrval = travelTimeCashed.timeFromTo(avr.getFromLink(), avr.getToLink()).add(drpoffDelayMax);
 
                 /** dual side search */
-                long time0 = System.currentTimeMillis();
                 Collection<RoboTaxi> potentialTaxis = //
                         dualSideSearch.apply(avr, plannedLocations, latestPickup, latestArrval);
-                System.out.println("dual side search:  " + (System.currentTimeMillis() - time0));
 
                 /** insertion feasibility check */
-                time0 = System.currentTimeMillis();
                 NavigableMap<Scalar, InsertionCheck> insertions = new TreeMap<>();
                 for (RoboTaxi roboTaxi : potentialTaxis) {
                     if (roboTaxi.getUnmodifiableViewOfCourses().size() < roboTaxi.getCapacity() * 2 * menuHorizon) {
@@ -164,8 +160,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
                             insertions.put(check.getAddDistance(), check);
                     }
                 }
-                System.out.println("insertion feasibility check:  " + (System.currentTimeMillis() - time0));
-                time0 = System.currentTimeMillis();
+
                 /** plan update */
                 if (Objects.nonNull(insertions.firstEntry())) {
                     /** insert the request into the plan of the {@link RoboTaxi} */
@@ -176,7 +171,6 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
                         rtc.remove(sentTaxi);
                     });
                 }
-                System.out.println("plan update:  " + (System.currentTimeMillis() - time0));
             }
         }
 
