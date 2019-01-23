@@ -73,10 +73,11 @@ public class VideoGenerator implements Runnable {
 
                 System.out.println("successfully finished video generation");
                 
-                setStop(true);
+                System.exit(0);
+                
 
             } catch (Exception e) {
-                Thread.currentThread().isInterrupted();
+                e.printStackTrace();
             }
         }
     }
@@ -174,6 +175,7 @@ public class VideoGenerator implements Runnable {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+        setStop(true);
     }
     
     public Boolean getStop() {
