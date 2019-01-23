@@ -23,9 +23,11 @@ import ch.ethz.idsc.tensor.qty.Quantity;
  * Like that a very efficient travel time calculation can be guaranteed such that
  * the computationally expensive routing has only to be done once for a given link
  * to link pair. */
-/* package */ class TravelTimeCalculatorCached implements TravelTimeCalculator {
+// TODO move to separate class and ensure that duplicate code with
+// CashedDistanceCalculator is removed.
+public class TravelTimeCalculatorCached implements TravelTimeCalculator {
 
-    static TravelTimeCalculatorCached of(LeastCostPathCalculator calculator, double maxLag) {
+    public static TravelTimeCalculatorCached of(LeastCostPathCalculator calculator, double maxLag) {
         return new TravelTimeCalculatorCached(calculator, maxLag);
     }
 
