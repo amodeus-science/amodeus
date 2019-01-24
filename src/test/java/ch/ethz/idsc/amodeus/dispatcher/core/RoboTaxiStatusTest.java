@@ -11,5 +11,4 @@ public class RoboTaxiStatusTest extends TestCase {
         assertFalse(RoboTaxiStatus.STAY.isDriving());
         assertFalse(RoboTaxiStatus.OFFSERVICE.isDriving());
     }
-
 }

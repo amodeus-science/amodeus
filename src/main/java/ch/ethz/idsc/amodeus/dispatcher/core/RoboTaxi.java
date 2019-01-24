@@ -288,21 +288,11 @@ public class RoboTaxi {
      * for each request the dropoff occurs after the pickup and no course apears exactely once)
      * 
      * If a Dropoff is currently in progress then this course can not be moved away from the first position. All other changes are still possible. If a dropoff is
-     * in progress can be checked with the function
+     * in progress if the divertable link of the robotaxi equals the link of the Dropoff Course.
      * 
      * @param List<SharedCourse> */
     public void updateMenu(List<SharedCourse> list) {
         updateMenu(SharedMenu.of(list));
-    }
-
-    public boolean getDropoffInProgress() {
-        if (dropoffInProgress) {
-            if (isDivertable()) {
-                System.err.println(
-                        "It Is not expected that a Robo Taxi is divertable during its Dropoff. check if this is correctly implemented in the Robo Taxi Class. nevertheless, it works also like it is");
-            }
-        }
-        return dropoffInProgress;
     }
 
     /** This function is only for internal use. It should not be allowed that the menu can be changed from outside of the RoboTaxi directly.
