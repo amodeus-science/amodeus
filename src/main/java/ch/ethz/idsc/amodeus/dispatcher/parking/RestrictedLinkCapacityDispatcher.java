@@ -77,11 +77,11 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 60);
         sharingPeriod = safeConfig.getInteger("sharingPeriod", 10); // makes sense to choose this value similar to the
                                                                     // pickup duration
-        freeParkingPeriod = safeConfig.getInteger("freeParkingPeriod", 10);
+        freeParkingPeriod = (long) safeConfig.getInteger("freeParkingPeriod", 10);
 
         double rMax = safeConfig.getDouble("rMax", 1000.0);
         double phiMax = Pi.in(1000).multiply(RealScalar.of(safeConfig.getDouble("phiMaxDeg", 5.0) / 180.0)).number().doubleValue();
-       
+
         beamExtensionForSharing = new BeamExtensionForSharing(rMax, phiMax);
         this.networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
         this.requestMaintainer = new TreeMaintainer<>(networkBounds, this::getLocation);
