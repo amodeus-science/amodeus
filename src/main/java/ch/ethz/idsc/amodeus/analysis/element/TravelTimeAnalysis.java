@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.analysis.element;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -141,6 +142,11 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
      *         chosen quantiles defined in {@link Quantiles} */
     public Tensor getTotJAggrgte() {
         return totJTAgg;
+    }
+
+    /** @return and unmodifiable Map on the travel histories with the Request Index as key and the {@link TravelHistory} as value */
+    public Map<Integer, TravelHistory> getTravelHistories() {
+        return Collections.unmodifiableMap(travelHistories);
     }
 
     @Override
