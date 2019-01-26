@@ -53,7 +53,7 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
     private static final double maxWaitTime = 300.0;
     private static final double costOfIgnoredReuqestNormal = 7200;
     private static final double costOfIgnoredReuqestHigh = 72000;
-    private static final int DEFAULTNUMBERSEATS = 10;
+    private static final int DEFAULTNUMBERSEATS = 4;
 
     private final int dispatchPeriod;
     private final int rebalancePeriod;
