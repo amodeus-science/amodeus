@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared.tshare;
 
 import java.util.ArrayList;
@@ -84,11 +85,9 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      *         the request cannot be dropped of before reaching maxDrpoffDelay. Otherwise
      *         returns the additional necessary distance to pickup the request. */
     public Scalar getAddDistance() {
-        if (Objects.nonNull(optimalMenu)) {
+        if (Objects.nonNull(optimalMenu))
             return optimalLength.subtract(originalLength);
-        } else {
-            return null;
-        }
+        return null;
     }
 
     public void insert(BiConsumer<RoboTaxi, AVRequest> addSharedPickup) {
