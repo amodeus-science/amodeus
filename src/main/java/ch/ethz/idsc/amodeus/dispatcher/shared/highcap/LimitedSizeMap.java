@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared.highcap;
 
 import java.util.LinkedHashMap;
@@ -6,6 +7,7 @@ import java.util.Map;
 import ch.ethz.idsc.amodeus.util.math.LruCache;
 
 /** similar to {@link LruCache} */
+// TODO use LruCache instead
 public class LimitedSizeMap<K, V> extends LinkedHashMap<K, V> {
     /**
      * 
