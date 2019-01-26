@@ -47,7 +47,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
     public static boolean checkNoPickupAfterDropoffOfSameRequest(SharedMenu sharedMenu) {
         return SharedCourseListUtils.checkNoPickupAfterDropoffOfSameRequest(sharedMenu.getRoboTaxiMenu());
     }
-    
+
     public static boolean checkMenuConsistencyWithRoboTaxi(SharedMenu sharedMenu, int roboTaxiCapacity) {
         return SharedCourseListUtils.checkMenuConsistency(sharedMenu.getRoboTaxiMenu(), roboTaxiCapacity);
     }

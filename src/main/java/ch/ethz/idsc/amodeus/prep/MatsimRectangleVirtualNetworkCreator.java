@@ -21,8 +21,6 @@ public class MatsimRectangleVirtualNetworkCreator {
 
     public static VirtualNetwork<Link> createVirtualNetwork(Population population, Network network, boolean completeGraph, //
             int divLat, int divLng) {
-        @SuppressWarnings("unchecked")
-
         /** bounds */
         Tensor bounds = NetworkBounds.of(network);
         Tensor lbounds = bounds.get(0);
@@ -37,6 +35,7 @@ public class MatsimRectangleVirtualNetworkCreator {
         network.getLinks().values().forEach(l -> uElements.get(l.getFromNode()).add(l));
         network.getLinks().values().forEach(l -> uElements.get(l.getToNode()).add(l));
 
+        @SuppressWarnings("unchecked")
         Collection<Link> elements = (Collection<Link>) network.getLinks().values();
         RectangleGridVirtualNetworkCreator<Link, Node> creator = //
                 new RectangleGridVirtualNetworkCreator<>(elements, TensorLocation::of, NetworkCreatorUtils::linkToID, //

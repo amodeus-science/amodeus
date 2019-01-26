@@ -22,7 +22,6 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     // output: route (a list of stopInRoute)
     // 20181022 Important update! Stop generating route immediately when the route is not feasible.
 
-
     static List<StopInRoute> of(RoboTaxi roboTaxi, Set<AVRequest> additionalRequest, //
             double now, Map<AVRequest, RequestKeyInfo> requestKeyInfoMap, //
             int capacityOfTaxi, TravelTimeCalculator ttc, double pickupDurationPerStop, double dropoffDurationPerStop) {

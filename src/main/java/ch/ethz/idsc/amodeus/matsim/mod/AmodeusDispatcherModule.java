@@ -63,9 +63,9 @@ public class AmodeusDispatcherModule extends AbstractModule {
 
         bind(DynamicRideSharingStrategy.Factory.class);
         AVUtils.bindDispatcherFactory(binder(), DynamicRideSharingStrategy.class.getSimpleName()).to(DynamicRideSharingStrategy.Factory.class);
-        
+
         bind(TShareDispatcher.Factory.class);
         AVUtils.bindDispatcherFactory(binder(), TShareDispatcher.class.getSimpleName()).to(TShareDispatcher.Factory.class);
-        
+
     }
 }

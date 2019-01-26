@@ -19,7 +19,7 @@ import org.matsim.core.router.util.LeastCostPathCalculator.Path;
 
     // map data structure
     double of(Link fromLink, Link toLink, double now, boolean storeInCache) {
-        if (!travelTimeDataMap.containsKey(fromLink)) 
+        if (!travelTimeDataMap.containsKey(fromLink))
 
             travelTimeDataMap.put(fromLink, new HashMap<>());
 
