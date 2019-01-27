@@ -10,33 +10,33 @@ import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Rectangle;
 
-public class DisplayHelper {
-    private Rectangle myScreen = new Rectangle();
+/* package */ class DisplayHelper {
+    private Rectangle screen = new Rectangle();
 
     public DisplayHelper() {
-        GraphicsEnvironment myGraphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        for (GraphicsDevice myGraphicsDevice : myGraphicsEnvironment.getScreenDevices())
-            for (GraphicsConfiguration myGraphicsConfiguration : myGraphicsDevice.getConfigurations())
-                myScreen = myScreen.union(myGraphicsConfiguration.getBounds());
+        GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        for (GraphicsDevice graphicsDevice : graphicsEnvironment.getScreenDevices())
+            for (GraphicsConfiguration graphicsConfiguration : graphicsDevice.getConfigurations())
+                screen = screen.union(graphicsConfiguration.getBounds());
     }
 
     public Rectangle allVisible(int x, int y, int width, int height) {
-        x = Math.max(0, Math.min(x, myScreen.width - width));
-        y = Math.max(0, Math.min(y, myScreen.height - height));
+        x = Math.max(0, Math.min(x, screen.width - width));
+        y = Math.max(0, Math.min(y, screen.height - height));
         return new Rectangle(x, y, width, height);
     }
 
-    public Rectangle allVisible(Rectangle myRectangle) {
-        return allVisible(myRectangle.x, myRectangle.y, myRectangle.width, myRectangle.height);
+    public Rectangle allVisible(Rectangle rectangle) {
+        return allVisible(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
     }
 
     public Rectangle getScreenRectangle() {
-        return myScreen;
+        return screen;
     }
 
     @Override
     public String toString() {
-        return "Display point=(" + myScreen.x + ", " + myScreen.y + ") dimension=(" + myScreen.width + ", " + myScreen.height + ")";
+        return "Display point=(" + screen.x + ", " + screen.y + ") dimension=(" + screen.width + ", " + screen.height + ")";
     }
 
     public static Point getMouseLocation() {

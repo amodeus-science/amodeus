@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared.highcap;
 
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.Objects;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-enum TotalDelayCalculator {
+public enum TotalDelayCalculator {
     ;
     /** the function (TotalDelayCalculator.of) intakes the route (a list of stopInRoute)
      * and returns totalDelay (double) which represents the total delay of the route
@@ -15,7 +16,7 @@ enum TotalDelayCalculator {
      * Update 20181022 this function has been greatly changed in accordance with route generator for shorter running time.
      * 
      * /* package */
-    static double of(List<StopInRoute> route, //
+    public static double of(List<StopInRoute> route, //
             Map<AVRequest, RequestKeyInfo> requestKeyInfoMap, //
             TravelTimeCalculator ttc) {
 

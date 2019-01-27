@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared.highcap;
 
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiUtils;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-/* package */ enum RouteGenerator {
+public enum RouteGenerator {
     ;
     /** Route Generator
      * this function generate a route base on current request on board and additional requests to be assigned to the roboTaxi
@@ -22,7 +23,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     // output: route (a list of stopInRoute)
     // 20181022 Important update! Stop generating route immediately when the route is not feasible.
 
-    static List<StopInRoute> of(RoboTaxi roboTaxi, Set<AVRequest> additionalRequest, //
+    public static List<StopInRoute> of(RoboTaxi roboTaxi, Set<AVRequest> additionalRequest, //
             double now, Map<AVRequest, RequestKeyInfo> requestKeyInfoMap, //
             int capacityOfTaxi, TravelTimeCalculator ttc, double pickupDurationPerStop, double dropoffDurationPerStop) {
         // define some variables

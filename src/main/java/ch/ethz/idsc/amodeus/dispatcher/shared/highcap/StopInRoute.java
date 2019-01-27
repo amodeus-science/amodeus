@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared.highcap;
 
 import org.matsim.api.core.v01.network.Link;
@@ -7,7 +8,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 // TODO might be an extension of the Shared Course instead, see the StopInRouteAsCourseExtension
-/* package */ class StopInRoute {
+public class StopInRoute {
     private final double time;
     private final Link stopLink;
     private final SharedMealType stopType;
