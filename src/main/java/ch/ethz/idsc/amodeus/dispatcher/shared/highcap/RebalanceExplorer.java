@@ -9,11 +9,11 @@ import org.matsim.api.core.v01.network.Link;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-/* package */ enum RebalanceExplorer {
+public enum RebalanceExplorer {
     ;
     /** the of function in RebalanceExplorer intakes unassigned vehicle and idling taxi, and generate a list of RebalanceTripWithVehicle.
      * It is similar to TripExploerer.of but for different purpose and much simpler. */
-    static List<RebalanceTripWithVehicle> of( //
+    public static List<RebalanceTripWithVehicle> of( //
             List<AVRequest> listOfUnassignedRequest, List<RoboTaxi> idlingRoboTaxis, //
             double now, TravelTimeCalculator ttc) {
         List<RebalanceTripWithVehicle> listOfAllRebalanceTripWithVehicle = new ArrayList<>();

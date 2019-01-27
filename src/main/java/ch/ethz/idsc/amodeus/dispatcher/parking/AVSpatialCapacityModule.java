@@ -14,6 +14,7 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 
+//TODO class not used outside project: document purpose or hide implementation
 public class AVSpatialCapacityModule extends AbstractModule {
 
     @Override

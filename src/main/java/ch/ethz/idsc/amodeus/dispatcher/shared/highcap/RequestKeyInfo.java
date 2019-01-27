@@ -33,7 +33,7 @@ public class RequestKeyInfo {
         return modifiableSubmissionTime;
     }
 
-    void modifyDeadlinePickUp(List<TripWithVehicle> lastAssignment, AVRequest avRequest, double maxWaitTime) {
+    public void modifyDeadlinePickUp(List<TripWithVehicle> lastAssignment, AVRequest avRequest, double maxWaitTime) {
         deadlinePickUp = modifiableSubmissionTime + maxWaitTime; // first write the original value
         // if it is assigned last time then make the deadline earlier
         for (TripWithVehicle tripWithVehicle : lastAssignment) {
@@ -51,13 +51,13 @@ public class RequestKeyInfo {
         }
     }
 
-    void addTrafficAllowance(double trafficAllowance) {
+    public void addTrafficAllowance(double trafficAllowance) {
         deadlinePickUp += trafficAllowance;
         deadlineDropOff += trafficAllowance;
         allowanceGiven = true;
     }
 
-    void removeTrafficAllowance(double trafficAllowance) { // this function is needed when we finish dealing with one roboTaxi, we need to change back the deadlines
+    public void removeTrafficAllowance(double trafficAllowance) { // this function is needed when we finish dealing with one roboTaxi, we need to change back the deadlines
         if (allowanceGiven == true) {
             deadlinePickUp -= trafficAllowance;
             deadlineDropOff -= trafficAllowance;
@@ -65,7 +65,7 @@ public class RequestKeyInfo {
         }
     }
 
-    void modifySubmissionTime(double now, double maxWaitTime, AVRequest avRequest, Set<AVRequest> overduedRequests) {
+    public void modifySubmissionTime(double now, double maxWaitTime, AVRequest avRequest, Set<AVRequest> overduedRequests) {
         if (modifiableSubmissionTime + maxWaitTime < now && overduedRequests.contains(avRequest)) {
             modifiableSubmissionTime += maxWaitTime;
             deadlinePickUp += maxWaitTime;

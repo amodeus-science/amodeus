@@ -8,9 +8,9 @@ import java.util.Set;
 
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-/* package */ enum RequestTracker {
+public enum RequestTracker {
     ;
-    static Set<AVRequest> getNewAddedValidRequests(Set<AVRequest> openRequestSet, Set<AVRequest> lastValidRequestSet) {
+    public static Set<AVRequest> getNewAddedValidRequests(Set<AVRequest> openRequestSet, Set<AVRequest> lastValidRequestSet) {
         Set<AVRequest> newAddedValidRequests = new HashSet<>();
         for (AVRequest avRequest : openRequestSet)
             if (!lastValidRequestSet.contains(avRequest))
@@ -18,7 +18,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         return newAddedValidRequests;
     }
 
-    static Set<AVRequest> getRemovedRequests(Set<AVRequest> openRequestSet, Set<AVRequest> lastValidRequestSet) {
+    public static Set<AVRequest> getRemovedRequests(Set<AVRequest> openRequestSet, Set<AVRequest> lastValidRequestSet) {
         Set<AVRequest> removedRequests = new HashSet<>();
         for (AVRequest avRequest : lastValidRequestSet)
             if (!openRequestSet.contains(avRequest))
@@ -26,7 +26,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         return removedRequests;
     }
 
-    static Set<AVRequest> getRemainedRequests(Set<AVRequest> openRequestSet, Set<AVRequest> lastValidRequestSet) {
+    public static Set<AVRequest> getRemainedRequests(Set<AVRequest> openRequestSet, Set<AVRequest> lastValidRequestSet) {
         Set<AVRequest> remainedRequests = new HashSet<>();
         for (AVRequest avRequest : lastValidRequestSet)
             if (openRequestSet.contains(avRequest))
@@ -34,7 +34,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         return remainedRequests;
     }
 
-    static void removeClosedRequest(Set<AVRequest> requestPool, Collection<AVRequest> openRequests) {
+    public static void removeClosedRequest(Set<AVRequest> requestPool, Collection<AVRequest> openRequests) {
         Set<AVRequest> closedRequests = new HashSet<>();
         for (AVRequest avRequest : requestPool)
             if (!openRequests.contains(avRequest))
@@ -50,7 +50,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param requestMatchedLastTime
      * @return the set of removed requests */
 
-    static Set<AVRequest> removeOverduedRequest(Set<AVRequest> requestPool, //
+    public static Set<AVRequest> removeOverduedRequest(Set<AVRequest> requestPool, //
 
             Map<AVRequest, RequestKeyInfo> requestKeyInfoMap, double now, Set<AVRequest> requestMatchedLastTime) {
         Set<AVRequest> overduedRequests = new HashSet<>();
