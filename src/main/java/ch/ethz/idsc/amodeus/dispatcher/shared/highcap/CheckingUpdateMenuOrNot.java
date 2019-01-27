@@ -9,11 +9,11 @@ import java.util.Set;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-/* package */ class CheckingUpdateMenuOrNot {
+public class CheckingUpdateMenuOrNot {
     private final Map<RoboTaxi, Set<AVRequest>> lastSetOfRequestsInRoute = new HashMap<>();
     private final Map<RoboTaxi, Set<AVRequest>> secondLastSetOfRequestInRoute = new HashMap<>();
 
-    boolean updateMenuOrNot(RoboTaxi roboTaxi, Set<AVRequest> setOfRequestsInRoute) {
+    public boolean updateMenuOrNot(RoboTaxi roboTaxi, Set<AVRequest> setOfRequestsInRoute) {
         // prevent looping
         if (!secondLastSetOfRequestInRoute.containsKey(roboTaxi)) {
             secondLastSetOfRequestInRoute.put(roboTaxi, new HashSet<>());

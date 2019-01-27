@@ -8,14 +8,14 @@ import java.util.Set;
 
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-/* package */ enum EverySubtripIsValid {
+public enum EverySubtripIsValid {
     ;
     /** this function check the if every sub-trip of a trip is valid trip ]
      * 
      * @param listOfTripsFromLastLoop
      * @param thisTrip
      * @return */
-    static boolean of(List<Set<AVRequest>> listOfTripsFromLastLoop, Set<AVRequest> thisTrip) {
+    public static boolean of(List<Set<AVRequest>> listOfTripsFromLastLoop, Set<AVRequest> thisTrip) {
         // generate all sub-trips
         List<Set<AVRequest>> listOfSubtrips = new ArrayList<>();
         List<AVRequest> listOfSingleRequest = new ArrayList<>();
