@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.geotools.console.Option;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -201,7 +202,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
         @Inject
         private MatsimAmodeusDatabase db;
 
-        @Inject
+        @Inject (optional = true)
         private AVSpatialCapacityAmodeus avSpatialCapacityAmodeus;
 
         @Override

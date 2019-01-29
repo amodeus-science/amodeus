@@ -37,7 +37,16 @@ public enum VirtualNetworkCreators implements VirtualNetworkCreator {
             int divLat = Integer.parseInt(scenarioOptions.getString("LATITUDE_NODES"));
             int divLng = Integer.parseInt(scenarioOptions.getString("LONGITUDE_NODES"));
             GlobalAssert.that(divLat > 0 && divLng > 0);
-            return MatsimRectangleVirtualNetworkCreator.createVirtualNetwork(population, network, scenarioOptions.isCompleteGraph(), divLat, divLng);
+            return MatsimRectangleVirtualNetworkCreator.createVirtualNetwork(network, scenarioOptions.isCompleteGraph(), divLat, divLng);
+        }
+    },
+    RECTANGULARNEIGHBOUR {
+        @Override
+        public VirtualNetwork<Link> create(Network network, Population population, ScenarioOptions scenarioOptions, int numRoboTaxis, int endTime) {
+            int divLat = Integer.parseInt(scenarioOptions.getString("LATITUDE_NODES"));
+            int divLng = Integer.parseInt(scenarioOptions.getString("LONGITUDE_NODES"));
+            GlobalAssert.that(divLat > 0 && divLng > 0);
+            return MatsimNeighbourRectangleVirtualNetworkCreator.createVirtualNetwork(network, divLat, divLng);
         }
     };
 }

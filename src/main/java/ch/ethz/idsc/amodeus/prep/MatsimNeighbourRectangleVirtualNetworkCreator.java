@@ -8,18 +8,17 @@ import java.util.Map;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
-import org.matsim.api.core.v01.population.Population;
 
 import ch.ethz.idsc.amodeus.dispatcher.util.NetworkBounds;
 import ch.ethz.idsc.amodeus.dispatcher.util.TensorLocation;
-import ch.ethz.idsc.amodeus.virtualnetwork.RectangleGridVirtualNetworkCreator;
+import ch.ethz.idsc.amodeus.virtualnetwork.NeighbourRectangleGridVirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-public class MatsimRectangleVirtualNetworkCreator {
+public class MatsimNeighbourRectangleVirtualNetworkCreator {
 
-    public static VirtualNetwork<Link> createVirtualNetwork(Network network, boolean completeGraph, //
+    public static VirtualNetwork<Link> createVirtualNetwork(Network network, //
             int divLat, int divLng) {
         @SuppressWarnings("unchecked")
 
@@ -38,10 +37,10 @@ public class MatsimRectangleVirtualNetworkCreator {
         network.getLinks().values().forEach(l -> uElements.get(l.getToNode()).add(l));
 
         Collection<Link> elements = (Collection<Link>) network.getLinks().values();
-        RectangleGridVirtualNetworkCreator<Link, Node> creator = //
-                new RectangleGridVirtualNetworkCreator<>(elements, TensorLocation::of, NetworkCreatorUtils::linkToID, //
+        NeighbourRectangleGridVirtualNetworkCreator<Link, Node> creator = //
+                new NeighbourRectangleGridVirtualNetworkCreator<>(elements, TensorLocation::of, NetworkCreatorUtils::linkToID, //
                         divLat, divLng, xBounds, yBounds, //
-                        uElements, completeGraph);
+                        uElements);
         return creator.getVirtualNetwork();
     }
 }

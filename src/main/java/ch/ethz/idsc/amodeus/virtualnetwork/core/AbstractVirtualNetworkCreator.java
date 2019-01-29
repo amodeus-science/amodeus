@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.function.Function;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.amodeus.virtualnetwork.VNodeAdd;
 
 public abstract class AbstractVirtualNetworkCreator<T, U> {
 
@@ -19,17 +18,22 @@ public abstract class AbstractVirtualNetworkCreator<T, U> {
 
         /** initialize new {@link VirtualNetwork} */
         VirtualNetwork<T> virtualNetwork = new VirtualNetworkImpl<>();
-
         VirtualNetworkCreatorUtils.addToVNodes(vNodeTMap, nameOf, virtualNetwork);
 
-        /** create virtualLinks for complete or neighboring graph */
-        VirtualLinkBuilder.build(virtualNetwork, completeGraph, uElements);
+        /** build Links , canbe overwritten by child classes */
+        buildLinks(virtualNetwork, completeGraph, uElements);
         GlobalAssert.that(VirtualNetworkCheck.virtualLinkConsistencyCheck(virtualNetwork));
 
         /** fill information for serialization */
         VirtualNetworkCreatorUtils.fillSerializationInfo(elements, virtualNetwork, nameOf);
 
         return virtualNetwork;
+
+    }
+
+    protected void buildLinks(VirtualNetwork<T> virtualNetwork, boolean completeGraph, Map<U, HashSet<T>> uElements) {
+        /** create virtualLinks for complete or neighboring graph */
+        VirtualLinkBuilder.build(virtualNetwork, completeGraph, uElements);
 
     }
 
