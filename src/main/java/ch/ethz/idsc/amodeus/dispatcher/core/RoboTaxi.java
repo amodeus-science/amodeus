@@ -310,6 +310,13 @@ public class RoboTaxi {
                 finishRedirection();
             }
         }
+        
+        if (status.equals(RoboTaxiStatus.PARKING)) {
+            GlobalAssert.that(RoboTaxiUtils.getStarterCourse(this).get().getMealType().equals(SharedMealType.PARKING));
+            if (getUnmodifiableViewOfCourses().size() == 1) {
+                finishParking();
+            }
+        }
         SharedCourse pickupCourse = SharedCourse.pickupCourse(avRequest);
         SharedCourse dropoffCourse = SharedCourse.dropoffCourse(avRequest);
         setMenu(SharedMenuUtils.addAVCoursesAsDessert(menu, pickupCourse, dropoffCourse));
@@ -323,6 +330,11 @@ public class RoboTaxi {
     /* package */ void addRedirectCourseToMenuAtBegining(SharedCourse redirectCourse) {
         GlobalAssert.that(redirectCourse.getMealType().equals(SharedMealType.REDIRECT));
         setMenu(SharedMenuUtils.addAVCoursesAsStarter(menu, redirectCourse));
+    }
+    
+    /* package */ void addParkingCourseToManu(SharedCourse parkingCourse) {
+        GlobalAssert.that(parkingCourse.getMealType().equals(SharedMealType.PARKING));
+        setMenu(SharedMenuUtils.addAVCoursesAsDessert(menu, parkingCourse));
     }
 
     /* package */ void pickupNewCustomerOnBoard() {
@@ -353,6 +365,12 @@ public class RoboTaxi {
     /* package */ void finishRedirection() {
         GlobalAssert.that(RoboTaxiUtils.hasNextCourse(this));
         GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.REDIRECT));
+        setMenu(SharedMenuUtils.removeStarterCourse(menu));
+    }
+    
+    /* package */ void finishParking() {
+        GlobalAssert.that(RoboTaxiUtils.hasNextCourse(this));
+        GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.PARKING));
         setMenu(SharedMenuUtils.removeStarterCourse(menu));
     }
 

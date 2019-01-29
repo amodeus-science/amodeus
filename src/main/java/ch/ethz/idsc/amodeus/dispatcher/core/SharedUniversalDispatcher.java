@@ -309,6 +309,14 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
         }
     }
 
+    /** ensures completed parking tasks are removed from menu */
+    @Override
+    void executeParking() {
+        for (RoboTaxi roboTaxi : getRoboTaxis()) {
+            SharedRoboTaxiHelper.finishRedirectionIfOnLastLink(roboTaxi);
+        }
+    }
+    
     @Override
     /* package */ void stopAbortedPickupRoboTaxis() {
         // --- Deliberately empty
@@ -351,7 +359,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
         GlobalAssert.that(roboTaxi.isWithoutCustomer());
         Objects.requireNonNull(roboTaxi);
         List<SharedCourse> oldCourses = roboTaxi.cleanAndAbandonMenu();
-        oldCourses.stream().filter(sc -> !sc.getMealType().equals(SharedMealType.REDIRECT))//
+        oldCourses.stream().filter(sc -> !sc.getMealType().equals(SharedMealType.REDIRECT) && !sc.getMealType().equals(SharedMealType.PARKING))//
                 .forEach(sc -> {
                     pendingRequests.add(sc.getAvRequest());
                     reqStatuses.put(sc.getAvRequest(), RequestStatus.REQUESTED);
@@ -382,10 +390,19 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
                         GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE));
                     }
                 }
+                if (nextCourseOptional.get().getMealType().equals(SharedMealType.PARKING)) {
+                    if (RoboTaxiUtils.getNumberOnBoardRequests(roboTaxi) == 0) {
+                        GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.PARKING));
+                    }
+                }
             }
 
             if (roboTaxi.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE)) {
                 GlobalAssert.that(RoboTaxiUtils.getStarterCourse(roboTaxi).get().getMealType().equals(SharedMealType.REDIRECT));
+            }
+            
+            if (roboTaxi.getStatus().equals(RoboTaxiStatus.PARKING)) {
+                GlobalAssert.that(RoboTaxiUtils.getStarterCourse(roboTaxi).get().getMealType().equals(SharedMealType.PARKING));
             }
         }
 
@@ -429,7 +446,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
         for (RoboTaxi roboTaxi : getRoboTaxis()) {
             if (RoboTaxiUtils.hasNextCourse(roboTaxi)) {
                 for (SharedCourse course : roboTaxi.getUnmodifiableViewOfCourses()) {
-                    if (!course.getMealType().equals(SharedMealType.REDIRECT)) {
+                    if (!course.getMealType().equals(SharedMealType.REDIRECT) && !course.getMealType().equals(SharedMealType.PARKING)) {
                         String requestId = course.getCourseId();
                         Map<String, AVRequest> requests = requestRegister.get(roboTaxi);
                         GlobalAssert.that(requests.containsKey(requestId));

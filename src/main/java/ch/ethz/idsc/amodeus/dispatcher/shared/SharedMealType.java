@@ -7,6 +7,7 @@ public enum SharedMealType {
     PICKUP, //
     DROPOFF, //
     REDIRECT, //
-    WAITFORCUSTOMER,
+    WAITFORCUSTOMER, //
+    PARKING
     ;
 }
