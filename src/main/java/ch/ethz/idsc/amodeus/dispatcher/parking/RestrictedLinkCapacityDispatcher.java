@@ -201,7 +201,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
         @Inject
         private MatsimAmodeusDatabase db;
 
-        @Inject
+        @Inject (optional=true)
         private AVSpatialCapacityAmodeus avSpatialCapacityAmodeus;
 
         @Override
