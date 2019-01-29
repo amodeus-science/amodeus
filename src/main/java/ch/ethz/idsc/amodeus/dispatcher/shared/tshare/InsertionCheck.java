@@ -1,13 +1,16 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared.tshare;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NavigableMap;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.function.BiConsumer;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.matsim.av.passenger.AVRequest;
@@ -16,12 +19,12 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
     private final RoboTaxi roboTaxi;
     private final AVRequest request;
-    private List<SharedCourse> optimalMenu;
-    private final Scalar optimalLength;
-    private final Scalar originalLength;
+    private List<SharedCourse> optimalMenu = null;
+    private Scalar optimalLength;
+    private Scalar originalLength;
 
     public InsertionCheck(CashedDistanceCalculator distance, //
-            RoboTaxi roboTaxi, AVRequest request, double latestPickup, double latestArrval) {
+            RoboTaxi roboTaxi, AVRequest request) {
         this.roboTaxi = roboTaxi;
         this.request = request;
 
@@ -58,6 +61,10 @@ import ch.ethz.matsim.av.passenger.AVRequest;
                     }
                     if (k < length)
                         newMenu.add(originalMenu.get(k));
+                }
+
+                if (SharedCourseListUtils//
+                        .checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(newMenu, roboTaxi.getCapacity())) {
                     /** the line below is computationally expensive and calculates the
                      * path length of the option. */
                     menuOptions.put(Length.of(roboTaxi, newMenu, distance), newMenu);
@@ -66,21 +73,28 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         }
 
         /** save the optimal menu */
-        optimalMenu = menuOptions.firstEntry().getValue();
-        GlobalAssert.that(optimalMenu.size() == originalMenu.size() + 2);
-        optimalLength = menuOptions.firstEntry().getKey();
+        if (Objects.nonNull(menuOptions.firstEntry())) {
+            optimalMenu = menuOptions.firstEntry().getValue();
+            GlobalAssert.that(optimalMenu.size() == originalMenu.size() + 2);
+            GlobalAssert.that(SharedCourseListUtils.checkMenuConsistency(optimalMenu, roboTaxi.getCapacity()));
+            optimalLength = menuOptions.firstEntry().getKey();
+        }
     }
 
     /** @return null if the request cannot be reached before maxPickupDelay or
      *         the request cannot be dropped of before reaching maxDrpoffDelay. Otherwise
      *         returns the additional necessary distance to pickup the request. */
     public Scalar getAddDistance() {
-        return optimalLength.subtract(originalLength);
+        if (Objects.nonNull(optimalMenu))
+            return optimalLength.subtract(originalLength);
+        return null;
     }
 
     public void insert(BiConsumer<RoboTaxi, AVRequest> addSharedPickup) {
-        addSharedPickup.accept(roboTaxi, request);
-        roboTaxi.updateMenu(optimalMenu);
+        if (Objects.nonNull(optimalMenu)) {
+            addSharedPickup.accept(roboTaxi, request);
+            roboTaxi.updateMenu(optimalMenu);
+        }
     }
 
     public RoboTaxi getRoboTaxi() {
