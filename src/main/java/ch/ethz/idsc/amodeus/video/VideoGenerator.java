@@ -145,6 +145,10 @@ public class VideoGenerator implements Runnable {
         amodeusComponent.setSize(resolution);
         AmodeusComponentUtil.adjustMapZoom(amodeusComponent, network, scenarioOptions, db);
         amodeusComponent.reorientMap(viewerConfig);
+        int test = amodeusComponent.getZoom();
+        amodeusComponent.setZoom(amodeusComponent.getZoom() + 1);
+        amodeusComponent.moveMap(100, 0);
+        
 
         StorageUtils storageUtils = new StorageUtils(outputSubDirectory);
         IterationFolder iterationFolder = storageUtils.getAvailableIterations().get(0);

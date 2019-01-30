@@ -56,6 +56,8 @@ public enum ScenarioOptionsBase {
     public static final String DISPATCHERSTRATEGYIDENTIFIER = "dispatchStrategy";
     
     public static final String MAKEVIDEOIDENTIFIER = "makeVideo";
+    
+    public static final String MINIMUMTRIPDISTANCE = "minTripDistance";
 
     public static Properties getDefault() {
         Properties properties = new Properties();
@@ -87,6 +89,7 @@ public enum ScenarioOptionsBase {
         properties.setProperty(NUMBEROFVEHICLESIDENTIFIER, "100");
         properties.setProperty(DISPATCHERSTRATEGYIDENTIFIER, "RemoteControllerDispatcher");
         properties.setProperty(MAKEVIDEOIDENTIFIER, "true");
+        properties.setProperty(MINIMUMTRIPDISTANCE, "1500");
         return properties;
     }
 

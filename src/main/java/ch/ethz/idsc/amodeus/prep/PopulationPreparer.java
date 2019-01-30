@@ -33,7 +33,7 @@ public enum PopulationPreparer {
         System.out.println("Population size after cutting: " + population.getPersons().values().size());
         
         int endTime = (int) config.qsim().getEndTime();
-        double minDistance = 1500;
+        double minDistance = scenOptions.getMinimumTripDistance();
 //        double minDistance = 0;
 
         TheApocalypse.reducesThe(population, network, endTime, minDistance).toNoMoreThan(scenOptions.getMaxPopulationSize()).people();

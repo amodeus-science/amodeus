@@ -122,6 +122,14 @@ public class ScenarioOptions {
         properties.setProperty(ScenarioOptionsBase.MAXNUMBERREQUESTSIDENTIFIER, String.valueOf(maxNumberRequests));
     }
     
+    public int getMinimumTripDistance() {
+        return getInt(ScenarioOptionsBase.MINIMUMTRIPDISTANCE);
+    }
+
+    public void setMinimumTripDistance(int minTripDistance) {
+        properties.setProperty(ScenarioOptionsBase.MINIMUMTRIPDISTANCE, String.valueOf(minTripDistance));
+    }
+    
     public double getModifierLinkFreeSpeed() {
         return getDouble(ScenarioOptionsBase.MODFYLINKFREESPEEDIDENTIFIER);
     }
