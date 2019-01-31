@@ -34,7 +34,7 @@ public final class TheRequestApocalypse {
     }
 
     public TheRequestApocalypse toNoMoreThan(Scalar maxRequests, long seed) {
-        GlobalAssert.that(Scalars.lessEquals(maxRequests, LegCount.of(population, "av")));
+//        GlobalAssert.that(Scalars.lessEquals(maxRequests, LegCount.of(population, "av")));
 
         /** shuffle list of {@link Person}s */
         List<Id<Person>> list = new ArrayList<>(population.getPersons().keySet());
@@ -73,7 +73,7 @@ public final class TheRequestApocalypse {
         if (Objects.nonNull(splitUpPerson))
             population.addPerson(splitUpPerson);
 
-        GlobalAssert.that(LegCount.of(population, "av").equals(maxRequests));
+//        GlobalAssert.that(LegCount.of(population, "av").equals(maxRequests));
         return this;
     }
 
