@@ -42,15 +42,15 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param oldRoute
      * @param newRequestWrap
      * @param now
-     * @param requestMaintainer
+     * @param requestHandler
      * @return true if this is a valid route, false if the rout can not be considered for sharing. */
-    boolean isValidRoute(SharedAvRoute sharedAvRoute, SharedAvRoute oldRoute, RequestWrap newRequestWrap, double now, RequestHandler requestMaintainer) {
-        Map<AVRequest, Double> driveTimes = getDriveTimes(sharedAvRoute, requestMaintainer);
+    boolean isValidRoute(SharedAvRoute sharedAvRoute, SharedAvRoute oldRoute, RequestWrap newRequestWrap, double now, RequestHandler requestHandler) {
+        Map<AVRequest, Double> driveTimes = requestHandler.getDriveTimes(sharedAvRoute);
         AVRequest newAvRequest = newRequestWrap.getAvRequest();
-        double unitCapacityDriveTime = requestMaintainer.getDriveTimeDirectUnitCap(newAvRequest);
+        double unitCapacityDriveTime = requestHandler.getDriveTimeDirectUnitCap(newAvRequest);
         GlobalAssert.that(unitCapacityDriveTime == newRequestWrap.getUnitDriveTime());
         // Requirement 1 Current Passenger Total Travel Time Increase
-        if (rideSharingConstraints.driveTimeCurrentPassengersExceeded(driveTimes, newAvRequest, requestMaintainer))
+        if (rideSharingConstraints.driveTimeCurrentPassengersExceeded(driveTimes, newAvRequest, requestHandler))
             return false;
 
         // Requirement 2 Current Passenger remaining Time Increase
@@ -69,25 +69,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         return rideSharingConstraints.combinedConstraintAcceptable(sharedAvRoute, oldRoute, unitCapacityDriveTime);
     }
 
-    private static Map<AVRequest, Double> getDriveTimes(SharedAvRoute route, RequestHandler requestMaintainer) {
-        // Preparation
-        Map<AVRequest, Double> thisPickupTimes = new HashMap<>();
-        route.getRoute().stream() //
-                .filter(srp -> srp.getMealType().equals(SharedMealType.PICKUP)) //
-                .forEach(srp -> thisPickupTimes.put(srp.getAvRequest(), srp.getArrivalTime()));
-        //
-        Map<AVRequest, Double> driveTimes = new HashMap<>();
-        for (SharedRoutePoint sharedRoutePoint : route.getRoute())
-            if (sharedRoutePoint.getMealType().equals(SharedMealType.DROPOFF))
-                if (thisPickupTimes.containsKey(sharedRoutePoint.getAvRequest())) {
-                    // TODO does it include the dropoff or not?
-                    driveTimes.put(sharedRoutePoint.getAvRequest(), sharedRoutePoint.getEndTime() - thisPickupTimes.get(sharedRoutePoint.getAvRequest()));
-                } else {
-                    driveTimes.put(sharedRoutePoint.getAvRequest(), sharedRoutePoint.getEndTime() - requestMaintainer.getPickupTime(sharedRoutePoint.getAvRequest()));
-                }
 
-        return driveTimes;
-    }
 
     /** @param allRoboTaxis
      * @param robotaxisWithMenu
