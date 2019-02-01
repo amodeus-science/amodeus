@@ -24,4 +24,8 @@ public enum LocationSpecDatabase {
         return Objects.requireNonNull(locationSpec);
 
     }
+    
+    public boolean isEmpty() {
+        return map.isEmpty();
+    }
 }
