@@ -34,10 +34,7 @@ public enum ScenarioServerHelper {
      * {@link AmodeusModule}
      * {@link AmodeusVehicleGeneratorModule}
      * {@link AmodeusDispatcherModule}
-     * {@link AmodeusVirtualNetworkModule}
      * {@link AmodeusDatabaseModule}
-     * {@link IDSCGeneratorModule}
-     * {@link IDSCDispatcherModule}
      * dvrp_routing
      * 
      * @param simulationProperties
@@ -90,6 +87,11 @@ public enum ScenarioServerHelper {
         }
     }
 
+    /**Sets up a standard Amodues Analysis for the Simulation.
+     * 
+     * @param simulationProperties
+     * @return
+     */
     public static Analysis setUpAnalysis(SimulationProperties simulationProperties) {
         String outputDirectory = simulationProperties.config.controler().getOutputDirectory();
         Analysis analysis;
@@ -113,5 +115,4 @@ public enum ScenarioServerHelper {
             throw new RuntimeException();
         }
     }
-
 }

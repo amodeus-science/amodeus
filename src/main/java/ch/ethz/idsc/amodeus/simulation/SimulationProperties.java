@@ -21,6 +21,12 @@ import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.framework.AVConfigGroup;
 
+/** The simulation Properties contains all the required values in the simulation. This helper calls enables a clean set up of the simulation in the server
+ * class.
+ * e.g.
+ * - the three config files,
+ * - The different directories
+ * - The scenario with the population and the network */
 public class SimulationProperties {
     private final ScenarioOptions scenarioOptions;
     public final File workingDirectory;
@@ -32,6 +38,9 @@ public class SimulationProperties {
     public final Population population;
     public final MatsimAmodeusDatabase db;
 
+    /** Loads the simulation properties without throwing an exception.
+     * 
+     * @return {@link SimulationProperties} */
     public static SimulationProperties load() {
         SimulationProperties simulationProperties = null;
         try {
@@ -46,7 +55,7 @@ public class SimulationProperties {
     }
 
     /** To use this class the LocationSpecDatabase has to be set up in advance. This can be done with the Helper Class "Static" */
-    public SimulationProperties() throws IOException {
+    protected SimulationProperties() throws IOException {
         GlobalAssert.that(!LocationSpecDatabase.INSTANCE.isEmpty());
 
         workingDirectory = MultiFileTools.getWorkingDirectory();
