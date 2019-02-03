@@ -56,7 +56,7 @@ public enum NetworkPreparer {
             double yCoord = ysum / coordList.size();
 
             Coord coord = new Coord(xCoord, yCoord);
-            double distance = 6000;
+            double distance = scenOptions.getNetworkRadiusCut();
 
             Collection<Node> reducedNodes = NetworkUtils.getNearestNodes(modifiedNetwork, coord, distance);
             

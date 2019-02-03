@@ -192,6 +192,14 @@ public class ScenarioOptions {
         properties.setProperty(ScenarioOptionsBase.NUMBEROFVEHICLESIDENTIFIER, String.valueOf(numberVehicles));
     }
     
+    public int getNetworkRadiusCut() {
+        return getInt(ScenarioOptionsBase.NETWORKRADIUSCUTTER);
+    }
+
+    public void setNetworkRadiusCut(int radius) {
+        properties.setProperty(ScenarioOptionsBase.NETWORKRADIUSCUTTER, String.valueOf(radius));
+    }
+    
     public String getDispatcher() {
         return getString(ScenarioOptionsBase.DISPATCHERSTRATEGYIDENTIFIER);
     }

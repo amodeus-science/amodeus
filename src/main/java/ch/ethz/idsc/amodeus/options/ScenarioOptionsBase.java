@@ -58,6 +58,8 @@ public enum ScenarioOptionsBase {
     public static final String MAKEVIDEOIDENTIFIER = "makeVideo";
     
     public static final String MINIMUMTRIPDISTANCE = "minTripDistance";
+    
+    public static final String NETWORKRADIUSCUTTER = "networkRadiusCut";
 
     public static Properties getDefault() {
         Properties properties = new Properties();
@@ -90,6 +92,7 @@ public enum ScenarioOptionsBase {
         properties.setProperty(DISPATCHERSTRATEGYIDENTIFIER, "RemoteControllerDispatcher");
         properties.setProperty(MAKEVIDEOIDENTIFIER, "true");
         properties.setProperty(MINIMUMTRIPDISTANCE, "1500");
+        properties.setProperty(NETWORKRADIUSCUTTER, "6000");
         return properties;
     }
 
