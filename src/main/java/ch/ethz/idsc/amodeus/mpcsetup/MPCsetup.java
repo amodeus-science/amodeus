@@ -18,6 +18,9 @@ public interface MPCsetup {
     /** @return {@link double} the rebalance punisher for the MPC controller */
     double getRebalancePunisher();
     
+    /** @return {@link boolean} choose first rebalancing vehicles */
+    boolean getFirstRebalance();
+    
     /** @return {@link int} the planning horizon for the MPC controller */
     void setPlanningHorizon(int planningHorizon);
 
@@ -32,5 +35,8 @@ public interface MPCsetup {
     
     /** @return {@link double} the rebalance punisher for the MPC controller */
     void setRebalancePunisher(double rebalancePunisher);
+    
+    /** @return {@link boolean} choose first rebalancing vehicles */
+    void setFirstRebalance(boolean firstRebalance);
 
 }

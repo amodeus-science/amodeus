@@ -61,6 +61,8 @@ public enum ScenarioOptionsBase {
     public static final String MINIMUMTRIPDISTANCE = "minTripDistance";
     
     public static final String NETWORKRADIUSCUTTER = "networkRadiusCut";
+    
+    public static final String FIRSTREBALANCEIDENTIFIER = "firstRebalance";
 
     public static Properties getDefault() {
         Properties properties = new Properties();
@@ -95,6 +97,7 @@ public enum ScenarioOptionsBase {
         properties.setProperty(MINIMUMTRIPDISTANCE, "1500");
         properties.setProperty(NETWORKRADIUSCUTTER, "6000");
         properties.setProperty(MPCREBALANCEPUNISHER, "0.7");
+        properties.setProperty(FIRSTREBALANCEIDENTIFIER, "false");
         return properties;
     }
 

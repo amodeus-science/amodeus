@@ -223,6 +223,14 @@ public class ScenarioOptions {
     public void setMakeVideo(boolean makeVideo) {
         properties.setProperty(ScenarioOptionsBase.DISPATCHERSTRATEGYIDENTIFIER, String.valueOf(makeVideo));
     }
+    
+    public boolean getFirstRebalance() {
+        return getBoolean(ScenarioOptionsBase.FIRSTREBALANCEIDENTIFIER);
+    }
+
+    public void setFirstRebalance(boolean firstRebalance) {
+        properties.setProperty(ScenarioOptionsBase.FIRSTREBALANCEIDENTIFIER, String.valueOf(firstRebalance));
+    }
 
     // base access functions ==================================================
     public final String getString(String key) {
