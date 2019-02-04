@@ -36,8 +36,8 @@ public enum PopulationPreparer {
         double minDistance = scenOptions.getMinimumTripDistance();
 //        double minDistance = 0;
 
-        TheApocalypse.reducesThe(population, network, endTime, minDistance).toNoMoreThan(scenOptions.getMaxPopulationSize()).people();
-        TheApocalypse.reducesThe(population, network, endTime, minDistance).toNoMoreThan(scenOptions.getMaxPopulationSize(), seed);
+        TheApocalypse.reducesThe(population, network, endTime, minDistance, scenOptions.getLocationSpec()).toNoMoreThan(scenOptions.getMaxPopulationSize()).people();
+        TheApocalypse.reducesThe(population, network, endTime, minDistance, scenOptions.getLocationSpec()).toNoMoreThan(scenOptions.getMaxPopulationSize(), seed);
         TheRequestApocalypse.reducesThe(population).toNoMoreThan(RealScalar.of(scenOptions.getMaxNumberRequests()), seed).requests();
         System.out.println("Population after decimation:" + population.getPersons().values().size());
         GlobalAssert.that(0 < population.getPersons().size());

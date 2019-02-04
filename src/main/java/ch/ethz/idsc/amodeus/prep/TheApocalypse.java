@@ -20,6 +20,8 @@ import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.network.NetworkUtils;
 
+import ch.ethz.idsc.amodeus.data.LocationSpec;
+import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.sca.Clip;
@@ -33,8 +35,8 @@ public final class TheApocalypse {
     public static final long DEFAULT_SEED = 7582456789l;
 //    public static final long DEFAULT_SEED = 200000l;
 
-    public static TheApocalypse reducesThe(Population population, Network network, int endTime, double minDistance) {
-        return new TheApocalypse(population, network, endTime, minDistance);
+    public static TheApocalypse reducesThe(Population population, Network network, int endTime, double minDistance, LocationSpec locationSpec) {
+        return new TheApocalypse(population, network, endTime, minDistance, locationSpec);
     }
 
     // ---
@@ -42,12 +44,14 @@ public final class TheApocalypse {
     private final Network network;
     private final int endTime;
     private final double minDistance;
+    private final LocationSpec locationSpec;
 
-    private TheApocalypse(Population population, Network network, int endTime, double minDistance) {
+    private TheApocalypse(Population population, Network network, int endTime, double minDistance, LocationSpec locationSpec) {
         this.population = population;
         this.network = network;
         this.endTime = endTime;
         this.minDistance = minDistance;
+        this.locationSpec = locationSpec;
     }
 
     /** version with seed used so far **/
@@ -56,7 +60,7 @@ public final class TheApocalypse {
     }
 
     public TheApocalypse toNoMoreThan(int maxPrs, long seed) {
-        List<Id<Person>> list = getFilteredPopulation(network, endTime, minDistance);
+        List<Id<Person>> list = getFilteredPopulation(network, endTime, minDistance, locationSpec);
 //        List<Id<Person>> list = new ArrayList<>(population.getPersons().keySet());
         Collections.shuffle(list, new Random(seed));
         final int sizeAnte = list.size();
@@ -72,11 +76,12 @@ public final class TheApocalypse {
         System.out.println("Population size: " + population.getPersons().values().size());
     }
     
-    private List<Id<Person>> getFilteredPopulation(Network network, int endTime, double minDistance) {
+    private List<Id<Person>> getFilteredPopulation(Network network, int endTime, double minDistance, LocationSpec locationSpec) {
         List<Id<Person>> list = new ArrayList<>();
         List<Id<Person>> removedList = new ArrayList<>();
         Clip timeClip = Clip.function(0, endTime - 1);
         boolean isFar = false;
+        boolean isLate = false;
         // fill based on population file
         for (Person person : population.getPersons().values()) {
             for (Plan plan : person.getPlans()) {
@@ -101,11 +106,17 @@ public final class TheApocalypse {
                                 startTime = actBefore.getEndTime();
                             }
                             timeClip.requireInside(RealScalar.of(startTime));
+                            
+                            if(startTime >= 22*60*60 && locationSpec.name() == "BERLIN") {
+                            	isLate = true;
+                            } else {
+                            	isLate = false;
+                            }
 
                             Link startLink = network.getLinks().get(((Activity) planElMins).getLinkId());
                             Link endLink = network.getLinks().get(((Activity) planElPlus).getLinkId());
                             double distance = distanceLinks(startLink, endLink);
-                            if(distance >= minDistance) {
+                            if(distance >= minDistance && isLate == false) {
                                 isFar = true;
                             } else {
                                 isFar = false;
