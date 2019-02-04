@@ -147,7 +147,7 @@ public class VideoGenerator implements Runnable {
         AmodeusComponentUtil.adjustMapZoom(amodeusComponent, network, scenarioOptions, db);
         amodeusComponent.reorientMap(viewerConfig);
                 
-        if(scenarioOptions.getLocationSpec().name() == "BERLIN" && !scenarioOptions.isCompleteGraph()) {
+        if(scenarioOptions.getLocationSpec().name() == "BERLIN" && !scenarioOptions.isCompleteGraph() && scenarioOptions.getNetworkRadiusCut() <= 6000) {
           amodeusComponent.setZoom(amodeusComponent.getZoom() + 1);
           amodeusComponent.moveMap(100, 0);
         }
