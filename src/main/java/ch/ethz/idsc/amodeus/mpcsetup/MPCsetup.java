@@ -15,6 +15,9 @@ public interface MPCsetup {
     /** @return {@link boolean} allow assistance for robustness */
     boolean getAssistanceFlag();
     
+    /** @return {@link double} the rebalance punisher for the MPC controller */
+    double getRebalancePunisher();
+    
     /** @return {@link int} the planning horizon for the MPC controller */
     void setPlanningHorizon(int planningHorizon);
 
@@ -26,5 +29,8 @@ public interface MPCsetup {
     
     /** @return {@link boolean} allow assistance for robustness */
     void setAssistanceFlag(boolean assistanceFlag);
+    
+    /** @return {@link double} the rebalance punisher for the MPC controller */
+    void setRebalancePunisher(double rebalancePunisher);
 
 }

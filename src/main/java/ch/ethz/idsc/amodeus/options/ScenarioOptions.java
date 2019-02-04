@@ -154,6 +154,14 @@ public class ScenarioOptions {
         properties.setProperty(ScenarioOptionsBase.MPCTIMESTEPIDENTIFIER, String.valueOf(timeStep));
     }
     
+    public double getMPCRebalancePunisher() {
+        return getDouble(ScenarioOptionsBase.MPCREBALANCEPUNISHER);
+    }
+
+    public void setMPCRebalancePunisher(double rebalancePunisher) {
+        properties.setProperty(ScenarioOptionsBase.MPCREBALANCEPUNISHER, String.valueOf(rebalancePunisher));
+    }
+    
     public boolean isMPCmilp() {
         return getBoolean(ScenarioOptionsBase.MPCMILPFLAGIDENTIFIER);
     }

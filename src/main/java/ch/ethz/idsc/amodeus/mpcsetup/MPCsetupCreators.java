@@ -14,6 +14,7 @@ public enum MPCsetupCreators {
             mpcSetup.setTimeStep(scenarioOptions.getMPCtimeStep());
             mpcSetup.setMILPflag(scenarioOptions.isMPCmilp());
             mpcSetup.setAssistanceFlag(scenarioOptions.allowAssistance());
+            mpcSetup.setRebalancePunisher(scenarioOptions.getMPCRebalancePunisher());
             return mpcSetup;
         }
 }

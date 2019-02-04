@@ -51,6 +51,7 @@ public enum ScenarioOptionsBase {
     public static final String MPCTIMESTEPIDENTIFIER = "timeStep";
     public static final String MPCMILPFLAGIDENTIFIER = "milpFlag";
     public static final String MPCASSISTANCEIDENTIFIER = "allowAssistance";
+    public static final String MPCREBALANCEPUNISHER = "rebalancePunisher";
     
     public static final String NUMBEROFVEHICLESIDENTIFIER = "numberVehicles";
     public static final String DISPATCHERSTRATEGYIDENTIFIER = "dispatchStrategy";
@@ -93,6 +94,7 @@ public enum ScenarioOptionsBase {
         properties.setProperty(MAKEVIDEOIDENTIFIER, "true");
         properties.setProperty(MINIMUMTRIPDISTANCE, "1500");
         properties.setProperty(NETWORKRADIUSCUTTER, "6000");
+        properties.setProperty(MPCREBALANCEPUNISHER, "0.7");
         return properties;
     }
 

@@ -9,6 +9,7 @@ public class MPCsetupImpl implements MPCsetup, Serializable {
     private int timeStep = 0;
     private boolean milpFlag = false;
     private boolean allowAssistanceFlag = false;
+    private double rebalancePunisher = 0.7;
 
 
     public MPCsetupImpl() {
@@ -34,6 +35,11 @@ public class MPCsetupImpl implements MPCsetup, Serializable {
     public boolean getAssistanceFlag() {
         return allowAssistanceFlag;
     }
+    
+    @Override
+    public double getRebalancePunisher() {
+    	return rebalancePunisher;
+    }
 
     public void setPlanningHorizon(int planningHorizon) {
         this.planningHorizon = planningHorizon;
@@ -49,6 +55,10 @@ public class MPCsetupImpl implements MPCsetup, Serializable {
     
     public void setAssistanceFlag(boolean assistanceFlag) {
         this.allowAssistanceFlag = assistanceFlag;
+    }
+    
+    public void setRebalancePunisher(double rebalancePunisher) {
+    	this.rebalancePunisher = rebalancePunisher;
     }
     
     
