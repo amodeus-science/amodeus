@@ -63,6 +63,8 @@ public enum ScenarioOptionsBase {
     public static final String NETWORKRADIUSCUTTER = "networkRadiusCut";
     
     public static final String FIRSTREBALANCEIDENTIFIER = "firstRebalance";
+    
+    public static final String MAXDRIVINGEMPTYVEHICLES = "maxDrivingEmptyVehicles";
 
     public static Properties getDefault() {
         Properties properties = new Properties();
@@ -98,6 +100,7 @@ public enum ScenarioOptionsBase {
         properties.setProperty(NETWORKRADIUSCUTTER, "6000");
         properties.setProperty(MPCREBALANCEPUNISHER, "0.7");
         properties.setProperty(FIRSTREBALANCEIDENTIFIER, "false");
+        properties.setProperty(MAXDRIVINGEMPTYVEHICLES, "1000000");
         return properties;
     }
 

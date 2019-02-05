@@ -16,6 +16,7 @@ public enum MPCsetupCreators {
             mpcSetup.setAssistanceFlag(scenarioOptions.allowAssistance());
             mpcSetup.setRebalancePunisher(scenarioOptions.getMPCRebalancePunisher());
             mpcSetup.setFirstRebalance(scenarioOptions.getFirstRebalance());
+            mpcSetup.setMaxNumberDrivingEmptyVehicles(scenarioOptions.getMaxDrivingEmptyVehicles());
             return mpcSetup;
         }
 }

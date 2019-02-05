@@ -9,6 +9,9 @@ public interface MPCsetup {
     /** @return {@link int} the time step in minutes for the MPC controller */
     int getTimeStep();
     
+    /** @return {@link int} the maximum number of empty driving vehicles */
+    int getMaxNumberDrivingEmptyVehicles();
+    
     /** @return {@link boolean} solve mixed integer linear program or linear program */
     boolean getMILPflag();
     
@@ -38,5 +41,8 @@ public interface MPCsetup {
     
     /** @return {@link boolean} choose first rebalancing vehicles */
     void setFirstRebalance(boolean firstRebalance);
+    
+    /** @return {@link int} the maximum number of empty driving vehicles */
+    void setMaxNumberDrivingEmptyVehicles(int maxNumberDrivingEmptyVehicles);
 
 }

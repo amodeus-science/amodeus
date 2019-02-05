@@ -231,6 +231,14 @@ public class ScenarioOptions {
     public void setFirstRebalance(boolean firstRebalance) {
         properties.setProperty(ScenarioOptionsBase.FIRSTREBALANCEIDENTIFIER, String.valueOf(firstRebalance));
     }
+    
+    public int getMaxDrivingEmptyVehicles() {
+        return getInt(ScenarioOptionsBase.MAXDRIVINGEMPTYVEHICLES);
+    }
+
+    public void setMaxDrivingEmptyVehicles(int maxDrivingEmptyVehicles) {
+        properties.setProperty(ScenarioOptionsBase.MAXDRIVINGEMPTYVEHICLES, String.valueOf(maxDrivingEmptyVehicles));
+    }
 
     // base access functions ==================================================
     public final String getString(String key) {

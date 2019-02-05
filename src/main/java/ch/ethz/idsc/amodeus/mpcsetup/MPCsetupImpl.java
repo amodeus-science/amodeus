@@ -11,6 +11,7 @@ public class MPCsetupImpl implements MPCsetup, Serializable {
     private boolean allowAssistanceFlag = false;
     private double rebalancePunisher = 0.7;
     private boolean firstRebalance = false;
+    private int maxDrivingEmtpyVehicles = 100000;
 
 
     public MPCsetupImpl() {
@@ -25,6 +26,11 @@ public class MPCsetupImpl implements MPCsetup, Serializable {
     @Override
     public int getTimeStep() {
         return timeStep;
+    }
+    
+    @Override
+    public int getMaxNumberDrivingEmptyVehicles() {
+    	return maxDrivingEmtpyVehicles;
     }
 
     @Override
@@ -52,6 +58,10 @@ public class MPCsetupImpl implements MPCsetup, Serializable {
 
     public void setTimeStep(int timeStep) {
         this.timeStep = timeStep;
+    }
+    
+    public void setMaxNumberDrivingEmptyVehicles(int maxDrivingEmtpyVehicles) {
+        this.maxDrivingEmtpyVehicles = maxDrivingEmtpyVehicles;
     }
 
     public void setMILPflag(boolean milpFlag) {
