@@ -50,6 +50,10 @@ public enum SharedCourseListUtils {
     public static long getNumberRedirections(List<? extends SharedCourse> courses) {
         return getNumberSharedMealType(courses, SharedMealType.REDIRECT);
     }
+    
+    public static long getNumberWaits(List<? extends SharedCourse> courses) {
+        return getNumberSharedMealType(courses, SharedMealType.WAIT);
+    }
 
     private static long getNumberSharedMealType(List<? extends SharedCourse> courses, SharedMealType sharedMealType) {
         return courses.stream().filter(sc -> sc.getMealType().equals(sharedMealType)).count();
@@ -60,7 +64,7 @@ public enum SharedCourseListUtils {
     }
 
     public static Set<AVRequest> getUniqueAVRequests(List<? extends SharedCourse> courses) {
-        return courses.stream().filter(sc -> !sc.getMealType().equals(SharedMealType.REDIRECT)).map(sc -> sc.getAvRequest()).collect(Collectors.toSet());//
+        return courses.stream().filter(sc -> !sc.getMealType().equals(SharedMealType.REDIRECT) && !sc.getMealType().equals(SharedMealType.WAIT)).map(sc -> sc.getAvRequest()).collect(Collectors.toSet());//
     }
 
     /** Gets the next course of the menu.
@@ -127,6 +131,8 @@ public enum SharedCourseListUtils {
             } else if (sharedAVCourse.getMealType().equals(SharedMealType.DROPOFF)) {
                 futureNumberCustomers--;
             } else if (sharedAVCourse.getMealType().equals(SharedMealType.REDIRECT)) {
+                // --
+            } else if (sharedAVCourse.getMealType().equals(SharedMealType.WAIT)) {
                 // --
             } else {
                 throw new IllegalArgumentException("Unknown SharedAVMealType -- please specify it !!!--");

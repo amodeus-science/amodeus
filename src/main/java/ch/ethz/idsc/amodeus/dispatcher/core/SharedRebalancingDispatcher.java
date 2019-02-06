@@ -46,6 +46,13 @@ public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatc
         roboTaxi.addRedirectCourseToMenu(redirectCourse);
     }
     
+    /** {@link RoboTaxi} @param roboTaxi is waiting at the {@link SharedCourse}
+     * the course can be moved to another position in the {@link SharedMenu} of the {@link} RoboTaxi */
+    protected static void addSharedRoboTaxiWait(RoboTaxi roboTaxi, SharedCourse waitCourse) {
+        GlobalAssert.that(waitCourse.getMealType().equals(SharedMealType.WAIT));
+        roboTaxi.addWaitCourseToMenu(waitCourse);
+    }
+    
     /** {@link RoboTaxi} @param roboTaxi is redirected to the {@link Link} of the {@link SharedCourse}
      * the course can be moved to another position in the {@link SharedMenu} of the {@link} RoboTaxi */
 //    protected static void addSharedRoboTaxiWaiting(RoboTaxi roboTaxi, SharedCourse waitingCourse) {

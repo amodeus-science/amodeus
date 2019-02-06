@@ -406,6 +406,11 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
     final void executeRedirects() {
         // deliberately empty
     }
+    
+    @Override
+    final void executeWait() {
+        // deliberately empty
+    }
 
     /** adding a vehicle during setup of simulation, handeled by {@link AVGenerator} */
     @Override

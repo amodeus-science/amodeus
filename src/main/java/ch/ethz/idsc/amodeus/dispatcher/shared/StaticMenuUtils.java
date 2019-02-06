@@ -36,13 +36,18 @@ public enum StaticMenuUtils {
                 list.add(sharedCourse);
             }
         }
+        for (SharedCourse sharedCourse : roboTaxiMenu) {
+            if (sharedCourse.getMealType().equals(SharedMealType.WAIT)) {
+                list.add(sharedCourse);
+            }
+        }
         return list;
     }
 
     public static List<SharedCourse> fastDropoffTour(List<SharedCourse> unmodifiableSharedMenu) {
         List<SharedCourse> sharedMenu = new ArrayList<>(unmodifiableSharedMenu);
         GlobalAssert.that(checkAllPickupsFirst(sharedMenu));
-        GlobalAssert.that(!sharedMenu.stream().anyMatch(sc -> sc.getMealType().equals(SharedMealType.REDIRECT)));
+        GlobalAssert.that(!sharedMenu.stream().anyMatch(sc -> sc.getMealType().equals(SharedMealType.REDIRECT) && sc.getMealType().equals(SharedMealType.WAIT)));
 
         Coord lastPickupCoord = getLastPickup(sharedMenu).getLink().getCoord();
         Set<SharedCourse> set = new HashSet<>();

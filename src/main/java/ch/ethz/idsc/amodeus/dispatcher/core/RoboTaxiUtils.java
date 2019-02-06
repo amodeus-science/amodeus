@@ -87,7 +87,13 @@ public enum RoboTaxiUtils {
                     return RoboTaxiStatus.DRIVETOCUSTOMER;
                 }
                 return RoboTaxiStatus.REBALANCEDRIVE;
-            } else {
+            } 
+            if (nextCourseOptional.get().getMealType().equals(SharedMealType.WAIT)) {
+                if (SharedCourseListUtils.getNumberPickups(roboTaxi.getUnmodifiableViewOfCourses()) > 0) {
+                    return RoboTaxiStatus.DRIVETOCUSTOMER;
+                }
+                return RoboTaxiStatus.STAY;
+            }else {
                 System.out.println("We have a not Covered Status of the Robotaxi");
                 GlobalAssert.that(false);
             }
