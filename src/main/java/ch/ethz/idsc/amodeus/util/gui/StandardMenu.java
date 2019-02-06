@@ -15,7 +15,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
-public abstract class StandardMenu {
+abstract class StandardMenu {
     public static <Type extends StandardMenu> void bind(JButton jButton, Supplier<Type> supplier) {
         jButton.addActionListener(new ActionListener() {
             long tic = System.nanoTime();

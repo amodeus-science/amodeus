@@ -8,7 +8,6 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
 import org.matsim.contrib.dvrp.data.Request;
 import org.matsim.contrib.dvrp.data.Vehicle;
-import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 import org.matsim.core.config.Config;
@@ -16,9 +15,6 @@ import org.matsim.core.network.NetworkUtils;
 
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.passenger.AVRequest;
-import ch.ethz.matsim.av.schedule.AVDriveTask;
-import ch.ethz.matsim.av.schedule.AVDropoffTask;
-import ch.ethz.matsim.av.schedule.AVPickupTask;
 import ch.ethz.matsim.av.schedule.AVStayTask;
 
 /*package*/ class ArtificialScenarioCreator {
@@ -134,9 +130,9 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         System.out.println("ArtificialScenario Created");
     }
 
-    private static void changeRoboTaxiLinks(RoboTaxi roboTaxi, Link divertableLocation, Link courseLink) {
-        // TODO is function empty on purpose?
-    }
+    // private static void changeRoboTaxiLinks(RoboTaxi roboTaxi, Link divertableLocation, Link courseLink) {
+    // // TODO is function empty on purpose?
+    // }
 
     private static void setFirstStayTask(AVVehicle vehicle) {
         Schedule schedule = vehicle.getSchedule();
@@ -144,26 +140,19 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         schedule.nextTask();
     }
 
-    private static void setFirstDriveTask(AVVehicle vehicle) {
-        Schedule schedule = vehicle.getSchedule();
-        VrpPathWithTravelData vrpPathWithTravelData = null;
-        schedule.addTask(new AVDriveTask(vrpPathWithTravelData));
-        schedule.nextTask();
-
-    }
-
-    private static void setFirstPickupTask(AVVehicle vehicle) {
-        Schedule schedule = vehicle.getSchedule();
-        schedule.addTask(new AVPickupTask(vehicle.getServiceBeginTime(), vehicle.getServiceEndTime(), vehicle.getStartLink()));
-        schedule.nextTask();
-
-    }
-
-    private static void setFirstDropoffTask(AVVehicle vehicle) {
-        Schedule schedule = vehicle.getSchedule();
-        schedule.addTask(new AVDropoffTask(vehicle.getServiceBeginTime(), vehicle.getServiceEndTime(), vehicle.getStartLink()));
-        schedule.nextTask();
-
-    }
+    // private static void setFirstDriveTask(AVVehicle vehicle) {
+    // Schedule schedule = vehicle.getSchedule();
+    // VrpPathWithTravelData vrpPathWithTravelData = null;
+    // schedule.addTask(new AVDriveTask(vrpPathWithTravelData));
+    // schedule.nextTask();
+    //
+    // }
+    //
+    // private static void setFirstPickupTask(AVVehicle vehicle) {
+    // Schedule schedule = vehicle.getSchedule();
+    // schedule.addTask(new AVPickupTask(vehicle.getServiceBeginTime(), vehicle.getServiceEndTime(), vehicle.getStartLink()));
+    // schedule.nextTask();
+    //
+    // }
 
 }

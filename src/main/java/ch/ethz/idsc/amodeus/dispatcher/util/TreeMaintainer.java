@@ -76,6 +76,16 @@ public class TreeMaintainer<T> {
         return tree.getRectangle(bounds, new HashSet<>());
     }
 
+    /** Gets all objects within a certain distance around x/y
+     *
+     * @param x left-right location, longitude
+     * @param y up-down location, latitude
+     * @param distance the maximal distance returned objects can be away from x/y
+     * @return the objects found within distance to x/y */
+    public Collection<T> disk(double x, double y, double distance) {
+        return tree.getDisk(x, y, distance);
+    }
+
     public boolean contains(Tensor coord) {
         VectorQ.requireLength(coord, 2); // ensure that vector of length 2;
         return outerRect.contains(coord.Get(0).number().doubleValue(), coord.Get(1).number().doubleValue());
@@ -85,7 +95,7 @@ public class TreeMaintainer<T> {
         return set;
     }
 
-    /** Clears the whole tree. After this method is called no elements will rem */
+    /** Clears the whole tree. After this method is called no elements will remain */
     public void clear() {
         set.forEach(t -> GlobalAssert.that(tree.remove(location.apply(t).Get(0).number().doubleValue(), location.apply(t).Get(1).number().doubleValue(), t)));
         set.clear();

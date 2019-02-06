@@ -46,11 +46,13 @@ public class ClockLayer extends ViewerLayer {
         amodeusComponent.repaint();
     }
 
+    @Override
     public void updateSettings(ViewerSettings settings) {
         settings.show = show;
         settings.alpha = alpha;
     }
 
+    @Override
     public void loadSettings(ViewerSettings settings) {
         setShow(settings.show);
         alpha = settings.alpha;

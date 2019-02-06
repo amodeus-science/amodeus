@@ -1,17 +1,50 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.gfx;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.matsim.api.core.v01.Coord;
 
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.ICoordinate;
 import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.TileSource;
 import ch.ethz.idsc.amodeus.view.jmapviewer.tilesources.MapnikTileSource;
-import org.matsim.api.core.v01.Coord;
-
-import java.io.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ViewerConfig {
-    private static String defaultFileName = "viewerSettings";
+    private static final String DEFAULT_FILENAME = "viewerSettings";
+
+    public static ViewerConfig fromDefaults(MatsimAmodeusDatabase db) {
+        return new ViewerConfig(db);
+    }
+
+    public static ViewerConfig from(AmodeusComponent amodeusComponent) {
+        return new ViewerConfig(amodeusComponent.db).update(amodeusComponent);
+    }
+
+    public static ViewerConfig from(MatsimAmodeusDatabase db, File workingDirectory) throws IOException {
+        File settingsFile = new File(workingDirectory, DEFAULT_FILENAME);
+        try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(settingsFile))) {
+            ViewerSettings settings = (ViewerSettings) objectInputStream.readObject();
+            return new ViewerConfig(db, settings);
+        } catch (FileNotFoundException e) {
+            System.out.println(String.format("Unable to find file: %s! Continue with default setting.", //
+                    settingsFile.getAbsolutePath()));
+            return ViewerConfig.fromDefaults(db);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    // ---
     public ViewerSettings settings;
 
     private ViewerConfig(MatsimAmodeusDatabase db, ViewerSettings settings) {
@@ -24,31 +57,6 @@ public class ViewerConfig {
     private ViewerConfig(MatsimAmodeusDatabase db) {
         settings = new ViewerSettings();
         settings.coord = db.getCenter();
-    }
-
-    public static ViewerConfig fromDefaults(MatsimAmodeusDatabase db) {
-        return new ViewerConfig(db);
-    }
-
-    public static ViewerConfig from(AmodeusComponent amodeusComponent) {
-        return new ViewerConfig(amodeusComponent.db).update(amodeusComponent);
-    }
-
-    public static ViewerConfig from(MatsimAmodeusDatabase db, File workingDirectory) throws IOException {
-        File settingsFile = new File(workingDirectory, defaultFileName);
-        try {
-            ObjectInputStream stream = new ObjectInputStream(new FileInputStream(settingsFile));
-            ViewerSettings settings = (ViewerSettings) stream.readObject();
-            stream.close();
-            return new ViewerConfig(db, settings);
-        } catch (FileNotFoundException e) {
-            System.out.println(String.format("Unable to find file: %s! Continue with default setting.", //
-                    settingsFile.getAbsolutePath()));
-            return ViewerConfig.fromDefaults(db);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 
     @Override
@@ -65,11 +73,9 @@ public class ViewerConfig {
     }
 
     public void save(AmodeusComponent amodeusComponent, File workingDirectory) throws IOException {
-        File settingsFile = new File(workingDirectory, defaultFileName);
-        try {
-            ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(settingsFile));
-            stream.writeObject(update(amodeusComponent).settings);
-            stream.close();
+        File settingsFile = new File(workingDirectory, DEFAULT_FILENAME);
+        try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(settingsFile))) {
+            objectOutputStream.writeObject(update(amodeusComponent).settings);
             System.out.println("exporting viewer settings to " + settingsFile.getAbsolutePath());
         } catch (FileNotFoundException e) {
             e.printStackTrace();

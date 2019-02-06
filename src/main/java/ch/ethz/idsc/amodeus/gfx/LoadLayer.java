@@ -141,12 +141,14 @@ public class LoadLayer extends ViewerLayer {
         }
     }
 
+    @Override
     public void updateSettings(ViewerSettings settings) {
         settings.drawLoad = drawLoad;
         settings.historyLength = historyLength;
         settings.loadScale = loadScale;
     }
 
+    @Override
     public void loadSettings(ViewerSettings settings) {
         drawLoad = settings.drawLoad;
         historyLength = settings.historyLength;

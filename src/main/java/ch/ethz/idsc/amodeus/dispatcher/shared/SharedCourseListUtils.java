@@ -119,6 +119,8 @@ public enum SharedCourseListUtils {
         return true;
     }
 
+    // TODO add documentation
+    // TODO rename
     public static boolean checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(List<? extends SharedCourse> courses, int roboTaxiCapacity) {
         long futureNumberCustomers = SharedCourseListUtils.getNumberCustomersOnBoard(courses);
         for (SharedCourse sharedAVCourse : courses) {

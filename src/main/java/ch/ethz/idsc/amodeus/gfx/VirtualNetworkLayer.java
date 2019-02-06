@@ -22,9 +22,9 @@ import ch.ethz.idsc.amodeus.net.TensorCoords;
 import ch.ethz.idsc.amodeus.util.gui.RowPanel;
 import ch.ethz.idsc.amodeus.util.gui.SpinnerLabel;
 import ch.ethz.idsc.amodeus.view.gheat.gui.ColorSchemes;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualLink;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNode;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualLink;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 import ch.ethz.idsc.tensor.Tensor;
 
 public class VirtualNetworkLayer extends ViewerLayer {
@@ -223,6 +223,7 @@ public class VirtualNetworkLayer extends ViewerLayer {
         return new Color(rgb | (alpha << 24), true);
     }
 
+    @Override
     public void updateSettings(ViewerSettings settings) {
         settings.drawVNodes = drawVNodes;
         settings.drawVLinks = drawVLinks;
@@ -230,6 +231,7 @@ public class VirtualNetworkLayer extends ViewerLayer {
         settings.colorSchemes = colorSchemes;
     }
 
+    @Override
     public void loadSettings(ViewerSettings settings) {
         drawVNodes = settings.drawVNodes;
         drawVLinks = settings.drawVLinks;

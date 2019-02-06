@@ -14,13 +14,13 @@ import java.util.Objects;
 
 import javax.swing.JLabel;
 
-import ch.ethz.idsc.amodeus.view.jmapviewer.Coordinate;
 import org.matsim.api.core.v01.Coord;
 
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.util.gui.GraphicsUtil;
 import ch.ethz.idsc.amodeus.view.jmapviewer.AmodeusHeatMap;
+import ch.ethz.idsc.amodeus.view.jmapviewer.Coordinate;
 import ch.ethz.idsc.amodeus.view.jmapviewer.JMapViewer;
 import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.ICoordinate;
 
@@ -81,8 +81,7 @@ public class AmodeusComponent extends JMapViewer {
     public void reorientMap(ViewerConfig viewerConfig) {
         setDisplayPosition( //
                 new Coordinate(viewerConfig.settings.coord.getY(), viewerConfig.settings.coord.getX()), //
-                viewerConfig.settings.zoom
-        );
+                viewerConfig.settings.zoom);
     }
 
     /** @param coord

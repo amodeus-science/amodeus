@@ -19,7 +19,7 @@ public enum LPOptionsBase {
 
     public static Properties getDefault() {
         Properties properties = new Properties();
-        properties.setProperty(LPSOLVER, "none");
+        properties.setProperty(LPSOLVER, "TIMEINVARIANT");
         properties.setProperty(LPWEIGHTQ, "0.99");
         properties.setProperty(LPWEIGHTR, "0.01");
         return properties;

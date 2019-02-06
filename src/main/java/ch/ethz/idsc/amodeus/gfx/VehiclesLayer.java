@@ -137,12 +137,14 @@ public class VehiclesLayer extends ViewerLayer {
             System.err.println("cannot visualize dest link");
     }
 
+    @Override
     public void updateSettings(ViewerSettings settings) {
         settings.bits = bits;
         settings.statusColors = statusColors;
         settings.showLocation = showLocation;
     }
 
+    @Override
     public void loadSettings(ViewerSettings settings) {
         try {
             loadBitSet(settings);

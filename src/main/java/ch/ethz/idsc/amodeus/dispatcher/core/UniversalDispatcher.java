@@ -334,7 +334,7 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
         GlobalAssert.that(pickupRegister.size() <= pendingRequests.size());
     }
 
-    /** Consistency checks to be called by {@link RoboTaxiMaintainer.consistencyCheck} in each iteration. */
+    /** Consistency checks to be called by {@link RoboTaxiHandler.consistencyCheck} in each iteration. */
     @Override
     protected final void consistencySubCheck() {
         GlobalAssert.that(pickupRegister.size() <= pendingRequests.size());

@@ -1,19 +1,19 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.gfx;
 
-import ch.ethz.idsc.amodeus.view.gheat.gui.ColorSchemes;
-import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.TileSource;
-import ch.ethz.idsc.amodeus.view.jmapviewer.tilesources.GrayMapnikTileSource;
-import org.matsim.api.core.v01.Coord;
-
-import java.awt.*;
+import java.awt.Dimension;
 import java.io.Serializable;
 import java.util.BitSet;
+
+import org.matsim.api.core.v01.Coord;
+
+import ch.ethz.idsc.amodeus.view.gheat.gui.ColorSchemes;
 
 public class ViewerSettings implements Serializable {
 
     public int zoom = 12;
     public Dimension dimensions = new Dimension(900, 900);
-    public Coord coord = null;  // gets replaced by db.getCenter() initially
+    public Coord coord = null; // gets replaced by db.getCenter() initially
 
     // VideoLayer
     public int fps = 25;

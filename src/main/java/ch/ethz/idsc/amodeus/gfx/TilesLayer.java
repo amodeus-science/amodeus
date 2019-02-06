@@ -69,12 +69,14 @@ public class TilesLayer extends ViewerLayer {
         // nothing to do here
     }
 
+    @Override
     public void updateSettings(ViewerSettings settings) {
         settings.mapAlphaCover = amodeusComponent.mapAlphaCover;
         settings.mapGrayCover = amodeusComponent.mapGrayCover;
         settings.tileSourceName = amodeusComponent.getTileSource().getName();
     }
 
+    @Override
     public void loadSettings(ViewerSettings settings) {
         amodeusComponent.mapAlphaCover = settings.mapAlphaCover;
         amodeusComponent.mapGrayCover = settings.mapGrayCover;

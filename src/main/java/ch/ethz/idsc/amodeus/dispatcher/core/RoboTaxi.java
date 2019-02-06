@@ -24,7 +24,7 @@ import ch.ethz.matsim.av.schedule.AVDropoffTask;
 import ch.ethz.matsim.av.schedule.AVPickupTask;
 import ch.ethz.matsim.av.schedule.AVStayTask;
 
-/** RoboTaxi is central classs to be used in all dispatchers. Dispatchers control
+/** RoboTaxi is central class to be used in all dispatchers. Dispatchers control
  * a fleet of RoboTaxis, each is uniquely associated to an AVVehicle object in
  * MATSim. */
 public class RoboTaxi {
@@ -110,7 +110,9 @@ public class RoboTaxi {
         return status;
     }
 
-    /** Gets the capacity of the avVehicle. Now its an Integer and not a double as in Matsim
+    /** Gets the capacity of the avVehicle. Now its an Integer and not a double as in MATSim,
+     * the current number of people on board can be accessed with
+     * {@link RoboTaxiUtils.getNumberOnBoardRequests(roboTaxi)}
      * 
      * @return */
     public int getCapacity() {
@@ -197,7 +199,8 @@ public class RoboTaxi {
         // TODO Who? check why this appears often
         if (avT instanceof AVStayTask) {
             // TODO MISC For now, this works, but probably needs fixing somewhere upfront /sh, apr 2018
-            if (!usageType.equals(RoboTaxiUsageType.SHARED)) { // for shared this is allowed e.g. when a new course is added but the it has not been executed yet
+            if (!usageType.equals(RoboTaxiUsageType.SHARED)) { // for shared this is allowed e.g. when a new course is added but the it has not been executed
+                                                               // yet
                 logger.warn("RoboTaxiStatus != STAY, but Schedule.getCurrentTask() == AVStayTask; probably needs fixing");
                 System.out.println("status: " + status);
             }
@@ -284,6 +287,9 @@ public class RoboTaxi {
      * 3. The menu has to be consistent in itself (i.e. for each pickup a dropoff of the same request is present,
      * for each request the dropoff occurs after the pickup and no course apears exactely once)
      * 
+     * If a Dropoff is currently in progress then this course can not be moved away from the first position. All other changes are still possible. If a dropoff is
+     * in progress if the divertable link of the robotaxi equals the link of the Dropoff Course.
+     * 
      * @param List<SharedCourse> */
     public void updateMenu(List<SharedCourse> list) {
         updateMenu(SharedMenu.of(list));
@@ -344,10 +350,12 @@ public class RoboTaxi {
         GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.DROPOFF));
         GlobalAssert.that(RoboTaxiUtils.getStarterLink(this).equals(getDivertableLocation()));
     }
+
     /* package */ void startDropoff() {
         checkAbilityToDropOff();
         dropoffInProgress = true;
     }
+
     /* package */ void finishRedirection() {
         GlobalAssert.that(RoboTaxiUtils.hasNextCourse(this));
         GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.REDIRECT));

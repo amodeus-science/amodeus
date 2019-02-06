@@ -204,6 +204,7 @@ public class RequestsLayer extends ViewerLayer {
         return Arrays.asList(requestHeatMap, requestDestMap);
     }
 
+    @Override
     public void updateSettings(ViewerSettings settings) {
         settings.drawNumber = drawNumber;
         settings.drawRequestDestinations = drawRequestDestinations;
@@ -213,6 +214,7 @@ public class RequestsLayer extends ViewerLayer {
         settings.sinkColorSchemes = requestDestMap.getColorSchemes();
     }
 
+    @Override
     public void loadSettings(ViewerSettings settings) {
         drawNumber = settings.drawNumber;
         drawRequestDestinations = settings.drawRequestDestinations;

@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.virtualnetwork;
 
 import static org.junit.Assert.assertEquals;
@@ -20,6 +21,9 @@ import ch.ethz.idsc.amodeus.testutils.TestPreparer;
 import ch.ethz.idsc.amodeus.testutils.TestUtils;
 import ch.ethz.idsc.amodeus.traveldata.TravelDataTestHelper;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkGet;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkIO;
 
 public class SaveLoadTest {
 
@@ -39,6 +43,7 @@ public class SaveLoadTest {
         vNCreated = VirtualNetworkGet.readDefault(testPreparer.getPreparedNetwork());
         Map<String, Link> map = new HashMap<>();
         testPreparer.getPreparedNetwork().getLinks().entrySet().forEach(e -> map.put(e.getKey().toString(), e.getValue()));
+        // TODO document how to regenerate virtualNetwork test file
         vNSaved = VirtualNetworkIO.fromByte(map, new File("resources/testComparisonFiles/virtualNetwork"));
         travelDataTestHelper = TravelDataTestHelper.prepare(vNCreated, vNSaved);
     }

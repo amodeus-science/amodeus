@@ -5,7 +5,7 @@ import java.io.File;
 
 import org.matsim.api.core.v01.network.Link;
 
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.tensor.sca.Chop;
 
 public class TravelDataTestHelper {
@@ -14,9 +14,9 @@ public class TravelDataTestHelper {
         return new TravelDataTestHelper(vNCreated, vNSaved);
     }
 
+    // ---
     private TravelData tDCreated;
     private TravelData tDSaved;
-    // private VirtualNetwork<Link> virtualNetworkCreated;
 
     private TravelDataTestHelper(VirtualNetwork<Link> vNCreated, VirtualNetwork<Link> vNSaved) throws Exception {
         tDCreated = TravelDataGet.readDefault(vNCreated);
@@ -24,11 +24,11 @@ public class TravelDataTestHelper {
     }
 
     public boolean timeIntervalCheck() {
-        return (tDSaved.getTimeIntervalLength() == tDCreated.getTimeIntervalLength());
+        return tDSaved.getTimeIntervalLength() == tDCreated.getTimeIntervalLength();
     }
 
     public boolean timeStepsCheck() {
-        return (tDSaved.getTimeSteps() == tDCreated.getTimeSteps());
+        return tDSaved.getTimeSteps() == tDCreated.getTimeSteps();
     }
 
     public boolean lambdaAbsoluteCheck() {
@@ -42,7 +42,7 @@ public class TravelDataTestHelper {
     public boolean lambdaOutOfRangeCheck() {
         try {
             tDCreated.getLambdaRateAtTime(30 * 3600);
-        } catch (Exception e) {
+        } catch (Exception exception) {
             return true;
         }
         return false;
