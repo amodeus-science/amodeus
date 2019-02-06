@@ -15,7 +15,7 @@ public class VisualRow {
     private Tensor values = Tensors.empty();
     private ComparableLabel comparableLabel = null;
     private Color color = Color.BLUE;
-    private Stroke stroke = new BasicStroke();
+    private Stroke stroke = new BasicStroke(1f);
 
     public VisualRow() {}
 
