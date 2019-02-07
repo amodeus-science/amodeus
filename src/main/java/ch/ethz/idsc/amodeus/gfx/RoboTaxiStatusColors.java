@@ -13,6 +13,7 @@ public enum RoboTaxiStatusColors {
     Mild(ColorDataAmodeusSpecific.MILD.cyclic()), //
     /*** New poppy color set */
     Pop(ColorDataAmodeusSpecific.POP.cyclic()), //
+    Colorful(ColorDataAmodeusSpecific.COLORFUL.cyclic()), //
     ;
 
     private final ColorDataIndexed colorDataIndexed;

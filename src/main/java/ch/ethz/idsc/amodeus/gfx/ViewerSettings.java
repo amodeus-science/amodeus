@@ -33,7 +33,7 @@ public class ViewerSettings implements Serializable {
 
     // VehiclesLayer
     public BitSet bits = null; // gets replaced by meaningful value during default
-    public RoboTaxiStatusColors statusColors = RoboTaxiStatusColors.Pop;
+    public RoboTaxiStatusColors statusColors = RoboTaxiStatusColors.Colorful;
     public boolean showLocation = true;
 
     // RequestsLayer
