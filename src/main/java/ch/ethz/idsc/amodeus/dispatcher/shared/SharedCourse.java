@@ -39,6 +39,14 @@ public class SharedCourse {
         return new SharedCourse(STANDARD_REDIRECT_AVREQUEST, link, courseId, SharedMealType.WAIT);
     }
     
+    /** @param link the destination of the redirection
+     * @param courseId is an unique identifier for an Redirect Course
+     * @return */
+    public static SharedCourse parkCourse(Link link, String courseId) {
+        // TODO with Claudio. What would be a good solution for this id? might it be a possibility to at a new AV Request here? new AVRequest()
+        return new SharedCourse(STANDARD_REDIRECT_AVREQUEST, link, courseId, SharedMealType.PARK);
+    }
+    
 //    public static SharedCourse waitingCourse(Link link, String id) {
 //        return new SharedCourse(id, link, SharedMealType.WAITFORCUSTOMER);
 //    }

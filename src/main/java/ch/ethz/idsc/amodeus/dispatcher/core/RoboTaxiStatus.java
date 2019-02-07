@@ -5,6 +5,7 @@ public enum RoboTaxiStatus {
     DRIVEWITHCUSTOMER(true, "dwc", "with customer"), //
     DRIVETOCUSTOMER(true, "d2c", "pickup"), //
     REBALANCEDRIVE(true, "reb", "rebalance"), //
+    PARKING(true, "par", "parking"), //
     STAY(false, "sty", "stay"), //
     WAITING(false, "wai", "wait"),
     OFFSERVICE(false, "off", "off service"),;

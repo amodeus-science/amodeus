@@ -129,5 +129,18 @@ import ch.ethz.matsim.av.passenger.AVRequest;
             }
         }
     }
+    
+    /* package */ static final void finishPark(RoboTaxi roboTaxi) {
+        if (RoboTaxiUtils.hasNextCourse(roboTaxi)) {
+            Optional<SharedCourse> currentCourse = RoboTaxiUtils.getStarterCourse(roboTaxi);
+            /** search redirect courses */
+            if (currentCourse.get().getMealType().equals(SharedMealType.PARK)) {
+                /** search if arrived at redirect destination */
+            	if (currentCourse.get().getLink().equals(roboTaxi.getDivertableLocation())) {
+                    roboTaxi.finishPark();
+                }
+            }
+        }
+    }
 
 }

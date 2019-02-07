@@ -32,6 +32,7 @@ public enum DistanceElementHtml implements HtmlReportElement {
                 "\n\tTotal:" + //
                 "\n\tRebalancing:" + //
                 "\n\tPickup:" + //
+                "\n\tParking:" + //
                 "\n\tWith Customer:" + //
                 "\n" + //
                 "\nAverage Trip Distance:" //
@@ -44,6 +45,8 @@ public enum DistanceElementHtml implements HtmlReportElement {
                 DECIMAL.format(100 * de.totalDistanceRebal / de.totalDistance) + "%)" + //
                 "\n" + DECIMAL.format(de.totalDistancePicku) + " km (" + //
                 DECIMAL.format(100 * de.totalDistancePicku / de.totalDistance) + "%)" + //
+                "\n" + DECIMAL.format(de.totalDistanceParki) + " km (" + //
+                DECIMAL.format(100 * de.totalDistanceParki / de.totalDistance) + "%)" + //
                 "\n" + DECIMAL.format(de.totalDistanceWtCst) + " km (" + //
                 DECIMAL.format(100 * de.totalDistanceWtCst / de.totalDistance) + "%)" + //
                 "\n" + //

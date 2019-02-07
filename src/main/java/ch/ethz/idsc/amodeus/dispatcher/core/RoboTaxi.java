@@ -189,7 +189,7 @@ public class RoboTaxi {
      *         used for filtering purposes as currently the roboTaxis cannot be rerouted
      *         when driving on the last link of their route */
     /* package */ boolean notDrivingOnLastLink() {
-        if (status.equals(RoboTaxiStatus.STAY) || status.equals(RoboTaxiStatus.WAITING))
+        if (status.equals(RoboTaxiStatus.STAY) || status.equals(RoboTaxiStatus.WAITING) || status.equals(RoboTaxiStatus.PARKING))
             return true;
 
         Task avT = getSchedule().getCurrentTask();
@@ -324,6 +324,11 @@ public class RoboTaxi {
         GlobalAssert.that(waitCourse.getMealType().equals(SharedMealType.WAIT));
         setMenu(SharedMenuUtils.addAVCoursesAsDessert(menu, waitCourse));
     }
+    
+    /* package */ void addParkCourseToMenu(SharedCourse parkCourse) {
+        GlobalAssert.that(parkCourse.getMealType().equals(SharedMealType.PARK));
+        setMenu(SharedMenuUtils.addAVCoursesAsDessert(menu, parkCourse));
+    }
 
     /* package */ void addRedirectCourseToMenuAtBegining(SharedCourse redirectCourse) {
         GlobalAssert.that(redirectCourse.getMealType().equals(SharedMealType.REDIRECT));
@@ -364,6 +369,12 @@ public class RoboTaxi {
     /* package */ void finishWait() {
         GlobalAssert.that(RoboTaxiUtils.hasNextCourse(this));
         GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.WAIT));
+        setMenu(SharedMenuUtils.removeStarterCourse(menu));
+    }
+    
+    /* package */ void finishPark() {
+        GlobalAssert.that(RoboTaxiUtils.hasNextCourse(this));
+        GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.PARK));
         setMenu(SharedMenuUtils.removeStarterCourse(menu));
     }
 

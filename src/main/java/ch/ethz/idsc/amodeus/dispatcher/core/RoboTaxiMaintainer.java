@@ -81,6 +81,7 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
         executePickups();
         executeRedirects();
         executeWait();
+        executePark();
         redispatch(now);
         redispatchInternal(now);
         afterStepTasks();
@@ -159,6 +160,8 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
     /* package */ abstract void executeRedirects();
     
     /* package */ abstract void executeWait();
+    
+    /* package */ abstract void executePark();
 
     @Override
     public final void onNextTaskStarted(AVVehicle task) {

@@ -48,6 +48,7 @@ public enum NumberPassengerStatusDistribution implements AnalysisExport {
         Tensor notWithCustomer = Tensors.empty();
         notWithCustomer.append(statusesTensor.get(RoboTaxiStatus.DRIVETOCUSTOMER.ordinal()));
         notWithCustomer.append(statusesTensor.get(RoboTaxiStatus.REBALANCEDRIVE.ordinal()));
+        notWithCustomer.append(statusesTensor.get(RoboTaxiStatus.PARKING.ordinal()));
         notWithCustomer.append(statusesTensor.get(RoboTaxiStatus.WAITING.ordinal()));
         notWithCustomer.append(statusesTensor.get(RoboTaxiStatus.STAY.ordinal()));
         notWithCustomer.append(statusesTensor.get(RoboTaxiStatus.OFFSERVICE.ordinal()));
@@ -63,6 +64,7 @@ public enum NumberPassengerStatusDistribution implements AnalysisExport {
         String[] statusLablesOnly = new String[] { //
                 RoboTaxiStatus.DRIVETOCUSTOMER.description(), //
                 RoboTaxiStatus.REBALANCEDRIVE.description(), //
+                RoboTaxiStatus.PARKING.description(), //
                 RoboTaxiStatus.WAITING.description(), //
                 RoboTaxiStatus.STAY.description(), //
                 RoboTaxiStatus.OFFSERVICE.description(), //
@@ -79,6 +81,7 @@ public enum NumberPassengerStatusDistribution implements AnalysisExport {
         IntStream.range(0, numBins).forEach(i -> colorDataCreator.append(nPCS.of(RealScalar.of(numBins - i))));
         colorDataCreator.append(nPCS.of(RoboTaxiStatus.DRIVETOCUSTOMER));
         colorDataCreator.append(nPCS.of(RoboTaxiStatus.REBALANCEDRIVE));
+        colorDataCreator.append(nPCS.of(RoboTaxiStatus.PARKING));
         colorDataCreator.append(nPCS.of(RoboTaxiStatus.WAITING));
         colorDataCreator.append(nPCS.of(RoboTaxiStatus.STAY));
         colorDataCreator.append(nPCS.of(RoboTaxiStatus.OFFSERVICE));

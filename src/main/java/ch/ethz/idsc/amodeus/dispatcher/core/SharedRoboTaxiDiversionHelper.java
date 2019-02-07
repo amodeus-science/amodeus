@@ -25,6 +25,7 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
     /* package */ static void adaptMenuToDirective(RoboTaxi roboTaxi, FuturePathFactory futurePathFactory, double now, EventsManager eventsManager) {
         // Check that we are not already on the link of the redirectino (this can only happen if a command was given in redispatch to the current location)
         removeRedirectionToDivertableLocationInBeginning(roboTaxi);
+        removeParkToDivertableLocationInBeginning(roboTaxi);
 
         Optional<Link> link = getToLink(roboTaxi, now);
         if (link.isPresent()) {
@@ -47,6 +48,8 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
     /* package */ static Optional<Link> getToLink(RoboTaxi roboTaxi, double now) {
 
         GlobalAssert.that(!nextCourseIsRedirectToCurrentLink(roboTaxi));
+        
+        GlobalAssert.that(!nextCourseIsParkToCurrentLink(roboTaxi));
 
         Optional<SharedCourse> currentCourse = RoboTaxiUtils.getStarterCourse(roboTaxi);
         final Schedule schedule = roboTaxi.getSchedule();
@@ -212,6 +215,10 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
                         GlobalAssert.that(avStayTask.getLink().equals(nextCourse.getLink()));
                         GlobalAssert.that(!sRoboTaxi.getDivertableLocation().equals(nextCourse.getLink()));
                         sRoboTaxi.finishRedirection();
+                    } else if (nextCourse.getMealType().equals(SharedMealType.PARK)) {
+                    	GlobalAssert.that(avStayTask.getLink().equals(nextCourse.getLink()));
+                        GlobalAssert.that(!sRoboTaxi.getDivertableLocation().equals(nextCourse.getLink()));
+                        sRoboTaxi.finishPark();
                     } else if (nextCourse.getMealType().equals(SharedMealType.PICKUP)) {
                         GlobalAssert.that(avStayTask.getLink().equals(nextCourse.getLink()));
                         GlobalAssert.that(sRoboTaxi.getDivertableLocation().equals(nextCourse.getLink()));
@@ -277,10 +284,25 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
             return false;
         return redirectCourseCheck.get().getLink().equals(roboTaxi.getDivertableLocation());
     }
+    
+    private static boolean nextCourseIsParkToCurrentLink(RoboTaxi roboTaxi) {
+        Optional<SharedCourse> parkCourseCheck = RoboTaxiUtils.getStarterCourse(roboTaxi);
+        if (!parkCourseCheck.isPresent())
+            return false;
+        if (!parkCourseCheck.get().getMealType().equals(SharedMealType.PARK))
+            return false;
+        return parkCourseCheck.get().getLink().equals(roboTaxi.getDivertableLocation());
+    }
 
     private static void removeRedirectionToDivertableLocationInBeginning(RoboTaxi roboTaxi) {
         while (nextCourseIsRedirectToCurrentLink(roboTaxi)) {
             roboTaxi.finishRedirection();
+        }
+    }
+    
+    private static void removeParkToDivertableLocationInBeginning(RoboTaxi roboTaxi) {
+        while (nextCourseIsParkToCurrentLink(roboTaxi)) {
+            roboTaxi.finishPark();
         }
     }
 

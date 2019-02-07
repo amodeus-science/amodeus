@@ -48,6 +48,7 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
     public double totalDistanceWtCst;
     public double totalDistancePicku;
     public double totalDistanceRebal;
+    public double totalDistanceParki;
     public double totalDistanceRatio;
     private double avgTripDistance;
     public double avgOccupancy;
@@ -92,9 +93,10 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
         Tensor distWtCst = list.stream().map(vs -> vs.distanceWithCustomer).reduce(Tensor::add).get().multiply(KM2M);
         Tensor distPicku = list.stream().map(vs -> vs.distancePickup).reduce(Tensor::add).get().multiply(KM2M);
         Tensor distRebal = list.stream().map(vs -> vs.distanceRebalance).reduce(Tensor::add).get().multiply(KM2M);
+        Tensor distParki = list.stream().map(vs -> vs.distanceParking).reduce(Tensor::add).get().multiply(KM2M);
         Tensor distRatio = distTotal.map(InvertUnlessZero.FUNCTION).pmul(distWtCst);
         // ---
-        distancesOverDay = Transpose.of(Tensors.of(distTotal, distWtCst, distPicku, distRebal, distRatio));
+        distancesOverDay = Transpose.of(Tensors.of(distTotal, distWtCst, distPicku, distRebal, distParki, distRatio));
 
         // total distances driven per vehicle
         totalDistancesPerVehicle = Tensor.of(list.stream().map(vs -> Total.of(vs.distanceTotal))).multiply(KM2M);
@@ -104,6 +106,7 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
         totalDistanceWtCst = distWtCst.stream().reduce(Tensor::add).get().Get().number().doubleValue();
         totalDistancePicku = distPicku.stream().reduce(Tensor::add).get().Get().number().doubleValue();
         totalDistanceRebal = distRebal.stream().reduce(Tensor::add).get().Get().number().doubleValue();
+        totalDistanceParki = distParki.stream().reduce(Tensor::add).get().Get().number().doubleValue();
         totalDistanceRatio = totalDistanceWtCst / totalDistance;
         avgTripDistance = totalDistanceWtCst / requestIndices.size();
         ratios = Transpose.of(Join.of(Tensors.of(occupancyTensor), Tensors.of(distRatio)));
@@ -131,6 +134,7 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
         map.put(TtlValIdent.TOTALROBOTAXIDISTANCEPICKU, String.valueOf(totalDistancePicku));
         map.put(TtlValIdent.TOTALROBOTAXIDISTANCEWTCST, String.valueOf(totalDistanceWtCst));
         map.put(TtlValIdent.TOTALROBOTAXIDISTANCEREB, String.valueOf(totalDistanceRebal));
+        map.put(TtlValIdent.TOTALROBOTAXIDISTANCEPAR, String.valueOf(totalDistanceParki));
         map.put(TtlValIdent.DISTANCERATIO, String.valueOf(totalDistanceRatio));
         map.put(TtlValIdent.OCCUPANCYRATIO, String.valueOf(avgOccupancy));
         map.put(TtlValIdent.AVGTRIPDISTANCE, String.valueOf(avgTripDistance));

@@ -16,11 +16,12 @@ public enum StackedDistanceChartImage implements AnalysisExport {
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
         DistanceElement de = analysisSummary.getDistanceElement();
-        String[] labels = { "With Customer", "Pickup", "Rebalancing" };
+        String[] labels = { "With Customer", "Pickup", "Rebalancing" , "Parking"};
         double[] values = new double[] { //
                 de.totalDistanceWtCst / de.totalDistance, //
                 de.totalDistancePicku / de.totalDistance, //
-                de.totalDistanceRebal / de.totalDistance };
+                de.totalDistanceRebal / de.totalDistance, //
+                de.totalDistanceParki / de.totalDistance};
         try {
             CompositionStack.of( //
                     relativeDirectory, //

@@ -8,5 +8,6 @@ public enum SharedMealType {
     DROPOFF, //
     REDIRECT, //
     WAIT,
+    PARK,
     ;
 }

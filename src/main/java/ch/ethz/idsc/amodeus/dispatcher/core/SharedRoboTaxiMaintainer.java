@@ -203,6 +203,8 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     /* package */ abstract boolean isInRequestRegister(RoboTaxi robotaxi);
     
     /* package */ abstract void executeWaiting();
+    
+    /* package */ abstract void executePark();
 
     @Override
     public final void onNextTaskStarted(AVVehicle task) {

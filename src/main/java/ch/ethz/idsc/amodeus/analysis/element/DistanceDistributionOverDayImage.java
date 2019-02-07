@@ -18,11 +18,11 @@ public enum DistanceDistributionOverDayImage implements AnalysisExport {
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
         DistanceElement de = analysisSummary.getDistanceElement();
-        String[] diagramLables = Arrays.copyOf(StaticHelper.descriptions(), 3);
+        String[] diagramLables = Arrays.copyOf(StaticHelper.descriptions(), 4);
         Double[] scale = new Double[diagramLables.length];
         Arrays.fill(scale, 1.0);
         scale[0] = -1.0;
-        Tensor distances = Transpose.of(Transpose.of(de.distancesOverDay).extract(1, 4));
+        Tensor distances = Transpose.of(Transpose.of(de.distancesOverDay).extract(1, 5));
         try {
             StackedTimeChart.of( //
                     relativeDirectory, //

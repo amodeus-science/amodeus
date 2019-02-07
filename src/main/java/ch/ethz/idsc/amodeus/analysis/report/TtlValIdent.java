@@ -43,6 +43,7 @@ public enum TtlValIdent implements TotalValueIdentifier {
     // Distances
     TOTALROBOTAXIDISTANCE("TotalRoboTaxiDistance"), //
     TOTALROBOTAXIDISTANCEREB("totalRoboTaxiDistanceReb"), //
+    TOTALROBOTAXIDISTANCEPAR("totalRoboTaxiDistancePar"), //
     TOTALROBOTAXIDISTANCEPICKU("totalRoboTaxiDistancePicku"), //
     TOTALROBOTAXIDISTANCEWTCST("totalRoboTaxiDistanceWtCst"), //
     AVGTRIPDISTANCE("averageTripDistance"), //

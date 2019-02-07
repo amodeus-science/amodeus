@@ -93,7 +93,13 @@ public enum RoboTaxiUtils {
                     return RoboTaxiStatus.DRIVETOCUSTOMER;
                 }
                 return RoboTaxiStatus.WAITING;
-            }else {
+            }
+            if (nextCourseOptional.get().getMealType().equals(SharedMealType.PARK)) {
+                if (SharedCourseListUtils.getNumberPickups(roboTaxi.getUnmodifiableViewOfCourses()) > 0) {
+                    return RoboTaxiStatus.DRIVETOCUSTOMER;
+                }
+                return RoboTaxiStatus.PARKING;
+            } else {
                 System.out.println("We have a not Covered Status of the Robotaxi");
                 GlobalAssert.that(false);
             }
