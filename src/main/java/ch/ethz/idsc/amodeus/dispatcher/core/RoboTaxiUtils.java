@@ -92,7 +92,7 @@ public enum RoboTaxiUtils {
                 if (SharedCourseListUtils.getNumberPickups(roboTaxi.getUnmodifiableViewOfCourses()) > 0) {
                     return RoboTaxiStatus.DRIVETOCUSTOMER;
                 }
-                return RoboTaxiStatus.STAY;
+                return RoboTaxiStatus.WAITING;
             }else {
                 System.out.println("We have a not Covered Status of the Robotaxi");
                 GlobalAssert.that(false);

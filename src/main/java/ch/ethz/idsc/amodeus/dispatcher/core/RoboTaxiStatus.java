@@ -6,6 +6,7 @@ public enum RoboTaxiStatus {
     DRIVETOCUSTOMER(true, "d2c", "pickup"), //
     REBALANCEDRIVE(true, "reb", "rebalance"), //
     STAY(false, "sty", "stay"), //
+    WAITING(false, "wai", "wait"),
     OFFSERVICE(false, "off", "off service"),;
 
     private final String tag;

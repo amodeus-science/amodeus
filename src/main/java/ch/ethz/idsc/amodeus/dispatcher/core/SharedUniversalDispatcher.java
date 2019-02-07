@@ -392,7 +392,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
                 }
                 if (nextCourseOptional.get().getMealType().equals(SharedMealType.WAIT)) {
                     if (RoboTaxiUtils.getNumberOnBoardRequests(roboTaxi) == 0) {
-                        GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.STAY));
+                        GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.WAITING));
                     }
                 }
             }

@@ -189,7 +189,7 @@ public class RoboTaxi {
      *         used for filtering purposes as currently the roboTaxis cannot be rerouted
      *         when driving on the last link of their route */
     /* package */ boolean notDrivingOnLastLink() {
-        if (status.equals(RoboTaxiStatus.STAY))
+        if (status.equals(RoboTaxiStatus.STAY) || status.equals(RoboTaxiStatus.WAITING))
             return true;
 
         Task avT = getSchedule().getCurrentTask();
