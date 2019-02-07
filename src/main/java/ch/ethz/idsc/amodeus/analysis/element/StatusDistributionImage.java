@@ -2,40 +2,52 @@
 package ch.ethz.idsc.amodeus.analysis.element;
 
 import java.io.File;
-import java.util.Arrays;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
-import ch.ethz.idsc.amodeus.analysis.plot.StackedTimeChart;
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.subare.plot.VisualRow;
+import ch.ethz.idsc.subare.plot.VisualSet;
+import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
+import ch.ethz.idsc.tensor.img.MeanFilter;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
 
 public enum StatusDistributionImage implements AnalysisExport {
     INSTANCE;
 
     public static final String FILENAME = "statusDistribution";
+    public static final int WIDTH = 1000;
+    public static final int HEIGHT = 750;
 
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
         String[] statusLabels = StaticHelper.descriptions();
         StatusDistributionElement st = analysisSummary.getStatusDistribution();
 
-        Double[] scale = new Double[statusLabels.length];
-        Arrays.fill(scale, 1.0);
+        VisualSet visualSet = new VisualSet();
+        for (int i = 0; i < statusLabels.length; i++) {
+            Tensor values = Transpose.of(st.statusTensor).get(i);
+            values = StaticHelper.FILTER_ON ? MeanFilter.of(values, StaticHelper.FILTERSIZE) : values;
+            visualSet.add(new VisualRow(st.time, values));
+            visualSet.setRowLabel(i, statusLabels[i]);
+        }
+
+        visualSet.setPlotLabel("Status Distribution");
+        visualSet.setRangeAxisLabel("RoboTaxis");
+        visualSet.setColors(colorDataIndexed);
+
+        JFreeChart chart = ch.ethz.idsc.subare.plot.StackedTimeChart.of(visualSet);
+
         try {
-            StackedTimeChart.of( //
-                    relativeDirectory, //
-                    FILENAME, //
-                    "Status Distribution", //
-                    StaticHelper.FILTER_ON, //
-                    StaticHelper.FILTERSIZE, //
-                    scale, //
-                    statusLabels, //
-                    "RoboTaxis", //
-                    st.time, //
-                    st.statusTensor, //
-                    colorDataIndexed);
-        } catch (Exception e1) {
-            System.err.println("The Modular status dist with Tensor was not carried out!!");
-            e1.printStackTrace();
+            File fileChart = new File(relativeDirectory, FILENAME + ".png");
+            ChartUtilities.saveChartAsPNG(fileChart, chart, WIDTH, HEIGHT);
+            GlobalAssert.that(fileChart.isFile());
+            System.out.println("Exported " + FILENAME + ".png");
+        } catch (Exception e) {
+            System.err.println("Plotting " + FILENAME + " failed");
+            e.printStackTrace();
         }
     }
 }

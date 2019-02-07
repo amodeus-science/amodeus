@@ -17,7 +17,7 @@ import java.io.IOException;
 public class PlotDemo {
 
     public static void main(String[] args) throws IOException {
-                Tensor domain = Tensors.fromString("{1, 2, 3, 4, 5}");
+        Tensor domain = Tensors.fromString("{1, 2, 3, 4, 5}");
         Tensor values1 = RandomVariate.of(UniformDistribution.unit(), 5);
         Tensor values2 = RandomVariate.of(UniformDistribution.unit(), 5);
 
@@ -30,6 +30,7 @@ public class PlotDemo {
         visualSet.setRowLabel(1, "row 2");
         visualSet.setPlotLabel("title");
         visualSet.setDomainAxisLabel("x axis");
+        visualSet.setRangeAxisLabel("y axis");
 
         visualSet.setColors(ColorDataLists._097.cyclic());
 

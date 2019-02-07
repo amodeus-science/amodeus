@@ -5,32 +5,48 @@ import java.io.File;
 
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.amodeus.analysis.element.DistanceElement;
-import ch.ethz.idsc.amodeus.analysis.plot.CompositionStack;
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.subare.plot.CompositionStack;
+import ch.ethz.idsc.subare.plot.VisualRow;
+import ch.ethz.idsc.subare.plot.VisualSet;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
 
 public enum StackedDistanceChartImage implements AnalysisExport {
     INSTANCE;
 
     public static final String FILENAME = "stackedDistance";
+    public static final int WIDTH = 700; /* Width of the image */
+    public static final int HEIGHT = 125; /* Height of the image */
 
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
         DistanceElement de = analysisSummary.getDistanceElement();
-        String[] labels = { "With Customer", "Pickup", "Rebalancing" };
-        double[] values = new double[] { //
-                de.totalDistanceWtCst / de.totalDistance, //
-                de.totalDistancePicku / de.totalDistance, //
-                de.totalDistanceRebal / de.totalDistance };
+        VisualSet visualSet = new VisualSet( //
+                new VisualRow(RealScalar.ONE, RealScalar.of(de.totalDistanceWtCst / de.totalDistance)), //
+                new VisualRow(RealScalar.ONE, RealScalar.of(de.totalDistancePicku / de.totalDistance)), //
+                new VisualRow(RealScalar.ONE, RealScalar.of(de.totalDistanceRebal / de.totalDistance)) //
+        );
+        visualSet.setPlotLabel("Total Distance Distribution");
+        visualSet.setRowLabel(0, "With Customer");
+        visualSet.setRowLabel(1, "Pickup");
+        visualSet.setRowLabel(2, "Rebalancing");
+        visualSet.setColors(colorDataIndexed);
+
+        JFreeChart chart = CompositionStack.of(visualSet);
+        chart.getCategoryPlot().setOrientation(PlotOrientation.HORIZONTAL);
+        chart.getCategoryPlot().getRangeAxis().setRange(0, 1.0);
+
         try {
-            CompositionStack.of( //
-                    relativeDirectory, //
-                    FILENAME, //
-                    "Total Distance Distribution", //
-                    values, //
-                    labels, //
-                    colorDataIndexed);
+            File fileChart = new File(relativeDirectory, FILENAME + ".png");
+            ChartUtilities.saveChartAsPNG(fileChart, chart, WIDTH, HEIGHT);
+            GlobalAssert.that(fileChart.isFile());
+            System.out.println("Exported " + FILENAME + ".png");
         } catch (Exception e) {
-            System.err.println("The Stacked Distance Plot was not successfull");
+            System.err.println("Plotting " + FILENAME + " failed");
             e.printStackTrace();
         }
     }

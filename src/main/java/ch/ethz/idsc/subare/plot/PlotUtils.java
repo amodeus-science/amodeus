@@ -16,12 +16,12 @@ import java.util.function.Function;
         for (int i = 0; i < visualSet.visualRows().size(); i++) {
             VisualRow visualRow = visualSet.get(i);
             renderer.setSeriesPaint(i, visualRow.getColor());
+            renderer.setSeriesStroke(i, visualRow.getStroke());
             renderer.setSeriesOutlinePaint(i, visualRow.getColor().darker());
-            renderer.setSeriesOutlineStroke(i, visualRow.getStroke());
         }
     }
 
-    public static JFreeChart ofXYTable(VisualSet visualSet, boolean stacked, Function<VisualSet,TableXYDataset> table) {
+    public static JFreeChart chartFromXYTable(VisualSet visualSet, boolean stacked, Function<VisualSet,TableXYDataset> table) {
         JFreeChart chart = stacked ? //
                 ChartFactory.createStackedXYAreaChart(visualSet.getPlotLabel(), //
                         visualSet.getDomainAxisLabel(), visualSet.getRangeAxisLabel(), //

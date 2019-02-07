@@ -10,7 +10,7 @@ public enum ListPlot {
     }
 
     public static JFreeChart of(VisualSet visualSet, boolean stacked) {
-        return PlotUtils.ofXYTable(visualSet, stacked, VisualSet::xy);
+        return PlotUtils.chartFromXYTable(visualSet, stacked, VisualSet::xy);
     }
 
 }

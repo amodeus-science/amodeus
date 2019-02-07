@@ -15,7 +15,7 @@ public class VisualRow {
     private Tensor values = Tensors.empty();
     private ComparableLabel comparableLabel = null;
     private Color color = Color.BLUE;
-    private Stroke stroke = new BasicStroke(1f);
+    private Stroke stroke = new BasicStroke(2f);
 
     public VisualRow() {}
 
@@ -28,6 +28,11 @@ public class VisualRow {
     }
 
     public VisualRow add(Tensor domain, Tensor values) {
+        GlobalAssert.that(Dimensions.of(domain).equals(Dimensions.of(values)));
+        if (Dimensions.of(domain).isEmpty()) { // if only a single point is provided
+            domain = Tensors.of(domain);
+            values = Tensors.of(values);
+        }
         GlobalAssert.that(Dimensions.of(domain).size() == 1 && Dimensions.of(domain).equals(Dimensions.of(values)));
         this.domain = Join.of(this.domain, domain);
         this.values = Join.of(this.values, values);

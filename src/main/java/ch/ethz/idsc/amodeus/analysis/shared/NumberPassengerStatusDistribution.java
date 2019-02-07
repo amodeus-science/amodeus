@@ -5,13 +5,15 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
+import ch.ethz.idsc.subare.plot.VisualRow;
+import ch.ethz.idsc.subare.plot.VisualSet;
+import ch.ethz.idsc.tensor.img.MeanFilter;
 import org.apache.commons.lang3.ArrayUtils;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.amodeus.analysis.element.NumberPassengersAnalysis;
 import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionElement;
-import ch.ethz.idsc.amodeus.analysis.plot.StackedTimeChart;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -24,6 +26,8 @@ import ch.ethz.idsc.tensor.img.ColorDataGradients;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.opt.ScalarTensorFunction;
 import ch.ethz.idsc.tensor.red.Total;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
 
 public enum NumberPassengerStatusDistribution implements AnalysisExport {
     INSTANCE;
@@ -31,6 +35,8 @@ public enum NumberPassengerStatusDistribution implements AnalysisExport {
     public static final String FILENAME = "statusDistributionNumPassengers";
     // TODO might be done dependent on the Secnario Options
     public static final ScalarTensorFunction COLOR_DATA_GRADIENT_DEFAULT = ColorDataGradients.SUNSET;
+    public static final int WIDTH = 1000; /* Width of the image */
+    public static final int HEIGHT = 750; /* Height of the image */
 
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
@@ -85,25 +91,6 @@ public enum NumberPassengerStatusDistribution implements AnalysisExport {
         Double[] scale = new Double[statusLabels.length];
         Arrays.fill(scale, 1.0);
 
-        /** plot image */
-        try {
-            StackedTimeChart.of( //
-                    relativeDirectory, //
-                    FILENAME, //
-                    "Number Passengers", //
-                    StaticHelper.FILTER_ON, //
-                    StaticHelper.FILTERSIZE, //
-                    scale, //
-                    statusLabels, //
-                    "RoboTaxis", //
-                    time, //
-                    valuesComplet, //
-                    colorScheme);
-        } catch (Exception e1) {
-            System.err.println("The Modular number Passenger Tensor was not carried out!!");
-            e1.printStackTrace();
-        }
-
         /** Store Tensor */
         try {
             SaveUtils.saveFile(Join.of(valuesComplet), FILENAME, relativeDirectory);
@@ -112,5 +99,29 @@ public enum NumberPassengerStatusDistribution implements AnalysisExport {
             e.printStackTrace();
         }
 
+        /** plot image */
+        VisualSet visualSet = new VisualSet();
+        for (int i = 0; i < statusLabels.length; i++) {
+            Tensor vals = Transpose.of(valuesComplet).get(i);
+            vals = StaticHelper.FILTER_ON ? MeanFilter.of(vals, StaticHelper.FILTERSIZE) : vals;
+            visualSet.add(new VisualRow(time, vals));
+            visualSet.setRowLabel(i, statusLabels[i]);
+        }
+
+        visualSet.setPlotLabel("Number Passengers");
+        visualSet.setRangeAxisLabel("RoboTaxis");
+        visualSet.setColors(colorScheme);
+
+        JFreeChart chart = ch.ethz.idsc.subare.plot.StackedTimeChart.of(visualSet);
+
+        try {
+            File fileChart = new File(relativeDirectory, FILENAME + ".png");
+            ChartUtilities.saveChartAsPNG(fileChart, chart, WIDTH, HEIGHT);
+            GlobalAssert.that(fileChart.isFile());
+            System.out.println("Exported " + FILENAME + ".png");
+        } catch (Exception e) {
+            System.err.println("Plotting " + FILENAME + " failed");
+            e.printStackTrace();
+        }
     }
 }

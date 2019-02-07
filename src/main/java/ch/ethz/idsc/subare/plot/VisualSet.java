@@ -12,6 +12,7 @@ import org.jfree.data.xy.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 public class VisualSet {
     private List<VisualRow> visualRows;
@@ -93,12 +94,16 @@ public class VisualSet {
     // TODO is there a way to make better use of similarity?
 
     public CategoryDataset categorical() {
+        return categorical(Scalar::toString);
+    }
+
+    public CategoryDataset categorical(Function<Scalar, String> naming) {
         final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         for (VisualRow visualRow : visualRows)
             for (int i = 0; i < visualRow.getDomain().length(); i++)
                 dataset.addValue(visualRow.getValues().Get(i).number().doubleValue(), //
                         visualRow.getLabelString(), //
-                        String.valueOf(i));
+                        naming.apply(visualRow.getDomain().Get(i)));
         return dataset;
     }
 

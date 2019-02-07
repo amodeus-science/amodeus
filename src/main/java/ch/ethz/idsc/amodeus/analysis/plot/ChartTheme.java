@@ -31,8 +31,8 @@ public enum ChartTheme {
             theme.setPlotOutlinePaint(Color.BLACK);
             theme.setLabelLinkStyle(PieLabelLinkStyle.STANDARD);
             theme.setAxisOffset(new RectangleInsets(4, 4, 4, 4));
-            theme.setDomainGridlinePaint(Color.WHITE);
-            theme.setRangeGridlinePaint(Color.WHITE);
+            theme.setDomainGridlinePaint(Color.LIGHT_GRAY);
+            theme.setRangeGridlinePaint(Color.LIGHT_GRAY);
             theme.setBaselinePaint(Color.BLACK);
             theme.setCrosshairPaint(Color.BLACK);
             theme.setAxisLabelPaint(Color.DARK_GRAY);
