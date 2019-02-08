@@ -2,18 +2,13 @@ package ch.ethz.idsc.subare;
 
 import ch.ethz.idsc.subare.plot.VisualRow;
 import ch.ethz.idsc.tensor.RealScalar;
-import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.alg.Dimensions;
 import ch.ethz.idsc.tensor.alg.Join;
 import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.pdf.RandomVariate;
 import ch.ethz.idsc.tensor.pdf.UniformDistribution;
 import junit.framework.TestCase;
-
-import java.awt.*;
-import java.util.stream.IntStream;
 
 public class VisualRowTest extends TestCase {
 

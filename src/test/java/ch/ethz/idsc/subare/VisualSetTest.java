@@ -61,6 +61,4 @@ public class VisualSetTest extends TestCase {
         assertEquals(set.get(1).getLabelString(), "row 2");
     }
 
-
-
 }

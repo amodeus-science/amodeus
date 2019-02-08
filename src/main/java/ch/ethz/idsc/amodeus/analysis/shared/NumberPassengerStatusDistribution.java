@@ -5,10 +5,9 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
-import ch.ethz.idsc.subare.plot.VisualRow;
-import ch.ethz.idsc.subare.plot.VisualSet;
-import ch.ethz.idsc.tensor.img.MeanFilter;
 import org.apache.commons.lang3.ArrayUtils;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
@@ -16,6 +15,8 @@ import ch.ethz.idsc.amodeus.analysis.element.NumberPassengersAnalysis;
 import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionElement;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.subare.plot.VisualRow;
+import ch.ethz.idsc.subare.plot.VisualSet;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -24,10 +25,9 @@ import ch.ethz.idsc.tensor.alg.Reverse;
 import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.img.ColorDataGradients;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
+import ch.ethz.idsc.tensor.img.MeanFilter;
 import ch.ethz.idsc.tensor.opt.ScalarTensorFunction;
 import ch.ethz.idsc.tensor.red.Total;
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
 
 public enum NumberPassengerStatusDistribution implements AnalysisExport {
     INSTANCE;

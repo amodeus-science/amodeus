@@ -1,8 +1,10 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.analysis.element;
 
-import java.awt.*;
 import java.io.File;
+
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
@@ -12,8 +14,6 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.img.MeanFilter;
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
 
 public enum OccupancyDistanceRatiosImage implements AnalysisExport {
     INSTANCE;

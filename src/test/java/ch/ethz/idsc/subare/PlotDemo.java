@@ -1,18 +1,25 @@
 package ch.ethz.idsc.subare;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+
 import ch.ethz.idsc.amodeus.analysis.plot.ChartTheme;
-import ch.ethz.idsc.subare.plot.*;
+import ch.ethz.idsc.subare.plot.CompositionStack;
+import ch.ethz.idsc.subare.plot.Histogram;
+import ch.ethz.idsc.subare.plot.ListPlot;
+import ch.ethz.idsc.subare.plot.StackedTimeChart;
+import ch.ethz.idsc.subare.plot.TimeChart;
+import ch.ethz.idsc.subare.plot.VisualRow;
+import ch.ethz.idsc.subare.plot.VisualSet;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.img.ColorDataLists;
 import ch.ethz.idsc.tensor.pdf.RandomVariate;
 import ch.ethz.idsc.tensor.pdf.UniformDistribution;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
-
-import java.io.File;
-import java.io.IOException;
 
 public class PlotDemo {
 
@@ -56,7 +63,7 @@ public class PlotDemo {
         File file5 = new File("line.png");
         ChartUtilities.saveChartAsPNG(file5, chart5, 500, 300);
 
-        JFreeChart chart6 = ListPlot.of(visualSet,true);
+        JFreeChart chart6 = ListPlot.of(visualSet, true);
         File file6 = new File("stackedLine.png");
         ChartUtilities.saveChartAsPNG(file6, chart6, 500, 300);
     }

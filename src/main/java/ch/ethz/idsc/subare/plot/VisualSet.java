@@ -1,18 +1,26 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.subare.plot;
 
-import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.img.ColorDataIndexed;
-import ch.ethz.idsc.tensor.img.ColorDataLists;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+
 import org.apache.commons.lang3.StringUtils;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeTableXYDataset;
-import org.jfree.data.xy.*;
+import org.jfree.data.xy.CategoryTableXYDataset;
+import org.jfree.data.xy.TableXYDataset;
 
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
+import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.img.ColorDataIndexed;
+import ch.ethz.idsc.tensor.img.ColorDataLists;
 
 public class VisualSet {
     private List<VisualRow> visualRows;
@@ -51,7 +59,7 @@ public class VisualSet {
     }
 
     public boolean hasLegend() {
-        return visualRows.stream().anyMatch(visualRow -> StringUtils.isNotEmpty(visualRow.getLabelString()) );
+        return visualRows.stream().anyMatch(visualRow -> StringUtils.isNotEmpty(visualRow.getLabelString()));
     }
 
     public VisualSet add(VisualRow visualRow) {

@@ -3,6 +3,9 @@ package ch.ethz.idsc.amodeus.analysis.element;
 
 import java.io.File;
 
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.UnitSaveUtils;
 import ch.ethz.idsc.amodeus.util.io.SaveFormats;
@@ -15,8 +18,6 @@ import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.img.MeanFilter;
 import ch.ethz.idsc.tensor.red.Max;
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
 
 public enum WaitingCustomerExport implements AnalysisExport {
     INSTANCE;

@@ -1,4 +1,9 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.subare.plot;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Stroke;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert; // also exists in subare
 import ch.ethz.idsc.tensor.Scalar;
@@ -8,8 +13,6 @@ import ch.ethz.idsc.tensor.alg.Dimensions;
 import ch.ethz.idsc.tensor.alg.Join;
 import ch.ethz.idsc.tensor.alg.Transpose;
 
-import java.awt.*;
-
 public class VisualRow {
     private Tensor domain = Tensors.empty();
     private Tensor values = Tensors.empty();
@@ -17,7 +20,8 @@ public class VisualRow {
     private Color color = Color.BLUE;
     private Stroke stroke = new BasicStroke(2f);
 
-    public VisualRow() {}
+    public VisualRow() {
+    }
 
     public VisualRow(Tensor domain, Tensor values) {
         add(domain, values);

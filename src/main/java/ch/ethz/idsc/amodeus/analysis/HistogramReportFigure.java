@@ -3,6 +3,11 @@ package ch.ethz.idsc.amodeus.analysis;
 
 import java.io.File;
 
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.CategoryAnchor;
+import org.jfree.chart.axis.CategoryLabelPositions;
+
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.subare.plot.Histogram;
 import ch.ethz.idsc.subare.plot.VisualRow;
@@ -14,10 +19,6 @@ import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.pdf.BinCounts;
 import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.sca.Round;
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.CategoryAnchor;
-import org.jfree.chart.axis.CategoryLabelPositions;
 
 /* package */ enum HistogramReportFigure {
     ;
@@ -45,7 +46,7 @@ import org.jfree.chart.axis.CategoryLabelPositions;
         binCounter = binCounter.divide(RealScalar.of(vals.length())).multiply(RealScalar.of(100));
 
         VisualRow visualRow = new VisualRow();
-        for (int i = 0;i < binCounter.length(); i++) {
+        for (int i = 0; i < binCounter.length(); i++) {
             visualRow.add(RealScalar.of(i).multiply(binSize), binCounter.Get(i));
         }
         VisualSet visualSet = new VisualSet(visualRow);

@@ -1,13 +1,15 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.subare.plot;
 
-import ch.ethz.idsc.tensor.Scalar;
+import java.util.function.Function;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StackedBarRenderer;
 
-import java.util.function.Function;
+import ch.ethz.idsc.tensor.Scalar;
 
 public enum Histogram {
     ;
