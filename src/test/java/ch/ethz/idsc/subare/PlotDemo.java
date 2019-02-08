@@ -28,22 +28,22 @@ enum PlotDemo {
     static void demoPlots(File folder, boolean labels) throws IOException {
         folder.mkdirs();
 
-        Tensor domain = Range.of(0, 10);
+        Tensor domain = Range.of(0, 20);
         Tensor values1 = RandomVariate.of(UniformDistribution.unit(), domain.length());
         Tensor values2 = RandomVariate.of(UniformDistribution.unit(), domain.length());
         Tensor values3 = RandomVariate.of(UniformDistribution.unit(), domain.length());
 
-        VisualSet visualSet = new VisualSet();
-        VisualRow row1 = visualSet.add(domain, values1);
-        VisualRow row2 = visualSet.add(domain, values2);
-        VisualRow row3 = visualSet.add(domain, values3);
+        VisualSet visualSet = new VisualSet(ColorDataLists._001.cyclic());
 
-        visualSet.setColors(ColorDataLists._097.cyclic());
+        VisualRow row0 = visualSet.add(domain, values1);
+        // VisualRow row1 =
+        visualSet.add(domain, values2);
+        VisualRow row2 = visualSet.add(domain, values3);
 
         if (labels) {
-            row1.setLabel("row 1");
+            row0.setLabel("row 0");
+            // row2.setLabel("row 2");
             row2.setLabel("row 2");
-            row3.setLabel("row 3");
             visualSet.setPlotLabel("title");
             visualSet.setDomainAxisLabel("x axis");
             visualSet.setRangeAxisLabel("y axis");

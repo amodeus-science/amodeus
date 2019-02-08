@@ -3,6 +3,7 @@ package ch.ethz.idsc.subare;
 
 import ch.ethz.idsc.subare.plot.VisualRow;
 import ch.ethz.idsc.subare.plot.VisualSet;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Transpose;
@@ -24,5 +25,30 @@ public class VisualRowTest extends TestCase {
         assertEquals(row1.points(), row2.points());
 
         assertEquals(visualSet.visualRows().size(), 2);
+    }
+
+    public void testFailNull() {
+        try {
+            new VisualSet(null);
+            fail();
+        } catch (Exception exception) {
+            // ---
+        }
+    }
+
+    public void testPointNonMatrix() {
+        VisualSet visualSet = new VisualSet();
+        try {
+            visualSet.add(Tensors.vector(1, 2, 3, 4));
+            fail();
+        } catch (Exception exception) {
+            // ---
+        }
+        try {
+            visualSet.add(RealScalar.ZERO);
+            fail();
+        } catch (Exception exception) {
+            // ---
+        }
     }
 }

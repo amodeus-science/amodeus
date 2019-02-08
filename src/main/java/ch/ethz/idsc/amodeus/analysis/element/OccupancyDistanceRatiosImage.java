@@ -27,8 +27,8 @@ public enum OccupancyDistanceRatiosImage implements AnalysisExport {
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
         DistanceElement de = analysisSummary.getDistanceElement();
 
-        VisualSet visualSet = new VisualSet();
-        for (int i = 0; i < RATIOS_LABELS.length; i++) {
+        VisualSet visualSet = new VisualSet(colorDataIndexed);
+        for (int i = 0; i < RATIOS_LABELS.length; ++i) {
             Tensor values = Transpose.of(de.ratios).get(i);
             values = StaticHelper.FILTER_ON ? MeanFilter.of(values, StaticHelper.FILTERSIZE) : values;
             VisualRow visualRow = visualSet.add(de.time, values);
@@ -38,7 +38,6 @@ public enum OccupancyDistanceRatiosImage implements AnalysisExport {
         visualSet.setPlotLabel("Occupancy and Distance Ratios");
         visualSet.setDomainAxisLabel("Time");
         visualSet.setRangeAxisLabel("Occupancy / Distance Ratio");
-        visualSet.setColors(colorDataIndexed);
 
         JFreeChart chart = ch.ethz.idsc.subare.plot.TimeChart.of(visualSet);
         chart.getXYPlot().getRangeAxis().setRange(0., 1.);

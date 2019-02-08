@@ -51,11 +51,16 @@ import ch.ethz.idsc.tensor.Tensor;
     public static JFreeChart fromXYSeries(VisualSet visualSet) {
         XYSeriesCollection xySeriesCollection = new XYSeriesCollection();
 
-        for (VisualRow row : visualSet.visualRows()) {
-            XYSeries xySeries = new XYSeries(xySeriesCollection.getSeriesCount());
-            for (Tensor point : row.points())
+        for (VisualRow visualRow : visualSet.visualRows()) {
+            String string = visualRow.getLabelString();
+            Comparable key = string.isEmpty() //
+                    ? xySeriesCollection.getSeriesCount()
+                    : string;
+            XYSeries xySeries = new XYSeries(key);
+            for (Tensor point : visualRow.points())
                 xySeries.add(point.Get(0).number(), point.Get(1).number());
             xySeriesCollection.addSeries(xySeries);
+
         }
 
         JFreeChart jFreeChart = ChartFactory.createXYLineChart( //
@@ -78,9 +83,11 @@ import ch.ethz.idsc.tensor.Tensor;
         xyPlot.setDomainGridlinePaint(Color.LIGHT_GRAY);
         xyPlot.getDomainAxis().setLowerMargin(0.0);
         xyPlot.getDomainAxis().setUpperMargin(0.0);
-        LegendTitle legendTitle = new LegendTitle(xyItemRenderer);
-        legendTitle.setPosition(RectangleEdge.TOP);
-        jFreeChart.addLegend(legendTitle);
+        if (visualSet.hasLegend()) {
+            LegendTitle legendTitle = new LegendTitle(xyItemRenderer);
+            legendTitle.setPosition(RectangleEdge.TOP);
+            jFreeChart.addLegend(legendTitle);
+        }
         if (visualSet.axisClipX != null) {
             NumberAxis numberAxis = (NumberAxis) jFreeChart.getXYPlot().getDomainAxis();
             numberAxis.setRange(visualSet.axisClipX.min().number().doubleValue(), visualSet.axisClipY.max().number().doubleValue());

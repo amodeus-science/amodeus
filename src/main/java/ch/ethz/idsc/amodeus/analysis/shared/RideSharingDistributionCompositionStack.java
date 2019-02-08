@@ -35,7 +35,8 @@ public enum RideSharingDistributionCompositionStack implements AnalysisExport {
 
         /** Get Values */
         Tensor sharedDistribution = nPA.getSharedOthersDistribution();
-        VisualSet visualSet = new VisualSet();
+        CustomColorDataCreator colorDataCreator = new CustomColorDataCreator();
+        VisualSet visualSet = new VisualSet(colorDataCreator.getColorDataIndexed());
         Scalar totalNumberPassengers = Total.of(sharedDistribution).Get();
         sharedDistribution.forEach(s -> visualSet.add( //
                 Tensors.matrix(new Scalar[][] { //
@@ -47,9 +48,7 @@ public enum RideSharingDistributionCompositionStack implements AnalysisExport {
 
         /** create Colors */
         NumberPassengerColorScheme nPCS = new NumberPassengerColorScheme(NumberPassengerStatusDistribution.COLOR_DATA_GRADIENT_DEFAULT, colorDataIndexed);
-        CustomColorDataCreator colorDataCreator = new CustomColorDataCreator();
         IntStream.range(1, sharedDistribution.length() + 1).forEach(i -> colorDataCreator.append(nPCS.of(RealScalar.of(i))));
-        visualSet.setColors(colorDataCreator.getColorDataIndexed());
 
         JFreeChart chart = CompositionStack.of(visualSet);
         chart.getCategoryPlot().setOrientation(PlotOrientation.HORIZONTAL);

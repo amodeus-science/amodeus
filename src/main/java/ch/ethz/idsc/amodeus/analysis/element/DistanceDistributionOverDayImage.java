@@ -29,7 +29,7 @@ public enum DistanceDistributionOverDayImage implements AnalysisExport {
         DistanceElement de = analysisSummary.getDistanceElement();
         Tensor distances = Transpose.of(de.distancesOverDay).extract(1, 4);
 
-        VisualSet visualSet = new VisualSet();
+        VisualSet visualSet = new VisualSet(colorDataIndexed);
         for (int i = 0; i < 3; i++) {
             Tensor values = i == 0 ? distances.get(i).multiply(RealScalar.of(-1)) : distances.get(i);
             values = StaticHelper.FILTER_ON ? MeanFilter.of(values, StaticHelper.FILTERSIZE) : values;
@@ -39,7 +39,6 @@ public enum DistanceDistributionOverDayImage implements AnalysisExport {
 
         visualSet.setPlotLabel("Distance Distribution over Day");
         visualSet.setRangeAxisLabel("Distance [km]");
-        visualSet.setColors(colorDataIndexed);
 
         JFreeChart chart = StackedTimeChart.of(visualSet);
 

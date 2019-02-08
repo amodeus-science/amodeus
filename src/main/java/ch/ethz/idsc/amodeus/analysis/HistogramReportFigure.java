@@ -45,13 +45,12 @@ import ch.ethz.idsc.tensor.sca.Round;
         Tensor binCounter = BinCounts.of(vals, binSize);
         binCounter = binCounter.divide(RealScalar.of(vals.length())).multiply(RealScalar.of(100));
 
-        VisualSet visualSet = new VisualSet();
+        VisualSet visualSet = new VisualSet(colorDataIndexed);
         visualSet.add(Range.of(0, binCounter.length()).multiply(binSize), binCounter);
         // ---
         visualSet.setPlotLabel(title);
         visualSet.setRangeAxisLabel("% of requests");
         visualSet.setDomainAxisLabel(xLabel);
-        visualSet.setColors(colorDataIndexed);
 
         final Scalar size = binSize;
         JFreeChart chart = Histogram.of(visualSet, s -> "[" + s.number() + " , " + s.add(size).number() + ")");

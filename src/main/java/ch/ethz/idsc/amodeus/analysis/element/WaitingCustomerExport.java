@@ -36,13 +36,12 @@ public enum WaitingCustomerExport implements AnalysisExport {
 
         Tensor values = tta.waitingCustomers;
         values = StaticHelper.FILTER_ON ? MeanFilter.of(values, StaticHelper.FILTERSIZE) : values;
-        VisualSet visualSet = new VisualSet();
+        VisualSet visualSet = new VisualSet(colorDataIndexed);
         visualSet.add(tta.time, values);
 
         visualSet.setPlotLabel("Waiting Customers per Day Time");
         visualSet.setDomainAxisLabel("Time");
         visualSet.setRangeAxisLabel("Waiting Customers [#]");
-        visualSet.setColors(colorDataIndexed);
 
         JFreeChart chart = ch.ethz.idsc.subare.plot.TimeChart.of(visualSet);
         chart.getXYPlot().getRangeAxis().setRange(0., maxWaiting + 1);

@@ -30,7 +30,7 @@ public enum BinnedWaitingTimesImage implements AnalysisExport {
         TravelTimeAnalysis tta = analysisSummary.getTravelTimeAnalysis();
         Scalar scalingFactor = RealScalar.of(60.0); // [s] to [min]
 
-        VisualSet visualSet = new VisualSet();
+        VisualSet visualSet = new VisualSet(colorDataIndexed);
         for (int i = 0; i < Quantiles.LBL.length; ++i) {
             Tensor values = Transpose.of(tta.waitTimePlotValues).get(i).divide(scalingFactor);
             values = StaticHelper.FILTER_ON ? MeanFilter.of(values, StaticHelper.FILTERSIZE) : values;
@@ -41,7 +41,6 @@ public enum BinnedWaitingTimesImage implements AnalysisExport {
         visualSet.setPlotLabel("Binned Waiting Times");
         visualSet.setDomainAxisLabel("Time");
         visualSet.setRangeAxisLabel("Waiting Times [min]");
-        visualSet.setColors(colorDataIndexed);
 
         JFreeChart chart = TimeChart.of(visualSet);
         chart.getXYPlot().getRangeAxis().setRange(0., //
