@@ -17,35 +17,36 @@ import ch.ethz.idsc.subare.plot.TimeChart;
 import ch.ethz.idsc.subare.plot.VisualRow;
 import ch.ethz.idsc.subare.plot.VisualSet;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Range;
 import ch.ethz.idsc.tensor.img.ColorDataLists;
 import ch.ethz.idsc.tensor.io.HomeDirectory;
 import ch.ethz.idsc.tensor.pdf.RandomVariate;
 import ch.ethz.idsc.tensor.pdf.UniformDistribution;
 
-public class PlotDemo {
+enum PlotDemo {
+    ;
+    static void demoPlots(File folder, boolean labels) throws IOException {
+        folder.mkdirs();
 
-    public static void main(String[] args) throws IOException {
-        Tensor domain = Tensors.fromString("{1, 2, 3, 4, 5}");
-        Tensor values1 = RandomVariate.of(UniformDistribution.unit(), 5);
-        Tensor values2 = RandomVariate.of(UniformDistribution.unit(), 5);
+        Tensor domain = Range.of(0, 10);
+        Tensor values1 = RandomVariate.of(UniformDistribution.unit(), domain.length());
+        Tensor values2 = RandomVariate.of(UniformDistribution.unit(), domain.length());
 
         VisualSet visualSet = new VisualSet();
         VisualRow row1 = visualSet.add(domain, values1);
         VisualRow row2 = visualSet.add(domain, values2);
 
-        row1.setLabel("row 1");
-        row2.setLabel("row 2");
-        visualSet.setPlotLabel("title");
-        visualSet.setDomainAxisLabel("x axis");
-        visualSet.setRangeAxisLabel("y axis");
+        if (labels) {
+            row1.setLabel("row 1");
+            row2.setLabel("row 2");
+            visualSet.setPlotLabel("title");
+            visualSet.setDomainAxisLabel("x axis");
+            visualSet.setRangeAxisLabel("y axis");
+        }
 
         visualSet.setColors(ColorDataLists._097.cyclic());
 
         ChartFactory.setChartTheme(/* amodeus specific */ ChartTheme.STANDARD.getChartTheme(false));
-
-        File folder = HomeDirectory.Pictures("amodeus");
-        folder.mkdir();
 
         JFreeChart chart1 = CompositionStack.of(visualSet);
         File file1 = new File(folder, "compositionStack.png");
@@ -70,5 +71,11 @@ public class PlotDemo {
         JFreeChart chart6 = ListPlot.of(visualSet, true);
         File file6 = new File(folder, "stackedLine.png");
         ChartUtilities.saveChartAsPNG(file6, chart6, 500, 300);
+
+    }
+
+    public static void main(String[] args) throws IOException {
+        demoPlots(HomeDirectory.Pictures("amodeus", "0"), false);
+        demoPlots(HomeDirectory.Pictures("amodeus", "1"), true);
     }
 }
