@@ -102,7 +102,7 @@ public class VisualSet {
         for (VisualRow visualRow : visualRows)
             for (Tensor point : visualRow.points())
                 dataset.addValue(point.Get(1).number().doubleValue(), //
-                        visualRow.getLabelString(), //
+                        visualRow.getLabel(), //
                         naming.apply(point.Get(0)));
         return dataset;
     }
@@ -113,7 +113,7 @@ public class VisualSet {
             for (Tensor point : visualRow.points())
                 dataset.add(toTime(point.Get(0)), //
                         point.Get(1).number().doubleValue(), //
-                        visualRow.getLabelString());
+                        visualRow.getLabel());
         return dataset;
     }
 
@@ -123,7 +123,7 @@ public class VisualSet {
             for (Tensor point : visualRow.points())
                 dataset.add(point.Get(0).number().doubleValue(), //
                         point.Get(1).number().doubleValue(), //
-                        visualRow.getLabelString());
+                        visualRow.getLabelString()); // requires string, might lead to overwriting
         return dataset;
     }
 
