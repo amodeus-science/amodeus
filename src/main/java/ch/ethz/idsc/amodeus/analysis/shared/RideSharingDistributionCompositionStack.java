@@ -18,6 +18,7 @@ import ch.ethz.idsc.subare.plot.VisualSet;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.red.Total;
 
@@ -38,7 +39,8 @@ public enum RideSharingDistributionCompositionStack implements AnalysisExport {
         VisualSet visualSet = new VisualSet();
         Scalar totalNumberPassengers = Total.of(sharedDistribution).Get();
         sharedDistribution.forEach(s -> visualSet.add( //
-                new VisualRow(RealScalar.ONE, s.divide(totalNumberPassengers)) //
+                new VisualRow(Tensors.matrix(new Scalar[][] { //
+                        { RealScalar.ONE, (Scalar) s.divide(totalNumberPassengers) } })) //
         ));
         for (int i = 0; i < visualSet.visualRows().size(); i++)
             visualSet.setRowLabel(i, (i + 1) + " Passengers");

@@ -13,12 +13,14 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.subare.plot.CompositionStack;
 import ch.ethz.idsc.subare.plot.VisualRow;
 import ch.ethz.idsc.subare.plot.VisualSet;
-import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
 public enum StackedDistanceChartImage implements AnalysisExport {
     INSTANCE;
 
+    private static final Tensor DOMAIN = Tensors.vector(1);
     public static final String FILENAME = "stackedDistance";
     public static final int WIDTH = 700; /* Width of the image */
     public static final int HEIGHT = 125; /* Height of the image */
@@ -27,9 +29,9 @@ public enum StackedDistanceChartImage implements AnalysisExport {
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
         DistanceElement de = analysisSummary.getDistanceElement();
         VisualSet visualSet = new VisualSet( //
-                new VisualRow(RealScalar.ONE, RealScalar.of(de.totalDistanceWtCst / de.totalDistance)), //
-                new VisualRow(RealScalar.ONE, RealScalar.of(de.totalDistancePicku / de.totalDistance)), //
-                new VisualRow(RealScalar.ONE, RealScalar.of(de.totalDistanceRebal / de.totalDistance)) //
+                new VisualRow(DOMAIN, Tensors.vector(de.totalDistanceWtCst / de.totalDistance)), //
+                new VisualRow(DOMAIN, Tensors.vector(de.totalDistancePicku / de.totalDistance)), //
+                new VisualRow(DOMAIN, Tensors.vector(de.totalDistanceRebal / de.totalDistance)) //
         );
         visualSet.setPlotLabel("Total Distance Distribution");
         visualSet.setRowLabel(0, "With Customer");
