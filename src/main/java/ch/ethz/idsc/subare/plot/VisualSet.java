@@ -32,8 +32,6 @@ public class VisualSet {
     private String plotLabel = "";
     private String domainAxisLabel = "";
     private String rangeAxisLabel = "";
-    protected Clip axisClipX = null;
-    protected Clip axisClipY = null;
 
     public VisualSet(ColorDataIndexed colorDataIndexed) {
         this.colorDataIndexed = Objects.requireNonNull(colorDataIndexed);
@@ -97,14 +95,6 @@ public class VisualSet {
         rangeAxisLabel = string;
     }
 
-    public final void setAxisClipX(Clip axisClipX) {
-        this.axisClipX = axisClipX;
-    }
-
-    public final void setAxisClipY(Clip axisClipY) {
-        this.axisClipY = axisClipY;
-    }
-
     // TODO is there a way to make better use of similarity?
 
     public CategoryDataset categorical() {
@@ -133,11 +123,15 @@ public class VisualSet {
 
     public TableXYDataset xy() {
         final CategoryTableXYDataset dataset = new CategoryTableXYDataset();
-        for (VisualRow visualRow : visualRows)
+        for (VisualRow visualRow : visualRows) {
+            String label = visualRow.getLabelString().isEmpty() //
+                    ? String.valueOf(dataset.getSeriesCount())
+                    : visualRow.getLabelString();
             for (Tensor point : visualRow.points())
                 dataset.add(point.Get(0).number().doubleValue(), //
                         point.Get(1).number().doubleValue(), //
-                        visualRow.getLabelString()); // requires string, might lead to overwriting
+                        label); // requires string, might lead to overwriting
+        }
         return dataset;
     }
 
