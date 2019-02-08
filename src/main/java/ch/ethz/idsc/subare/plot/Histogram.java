@@ -44,7 +44,7 @@ public enum Histogram {
                 ? new StackedBarRenderer()
                 : new BarRenderer();
         renderer.setDrawBarOutline(true);
-        PlotUtils.formatLines(visualSet, renderer);
+        JFreeCharts.formatLines(visualSet, renderer);
         chart.getCategoryPlot().setRenderer(renderer);
 
         return chart;

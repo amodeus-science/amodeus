@@ -22,6 +22,7 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.img.ColorDataLists;
+import ch.ethz.idsc.tensor.sca.Clip;
 
 public class VisualSet {
     private final List<VisualRow> visualRows = new ArrayList<>();
@@ -29,6 +30,8 @@ public class VisualSet {
     private String domainAxisLabel = "";
     private String rangeAxisLabel = "";
     private ColorDataIndexed colorDataIndexed = ColorDataLists._097.cyclic();
+    protected Clip axisClipX = null;
+    protected Clip axisClipY = null;
 
     /** only affects visual rows that are added subsequent to the function call
      * 
@@ -88,6 +91,14 @@ public class VisualSet {
 
     public void setRangeAxisLabel(String string) {
         rangeAxisLabel = string;
+    }
+
+    public final void setAxisClipX(Clip axisClipX) {
+        this.axisClipX = axisClipX;
+    }
+
+    public final void setAxisClipY(Clip axisClipY) {
+        this.axisClipY = axisClipY;
     }
 
     // TODO is there a way to make better use of similarity?

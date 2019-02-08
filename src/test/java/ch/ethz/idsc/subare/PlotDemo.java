@@ -31,16 +31,19 @@ enum PlotDemo {
         Tensor domain = Range.of(0, 10);
         Tensor values1 = RandomVariate.of(UniformDistribution.unit(), domain.length());
         Tensor values2 = RandomVariate.of(UniformDistribution.unit(), domain.length());
+        Tensor values3 = RandomVariate.of(UniformDistribution.unit(), domain.length());
 
         VisualSet visualSet = new VisualSet();
         VisualRow row1 = visualSet.add(domain, values1);
         VisualRow row2 = visualSet.add(domain, values2);
+        VisualRow row3 = visualSet.add(domain, values3);
 
         visualSet.setColors(ColorDataLists._097.cyclic());
-        
+
         if (labels) {
             row1.setLabel("row 1");
             row2.setLabel("row 2");
+            row3.setLabel("row 3");
             visualSet.setPlotLabel("title");
             visualSet.setDomainAxisLabel("x axis");
             visualSet.setRangeAxisLabel("y axis");
@@ -48,29 +51,41 @@ enum PlotDemo {
 
         ChartFactory.setChartTheme(/* amodeus specific */ ChartTheme.STANDARD.getChartTheme(false));
 
-        JFreeChart chart1 = CompositionStack.of(visualSet);
-        File file1 = new File(folder, "compositionStack.png");
-        ChartUtilities.saveChartAsPNG(file1, chart1, 200, 300);
+        {
+            JFreeChart jFreeChart = CompositionStack.of(visualSet);
+            File file1 = new File(folder, CompositionStack.class.getSimpleName() + ".png");
+            ChartUtilities.saveChartAsPNG(file1, jFreeChart, 200, 300);
+        }
 
-        JFreeChart chart2 = Histogram.of(visualSet);
-        File file2 = new File(folder, "histogram.png");
-        ChartUtilities.saveChartAsPNG(file2, chart2, 500, 300);
+        {
+            JFreeChart jFreeChart = Histogram.of(visualSet);
+            File file2 = new File(folder, Histogram.class.getSimpleName() + ".png");
+            ChartUtilities.saveChartAsPNG(file2, jFreeChart, 500, 300);
+        }
 
-        JFreeChart chart3 = TimeChart.of(visualSet);
-        File file3 = new File(folder, "time.png");
-        ChartUtilities.saveChartAsPNG(file3, chart3, 500, 300);
+        {
+            JFreeChart jFreeChart = TimeChart.of(visualSet);
+            File file3 = new File(folder, TimeChart.class.getSimpleName() + ".png");
+            ChartUtilities.saveChartAsPNG(file3, jFreeChart, 500, 300);
+        }
 
-        JFreeChart chart4 = StackedTimeChart.of(visualSet);
-        File file4 = new File(folder, "stackedTime.png");
-        ChartUtilities.saveChartAsPNG(file4, chart4, 500, 300);
+        {
+            JFreeChart jFreeChart = StackedTimeChart.of(visualSet);
+            File file4 = new File(folder, StackedTimeChart.class.getSimpleName() + ".png");
+            ChartUtilities.saveChartAsPNG(file4, jFreeChart, 500, 300);
+        }
 
-        JFreeChart chart5 = ListPlot.of(visualSet);
-        File file5 = new File(folder, "line.png");
-        ChartUtilities.saveChartAsPNG(file5, chart5, 500, 300);
+        {
+            JFreeChart jFreeChart = ListPlot.of(visualSet);
+            File file5 = new File(folder, ListPlot.class.getSimpleName() + ".png");
+            ChartUtilities.saveChartAsPNG(file5, jFreeChart, 500, 300);
+        }
 
-        JFreeChart chart6 = ListPlot.of(visualSet, true);
-        File file6 = new File(folder, "stackedLine.png");
-        ChartUtilities.saveChartAsPNG(file6, chart6, 500, 300);
+        {
+            JFreeChart jFreeChart = ListPlot.of(visualSet, true);
+            File file6 = new File(folder, "stacked.png");
+            ChartUtilities.saveChartAsPNG(file6, jFreeChart, 500, 300);
+        }
 
     }
 
