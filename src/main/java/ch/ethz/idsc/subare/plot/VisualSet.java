@@ -30,13 +30,19 @@ public class VisualSet {
     private String rangeAxisLabel = "";
     private ColorDataIndexed colorDataIndexed = ColorDataLists._097.cyclic();
 
+    /** only affects visual rows that are added subsequent to the function call
+     * 
+     * @param colorDataIndexed */
+    public void setColors(ColorDataIndexed colorDataIndexed) {
+        this.colorDataIndexed = colorDataIndexed;
+    }
+
     /** @param points of the form {{x1, y1}, {x2, y2}, ..., {xn, yn}}
      * @return */
     public VisualRow add(Tensor points) {
-        VisualRow visualRow = new VisualRow(points);
-        int index = visualRows.size();
+        final int index = visualRows.size();
+        VisualRow visualRow = new VisualRow(points, index);
         visualRow.setColor(colorDataIndexed.getColor(index));
-        visualRow.setLabel(new ComparableLabel(index));
         visualRows.add(visualRow);
         return visualRow;
     }
@@ -82,13 +88,6 @@ public class VisualSet {
 
     public void setRangeAxisLabel(String string) {
         rangeAxisLabel = string;
-    }
-
-    /** only affects visual rows that are added subsequent to the function call
-     * 
-     * @param colorDataIndexed */
-    public void setColors(ColorDataIndexed colorDataIndexed) {
-        this.colorDataIndexed = colorDataIndexed;
     }
 
     // TODO is there a way to make better use of similarity?

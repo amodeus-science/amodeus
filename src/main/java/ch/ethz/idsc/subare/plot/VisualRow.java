@@ -10,20 +10,22 @@ import ch.ethz.idsc.tensor.Tensor;
 
 public class VisualRow {
     private final Tensor points;
+    private final ComparableLabel comparableLabel;
     private Color color = Color.BLUE;
     private Stroke stroke = new BasicStroke(2f);
-    private ComparableLabel comparableLabel;
 
     /** Mathematica::ListPlot[points]
      * 
      * @param points of the form {{x1, y1}, {x2, y2}, ..., {xn, yn}}
      * @return */
-    VisualRow(Tensor points) {
+    VisualRow(Tensor points, int index) {
         this.points = points;
+        this.comparableLabel = new ComparableLabel(index);
     }
 
+    /** @return points of the form {{x1, y1}, {x2, y2}, ..., {xn, yn}} */
     public Tensor points() {
-        return points;
+        return points.unmodifiable();
     }
 
     public void setColor(Color color) {
@@ -42,24 +44,15 @@ public class VisualRow {
         return stroke;
     }
 
-    public void setLabel(ComparableLabel comparableLabel) {
-        this.comparableLabel = Objects.requireNonNull(comparableLabel);
-    }
-
     public void setLabel(String string) {
         comparableLabel.setString(string);
-    }
-
-    public ComparableLabel getLabel() {
-        return comparableLabel;
     }
 
     public String getLabelString() {
         return getLabel().toString();
     }
 
-    public boolean hasLabel() {
-        return Objects.nonNull(comparableLabel);
+    /* package */ ComparableLabel getLabel() {
+        return comparableLabel;
     }
-
 }

@@ -36,6 +36,8 @@ enum PlotDemo {
         VisualRow row1 = visualSet.add(domain, values1);
         VisualRow row2 = visualSet.add(domain, values2);
 
+        visualSet.setColors(ColorDataLists._097.cyclic());
+        
         if (labels) {
             row1.setLabel("row 1");
             row2.setLabel("row 2");
@@ -43,8 +45,6 @@ enum PlotDemo {
             visualSet.setDomainAxisLabel("x axis");
             visualSet.setRangeAxisLabel("y axis");
         }
-
-        visualSet.setColors(ColorDataLists._097.cyclic());
 
         ChartFactory.setChartTheme(/* amodeus specific */ ChartTheme.STANDARD.getChartTheme(false));
 
