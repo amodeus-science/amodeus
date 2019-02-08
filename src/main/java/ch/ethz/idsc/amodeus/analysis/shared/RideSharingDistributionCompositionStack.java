@@ -31,11 +31,20 @@ public enum RideSharingDistributionCompositionStack implements AnalysisExport {
 
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
-        NumberPassengersAnalysis nPA = analysisSummary.getNumberPassengersAnalysis();
+        NumberPassengersAnalysis numberPassengersAnalysis = analysisSummary.getNumberPassengersAnalysis();
 
         /** Get Values */
-        Tensor sharedDistribution = nPA.getSharedOthersDistribution();
+        Tensor sharedDistribution = numberPassengersAnalysis.getSharedOthersDistribution();
         CustomColorDataCreator colorDataCreator = new CustomColorDataCreator();
+        /** create Colors */
+        {
+            // TODO TENSOR V069 use simpler color table build
+            NumberPassengerColorScheme numberPassengerColorScheme = //
+                    new NumberPassengerColorScheme(NumberPassengerStatusDistribution.COLOR_DATA_GRADIENT_DEFAULT, colorDataIndexed);
+            IntStream.range(1, sharedDistribution.length() + 1) //
+                    .forEach(i -> colorDataCreator.append(numberPassengerColorScheme.of(RealScalar.of(i))));
+        }
+        // ---
         VisualSet visualSet = new VisualSet(colorDataCreator.getColorDataIndexed());
         Scalar totalNumberPassengers = Total.of(sharedDistribution).Get();
         sharedDistribution.forEach(s -> visualSet.add( //
@@ -45,10 +54,6 @@ public enum RideSharingDistributionCompositionStack implements AnalysisExport {
         for (int i = 0; i < visualSet.visualRows().size(); ++i)
             visualSet.get(i).setLabel((i + 1) + " Passengers");
         visualSet.setPlotLabel("Ride Sharing Distribution, fraction of Requests");
-
-        /** create Colors */
-        NumberPassengerColorScheme nPCS = new NumberPassengerColorScheme(NumberPassengerStatusDistribution.COLOR_DATA_GRADIENT_DEFAULT, colorDataIndexed);
-        IntStream.range(1, sharedDistribution.length() + 1).forEach(i -> colorDataCreator.append(nPCS.of(RealScalar.of(i))));
 
         JFreeChart chart = CompositionStack.of(visualSet);
         chart.getCategoryPlot().setOrientation(PlotOrientation.HORIZONTAL);
