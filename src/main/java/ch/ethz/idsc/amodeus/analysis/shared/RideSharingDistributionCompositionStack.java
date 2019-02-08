@@ -13,7 +13,6 @@ import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.amodeus.analysis.element.NumberPassengersAnalysis;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.subare.plot.CompositionStack;
-import ch.ethz.idsc.subare.plot.VisualRow;
 import ch.ethz.idsc.subare.plot.VisualSet;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -39,10 +38,10 @@ public enum RideSharingDistributionCompositionStack implements AnalysisExport {
         VisualSet visualSet = new VisualSet();
         Scalar totalNumberPassengers = Total.of(sharedDistribution).Get();
         sharedDistribution.forEach(s -> visualSet.add( //
-                new VisualRow(Tensors.matrix(new Scalar[][] { //
+                Tensors.matrix(new Scalar[][] { //
                         { RealScalar.ONE, (Scalar) s.divide(totalNumberPassengers) } })) //
-        ));
-        for (int i = 0; i < visualSet.visualRows().size(); i++)
+        );
+        for (int i = 0; i < visualSet.visualRows().size(); ++i)
             visualSet.get(i).setLabel((i + 1) + " Passengers");
         visualSet.setPlotLabel("Ride Sharing Distribution, fraction of Requests");
 

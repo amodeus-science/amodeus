@@ -1,14 +1,12 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.subare.plot;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jfree.data.category.CategoryDataset;
@@ -20,19 +18,34 @@ import org.jfree.data.xy.TableXYDataset;
 
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.img.ColorDataLists;
 
 public class VisualSet {
-    private final List<VisualRow> visualRows;
+    private final List<VisualRow> visualRows = new ArrayList<>();
     private String plotLabel = "";
     private String domainAxisLabel = "";
     private String rangeAxisLabel = "";
-    private ColorDataIndexed colorDataIndexed = ColorDataLists._001.cyclic();
+    private ColorDataIndexed colorDataIndexed = ColorDataLists._097.cyclic();
 
-    public VisualSet(VisualRow... visualRows) {
-        this.visualRows = Stream.of(visualRows).collect(Collectors.toList());
-        adjustRows();
+    /** @param points of the form {{x1, y1}, {x2, y2}, ..., {xn, yn}}
+     * @return */
+    public VisualRow add(Tensor points) {
+        VisualRow visualRow = new VisualRow(points);
+        int index = visualRows.size();
+        visualRow.setColor(colorDataIndexed.getColor(index));
+        visualRow.setLabel(new ComparableLabel(index));
+        visualRows.add(visualRow);
+        return visualRow;
+    }
+
+    /** @param domain {x1, x2, ..., xn}
+     * @param values {y1, y2, ..., yn}
+     * @return */
+    public VisualRow add(Tensor domain, Tensor values) {
+        return add(Transpose.of(Tensors.of(domain, values)));
     }
 
     public List<VisualRow> visualRows() {
@@ -42,12 +55,6 @@ public class VisualSet {
     public VisualRow get(int index) {
         return visualRows.get(index);
     }
-
-    // public Optional<VisualRow> get(String label) {
-    // return visualRows.stream() //
-    // .filter(visualRow -> visualRow.getLabel().toString().equals(label)) //
-    // .findAny();
-    // }
 
     public String getPlotLabel() {
         return plotLabel;
@@ -65,11 +72,6 @@ public class VisualSet {
         return visualRows.stream().anyMatch(visualRow -> StringUtils.isNotEmpty(visualRow.getLabelString()));
     }
 
-    public void add(VisualRow visualRow) {
-        visualRows.add(visualRow);
-        adjustRows();
-    }
-
     public void setPlotLabel(String string) {
         plotLabel = string;
     }
@@ -82,19 +84,11 @@ public class VisualSet {
         rangeAxisLabel = string;
     }
 
+    /** only affects visual rows that are added subsequent to the function call
+     * 
+     * @param colorDataIndexed */
     public void setColors(ColorDataIndexed colorDataIndexed) {
         this.colorDataIndexed = colorDataIndexed;
-        adjustRows();
-    }
-
-    private void adjustRows() {
-        ListIterator<VisualRow> it = this.visualRows.listIterator();
-        while (it.hasNext()) {
-            VisualRow visualRow = it.next();
-            if (!visualRow.hasLabel())
-                visualRow.setLabel(new ComparableLabel(it.previousIndex()));
-            visualRow.setColor(colorDataIndexed.getColor(it.previousIndex()));
-        }
     }
 
     // TODO is there a way to make better use of similarity?

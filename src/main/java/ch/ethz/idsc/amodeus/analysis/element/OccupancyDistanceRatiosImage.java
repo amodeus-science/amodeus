@@ -31,9 +31,8 @@ public enum OccupancyDistanceRatiosImage implements AnalysisExport {
         for (int i = 0; i < RATIOS_LABELS.length; i++) {
             Tensor values = Transpose.of(de.ratios).get(i);
             values = StaticHelper.FILTER_ON ? MeanFilter.of(values, StaticHelper.FILTERSIZE) : values;
-            VisualRow visualRow = new VisualRow(de.time, values);
+            VisualRow visualRow = visualSet.add(de.time, values);
             visualRow.setLabel(RATIOS_LABELS[i]);
-            visualSet.add(visualRow);
         }
 
         visualSet.setPlotLabel("Occupancy and Distance Ratios");

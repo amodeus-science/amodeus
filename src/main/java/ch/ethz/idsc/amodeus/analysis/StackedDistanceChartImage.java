@@ -11,7 +11,6 @@ import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.amodeus.analysis.element.DistanceElement;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.subare.plot.CompositionStack;
-import ch.ethz.idsc.subare.plot.VisualRow;
 import ch.ethz.idsc.subare.plot.VisualSet;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -28,16 +27,13 @@ public enum StackedDistanceChartImage implements AnalysisExport {
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
         DistanceElement de = analysisSummary.getDistanceElement();
-        VisualSet visualSet = new VisualSet( //
-                new VisualRow(DOMAIN, Tensors.vector(de.totalDistanceWtCst / de.totalDistance)), //
-                new VisualRow(DOMAIN, Tensors.vector(de.totalDistancePicku / de.totalDistance)), //
-                new VisualRow(DOMAIN, Tensors.vector(de.totalDistanceRebal / de.totalDistance)) //
-        );
-        visualSet.setPlotLabel("Total Distance Distribution");
-        visualSet.get(0).setLabel("With Customer");
-        visualSet.get(1).setLabel("Pickup");
-        visualSet.get(2).setLabel("Rebalancing");
+        VisualSet visualSet = new VisualSet(); //
         visualSet.setColors(colorDataIndexed);
+        visualSet.add(DOMAIN, Tensors.vector(de.totalDistanceWtCst / de.totalDistance)).setLabel("With Customer");
+        visualSet.add(DOMAIN, Tensors.vector(de.totalDistancePicku / de.totalDistance)).setLabel("Pickup");
+        visualSet.add(DOMAIN, Tensors.vector(de.totalDistanceRebal / de.totalDistance)).setLabel("Rebalancing");
+
+        visualSet.setPlotLabel("Total Distance Distribution");
 
         JFreeChart chart = CompositionStack.of(visualSet);
         chart.getCategoryPlot().setOrientation(PlotOrientation.HORIZONTAL);

@@ -1,6 +1,6 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.subare;
 
-import ch.ethz.idsc.subare.plot.VisualRow;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Transpose;
@@ -16,19 +16,19 @@ public class VisualRowTest extends TestCase {
         Tensor points = Transpose.of(Tensors.of(domain, values));
 
         // VisualRow row1 = new VisualRow();
-        VisualRow row2 = new VisualRow(domain, values);
-        VisualRow row3 = new VisualRow(points);
+        // VisualRow row2 = new VisualRow(domain, values);
+        // VisualRow row3 = new VisualRow(points);
 
         // assertTrue(row1.getDomain().equals(Tensors.empty()) && row1.getValues().equals(Tensors.empty()));
-        assertTrue(row2.points().equals(points));
-        assertTrue(row3.points().equals(points));
+        // assertTrue(row2.points().equals(points));
+        // assertTrue(row3.points().equals(points));
     }
 
     public void testAdd() {
         Tensor domain = Tensors.fromString("{1, 2, 3, 4, 5}");
         Tensor values = RandomVariate.of(UniformDistribution.unit(), 5);
 
-        VisualRow row = new VisualRow(domain, values);
+        // VisualRow row = new VisualRow(domain, values);
 
         Tensor domainNext = Tensors.fromString("{6, 7}");
         Tensor valuesNext = RandomVariate.of(UniformDistribution.unit(), 2);

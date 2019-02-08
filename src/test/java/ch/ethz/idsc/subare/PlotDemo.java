@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.subare;
 
 import java.io.File;
@@ -29,13 +30,12 @@ public class PlotDemo {
         Tensor values1 = RandomVariate.of(UniformDistribution.unit(), 5);
         Tensor values2 = RandomVariate.of(UniformDistribution.unit(), 5);
 
-        VisualRow row1 = new VisualRow(domain, values1);
-        VisualRow row2 = new VisualRow(domain, values2);
+        VisualSet visualSet = new VisualSet();
+        VisualRow row1 = visualSet.add(domain, values1);
+        VisualRow row2 = visualSet.add(domain, values2);
 
-        VisualSet visualSet = new VisualSet(row1, row2);
-
-        visualSet.get(0).setLabel("row 1");
-        visualSet.get(1).setLabel("row 2");
+        row1.setLabel("row 1");
+        row2.setLabel("row 2");
         visualSet.setPlotLabel("title");
         visualSet.setDomainAxisLabel("x axis");
         visualSet.setRangeAxisLabel("y axis");
@@ -71,5 +71,4 @@ public class PlotDemo {
         File file6 = new File(folder, "stackedLine.png");
         ChartUtilities.saveChartAsPNG(file6, chart6, 500, 300);
     }
-
 }

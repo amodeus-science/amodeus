@@ -10,7 +10,6 @@ import org.jfree.chart.axis.CategoryLabelPositions;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.subare.plot.Histogram;
-import ch.ethz.idsc.subare.plot.VisualRow;
 import ch.ethz.idsc.subare.plot.VisualSet;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -46,9 +45,9 @@ import ch.ethz.idsc.tensor.sca.Round;
         Tensor binCounter = BinCounts.of(vals, binSize);
         binCounter = binCounter.divide(RealScalar.of(vals.length())).multiply(RealScalar.of(100));
 
-        VisualRow visualRow = new VisualRow(Range.of(0, binCounter.length()).multiply(binSize), binCounter);
+        VisualSet visualSet = new VisualSet();
+        visualSet.add(Range.of(0, binCounter.length()).multiply(binSize), binCounter);
         // ---
-        VisualSet visualSet = new VisualSet(visualRow);
         visualSet.setPlotLabel(title);
         visualSet.setRangeAxisLabel("% of requests");
         visualSet.setDomainAxisLabel(xLabel);

@@ -7,29 +7,18 @@ import java.awt.Stroke;
 import java.util.Objects;
 
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.alg.Transpose;
 
 public class VisualRow {
     private final Tensor points;
     private Color color = Color.BLUE;
     private Stroke stroke = new BasicStroke(2f);
-    private ComparableLabel comparableLabel = null;
-
-    /** MATLAB::plot(x, y)
-     * 
-     * @param domain {x1, x2, ..., xn}
-     * @param values {y1, y2, ..., yn}
-     * @return */
-    public VisualRow(Tensor domain, Tensor values) {
-        points = Transpose.of(Tensors.of(domain, values));
-    }
+    private ComparableLabel comparableLabel;
 
     /** Mathematica::ListPlot[points]
      * 
      * @param points of the form {{x1, y1}, {x2, y2}, ..., {xn, yn}}
      * @return */
-    public VisualRow(Tensor points) {
+    VisualRow(Tensor points) {
         this.points = points;
     }
 

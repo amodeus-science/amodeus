@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.subare;
 
 import ch.ethz.idsc.subare.plot.VisualRow;
@@ -17,11 +18,12 @@ public class VisualSetTest extends TestCase {
         Tensor points = Transpose.of(Tensors.of(domain, values));
 
         // VisualRow row1 = new VisualRow();
-        VisualRow row2 = new VisualRow(domain, values);
-        VisualRow row3 = new VisualRow(points);
+        VisualSet set2 = new VisualSet();
+        VisualRow row2 = set2.add(domain, values);
+        VisualRow row3 = set2.add(points);
 
         VisualSet set1 = new VisualSet();
-        // VisualSet set2 = new VisualSet(row1);
+        //
         // VisualSet set3 = new VisualSet(row1, row2, row3);
 
         assertEquals(set1.visualRows().size(), 0);
@@ -36,11 +38,9 @@ public class VisualSetTest extends TestCase {
         Tensor values1 = RandomVariate.of(UniformDistribution.unit(), 5);
         Tensor values2 = RandomVariate.of(UniformDistribution.unit(), 5);
 
-        VisualRow row1 = new VisualRow(domain, values1);
-        VisualRow row2 = new VisualRow(domain, values2);
-
-        VisualSet set = new VisualSet(row1);
-        set.add(row2);
+        VisualSet set = new VisualSet();
+        VisualRow row1 = set.add(domain, values1);
+        VisualRow row2 = set.add(domain, values2);
 
         // assertEquals(set.get(1).getValues(), values2);
     }
@@ -50,10 +50,9 @@ public class VisualSetTest extends TestCase {
         Tensor values1 = RandomVariate.of(UniformDistribution.unit(), 5);
         Tensor values2 = RandomVariate.of(UniformDistribution.unit(), 5);
 
-        VisualRow row1 = new VisualRow(domain, values1);
-        VisualRow row2 = new VisualRow(domain, values2);
-
-        VisualSet set = new VisualSet(row1, row2);
+        VisualSet set = new VisualSet();
+        VisualRow row1 = set.add(domain, values1);
+        VisualRow row2 = set.add(domain, values2);
 
         set.get(0).setLabel("row 1");
         set.get(1).setLabel("row 2");
