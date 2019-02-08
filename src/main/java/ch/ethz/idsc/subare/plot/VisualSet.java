@@ -1,14 +1,15 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.subare.plot;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jfree.data.category.CategoryDataset;
@@ -19,23 +20,24 @@ import org.jfree.data.xy.CategoryTableXYDataset;
 import org.jfree.data.xy.TableXYDataset;
 
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.img.ColorDataLists;
 
 public class VisualSet {
-    private List<VisualRow> visualRows;
+    private final List<VisualRow> visualRows;
     private String plotLabel = "";
     private String domainAxisLabel = "";
     private String rangeAxisLabel = "";
     private ColorDataIndexed colorDataIndexed = ColorDataLists._001.cyclic();
 
     public VisualSet(VisualRow... visualRows) {
-        this.visualRows = new ArrayList<>(Arrays.asList(visualRows));
+        this.visualRows = Stream.of(visualRows).collect(Collectors.toList());
         adjustRows();
     }
 
     public List<VisualRow> visualRows() {
-        return visualRows;
+        return Collections.unmodifiableList(visualRows);
     }
 
     public VisualRow get(int index) {
@@ -108,39 +110,35 @@ public class VisualSet {
     public CategoryDataset categorical(Function<Scalar, String> naming) {
         final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         for (VisualRow visualRow : visualRows)
-            for (int i = 0; i < visualRow.getDomain().length(); i++)
-                dataset.addValue(visualRow.getValues().Get(i).number().doubleValue(), //
+            for (Tensor point : visualRow.points())
+                dataset.addValue(point.Get(1).number().doubleValue(), //
                         visualRow.getLabelString(), //
-                        naming.apply(visualRow.getDomain().Get(i)));
+                        naming.apply(point.Get(0)));
         return dataset;
     }
 
     public TableXYDataset timed() {
         final TimeTableXYDataset dataset = new TimeTableXYDataset();
-        for (VisualRow visualRow : visualRows) {
-            for (int i = 0; i < visualRow.getDomain().length(); i++) {
-                dataset.add(toTime(visualRow.getDomain().Get(i)), //
-                        visualRow.getValues().Get(i).number().doubleValue(), //
+        for (VisualRow visualRow : visualRows)
+            for (Tensor point : visualRow.points())
+                dataset.add(toTime(point.Get(0)), //
+                        point.Get(1).number().doubleValue(), //
                         visualRow.getLabelString());
-            }
-        }
         return dataset;
     }
 
     public TableXYDataset xy() {
         final CategoryTableXYDataset dataset = new CategoryTableXYDataset();
-        for (VisualRow visualRow : visualRows) {
-            for (int i = 0; i < visualRow.getDomain().length(); i++) {
-                dataset.add(visualRow.getDomain().Get(i).number().doubleValue(), //
-                        visualRow.getValues().Get(i).number().doubleValue(), //
+        for (VisualRow visualRow : visualRows)
+            for (Tensor point : visualRow.points())
+                dataset.add(point.Get(0).number().doubleValue(), //
+                        point.Get(1).number().doubleValue(), //
                         visualRow.getLabelString());
-            }
-        }
         return dataset;
     }
 
     // from StaticHelper
-    private Second toTime(Scalar time) {
+    private static Second toTime(Scalar time) {
         long timeL = time.number().longValue();
         int day = 1;
         int hours = (int) TimeUnit.SECONDS.toHours(timeL);

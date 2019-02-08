@@ -15,6 +15,7 @@ import ch.ethz.idsc.subare.plot.VisualSet;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.alg.Range;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.pdf.BinCounts;
 import ch.ethz.idsc.tensor.qty.Quantity;
@@ -45,10 +46,8 @@ import ch.ethz.idsc.tensor.sca.Round;
         Tensor binCounter = BinCounts.of(vals, binSize);
         binCounter = binCounter.divide(RealScalar.of(vals.length())).multiply(RealScalar.of(100));
 
-        VisualRow visualRow = new VisualRow();
-        for (int i = 0; i < binCounter.length(); i++) {
-            visualRow.add(RealScalar.of(i).multiply(binSize), binCounter.Get(i));
-        }
+        VisualRow visualRow = new VisualRow(Range.of(0, binCounter.length()).multiply(binSize), binCounter);
+        // ---
         VisualSet visualSet = new VisualSet(visualRow);
         visualSet.setPlotLabel(title);
         visualSet.setRangeAxisLabel("% of requests");

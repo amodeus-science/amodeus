@@ -60,7 +60,6 @@ public class SimulationProperties {
 
         workingDirectory = MultiFileTools.getWorkingDirectory();
         scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
-        ;
 
         // Locationspec needs to be set manually in Amodeus.properties
         GlobalAssert.that(!Objects.isNull(scenarioOptions.getLocationSpec()));

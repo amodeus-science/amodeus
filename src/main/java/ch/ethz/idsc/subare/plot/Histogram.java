@@ -10,7 +10,10 @@ import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StackedBarRenderer;
 
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Tensor;
 
+/** inspired by
+ * <a href="https://reference.wolfram.com/language/ref/Histogram.html">Histogram</a> */
 public enum Histogram {
     ;
 
@@ -19,9 +22,12 @@ public enum Histogram {
     }
 
     public static JFreeChart of(VisualSet visualSet, boolean stacked) {
-        return of(visualSet, stacked, visualSet.visualRows().stream().allMatch( //
-                r -> r.getValues().length() == 1 && visualSet.get(0).getDomain().equals(r.getDomain()) //
-        ) ? s -> "" : Scalar::toString);
+        Function<Scalar, String> naming = visualSet.visualRows().stream() //
+                .allMatch(r -> r.points().length() == 1 //
+                        && visualSet.get(0).points().get(Tensor.ALL, 0).equals(r.points().get(Tensor.ALL, 0))) //
+                                ? s -> ""
+                                : Scalar::toString;
+        return of(visualSet, stacked, naming);
     }
 
     public static JFreeChart of(VisualSet visualSet, Function<Scalar, String> naming) {
@@ -34,7 +40,9 @@ public enum Histogram {
                 visualSet.categorical(naming), //
                 PlotOrientation.VERTICAL, visualSet.hasLegend(), true, false);
 
-        BarRenderer renderer = stacked ? new StackedBarRenderer() : new BarRenderer();
+        BarRenderer renderer = stacked //
+                ? new StackedBarRenderer()
+                : new BarRenderer();
         renderer.setDrawBarOutline(true);
         PlotUtils.formatLines(visualSet, renderer);
         chart.getCategoryPlot().setRenderer(renderer);

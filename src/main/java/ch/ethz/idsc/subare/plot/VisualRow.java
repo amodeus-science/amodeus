@@ -4,72 +4,57 @@ package ch.ethz.idsc.subare.plot;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Stroke;
+import java.util.Objects;
 
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert; // also exists in subare
-import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.alg.Dimensions;
-import ch.ethz.idsc.tensor.alg.Join;
 import ch.ethz.idsc.tensor.alg.Transpose;
 
 public class VisualRow {
-    private Tensor domain = Tensors.empty();
-    private Tensor values = Tensors.empty();
-    private ComparableLabel comparableLabel = null;
+    private final Tensor points;
     private Color color = Color.BLUE;
     private Stroke stroke = new BasicStroke(2f);
+    private ComparableLabel comparableLabel = null;
 
-    public VisualRow() {
-    }
-
+    /** MATLAB::plot(x, y)
+     * 
+     * @param domain {x1, x2, ..., xn}
+     * @param values {y1, y2, ..., yn}
+     * @return */
     public VisualRow(Tensor domain, Tensor values) {
-        add(domain, values);
+        points = Transpose.of(Tensors.of(domain, values));
     }
 
+    /** Mathematica::ListPlot[points]
+     * 
+     * @param points of the form {{x1, y1}, {x2, y2}, ..., {xn, yn}}
+     * @return */
     public VisualRow(Tensor points) {
-        add(points);
+        this.points = points;
     }
 
-    public VisualRow add(Tensor domain, Tensor values) {
-        GlobalAssert.that(Dimensions.of(domain).equals(Dimensions.of(values)));
-        if (Dimensions.of(domain).isEmpty()) { // if only a single point is provided
-            domain = Tensors.of(domain);
-            values = Tensors.of(values);
-        }
-        GlobalAssert.that(Dimensions.of(domain).size() == 1 && Dimensions.of(domain).equals(Dimensions.of(values)));
-        this.domain = Join.of(this.domain, domain);
-        this.values = Join.of(this.values, values);
-        return this;
+    public Tensor points() {
+        return points;
     }
 
-    public VisualRow add(Tensor points) {
-        if (Dimensions.of(points).size() == 1) // if only a single point is provided
-            points = Tensors.of(points);
-        GlobalAssert.that(Dimensions.of(points).size() == 2 && Dimensions.of(points).get(1) == 2);
-        domain = Join.of(domain, Transpose.of(points).get(0));
-        values = Join.of(values, Transpose.of(points).get(1));
-        return this;
-    }
-
-    public VisualRow add(Scalar x, Scalar y) {
-        return add(Tensors.of(x, y));
-    }
-
-    public Tensor getDomain() {
-        return domain;
-    }
-
-    public Tensor getValues() {
-        return values;
+    public void setColor(Color color) {
+        this.color = Objects.requireNonNull(color);
     }
 
     public Color getColor() {
         return color;
     }
 
+    public void setStroke(Stroke stroke) {
+        this.stroke = Objects.requireNonNull(stroke);
+    }
+
     public Stroke getStroke() {
         return stroke;
+    }
+
+    public void setLabel(ComparableLabel comparableLabel) {
+        this.comparableLabel = Objects.requireNonNull(comparableLabel);
     }
 
     public ComparableLabel getLabel() {
@@ -81,18 +66,7 @@ public class VisualRow {
     }
 
     public boolean hasLabel() {
-        return comparableLabel != null;
+        return Objects.nonNull(comparableLabel);
     }
 
-    public void setLabel(ComparableLabel comparableLabel) {
-        this.comparableLabel = comparableLabel;
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
-    public void setStroke(Stroke stroke) {
-        this.stroke = stroke;
-    }
 }

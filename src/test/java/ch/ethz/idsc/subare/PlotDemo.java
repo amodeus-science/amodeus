@@ -18,6 +18,7 @@ import ch.ethz.idsc.subare.plot.VisualSet;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.img.ColorDataLists;
+import ch.ethz.idsc.tensor.io.HomeDirectory;
 import ch.ethz.idsc.tensor.pdf.RandomVariate;
 import ch.ethz.idsc.tensor.pdf.UniformDistribution;
 
@@ -43,28 +44,31 @@ public class PlotDemo {
 
         ChartFactory.setChartTheme(/* amodeus specific */ ChartTheme.STANDARD.getChartTheme(false));
 
+        File folder = HomeDirectory.Pictures("amodeus");
+        folder.mkdir();
+
         JFreeChart chart1 = CompositionStack.of(visualSet);
-        File file1 = new File("compositionStack.png");
+        File file1 = new File(folder, "compositionStack.png");
         ChartUtilities.saveChartAsPNG(file1, chart1, 200, 300);
 
         JFreeChart chart2 = Histogram.of(visualSet);
-        File file2 = new File("histogram.png");
+        File file2 = new File(folder, "histogram.png");
         ChartUtilities.saveChartAsPNG(file2, chart2, 500, 300);
 
         JFreeChart chart3 = TimeChart.of(visualSet);
-        File file3 = new File("time.png");
+        File file3 = new File(folder, "time.png");
         ChartUtilities.saveChartAsPNG(file3, chart3, 500, 300);
 
         JFreeChart chart4 = StackedTimeChart.of(visualSet);
-        File file4 = new File("stackedTime.png");
+        File file4 = new File(folder, "stackedTime.png");
         ChartUtilities.saveChartAsPNG(file4, chart4, 500, 300);
 
         JFreeChart chart5 = ListPlot.of(visualSet);
-        File file5 = new File("line.png");
+        File file5 = new File(folder, "line.png");
         ChartUtilities.saveChartAsPNG(file5, chart5, 500, 300);
 
         JFreeChart chart6 = ListPlot.of(visualSet, true);
-        File file6 = new File("stackedLine.png");
+        File file6 = new File(folder, "stackedLine.png");
         ChartUtilities.saveChartAsPNG(file6, chart6, 500, 300);
     }
 
