@@ -31,8 +31,9 @@ public enum StatusDistributionImage implements AnalysisExport {
         for (int i = 0; i < statusLabels.length; i++) {
             Tensor values = Transpose.of(st.statusTensor).get(i);
             values = StaticHelper.FILTER_ON ? MeanFilter.of(values, StaticHelper.FILTERSIZE) : values;
-            visualSet.add(new VisualRow(st.time, values));
-            visualSet.setRowLabel(i, statusLabels[i]);
+            VisualRow visualRow = new VisualRow(st.time, values);
+            visualRow.setLabel(statusLabels[i]);
+            visualSet.add(visualRow);
         }
 
         visualSet.setPlotLabel("Status Distribution");

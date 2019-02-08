@@ -57,6 +57,10 @@ public class VisualRow {
         this.comparableLabel = Objects.requireNonNull(comparableLabel);
     }
 
+    public void setLabel(String string) {
+        comparableLabel.setString(string);
+    }
+
     public ComparableLabel getLabel() {
         return comparableLabel;
     }

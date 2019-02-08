@@ -55,8 +55,8 @@ public class VisualSetTest extends TestCase {
 
         VisualSet set = new VisualSet(row1, row2);
 
-        set.setRowLabel(0, "row 1");
-        set.setRowLabel(1, "row 2");
+        set.get(0).setLabel("row 1");
+        set.get(1).setLabel("row 2");
 
         assertEquals(set.get(1).getLabelString(), "row 2");
     }

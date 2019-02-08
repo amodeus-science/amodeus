@@ -5,7 +5,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -44,9 +43,11 @@ public class VisualSet {
         return visualRows.get(index);
     }
 
-    public Optional<VisualRow> get(String label) {
-        return visualRows.stream().filter(visualRow -> visualRow.getLabel().toString().equals(label)).findAny();
-    }
+    // public Optional<VisualRow> get(String label) {
+    // return visualRows.stream() //
+    // .filter(visualRow -> visualRow.getLabel().toString().equals(label)) //
+    // .findAny();
+    // }
 
     public String getPlotLabel() {
         return plotLabel;
@@ -64,14 +65,9 @@ public class VisualSet {
         return visualRows.stream().anyMatch(visualRow -> StringUtils.isNotEmpty(visualRow.getLabelString()));
     }
 
-    public VisualSet add(VisualRow visualRow) {
+    public void add(VisualRow visualRow) {
         visualRows.add(visualRow);
         adjustRows();
-        return this;
-    }
-
-    public void setRowLabel(int index, String string) {
-        get(index).getLabel().setString(string);
     }
 
     public void setPlotLabel(String string) {

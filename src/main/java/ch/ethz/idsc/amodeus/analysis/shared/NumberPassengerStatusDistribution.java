@@ -104,8 +104,9 @@ public enum NumberPassengerStatusDistribution implements AnalysisExport {
         for (int i = 0; i < statusLabels.length; i++) {
             Tensor vals = Transpose.of(valuesComplet).get(i);
             vals = StaticHelper.FILTER_ON ? MeanFilter.of(vals, StaticHelper.FILTERSIZE) : vals;
-            visualSet.add(new VisualRow(time, vals));
-            visualSet.setRowLabel(i, statusLabels[i]);
+            VisualRow visualRow = new VisualRow(time, vals);
+            visualRow.setLabel(statusLabels[i]);
+            visualSet.add(visualRow);
         }
 
         visualSet.setPlotLabel("Number Passengers");

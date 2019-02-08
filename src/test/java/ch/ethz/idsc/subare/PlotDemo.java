@@ -34,8 +34,8 @@ public class PlotDemo {
 
         VisualSet visualSet = new VisualSet(row1, row2);
 
-        visualSet.setRowLabel(0, "row 1");
-        visualSet.setRowLabel(1, "row 2");
+        visualSet.get(0).setLabel("row 1");
+        visualSet.get(1).setLabel("row 2");
         visualSet.setPlotLabel("title");
         visualSet.setDomainAxisLabel("x axis");
         visualSet.setRangeAxisLabel("y axis");

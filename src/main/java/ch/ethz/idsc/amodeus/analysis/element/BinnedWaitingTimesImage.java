@@ -31,12 +31,12 @@ public enum BinnedWaitingTimesImage implements AnalysisExport {
         Scalar scalingFactor = RealScalar.of(60.0); // [s] to [min]
 
         VisualSet visualSet = new VisualSet();
-        for (int i = 0; i < Quantiles.LBL.length; i++) {
+        for (int i = 0; i < Quantiles.LBL.length; ++i) {
             Tensor values = Transpose.of(tta.waitTimePlotValues).get(i).divide(scalingFactor);
             values = StaticHelper.FILTER_ON ? MeanFilter.of(values, StaticHelper.FILTERSIZE) : values;
             VisualRow visualRow = new VisualRow(tta.time, values);
+            visualRow.setLabel(Quantiles.LBL[i]);
             visualSet.add(visualRow);
-            visualSet.setRowLabel(i, Quantiles.LBL[i]);
         }
 
         visualSet.setPlotLabel("Binned Waiting Times");

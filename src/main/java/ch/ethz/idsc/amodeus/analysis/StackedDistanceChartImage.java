@@ -34,9 +34,9 @@ public enum StackedDistanceChartImage implements AnalysisExport {
                 new VisualRow(DOMAIN, Tensors.vector(de.totalDistanceRebal / de.totalDistance)) //
         );
         visualSet.setPlotLabel("Total Distance Distribution");
-        visualSet.setRowLabel(0, "With Customer");
-        visualSet.setRowLabel(1, "Pickup");
-        visualSet.setRowLabel(2, "Rebalancing");
+        visualSet.get(0).setLabel("With Customer");
+        visualSet.get(1).setLabel("Pickup");
+        visualSet.get(2).setLabel("Rebalancing");
         visualSet.setColors(colorDataIndexed);
 
         JFreeChart chart = CompositionStack.of(visualSet);

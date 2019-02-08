@@ -33,8 +33,9 @@ public enum DistanceDistributionOverDayImage implements AnalysisExport {
         for (int i = 0; i < 3; i++) {
             Tensor values = i == 0 ? distances.get(i).multiply(RealScalar.of(-1)) : distances.get(i);
             values = StaticHelper.FILTER_ON ? MeanFilter.of(values, StaticHelper.FILTERSIZE) : values;
-            visualSet.add(new VisualRow(de.time, values));
-            visualSet.setRowLabel(i, StaticHelper.descriptions()[i]);
+            VisualRow visualRow = new VisualRow(de.time, values);
+            visualRow.setLabel(StaticHelper.descriptions()[i]);
+            visualSet.add(visualRow);
         }
 
         visualSet.setPlotLabel("Distance Distribution over Day");
