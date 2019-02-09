@@ -12,7 +12,7 @@ import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.amodeus.analysis.element.NumberPassengersAnalysis;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.subare.plot.CompositionStack;
+import ch.ethz.idsc.subare.plot.StackedHistogram;
 import ch.ethz.idsc.subare.plot.VisualSet;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -55,7 +55,7 @@ public enum RideSharingDistributionCompositionStack implements AnalysisExport {
             visualSet.getVisualRow(i).setLabel((i + 1) + " Passengers");
         visualSet.setPlotLabel("Ride Sharing Distribution, fraction of Requests");
 
-        JFreeChart chart = CompositionStack.of(visualSet);
+        JFreeChart chart = StackedHistogram.of(visualSet);
         chart.getCategoryPlot().setOrientation(PlotOrientation.HORIZONTAL);
         chart.getCategoryPlot().getRangeAxis().setRange(0, 1.0);
 

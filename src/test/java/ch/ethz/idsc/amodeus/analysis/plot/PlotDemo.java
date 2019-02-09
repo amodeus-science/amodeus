@@ -1,5 +1,5 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.subare;
+package ch.ethz.idsc.amodeus.analysis.plot;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,10 +8,9 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 
-import ch.ethz.idsc.amodeus.analysis.plot.ChartTheme;
-import ch.ethz.idsc.subare.plot.CompositionStack;
 import ch.ethz.idsc.subare.plot.Histogram;
 import ch.ethz.idsc.subare.plot.ListPlot;
+import ch.ethz.idsc.subare.plot.StackedHistogram;
 import ch.ethz.idsc.subare.plot.StackedTimeChart;
 import ch.ethz.idsc.subare.plot.TimeChart;
 import ch.ethz.idsc.subare.plot.VisualRow;
@@ -49,11 +48,12 @@ enum PlotDemo {
             visualSet.setRangeAxisLabel("y axis");
         }
 
-        ChartFactory.setChartTheme(/* amodeus specific */ ChartTheme.STANDARD.getChartTheme(false));
+        /* amodeus specific */
+        ChartFactory.setChartTheme(ChartTheme.STANDARD);
 
         {
-            JFreeChart jFreeChart = CompositionStack.of(visualSet);
-            File file1 = new File(folder, CompositionStack.class.getSimpleName() + ".png");
+            JFreeChart jFreeChart = StackedHistogram.of(visualSet);
+            File file1 = new File(folder, StackedHistogram.class.getSimpleName() + ".png");
             ChartUtilities.saveChartAsPNG(file1, jFreeChart, 200, 300);
         }
 

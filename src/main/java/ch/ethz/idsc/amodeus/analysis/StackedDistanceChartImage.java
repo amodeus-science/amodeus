@@ -10,7 +10,7 @@ import org.jfree.chart.plot.PlotOrientation;
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.amodeus.analysis.element.DistanceElement;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.subare.plot.CompositionStack;
+import ch.ethz.idsc.subare.plot.StackedHistogram;
 import ch.ethz.idsc.subare.plot.VisualSet;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -34,7 +34,7 @@ public enum StackedDistanceChartImage implements AnalysisExport {
 
         visualSet.setPlotLabel("Total Distance Distribution");
 
-        JFreeChart chart = CompositionStack.of(visualSet);
+        JFreeChart chart = StackedHistogram.of(visualSet);
         chart.getCategoryPlot().setOrientation(PlotOrientation.HORIZONTAL);
         chart.getCategoryPlot().getRangeAxis().setRange(0, 1.0);
 

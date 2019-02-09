@@ -17,7 +17,7 @@ public enum Histogram {
         return of(visualSet, false);
     }
 
-    public static JFreeChart of(VisualSet visualSet, boolean stacked) {
+    /* package */ static JFreeChart of(VisualSet visualSet, boolean stacked) {
         Function<Scalar, String> naming = visualSet.visualRows().stream() //
                 .allMatch(r -> r.points().length() == 1 //
                         && visualSet.getVisualRow(0).points().get(Tensor.ALL, 0).equals(r.points().get(Tensor.ALL, 0))) //

@@ -7,6 +7,7 @@ import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAnchor;
 import org.jfree.chart.axis.CategoryLabelPositions;
+import org.jfree.chart.plot.CategoryPlot;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.subare.plot.Histogram;
@@ -24,8 +25,8 @@ import ch.ethz.idsc.tensor.sca.Round;
     ;
 
     private static final int binNmbr = 30;
-    private static final int width = 1000;
-    private static final int height = 750;
+    private static final int WIDTH = 1000;
+    private static final int HEIGHT = 750;
 
     /** saves a histogram for the report with the values in @param vals {@link Tensor}
      * of format {v1,v2,v3,..,vN} with the maximum value @param maxVal in
@@ -53,17 +54,18 @@ import ch.ethz.idsc.tensor.sca.Round;
         visualSet.setDomainAxisLabel(xLabel);
 
         final Scalar size = binSize;
-        JFreeChart chart = Histogram.of(visualSet, s -> "[" + s.number() + " , " + s.add(size).number() + ")");
-        chart.getCategoryPlot().getDomainAxis().setLowerMargin(0.0);
-        chart.getCategoryPlot().getDomainAxis().setUpperMargin(0.0);
-        chart.getCategoryPlot().getDomainAxis().setCategoryMargin(0.0);
-        chart.getCategoryPlot().getDomainAxis().setCategoryLabelPositions(CategoryLabelPositions.UP_90);
-        chart.getCategoryPlot().setDomainGridlinePosition(CategoryAnchor.START);
+        JFreeChart jFreeChart = Histogram.of(visualSet, s -> "[" + s.number() + " , " + s.add(size).number() + ")");
+        CategoryPlot categoryPlot = jFreeChart.getCategoryPlot();
+        categoryPlot.getDomainAxis().setLowerMargin(0.0);
+        categoryPlot.getDomainAxis().setUpperMargin(0.0);
+        categoryPlot.getDomainAxis().setCategoryMargin(0.0);
+        categoryPlot.getDomainAxis().setCategoryLabelPositions(CategoryLabelPositions.UP_90);
+        categoryPlot.setDomainGridlinePosition(CategoryAnchor.START);
 
         try {
-            File fileChart = new File(relativeDirectory, fileName + ".png");
-            ChartUtilities.saveChartAsPNG(fileChart, chart, width, height);
-            GlobalAssert.that(fileChart.isFile());
+            File file = new File(relativeDirectory, fileName + ".png");
+            ChartUtilities.saveChartAsPNG(file, jFreeChart, WIDTH, HEIGHT);
+            GlobalAssert.that(file.isFile());
             System.out.println("Exported " + fileName + ".png");
         } catch (Exception e) {
             System.err.println("Plotting " + fileName + " failed");

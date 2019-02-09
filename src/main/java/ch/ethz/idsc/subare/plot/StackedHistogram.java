@@ -3,7 +3,9 @@ package ch.ethz.idsc.subare.plot;
 
 import org.jfree.chart.JFreeChart;
 
-public enum CompositionStack {
+/** similar to {@link Histogram} but with bars stacked on top of each other
+ * instead of next to each other */
+public enum StackedHistogram {
     ;
 
     public static JFreeChart of(VisualSet visualSet) {

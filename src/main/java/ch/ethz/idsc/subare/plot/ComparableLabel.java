@@ -14,7 +14,7 @@ import java.util.Objects;
     }
 
     @Override
-    public final int compareTo(ComparableLabel comparableLabel) {
+    public int compareTo(ComparableLabel comparableLabel) {
         return Integer.compare(index, comparableLabel.index);
     }
 
