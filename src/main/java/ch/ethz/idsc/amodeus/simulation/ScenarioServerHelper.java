@@ -18,7 +18,6 @@ import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDatabaseModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDispatcherModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusVehicleGeneratorModule;
-import ch.ethz.idsc.amodeus.matsim.mod.AmodeusVirtualNetworkModule;
 import ch.ethz.idsc.amodeus.net.DatabaseModule;
 import ch.ethz.idsc.amodeus.net.SimulationServer;
 import ch.ethz.matsim.av.framework.AVModule;
@@ -87,11 +86,10 @@ public enum ScenarioServerHelper {
         }
     }
 
-    /**Sets up a standard Amodues Analysis for the Simulation.
+    /** Sets up a standard Amodues Analysis for the Simulation.
      * 
      * @param simulationProperties
-     * @return
-     */
+     * @return */
     public static Analysis setUpAnalysis(SimulationProperties simulationProperties) {
         String outputDirectory = simulationProperties.config.controler().getOutputDirectory();
         Analysis analysis;

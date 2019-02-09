@@ -3,11 +3,11 @@ package ch.ethz.idsc.subare.plot;
 
 import org.jfree.chart.JFreeChart;
 
-public enum StackedTimeChart {
+public enum StackedTablePlot {
     ;
 
     public static JFreeChart of(VisualSet visualSet) {
-        return TimeChart.of(visualSet, true);
+        return JFreeCharts.fromXYTable(visualSet, true, StaticHelper.categoryTableXYDataset(visualSet));
     }
 
 }

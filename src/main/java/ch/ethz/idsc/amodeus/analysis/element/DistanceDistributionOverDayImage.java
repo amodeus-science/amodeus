@@ -3,6 +3,9 @@ package ch.ethz.idsc.amodeus.analysis.element;
 
 import java.io.File;
 
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.subare.plot.StackedTimeChart;
@@ -13,8 +16,6 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.img.MeanFilter;
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
 
 public enum DistanceDistributionOverDayImage implements AnalysisExport {
     INSTANCE;
@@ -28,17 +29,16 @@ public enum DistanceDistributionOverDayImage implements AnalysisExport {
         DistanceElement de = analysisSummary.getDistanceElement();
         Tensor distances = Transpose.of(de.distancesOverDay).extract(1, 4);
 
-        VisualSet visualSet = new VisualSet();
+        VisualSet visualSet = new VisualSet(colorDataIndexed);
         for (int i = 0; i < 3; i++) {
             Tensor values = i == 0 ? distances.get(i).multiply(RealScalar.of(-1)) : distances.get(i);
             values = StaticHelper.FILTER_ON ? MeanFilter.of(values, StaticHelper.FILTERSIZE) : values;
-            visualSet.add(new VisualRow(de.time, values));
-            visualSet.setRowLabel(i, StaticHelper.descriptions()[i]);
+            VisualRow visualRow = visualSet.add(de.time, values);
+            visualRow.setLabel(StaticHelper.descriptions()[i]);
         }
 
         visualSet.setPlotLabel("Distance Distribution over Day");
         visualSet.setRangeAxisLabel("Distance [km]");
-        visualSet.setColors(colorDataIndexed);
 
         JFreeChart chart = StackedTimeChart.of(visualSet);
 

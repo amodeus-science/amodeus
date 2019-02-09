@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.subare.plot;
 
 import org.jfree.chart.JFreeChart;
@@ -13,15 +14,13 @@ public enum TimeChart {
     }
 
     public static JFreeChart of(VisualSet visualSet, boolean stacked) {
-        JFreeChart chart = PlotUtils.chartFromXYTable(visualSet, stacked, VisualSet::timed);
-
+        JFreeChart jFreeChart = JFreeCharts.fromXYTable(visualSet, stacked, StaticHelper.timeTableXYDataset(visualSet));
         DateAxis domainAxis = new DateAxis();
         domainAxis.setLabel(visualSet.getDomainAxisLabel());
         domainAxis.setTickUnit(new DateTickUnit(DateTickUnitType.SECOND, 1));
         domainAxis.setAutoTickUnitSelection(true);
-        chart.getXYPlot().setDomainAxis(domainAxis);
-
-        return chart;
+        jFreeChart.getXYPlot().setDomainAxis(domainAxis);
+        return jFreeChart;
     }
 
 }

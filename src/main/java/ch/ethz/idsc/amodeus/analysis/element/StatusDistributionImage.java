@@ -3,6 +3,9 @@ package ch.ethz.idsc.amodeus.analysis.element;
 
 import java.io.File;
 
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.subare.plot.VisualRow;
@@ -11,8 +14,6 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.img.MeanFilter;
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
 
 public enum StatusDistributionImage implements AnalysisExport {
     INSTANCE;
@@ -26,17 +27,16 @@ public enum StatusDistributionImage implements AnalysisExport {
         String[] statusLabels = StaticHelper.descriptions();
         StatusDistributionElement st = analysisSummary.getStatusDistribution();
 
-        VisualSet visualSet = new VisualSet();
+        VisualSet visualSet = new VisualSet(colorDataIndexed);
         for (int i = 0; i < statusLabels.length; i++) {
             Tensor values = Transpose.of(st.statusTensor).get(i);
             values = StaticHelper.FILTER_ON ? MeanFilter.of(values, StaticHelper.FILTERSIZE) : values;
-            visualSet.add(new VisualRow(st.time, values));
-            visualSet.setRowLabel(i, statusLabels[i]);
+            VisualRow visualRow = visualSet.add(st.time, values);
+            visualRow.setLabel(statusLabels[i]);
         }
 
         visualSet.setPlotLabel("Status Distribution");
         visualSet.setRangeAxisLabel("RoboTaxis");
-        visualSet.setColors(colorDataIndexed);
 
         JFreeChart chart = ch.ethz.idsc.subare.plot.StackedTimeChart.of(visualSet);
 

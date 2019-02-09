@@ -3,11 +3,13 @@ package ch.ethz.idsc.subare.plot;
 
 import org.jfree.chart.JFreeChart;
 
-public enum StackedTimeChart {
+/** similar to {@link Histogram} but with bars stacked on top of each other
+ * instead of next to each other */
+public enum StackedHistogram {
     ;
 
     public static JFreeChart of(VisualSet visualSet) {
-        return TimeChart.of(visualSet, true);
+        return Histogram.of(visualSet, true);
     }
 
 }

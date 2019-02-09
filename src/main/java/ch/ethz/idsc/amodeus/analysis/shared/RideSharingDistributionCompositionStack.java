@@ -4,21 +4,22 @@ package ch.ethz.idsc.amodeus.analysis.shared;
 import java.io.File;
 import java.util.stream.IntStream;
 
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.amodeus.analysis.element.NumberPassengersAnalysis;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.subare.plot.CompositionStack;
-import ch.ethz.idsc.subare.plot.VisualRow;
+import ch.ethz.idsc.subare.plot.StackedHistogram;
 import ch.ethz.idsc.subare.plot.VisualSet;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.red.Total;
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
 
 public enum RideSharingDistributionCompositionStack implements AnalysisExport {
     INSTANCE;
@@ -30,26 +31,31 @@ public enum RideSharingDistributionCompositionStack implements AnalysisExport {
 
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
-        NumberPassengersAnalysis nPA = analysisSummary.getNumberPassengersAnalysis();
+        NumberPassengersAnalysis numberPassengersAnalysis = analysisSummary.getNumberPassengersAnalysis();
 
         /** Get Values */
-        Tensor sharedDistribution = nPA.getSharedOthersDistribution();
-        VisualSet visualSet = new VisualSet();
+        Tensor sharedDistribution = numberPassengersAnalysis.getSharedOthersDistribution();
+        CustomColorDataCreator colorDataCreator = new CustomColorDataCreator();
+        /** create Colors */
+        {
+            // TODO TENSOR V069 use simpler color table build
+            NumberPassengerColorScheme numberPassengerColorScheme = //
+                    new NumberPassengerColorScheme(NumberPassengerStatusDistribution.COLOR_DATA_GRADIENT_DEFAULT, colorDataIndexed);
+            IntStream.range(1, sharedDistribution.length() + 1) //
+                    .forEach(i -> colorDataCreator.append(numberPassengerColorScheme.of(RealScalar.of(i))));
+        }
+        // ---
+        VisualSet visualSet = new VisualSet(colorDataCreator.getColorDataIndexed());
         Scalar totalNumberPassengers = Total.of(sharedDistribution).Get();
         sharedDistribution.forEach(s -> visualSet.add( //
-                new VisualRow(RealScalar.ONE, s.divide(totalNumberPassengers)) //
-        ));
-        for (int i = 0; i < visualSet.visualRows().size(); i++)
-            visualSet.setRowLabel(i, (i + 1) + " Passengers");
+                Tensors.matrix(new Scalar[][] { //
+                        { RealScalar.ONE, (Scalar) s.divide(totalNumberPassengers) } })) //
+        );
+        for (int i = 0; i < visualSet.visualRows().size(); ++i)
+            visualSet.getVisualRow(i).setLabel((i + 1) + " Passengers");
         visualSet.setPlotLabel("Ride Sharing Distribution, fraction of Requests");
 
-        /** create Colors */
-        NumberPassengerColorScheme nPCS = new NumberPassengerColorScheme(NumberPassengerStatusDistribution.COLOR_DATA_GRADIENT_DEFAULT, colorDataIndexed);
-        CustomColorDataCreator colorDataCreator = new CustomColorDataCreator();
-        IntStream.range(1, sharedDistribution.length() + 1).forEach(i -> colorDataCreator.append(nPCS.of(RealScalar.of(i))));
-        visualSet.setColors(colorDataCreator.getColorDataIndexed());
-
-        JFreeChart chart = CompositionStack.of(visualSet);
+        JFreeChart chart = StackedHistogram.of(visualSet);
         chart.getCategoryPlot().setOrientation(PlotOrientation.HORIZONTAL);
         chart.getCategoryPlot().getRangeAxis().setRange(0, 1.0);
 

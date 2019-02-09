@@ -1,8 +1,10 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.analysis.element;
 
-import java.awt.*;
 import java.io.File;
+
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
@@ -12,8 +14,6 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.img.MeanFilter;
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
 
 public enum OccupancyDistanceRatiosImage implements AnalysisExport {
     INSTANCE;
@@ -27,19 +27,17 @@ public enum OccupancyDistanceRatiosImage implements AnalysisExport {
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
         DistanceElement de = analysisSummary.getDistanceElement();
 
-        VisualSet visualSet = new VisualSet();
-        for (int i = 0; i < RATIOS_LABELS.length; i++) {
+        VisualSet visualSet = new VisualSet(colorDataIndexed);
+        for (int i = 0; i < RATIOS_LABELS.length; ++i) {
             Tensor values = Transpose.of(de.ratios).get(i);
             values = StaticHelper.FILTER_ON ? MeanFilter.of(values, StaticHelper.FILTERSIZE) : values;
-            VisualRow visualRow = new VisualRow(de.time, values);
-            visualSet.add(visualRow);
-            visualSet.setRowLabel(i, RATIOS_LABELS[i]);
+            VisualRow visualRow = visualSet.add(de.time, values);
+            visualRow.setLabel(RATIOS_LABELS[i]);
         }
 
         visualSet.setPlotLabel("Occupancy and Distance Ratios");
         visualSet.setDomainAxisLabel("Time");
         visualSet.setRangeAxisLabel("Occupancy / Distance Ratio");
-        visualSet.setColors(colorDataIndexed);
 
         JFreeChart chart = ch.ethz.idsc.subare.plot.TimeChart.of(visualSet);
         chart.getXYPlot().getRangeAxis().setRange(0., 1.);

@@ -22,7 +22,8 @@ public enum SharedAnalysisHtml implements HtmlReportElement {
         // Fleet Efficency
         HtmlBodyElement sharedElement = new HtmlBodyElement();
         sharedElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + NumberPassengerStatusDistribution.FILENAME + ".png", 800, 600);
-        sharedElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + RideSharingDistributionCompositionStack.FILENAME + ".png", RideSharingDistributionCompositionStack.WIDTH, RideSharingDistributionCompositionStack.HEIGHT);
+        sharedElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + RideSharingDistributionCompositionStack.FILENAME + ".png", RideSharingDistributionCompositionStack.WIDTH,
+                RideSharingDistributionCompositionStack.HEIGHT);
         // fEElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + ExtraDriveTimeImage.FILENAME + ".png", 800, 600);
         bodyElements.put(BodyElementKey, sharedElement);
         return bodyElements;

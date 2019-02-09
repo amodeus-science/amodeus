@@ -1,9 +1,12 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.subare;
 
 import ch.ethz.idsc.subare.plot.VisualRow;
 import ch.ethz.idsc.subare.plot.VisualSet;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Dimensions;
 import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.pdf.RandomVariate;
 import ch.ethz.idsc.tensor.pdf.UniformDistribution;
@@ -16,19 +19,16 @@ public class VisualSetTest extends TestCase {
         Tensor values = RandomVariate.of(UniformDistribution.unit(), 5);
         Tensor points = Transpose.of(Tensors.of(domain, values));
 
-        VisualRow row1 = new VisualRow();
-        VisualRow row2 = new VisualRow(domain, values);
-        VisualRow row3 = new VisualRow(points);
+        VisualSet set2 = new VisualSet();
+        VisualRow row2 = set2.add(domain, values);
+        row2.setLabel("row2");
+        VisualRow row3 = set2.add(points);
+        row3.setLabel("row3");
+        assertEquals(set2.visualRows().size(), 2);
 
         VisualSet set1 = new VisualSet();
-        VisualSet set2 = new VisualSet(row1);
-        VisualSet set3 = new VisualSet(row1, row2, row3);
 
         assertEquals(set1.visualRows().size(), 0);
-        assertEquals(set2.visualRows().size(), 1);
-        assertEquals(set3.visualRows().size(), 3);
-
-        assertEquals(set3.get(2).getValues(), values);
     }
 
     public void testAdd() {
@@ -36,13 +36,11 @@ public class VisualSetTest extends TestCase {
         Tensor values1 = RandomVariate.of(UniformDistribution.unit(), 5);
         Tensor values2 = RandomVariate.of(UniformDistribution.unit(), 5);
 
-        VisualRow row1 = new VisualRow(domain, values1);
-        VisualRow row2 = new VisualRow(domain, values2);
+        VisualSet visualSet = new VisualSet();
+        VisualRow row1 = visualSet.add(domain, values1);
+        VisualRow row2 = visualSet.add(domain, values2);
 
-        VisualSet set = new VisualSet(row1);
-        set.add(row2);
-
-        assertEquals(set.get(1).getValues(), values2);
+        assertEquals(Dimensions.of(row1.points()), Dimensions.of(row2.points()));
     }
 
     public void testSetRowLabel() {
@@ -50,17 +48,35 @@ public class VisualSetTest extends TestCase {
         Tensor values1 = RandomVariate.of(UniformDistribution.unit(), 5);
         Tensor values2 = RandomVariate.of(UniformDistribution.unit(), 5);
 
-        VisualRow row1 = new VisualRow(domain, values1);
-        VisualRow row2 = new VisualRow(domain, values2);
+        VisualSet set = new VisualSet();
+        VisualRow row1 = set.add(domain, values1);
+        VisualRow row2 = set.add(domain, values2);
 
-        VisualSet set = new VisualSet(row1, row2);
+        row1.setLabel("row 1");
+        row2.setLabel("row 2");
 
-        set.setRowLabel(0, "row 1");
-        set.setRowLabel(1, "row 2");
-
-        assertEquals(set.get(1).getLabelString(), "row 2");
+        assertEquals(set.getVisualRow(0).getLabelString(), "row 1");
+        assertEquals(set.getVisualRow(1).getLabelString(), "row 2");
     }
 
+    public void testFailScalar() {
+        VisualSet visualSet = new VisualSet();
+        try {
+            visualSet.add(RealScalar.ZERO, RealScalar.ONE);
+            fail();
+        } catch (Exception exception) {
+            // ---
+        }
+    }
 
+    public void testFailVector() {
+        VisualSet visualSet = new VisualSet();
+        try {
+            visualSet.add(Tensors.vector(1, 2, 3, 4), Tensors.vector(1, 2, 3, 4, 5));
+            fail();
+        } catch (Exception exception) {
+            // ---
+        }
+    }
 
 }

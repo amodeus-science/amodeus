@@ -3,21 +3,23 @@ package ch.ethz.idsc.amodeus.analysis;
 
 import java.io.File;
 
-import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
-import ch.ethz.idsc.amodeus.analysis.element.DistanceElement;
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.subare.plot.CompositionStack;
-import ch.ethz.idsc.subare.plot.VisualRow;
-import ch.ethz.idsc.subare.plot.VisualSet;
-import ch.ethz.idsc.tensor.RealScalar;
-import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 
+import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
+import ch.ethz.idsc.amodeus.analysis.element.DistanceElement;
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.subare.plot.StackedHistogram;
+import ch.ethz.idsc.subare.plot.VisualSet;
+import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.img.ColorDataIndexed;
+
 public enum StackedDistanceChartImage implements AnalysisExport {
     INSTANCE;
 
+    private static final Tensor DOMAIN = Tensors.vector(1);
     public static final String FILENAME = "stackedDistance";
     public static final int WIDTH = 700; /* Width of the image */
     public static final int HEIGHT = 125; /* Height of the image */
@@ -25,18 +27,14 @@ public enum StackedDistanceChartImage implements AnalysisExport {
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
         DistanceElement de = analysisSummary.getDistanceElement();
-        VisualSet visualSet = new VisualSet( //
-                new VisualRow(RealScalar.ONE, RealScalar.of(de.totalDistanceWtCst / de.totalDistance)), //
-                new VisualRow(RealScalar.ONE, RealScalar.of(de.totalDistancePicku / de.totalDistance)), //
-                new VisualRow(RealScalar.ONE, RealScalar.of(de.totalDistanceRebal / de.totalDistance)) //
-        );
-        visualSet.setPlotLabel("Total Distance Distribution");
-        visualSet.setRowLabel(0, "With Customer");
-        visualSet.setRowLabel(1, "Pickup");
-        visualSet.setRowLabel(2, "Rebalancing");
-        visualSet.setColors(colorDataIndexed);
+        VisualSet visualSet = new VisualSet(colorDataIndexed);
+        visualSet.add(DOMAIN, Tensors.vector(de.totalDistanceWtCst / de.totalDistance)).setLabel("With Customer");
+        visualSet.add(DOMAIN, Tensors.vector(de.totalDistancePicku / de.totalDistance)).setLabel("Pickup");
+        visualSet.add(DOMAIN, Tensors.vector(de.totalDistanceRebal / de.totalDistance)).setLabel("Rebalancing");
 
-        JFreeChart chart = CompositionStack.of(visualSet);
+        visualSet.setPlotLabel("Total Distance Distribution");
+
+        JFreeChart chart = StackedHistogram.of(visualSet);
         chart.getCategoryPlot().setOrientation(PlotOrientation.HORIZONTAL);
         chart.getCategoryPlot().getRangeAxis().setRange(0, 1.0);
 
