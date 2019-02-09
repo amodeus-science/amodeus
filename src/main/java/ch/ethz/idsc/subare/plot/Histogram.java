@@ -24,7 +24,7 @@ public enum Histogram {
     public static JFreeChart of(VisualSet visualSet, boolean stacked) {
         Function<Scalar, String> naming = visualSet.visualRows().stream() //
                 .allMatch(r -> r.points().length() == 1 //
-                        && visualSet.get(0).points().get(Tensor.ALL, 0).equals(r.points().get(Tensor.ALL, 0))) //
+                        && visualSet.getVisualRow(0).points().get(Tensor.ALL, 0).equals(r.points().get(Tensor.ALL, 0))) //
                                 ? s -> ""
                                 : Scalar::toString;
         return of(visualSet, stacked, naming);
@@ -35,19 +35,21 @@ public enum Histogram {
     }
 
     public static JFreeChart of(VisualSet visualSet, boolean stacked, Function<Scalar, String> naming) {
-        JFreeChart chart = ChartFactory.createBarChart(visualSet.getPlotLabel(), //
-                visualSet.getDomainAxisLabel(), visualSet.getRangeAxisLabel(), //
-                visualSet.categorical(naming), //
+        JFreeChart jFreeChart = ChartFactory.createBarChart( //
+                visualSet.getPlotLabel(), //
+                visualSet.getDomainAxisLabel(), //
+                visualSet.getRangeAxisLabel(), //
+                StaticHelper.defaultCategoryDataset(visualSet, naming), //
                 PlotOrientation.VERTICAL, visualSet.hasLegend(), true, false);
 
-        BarRenderer renderer = stacked //
+        BarRenderer barRenderer = stacked //
                 ? new StackedBarRenderer()
                 : new BarRenderer();
-        renderer.setDrawBarOutline(true);
-        JFreeCharts.formatLines(visualSet, renderer);
-        chart.getCategoryPlot().setRenderer(renderer);
+        barRenderer.setDrawBarOutline(true);
+        JFreeCharts.formatLines(visualSet, barRenderer);
+        jFreeChart.getCategoryPlot().setRenderer(barRenderer);
 
-        return chart;
+        return jFreeChart;
     }
 
 }

@@ -55,8 +55,8 @@ public class VisualSetTest extends TestCase {
         row1.setLabel("row 1");
         row2.setLabel("row 2");
 
-        assertEquals(set.get(0).getLabelString(), "row 1");
-        assertEquals(set.get(1).getLabelString(), "row 2");
+        assertEquals(set.getVisualRow(0).getLabelString(), "row 1");
+        assertEquals(set.getVisualRow(1).getLabelString(), "row 2");
     }
 
     public void testFailScalar() {

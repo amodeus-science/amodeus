@@ -52,7 +52,7 @@ public enum RideSharingDistributionCompositionStack implements AnalysisExport {
                         { RealScalar.ONE, (Scalar) s.divide(totalNumberPassengers) } })) //
         );
         for (int i = 0; i < visualSet.visualRows().size(); ++i)
-            visualSet.get(i).setLabel((i + 1) + " Passengers");
+            visualSet.getVisualRow(i).setLabel((i + 1) + " Passengers");
         visualSet.setPlotLabel("Ride Sharing Distribution, fraction of Requests");
 
         JFreeChart chart = CompositionStack.of(visualSet);

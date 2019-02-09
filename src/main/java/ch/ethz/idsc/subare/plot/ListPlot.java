@@ -13,7 +13,7 @@ public enum ListPlot {
     }
 
     public static JFreeChart of(VisualSet visualSet, boolean stacked) {
-        return JFreeCharts.chartFromXYTable(visualSet, stacked, VisualSet::xy);
+        return JFreeCharts.fromXYTable(visualSet, stacked, StaticHelper.categoryTableXYDataset(visualSet));
     }
 
 }
