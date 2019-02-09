@@ -19,8 +19,8 @@ public enum Histogram {
 
     /* package */ static JFreeChart of(VisualSet visualSet, boolean stacked) {
         Function<Scalar, String> naming = visualSet.visualRows().stream() //
-                .allMatch(r -> r.points().length() == 1 //
-                        && visualSet.getVisualRow(0).points().get(Tensor.ALL, 0).equals(r.points().get(Tensor.ALL, 0))) //
+                .allMatch(visualRow -> visualRow.points().length() == 1 // <- TODO JOEL this usually evaluates to false
+                        && visualSet.getVisualRow(0).points().get(Tensor.ALL, 0).equals(visualRow.points().get(Tensor.ALL, 0))) //
                                 ? s -> ""
                                 : Scalar::toString;
         return JFreeCharts.barChart(visualSet, stacked, naming);
