@@ -62,6 +62,7 @@ public class VisualSet {
         return domainAxisLabel;
     }
 
+    /** @return name of codomain/target set */
     public String getRangeAxisLabel() {
         return rangeAxisLabel;
     }

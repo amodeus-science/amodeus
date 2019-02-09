@@ -11,12 +11,32 @@ import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeTableXYDataset;
 import org.jfree.data.xy.CategoryTableXYDataset;
 import org.jfree.data.xy.TableXYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 /* package */ enum StaticHelper {
     ;
+    /** Quote from the JFreeChart javadoc: "[XYSeries] represents a sequence of zero
+     * or more data items in the form (x, y). By default, items in the series will be
+     * sorted into ascending order by x-value, and duplicate x-values are permitted."
+     * 
+     * @param visualSet
+     * @return */
+    public static XYSeriesCollection xySeriesCollection(VisualSet visualSet) {
+        XYSeriesCollection xySeriesCollection = new XYSeriesCollection();
+        for (VisualRow visualRow : visualSet.visualRows()) {
+            String labelString = visualRow.getLabelString();
+            XYSeries xySeries = new XYSeries(labelString.isEmpty() ? xySeriesCollection.getSeriesCount() : labelString);
+            for (Tensor point : visualRow.points())
+                xySeries.add(point.Get(0).number(), point.Get(1).number());
+            xySeriesCollection.addSeries(xySeries);
+        }
+        return xySeriesCollection;
+    }
+
     public static CategoryDataset defaultCategoryDataset(VisualSet visualSet) {
         return defaultCategoryDataset(visualSet, Scalar::toString);
     }
@@ -32,6 +52,14 @@ import ch.ethz.idsc.tensor.Tensor;
         return defaultCategoryDataset;
     }
 
+    /** Quote from the JFreeChart javadoc: "[...] The {@link TableXYDataset}
+     * interface requires all series to share the same set of x-values. When
+     * adding a new item <code>(x, y)</code> to one series, all other series
+     * automatically get a new item <code>(x, null)</code> unless a non-null item
+     * has already been specified."
+     * 
+     * @param visualSet
+     * @return */
     public static TableXYDataset timeTableXYDataset(VisualSet visualSet) {
         TimeTableXYDataset timeTableXYDataset = new TimeTableXYDataset();
         for (VisualRow visualRow : visualSet.visualRows())

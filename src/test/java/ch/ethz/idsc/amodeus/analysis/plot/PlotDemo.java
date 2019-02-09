@@ -11,6 +11,7 @@ import org.jfree.chart.JFreeChart;
 import ch.ethz.idsc.subare.plot.Histogram;
 import ch.ethz.idsc.subare.plot.ListPlot;
 import ch.ethz.idsc.subare.plot.StackedHistogram;
+import ch.ethz.idsc.subare.plot.StackedTablePlot;
 import ch.ethz.idsc.subare.plot.StackedTimeChart;
 import ch.ethz.idsc.subare.plot.TimeChart;
 import ch.ethz.idsc.subare.plot.VisualRow;
@@ -52,38 +53,44 @@ enum PlotDemo {
         ChartFactory.setChartTheme(ChartTheme.STANDARD);
 
         {
+            visualSet.setPlotLabel(StackedHistogram.class.getSimpleName());
             JFreeChart jFreeChart = StackedHistogram.of(visualSet);
             File file = new File(folder, StackedHistogram.class.getSimpleName() + ".png");
             ChartUtilities.saveChartAsPNG(file, jFreeChart, 200, 300);
         }
 
         {
+            visualSet.setPlotLabel(Histogram.class.getSimpleName());
             JFreeChart jFreeChart = Histogram.of(visualSet);
             File file = new File(folder, Histogram.class.getSimpleName() + ".png");
             ChartUtilities.saveChartAsPNG(file, jFreeChart, 500, 300);
         }
 
         {
+            visualSet.setPlotLabel(TimeChart.class.getSimpleName());
             JFreeChart jFreeChart = TimeChart.of(visualSet);
             File file = new File(folder, TimeChart.class.getSimpleName() + ".png");
             ChartUtilities.saveChartAsPNG(file, jFreeChart, 500, 300);
         }
 
         {
+            visualSet.setPlotLabel(StackedTimeChart.class.getSimpleName());
             JFreeChart jFreeChart = StackedTimeChart.of(visualSet);
             File file = new File(folder, StackedTimeChart.class.getSimpleName() + ".png");
             ChartUtilities.saveChartAsPNG(file, jFreeChart, 500, 300);
         }
 
         {
+            visualSet.setPlotLabel(ListPlot.class.getSimpleName());
             JFreeChart jFreeChart = ListPlot.of(visualSet);
             File file = new File(folder, ListPlot.class.getSimpleName() + ".png");
             ChartUtilities.saveChartAsPNG(file, jFreeChart, 500, 300);
         }
 
         {
-            JFreeChart jFreeChart = ListPlot.of(visualSet, true);
-            File file = new File(folder, "stacked.png");
+            visualSet.setPlotLabel(StackedTablePlot.class.getSimpleName());
+            JFreeChart jFreeChart = StackedTablePlot.of(visualSet);
+            File file = new File(folder, StackedTablePlot.class.getSimpleName() + ".png");
             ChartUtilities.saveChartAsPNG(file, jFreeChart, 500, 300);
         }
 

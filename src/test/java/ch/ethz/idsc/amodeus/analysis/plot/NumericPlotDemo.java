@@ -84,12 +84,6 @@ enum NumericPlotDemo {
             ChartUtilities.saveChartAsPNG(file, jFreeChart, 500, 300);
         }
 
-        {
-            JFreeChart jFreeChart = ListPlot.of(visualSet, true);
-            File file = new File(folder, "stacked.png");
-            ChartUtilities.saveChartAsPNG(file, jFreeChart, 500, 300);
-        }
-
     }
 
     public static void main(String[] args) throws IOException {

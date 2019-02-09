@@ -11,8 +11,9 @@ import org.jfree.chart.JFreeChart;
 import ch.ethz.idsc.amodeus.analysis.plot.ChartTheme;
 import ch.ethz.idsc.subare.plot.ListPlot;
 import ch.ethz.idsc.subare.plot.VisualSet;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.alg.Sort;
+import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.img.ColorDataLists;
 import ch.ethz.idsc.tensor.io.HomeDirectory;
 import ch.ethz.idsc.tensor.pdf.RandomVariate;
@@ -27,14 +28,17 @@ import ch.ethz.idsc.tensor.pdf.UniformDistribution;
 
         VisualSet visualSet = new VisualSet(ColorDataLists._250.cyclic());
 
-        Tensor domain1 = Sort.of(RandomVariate.of(UniformDistribution.unit(), values1.length()));
+        Tensor domain1 = RandomVariate.of(UniformDistribution.unit(), values1.length());
         visualSet.add(domain1, values1);
 
-        Tensor domain2 = Sort.of(RandomVariate.of(UniformDistribution.unit(), values2.length()));
+        Tensor domain2 = RandomVariate.of(UniformDistribution.unit(), values2.length());
         visualSet.add(domain2, values2);
 
-        Tensor domain3 = Sort.of(RandomVariate.of(UniformDistribution.unit(), values3.length()));
+        Tensor domain3 = RandomVariate.of(UniformDistribution.unit(), values3.length());
         visualSet.add(domain3, values3);
+
+        Tensor domain4 = Tensors.vector(1, 3, 2, 5, 4).multiply(RealScalar.of(.2));
+        visualSet.add(domain4, domain4);
 
         /* amodeus specific */
         ChartFactory.setChartTheme(ChartTheme.STANDARD);
