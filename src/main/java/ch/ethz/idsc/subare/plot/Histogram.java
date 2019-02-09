@@ -3,11 +3,7 @@ package ch.ethz.idsc.subare.plot;
 
 import java.util.function.Function;
 
-import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.renderer.category.BarRenderer;
-import org.jfree.chart.renderer.category.StackedBarRenderer;
 
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -27,29 +23,10 @@ public enum Histogram {
                         && visualSet.getVisualRow(0).points().get(Tensor.ALL, 0).equals(r.points().get(Tensor.ALL, 0))) //
                                 ? s -> ""
                                 : Scalar::toString;
-        return of(visualSet, stacked, naming);
+        return JFreeCharts.barChart(visualSet, stacked, naming);
     }
 
     public static JFreeChart of(VisualSet visualSet, Function<Scalar, String> naming) {
-        return of(visualSet, false, naming);
+        return JFreeCharts.barChart(visualSet, false, naming);
     }
-
-    public static JFreeChart of(VisualSet visualSet, boolean stacked, Function<Scalar, String> naming) {
-        JFreeChart jFreeChart = ChartFactory.createBarChart( //
-                visualSet.getPlotLabel(), //
-                visualSet.getDomainAxisLabel(), //
-                visualSet.getRangeAxisLabel(), //
-                StaticHelper.defaultCategoryDataset(visualSet, naming), //
-                PlotOrientation.VERTICAL, visualSet.hasLegend(), true, false);
-
-        BarRenderer barRenderer = stacked //
-                ? new StackedBarRenderer()
-                : new BarRenderer();
-        barRenderer.setDrawBarOutline(true);
-        JFreeCharts.formatLines(visualSet, barRenderer);
-        jFreeChart.getCategoryPlot().setRenderer(barRenderer);
-
-        return jFreeChart;
-    }
-
 }
