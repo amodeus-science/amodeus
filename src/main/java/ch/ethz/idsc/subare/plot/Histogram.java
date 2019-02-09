@@ -23,6 +23,7 @@ public enum Histogram {
                         && visualSet.getVisualRow(0).points().get(Tensor.ALL, 0).equals(visualRow.points().get(Tensor.ALL, 0))) //
                                 ? s -> ""
                                 : Scalar::toString;
+        naming = Scalar::toString;
         return JFreeCharts.barChart(visualSet, stacked, naming);
     }
 

@@ -16,28 +16,31 @@ import ch.ethz.idsc.subare.plot.TimeChart;
 import ch.ethz.idsc.subare.plot.VisualRow;
 import ch.ethz.idsc.subare.plot.VisualSet;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.alg.Range;
+import ch.ethz.idsc.tensor.alg.Sort;
 import ch.ethz.idsc.tensor.img.ColorDataLists;
 import ch.ethz.idsc.tensor.io.HomeDirectory;
 import ch.ethz.idsc.tensor.pdf.RandomVariate;
 import ch.ethz.idsc.tensor.pdf.UniformDistribution;
 
-enum PlotDemo {
+enum NumericPlotDemo {
     ;
     static void demoPlots(File folder, boolean labels) throws IOException {
         folder.mkdirs();
 
-        Tensor domain = Range.of(0, 20);
-        Tensor values1 = RandomVariate.of(UniformDistribution.unit(), domain.length());
-        Tensor values2 = RandomVariate.of(UniformDistribution.unit(), domain.length());
-        Tensor values3 = RandomVariate.of(UniformDistribution.unit(), domain.length());
+        Tensor values1 = RandomVariate.of(UniformDistribution.unit(), 5);
+        Tensor values2 = RandomVariate.of(UniformDistribution.unit(), 15);
+        Tensor values3 = RandomVariate.of(UniformDistribution.unit(), 10);
 
-        VisualSet visualSet = new VisualSet(ColorDataLists._001.cyclic());
+        VisualSet visualSet = new VisualSet(ColorDataLists._250.cyclic());
 
-        VisualRow row0 = visualSet.add(domain, values1);
-        // VisualRow row1 =
-        visualSet.add(domain, values2);
-        VisualRow row2 = visualSet.add(domain, values3);
+        Tensor domain1 = Sort.of(RandomVariate.of(UniformDistribution.unit(), values1.length()));
+        VisualRow row0 = visualSet.add(domain1, values1);
+
+        Tensor domain2 = Sort.of(RandomVariate.of(UniformDistribution.unit(), values2.length()));
+        visualSet.add(domain2, values2);
+
+        Tensor domain3 = Sort.of(RandomVariate.of(UniformDistribution.unit(), values3.length()));
+        VisualRow row2 = visualSet.add(domain3, values3);
 
         if (labels) {
             row0.setLabel("row 0");
@@ -54,7 +57,7 @@ enum PlotDemo {
         {
             JFreeChart jFreeChart = StackedHistogram.of(visualSet);
             File file = new File(folder, StackedHistogram.class.getSimpleName() + ".png");
-            ChartUtilities.saveChartAsPNG(file, jFreeChart, 200, 300);
+            ChartUtilities.saveChartAsPNG(file, jFreeChart, 500, 300);
         }
 
         {
@@ -90,7 +93,7 @@ enum PlotDemo {
     }
 
     public static void main(String[] args) throws IOException {
-        demoPlots(HomeDirectory.Pictures("amodeus", "0"), false);
-        demoPlots(HomeDirectory.Pictures("amodeus", "1"), true);
+        demoPlots(HomeDirectory.Pictures("amodeus", "4"), false);
+        demoPlots(HomeDirectory.Pictures("amodeus", "5"), true);
     }
 }
