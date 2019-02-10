@@ -60,7 +60,11 @@
 			<artifactId>humble-video-all</artifactId>
 			<version>0.2.1</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.jfree</groupId>
+			<artifactId>jfreechart</artifactId>
+			<version>1.5.0</version>
+		</dependency>
 		<dependency><!-- workaround since jaxb api is not part of java 9 -->
 			<groupId>javax.xml.bind</groupId>
 			<artifactId>jaxb-api</artifactId>

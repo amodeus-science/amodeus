@@ -3,7 +3,7 @@ package ch.ethz.idsc.amodeus.analysis.element;
 
 import java.io.File;
 
-import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
@@ -42,7 +42,7 @@ public enum StatusDistributionImage implements AnalysisExport {
 
         try {
             File fileChart = new File(relativeDirectory, FILENAME + ".png");
-            ChartUtilities.saveChartAsPNG(fileChart, chart, WIDTH, HEIGHT);
+            ChartUtils.saveChartAsPNG(fileChart, chart, WIDTH, HEIGHT);
             GlobalAssert.that(fileChart.isFile());
             System.out.println("Exported " + FILENAME + ".png");
         } catch (Exception e) {

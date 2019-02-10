@@ -6,9 +6,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
-import org.jfree.chart.title.LegendTitle;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.jfree.ui.RectangleEdge;
 
 /** inspired by
  * <a href="https://reference.wolfram.com/language/ref/ListPlot.html">ListPlot</a> */
@@ -32,11 +30,11 @@ public enum ListPlot {
             xyItemRenderer.setSeriesPaint(index, visualSet.getVisualRow(index).getColor());
             xyItemRenderer.setSeriesStroke(index, visualSet.getVisualRow(index).getStroke());
         }
-        if (visualSet.hasLegend()) {
-            LegendTitle legendTitle = new LegendTitle(xyItemRenderer);
-            legendTitle.setPosition(RectangleEdge.TOP);
-            jFreeChart.addLegend(legendTitle);
-        }
+        // if (visualSet.hasLegend()) {
+        // LegendTitle legendTitle = new LegendTitle(xyItemRenderer);
+        // // legendTitle.setPosition(RectangleEdge.TOP);
+        // jFreeChart.addLegend(legendTitle);
+        // }
         return jFreeChart;
     }
 

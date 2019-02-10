@@ -5,7 +5,7 @@ import java.io.File;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
-import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.time.Second;
 
@@ -37,7 +37,7 @@ import ch.ethz.idsc.tensor.img.MeanFilter;
 
     public static File savePlot(File directory, String fileTitle, JFreeChart chart, int width, int height) throws Exception {
         File fileChart = new File(directory, fileTitle + ".png");
-        ChartUtilities.saveChartAsPNG(fileChart, chart, width, height);
+        ChartUtils.saveChartAsPNG(fileChart, chart, width, height);
         GlobalAssert.that(fileChart.isFile());
         System.out.println("Exported " + fileTitle + ".png");
         return fileChart;

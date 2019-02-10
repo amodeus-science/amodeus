@@ -3,7 +3,7 @@ package ch.ethz.idsc.amodeus.analysis;
 
 import java.io.File;
 
-import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAnchor;
 import org.jfree.chart.axis.CategoryLabelPositions;
@@ -64,7 +64,7 @@ import ch.ethz.idsc.tensor.sca.Round;
 
         try {
             File file = new File(relativeDirectory, fileName + ".png");
-            ChartUtilities.saveChartAsPNG(file, jFreeChart, WIDTH, HEIGHT);
+            ChartUtils.saveChartAsPNG(file, jFreeChart, WIDTH, HEIGHT);
             GlobalAssert.that(file.isFile());
             System.out.println("Exported " + fileName + ".png");
         } catch (Exception e) {

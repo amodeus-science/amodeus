@@ -4,7 +4,7 @@ package ch.ethz.idsc.amodeus.analysis.shared;
 import java.io.File;
 import java.util.stream.IntStream;
 
-import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 
@@ -61,7 +61,7 @@ public enum RideSharingDistributionCompositionStack implements AnalysisExport {
 
         try {
             File fileChart = new File(relativeDirectory, FILENAME + ".png");
-            ChartUtilities.saveChartAsPNG(fileChart, chart, WIDTH, HEIGHT);
+            ChartUtils.saveChartAsPNG(fileChart, chart, WIDTH, HEIGHT);
             GlobalAssert.that(fileChart.isFile());
             System.out.println("Exported " + FILENAME + ".png");
         } catch (Exception e) {
