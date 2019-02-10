@@ -28,6 +28,14 @@ public class VisualRow {
         return points.unmodifiable();
     }
 
+    public Tensor domain() {
+        return points.get(Tensor.ALL, 0).unmodifiable();
+    }
+
+    public Tensor values() {
+        return points.get(Tensor.ALL, 1).unmodifiable();
+    }
+
     public void setColor(Color color) {
         this.color = Objects.requireNonNull(color);
     }

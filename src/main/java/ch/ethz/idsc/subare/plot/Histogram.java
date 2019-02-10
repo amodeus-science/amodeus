@@ -6,7 +6,6 @@ import java.util.function.Function;
 import org.jfree.chart.JFreeChart;
 
 import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Tensor;
 
 /** inspired by
  * <a href="https://reference.wolfram.com/language/ref/Histogram.html">Histogram</a> */
@@ -19,11 +18,9 @@ public enum Histogram {
 
     /* package */ static JFreeChart of(VisualSet visualSet, boolean stacked) {
         Function<Scalar, String> naming = visualSet.visualRows().stream() //
-                .allMatch(visualRow -> visualRow.points().length() == 1 // <- TODO JOEL this usually evaluates to false
-                        && visualSet.getVisualRow(0).points().get(Tensor.ALL, 0).equals(visualRow.points().get(Tensor.ALL, 0))) //
-                                ? s -> ""
-                                : Scalar::toString;
-        naming = Scalar::toString;
+                .allMatch(visualRow -> visualRow.points().length() == 1 && visualSet.hasCommonDomain()) //
+                    ? s -> "" // special case with only one group/stack -> neglect group name
+                    : Scalar::toString; // general case
         return JFreeCharts.barChart(visualSet, stacked, naming);
     }
 

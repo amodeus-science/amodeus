@@ -10,6 +10,7 @@ import org.jfree.chart.renderer.AbstractRenderer;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StackedBarRenderer;
 import org.jfree.chart.renderer.xy.AbstractXYItemRenderer;
+import org.jfree.data.xy.IntervalXYDataset;
 import org.jfree.data.xy.TableXYDataset;
 
 import ch.ethz.idsc.tensor.Scalar;
@@ -35,20 +36,28 @@ import ch.ethz.idsc.tensor.Scalar;
         return jFreeChart;
     }
 
-    public static JFreeChart fromXYTable(VisualSet visualSet, boolean stacked, TableXYDataset tableXYDataset) {
-        JFreeChart jFreeChart = stacked //
-                ? ChartFactory.createStackedXYAreaChart( //
-                        visualSet.getPlotLabel(), //
-                        visualSet.getDomainAxisLabel(), //
-                        visualSet.getRangeAxisLabel(), //
-                        tableXYDataset, //
-                        PlotOrientation.VERTICAL, visualSet.hasLegend(), true, false)
-                : ChartFactory.createXYLineChart( //
-                        visualSet.getPlotLabel(), //
-                        visualSet.getDomainAxisLabel(), //
-                        visualSet.getRangeAxisLabel(), //
-                        tableXYDataset, //
-                        PlotOrientation.VERTICAL, visualSet.hasLegend(), true, false);
+    public static JFreeChart lineChart(VisualSet visualSet, IntervalXYDataset intervalXYDataset) {
+        JFreeChart jFreeChart = ChartFactory.createXYLineChart( //
+                visualSet.getPlotLabel(), //
+                visualSet.getDomainAxisLabel(), //
+                visualSet.getRangeAxisLabel(), //
+                intervalXYDataset, //
+                PlotOrientation.VERTICAL, visualSet.hasLegend(), true, false);
+
+        formatLines(visualSet, (AbstractXYItemRenderer) jFreeChart.getXYPlot().getRenderer());
+
+        return jFreeChart;
+    }
+
+    public static JFreeChart stackedAreaPlot(VisualSet visualSet, TableXYDataset tableXYDataset) {
+        if (!visualSet.hasCommonDomain())
+            System.out.println("WARNING: Having different domains might lead to unsatisfying results!");
+        JFreeChart jFreeChart = ChartFactory.createStackedXYAreaChart( //
+                visualSet.getPlotLabel(), //
+                visualSet.getDomainAxisLabel(), //
+                visualSet.getRangeAxisLabel(), //
+                tableXYDataset, //
+                PlotOrientation.VERTICAL, visualSet.hasLegend(), true, false);
 
         formatLines(visualSet, (AbstractXYItemRenderer) jFreeChart.getXYPlot().getRenderer());
 

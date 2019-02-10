@@ -8,6 +8,8 @@ import java.util.function.Function;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.time.Second;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeTableXYDataset;
 import org.jfree.data.xy.CategoryTableXYDataset;
 import org.jfree.data.xy.TableXYDataset;
@@ -19,24 +21,6 @@ import ch.ethz.idsc.tensor.Tensor;
 
 /* package */ enum StaticHelper {
     ;
-    /** Quote from the JFreeChart javadoc: "[XYSeries] represents a sequence of zero
-     * or more data items in the form (x, y). By default, items in the series will be
-     * sorted into ascending order by x-value, and duplicate x-values are permitted."
-     * 
-     * @param visualSet
-     * @return */
-    public static XYSeriesCollection xySeriesCollection(VisualSet visualSet) {
-        XYSeriesCollection xySeriesCollection = new XYSeriesCollection();
-        for (VisualRow visualRow : visualSet.visualRows()) {
-            String labelString = visualRow.getLabelString();
-            XYSeries xySeries = new XYSeries(labelString.isEmpty() ? xySeriesCollection.getSeriesCount() : labelString);
-            for (Tensor point : visualRow.points())
-                xySeries.add(point.Get(0).number(), point.Get(1).number());
-            xySeriesCollection.addSeries(xySeries);
-        }
-        return xySeriesCollection;
-    }
-
     public static CategoryDataset defaultCategoryDataset(VisualSet visualSet) {
         return defaultCategoryDataset(visualSet, Scalar::toString);
     }
@@ -60,17 +44,6 @@ import ch.ethz.idsc.tensor.Tensor;
      * 
      * @param visualSet
      * @return */
-    public static TableXYDataset timeTableXYDataset(VisualSet visualSet) {
-        TimeTableXYDataset timeTableXYDataset = new TimeTableXYDataset();
-        for (VisualRow visualRow : visualSet.visualRows())
-            for (Tensor point : visualRow.points())
-                timeTableXYDataset.add( //
-                        toTime(point.Get(0)), //
-                        point.Get(1).number().doubleValue(), //
-                        visualRow.getLabel());
-        return timeTableXYDataset;
-    }
-
     public static TableXYDataset categoryTableXYDataset(VisualSet visualSet) {
         CategoryTableXYDataset categoryTableXYDataset = new CategoryTableXYDataset();
         for (VisualRow visualRow : visualSet.visualRows()) {
@@ -84,6 +57,52 @@ import ch.ethz.idsc.tensor.Tensor;
                         label); // requires string, might lead to overwriting
         }
         return categoryTableXYDataset;
+    }
+
+    public static TimeTableXYDataset timeTableXYDataset(VisualSet visualSet) {
+        TimeTableXYDataset timeTableXYDataset = new TimeTableXYDataset();
+        for (VisualRow visualRow : visualSet.visualRows())
+            for (Tensor point : visualRow.points())
+                timeTableXYDataset.add( //
+                        toTime(point.Get(0)), //
+                        point.Get(1).number().doubleValue(), //
+                        visualRow.getLabel());
+        return timeTableXYDataset;
+    }
+
+    /** Quote from the JFreeChart javadoc: "[XYSeries] represents a sequence of zero
+     * or more data items in the form (x, y). By default, items in the series will be
+     * sorted into ascending order by x-value, and duplicate x-values are permitted."
+     *
+     * @param visualSet
+     * @return */
+    public static XYSeriesCollection xySeriesCollection(VisualSet visualSet) {
+        XYSeriesCollection xySeriesCollection = new XYSeriesCollection();
+        for (VisualRow visualRow : visualSet.visualRows()) {
+            String labelString = visualRow.getLabelString();
+            XYSeries xySeries = new XYSeries(labelString.isEmpty() ? xySeriesCollection.getSeriesCount() : labelString);
+            for (Tensor point : visualRow.points())
+                xySeries.add(point.Get(0).number(), point.Get(1).number());
+            xySeriesCollection.addSeries(xySeries);
+        }
+        return xySeriesCollection;
+    }
+
+    public static TimeSeriesCollection timeSeriesCollection(VisualSet visualSet) {
+        TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection();
+        for (VisualRow visualRow : visualSet.visualRows()) {
+            String labelString = visualRow.getLabelString();
+            TimeSeries timeSeries = new TimeSeries(labelString.isEmpty() ? timeSeriesCollection.getSeriesCount() : labelString);
+            for (Tensor point : visualRow.points())
+                try {
+                    timeSeries.add(toTime(point.Get(0)), point.Get(1).number());
+                } catch (Exception e) {
+                    // sensitive to overwriting as smallest unit is second (integer)
+                    e.printStackTrace();
+                }
+            timeSeriesCollection.addSeries(timeSeries);
+        }
+        return timeSeriesCollection;
     }
 
     // from StaticHelper

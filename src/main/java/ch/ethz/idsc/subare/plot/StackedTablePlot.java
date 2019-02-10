@@ -7,7 +7,7 @@ public enum StackedTablePlot {
     ;
 
     public static JFreeChart of(VisualSet visualSet) {
-        return JFreeCharts.fromXYTable(visualSet, true, StaticHelper.categoryTableXYDataset(visualSet));
+        return JFreeCharts.stackedAreaPlot(visualSet, StaticHelper.categoryTableXYDataset(visualSet));
     }
 
 }

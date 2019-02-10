@@ -4,6 +4,7 @@ package ch.ethz.idsc.amodeus.analysis.plot;
 import java.io.File;
 import java.io.IOException;
 
+import ch.ethz.idsc.tensor.RealScalar;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
@@ -33,13 +34,16 @@ enum NumericPlotDemo {
 
         VisualSet visualSet = new VisualSet(ColorDataLists._250.cyclic());
 
-        Tensor domain1 = Sort.of(RandomVariate.of(UniformDistribution.unit(), values1.length()));
+        Tensor domain1 = Sort.of(RandomVariate.of(UniformDistribution.unit(), values1.length())) //
+                .multiply(RealScalar.of(10));
         VisualRow row0 = visualSet.add(domain1, values1);
 
-        Tensor domain2 = Sort.of(RandomVariate.of(UniformDistribution.unit(), values2.length()));
+        Tensor domain2 = Sort.of(RandomVariate.of(UniformDistribution.unit(), values2.length())) //
+                .multiply(RealScalar.of(10));
         visualSet.add(domain2, values2);
 
-        Tensor domain3 = Sort.of(RandomVariate.of(UniformDistribution.unit(), values3.length()));
+        Tensor domain3 = Sort.of(RandomVariate.of(UniformDistribution.unit(), values3.length())) //
+                .multiply(RealScalar.of(10));
         VisualRow row2 = visualSet.add(domain3, values3);
 
         if (labels) {

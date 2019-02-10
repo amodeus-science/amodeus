@@ -85,6 +85,11 @@ public class VisualSet {
         rangeAxisLabel = string;
     }
 
+    public boolean hasCommonDomain() {
+        return visualRows.isEmpty() || //
+                visualRows.stream().allMatch(visualRow -> getVisualRow(0).domain().equals(visualRow.domain()));
+    }
+
     // TODO is there a way to make better use of similarity?
 
 }

@@ -51,4 +51,15 @@ public class VisualRowTest extends TestCase {
             // ---
         }
     }
+
+    public void testXYGetters() {
+        Tensor domain = Tensors.fromString("{1, 2, 3, 4, 5}");
+        Tensor values = RandomVariate.of(UniformDistribution.unit(), 5);
+
+        VisualSet visualSet = new VisualSet();
+        VisualRow row = visualSet.add(domain, values);
+
+        assertEquals(domain, row.domain());
+        assertEquals(values, row.values());
+    }
 }
