@@ -4,7 +4,6 @@ package ch.ethz.idsc.amodeus.analysis.plot;
 import java.io.File;
 import java.io.IOException;
 
-import ch.ethz.idsc.tensor.RealScalar;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
@@ -12,10 +11,11 @@ import org.jfree.chart.JFreeChart;
 import ch.ethz.idsc.subare.plot.Histogram;
 import ch.ethz.idsc.subare.plot.ListPlot;
 import ch.ethz.idsc.subare.plot.StackedHistogram;
-import ch.ethz.idsc.subare.plot.StackedTimeChart;
-import ch.ethz.idsc.subare.plot.TimeChart;
+import ch.ethz.idsc.subare.plot.StackedTimedChart;
+import ch.ethz.idsc.subare.plot.TimedChart;
 import ch.ethz.idsc.subare.plot.VisualRow;
 import ch.ethz.idsc.subare.plot.VisualSet;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Sort;
 import ch.ethz.idsc.tensor.img.ColorDataLists;
@@ -71,14 +71,14 @@ enum NumericPlotDemo {
         }
 
         {
-            JFreeChart jFreeChart = TimeChart.of(visualSet);
-            File file = new File(folder, TimeChart.class.getSimpleName() + ".png");
+            JFreeChart jFreeChart = TimedChart.of(visualSet);
+            File file = new File(folder, TimedChart.class.getSimpleName() + ".png");
             ChartUtilities.saveChartAsPNG(file, jFreeChart, 500, 300);
         }
 
         {
-            JFreeChart jFreeChart = StackedTimeChart.of(visualSet);
-            File file = new File(folder, StackedTimeChart.class.getSimpleName() + ".png");
+            JFreeChart jFreeChart = StackedTimedChart.of(visualSet);
+            File file = new File(folder, StackedTimedChart.class.getSimpleName() + ".png");
             ChartUtilities.saveChartAsPNG(file, jFreeChart, 500, 300);
         }
 

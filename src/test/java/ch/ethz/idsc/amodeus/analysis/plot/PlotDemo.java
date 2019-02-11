@@ -12,8 +12,8 @@ import ch.ethz.idsc.subare.plot.Histogram;
 import ch.ethz.idsc.subare.plot.ListPlot;
 import ch.ethz.idsc.subare.plot.StackedHistogram;
 import ch.ethz.idsc.subare.plot.StackedTablePlot;
-import ch.ethz.idsc.subare.plot.StackedTimeChart;
-import ch.ethz.idsc.subare.plot.TimeChart;
+import ch.ethz.idsc.subare.plot.StackedTimedChart;
+import ch.ethz.idsc.subare.plot.TimedChart;
 import ch.ethz.idsc.subare.plot.VisualRow;
 import ch.ethz.idsc.subare.plot.VisualSet;
 import ch.ethz.idsc.tensor.Tensor;
@@ -67,16 +67,16 @@ enum PlotDemo {
         }
 
         {
-            visualSet.setPlotLabel(TimeChart.class.getSimpleName());
-            JFreeChart jFreeChart = TimeChart.of(visualSet);
-            File file = new File(folder, TimeChart.class.getSimpleName() + ".png");
+            visualSet.setPlotLabel(TimedChart.class.getSimpleName());
+            JFreeChart jFreeChart = TimedChart.of(visualSet);
+            File file = new File(folder, TimedChart.class.getSimpleName() + ".png");
             ChartUtilities.saveChartAsPNG(file, jFreeChart, 500, 300);
         }
 
         {
-            visualSet.setPlotLabel(StackedTimeChart.class.getSimpleName());
-            JFreeChart jFreeChart = StackedTimeChart.of(visualSet);
-            File file = new File(folder, StackedTimeChart.class.getSimpleName() + ".png");
+            visualSet.setPlotLabel(StackedTimedChart.class.getSimpleName());
+            JFreeChart jFreeChart = StackedTimedChart.of(visualSet);
+            File file = new File(folder, StackedTimedChart.class.getSimpleName() + ".png");
             ChartUtilities.saveChartAsPNG(file, jFreeChart, 500, 300);
         }
 
