@@ -102,7 +102,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     double getDriveTimeDirectUnitCap(AVRequest avRequest) {
         return driveTimesSingle.get(avRequest);
     }
-    
+
     Map<AVRequest, Double> getDriveTimes(SharedAvRoute route) {
         // Preparation
         Map<AVRequest, Double> thisPickupTimes = new HashMap<>();
