@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.matsim.api.core.v01.network.Link;
 
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.util.TreeMultipleItems;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
@@ -100,6 +101,26 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
     double getDriveTimeDirectUnitCap(AVRequest avRequest) {
         return driveTimesSingle.get(avRequest);
+    }
+
+    Map<AVRequest, Double> getDriveTimes(SharedAvRoute route) {
+        // Preparation
+        Map<AVRequest, Double> thisPickupTimes = new HashMap<>();
+        route.getRoute().stream() //
+                .filter(srp -> srp.getMealType().equals(SharedMealType.PICKUP)) //
+                .forEach(srp -> thisPickupTimes.put(srp.getAvRequest(), srp.getArrivalTime()));
+        //
+        Map<AVRequest, Double> driveTimes = new HashMap<>();
+        for (SharedRoutePoint sharedRoutePoint : route.getRoute())
+            if (sharedRoutePoint.getMealType().equals(SharedMealType.DROPOFF))
+                if (thisPickupTimes.containsKey(sharedRoutePoint.getAvRequest())) {
+                    // TODO does it include the dropoff or not?
+                    driveTimes.put(sharedRoutePoint.getAvRequest(), sharedRoutePoint.getEndTime() - thisPickupTimes.get(sharedRoutePoint.getAvRequest()));
+                } else {
+                    driveTimes.put(sharedRoutePoint.getAvRequest(), sharedRoutePoint.getEndTime() - getPickupTime(sharedRoutePoint.getAvRequest()));
+                }
+
+        return driveTimes;
     }
 
     double getPickupTime(AVRequest avRequest) {
