@@ -39,7 +39,7 @@ public enum OccupancyDistanceRatiosImage implements AnalysisExport {
         visualSet.setDomainAxisLabel("Time");
         visualSet.setRangeAxisLabel("Occupancy / Distance Ratio");
 
-        JFreeChart chart = ch.ethz.idsc.subare.plot.TimeChart.of(visualSet);
+        JFreeChart chart = ch.ethz.idsc.subare.plot.TimedChart.of(visualSet);
         chart.getXYPlot().getRangeAxis().setRange(0., 1.);
 
         try {

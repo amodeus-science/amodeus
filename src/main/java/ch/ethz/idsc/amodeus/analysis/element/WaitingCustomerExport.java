@@ -43,7 +43,7 @@ public enum WaitingCustomerExport implements AnalysisExport {
         visualSet.setDomainAxisLabel("Time");
         visualSet.setRangeAxisLabel("Waiting Customers [#]");
 
-        JFreeChart chart = ch.ethz.idsc.subare.plot.TimeChart.of(visualSet);
+        JFreeChart chart = ch.ethz.idsc.subare.plot.TimedChart.of(visualSet);
         chart.getXYPlot().getRangeAxis().setRange(0., maxWaiting + 1);
 
         try {

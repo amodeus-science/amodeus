@@ -6,7 +6,7 @@ import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.DateTickUnit;
 import org.jfree.chart.axis.DateTickUnitType;
 
-public enum TimeChart {
+public enum TimedChart {
     ;
 
     public static JFreeChart of(VisualSet visualSet) {

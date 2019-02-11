@@ -8,7 +8,7 @@ import org.jfree.chart.JFreeChart;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.subare.plot.TimeChart;
+import ch.ethz.idsc.subare.plot.TimedChart;
 import ch.ethz.idsc.subare.plot.VisualRow;
 import ch.ethz.idsc.subare.plot.VisualSet;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -42,7 +42,7 @@ public enum BinnedWaitingTimesImage implements AnalysisExport {
         visualSet.setDomainAxisLabel("Time");
         visualSet.setRangeAxisLabel("Waiting Times [min]");
 
-        JFreeChart chart = TimeChart.of(visualSet);
+        JFreeChart chart = TimedChart.of(visualSet);
         chart.getXYPlot().getRangeAxis().setRange(0., //
                 tta.getWaitAggrgte().Get(2).divide(scalingFactor).number().doubleValue());
 
