@@ -3,15 +3,19 @@ package ch.ethz.idsc.amodeus.analysis.element;
 
 import java.io.File;
 
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.UnitSaveUtils;
-import ch.ethz.idsc.amodeus.analysis.plot.TimeChart;
 import ch.ethz.idsc.amodeus.util.io.SaveFormats;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.subare.plot.VisualSet;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
+import ch.ethz.idsc.tensor.img.MeanFilter;
 import ch.ethz.idsc.tensor.red.Max;
 
 public enum WaitingCustomerExport implements AnalysisExport {
@@ -19,35 +23,45 @@ public enum WaitingCustomerExport implements AnalysisExport {
 
     private final String identifier = "waitingCustPerTime";
     public static final String FILENAME = "numberCustomersPlot";
+    public static final int WIDTH = 1000;
+    public static final int HEIGHT = 750;
 
     @Override
-    public void summaryTarget(AnalysisSummary analysisSummary, File relDir, ColorDataIndexed colorDataIndexed) {
-        TravelTimeAnalysis travelTime = analysisSummary.getTravelTimeAnalysis();
+    public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
+        TravelTimeAnalysis tta = analysisSummary.getTravelTimeAnalysis();
 
         /** save graphics */
-        double maxWaiting = travelTime.waitingCustomers.flatten(-1) // integer value, double for compatibility
+        double maxWaiting = tta.waitingCustomers.flatten(-1) // integer value, double for compatibility
                 .reduce(Max::of).get().Get().number().doubleValue();
 
-        String xAxisLabel = "Time";
-        String yAxisLabel = "Waiting Customers [#]";
-        double[] scale = new double[] { 1.0 };
+        Tensor values = tta.waitingCustomers;
+        values = StaticHelper.FILTER_ON ? MeanFilter.of(values, StaticHelper.FILTERSIZE) : values;
+        VisualSet visualSet = new VisualSet(colorDataIndexed);
+        visualSet.add(tta.time, values);
+
+        visualSet.setPlotLabel("Waiting Customers per Day Time");
+        visualSet.setDomainAxisLabel("Time");
+        visualSet.setRangeAxisLabel("Waiting Customers [#]");
+
+        JFreeChart chart = ch.ethz.idsc.subare.plot.TimeChart.of(visualSet);
+        chart.getXYPlot().getRangeAxis().setRange(0., maxWaiting + 1);
 
         try {
-            TimeChart.of(relDir, FILENAME, "Waiting Customers per Day Time", //
-                    StaticHelper.FILTER_ON, StaticHelper.FILTERSIZE, scale, new String[] { "# waiting customers" }, //
-                    xAxisLabel, yAxisLabel, travelTime.time, Transpose.of(Tensors.of(travelTime.waitingCustomers)), //
-                    new Double[] { 0.0, maxWaiting + 1 }, colorDataIndexed);
+            File fileChart = new File(relativeDirectory, FILENAME + ".png");
+            ChartUtilities.saveChartAsPNG(fileChart, chart, WIDTH, HEIGHT);
+            GlobalAssert.that(fileChart.isFile());
+            System.out.println("Exported " + FILENAME + ".png");
         } catch (Exception e) {
-            System.err.println("Binned Waiting Times Plot was unsucessfull!");
+            System.err.println("Plotting " + FILENAME + " failed");
             e.printStackTrace();
         }
 
         /** save information for processing in other tools */
         try {
             /** request information */
-            Tensor table = Transpose.of(Tensors.of(travelTime.time, travelTime.waitingCustomers));
-            UnitSaveUtils.saveFile(table, identifier, relDir);
-            File dataFolder = new File(relDir, identifier);
+            Tensor table = Transpose.of(Tensors.of(tta.time, tta.waitingCustomers));
+            UnitSaveUtils.saveFile(table, identifier, relativeDirectory);
+            File dataFolder = new File(relativeDirectory, identifier);
             GlobalAssert.that(dataFolder.isDirectory());
             SaveFormats.CSV.save(Tensors.fromString("time, # waiting customers"), dataFolder, "description");
         } catch (Exception e) {
