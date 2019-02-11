@@ -9,7 +9,7 @@ public enum ListPlot {
     ;
 
     public static JFreeChart of(VisualSet visualSet) {
-        return JFreeCharts.stackedAreaPlot(visualSet, StaticHelper.categoryTableXYDataset(visualSet));
+        return JFreeCharts.lineChart(visualSet, StaticHelper.xySeriesCollection(visualSet));
     }
 
 }
