@@ -15,8 +15,8 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-//TODO class not used outside project: document purpose or hide implementation
-public class DualSideSearch {
+/** Implementation of the "Algorithm 1: Dual Side Taxi Searching" */
+/* package */ class DualSideSearch {
 
     private final Map<VirtualNode<Link>, GridCell> gridCells;
     private final VirtualNetwork<Link> virtualNetwork;
@@ -29,8 +29,9 @@ public class DualSideSearch {
     public Collection<RoboTaxi> apply(AVRequest request, Map<VirtualNode<Link>, Set<RoboTaxi>> plannedLocations, //
             Scalar latestPickup, Scalar latestArrval) {
 
-        GridCell oCell = gridCells.get(virtualNetwork.getVirtualNode(request.getToLink()));
-        GridCell dCell = gridCells.get(virtualNetwork.getVirtualNode(request.getFromLink()));
+        /** origin and destination cells */
+        GridCell oCell = gridCells.get(virtualNetwork.getVirtualNode(request.getFromLink()));
+        GridCell dCell = gridCells.get(virtualNetwork.getVirtualNode(request.getToLink()));
 
         Collection<RoboTaxi> oTaxis = new ArrayList<>();
         Collection<RoboTaxi> dTaxis = new ArrayList<>();
@@ -42,10 +43,10 @@ public class DualSideSearch {
         boolean stop0 = false;
         boolean stopD = false;
 
+        /** Loop finds potential taxis for which trip insertion is evaluated */
         int i0 = 0;
         int iD = 0;
         while (potentialTaxis.isEmpty() && (stop0 == false || stopD == false)) {
-
             if (i0 < oCloseCells.size()) {
                 VirtualNode<Link> vNode = oCell.getDistAt(i0);
                 if (oCloseCells.contains(vNode)) {
@@ -54,7 +55,6 @@ public class DualSideSearch {
                 ++i0;
             } else
                 stop0 = true;
-
             if (iD < dCloseCells.size()) {
                 VirtualNode<Link> vNode = dCell.getDistAt(iD);
                 if (dCloseCells.contains(vNode)) {

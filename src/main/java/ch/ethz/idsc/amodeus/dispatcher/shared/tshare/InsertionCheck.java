@@ -16,7 +16,8 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-/** Implementation of the Algorithm 2: Insertion feasibility check is contained in this class. */
+/** Implementation of the "Algorithm 2: Insertion feasibility check" is contained in this class for all
+ * possible insertions. */
 /* package */ class InsertionCheck {
 
     private final RoboTaxi roboTaxi;
@@ -65,7 +66,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
                         newMenu.add(originalMenu.get(k));
                 }
 
-                if (Compatibility.of(newMenu).forCapacity(roboTaxi.getCapacity())){
+                if (Compatibility.of(newMenu).forCapacity(roboTaxi.getCapacity())) {
                     /** the line below is computationally expensive and calculates the
                      * path length of the option. */
                     menuOptions.put(Length.of(roboTaxi, newMenu, distance), newMenu);
