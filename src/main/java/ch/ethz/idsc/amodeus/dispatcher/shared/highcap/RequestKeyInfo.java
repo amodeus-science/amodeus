@@ -7,7 +7,7 @@ import java.util.Set;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-public class RequestKeyInfo {
+/* package */ class RequestKeyInfo {
     private double deadlinePickUp;
     private double modifiableSubmissionTime;
     private double deadlineDropOff;
