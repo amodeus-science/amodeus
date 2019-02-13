@@ -12,7 +12,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     private final Map<RoboTaxi, Set<AVRequest>> lastSetOfRequestsInRoute = new HashMap<>();
     private final Map<RoboTaxi, Set<AVRequest>> secondLastSetOfRequestInRoute = new HashMap<>();
 
-    boolean updateMenuOrNot(RoboTaxi roboTaxi, Set<AVRequest> setOfRequestsInRoute) {
+    public boolean updateMenuOrNot(RoboTaxi roboTaxi, Set<AVRequest> setOfRequestsInRoute) {
         // prevent looping
         if (!secondLastSetOfRequestInRoute.containsKey(roboTaxi)) {
             secondLastSetOfRequestInRoute.put(roboTaxi, new HashSet<>());

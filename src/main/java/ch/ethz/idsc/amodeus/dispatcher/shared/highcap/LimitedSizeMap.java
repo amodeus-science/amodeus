@@ -6,7 +6,7 @@ import java.util.Map;
 import ch.ethz.idsc.amodeus.util.math.LruCache;
 
 /** similar to {@link LruCache} */
-public class LimitedSizeMap<K, V> extends LinkedHashMap<K, V> {
+/* package */ class LimitedSizeMap<K, V> extends LinkedHashMap<K, V> {
     /**
      * 
      */

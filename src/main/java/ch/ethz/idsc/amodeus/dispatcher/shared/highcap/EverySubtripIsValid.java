@@ -14,7 +14,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param listOfTripsFromLastLoop
      * @param thisTrip
      * @return */
-    static boolean of(List<Set<AVRequest>> listOfTripsFromLastLoop, Set<AVRequest> thisTrip) {
+    public static boolean of(List<Set<AVRequest>> listOfTripsFromLastLoop, Set<AVRequest> thisTrip) {
         // generate all sub-trips
         List<Set<AVRequest>> listOfSubtrips = new ArrayList<>();
         List<AVRequest> listOfSingleRequest = new ArrayList<>();

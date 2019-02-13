@@ -11,7 +11,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-public class TripWithVehicle {
+/* package */ class TripWithVehicle {
     private final Set<AVRequest> trip = new HashSet<>();
     private final RoboTaxi roboTaxi;
     private final double totalDelay;
