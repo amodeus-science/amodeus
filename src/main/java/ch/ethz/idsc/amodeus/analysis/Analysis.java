@@ -110,7 +110,7 @@ public class Analysis {
     private final HtmlReport htmlReport;
     private final TotalValues totalValues;
     private final ColorDataIndexed colorDataIndexed;
-    private final ChartTheme chartTheme;
+    // private final StandardChartTheme chartTheme; // <- not used
     private final Set<String> allAmodeusTotalValueIdentifiers = TtlValIdent.getAllIdentifiers();
 
     /** Constructor of the Analysis Class can be called with any combination of null
@@ -153,9 +153,10 @@ public class Analysis {
         // load colorScheme & theme
         colorDataIndexed = ColorDataAmodeus.indexed(scenOptions.getColorScheme());
 
-        chartTheme = ChartTheme.valueOf(scenOptions.getChartTheme());
+        // chartTheme was not used
+        // chartTheme = ChartTheme.valueOf(scenOptions.getChartTheme());
 
-        ChartFactory.setChartTheme(chartTheme.getChartTheme(false));
+        ChartFactory.setChartTheme(ChartTheme.STANDARD);
         BarRenderer.setDefaultBarPainter(new StandardBarPainter());
         BarRenderer.setDefaultShadowsVisible(false);
 

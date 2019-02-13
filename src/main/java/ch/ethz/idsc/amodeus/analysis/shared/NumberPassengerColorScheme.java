@@ -36,7 +36,7 @@ public class NumberPassengerColorScheme {
     }
 
     private static Scalar functionTofraction(Scalar scalar) {
-        return (RealScalar.ONE.subtract(Exp.of(scalar.negate().divide(RealScalar.of(SCALINGFACTOR)))));
+        return RealScalar.ONE.subtract(Exp.of(scalar.negate().divide(RealScalar.of(SCALINGFACTOR))));
     }
 
 }

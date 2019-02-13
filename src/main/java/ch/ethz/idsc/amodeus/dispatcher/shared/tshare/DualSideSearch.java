@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared.tshare;
 
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
+//TODO class not used outside project: document purpose or hide implementation
 public class DualSideSearch {
 
     private final Map<VirtualNode<Link>, GridCell> gridCells;

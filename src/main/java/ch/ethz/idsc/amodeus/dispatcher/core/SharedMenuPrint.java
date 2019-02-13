@@ -6,7 +6,7 @@ import java.util.List;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
 
-public class SharedMenuPrint {
+public enum SharedMenuPrint {
     ;
 
     public static void of(SharedMenu sharedMenu) {

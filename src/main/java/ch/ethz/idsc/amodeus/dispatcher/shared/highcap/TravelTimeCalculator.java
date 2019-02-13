@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared.highcap;
 
 import java.util.HashMap;
@@ -7,7 +8,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.core.router.util.LeastCostPathCalculator;
 import org.matsim.core.router.util.LeastCostPathCalculator.Path;
 
-/* package */ class TravelTimeCalculator {
+public class TravelTimeCalculator {
 
     private final LeastCostPathCalculator lcpc;
     private final LimitedSizeMap<Link, Map<Link, Double>> travelTimeDataMap;
@@ -18,8 +19,8 @@ import org.matsim.core.router.util.LeastCostPathCalculator.Path;
     }
 
     // map data structure
-    double of(Link fromLink, Link toLink, double now, boolean storeInCache) {
-        if (!travelTimeDataMap.containsKey(fromLink)) 
+    public double of(Link fromLink, Link toLink, double now, boolean storeInCache) {
+        if (!travelTimeDataMap.containsKey(fromLink))
 
             travelTimeDataMap.put(fromLink, new HashMap<>());
 
@@ -42,7 +43,7 @@ import org.matsim.core.router.util.LeastCostPathCalculator.Path;
         travelTimeDataMap.get(fromLink).put(toLink, travelTime);
     }
 
-    void removeEntry(Link fromLink) {
+    public void removeEntry(Link fromLink) {
         travelTimeDataMap.remove(fromLink);
     }
 

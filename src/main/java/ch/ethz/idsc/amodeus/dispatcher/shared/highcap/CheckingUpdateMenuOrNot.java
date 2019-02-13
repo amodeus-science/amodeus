@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared.highcap;
 
 import java.util.HashMap;
@@ -8,7 +9,7 @@ import java.util.Set;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-/* package */ class CheckingUpdateMenuOrNot {
+public class CheckingUpdateMenuOrNot {
     private final Map<RoboTaxi, Set<AVRequest>> lastSetOfRequestsInRoute = new HashMap<>();
     private final Map<RoboTaxi, Set<AVRequest>> secondLastSetOfRequestInRoute = new HashMap<>();
 

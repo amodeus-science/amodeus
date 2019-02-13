@@ -91,7 +91,7 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
     // profiling
     long time = System.currentTimeMillis(); // for recording time spent at each step
 
-    protected HighCapacityDispatcher(Network network, //
+    public HighCapacityDispatcher(Network network, //
             Config config, AVDispatcherConfig avDispatcherConfig, //
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, //
             MatsimAmodeusDatabase db) {

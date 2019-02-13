@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared.highcap;
 
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import org.matsim.api.core.v01.network.Link;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-/* package */ class AdvancedRTVGenerator {
+public class AdvancedRTVGenerator {
     private static final double MAX_RANGE = 999999.8;
     // ---
     private final Map<RoboTaxi, Set<AVRequest>> feasibleOpenRequestFromLastStepMap = new HashMap<>();
@@ -26,7 +27,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         this.dropoffDurationPerStop = dropoffDurationPerStop;
     }
 
-    List<TripWithVehicle> generateRTV(List<RoboTaxi> roboTaxis, Set<AVRequest> newAddedRequests, Set<AVRequest> removedRequests, //
+    public List<TripWithVehicle> generateRTV(List<RoboTaxi> roboTaxis, Set<AVRequest> newAddedRequests, Set<AVRequest> removedRequests, //
             double now, Map<AVRequest, RequestKeyInfo> requestKeyInfoMap, Set<Set<AVRequest>> rvEdges, //
             TravelTimeCalculator ttc, List<TripWithVehicle> lastAssignment, double trafficAllowance) {
         List<TripWithVehicle> grossListOfRTVEdges = new ArrayList<>();

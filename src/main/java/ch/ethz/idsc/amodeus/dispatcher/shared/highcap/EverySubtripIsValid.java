@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared.highcap;
 
 import java.util.ArrayList;
@@ -7,7 +8,7 @@ import java.util.Set;
 
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-/* package */ enum EverySubtripIsValid {
+public enum EverySubtripIsValid {
     ;
     /** this function check the if every sub-trip of a trip is valid trip ]
      * 

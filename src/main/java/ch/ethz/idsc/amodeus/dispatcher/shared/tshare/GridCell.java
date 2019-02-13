@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared.tshare;
 
 import java.util.ArrayList;
@@ -86,23 +87,23 @@ import ch.ethz.idsc.tensor.qty.Quantity;
     }
 
     public List<VirtualNode<Link>> nodesReachableWithin(Scalar time) {
-        GlobalAssert.that(Scalars.lessEquals(Quantity.of(0, "s"),time));
+        GlobalAssert.that(Scalars.lessEquals(Quantity.of(0, "s"), time));
         return this.nodesWithinLessThan.lowerEntry(time).getValue();
-        
-////        NavigableMap<Scalar,List<VirtualNode<Link>>> nodesWithinLessthan = new TreeMap<>();
-////        return nodesWithinLessthan(time);
-//        
-//        List<VirtualNode<Link>> closeEnough = new ArrayList<>();
-//        int i = 1;
-//        boolean withinLimit = true;
-//        while (withinLimit && i < virtualNetwork.getvNodesCount()) {
-//            closeEnough = getTimeNClosest(i);
-//            if (Scalars.lessEquals(time, timeTo(closeEnough.get(i - 1)))) {
-//                withinLimit = false;
-//            }
-//            ++i;
-//        }
-//        return closeEnough;
+
+        //// NavigableMap<Scalar,List<VirtualNode<Link>>> nodesWithinLessthan = new TreeMap<>();
+        //// return nodesWithinLessthan(time);
+        //
+        // List<VirtualNode<Link>> closeEnough = new ArrayList<>();
+        // int i = 1;
+        // boolean withinLimit = true;
+        // while (withinLimit && i < virtualNetwork.getvNodesCount()) {
+        // closeEnough = getTimeNClosest(i);
+        // if (Scalars.lessEquals(time, timeTo(closeEnough.get(i - 1)))) {
+        // withinLimit = false;
+        // }
+        // ++i;
+        // }
+        // return closeEnough;
     }
 
     public Scalar timeTo(VirtualNode<Link> virtualNode) {
