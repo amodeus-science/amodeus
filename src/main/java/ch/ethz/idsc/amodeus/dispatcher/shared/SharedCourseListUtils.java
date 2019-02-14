@@ -98,7 +98,7 @@ public enum SharedCourseListUtils {
     }
 
     public static boolean checkMenuConsistency(List<? extends SharedCourse> courses, int capacity) {
-        return  Compatibility.of(courses).forCapacity(capacity);
+        return Compatibility.of(courses).forCapacity(capacity);
     }
 
     /** @return false if any dropoff occurs after pickup in the menu.
@@ -118,7 +118,6 @@ public enum SharedCourseListUtils {
         }
         return true;
     }
-
 
     // **************************************************
     // ADDING COURSES
