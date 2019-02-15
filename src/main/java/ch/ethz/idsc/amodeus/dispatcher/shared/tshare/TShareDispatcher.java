@@ -147,9 +147,8 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
                     .collect(Collectors.toList());
 
             for (AVRequest avr : sortedRequests) {
-                Scalar latestPickup = Quantity.of(avr.getSubmissionTime(), "s").add(pickupDelayMax);
-                // TODO possibly simplified grid-cell travel time used in publication, check
-                Scalar latestArrval = travelTimeCashed.timeFromTo(avr.getFromLink(), avr.getToLink()).add(drpoffDelayMax);
+                Scalar latestPickup = LatestPickup.of(avr, pickupDelayMax);
+                Scalar latestArrval = LatestArrival.of(avr, drpoffDelayMax, travelTimeCashed);
 
                 /** dual side search */
                 Collection<RoboTaxi> potentialTaxis = //
@@ -159,7 +158,8 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
                 NavigableMap<Scalar, InsertionCheck> insertions = new TreeMap<>();
                 for (RoboTaxi taxi : potentialTaxis) {
                     if (taxi.getUnmodifiableViewOfCourses().size() < taxi.getCapacity() * 2 * menuHorizon) {
-                        InsertionCheck check = new InsertionCheck(distanceCashed, taxi, avr);
+                        InsertionCheck check = new InsertionCheck(distanceCashed, travelTimeCashed, taxi, avr, //
+                                pickupDelayMax, drpoffDelayMax, now);
                         if (Objects.nonNull(check.getAddDistance()))
                             insertions.put(check.getAddDistance(), check);
                     }
