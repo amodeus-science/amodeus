@@ -31,20 +31,36 @@ public enum VirtualNetworkExport implements AnalysisExport {
             GlobalAssert.that(false);
         }
         final File virtualNetworkFolder = new File(workingDirectory, scenOptions.getVirtualNetworkName());
-        if (virtualNetworkFolder.isDirectory()) {
+
+        try {//
             File virtualNetworkFile = new File(virtualNetworkFolder, scenOptions.getVirtualNetworkName());
             File copyTo = new File(relativeDirectory, scenOptions.getVirtualNetworkName());
-            GlobalAssert.that(virtualNetworkFile.exists());
-            GlobalAssert.that(copyTo.getParentFile().isDirectory());
-            try {
-                System.out.println(virtualNetworkFile);
-                System.out.println(copyTo);
-                Files.copy(virtualNetworkFile, copyTo);
-            } catch (IOException e) {
-                GlobalAssert.that(false);
-            }
-        } else
-            System.err.println("virtual directory not found");
+            // GlobalAssert.that(virtualNetworkFile.exists());
+            // GlobalAssert.that(copyTo.getParentFile().isDirectory());
+            System.out.println(virtualNetworkFile);
+            System.out.println(copyTo);
+            Files.copy(virtualNetworkFile, copyTo);
+        } catch (IOException exception) {
+            System.err.println("The virtual network file was not copied to the data directory as");
+            System.err.println("it was not found. A possible reason is that no virtualnetwork was");
+            System.err.println("created in this simulation. ");
+        }
+
+        // if (virtualNetworkFolder.isDirectory()) {
+        // File virtualNetworkFile = new File(virtualNetworkFolder, scenOptions.getVirtualNetworkName());
+        // File copyTo = new File(relativeDirectory, scenOptions.getVirtualNetworkName());
+        // GlobalAssert.that(virtualNetworkFile.exists());
+        // GlobalAssert.that(copyTo.getParentFile().isDirectory());
+        // try {
+        // System.out.println(virtualNetworkFile);
+        // System.out.println(copyTo);
+        // Files.copy(virtualNetworkFile, copyTo);
+        // } catch (IOException e) {
+        // GlobalAssert.that(false);
+        // }
+        // } else
+        // System.err.println("virtual directory not found");
+
     }
 
 }

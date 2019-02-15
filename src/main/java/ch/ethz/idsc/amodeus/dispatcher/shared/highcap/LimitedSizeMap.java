@@ -8,7 +8,8 @@ import ch.ethz.idsc.amodeus.util.math.LruCache;
 
 /** similar to {@link LruCache} */
 // TODO use LruCache instead
-public class LimitedSizeMap<K, V> extends LinkedHashMap<K, V> {
+/* package */ class LimitedSizeMap<K, V> extends LinkedHashMap<K, V> {
+
     /**
      * 
      */

@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ch.ethz.idsc</groupId>
 	<artifactId>amodeus</artifactId>
-	<version>1.6.2</version>
+	<version>1.6.4</version>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>

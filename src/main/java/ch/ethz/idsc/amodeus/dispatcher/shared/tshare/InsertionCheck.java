@@ -9,12 +9,19 @@ import java.util.TreeMap;
 import java.util.function.BiConsumer;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.shared.Compatibility;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
+import ch.ethz.idsc.amodeus.dispatcher.shared.fifs.TravelTimeCalculatorCached;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Scalars;
+import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
+/** Implementation of the "Algorithm 2: Insertion feasibility check" is contained in this class for all
+ * possible insertions. */
 /* package */ class InsertionCheck {
 
     private final RoboTaxi roboTaxi;
@@ -23,8 +30,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     private Scalar optimalLength;
     private Scalar originalLength;
 
-    public InsertionCheck(CashedDistanceCalculator distance, //
-            RoboTaxi roboTaxi, AVRequest request) {
+    public InsertionCheck(CashedDistanceCalculator distance, TravelTimeCalculatorCached travelTimeCashed, //
+            RoboTaxi roboTaxi, AVRequest request, Scalar pickupDelayMax, Scalar drpoffDelayMax, double timeNow) {
         this.roboTaxi = roboTaxi;
         this.request = request;
 
@@ -63,8 +70,34 @@ import ch.ethz.matsim.av.passenger.AVRequest;
                         newMenu.add(originalMenu.get(k));
                 }
 
-                if (SharedCourseListUtils//
-                        .checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(newMenu, roboTaxi.getCapacity())) {
+                /** check compatibility with {@link RoboTaxi} capacity for newMenu */
+                boolean capctyComp = Compatibility.of(newMenu).forCapacity(roboTaxi.getCapacity());
+
+                /** compute expecte arrival times and check compatibility with time windows */
+                boolean timeComp = true;
+                Scalar timePrev = Quantity.of(timeNow, "s");
+                for (int k = 0; k < newMenu.size(); ++k) {
+                    SharedCourse course = newMenu.get(k);
+                    Scalar travelTime = travelTimeCashed.timeFromTo(roboTaxi.getLastKnownLocation(), course.getLink());
+                    Scalar timeofCourse = timePrev.add(travelTime);
+                    if (course.getMealType().equals(SharedMealType.PICKUP)) {
+                        Scalar latestPickup = LatestPickup.of(course.getAvRequest(), pickupDelayMax);
+                        if (Scalars.lessThan(latestPickup, timeofCourse)) {
+                            timeComp = false;
+                            break;
+                        }
+                    }
+                    if (course.getMealType().equals(SharedMealType.DROPOFF)) {
+                        Scalar latestDropoff = LatestArrival.of(course.getAvRequest(), drpoffDelayMax, travelTimeCashed);
+                        if (Scalars.lessThan(latestDropoff, timeofCourse)) {
+                            timeComp = false;
+                            break;
+                        }
+                    }
+                    timePrev = timeofCourse;
+                }
+
+                if (capctyComp && timeComp) {
                     /** the line below is computationally expensive and calculates the
                      * path length of the option. */
                     menuOptions.put(Length.of(roboTaxi, newMenu, distance), newMenu);

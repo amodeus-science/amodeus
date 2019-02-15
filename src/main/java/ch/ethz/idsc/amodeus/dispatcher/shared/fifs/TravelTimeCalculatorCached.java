@@ -25,6 +25,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
  * to link pair. */
 // TODO move to separate class and ensure that duplicate code with
 // CashedDistanceCalculator is removed.
+// TODO document maxLag
 public class TravelTimeCalculatorCached implements TravelTimeCalculator {
 
     public static TravelTimeCalculatorCached of(LeastCostPathCalculator calculator, double maxLag) {

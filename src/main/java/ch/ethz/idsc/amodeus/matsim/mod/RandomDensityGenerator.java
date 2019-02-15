@@ -22,7 +22,7 @@ import ch.ethz.matsim.av.generator.AVGenerator;
  *
  * all vehicles are created in this iteration. after that, no more AVVehiles are
  * added to the system. */
-/* package */ class RandomDensityGenerator implements AVGenerator {
+public class RandomDensityGenerator implements AVGenerator {
     private static final Logger LOGGER = Logger.getLogger(RandomDensityGenerator.class);
     // ---
     private final long numberOfVehicles;

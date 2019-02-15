@@ -13,6 +13,7 @@ import java.util.Set;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiUtils;
+import ch.ethz.idsc.amodeus.dispatcher.shared.Compatibility;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
@@ -107,7 +108,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         }
         Optional<Entry<RoboTaxi, List<SharedCourse>>> rt = getFastestValidEntry(avRouteHandler, avRequest, oldRoutes, now, requestMaintainer);
         if (rt.isPresent()) {
-            GlobalAssert.that(SharedCourseListUtils.checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(rt.get().getValue(), rt.get().getKey().getCapacity()));
+            GlobalAssert.that(Compatibility.of(rt.get().getValue()).forCapacity(rt.get().getKey().getCapacity()));
         }
         return rt;
     }
@@ -122,7 +123,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
             for (Entry<RoboTaxi, Set<SharedAvRoute>> entry : map.entrySet())
                 for (SharedAvRoute sharedAvRoute : entry.getValue())
                     if (isValidRoute(sharedAvRoute, oldRoutes.get(entry.getKey()), requestMaintainer.getRequestWrap(avRequest), now, requestMaintainer))
-                        if (SharedCourseListUtils.checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(sharedAvRoute.getRoboTaxiMenu(), entry.getKey().getCapacity())) {
+                        if (Compatibility.of(sharedAvRoute.getRoboTaxiMenu()).forCapacity(entry.getKey().getCapacity())) {
                             return Optional.of(new SimpleEntry<>(entry.getKey(), sharedAvRoute.getRoboTaxiMenu()));
                         }
 
