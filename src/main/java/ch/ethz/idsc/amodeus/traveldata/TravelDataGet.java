@@ -16,7 +16,7 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 public enum TravelDataGet {
     ;
 
-    public static TravelData readDefault(VirtualNetwork<Link> virtualNetwork) throws IOException {
+    public static StaticTravelData readStatic(VirtualNetwork<Link> virtualNetwork) throws IOException {
         GlobalAssert.that(Objects.nonNull(virtualNetwork));
         File workingDirectory = MultiFileTools.getWorkingDirectory();
         ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
@@ -24,7 +24,7 @@ public enum TravelDataGet {
                 scenarioOptions.getTravelDataName());
         System.out.println("loading travelData from " + travelDataFile.getAbsoluteFile());
         try {
-            return TravelDataIO.read(travelDataFile, virtualNetwork);
+            return TravelDataIO.readStatic(travelDataFile, virtualNetwork);
         } catch (Exception e) {
             System.err.println("cannot load default " + travelDataFile);
             e.printStackTrace();

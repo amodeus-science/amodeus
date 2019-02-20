@@ -14,10 +14,11 @@ import ch.ethz.idsc.amodeus.prep.Request;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.tensor.Tensor;
 
-public enum TravelDataCreator {
+public enum StaticTravelDataCreator {
     ;
     /** Creates the travel data by counting all travel requests and solving an LP depending on this request information */
-    public static TravelData create(VirtualNetwork<Link> virtualNetwork, Network network, Population population, int interval, int numberOfVehicles, int endTime) throws Exception {
+    public static StaticTravelData create(VirtualNetwork<Link> virtualNetwork, Network network, Population population, int interval, int numberOfVehicles, int endTime)
+            throws Exception {
         Tensor lambdaAbsolute = getLambdaAbsolute(network, virtualNetwork, population, interval, endTime);
 
         LPSolver lpSolver = LPPreparer.run(virtualNetwork, network, lambdaAbsolute, numberOfVehicles, endTime);
@@ -27,7 +28,7 @@ public enum TravelDataCreator {
         Tensor v0_i = lpSolver.getV0_i();
         Tensor fAbsolute = lpSolver.getFAbsolute_ij();
 
-        return new TravelData(virtualNetwork.getvNetworkID(), lambdaAbsolute, alphaAbsolute, fAbsolute, v0_i, lpName, endTime);
+        return new StaticTravelData(virtualNetwork.getvNetworkID(), lambdaAbsolute, alphaAbsolute, fAbsolute, v0_i, lpName, endTime);
     }
 
     /** returns the lambdaAbsolute {@link Tensor} that represents all requests in the population.

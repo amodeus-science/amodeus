@@ -19,8 +19,8 @@ public class TravelDataTestHelper {
     private TravelData tDSaved;
 
     private TravelDataTestHelper(VirtualNetwork<Link> vNCreated, VirtualNetwork<Link> vNSaved) throws Exception {
-        tDCreated = TravelDataGet.readDefault(vNCreated);
-        tDSaved = TravelDataIO.read(new File("resources/testComparisonFiles/travelData"), vNSaved);
+        tDCreated = TravelDataGet.readStatic(vNCreated);
+        tDSaved = TravelDataIO.readStatic(new File("resources/testComparisonFiles/travelData"), vNSaved);
     }
 
     public boolean timeIntervalCheck() {

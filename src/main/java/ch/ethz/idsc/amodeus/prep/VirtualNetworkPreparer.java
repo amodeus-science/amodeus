@@ -9,8 +9,8 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
 
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
-import ch.ethz.idsc.amodeus.traveldata.TravelData;
-import ch.ethz.idsc.amodeus.traveldata.TravelDataCreator;
+import ch.ethz.idsc.amodeus.traveldata.StaticTravelData;
+import ch.ethz.idsc.amodeus.traveldata.StaticTravelDataCreator;
 import ch.ethz.idsc.amodeus.traveldata.TravelDataIO;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
@@ -39,10 +39,10 @@ public enum VirtualNetworkPreparer implements VirtualNetworkCreator {
             System.out.println("successfully converted simulation data files from in " + MultiFileTools.getWorkingDirectory());
 
             /** reading the whole travel data */
-            TravelData travelData = TravelDataCreator.create(virtualNetwork, network, population, scenarioOptions.getdtTravelData(), numVehicles, endTime);
+            StaticTravelData travelData = StaticTravelDataCreator.create(virtualNetwork, network, population, scenarioOptions.getdtTravelData(), numVehicles, endTime);
 
             File travelDataFile = new File(scenarioOptions.getVirtualNetworkName(), scenarioOptions.getTravelDataName());
-            TravelDataIO.write(travelDataFile, travelData);
+            TravelDataIO.writeStatic(travelDataFile, travelData);
 
         } catch (Exception exception) {
             exception.printStackTrace();

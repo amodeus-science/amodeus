@@ -62,7 +62,7 @@ import ch.ethz.idsc.amodeus.prep.MatsimKMeansVirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.test.TestFileHandling;
 import ch.ethz.idsc.amodeus.testutils.TestUtils;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
-import ch.ethz.idsc.amodeus.traveldata.TravelDataCreator;
+import ch.ethz.idsc.amodeus.traveldata.StaticTravelDataCreator;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
@@ -274,7 +274,7 @@ public class StandardMATSimScenarioTest {
                 LPOptions lpOptions = new LPOptions(MultiFileTools.getWorkingDirectory(), LPOptionsBase.getDefault());
                 lpOptions.setProperty(LPOptionsBase.LPSOLVER, "timeInvariant");
                 lpOptions.saveAndOverwriteLPOptions();
-                TravelData travelData = TravelDataCreator.create(virtualNetwork, network, population, scenarioOptions.getdtTravelData(),
+                TravelData travelData = StaticTravelDataCreator.create(virtualNetwork, network, population, scenarioOptions.getdtTravelData(),
                         (int) generatorConfig.getNumberOfVehicles(), endTime);
                 return travelData;
             }
