@@ -2,12 +2,17 @@
 package ch.ethz.idsc.amodeus.util.io;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.stream.Stream;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 public enum MultiFileTools {
     ;
+
+    public static File getDefaultWorkingDirectory() throws IOException {
+        return new File(".").getCanonicalFile();
+    }
 
     /** @return all directories in filesDirectory sorted by name */
     public static File[] getAllDirectoriesSorted(File filesDirectory) {
