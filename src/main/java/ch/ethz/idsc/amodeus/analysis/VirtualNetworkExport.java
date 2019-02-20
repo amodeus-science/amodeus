@@ -8,33 +8,22 @@ import com.google.common.io.Files;
 
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
-import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
-import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
-public enum VirtualNetworkExport implements AnalysisExport {
-    INSTANCE;
+public class VirtualNetworkExport implements AnalysisExport {
+    private final ScenarioOptions scenarioOptions;
+
+    public VirtualNetworkExport(ScenarioOptions scenarioOptions) {
+        this.scenarioOptions = scenarioOptions;
+    }
 
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
-        File workingDirectory = null;
-        try {
-            workingDirectory = MultiFileTools.getWorkingDirectory();
-        } catch (IOException e) {
-            GlobalAssert.that(false);
-        }
-        ScenarioOptions scenOptions = null;
-        try {
-            scenOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
-        } catch (IOException e) {
-            GlobalAssert.that(false);
-        }
-        final File virtualNetworkFolder = new File(workingDirectory, scenOptions.getVirtualNetworkName());
+        final File virtualNetworkFolder = new File(scenarioOptions.getWorkingDirectory(), scenarioOptions.getVirtualNetworkName());
 
         try {//
-            File virtualNetworkFile = new File(virtualNetworkFolder, scenOptions.getVirtualNetworkName());
-            File copyTo = new File(relativeDirectory, scenOptions.getVirtualNetworkName());
+            File virtualNetworkFile = new File(virtualNetworkFolder, scenarioOptions.getVirtualNetworkName());
+            File copyTo = new File(relativeDirectory, scenarioOptions.getVirtualNetworkName());
             // GlobalAssert.that(virtualNetworkFile.exists());
             // GlobalAssert.that(copyTo.getParentFile().isDirectory());
             System.out.println(virtualNetworkFile);

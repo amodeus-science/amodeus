@@ -8,14 +8,11 @@ import java.util.Properties;
 import ch.ethz.idsc.amodeus.lp.LPCreator;
 
 public class LPOptions {
-
+    private final File workingDirectory;
     protected final Properties properties;
 
-    protected LPOptions(Properties properties) {
-        this.properties = properties;
-    }
-
     public LPOptions(File workingDirectory, Properties fallbackDefault) throws IOException {
+        this.workingDirectory = workingDirectory;
         this.properties = StaticHelper.loadOrCreateLPOptions(workingDirectory, fallbackDefault);
     }
 
@@ -26,7 +23,7 @@ public class LPOptions {
     }
 
     public void saveAndOverwriteLPOptions() throws IOException {
-        LPOptionsBase.saveProperties(properties);
+        LPOptionsBase.saveProperties(workingDirectory, properties);
     }
 
     public void saveToFolder(File folder, String header) throws IOException {

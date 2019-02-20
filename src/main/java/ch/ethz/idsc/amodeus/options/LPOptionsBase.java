@@ -25,8 +25,8 @@ public enum LPOptionsBase {
         return properties;
     }
 
-    public static void saveProperties(Properties prop) throws IOException {
-        saveProperties(prop, new File(OPTIONSFILENAME));
+    public static void saveProperties(File workingDirectory, Properties prop) throws IOException {
+        saveProperties(prop, new File(workingDirectory, OPTIONSFILENAME));
     }
 
     public static void saveProperties(Properties prop, File file) throws IOException {

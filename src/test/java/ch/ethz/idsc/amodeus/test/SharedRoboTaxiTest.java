@@ -52,7 +52,7 @@ public class SharedRoboTaxiTest {
 
         // copy scenario data into main directory
         File scenarioDirectory = new File(TestUtils.getSuperFolder("amodeus"), "resources/testScenario");
-        File workingDirectory = MultiFileTools.getWorkingDirectory();
+        File workingDirectory = TestUtils.getWorkingDirectory();
         GlobalAssert.that(workingDirectory.isDirectory());
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
 
@@ -64,7 +64,7 @@ public class SharedRoboTaxiTest {
 
         // prepare travel data test
         // vNCreated =
-        VirtualNetworkGet.readDefault(testPreparer.getPreparedNetwork());
+        VirtualNetworkGet.readDefault(testPreparer.getPreparedNetwork(), new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault()));
         Map<String, Link> map = new HashMap<>();
         testPreparer.getPreparedNetwork().getLinks().entrySet().forEach(e -> map.put(e.getKey().toString(), e.getValue()));
         // vNSaved =
@@ -101,7 +101,7 @@ public class SharedRoboTaxiTest {
         System.out.print("Server Test:\t");
 
         /** scenario options */
-        File workingDirectory = MultiFileTools.getWorkingDirectory();
+        File workingDirectory = TestUtils.getWorkingDirectory();
         ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
         assertEquals("config.xml", scenarioOptions.getSimulationConfigName());
         assertEquals("preparedNetwork", scenarioOptions.getPreparedNetworkName());

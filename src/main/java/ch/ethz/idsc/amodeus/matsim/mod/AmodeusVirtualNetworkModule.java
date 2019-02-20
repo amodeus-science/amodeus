@@ -10,6 +10,7 @@ import org.matsim.core.controler.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 
+import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkPreparer;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.traveldata.TravelDataGet;
@@ -18,6 +19,12 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkGet;
 
 /** provides the {@link VirtualNetwork} and {@link TravelData} and therefore {@link VirtualNetworkPreparer} has to be run in the Preparer */
 public class AmodeusVirtualNetworkModule extends AbstractModule {
+    private final ScenarioOptions scenarioOptions;
+
+    public AmodeusVirtualNetworkModule(ScenarioOptions scenarioOptions) {
+        this.scenarioOptions = scenarioOptions;
+    }
+
     @Override
     public void install() {
         // ---
@@ -27,7 +34,7 @@ public class AmodeusVirtualNetworkModule extends AbstractModule {
     @Singleton
     public VirtualNetwork<Link> provideVirtualNetwork(Network network) {
         try {
-            return VirtualNetworkGet.readDefault(network);
+            return VirtualNetworkGet.readDefault(network, scenarioOptions);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -37,7 +44,7 @@ public class AmodeusVirtualNetworkModule extends AbstractModule {
     @Singleton
     public TravelData provideTravelData(VirtualNetwork<Link> virtualNetwork) {
         try {
-            return TravelDataGet.readStatic(virtualNetwork);
+            return TravelDataGet.readStatic(virtualNetwork, scenarioOptions);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

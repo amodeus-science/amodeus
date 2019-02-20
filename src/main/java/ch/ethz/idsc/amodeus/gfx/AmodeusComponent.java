@@ -7,6 +7,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,7 +29,7 @@ public class AmodeusComponent extends JMapViewer {
 
     /** @param db
      * @return instance of MatsimMapComponent with default sequence of {@link ViewerLayer}s */
-    public static AmodeusComponent createDefault(MatsimAmodeusDatabase db) {
+    public static AmodeusComponent createDefault(MatsimAmodeusDatabase db, File workingDirectory) {
         AmodeusComponent amodeusComponent = new AmodeusComponent(db);
         amodeusComponent.addLayer(new TilesLayer(amodeusComponent));
         amodeusComponent.addLayer(new VirtualNetworkLayer(amodeusComponent));
@@ -38,7 +39,7 @@ public class AmodeusComponent extends JMapViewer {
         amodeusComponent.addLayer(new LoadLayer(amodeusComponent));
         amodeusComponent.addLayer(new HudLayer(amodeusComponent));
         amodeusComponent.addLayer(new ClockLayer(amodeusComponent));
-        amodeusComponent.addLayer(new VideoLayer(amodeusComponent));
+        amodeusComponent.addLayer(new VideoLayer(amodeusComponent, workingDirectory));
         return amodeusComponent;
     }
 

@@ -12,7 +12,6 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.traveldata.StaticTravelData;
 import ch.ethz.idsc.amodeus.traveldata.StaticTravelDataCreator;
 import ch.ethz.idsc.amodeus.traveldata.TravelDataIO;
-import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkIO;
@@ -36,10 +35,11 @@ public enum VirtualNetworkPreparer implements VirtualNetworkCreator {
             System.out.println("saved virtual network byte format to : " + new File(vnDir, scenarioOptions.getVirtualNetworkName()));
 
             virtualNetwork.printVirtualNetworkInfo();
-            System.out.println("successfully converted simulation data files from in " + MultiFileTools.getWorkingDirectory());
+            System.out.println("successfully converted simulation data files from in " + scenarioOptions.getWorkingDirectory());
 
             /** reading the whole travel data */
-            StaticTravelData travelData = StaticTravelDataCreator.create(virtualNetwork, network, population, scenarioOptions.getdtTravelData(), numVehicles, endTime);
+            StaticTravelData travelData = StaticTravelDataCreator.create(scenarioOptions.getWorkingDirectory(), virtualNetwork, network, population,
+                    scenarioOptions.getdtTravelData(), numVehicles, endTime);
 
             File travelDataFile = new File(scenarioOptions.getVirtualNetworkName(), scenarioOptions.getTravelDataName());
             TravelDataIO.writeStatic(travelDataFile, travelData);

@@ -22,9 +22,8 @@ import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
     /* package */ final Population population;
     /* package */ final Config config;
 
-    public Preparer() throws IOException {
+    public Preparer(File workingDirectory) throws IOException {
         // Static.setup();
-        File workingDirectory = MultiFileTools.getWorkingDirectory();
 
         /** amodeus options */
         scenOpt = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());

@@ -61,9 +61,8 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.prep.MatsimKMeansVirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.test.TestFileHandling;
 import ch.ethz.idsc.amodeus.testutils.TestUtils;
-import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.traveldata.StaticTravelDataCreator;
-import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
+import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.matsim.av.config.AVConfig;
@@ -162,7 +161,7 @@ public class StandardMATSimScenarioTest {
     public static void setUp() throws IOException {
         // copy scenario data into main directory
         File scenarioDirectory = new File(TestUtils.getSuperFolder("amodeus"), "resources/testScenario");
-        File workingDirectory = MultiFileTools.getWorkingDirectory();
+        File workingDirectory = TestUtils.getWorkingDirectory();
         GlobalAssert.that(workingDirectory.isDirectory());
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
     }
@@ -178,7 +177,7 @@ public class StandardMATSimScenarioTest {
         Config config = ConfigUtils.createConfig(new AVConfigGroup(), new DvrpConfigGroup());
         Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
 
-        File workingDirectory = MultiFileTools.getWorkingDirectory();
+        File workingDirectory = TestUtils.getWorkingDirectory();
         ScenarioOptions simOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
         LocationSpec locationSpec = simOptions.getLocationSpec();
         ReferenceFrame referenceFrame = locationSpec.referenceFrame();
@@ -269,12 +268,11 @@ public class StandardMATSimScenarioTest {
             public TravelData provideTravelData(VirtualNetwork<Link> virtualNetwork, @Named(AVModule.AV_MODE) Network network, Population population) throws Exception {
                 // Same as for the virtual network: For the LPFF dispatcher we need travel
                 // data, which we generate on the fly here.
-                ScenarioOptions scenarioOptions = new ScenarioOptions(MultiFileTools.getWorkingDirectory(), ScenarioOptionsBase.getDefault());
 
-                LPOptions lpOptions = new LPOptions(MultiFileTools.getWorkingDirectory(), LPOptionsBase.getDefault());
+                LPOptions lpOptions = new LPOptions(simOptions.getWorkingDirectory(), LPOptionsBase.getDefault());
                 lpOptions.setProperty(LPOptionsBase.LPSOLVER, "timeInvariant");
                 lpOptions.saveAndOverwriteLPOptions();
-                TravelData travelData = StaticTravelDataCreator.create(virtualNetwork, network, population, scenarioOptions.getdtTravelData(),
+                TravelData travelData = StaticTravelDataCreator.create(simOptions.getWorkingDirectory(), virtualNetwork, network, population, simOptions.getdtTravelData(),
                         (int) generatorConfig.getNumberOfVehicles(), endTime);
                 return travelData;
             }

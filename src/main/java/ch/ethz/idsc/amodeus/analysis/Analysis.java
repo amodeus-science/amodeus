@@ -200,7 +200,7 @@ public class Analysis {
         analysisExports.add(DistancesRatiosTable.INSTANCE);
         analysisExports.add(WaitingTimesTable.INSTANCE);
         analysisExports.add(StatusDistributionTable.INSTANCE);
-        analysisExports.add(VirtualNetworkExport.INSTANCE);
+        analysisExports.add(new VirtualNetworkExport(scenOptions));
         analysisExports.add(TravelTimeExport.INSTANCE);
         analysisExports.add(WaitingCustomerExport.INSTANCE);
 

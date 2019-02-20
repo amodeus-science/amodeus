@@ -48,7 +48,7 @@ public class LPTimeVariantTest {
         System.out.println(LPTimeVariant.class.getName());
         // copy scenario data into main directory
         File scenarioDirectory = new File(TestUtils.getSuperFolder("amodeus"), "resources/testScenario");
-        File workingDirectory = MultiFileTools.getWorkingDirectory();
+        File workingDirectory = TestUtils.getWorkingDirectory();
         GlobalAssert.that(workingDirectory.isDirectory());
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
 
@@ -76,7 +76,7 @@ public class LPTimeVariantTest {
         virtualNetworkCreator = scenarioOptions.getVirtualNetworkCreator();
         virtualNetwork3 = virtualNetworkCreator.create(network, population, scenarioOptions, numRt, endTime);
 
-        lpOptions = new LPOptions(MultiFileTools.getWorkingDirectory(), LPOptionsBase.getDefault());
+        lpOptions = new LPOptions(workingDirectory, LPOptionsBase.getDefault());
     }
 
     @Test

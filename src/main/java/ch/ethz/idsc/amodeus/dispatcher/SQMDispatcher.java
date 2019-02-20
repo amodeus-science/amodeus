@@ -160,7 +160,9 @@ public class SQMDispatcher extends PartitionedDispatcher {
 
         @Inject
         private Network network;
-        public static VirtualNetwork<Link> virtualNetwork;
+        
+        @Inject
+        private VirtualNetwork<Link> virtualNetwork;
 
         @Inject
         private Config config;
@@ -172,12 +174,6 @@ public class SQMDispatcher extends PartitionedDispatcher {
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
             AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
 
-            try {
-                virtualNetwork = VirtualNetworkGet.readDefault(network);
-            } catch (IOException e) {
-                e.printStackTrace();
-                GlobalAssert.that(false);
-            }
             return new SQMDispatcher(config, avconfig, travelTime, generatorConfig, router, eventsManager, network, //
                     virtualNetwork, db);
         }

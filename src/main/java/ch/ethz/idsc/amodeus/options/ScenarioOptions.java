@@ -15,15 +15,16 @@ import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreators;
 
 public class ScenarioOptions {
-
+    private final File workingDirectory;
     protected final Properties properties;
 
-    protected ScenarioOptions(Properties properties) {
-        this.properties = properties;
-    }
-
     public ScenarioOptions(File workingDirectory, Properties fallbackDefault) throws IOException {
+        this.workingDirectory = workingDirectory;
         this.properties = StaticHelper.loadOrCreateScenarioOptions(workingDirectory, fallbackDefault);
+    }
+    
+    public File getWorkingDirectory() {
+        return workingDirectory;
     }
 
     // PROPERTIES FUNCTIONS
@@ -33,7 +34,7 @@ public class ScenarioOptions {
     }
 
     public void saveAndOverwriteAmodeusOptions() throws IOException {
-        ScenarioOptionsBase.saveProperties(properties);
+        ScenarioOptionsBase.saveProperties(workingDirectory, properties);
     }
 
     public void saveToFolder(File folder, String header) throws IOException {
