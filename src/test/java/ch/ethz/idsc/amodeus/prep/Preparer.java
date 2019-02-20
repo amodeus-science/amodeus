@@ -13,7 +13,6 @@ import org.matsim.core.scenario.ScenarioUtils;
 
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
-import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 
 /* package */ class Preparer {
 
