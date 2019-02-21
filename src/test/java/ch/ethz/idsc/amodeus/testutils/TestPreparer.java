@@ -18,8 +18,8 @@ import ch.ethz.idsc.amodeus.prep.ConfigCreator;
 import ch.ethz.idsc.amodeus.prep.NetworkPreparer;
 import ch.ethz.idsc.amodeus.prep.PopulationPreparer;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkPreparer;
-import ch.ethz.idsc.amodeus.traveldata.TravelData;
-import ch.ethz.idsc.amodeus.traveldata.TravelDataCreator;
+import ch.ethz.idsc.amodeus.traveldata.StaticTravelData;
+import ch.ethz.idsc.amodeus.traveldata.StaticTravelDataCreator;
 import ch.ethz.idsc.amodeus.traveldata.TravelDataIO;
 import ch.ethz.idsc.amodeus.util.io.ProvideAVConfig;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
@@ -76,9 +76,9 @@ public class TestPreparer {
 
         // 4) create TravelData
         /** reading the customer requests */
-        TravelData travelData = TravelDataCreator.create(virtualNetwork, networkPrepared, populationPrepared, scenarioOptions.getdtTravelData(), numRt, endTime);
+        StaticTravelData travelData = StaticTravelDataCreator.create(virtualNetwork, networkPrepared, populationPrepared, scenarioOptions.getdtTravelData(), numRt, endTime);
         File travelDataFile = new File(scenarioOptions.getVirtualNetworkName(), scenarioOptions.getTravelDataName());
-        TravelDataIO.write(travelDataFile, travelData);
+        TravelDataIO.writeStatic(travelDataFile, travelData);
 
         // 5) save a simulation config file
         // IncludeActTypeOf.BaselineCH(config); // Only needed in Some Scenarios
