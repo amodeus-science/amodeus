@@ -8,6 +8,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,12 +21,23 @@ import org.matsim.api.core.v01.Coord;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.util.gui.GraphicsUtil;
+import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.view.jmapviewer.AmodeusHeatMap;
 import ch.ethz.idsc.amodeus.view.jmapviewer.Coordinate;
 import ch.ethz.idsc.amodeus.view.jmapviewer.JMapViewer;
 import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.ICoordinate;
 
 public class AmodeusComponent extends JMapViewer {
+    
+    @Deprecated
+    /** Should not be used in amodeus repository anymore */
+    public static AmodeusComponent createDefault(MatsimAmodeusDatabase db) {
+        try {
+            return createDefault(db, MultiFileTools.getDefaultWorkingDirectory());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /** @param db
      * @return instance of MatsimMapComponent with default sequence of {@link ViewerLayer}s */

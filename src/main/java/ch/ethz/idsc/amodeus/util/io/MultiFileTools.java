@@ -13,6 +13,12 @@ public enum MultiFileTools {
     public static File getDefaultWorkingDirectory() throws IOException {
         return new File(".").getCanonicalFile();
     }
+    
+    @Deprecated
+    /** Should not be used in amodeus repository anymore! */
+    public static File getWorkingDirectory() throws IOException {
+        return new File(".").getCanonicalFile();
+    }
 
     /** @return all directories in filesDirectory sorted by name */
     public static File[] getAllDirectoriesSorted(File filesDirectory) {

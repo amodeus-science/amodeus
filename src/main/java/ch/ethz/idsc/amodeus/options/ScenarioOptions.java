@@ -13,16 +13,28 @@ import ch.ethz.idsc.amodeus.prep.PopulationCutter;
 import ch.ethz.idsc.amodeus.prep.PopulationCutters;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreators;
+import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 
 public class ScenarioOptions {
     private final File workingDirectory;
     protected final Properties properties;
 
+    @Deprecated
+    /** Should not be used in amodeus repository anymore. */
+    protected ScenarioOptions(Properties properties) {
+        try {
+            this.workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
+            this.properties = properties;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public ScenarioOptions(File workingDirectory, Properties fallbackDefault) throws IOException {
         this.workingDirectory = workingDirectory;
         this.properties = StaticHelper.loadOrCreateScenarioOptions(workingDirectory, fallbackDefault);
     }
-    
+
     public File getWorkingDirectory() {
         return workingDirectory;
     }

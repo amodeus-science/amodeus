@@ -8,11 +8,21 @@ import java.util.Objects;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
+import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
+import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 
 public enum TravelDataGet {
     ;
+
+    @Deprecated
+    /** Should not be used in amodeus repository anymore! */
+    public static TravelData readStatic(VirtualNetwork<Link> virtualNetwork) throws IOException {
+        File workingDirectory = MultiFileTools.getWorkingDirectory();
+        ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
+        return readStatic(virtualNetwork, scenarioOptions);
+    }
 
     public static StaticTravelData readStatic(VirtualNetwork<Link> virtualNetwork, ScenarioOptions scenarioOptions) throws IOException {
         GlobalAssert.that(Objects.nonNull(virtualNetwork));
