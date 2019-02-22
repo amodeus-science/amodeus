@@ -17,23 +17,23 @@
 		<dependency>
 			<groupId>ch.ethz.matsim</groupId>
 			<artifactId>av</artifactId>
-			<version>0.1.6-amodeus</version>
+			<version>0.2.7</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.ethz.matsim</groupId>
 			<artifactId>av</artifactId>
-			<version>0.1.4</version>
+			<version>0.2.7</version>
 			<type>test-jar</type>
 		</dependency>
 		<dependency>
 			<groupId>org.matsim</groupId>
 			<artifactId>matsim</artifactId>
-			<version>0.10.0-nov17</version>
+			<version>0.10.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.matsim.contrib</groupId>
 			<artifactId>dvrp</artifactId>
-			<version>0.10.0-nov17</version>
+			<version>0.10.1</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.ethz.idsc</groupId>
@@ -77,8 +77,12 @@
 
 	<repositories>
 		<repository>
-			<id>bintray-matsim-eth-matsim</id>
+			<id>matsim-eth</id>
 			<url>https://dl.bintray.com/matsim-eth/matsim</url>
+		</repository>
+		<repository>
+			<id>matsim-org</id>
+			<url>https://dl.bintray.com/matsim/matsim</url>
 		</repository>
 		<repository>
 			<id>tensor-mvn-repo</id>

@@ -197,6 +197,9 @@ public class ScenarioPipeLineTest {
         scalarAssert.add(Quantity.of(893.155, SI.SECOND), ate.getTravelTimeAnalysis().getDrveAggrgte().Get(1));
         scalarAssert.add(Quantity.of(3670.0, SI.SECOND), ate.getTravelTimeAnalysis().getDrveAggrgte().Get(2));
 
+        /* TODO: Have a look at {AmodeusModule::install}. At some point the travel time calculation in DVRP has been improved. Unfortunately, this improvement breaks
+         * these tests. The reference numbers here should be adjusted at some point so that the fallback in {AmodeusModule::install} can be removed again.
+         * (Nevertheless, we're talking about a different in routed time of +/-1 second). /sebhoerl */
         scalarAssert.consolidate();
 
         /** presence of plot files */
