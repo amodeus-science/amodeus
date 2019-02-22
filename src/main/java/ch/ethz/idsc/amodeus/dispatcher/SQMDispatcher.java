@@ -158,7 +158,7 @@ public class SQMDispatcher extends PartitionedDispatcher {
 
         @Inject
         private Network network;
-        
+
         @Inject
         private VirtualNetwork<Link> virtualNetwork;
 

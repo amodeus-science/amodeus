@@ -58,7 +58,7 @@ public class ScenarioPipeLineTest {
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
 
         // run scenario preparer
-        testPreparer = TestPreparer.run().on(workingDirectory);
+        testPreparer = TestPreparer.run(workingDirectory);
 
         // run scenario server
         testServer = TestServer.run().on(workingDirectory);

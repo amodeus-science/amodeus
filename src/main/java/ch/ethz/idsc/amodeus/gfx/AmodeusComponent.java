@@ -28,7 +28,7 @@ import ch.ethz.idsc.amodeus.view.jmapviewer.JMapViewer;
 import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.ICoordinate;
 
 public class AmodeusComponent extends JMapViewer {
-    
+
     @Deprecated
     /** Should not be used in amodeus repository anymore */
     public static AmodeusComponent createDefault(MatsimAmodeusDatabase db) {

@@ -68,7 +68,7 @@ public enum ScenarioOptionsBase {
         properties.setProperty(PARKINGSPOTSTAGIDENTIFIER, "spatialAvCapacity");
         return properties;
     }
-    
+
     @Deprecated
     /** Should not be used in amodeus repository anymore. */
     public static void saveProperties(Properties prop) throws IOException {

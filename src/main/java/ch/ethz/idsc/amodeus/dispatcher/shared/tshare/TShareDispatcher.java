@@ -27,6 +27,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiUtils;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedPartitionedDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
+import ch.ethz.idsc.amodeus.dispatcher.shared.fifs.TravelTimeCalculator;
 import ch.ethz.idsc.amodeus.dispatcher.shared.fifs.TravelTimeCalculatorCached;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
@@ -79,7 +80,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
     private final double menuHorizon;
     private final DualSideSearch dualSideSearch;
     private final CashedDistanceCalculator distanceCashed;
-    private final TravelTimeCalculatorCached travelTimeCashed;
+    private final TravelTimeCalculator travelTimeCalculator;
 
     protected TShareDispatcher(Network network, //
             Config config, AVDispatcherConfig avDispatcherConfig, //
@@ -98,7 +99,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
         distanceFunction = distanceHeuristics.getDistanceFunction(network);
         distanceCashed = CashedDistanceCalculator//
                 .of(EasyMinDistPathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0);
-        travelTimeCashed = TravelTimeCalculatorCached//
+        travelTimeCalculator = TravelTimeCalculatorCached//
                 .of(EasyMinTimePathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0);
         bipartiteMatchingUtils = new SharedBipartiteMatchingUtils(network);
 
@@ -111,7 +112,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
         QuadTree<Link> linkTree = FastQuadTree.of(network);
         for (VirtualNode<Link> virtualNode : virtualNetwork.getVirtualNodes()) {
             System.out.println("preparing grid cell: " + virtualNode.getIndex());
-            gridCells.put(virtualNode, new GridCell(virtualNode, virtualNetwork, network, distanceCashed, travelTimeCashed, linkTree));
+            gridCells.put(virtualNode, new GridCell(virtualNode, virtualNetwork, network, distanceCashed, travelTimeCalculator, linkTree));
         }
         dualSideSearch = new DualSideSearch(gridCells, virtualNetwork, network);
         System.out.println("According to the reference, a rectangular {@link VirtualNetwork} should be used.");
@@ -148,7 +149,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
 
             for (AVRequest avr : sortedRequests) {
                 Scalar latestPickup = LatestPickup.of(avr, pickupDelayMax);
-                Scalar latestArrval = LatestArrival.of(avr, drpoffDelayMax, travelTimeCashed);
+                Scalar latestArrval = LatestArrival.of(avr, drpoffDelayMax, travelTimeCalculator);
 
                 /** dual side search */
                 Collection<RoboTaxi> potentialTaxis = //
@@ -158,7 +159,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
                 NavigableMap<Scalar, InsertionCheck> insertions = new TreeMap<>();
                 for (RoboTaxi taxi : potentialTaxis) {
                     if (taxi.getUnmodifiableViewOfCourses().size() < taxi.getCapacity() * 2 * menuHorizon) {
-                        InsertionCheck check = new InsertionCheck(distanceCashed, travelTimeCashed, taxi, avr, //
+                        InsertionCheck check = new InsertionCheck(distanceCashed, travelTimeCalculator, taxi, avr, //
                                 pickupDelayMax, drpoffDelayMax, now);
                         if (Objects.nonNull(check.getAddDistance()))
                             insertions.put(check.getAddDistance(), check);
