@@ -60,6 +60,11 @@
 			<artifactId>humble-video-all</artifactId>
 			<version>0.2.1</version>
 		</dependency>
+		<dependency>
+			<groupId>org.matsim</groupId>
+			<artifactId>pt2matsim</artifactId>
+			<version>19.1</version>
+		</dependency>
 
 		<dependency><!-- workaround since jaxb api is not part of java 9 -->
 			<groupId>javax.xml.bind</groupId>
@@ -89,6 +94,10 @@
 			<name>Xypron Release</name>
 			<url>http://rsync.xypron.de/repository</url>
 			<layout>default</layout>
+		</repository>
+		<repository>
+			<id>pt2matsim</id>
+			<url>http://dl.bintray.com/polettif/matsim</url>
 		</repository>
 	</repositories>
 

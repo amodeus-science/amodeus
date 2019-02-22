@@ -1,5 +1,5 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.dispatcher.shared.tshare;
+package ch.ethz.idsc.amodeus.util.netdist;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,9 +18,9 @@ import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.qty.Quantity;
 
-/* package */ class CashedDistanceCalculator {
+public class CashedDistanceCalculator {
 
-    static CashedDistanceCalculator of(LeastCostPathCalculator calculator, double maxLag) {
+    public static CashedDistanceCalculator of(LeastCostPathCalculator calculator, double maxLag) {
         return new CashedDistanceCalculator(calculator, maxLag);
     }
 
