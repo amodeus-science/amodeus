@@ -4,7 +4,6 @@ import java.io.File;
 
 import ch.ethz.idsc.amodeus.scenario.InitialNetworkPreparer;
 import ch.ethz.idsc.amodeus.scenario.ScenarioAssembler;
-import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 /* package */ class ScenarioCreator {
@@ -22,9 +21,8 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         final File taxiData = ChicagoDataLoader.from("AmodeusOptions.properties", dataDir);
         final DataOperator dataOperator = DataOperator.CHICAGO_ONLINE;
         // ---
-
         ScenarioCreator scenarioCreator = new ScenarioCreator(dataDir, taxiData, dataOperator);
-        scenarioCreator.run();
+        scenarioCreator.run(new File(args[0]));
     }
 
     public ScenarioCreator(File dataDir, File taxiData, DataOperator dataOperator) {
@@ -35,8 +33,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         this.dataOperator = dataOperator;
     }
 
-    public void run() throws Exception {
-        File workingDirectory = MultiFileTools.getWorkingDirectory();
+    public void run(File workingDirectory) throws Exception {
         System.out.println(workingDirectory);
         final File destinDir = new File(workingDirectory, "CreatedScenario");
         final File processingDir = new File(workingDirectory, "Scenario");

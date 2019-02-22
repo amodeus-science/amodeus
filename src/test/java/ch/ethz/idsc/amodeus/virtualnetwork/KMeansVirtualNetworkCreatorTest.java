@@ -21,8 +21,8 @@ import org.matsim.core.scenario.ScenarioUtils;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;
-import ch.ethz.idsc.amodeus.testutils.TestUtils;
 import ch.ethz.idsc.amodeus.util.io.ProvideAVConfig;
+import ch.ethz.idsc.amodeus.util.io.LocateUtils;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.matsim.av.config.AVConfig;
 import ch.ethz.matsim.av.config.AVGeneratorConfig;
@@ -38,7 +38,7 @@ public class KMeansVirtualNetworkCreatorTest {
     public static void setup() throws IOException {
 
         /* input data */
-        File scenarioDirectory = new File(TestUtils.getSuperFolder("amodeus"), "resources/testScenario");
+        File scenarioDirectory = new File(LocateUtils.getSuperFolder("amodeus"), "resources/testScenario");
         ScenarioOptions scenarioOptions = new ScenarioOptions(scenarioDirectory, ScenarioOptionsBase.getDefault());
         File configFile = new File(scenarioDirectory, scenarioOptions.getPreparerConfigName());
         AVConfigGroup avCg = new AVConfigGroup();

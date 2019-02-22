@@ -3,30 +3,21 @@ package ch.ethz.idsc.amodeus.test;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.CopyOption;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
+import ch.ethz.idsc.amodeus.util.io.CopySomeFiles;
 import ch.ethz.idsc.amodeus.util.io.FileDelete;
 
 public enum TestFileHandling {
     ;
 
+    // TODO cleanup
     public static void copyScnearioToMainDirectory(String scenarioDir, String mainDir) throws IOException {
 
-        CopyOption[] options = new CopyOption[] { StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES };
-
-        String[] fileNames = new String[] { "AmodeusOptions.properties", "av.xml", "av_v1.dtd", "config_full.xml", //
-                "linkSpeedData.bin", "network.xml", "population.xml" };
-        for (String fileName : fileNames) {
-            Path source = Paths.get(scenarioDir, fileName);
-            Path target = Paths.get(mainDir, fileName);
-            Files.copy(source, target, options);
-        }
+        CopySomeFiles.now(scenarioDir, mainDir, Arrays.asList(new String[] { "AmodeusOptions.properties", "av.xml", "av_v1.dtd", "config_full.xml", //
+                "linkSpeedData.bin", "network.xml", "population.xml" }));
 
     }
 

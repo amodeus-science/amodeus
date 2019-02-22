@@ -23,7 +23,7 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.testutils.SharedTestServer;
 import ch.ethz.idsc.amodeus.testutils.TestPreparer;
-import ch.ethz.idsc.amodeus.testutils.TestUtils;
+import ch.ethz.idsc.amodeus.util.io.LocateUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkGet;
@@ -47,8 +47,8 @@ public class SharedRoboTaxiTest {
         System.out.println(GLPK.glp_version());
 
         // copy scenario data into main directory
-        File scenarioDirectory = new File(TestUtils.getSuperFolder("amodeus"), "resources/testScenario");
-        File workingDirectory = TestUtils.getWorkingDirectory();
+        File scenarioDirectory = new File(LocateUtils.getSuperFolder("amodeus"), "resources/testScenario");
+        File workingDirectory = LocateUtils.getWorkingDirectory();
         GlobalAssert.that(workingDirectory.isDirectory());
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
 
@@ -96,7 +96,7 @@ public class SharedRoboTaxiTest {
         System.out.print("Server Test:\t");
 
         /** scenario options */
-        File workingDirectory = TestUtils.getWorkingDirectory();
+        File workingDirectory = LocateUtils.getWorkingDirectory();
         ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
         assertEquals("config.xml", scenarioOptions.getSimulationConfigName());
         assertEquals("preparedNetwork", scenarioOptions.getPreparedNetworkName());

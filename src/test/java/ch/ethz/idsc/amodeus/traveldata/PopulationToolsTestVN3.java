@@ -26,8 +26,8 @@ import ch.ethz.idsc.amodeus.prep.PopulationTools;
 import ch.ethz.idsc.amodeus.prep.Request;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.test.TestFileHandling;
-import ch.ethz.idsc.amodeus.testutils.TestUtils;
 import ch.ethz.idsc.amodeus.util.io.ProvideAVConfig;
+import ch.ethz.idsc.amodeus.util.io.LocateUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.tensor.Tensor;
@@ -50,13 +50,13 @@ public class PopulationToolsTestVN3 {
     @BeforeClass
     public static void setUp() throws IOException {
         // copy scenario data into main directory
-        File scenarioDirectory = new File(TestUtils.getSuperFolder("amodeus"), "resources/testScenario");
-        File workingDirectory = TestUtils.getWorkingDirectory();
+        File scenarioDirectory = new File(LocateUtils.getSuperFolder("amodeus"), "resources/testScenario");
+        File workingDirectory = LocateUtils.getWorkingDirectory();
         GlobalAssert.that(workingDirectory.exists());
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
 
         /* input data */
-        scenarioDirectory = new File(TestUtils.getSuperFolder("amodeus"), "resources/testScenario");
+        scenarioDirectory = new File(LocateUtils.getSuperFolder("amodeus"), "resources/testScenario");
         scenarioOptions = new ScenarioOptions(scenarioDirectory, ScenarioOptionsBase.getDefault());
         File configFile = new File(scenarioDirectory, scenarioOptions.getPreparerConfigName());
         AVConfigGroup avCg = new AVConfigGroup();

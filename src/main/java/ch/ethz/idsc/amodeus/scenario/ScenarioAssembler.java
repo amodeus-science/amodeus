@@ -22,7 +22,7 @@ public enum ScenarioAssembler {
                 Thread.sleep(1000);
                 System.err.println(i + " seconds");
             }
-            FileDelete.of(processingDirectory, 1, 10);
+            FileDelete.of(processingDirectory, 2, 14);
             processingDirectory.mkdir();
         } else
             GlobalAssert.that(processingDirectory.mkdir());

@@ -60,9 +60,9 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.prep.MatsimKMeansVirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.test.TestFileHandling;
-import ch.ethz.idsc.amodeus.testutils.TestUtils;
 import ch.ethz.idsc.amodeus.traveldata.StaticTravelDataCreator;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
+import ch.ethz.idsc.amodeus.util.io.LocateUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.matsim.av.config.AVConfig;
@@ -160,8 +160,8 @@ public class StandardMATSimScenarioTest {
     @BeforeClass
     public static void setUp() throws IOException {
         // copy scenario data into main directory
-        File scenarioDirectory = new File(TestUtils.getSuperFolder("amodeus"), "resources/testScenario");
-        File workingDirectory = TestUtils.getWorkingDirectory();
+        File scenarioDirectory = new File(LocateUtils.getSuperFolder("amodeus"), "resources/testScenario");
+        File workingDirectory = LocateUtils.getWorkingDirectory();
         GlobalAssert.that(workingDirectory.isDirectory());
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
     }
@@ -177,7 +177,7 @@ public class StandardMATSimScenarioTest {
         Config config = ConfigUtils.createConfig(new AVConfigGroup(), new DvrpConfigGroup());
         Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
 
-        File workingDirectory = TestUtils.getWorkingDirectory();
+        File workingDirectory = LocateUtils.getWorkingDirectory();
         ScenarioOptions simOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
         LocationSpec locationSpec = simOptions.getLocationSpec();
         ReferenceFrame referenceFrame = locationSpec.referenceFrame();
