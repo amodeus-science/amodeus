@@ -15,11 +15,9 @@ import ch.ethz.idsc.amodeus.lp.LPSolver;
 import ch.ethz.idsc.amodeus.options.LPOptions;
 import ch.ethz.idsc.amodeus.options.LPOptionsBase;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
-import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.traveldata.StaticTravelData;
 import ch.ethz.idsc.amodeus.traveldata.StaticTravelDataCreator;
 import ch.ethz.idsc.amodeus.traveldata.TravelDataIO;
-import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.io.ProvideAVConfig;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.tensor.Tensor;
@@ -30,13 +28,9 @@ import ch.ethz.matsim.av.framework.AVConfigGroup;
 public enum FeedForwardTravelData {
     ;
 
-    public static void overwriteIfRequired(LPCreator lpCreator, StaticTravelData travelData, VirtualNetwork<Link> virtualNetwork) {
+    public static void overwriteIfRequired(LPCreator lpCreator, StaticTravelData travelData, VirtualNetwork<Link> virtualNetwork, ScenarioOptions scenarioOptions) {
         if (!travelData.getLPName().equals(lpCreator.name())) {
             try {
-                /** amodeus options */
-                File workingDirectory = MultiFileTools.getWorkingDirectory();
-                ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
-
                 /** MATSim config */
                 AVConfigGroup avConfigGroup = new AVConfigGroup();
                 Config config = ConfigUtils.loadConfig(scenarioOptions.getSimulationConfigName(), avConfigGroup);
@@ -53,7 +47,7 @@ public enum FeedForwardTravelData {
                 Tensor lambdaAbsolute = StaticTravelDataCreator.getLambdaAbsolute( //
                         scenario.getNetwork(), virtualNetwork, //
                         scenario.getPopulation(), scenarioOptions.getdtTravelData(), endTime);
-                LPOptions lpOptions = new LPOptions(workingDirectory, LPOptionsBase.getDefault());
+                LPOptions lpOptions = new LPOptions(scenarioOptions.getWorkingDirectory(), LPOptionsBase.getDefault());
                 System.out.println("Loaded the Lp Options");
 
                 LPSolver lpSolver = lpCreator.create(virtualNetwork, scenario.getNetwork(), lpOptions, lambdaAbsolute, numRt, endTime);

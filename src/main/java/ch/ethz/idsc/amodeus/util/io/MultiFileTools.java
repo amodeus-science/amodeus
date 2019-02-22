@@ -10,10 +10,14 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 public enum MultiFileTools {
     ;
 
-    /** @return {@link File} of current working directory
-     * @throws IOException */
+    public static File getDefaultWorkingDirectory() throws IOException {
+        return new File(".").getCanonicalFile();
+    }
+    
+    @Deprecated
+    /** Should not be used in amodeus repository anymore! */
     public static File getWorkingDirectory() throws IOException {
-        return new File("").getCanonicalFile();
+        return new File(".").getCanonicalFile();
     }
 
     /** @return all directories in filesDirectory sorted by name */

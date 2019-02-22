@@ -5,21 +5,22 @@ import java.io.File;
 
 import org.matsim.api.core.v01.network.Link;
 
+import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.tensor.sca.Chop;
 
 public class TravelDataTestHelper {
 
-    public static TravelDataTestHelper prepare(VirtualNetwork<Link> vNCreated, VirtualNetwork<Link> vNSaved) throws Exception {
-        return new TravelDataTestHelper(vNCreated, vNSaved);
+    public static TravelDataTestHelper prepare(VirtualNetwork<Link> vNCreated, VirtualNetwork<Link> vNSaved, ScenarioOptions scenarioOptions) throws Exception {
+        return new TravelDataTestHelper(vNCreated, vNSaved, scenarioOptions);
     }
 
     // ---
     private TravelData tDCreated;
     private TravelData tDSaved;
 
-    private TravelDataTestHelper(VirtualNetwork<Link> vNCreated, VirtualNetwork<Link> vNSaved) throws Exception {
-        tDCreated = TravelDataGet.readStatic(vNCreated);
+    private TravelDataTestHelper(VirtualNetwork<Link> vNCreated, VirtualNetwork<Link> vNSaved, ScenarioOptions scenarioOptions) throws Exception {
+        tDCreated = TravelDataGet.readStatic(vNCreated, scenarioOptions);
         tDSaved = TravelDataIO.readStatic(new File("resources/testComparisonFiles/travelData"), vNSaved);
     }
 
