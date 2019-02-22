@@ -25,6 +25,7 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkGet;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkIO;
 
 public class SaveLoadTest {
+    public static final File COMPARISON_VN_FILE = new File("resources/testComparisonFiles/virtualNetwork");
 
     private static TravelDataTestHelper travelDataTestHelper;
     private static TestPreparer testPreparer;
@@ -38,12 +39,12 @@ public class SaveLoadTest {
         File scenarioDirectory = new File(TestUtils.getSuperFolder("amodeus"), "resources/testScenario");
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
         scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
-        testPreparer = TestPreparer.run().on(workingDirectory);
+        testPreparer = TestPreparer.run(workingDirectory);
         vNCreated = VirtualNetworkGet.readDefault(testPreparer.getPreparedNetwork(), scenarioOptions);
         Map<String, Link> map = new HashMap<>();
         testPreparer.getPreparedNetwork().getLinks().entrySet().forEach(e -> map.put(e.getKey().toString(), e.getValue()));
-        // TODO document how to regenerate virtualNetwork test file
-        vNSaved = VirtualNetworkIO.fromByte(map, new File("resources/testComparisonFiles/virtualNetwork"));
+        VirtualNetworkIO.toByte(COMPARISON_VN_FILE, vNCreated);
+        vNSaved = VirtualNetworkIO.fromByte(map, COMPARISON_VN_FILE);
         travelDataTestHelper = TravelDataTestHelper.prepare(vNCreated, vNSaved, scenarioOptions);
     }
 

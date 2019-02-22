@@ -29,23 +29,15 @@ import ch.ethz.matsim.av.framework.AVConfigGroup;
 
 public class TestPreparer {
 
-    public static TestPreparer run() {
-        return new TestPreparer();
+    public static TestPreparer run(File workingDirectory) throws Exception {
+        return new TestPreparer(workingDirectory);
     }
 
-    private Network networkPrepared;
-    private Population populationPrepared;
+    // ---
+    private final Network networkPrepared;
+    private final Population populationPrepared;
 
-    private TestPreparer() {
-
-    }
-
-    public TestPreparer on(File workingDirectory) throws Exception {
-        prepare(workingDirectory);
-        return this;
-    }
-
-    private void prepare(File workingDirectory) throws Exception {
+    private TestPreparer(File workingDirectory) throws Exception {
         System.out.println("working directory: " + workingDirectory);
 
         // run preparer in simulation working directory
@@ -54,12 +46,13 @@ public class TestPreparer {
         // load Settings from IDSC Options
         File configFile = new File(workingDirectory, scenarioOptions.getPreparerConfigName());
 
-        AVConfigGroup avCg = new AVConfigGroup();
-        Config config = ConfigUtils.loadConfig(configFile.getAbsolutePath(), avCg);
+        AVConfigGroup avConfigGroup = new AVConfigGroup();
+        Config config = ConfigUtils.loadConfig(configFile.getAbsolutePath(), avConfigGroup);
         Scenario scenario = ScenarioUtils.loadScenario(config);
-        AVConfig avC = ProvideAVConfig.with(config, avCg);
-        AVGeneratorConfig genConfig = avC.getOperatorConfigs().iterator().next().getGeneratorConfig();
-        int numRt = (int) genConfig.getNumberOfVehicles();
+        AVConfig avConfig = ProvideAVConfig.with(config, avConfigGroup);
+        AVGeneratorConfig avGeneratorConfig = //
+                avConfig.getOperatorConfigs().iterator().next().getGeneratorConfig();
+        int numRt = (int) avGeneratorConfig.getNumberOfVehicles();
         int endTime = (int) config.qsim().getEndTime();
 
         // 1) cut network (and reduce population to new network)
@@ -76,7 +69,9 @@ public class TestPreparer {
 
         // 4) create TravelData
         /** reading the customer requests */
-        StaticTravelData travelData = StaticTravelDataCreator.create(scenarioOptions.getWorkingDirectory(), virtualNetwork, networkPrepared, populationPrepared,
+        StaticTravelData travelData = StaticTravelDataCreator.create( //
+                scenarioOptions.getWorkingDirectory(), //
+                virtualNetwork, networkPrepared, populationPrepared, //
                 scenarioOptions.getdtTravelData(), numRt, endTime);
         File travelDataFile = new File(scenarioOptions.getVirtualNetworkName(), scenarioOptions.getTravelDataName());
         TravelDataIO.writeStatic(travelDataFile, travelData);

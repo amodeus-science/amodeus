@@ -27,7 +27,6 @@ import ch.ethz.idsc.amodeus.testutils.TestUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkGet;
-import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkIO;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
@@ -41,8 +40,6 @@ public class SharedRoboTaxiTest {
 
     private static TestPreparer testPreparer;
     private static SharedTestServer testServer;
-    // private static VirtualNetwork<Link> vNCreated;
-    // private static VirtualNetwork<Link> vNSaved;
 
     @BeforeClass
     public static void setUpOnce() throws Exception {
@@ -56,18 +53,17 @@ public class SharedRoboTaxiTest {
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
 
         // run scenario preparer
-        testPreparer = TestPreparer.run().on(workingDirectory);
+        testPreparer = TestPreparer.run(workingDirectory);
 
         // run scenario server
-        testServer = SharedTestServer.run().on(workingDirectory);
+        testServer = SharedTestServer.run(workingDirectory);
 
         // prepare travel data test
-        // vNCreated =
+        // TODO the call VirtualNetworkGet.readDefault below should not be necessary
+        // ... or why is it necessary?
         VirtualNetworkGet.readDefault(testPreparer.getPreparedNetwork(), new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault()));
         Map<String, Link> map = new HashMap<>();
         testPreparer.getPreparedNetwork().getLinks().entrySet().forEach(e -> map.put(e.getKey().toString(), e.getValue()));
-        // vNSaved =
-        VirtualNetworkIO.fromByte(map, new File("resources/testComparisonFiles/virtualNetwork"));
     }
 
     @Test

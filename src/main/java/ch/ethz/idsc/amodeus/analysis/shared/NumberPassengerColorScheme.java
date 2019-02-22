@@ -12,11 +12,12 @@ import ch.ethz.idsc.tensor.img.ColorFormat;
 import ch.ethz.idsc.tensor.opt.ScalarTensorFunction;
 import ch.ethz.idsc.tensor.sca.Exp;
 
+// TODO class not used outside amodeus
 public class NumberPassengerColorScheme {
+    private static final double SCALINGFACTOR = 4;
 
     private final ScalarTensorFunction colorDataGradient;
     private final ColorDataIndexed statusColorScheme;
-    private static final double SCALINGFACTOR = 4;
 
     public NumberPassengerColorScheme(ScalarTensorFunction colorDataGradient, ColorDataIndexed statusColorScheme) {
         this.colorDataGradient = colorDataGradient;

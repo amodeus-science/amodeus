@@ -3,6 +3,7 @@ package ch.ethz.idsc.subare.plot;
 
 import org.jfree.chart.JFreeChart;
 
+/** plotting utility */
 public enum StackedTablePlot {
     ;
 
