@@ -25,7 +25,7 @@ public enum RouteGenerator {
 
     public static List<StopInRoute> of(RoboTaxi roboTaxi, Set<AVRequest> additionalRequest, //
             double now, Map<AVRequest, RequestKeyInfo> requestKeyInfoMap, //
-            int capacityOfTaxi, TravelTimeCalculator ttc, double pickupDurationPerStop, double dropoffDurationPerStop) {
+            int capacityOfTaxi, TravelTimeComputation ttc, double pickupDurationPerStop, double dropoffDurationPerStop) {
         // define some variables
         double nowInThisFunction;
         nowInThisFunction = now;
@@ -117,7 +117,7 @@ public enum RouteGenerator {
     /** Check if this stop is valid */
     static boolean stopIsValid(NextPossibleStop chosenStop, Double arrivalTime, //
             Map<AVRequest, RequestKeyInfo> requestKeyInfoMap, //
-            TravelTimeCalculator ttc) {
+            TravelTimeComputation ttc) {
         AVRequest avRequest = chosenStop.getAVRequest();
         boolean onboardOrNot = chosenStop.getOnboardStatus();
         final double deadline;
