@@ -1,8 +1,6 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.parking;
 
-import java.io.IOException;
-
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.controler.AbstractModule;
 
@@ -29,15 +27,15 @@ public class AVSpatialCapacityModule extends AbstractModule {
     public AVSpatialCapacityAmodeus provideAVSpatialCapacity(Network network) {
         try {
             return loadSpatialCapacity(network, scenarioOptions);
-        } catch (IOException ioException) {
+        } catch (Exception exception) {
             System.err.println("We could not load the Spatial Capacity of all the Links");
-            ioException.printStackTrace();
+            exception.printStackTrace();
             new RuntimeException();
         }
         return null;
     }
 
-    private static AVSpatialCapacityAmodeus loadSpatialCapacity(Network network, ScenarioOptions scenarioOptions) throws IOException {
+    private static AVSpatialCapacityAmodeus loadSpatialCapacity(Network network, ScenarioOptions scenarioOptions) {
         return scenarioOptions.getParkingCapacityGenerator().generate(network);
     }
 

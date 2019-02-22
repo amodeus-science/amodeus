@@ -57,10 +57,6 @@ public class AmodeusVirtualNetworkModule extends AbstractModule {
     @Provides
     @Singleton
     public TravelData provideTravelData(VirtualNetwork<Link> virtualNetwork) {
-        try {
-            return TravelDataGet.readStatic(virtualNetwork, scenarioOptions);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return TravelDataGet.readStatic(virtualNetwork, scenarioOptions);
     }
 }

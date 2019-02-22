@@ -23,7 +23,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
 
 /* package */ class GridCell {
 
-    private final VirtualNetwork<Link> virtualNetwork;
+    // private final VirtualNetwork<Link> virtualNetwork;
     private final VirtualNode<Link> myVNode;
     private final NavigableMap<Scalar, VirtualNode<Link>> temporalSortedMap = new TreeMap<>();
     private final NavigableMap<Scalar, VirtualNode<Link>> distanceSortedMap = new TreeMap<>();
@@ -33,7 +33,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
     public GridCell(VirtualNode<Link> virtualNode, VirtualNetwork<Link> virtualNetwork, Network network, //
             CashedDistanceCalculator minDist, TravelTimeCalculator minTime, QuadTree<Link> linkTree) {
         this.myVNode = virtualNode;
-        this.virtualNetwork = virtualNetwork;
+        // this.virtualNetwork = virtualNetwork;
         computeMaps(virtualNetwork, linkTree, minDist, minTime);
     }
 
