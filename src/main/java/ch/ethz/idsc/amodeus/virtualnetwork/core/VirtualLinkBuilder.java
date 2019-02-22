@@ -1,12 +1,12 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.virtualnetwork.core;
 
-import java.awt.Point;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.amodeus.util.math.IntPoint;
 import ch.ethz.idsc.tensor.red.Norm;
 
 public enum VirtualLinkBuilder {
@@ -52,7 +52,7 @@ public enum VirtualLinkBuilder {
 
         int index = 0;
         System.out.println("there are " + gbf.allPairs().size() + " virtualLinks.");
-        for (Point point : gbf.allPairs()) {
+        for (IntPoint point : gbf.allPairs()) {
             VirtualNode<T> vNfrom = virtualNetwork.getVirtualNode(point.x);
             VirtualNode<T> vNto = virtualNetwork.getVirtualNode(point.y);
             String indexStr = "vLink_" + Integer.toString(index + 1);
