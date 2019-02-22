@@ -21,7 +21,7 @@ public class BlockRebalancing {
 
     /** General Settings */
     private final int minNumberForRebalance;
-    private final TravelTimeCalculator timeDb;
+    private final TravelTimeInterface timeDb;
 
     /** in this Set All the operations are made. */
     private final Map<Integer, Block> blocks;
@@ -42,8 +42,7 @@ public class BlockRebalancing {
      * @param historicalDataTime duration in seconds over which past requests are collected to predict future requests
      * @param predictedTime duration in seconds for which the future request should be predicted
      * @param gridDistance distance in meter which corresponds to the length of a block */
-    public BlockRebalancing(Network network, TravelTimeCalculator timeDb, int minNumberRobotaxisForRebalance, double historicalDataTime, double predictedTime,
-            double gridDistance) {
+    public BlockRebalancing(Network network, TravelTimeInterface timeDb, int minNumberRobotaxisForRebalance, double historicalDataTime, double predictedTime, double gridDistance) {
         this.minNumberForRebalance = minNumberRobotaxisForRebalance;
         this.timeDb = timeDb;
 

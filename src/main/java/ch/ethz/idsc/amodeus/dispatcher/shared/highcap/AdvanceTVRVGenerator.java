@@ -23,7 +23,7 @@ public class AdvanceTVRVGenerator {
     }
 
     public Set<Set<AVRequest>> generateRVGraph(Set<AVRequest> newAddedRequests, Set<AVRequest> removedRequests, //
-            Set<AVRequest> remainedRequests, double now, TravelTimeCalculator ttc, Map<AVRequest, RequestKeyInfo> requestKeyInfoMap) {
+            Set<AVRequest> remainedRequests, double now, TravelTimeComputation ttc, Map<AVRequest, RequestKeyInfo> requestKeyInfoMap) {
 
         // 1. remove edges that contains no longer open/valid request and remove no longer valid RV edges
         if (!rvEdges.isEmpty()) {
@@ -89,7 +89,7 @@ public class AdvanceTVRVGenerator {
     }
 
     /* package */ double getEdgeValidUntil(AVRequest request1, AVRequest request2, double now, //
-            Map<AVRequest, RequestKeyInfo> requestKeyInfoMap, TravelTimeCalculator ttc) {
+            Map<AVRequest, RequestKeyInfo> requestKeyInfoMap, TravelTimeComputation ttc) {
         double edgeSlackTime = 0.0;
         double ss1 = 0.0;
         double ss2 = 0.0;

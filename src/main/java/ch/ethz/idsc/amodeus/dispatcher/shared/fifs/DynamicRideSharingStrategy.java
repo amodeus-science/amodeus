@@ -89,7 +89,7 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
     private static final String MAXABSOLUTETRAVELTIMEINCREASEIDENTIFIER = "maxAbsolutDriveTimeIncrease";
 
     /** Travel Time Calculation */
-    private final TravelTimeCalculatorCached timeDb;
+    private final TravelTimeComputationCached timeDb;
     private static final double MAXLAGTRAVELTIMECALCULATION = 180000.0;
 
     protected DynamicRideSharingStrategy(Network network, //
@@ -111,7 +111,7 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
 
         FastAStarLandmarksFactory factory = new FastAStarLandmarksFactory();
         LeastCostPathCalculator calculator = EasyMinTimePathCalculator.prepPathCalculator(network, factory);
-        timeDb = TravelTimeCalculatorCached.of(calculator, MAXLAGTRAVELTIMECALCULATION);
+        timeDb = TravelTimeComputationCached.of(calculator, MAXLAGTRAVELTIMECALCULATION);
 
         rebalancing = new BlockRebalancing(network, timeDb, MINNUMBERROBOTAXISINBLOCKTOREBALANCE, BINSIZETRAVELDEMAND, dispatchPeriod, REBALANCINGGRIDDISTANCE);
 
