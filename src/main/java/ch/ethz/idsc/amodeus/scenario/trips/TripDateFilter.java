@@ -19,5 +19,4 @@ public class TripDateFilter implements DataFilter<Trip> {
         return stream.filter(trip -> //
                 StaticHelper.sameDay(date, trip.PickupDate) && StaticHelper.sameDay(date, trip.DropoffDate));
     }
-
 }

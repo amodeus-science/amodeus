@@ -5,11 +5,15 @@ import java.util.Arrays;
 
 import org.matsim.pt2matsim.run.Osm2MultimodalNetwork;
 
+import ch.ethz.idsc.amodeus.scenario.DataOperator;
+import ch.ethz.idsc.amodeus.scenario.OsmLoader;
+import ch.ethz.idsc.amodeus.scenario.Pt2MatsimXML;
+import ch.ethz.idsc.amodeus.scenario.ScenarioCreator;
 import ch.ethz.idsc.amodeus.util.io.CopySomeFiles;
 import ch.ethz.idsc.amodeus.util.io.FileDelete;
 import ch.ethz.idsc.amodeus.util.io.LocateUtils;
 
-public enum CreateChicagoScenario {
+/* package */ enum CreateChicagoScenario {
     ;
 
     /** @param args working directory (empty directory), will create an AMoDeus scenario based on
@@ -24,6 +28,7 @@ public enum CreateChicagoScenario {
     private static double[] bbox = new double[] { -87.7681, 41.8054, -87.5809, 41.9331 };
 
     public static void run(File workingDirectory) throws Exception {
+        ChicagoGeoInformation.setup();
 
         /** copy relevant files containing settings for scenario generation */
         File scenarioDirectory = new File(LocateUtils.getSuperFolder("amodeus"), "resources/chicagoScenario");

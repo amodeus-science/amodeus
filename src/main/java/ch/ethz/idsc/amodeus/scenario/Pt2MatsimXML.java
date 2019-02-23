@@ -1,5 +1,5 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.scenario.chicago;
+package ch.ethz.idsc.amodeus.scenario;
 
 import java.io.File;
 import java.util.List;
@@ -10,13 +10,12 @@ import org.jdom.Element;
 
 import ch.ethz.idsc.amodeus.matsim.xml.XmlModifier;
 
-/* package */ class Pt2MatsimXML {
+public class Pt2MatsimXML {
     ;
 
     public static void toLocalFileSystem(File xmlFile, String systemSpecificPath) throws Exception {
-        
-        System.out.println("xml file " +  xmlFile.getAbsolutePath());
 
+        System.out.println("xml file " + xmlFile.getAbsolutePath());
 
         try (XmlModifier xmlModifier = new XmlModifier(xmlFile)) {
             Document doc = xmlModifier.getDocument();

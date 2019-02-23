@@ -1,5 +1,13 @@
 package ch.ethz.idsc.amodeus.scenario.trips;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.HashSet;
+import java.util.Properties;
+import java.util.Set;
+
 import ch.ethz.idsc.amodeus.scenario.readers.CsvReader;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -8,14 +16,6 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.red.Mean;
 import ch.ethz.idsc.tensor.red.Median;
 import ch.ethz.idsc.tensor.red.Norm;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.Set;
 
 public class TripsAnalysis {
     private final CsvReader reader;
@@ -26,12 +26,6 @@ public class TripsAnalysis {
     private Tensor distances = Tensors.empty();
     private Tensor waitingTimes = Tensors.empty();
     public Tensor durations = Tensors.empty();
-
-    public static void main(String[] args) throws IOException {
-        TripsAnalysis analysis = new TripsAnalysis(new File("C:/Users/joelg/Documents/Studium/ETH/IDSC/" +
-                "TaxiData/Chicago/Scenario/tripData/Taxi_Trips_2014_11_18_corrected_clean.csv"));
-        analysis.printSummary();
-    }
 
     public TripsAnalysis(File tripsFile) throws IOException {
         GlobalAssert.that(tripsFile.isFile());

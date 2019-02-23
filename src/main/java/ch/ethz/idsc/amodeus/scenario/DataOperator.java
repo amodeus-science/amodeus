@@ -1,5 +1,7 @@
-package ch.ethz.idsc.amodeus.scenario.chicago;
+package ch.ethz.idsc.amodeus.scenario;
 
+import ch.ethz.idsc.amodeus.scenario.chicago.OnlineTripsReaderChicago;
+import ch.ethz.idsc.amodeus.scenario.chicago.TripsReaderChicago;
 import ch.ethz.idsc.amodeus.scenario.dataclean.AbstractDataCleaner;
 import ch.ethz.idsc.amodeus.scenario.dataclean.CharRemovalDataCorrector;
 import ch.ethz.idsc.amodeus.scenario.dataclean.DataCorrector;
@@ -7,14 +9,11 @@ import ch.ethz.idsc.amodeus.scenario.dataclean.StandardDataCorrector;
 import ch.ethz.idsc.amodeus.scenario.dataclean.TripDataCleaner;
 import ch.ethz.idsc.amodeus.scenario.fleetconvert.FleetConverter;
 import ch.ethz.idsc.amodeus.scenario.fleetconvert.TripFleetConverter;
-import ch.ethz.idsc.amodeus.scenario.readers.OnlineTripsReaderChicago;
-import ch.ethz.idsc.amodeus.scenario.readers.TripsReaderChicago;
 import ch.ethz.idsc.amodeus.scenario.trips.TripDistanceFilter;
 import ch.ethz.idsc.amodeus.scenario.trips.TripDurationFilter;
 import ch.ethz.idsc.amodeus.scenario.trips.TripEndTimeCorrection;
 import ch.ethz.idsc.amodeus.scenario.trips.TripNetworkFilter;
 import ch.ethz.idsc.amodeus.scenario.trips.TripStartTimeResampling;
-
 
 public enum DataOperator {
     CHICAGO(new TripFleetConverter(), new StandardDataCorrector(), new TripDataCleaner(new TripsReaderChicago())) {
@@ -50,5 +49,5 @@ public enum DataOperator {
         this.cleaner = cleaner;
     }
 
-    abstract void setFilters();
+    public abstract void setFilters();
 }

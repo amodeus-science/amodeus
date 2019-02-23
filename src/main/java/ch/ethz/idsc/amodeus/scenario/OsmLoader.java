@@ -1,4 +1,4 @@
-package ch.ethz.idsc.amodeus.scenario.chicago;
+package ch.ethz.idsc.amodeus.scenario;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
@@ -15,13 +15,8 @@ import java.util.stream.Collectors;
 public class OsmLoader {
     private final double[] bbox;
 
-    public static void main(String[] args) {
-        OsmLoader osm = new OsmLoader(-87.6497, 41.8602, -87.6092, 41.9019);
-        osm.saveIfNotAlreadyExists(new File("C:/Users/joelg/Downloads/map.osm"));
-    }
-
     public OsmLoader(double minLong, double minLat, double maxLong, double maxLat) {
-        bbox = new double[] {minLong, minLat, maxLong, maxLat};
+        bbox = new double[] { minLong, minLat, maxLong, maxLat };
         checkBbox();
     }
 

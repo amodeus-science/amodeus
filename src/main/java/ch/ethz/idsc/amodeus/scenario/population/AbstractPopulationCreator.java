@@ -25,7 +25,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-abstract class AbstractPopulationCreator {
+/* package */ abstract class AbstractPopulationCreator {
 
     private final String fileName = "population.xml";
 

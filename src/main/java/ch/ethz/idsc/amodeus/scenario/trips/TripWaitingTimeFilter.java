@@ -7,7 +7,7 @@ import org.matsim.api.core.v01.network.Network;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.scenario.dataclean.DataFilter;
 
-public class TripWaitingTimeFilter implements DataFilter<Trip> {
+/* package */ class TripWaitingTimeFilter implements DataFilter<Trip> {
     private final double maxWaitTime;
 
     public TripWaitingTimeFilter(double maxWaitTime) {

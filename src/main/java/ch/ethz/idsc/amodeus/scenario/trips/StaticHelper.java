@@ -21,17 +21,13 @@ import ch.ethz.idsc.amodeus.util.netdist.CashedDistanceCalculator;
 
     public static double getMinNetworkTripDistance(Trip trip, Network network) {
         // LeastCostPathCalculator lcpc = EasyDijkstra.prepDijkstra(network);
-
         CashedDistanceCalculator lcpc = CashedDistanceCalculator//
                 .of(EasyMinDistPathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0);
-
         // find links
         Link linkStart = NetworkUtils.getNearestLink(network, trip.PickupLoc);
         Link linkEnd = NetworkUtils.getNearestLink(network, trip.DropoffLoc);
-
         // shortest path
         return lcpc.distFromTo(linkStart, linkEnd).number().doubleValue();
-
     }
 
     public static boolean sameDay(Date date1, Date date2) {

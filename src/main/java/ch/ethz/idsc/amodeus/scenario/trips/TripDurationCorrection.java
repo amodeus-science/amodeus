@@ -7,7 +7,7 @@ import org.matsim.api.core.v01.network.Network;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.scenario.dataclean.DataFilter;
 
-public class TripDurationCorrection implements DataFilter<Trip> {
+/* package */ class TripDurationCorrection implements DataFilter<Trip> {
 
     public Stream<Trip> filter(Stream<Trip> stream, ScenarioOptions simOptions, Network network) {
         return stream.peek(trip -> {

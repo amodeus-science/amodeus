@@ -12,6 +12,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+// TODO remove
+@Deprecated // surely we have this implemented somewhere...
 public class CsvReader {
     private File file;
     private String delim;

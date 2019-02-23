@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 public abstract class AbstractTripsReader extends CsvReader {
     private Map<String, Integer> taxiIds = new HashMap<>();
 
-    /* package */ AbstractTripsReader(String delim, SimpleDateFormat format) {
+    public AbstractTripsReader(String delim, SimpleDateFormat format) {
         super(delim, format);
     }
 
@@ -52,19 +52,19 @@ public abstract class AbstractTripsReader extends CsvReader {
         return taxiIds.size();
     }
 
-    abstract String getTaxiCode(String[] line);
+    public abstract String getTaxiCode(String[] line);
 
-    abstract Date getStartTime(String[] line) throws ParseException;
+    public abstract Date getStartTime(String[] line) throws ParseException;
 
-    abstract Date getEndTime(String[] line) throws ParseException;
+    public abstract Date getEndTime(String[] line) throws ParseException;
 
-    abstract Coord getPickupLocation(String[] line);
+    public abstract Coord getPickupLocation(String[] line);
 
-    abstract Coord getDropoffLocation(String[] line);
+    public abstract Coord getDropoffLocation(String[] line);
 
-    abstract long getDuration(String[] line);
+    public abstract long getDuration(String[] line);
 
-    abstract Double getDistance(String[] line);
+    public abstract Double getDistance(String[] line);
 
-    abstract Double getWaitingTime(String[] line);
+    public abstract Double getWaitingTime(String[] line);
 }

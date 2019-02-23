@@ -8,8 +8,6 @@ import org.matsim.core.network.algorithms.NetworkCleaner;
 import org.matsim.core.network.io.NetworkWriter;
 
 import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
-import ch.ethz.idsc.amodeus.scenario.chicago.LinkModes;
-import ch.ethz.idsc.amodeus.scenario.chicago.NetworkCutterUtils;
 import ch.ethz.idsc.amodeus.util.io.GZHandler;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 

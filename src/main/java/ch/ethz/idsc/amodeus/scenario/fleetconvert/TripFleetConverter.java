@@ -12,8 +12,7 @@ import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
-import ch.ethz.idsc.amodeus.scenario.chicago.ChicagoGeoInformation;
-import ch.ethz.idsc.amodeus.scenario.chicago.DataOperator;
+import ch.ethz.idsc.amodeus.scenario.DataOperator;
 import ch.ethz.idsc.amodeus.scenario.population.TripPopulationCreator;
 import ch.ethz.idsc.amodeus.util.io.FileDelete;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
@@ -26,7 +25,6 @@ public class TripFleetConverter implements FleetConverter {
 
         // Prepare Environment and load all configuration files
         // ===================================
-        ChicagoGeoInformation.setup();
         ScenarioOptions simOptions = new ScenarioOptions(processingDir, ScenarioOptionsBase.getDefault());
 
         File configFile = new File(processingDir, simOptions.getPreparerConfigName());

@@ -1,4 +1,4 @@
-package ch.ethz.idsc.amodeus.scenario.chicago;
+package ch.ethz.idsc.amodeus.scenario;
 
 import java.util.Arrays;
 import java.util.HashSet;

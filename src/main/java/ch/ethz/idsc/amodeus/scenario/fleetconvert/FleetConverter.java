@@ -1,9 +1,8 @@
 package ch.ethz.idsc.amodeus.scenario.fleetconvert;
 
-
 import java.io.File;
 
-import ch.ethz.idsc.amodeus.scenario.chicago.DataOperator;
+import ch.ethz.idsc.amodeus.scenario.DataOperator;
 
 public interface FleetConverter {
 
