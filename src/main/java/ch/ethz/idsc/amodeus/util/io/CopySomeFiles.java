@@ -12,8 +12,12 @@ public enum CopySomeFiles {
     ;
 
     public static void now(String fromDir, String toDir, //
-            List<String> fileNames) throws IOException {
-        CopyOption[] options = new CopyOption[] { StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES };
+            List<String> fileNames, boolean replaceExisting) throws IOException {
+
+        CopyOption[] options = replaceExisting ? //
+                new CopyOption[] { StandardCopyOption.REPLACE_EXISTING, //
+                        StandardCopyOption.COPY_ATTRIBUTES }
+                : new CopyOption[] { StandardCopyOption.COPY_ATTRIBUTES };
         for (String fileName : fileNames) {
             Path source = Paths.get(fromDir, fileName);
             Path target = Paths.get(toDir, fileName);

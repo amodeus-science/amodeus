@@ -16,9 +16,11 @@ public enum TestFileHandling {
     // TODO cleanup
     public static void copyScnearioToMainDirectory(String scenarioDir, String mainDir) throws IOException {
 
-        CopySomeFiles.now(scenarioDir, mainDir, Arrays.asList(new String[] { "AmodeusOptions.properties", "av.xml", "av_v1.dtd", "config_full.xml", //
-                "linkSpeedData.bin", "network.xml", "population.xml" }));
-
+        CopySomeFiles.now(scenarioDir, mainDir, //
+                Arrays.asList(new String[] { "AmodeusOptions.properties", "av.xml", //
+                        "av_v1.dtd", "config_full.xml", "linkSpeedData.bin", //
+                        "network.xml", "population.xml" }),
+                true);
     }
 
     public static void removeGeneratedFiles() throws IOException {

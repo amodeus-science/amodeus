@@ -1,8 +1,12 @@
 package ch.ethz.idsc.amodeus.scenario;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.Tensors;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -10,6 +14,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 public class OsmLoader {
@@ -20,8 +25,16 @@ public class OsmLoader {
         checkBbox();
     }
 
-    public OsmLoader(double[] bbox) {
-        this.bbox = bbox;
+    public OsmLoader(File propertiesFile) throws FileNotFoundException, IOException {        
+        Properties props = new Properties();
+        props.load(new FileInputStream(propertiesFile));
+        GlobalAssert.that(propertiesFile.exists());
+        System.out.println(propertiesFile.getAbsolutePath());
+        Tensor boundBox = Tensors.fromString(props.getProperty("boundingBox"));
+        this.bbox = new double[]{boundBox.Get(0).number().doubleValue(),//
+                boundBox.Get(1).number().doubleValue(),//
+                boundBox.Get(2).number().doubleValue(),//
+                boundBox.Get(3).number().doubleValue()};
         checkBbox();
     }
 
