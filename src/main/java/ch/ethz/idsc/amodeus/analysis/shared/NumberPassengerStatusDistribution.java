@@ -2,7 +2,6 @@
 package ch.ethz.idsc.amodeus.analysis.shared;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -85,11 +84,11 @@ public enum NumberPassengerStatusDistribution implements AnalysisExport {
         colorDataCreator.append(nPCS.of(RoboTaxiStatus.REBALANCEDRIVE));
         colorDataCreator.append(nPCS.of(RoboTaxiStatus.STAY));
         colorDataCreator.append(nPCS.of(RoboTaxiStatus.OFFSERVICE));
-        ColorDataIndexed colorScheme = colorDataCreator.getColorDataIndexed();
+        // ColorDataIndexed colorScheme = colorDataCreator.getColorDataIndexed();
 
         /** create scaling factor */
-        Double[] scale = new Double[statusLabels.length];
-        Arrays.fill(scale, 1.0);
+        // double[] scale = new double[statusLabels.length];
+        // Arrays.fill(scale, 1.0);
 
         /** Store Tensor */
         try {
@@ -103,7 +102,9 @@ public enum NumberPassengerStatusDistribution implements AnalysisExport {
         VisualSet visualSet = new VisualSet(colorDataIndexed);
         for (int i = 0; i < statusLabels.length; ++i) {
             Tensor vals = Transpose.of(valuesComplet).get(i);
-            vals = StaticHelper.FILTER_ON ? MeanFilter.of(vals, StaticHelper.FILTERSIZE) : vals;
+            vals = StaticHelper.FILTER_ON //
+                    ? MeanFilter.of(vals, StaticHelper.FILTERSIZE)
+                    : vals;
             VisualRow visualRow = visualSet.add(time, vals);
             visualRow.setLabel(statusLabels[i]);
         }
@@ -118,9 +119,9 @@ public enum NumberPassengerStatusDistribution implements AnalysisExport {
             ChartUtilities.saveChartAsPNG(fileChart, chart, WIDTH, HEIGHT);
             GlobalAssert.that(fileChart.isFile());
             System.out.println("Exported " + FILENAME + ".png");
-        } catch (Exception e) {
+        } catch (Exception exception) {
             System.err.println("Plotting " + FILENAME + " failed");
-            e.printStackTrace();
+            exception.printStackTrace();
         }
     }
 }

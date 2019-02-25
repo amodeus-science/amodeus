@@ -26,10 +26,10 @@ import ch.ethz.idsc.tensor.qty.Quantity;
 // TODO move to separate class and ensure that duplicate code with
 // CashedDistanceCalculator is removed.
 // TODO document maxLag
-public class TravelTimeCalculatorCached implements TravelTimeCalculator {
+public class TravelTimeComputationCached implements TravelTimeInterface {
 
-    public static TravelTimeCalculatorCached of(LeastCostPathCalculator calculator, double maxLag) {
-        return new TravelTimeCalculatorCached(calculator, maxLag);
+    public static TravelTimeComputationCached of(LeastCostPathCalculator calculator, double maxLag) {
+        return new TravelTimeComputationCached(calculator, maxLag);
     }
 
     // ---
@@ -40,7 +40,7 @@ public class TravelTimeCalculatorCached implements TravelTimeCalculator {
     // ---
     private double now = 0.0;
 
-    private TravelTimeCalculatorCached(LeastCostPathCalculator calculator, Double maxLag) {
+    private TravelTimeComputationCached(LeastCostPathCalculator calculator, Double maxLag) {
         this.calculator = calculator;
         this.maxLag = maxLag;
     }

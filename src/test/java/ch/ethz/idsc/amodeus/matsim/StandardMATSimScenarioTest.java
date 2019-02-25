@@ -29,8 +29,8 @@ import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
+import org.matsim.contrib.dvrp.router.DvrpRoutingNetworkProvider;
 import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
-import org.matsim.contrib.dvrp.run.DvrpModule;
 import org.matsim.contrib.dvrp.trafficmonitoring.DvrpTravelTimeModule;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
@@ -205,7 +205,7 @@ public class StandardMATSimScenarioTest {
 
             @Provides
             @Singleton
-            @Named(DvrpModule.DVRP_ROUTING)
+            @Named(DvrpRoutingNetworkProvider.DVRP_ROUTING)
             public Network provideAVNetwork(Network fullNetwork) {
                 /* TODO TEST Eventually, this should go directly into the AmodeusModule.
                  * - For backward compatibility AmodeusModule provides a FULL network, see there.

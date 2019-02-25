@@ -24,7 +24,7 @@ public enum TravelDataGet {
         return readStatic(virtualNetwork, scenarioOptions);
     }
 
-    public static StaticTravelData readStatic(VirtualNetwork<Link> virtualNetwork, ScenarioOptions scenarioOptions) throws IOException {
+    public static StaticTravelData readStatic(VirtualNetwork<Link> virtualNetwork, ScenarioOptions scenarioOptions) {
         GlobalAssert.that(Objects.nonNull(virtualNetwork));
         final File travelDataFile = new File(scenarioOptions.getVirtualNetworkName(), //
                 scenarioOptions.getTravelDataName());

@@ -15,7 +15,7 @@ public enum RebalanceExplorer {
      * It is similar to TripExploerer.of but for different purpose and much simpler. */
     public static List<RebalanceTripWithVehicle> of( //
             List<AVRequest> listOfUnassignedRequest, List<RoboTaxi> idlingRoboTaxis, //
-            double now, TravelTimeCalculator ttc) {
+            double now, TravelTimeComputation ttc) {
         List<RebalanceTripWithVehicle> listOfAllRebalanceTripWithVehicle = new ArrayList<>();
         for (RoboTaxi idlingRoboTaxi : idlingRoboTaxis) {
             for (AVRequest unassignedRequest : listOfUnassignedRequest) {

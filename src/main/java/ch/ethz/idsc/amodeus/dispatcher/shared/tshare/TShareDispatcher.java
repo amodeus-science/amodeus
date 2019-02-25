@@ -27,8 +27,8 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiUtils;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedPartitionedDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
-import ch.ethz.idsc.amodeus.dispatcher.shared.fifs.TravelTimeCalculator;
-import ch.ethz.idsc.amodeus.dispatcher.shared.fifs.TravelTimeCalculatorCached;
+import ch.ethz.idsc.amodeus.dispatcher.shared.fifs.TravelTimeComputationCached;
+import ch.ethz.idsc.amodeus.dispatcher.shared.fifs.TravelTimeInterface;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
@@ -81,7 +81,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
     private final double menuHorizon;
     private final DualSideSearch dualSideSearch;
     private final CashedDistanceCalculator distanceCashed;
-    private final TravelTimeCalculator travelTimeCalculator;
+    private final TravelTimeInterface travelTimeCalculator;
 
     protected TShareDispatcher(Network network, //
             Config config, AVDispatcherConfig avDispatcherConfig, //
@@ -100,7 +100,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
         distanceFunction = distanceHeuristics.getDistanceFunction(network);
         distanceCashed = CashedDistanceCalculator//
                 .of(EasyMinDistPathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0);
-        travelTimeCalculator = TravelTimeCalculatorCached//
+        travelTimeCalculator = TravelTimeComputationCached//
                 .of(EasyMinTimePathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0);
         bipartiteMatchingUtils = new SharedBipartiteMatchingUtils(network);
 
