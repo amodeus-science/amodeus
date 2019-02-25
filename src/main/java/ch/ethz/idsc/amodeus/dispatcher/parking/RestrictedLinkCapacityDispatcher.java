@@ -147,8 +147,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
 
             for (RoboTaxi robotaxi : unassignedRoboTaxisNow)
                 if (!robotaxi.getStatus().equals(RoboTaxiStatus.STAY))
-                    if (unassignedRoboTaxis.contains(robotaxi)) // TODO <- check should be obsolete
-                        unassignedRoboTaxis.remove(robotaxi);
+                    unassignedRoboTaxis.remove(robotaxi);
 
         }
 
