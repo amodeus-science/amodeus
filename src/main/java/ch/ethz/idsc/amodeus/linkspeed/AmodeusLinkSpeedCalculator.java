@@ -7,7 +7,7 @@ import org.matsim.core.mobsim.qsim.qnetsimengine.linkspeedcalculator.LinkSpeedCa
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
-final class AmodeusLinkSpeedCalculator implements LinkSpeedCalculator {
+/* package */ final class AmodeusLinkSpeedCalculator implements LinkSpeedCalculator {
 
     private final TaxiTrafficData trafficData;
 

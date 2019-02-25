@@ -16,7 +16,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Tensor;
 
 @Singleton
-public class DefaultTaxiTrafficData implements TaxiTrafficData {
+/* package */ class DefaultTaxiTrafficData implements TaxiTrafficData {
 
     private final LinkSpeedDataContainer lsData;
     private final int timeBinSize;
