@@ -14,6 +14,7 @@ import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.util.TreeMultipleItems;
+import ch.ethz.idsc.amodeus.routing.NetworkTimeDistInterface;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
@@ -21,7 +22,7 @@ public class BlockRebalancing {
 
     /** General Settings */
     private final int minNumberForRebalance;
-    private final TravelTimeInterface timeDb;
+    private final NetworkTimeDistInterface timeDb;
 
     /** in this Set All the operations are made. */
     private final Map<Integer, Block> blocks;
@@ -42,7 +43,7 @@ public class BlockRebalancing {
      * @param historicalDataTime duration in seconds over which past requests are collected to predict future requests
      * @param predictedTime duration in seconds for which the future request should be predicted
      * @param gridDistance distance in meter which corresponds to the length of a block */
-    public BlockRebalancing(Network network, TravelTimeInterface timeDb, int minNumberRobotaxisForRebalance, double historicalDataTime, double predictedTime, double gridDistance) {
+    public BlockRebalancing(Network network, NetworkTimeDistInterface timeDb, int minNumberRobotaxisForRebalance, double historicalDataTime, double predictedTime, double gridDistance) {
         this.minNumberForRebalance = minNumberRobotaxisForRebalance;
         this.timeDb = timeDb;
 
@@ -88,7 +89,7 @@ public class BlockRebalancing {
         calculateRebalancing();
 
         /** Calculate for each block which vehicles will move to which link based on the results of the calculated rebalancing numbers above */
-        GlobalAssert.that(timeDb.isForNow(now));
+        GlobalAssert.that(timeDb.checkTime(now));
         RebalancingDirectives directives = new RebalancingDirectives(new HashMap<>());
         blocks.values().forEach(b -> directives.addOtherDirectives(b.executeRebalance(timeDb)));
         return directives;

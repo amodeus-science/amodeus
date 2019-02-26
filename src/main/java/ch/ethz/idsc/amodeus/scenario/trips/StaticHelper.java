@@ -11,7 +11,7 @@ import org.matsim.core.router.FastAStarLandmarksFactory;
 import org.matsim.core.utils.geometry.CoordUtils;
 
 import ch.ethz.idsc.amodeus.dispatcher.util.EasyMinDistPathCalculator;
-import ch.ethz.idsc.amodeus.util.netdist.CashedDistanceCalculator;
+import ch.ethz.idsc.amodeus.routing.CashedDistanceCalculator;
 import ch.ethz.idsc.tensor.Scalar;
 
 /* package */ enum StaticHelper {

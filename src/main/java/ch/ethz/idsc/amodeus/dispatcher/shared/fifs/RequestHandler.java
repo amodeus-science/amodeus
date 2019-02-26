@@ -14,6 +14,7 @@ import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.util.TreeMultipleItems;
+import ch.ethz.idsc.amodeus.routing.NetworkTimeDistInterface;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** A {@link RequestHandler} takes care of all the requests in the scenario. It allows to quickly access the desired subgoups such as unassigned Requests or
@@ -49,7 +50,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         this.waitListTime = waitListTime;
     }
 
-    void addUnassignedRequests(Collection<AVRequest> unassignedAVRequests, TravelTimeInterface timeDb) {
+    void addUnassignedRequests(Collection<AVRequest> unassignedAVRequests, NetworkTimeDistInterface timeDb) {
         unassignedAVRequests.stream().forEach(r -> {
             unassignedRequests.add(r);
             requestsLastHour.add(r);

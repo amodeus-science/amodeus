@@ -13,9 +13,9 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.utils.collections.QuadTree;
 
-import ch.ethz.idsc.amodeus.dispatcher.shared.fifs.TravelTimeInterface;
+import ch.ethz.idsc.amodeus.routing.CashedDistanceCalculator;
+import ch.ethz.idsc.amodeus.routing.NetworkTimeDistInterface;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.amodeus.util.netdist.CashedDistanceCalculator;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 import ch.ethz.idsc.tensor.Scalar;
@@ -32,14 +32,14 @@ import ch.ethz.idsc.tensor.qty.Quantity;
     private final Map<VirtualNode<Link>, Scalar> temporalLookupMap = new HashMap<>();
 
     public GridCell(VirtualNode<Link> virtualNode, VirtualNetwork<Link> virtualNetwork, Network network, //
-            CashedDistanceCalculator minDist, TravelTimeInterface minTime, QuadTree<Link> linkTree) {
+            CashedDistanceCalculator minDist, NetworkTimeDistInterface minTime, QuadTree<Link> linkTree) {
         this.myVNode = virtualNode;
         // this.virtualNetwork = virtualNetwork;
         computeMaps(virtualNetwork, linkTree, minDist, minTime);
     }
 
     private void computeMaps(VirtualNetwork<Link> virtualNetwork, QuadTree<Link> links, //
-            CashedDistanceCalculator minDist, TravelTimeInterface minTime) {
+            CashedDistanceCalculator minDist, NetworkTimeDistInterface minTime) {
         /** calculate distances and travel times to other nodes */
         for (VirtualNode<Link> toNode : virtualNetwork.getVirtualNodes()) {
             Link fromLink = links.getClosest(//

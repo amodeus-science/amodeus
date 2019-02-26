@@ -1,16 +1,16 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.dispatcher.shared.fifs;
+package ch.ethz.idsc.amodeus.routing;
 
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.tensor.Scalar;
 
 @FunctionalInterface
-public interface TravelTimeInterface {
+public interface NetworkTimeDistInterface {
 
-    Scalar timeFromTo(Link divertableLocation, Link centerLink);
+    public Scalar timeFromTo(Link divertableLocation, Link centerLink);
 
-    default boolean isForNow(double now) {
+    public default boolean checkTime(double now) {
         return true;
     }
 }

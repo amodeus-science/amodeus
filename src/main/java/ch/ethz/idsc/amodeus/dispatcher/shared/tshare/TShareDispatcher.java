@@ -27,8 +27,6 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiUtils;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedPartitionedDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
-import ch.ethz.idsc.amodeus.dispatcher.shared.fifs.TravelTimeComputationCached;
-import ch.ethz.idsc.amodeus.dispatcher.shared.fifs.TravelTimeInterface;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
@@ -41,7 +39,9 @@ import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.SharedBipartiteMatchingUtils;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
-import ch.ethz.idsc.amodeus.util.netdist.CashedDistanceCalculator;
+import ch.ethz.idsc.amodeus.routing.CashedDistanceCalculator;
+import ch.ethz.idsc.amodeus.routing.TravelTimeComputationCached;
+import ch.ethz.idsc.amodeus.routing.NetworkTimeDistInterface;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 import ch.ethz.idsc.tensor.Scalar;
@@ -81,7 +81,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
     private final double menuHorizon;
     private final DualSideSearch dualSideSearch;
     private final CashedDistanceCalculator distanceCashed;
-    private final TravelTimeInterface travelTimeCalculator;
+    private final NetworkTimeDistInterface travelTimeCalculator;
 
     protected TShareDispatcher(Network network, //
             Config config, AVDispatcherConfig avDispatcherConfig, //
