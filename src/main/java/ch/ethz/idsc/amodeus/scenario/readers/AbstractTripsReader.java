@@ -3,7 +3,8 @@ package ch.ethz.idsc.amodeus.scenario.readers;
 
 import org.matsim.api.core.v01.Coord;
 
-import ch.ethz.idsc.amodeus.scenario.trips.Trip;
+import ch.ethz.idsc.amodeus.scenario.trips.TaxiTrip;
+import ch.ethz.idsc.tensor.Scalar;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +23,7 @@ public abstract class AbstractTripsReader extends CsvReader {
         super(delim, format);
     }
 
-    public Stream<Trip> getTripStream(File file) throws IOException {
+    public Stream<TaxiTrip> getTripStream(File file) throws IOException {
         read(file);
         final AtomicInteger tripIds = new AtomicInteger(0);
         return lines().map(line -> {
@@ -33,7 +34,7 @@ public abstract class AbstractTripsReader extends CsvReader {
                 String taxiCode = getTaxiCode(line);
                 int taxiId = taxiIds.getOrDefault(taxiCode, taxiIds.size());
                 taxiIds.put(taxiCode, taxiId);
-                return new Trip(tripId, taxiId, //
+                return new TaxiTrip(tripId, taxiId, //
                         getStartTime(line), //
                         getEndTime(line), //
                         getPickupLocation(line), //
@@ -63,9 +64,9 @@ public abstract class AbstractTripsReader extends CsvReader {
 
     public abstract Coord getDropoffLocation(String[] line);
 
-    public abstract long getDuration(String[] line);
+    public abstract Scalar getDuration(String[] line);
 
-    public abstract Double getDistance(String[] line);
+    public abstract Scalar getDistance(String[] line);
 
-    public abstract Double getWaitingTime(String[] line);
+    public abstract Scalar getWaitingTime(String[] line);
 }

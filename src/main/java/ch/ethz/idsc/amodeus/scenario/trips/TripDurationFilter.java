@@ -7,16 +7,20 @@ import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.scenario.dataclean.DataFilter;
+import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Scalars;
 
-public class TripDurationFilter implements DataFilter<Trip> {
-    private final double maxTripDuration;
+/** Filter used to remove {@link TaxiTrip}s which a duration longer than
+ * maxTripDuration. */
+public class TripDurationFilter implements DataFilter<TaxiTrip> {
+    private final Scalar maxTripDuration;
 
-    public TripDurationFilter(long maxTripDuration) {
+    public TripDurationFilter(Scalar maxTripDuration) {
         this.maxTripDuration = maxTripDuration;
     }
 
-    public Stream<Trip> filter(Stream<Trip> stream, ScenarioOptions simOptions, Network network) {
-        return stream.filter(trip -> trip.Duration <= maxTripDuration);
+    public Stream<TaxiTrip> filter(Stream<TaxiTrip> stream, ScenarioOptions simOptions, Network network) {
+        return stream.filter(trip -> Scalars.lessEquals(trip.duration, maxTripDuration));
     }
 
 }

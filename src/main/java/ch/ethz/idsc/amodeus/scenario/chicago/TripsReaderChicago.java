@@ -1,22 +1,19 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.scenario.chicago;
 
-import org.matsim.api.core.v01.Coord;
-
-import ch.ethz.idsc.amodeus.scenario.readers.AbstractTripsReader;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
 
-public class TripsReaderChicago extends AbstractTripsReader {
+import org.matsim.api.core.v01.Coord;
+
+import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.qty.Quantity;
+
+public class TripsReaderChicago extends ChicagoTripsReaderBasic {
 
     public TripsReaderChicago() {
         super(",", new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a"));
-    }
-
-    public String getTaxiCode(String[] line) {
-        return get(line, "Taxi ID");
     }
 
     public Date getStartTime(String[] line) throws ParseException {
@@ -37,15 +34,8 @@ public class TripsReaderChicago extends AbstractTripsReader {
                 Double.valueOf(get(line, "Dropoff Centroid Latitude")));
     }
 
-    public long getDuration(String[] line) {
-        return Long.valueOf(get(line, "Trip Seconds"));
+    public Scalar getDuration(String[] line) {
+        return Quantity.of(Long.valueOf(get(line, "Trip Seconds")), "s");
     }
 
-    public Double getDistance(String[] line) {
-        return Double.valueOf(get(line, "Trip Miles")) * 1609.34; // miles to meters
-    }
-
-    public Double getWaitingTime(String[] line) {
-        return null;
-    }
 }

@@ -7,23 +7,29 @@ import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.scenario.dataclean.DataFilter;
+import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Scalars;
 
-/* package */ class TripDistanceRatioFilter implements DataFilter<Trip> {
-    private final double networkDistanceRatio;
+/** This filter is used to remove {@link TaxiTrip}s in which the recorded distance is
+ * too great compared to the minimum distance necessary in the network to go from
+ * the trip origin to destination. */
+/* package */ class TripDistanceRatioFilter implements DataFilter<TaxiTrip> {
+    private final Scalar networkDistanceRatio;
 
-    public TripDistanceRatioFilter(double networkDistanceRatio) {
+    public TripDistanceRatioFilter(Scalar networkDistanceRatio) {
         this.networkDistanceRatio = networkDistanceRatio;
     }
 
-    public Stream<Trip> filter(Stream<Trip> stream, ScenarioOptions simOptions, Network network) {
+    @Override
+    public Stream<TaxiTrip> filter(Stream<TaxiTrip> stream, ScenarioOptions simOptions, Network network) {
         if (network.getNodes().isEmpty()) {
             System.err.println("WARN network seems to be empty.");
             return stream;
         }
         return stream.filter(trip -> {
-            double minDistance = StaticHelper.getMinNetworkTripDistance(trip, network);
-            double ratio = trip.Distance / minDistance;
-            return ratio <= networkDistanceRatio;
+            Scalar minDistance = StaticHelper.getMinNetworkTripDistance(trip, network);
+            Scalar ratio = trip.distance.divide(minDistance);
+            return Scalars.lessEquals(ratio, networkDistanceRatio);
         });
     }
 

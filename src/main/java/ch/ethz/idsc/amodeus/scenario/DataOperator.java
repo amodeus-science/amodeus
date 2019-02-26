@@ -15,6 +15,7 @@ import ch.ethz.idsc.amodeus.scenario.trips.TripDurationFilter;
 import ch.ethz.idsc.amodeus.scenario.trips.TripEndTimeCorrection;
 import ch.ethz.idsc.amodeus.scenario.trips.TripNetworkFilter;
 import ch.ethz.idsc.amodeus.scenario.trips.TripStartTimeResampling;
+import ch.ethz.idsc.tensor.qty.Quantity;
 
 public enum DataOperator {
     CHICAGO(new TripFleetConverter(), new StandardDataCorrector(), new TripDataCleaner(new TripsReaderChicago())) {
@@ -24,8 +25,8 @@ public enum DataOperator {
             cleaner.addFilter(new TripEndTimeCorrection());
             cleaner.addFilter(new TripNetworkFilter());
             // cleaner.addFilter(new TripDistanceRatioFilter(4)); // massive slow down
-            cleaner.addFilter(new TripDurationFilter(20000));
-            cleaner.addFilter(new TripDistanceFilter(500, 50000));
+            cleaner.addFilter(new TripDurationFilter(Quantity.of(20000, "s") ));
+            cleaner.addFilter(new TripDistanceFilter(Quantity.of(500,"m"), Quantity.of(50000,"m")));
         }
     },
     CHICAGO_ONLINE(new TripFleetConverter(), new CharRemovalDataCorrector("\""), new TripDataCleaner(new OnlineTripsReaderChicago())) {
@@ -35,8 +36,8 @@ public enum DataOperator {
             cleaner.addFilter(new TripEndTimeCorrection());
             cleaner.addFilter(new TripNetworkFilter());
             // cleaner.addFilter(new TripDistanceRatioFilter(4)); // massive slow down
-            cleaner.addFilter(new TripDurationFilter(20000));
-            cleaner.addFilter(new TripDistanceFilter(500, 50000));
+            cleaner.addFilter(new TripDurationFilter(Quantity.of(20000, "s")));
+            cleaner.addFilter(new TripDistanceFilter(Quantity.of(500,"m"), Quantity.of(50000,"m")));
         }
     };
 

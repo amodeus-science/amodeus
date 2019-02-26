@@ -9,15 +9,15 @@ import org.matsim.api.core.v01.network.Network;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.scenario.dataclean.DataFilter;
 
-public class TripDateFilter implements DataFilter<Trip> {
+public class TripDateFilter implements DataFilter<TaxiTrip> {
     private final Date date;
 
     public TripDateFilter(Date date) {
         this.date = date;
     }
 
-    public Stream<Trip> filter(Stream<Trip> stream, ScenarioOptions simOptions, Network network) {
+    public Stream<TaxiTrip> filter(Stream<TaxiTrip> stream, ScenarioOptions simOptions, Network network) {
         return stream.filter(trip -> //
-                StaticHelper.sameDay(date, trip.PickupDate) && StaticHelper.sameDay(date, trip.DropoffDate));
+                StaticHelper.sameDay(date, trip.pickupDate) && StaticHelper.sameDay(date, trip.dropoffDate));
     }
 }

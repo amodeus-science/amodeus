@@ -10,7 +10,7 @@ import org.matsim.api.core.v01.network.Network;
 import java.util.Calendar;
 import java.util.stream.Stream;
 
-public class TripStartTimeResampling implements DataFilter<Trip> {
+public class TripStartTimeResampling implements DataFilter<TaxiTrip> {
     private Calendar calendar = Calendar.getInstance();
     private final double minuteResolution;
 
@@ -18,15 +18,15 @@ public class TripStartTimeResampling implements DataFilter<Trip> {
         this.minuteResolution = minuteResolution;
     }
 
-    public Stream<Trip> filter(Stream<Trip> stream, ScenarioOptions simOptions, Network network) {
+    public Stream<TaxiTrip> filter(Stream<TaxiTrip> stream, ScenarioOptions simOptions, Network network) {
         return stream.peek(trip -> {
-            calendar.setTime(trip.PickupDate);
+            calendar.setTime(trip.pickupDate);
             int offsetSec = RandomVariate.of(UniformDistribution.of(-30 * minuteResolution, 30 * minuteResolution)).number().intValue();
             calendar.add(Calendar.SECOND, offsetSec);
-            if (!trip.DropoffDate.equals(calendar.getTime())) {
-                System.out.println("resampling: trip " + trip.Id + ": pickup date " + trip.PickupDate + " -> " //
+            if (!trip.dropoffDate.equals(calendar.getTime())) {
+                System.out.println("resampling: trip " + trip.id + ": pickup date " + trip.pickupDate + " -> " //
                         + calendar.getTime());
-                trip.PickupDate = calendar.getTime(); // TODO respect time boundaries
+                trip.pickupDate = calendar.getTime(); // TODO respect time boundaries
             }
         });
     }

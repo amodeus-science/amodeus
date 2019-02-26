@@ -11,9 +11,9 @@ import ch.ethz.idsc.amodeus.data.ReferenceFrame;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.scenario.dataclean.DataFilter;
 
-public class TripNetworkFilter implements DataFilter<Trip> {
+public class TripNetworkFilter implements DataFilter<TaxiTrip> {
 
-    public Stream<Trip> filter(Stream<Trip> stream, ScenarioOptions simOptions, Network network) {
+    public Stream<TaxiTrip> filter(Stream<TaxiTrip> stream, ScenarioOptions simOptions, Network network) {
         ReferenceFrame rf = simOptions.getLocationSpec().referenceFrame();
         double[] networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
         Coord minCoord = rf.coords_toWGS84().transform(new Coord(networkBounds[0], networkBounds[1]));
@@ -24,7 +24,7 @@ public class TripNetworkFilter implements DataFilter<Trip> {
             return stream;
         }
         return stream.filter(trip -> //
-                inBounds(minCoord, maxCoord, trip.PickupLoc) && inBounds(minCoord, maxCoord, trip.DropoffLoc));
+                inBounds(minCoord, maxCoord, trip.pickupLoc) && inBounds(minCoord, maxCoord, trip.dropoffLoc));
     }
 
     private boolean inBounds(Coord minCoord, Coord maxCoord, Coord loc) {

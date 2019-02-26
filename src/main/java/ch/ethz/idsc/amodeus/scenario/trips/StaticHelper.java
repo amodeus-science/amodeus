@@ -12,23 +12,23 @@ import org.matsim.core.utils.geometry.CoordUtils;
 
 import ch.ethz.idsc.amodeus.dispatcher.util.EasyMinDistPathCalculator;
 import ch.ethz.idsc.amodeus.util.netdist.CashedDistanceCalculator;
+import ch.ethz.idsc.tensor.Scalar;
 
 /* package */ enum StaticHelper {
     ;
 
-    public static double getEuclideanTripDistance(Trip trip) {
-        return CoordUtils.calcEuclideanDistance(trip.PickupLoc, trip.DropoffLoc);
+    public static double getEuclideanTripDistance(TaxiTrip trip) {
+        return CoordUtils.calcEuclideanDistance(trip.pickupLoc, trip.dropoffLoc);
     }
 
-    public static double getMinNetworkTripDistance(Trip trip, Network network) {
-        // LeastCostPathCalculator lcpc = EasyDijkstra.prepDijkstra(network);
+    public static Scalar getMinNetworkTripDistance(TaxiTrip trip, Network network) {
         CashedDistanceCalculator lcpc = CashedDistanceCalculator//
                 .of(EasyMinDistPathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0);
         // find links
-        Link linkStart = NetworkUtils.getNearestLink(network, trip.PickupLoc);
-        Link linkEnd = NetworkUtils.getNearestLink(network, trip.DropoffLoc);
+        Link linkStart = NetworkUtils.getNearestLink(network, trip.pickupLoc);
+        Link linkEnd = NetworkUtils.getNearestLink(network, trip.dropoffLoc);
         // shortest path
-        return lcpc.distFromTo(linkStart, linkEnd).number().doubleValue();
+        return lcpc.distFromTo(linkStart, linkEnd);
     }
 
     public static boolean sameDay(Date date1, Date date2) {

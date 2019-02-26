@@ -14,25 +14,25 @@ import java.util.stream.Stream;
 import org.apache.commons.io.FilenameUtils;
 
 import ch.ethz.idsc.amodeus.scenario.readers.AbstractTripsReader;
-import ch.ethz.idsc.amodeus.scenario.trips.Trip;
+import ch.ethz.idsc.amodeus.scenario.trips.TaxiTrip;
 
-public class TripDataCleaner extends AbstractDataCleaner<Trip> {
+public class TripDataCleaner extends AbstractDataCleaner<TaxiTrip> {
     private final AbstractTripsReader reader;
 
     public TripDataCleaner(AbstractTripsReader reader) {
         this.reader = reader;
     }
 
-    public Stream<Trip> readFile(File file) throws IOException {
+    public Stream<TaxiTrip> readFile(File file) throws IOException {
         return reader.getTripStream(file);
     }
 
-    public File writeFile(File inFile, Stream<Trip> stream) throws IOException {
+    public File writeFile(File inFile, Stream<TaxiTrip> stream) throws IOException {
         String fileName = FilenameUtils.getBaseName(inFile.getPath()) + "_clean." + FilenameUtils.getExtension(inFile.getPath());
         File outFile = new File(inFile.getParentFile(), fileName);
 
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outFile))) {
-            String headers = Arrays.stream(Trip.class.getFields()).map(Field::getName) //
+            String headers = Arrays.stream(TaxiTrip.class.getFields()).map(Field::getName) //
                     .collect(Collectors.joining(","));
             bufferedWriter.write(headers);
             stream.sorted().forEachOrdered(trip -> {

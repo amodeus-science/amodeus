@@ -8,19 +8,24 @@ import org.matsim.api.core.v01.network.Network;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.scenario.dataclean.DataFilter;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Scalars;
 
-public class TripDistanceFilter implements DataFilter<Trip> {
-    private final double maxTripDistance;
-    private final double minTripDistance;
+/** This {@link TaxiTrip} filter is used to remove {@link TaxiTrip}s with a recorded distance
+ * smaller than a minimumDistance or larger than a maximum distance. */
+public class TripDistanceFilter implements DataFilter<TaxiTrip> {
+    private final Scalar maxTripDistance;
+    private final Scalar minTripDistance;
 
-    public TripDistanceFilter(double minTripDistance, double maxTripDistance) {
-        GlobalAssert.that(minTripDistance < maxTripDistance);
+    public TripDistanceFilter(Scalar minTripDistance, Scalar maxTripDistance) {
+        GlobalAssert.that(Scalars.lessThan(minTripDistance, maxTripDistance));
         this.minTripDistance = minTripDistance;
         this.maxTripDistance = maxTripDistance;
     }
 
-    public Stream<Trip> filter(Stream<Trip> stream, ScenarioOptions simOptions, Network network) {
-        return stream.filter(trip -> trip.Distance >= minTripDistance && trip.Distance <= maxTripDistance);
+    public Stream<TaxiTrip> filter(Stream<TaxiTrip> stream, ScenarioOptions simOptions, Network network) {
+        return stream//
+                .filter(trip -> Scalars.lessEquals(minTripDistance, trip.distance))//
+                .filter(trip -> Scalars.lessEquals(trip.distance, maxTripDistance));
     }
-
 }
