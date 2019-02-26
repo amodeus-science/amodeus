@@ -24,7 +24,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
     static SharedAvRoute of( //
             List<SharedCourse> list, Link currentLink, //
             double now, double pickupTime, double dropofftime, //
-            TravelTimeCalculatorCached timeDb) {
+            TravelTimeComputationCached timeDb) {
         List<SharedRoutePoint> routePoints = new ArrayList<>();
         Scalar departureTime = Quantity.of(now, SI.SECOND);
         for (int i = 0; i < list.size(); i++) {

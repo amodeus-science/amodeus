@@ -70,7 +70,7 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
     private final AdvancedRTVGenerator rtvGG;
     private final double trafficTimeAllowance = 60;
     /** Path calculator */
-    private final TravelTimeCalculator ttc;
+    private final TravelTimeComputation ttc;
     /** RV generator */
     private final AdvanceTVRVGenerator rvGenerator;
     /** Cache */
@@ -109,7 +109,7 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
 
         FastAStarLandmarksFactory factory = new FastAStarLandmarksFactory();
         LeastCostPathCalculator lcpc = EasyMinTimePathCalculator.prepPathCalculator(network, factory);
-        ttc = new TravelTimeCalculator(lcpc, sizeLimitOfCache);
+        ttc = new TravelTimeComputation(lcpc, sizeLimitOfCache);
         rtvGG = new AdvancedRTVGenerator(capacityOfTaxi, pickupDurationPerStop, dropoffDurationPerStop);
         rvGenerator = new AdvanceTVRVGenerator(pickupDurationPerStop, dropoffDurationPerStop);
         checkingUpdateMenuOrNot = new CheckingUpdateMenuOrNot();

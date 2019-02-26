@@ -41,10 +41,11 @@ import ch.ethz.matsim.av.framework.AVUtils;
 
 public class SharedTestServer {
 
-    public static SharedTestServer run() {
-        return new SharedTestServer();
+    public static SharedTestServer run(File workingDirectory) throws Exception {
+        return new SharedTestServer(workingDirectory);
     }
 
+    // ---
     private File workingDirectory;
     private ScenarioOptions scenarioOptions;
     private File configFile;
@@ -57,18 +58,13 @@ public class SharedTestServer {
     private Controler controler;
     private AnalysisTestExport ate;
 
-    private SharedTestServer() {
-
-    }
-
-    public SharedTestServer on(File workingDirectory) throws Exception {
+    private SharedTestServer(File workingDirectory) throws Exception {
         this.workingDirectory = workingDirectory;
         System.out.println(workingDirectory);
         GlobalAssert.that(workingDirectory.isDirectory());
         scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
         StaticHelper.changeDispatcherTo("NorthPoleSharedDispatcher", workingDirectory);
         simulate();
-        return this;
     }
 
     private void simulate() throws Exception {
@@ -118,7 +114,7 @@ public class SharedTestServer {
         controler.addOverridingModule(new AmodeusVehicleGeneratorModule());
         controler.addOverridingModule(new AmodeusVehicleToVSGeneratorModule());
         controler.addOverridingModule(new AmodeusDispatcherModule());
-        controler.addOverridingModule(new AmodeusVirtualNetworkModule());
+        controler.addOverridingModule(new AmodeusVirtualNetworkModule(scenarioOptions));
         controler.addOverridingModule(new AmodeusDatabaseModule(db));
         controler.addOverridingModule(new AbstractModule() {
             @Override

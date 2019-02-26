@@ -79,7 +79,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param timeSharing
      * @return The Closest RoboTaxi with a Shared Menu associated with it. */
     /* package */ Optional<Entry<RoboTaxi, List<SharedCourse>>> getClosestValidSharingRoboTaxi(Set<RoboTaxi> robotaxisWithMenu, AVRequest avRequest, double now,
-            TravelTimeCalculatorCached timeDb, RequestHandler requestMaintainer, RoboTaxiHandler roboTaxiMaintainer, double maxTime) {
+            TravelTimeComputationCached timeDb, RequestHandler requestMaintainer, RoboTaxiHandler roboTaxiMaintainer, double maxTime) {
 
         GlobalAssert.that(robotaxisWithMenu.stream().allMatch(r -> RoboTaxiUtils.hasNextCourse(r)));
 
@@ -136,7 +136,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     boolean menuFulfillsConstraints( //
             RoboTaxi roboTaxi, List<SharedCourse> newRoute, //
             AVRequest avRequest, double now, //
-            TravelTimeCalculatorCached timeDb, RequestHandler requestMaintainer) {
+            TravelTimeComputationCached timeDb, RequestHandler requestMaintainer) {
         Set<AVRequest> currentRequests = RoboTaxiUtils.getRequestsInMenu(roboTaxi);
         GlobalAssert.that(SharedCourseListUtils.getUniqueAVRequests(newRoute).containsAll(currentRequests));
         SharedAvRoute sharedAvRoute = SharedAvRoute.of(newRoute, roboTaxi.getDivertableLocation(), now, pickupDuration, dropoffDuration, timeDb);

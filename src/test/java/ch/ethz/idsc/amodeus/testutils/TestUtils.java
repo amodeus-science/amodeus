@@ -2,11 +2,20 @@
 package ch.ethz.idsc.amodeus.testutils;
 
 import java.io.File;
+import java.io.IOException;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 public enum TestUtils {
     ;
+
+    public static File getWorkingDirectory() {
+        try {
+            return new File("").getCanonicalFile();
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 
     public static File getSuperFolder(String name) {
         File file = new File(TestUtils.class.getResource("TestUtils.class").getFile());

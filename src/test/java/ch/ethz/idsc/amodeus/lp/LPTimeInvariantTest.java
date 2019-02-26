@@ -23,7 +23,6 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.test.TestFileHandling;
 import ch.ethz.idsc.amodeus.testutils.TestUtils;
-import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.io.ProvideAVConfig;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
@@ -46,7 +45,7 @@ public class LPTimeInvariantTest {
         System.out.println(LPTimeInvariant.class.getName());
         // copy scenario data into main directory
         File scenarioDirectory = new File(TestUtils.getSuperFolder("amodeus"), "resources/testScenario");
-        File workingDirectory = MultiFileTools.getWorkingDirectory();
+        File workingDirectory = TestUtils.getWorkingDirectory();
         GlobalAssert.that(workingDirectory.isDirectory());
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
 
