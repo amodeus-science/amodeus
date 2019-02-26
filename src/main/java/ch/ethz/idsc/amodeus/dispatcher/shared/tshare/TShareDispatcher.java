@@ -29,19 +29,17 @@ import ch.ethz.idsc.amodeus.dispatcher.core.SharedPartitionedDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
-import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
-import ch.ethz.idsc.amodeus.dispatcher.util.EasyMinDistPathCalculator;
-import ch.ethz.idsc.amodeus.dispatcher.util.EasyMinTimePathCalculator;
-import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.SharedBipartiteMatchingUtils;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
-import ch.ethz.idsc.amodeus.routing.CashedDistanceCalculator;
-import ch.ethz.idsc.amodeus.routing.TravelTimeComputationCached;
-import ch.ethz.idsc.amodeus.routing.NetworkTimeDistInterface;
+import ch.ethz.idsc.amodeus.routing.CashedNetworkTimeDistance;
+import ch.ethz.idsc.amodeus.routing.DistanceFunction;
+import ch.ethz.idsc.amodeus.routing.EasyMinDistPathCalculator;
+import ch.ethz.idsc.amodeus.routing.EasyMinTimePathCalculator;
+import ch.ethz.idsc.amodeus.routing.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 import ch.ethz.idsc.tensor.Scalar;
@@ -80,8 +78,8 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
     private final Scalar drpoffDelayMax;
     private final double menuHorizon;
     private final DualSideSearch dualSideSearch;
-    private final CashedDistanceCalculator distanceCashed;
-    private final NetworkTimeDistInterface travelTimeCalculator;
+    private final CashedNetworkTimeDistance distanceCashed;
+    private final CashedNetworkTimeDistance travelTimeCalculator;
 
     protected TShareDispatcher(Network network, //
             Config config, AVDispatcherConfig avDispatcherConfig, //
@@ -98,10 +96,10 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
                 dispatcherConfig.getDistanceHeuristics(DistanceHeuristics.EUCLIDEAN);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         distanceFunction = distanceHeuristics.getDistanceFunction(network);
-        distanceCashed = CashedDistanceCalculator//
-                .of(EasyMinDistPathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0);
-        travelTimeCalculator = TravelTimeComputationCached//
-                .of(EasyMinTimePathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0);
+        distanceCashed = new CashedNetworkTimeDistance//
+                (EasyMinDistPathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0);
+        travelTimeCalculator = new CashedNetworkTimeDistance//
+                (EasyMinTimePathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0);
         bipartiteMatchingUtils = new SharedBipartiteMatchingUtils(network);
 
         /** T-Share specific */

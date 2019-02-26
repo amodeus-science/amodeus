@@ -10,8 +10,8 @@ import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.router.FastAStarLandmarksFactory;
 import org.matsim.core.utils.geometry.CoordUtils;
 
-import ch.ethz.idsc.amodeus.dispatcher.util.EasyMinDistPathCalculator;
-import ch.ethz.idsc.amodeus.routing.CashedDistanceCalculator;
+import ch.ethz.idsc.amodeus.routing.CashedNetworkTimeDistance;
+import ch.ethz.idsc.amodeus.routing.EasyMinDistPathCalculator;
 import ch.ethz.idsc.tensor.Scalar;
 
 /* package */ enum StaticHelper {
@@ -22,13 +22,13 @@ import ch.ethz.idsc.tensor.Scalar;
     }
 
     public static Scalar getMinNetworkTripDistance(TaxiTrip trip, Network network) {
-        CashedDistanceCalculator lcpc = CashedDistanceCalculator//
-                .of(EasyMinDistPathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0);
+        CashedNetworkTimeDistance lcpc = new CashedNetworkTimeDistance//
+                (EasyMinDistPathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0);
         // find links
         Link linkStart = NetworkUtils.getNearestLink(network, trip.pickupLoc);
         Link linkEnd = NetworkUtils.getNearestLink(network, trip.dropoffLoc);
         // shortest path
-        return lcpc.fromTo(linkStart, linkEnd);
+        return lcpc.distance(linkStart, linkEnd);
     }
 
     public static boolean sameDay(Date date1, Date date2) {

@@ -13,7 +13,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.utils.collections.QuadTree;
 
-import ch.ethz.idsc.amodeus.routing.CashedDistanceCalculator;
+import ch.ethz.idsc.amodeus.routing.CashedNetworkTimeDistance;
 import ch.ethz.idsc.amodeus.routing.NetworkTimeDistInterface;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
@@ -32,14 +32,14 @@ import ch.ethz.idsc.tensor.qty.Quantity;
     private final Map<VirtualNode<Link>, Scalar> temporalLookupMap = new HashMap<>();
 
     public GridCell(VirtualNode<Link> virtualNode, VirtualNetwork<Link> virtualNetwork, Network network, //
-            CashedDistanceCalculator minDist, NetworkTimeDistInterface minTime, QuadTree<Link> linkTree) {
+            CashedNetworkTimeDistance minDist, NetworkTimeDistInterface minTime, QuadTree<Link> linkTree) {
         this.myVNode = virtualNode;
         // this.virtualNetwork = virtualNetwork;
         computeMaps(virtualNetwork, linkTree, minDist, minTime);
     }
 
     private void computeMaps(VirtualNetwork<Link> virtualNetwork, QuadTree<Link> links, //
-            CashedDistanceCalculator minDist, NetworkTimeDistInterface minTime) {
+            CashedNetworkTimeDistance minDist, NetworkTimeDistInterface minTime) {
         /** calculate distances and travel times to other nodes */
         for (VirtualNode<Link> toNode : virtualNetwork.getVirtualNodes()) {
             Link fromLink = links.getClosest(//
@@ -48,8 +48,8 @@ import ch.ethz.idsc.tensor.qty.Quantity;
             Link toLink = links.getClosest(//
                     toNode.getCoord().Get(0).number().doubleValue(), //
                     toNode.getCoord().Get(1).number().doubleValue());
-            Scalar time = minTime.fromTo(fromLink, toLink);
-            Scalar distance = minDist.fromTo(fromLink, toLink);
+            Scalar time = minTime.travelTime(fromLink, toLink);
+            Scalar distance = minDist.distance(fromLink, toLink);
             temporalSortedMap.put(time, toNode);
             temporalLookupMap.put(toNode, time);
             distanceSortedMap.put(distance, toNode);

@@ -54,11 +54,11 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         unassignedAVRequests.stream().forEach(r -> {
             unassignedRequests.add(r);
             requestsLastHour.add(r);
-            driveTimesSingle.put(r, timeDb.fromTo(r.getFromLink(), r.getToLink()).number().doubleValue());
+            driveTimesSingle.put(r, timeDb.travelTime(r.getFromLink(), r.getToLink()).number().doubleValue());
         });
 
         unassignedAVRequests.stream().filter(avr -> !requests.containsKey(avr)).forEach(avr -> requests.put(avr, new RequestWrap(avr)));
-        unassignedAVRequests.forEach(avr -> requests.get(avr).setUnitCapDriveTime(timeDb.fromTo(avr.getFromLink(), avr.getToLink()).number().doubleValue()));
+        unassignedAVRequests.forEach(avr -> requests.get(avr).setUnitCapDriveTime(timeDb.travelTime(avr.getFromLink(), avr.getToLink()).number().doubleValue()));
     }
 
     void updatePickupTimes(Collection<AVRequest> avRequests, double now) {

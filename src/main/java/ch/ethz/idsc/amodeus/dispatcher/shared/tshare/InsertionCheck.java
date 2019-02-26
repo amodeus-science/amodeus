@@ -13,7 +13,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.Compatibility;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
-import ch.ethz.idsc.amodeus.routing.CashedDistanceCalculator;
+import ch.ethz.idsc.amodeus.routing.CashedNetworkTimeDistance;
 import ch.ethz.idsc.amodeus.routing.NetworkTimeDistInterface;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Scalar;
@@ -31,7 +31,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     private Scalar optimalLength;
     private Scalar originalLength;
 
-    public InsertionCheck(CashedDistanceCalculator distance, NetworkTimeDistInterface travelTimeCashed, //
+    public InsertionCheck(CashedNetworkTimeDistance distance, NetworkTimeDistInterface travelTimeCashed, //
             RoboTaxi roboTaxi, AVRequest request, Scalar pickupDelayMax, Scalar drpoffDelayMax, double timeNow) {
         this.roboTaxi = roboTaxi;
         this.request = request;
@@ -79,7 +79,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
                 Scalar timePrev = Quantity.of(timeNow, "s");
                 for (int k = 0; k < newMenu.size(); ++k) {
                     SharedCourse course = newMenu.get(k);
-                    Scalar travelTime = travelTimeCashed.fromTo(roboTaxi.getLastKnownLocation(), course.getLink());
+                    Scalar travelTime = travelTimeCashed.travelTime(roboTaxi.getLastKnownLocation(), course.getLink());
                     Scalar timeofCourse = timePrev.add(travelTime);
                     if (course.getMealType().equals(SharedMealType.PICKUP)) {
                         Scalar latestPickup = LatestPickup.of(course.getAvRequest(), pickupDelayMax);

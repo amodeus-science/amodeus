@@ -5,10 +5,11 @@ import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.tensor.Scalar;
 
-@FunctionalInterface
 public interface NetworkTimeDistInterface {
 
-    public Scalar fromTo(Link divertableLocation, Link centerLink);
+    public Scalar travelTime(Link from, Link to);
+
+    public Scalar distance(Link from, Link to);
 
     public default boolean checkTime(double now) {
         return true;

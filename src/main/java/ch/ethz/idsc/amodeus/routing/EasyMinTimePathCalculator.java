@@ -1,5 +1,5 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.dispatcher.util;
+package ch.ethz.idsc.amodeus.routing;
 
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
@@ -13,7 +13,7 @@ import org.matsim.vehicles.Vehicle;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
-public enum EasyMinDistPathCalculator {
+public enum EasyMinTimePathCalculator {
     ;
 
     public static LeastCostPathCalculator prepPathCalculator(Network network, LeastCostPathCalculatorFactory calcFactory) {
@@ -25,7 +25,7 @@ public enum EasyMinDistPathCalculator {
 
             @Override
             public double getLinkMinimumTravelDisutility(Link link) {
-                return link.getLength();
+                return link.getLength() / link.getFreespeed();
             }
         };
         TravelTime travelTime = new TravelTime() {

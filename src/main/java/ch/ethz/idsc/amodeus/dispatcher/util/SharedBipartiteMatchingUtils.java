@@ -12,6 +12,8 @@ import org.matsim.core.router.FastAStarLandmarksFactory;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedUniversalDispatcher;
+import ch.ethz.idsc.amodeus.routing.DistanceFunction;
+import ch.ethz.idsc.amodeus.routing.NetworkMinTimeDistanceFunction;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.matsim.av.passenger.AVRequest;
