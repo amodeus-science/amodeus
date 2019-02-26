@@ -48,8 +48,8 @@ import ch.ethz.idsc.tensor.qty.Quantity;
             Link toLink = links.getClosest(//
                     toNode.getCoord().Get(0).number().doubleValue(), //
                     toNode.getCoord().Get(1).number().doubleValue());
-            Scalar time = minTime.timeFromTo(fromLink, toLink);
-            Scalar distance = minDist.distFromTo(fromLink, toLink);
+            Scalar time = minTime.fromTo(fromLink, toLink);
+            Scalar distance = minDist.fromTo(fromLink, toLink);
             temporalSortedMap.put(time, toNode);
             temporalLookupMap.put(toNode, time);
             distanceSortedMap.put(distance, toNode);

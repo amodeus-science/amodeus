@@ -117,7 +117,7 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
                 boolean assigned = false;
                 if (unassignedRoboTaxis.size() > 0) {
                     RoboTaxi closestRoboTaxi = unassignedRoboTaxis.getClosest(getLocation(avRequest));
-                    double travelTime = timeDb.timeFromTo(closestRoboTaxi.getDivertableLocation(), avRequest.getFromLink()).number().doubleValue();
+                    double travelTime = timeDb.fromTo(closestRoboTaxi.getDivertableLocation(), avRequest.getFromLink()).number().doubleValue();
                     if (travelTime < WAITTIME.calculate(avRequest, waitList, extremWaitList)) {
                         setRoboTaxiPickup(closestRoboTaxi, avRequest);
                         unassignedRoboTaxis.remove(closestRoboTaxi);

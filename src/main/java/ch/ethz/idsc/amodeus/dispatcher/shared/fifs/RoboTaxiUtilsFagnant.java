@@ -30,7 +30,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
                 .collect(Collectors.toSet());
         NavigableMap<Double, RoboTaxi> map = new TreeMap<>();
         for (RoboTaxi roboTaxi : closeRoboTaxis) {
-            double travelTimeToLink = timeDb.timeFromTo(link, roboTaxi.getDivertableLocation()).number().doubleValue();
+            double travelTimeToLink = timeDb.fromTo(link, roboTaxi.getDivertableLocation()).number().doubleValue();
             if (travelTimeToLink < maxTime) {
                 map.put(travelTimeToLink, roboTaxi);
             }
@@ -59,7 +59,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
             return Optional.empty();
         }
         GlobalAssert.that(roboTaxis.firstKey() < maxTime);
-        GlobalAssert.that(timeDb.timeFromTo(avRequest.getFromLink(), roboTaxis.firstEntry().getValue().getDivertableLocation()).number().doubleValue() < maxTime);
+        GlobalAssert.that(timeDb.fromTo(avRequest.getFromLink(), roboTaxis.firstEntry().getValue().getDivertableLocation()).number().doubleValue() < maxTime);
         return Optional.of(roboTaxis.firstEntry().getValue());
     }
 }

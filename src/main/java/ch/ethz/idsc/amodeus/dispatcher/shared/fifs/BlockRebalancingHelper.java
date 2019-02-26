@@ -34,7 +34,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         freeRoboTaxis.forEach(rt -> allTravelTimesForRoboTaxis.put(rt, new HashMap<>()));
         for (RoboTaxi roboTaxi : freeRoboTaxis) {
             for (Block block : blocks) {
-                double travelTime = timeDb.timeFromTo(roboTaxi.getDivertableLocation(), block.getCenterLink()).number().doubleValue();
+                double travelTime = timeDb.fromTo(roboTaxi.getDivertableLocation(), block.getCenterLink()).number().doubleValue();
                 if (!travelTimesSorted.containsKey(travelTime)) {
                     travelTimesSorted.put(travelTime, new HashMap<>());
                 }

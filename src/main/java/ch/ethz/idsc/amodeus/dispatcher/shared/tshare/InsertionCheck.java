@@ -79,7 +79,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
                 Scalar timePrev = Quantity.of(timeNow, "s");
                 for (int k = 0; k < newMenu.size(); ++k) {
                     SharedCourse course = newMenu.get(k);
-                    Scalar travelTime = travelTimeCashed.timeFromTo(roboTaxi.getLastKnownLocation(), course.getLink());
+                    Scalar travelTime = travelTimeCashed.fromTo(roboTaxi.getLastKnownLocation(), course.getLink());
                     Scalar timeofCourse = timePrev.add(travelTime);
                     if (course.getMealType().equals(SharedMealType.PICKUP)) {
                         Scalar latestPickup = LatestPickup.of(course.getAvRequest(), pickupDelayMax);

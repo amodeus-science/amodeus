@@ -8,7 +8,7 @@ import ch.ethz.idsc.tensor.Scalar;
 @FunctionalInterface
 public interface NetworkTimeDistInterface {
 
-    public Scalar timeFromTo(Link divertableLocation, Link centerLink);
+    public Scalar fromTo(Link divertableLocation, Link centerLink);
 
     public default boolean checkTime(double now) {
         return true;

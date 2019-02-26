@@ -28,7 +28,7 @@ import ch.ethz.idsc.tensor.Scalar;
         Link linkStart = NetworkUtils.getNearestLink(network, trip.pickupLoc);
         Link linkEnd = NetworkUtils.getNearestLink(network, trip.dropoffLoc);
         // shortest path
-        return lcpc.distFromTo(linkStart, linkEnd);
+        return lcpc.fromTo(linkStart, linkEnd);
     }
 
     public static boolean sameDay(Date date1, Date date2) {

@@ -21,7 +21,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
         Scalar length = Quantity.of(0.0, SI.METER);
         Link link = roboTaxi.getDivertableLocation();
         for (SharedCourse course : menu) {
-            length = length.add(distance.distFromTo(link, course.getLink()));
+            length = length.add(distance.fromTo(link, course.getLink()));
             link = course.getLink();
         }
         return length;

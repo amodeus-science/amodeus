@@ -13,7 +13,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     public static Scalar of(AVRequest avRequest, Scalar drpoffDelayMax, NetworkTimeDistInterface travelTimeCashed) {
         // TODO possibly simplified grid-cell travel time used in publication, check
         return Quantity.of(avRequest.getSubmissionTime(), SI.SECOND)//
-                .add(travelTimeCashed.timeFromTo(avRequest.getFromLink(), avRequest.getToLink()))//
+                .add(travelTimeCashed.fromTo(avRequest.getFromLink(), avRequest.getToLink()))//
                 .add(drpoffDelayMax);
     }
 
