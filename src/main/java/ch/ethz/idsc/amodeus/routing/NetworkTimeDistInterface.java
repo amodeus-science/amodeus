@@ -11,7 +11,4 @@ public interface NetworkTimeDistInterface {
 
     public Scalar distance(Link from, Link to);
 
-    public default boolean checkTime(double now) {
-        return true;
-    }
 }

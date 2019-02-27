@@ -10,7 +10,8 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.qty.Quantity;
 
-public enum TimeDistPath implements PathInterface<Tensor> {
+
+public enum TimeDistanceProperty implements NetworkPropertyInterface<Tensor> {
     INSTANCE;
 
     @Override

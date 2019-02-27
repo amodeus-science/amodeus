@@ -1,35 +1,14 @@
 package ch.ethz.idsc.amodeus.routing;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.NavigableMap;
-import java.util.Set;
-import java.util.TreeMap;
-
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.core.router.util.LeastCostPathCalculator;
-import org.matsim.core.router.util.LeastCostPathCalculator.Path;
 
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.qty.Quantity;
 
 public class CashedNetworkTimeDistance implements NetworkTimeDistInterface {
 
-    // // ---
-    // private final LeastCostPathCalculator calculator;
-    // private final Map<Link, Map<Link, Tensor>> cache = new HashMap<>();
-    // private final NavigableMap<Double, Map<Link, Set<Link>>> calculationTimes = new TreeMap<>();
-    // private final double maxLag;
-    // // ---
-    // protected double now = 0.0;
-
-    private final CashedPathComputation<Tensor> cachedPathComputation;
+    private final CashedNetworkPropertyComputation<Tensor> cachedPathComputation;
 
     /** A {@link CashedNetworkTimeDistance} stores all the calculated travel times
      * which were calculated no longer ago than @param maxLag. The underlying logic is that in this manner
@@ -37,71 +16,18 @@ public class CashedNetworkTimeDistance implements NetworkTimeDistInterface {
      * of {@link Link}s.For the routing, different {@link LeastCostPathCalculator}s can be used,
      * e.g., to minimize traveltime or network distance. If the boolean @param cachePath is set to
      * true, then the computed Pathes are stored as well (memory intensive!) */
-    public CashedNetworkTimeDistance(LeastCostPathCalculator calculator, Double maxLag, PathInterface<Tensor> pathInterface) {
-        this.cachedPathComputation = new CashedPathComputation<Tensor>(calculator, maxLag, pathInterface);
-        //
-        // this.calculator = calculator;
-        // this.maxLag = maxLag;
+    public CashedNetworkTimeDistance(LeastCostPathCalculator calculator, Double maxLag, NetworkPropertyInterface<Tensor> pathInterface) {
+        this.cachedPathComputation = new CashedNetworkPropertyComputation<Tensor>(calculator, maxLag, pathInterface);
     }
 
     /** removes computations that happened more time than @param maxLag ago since @param now */
     public final void update(Double now) {
         cachedPathComputation.update(now);
-        //
-        // this.now = now;
-        // Set<Double> timestoRemove = new HashSet<>();
-        // for (Entry<Double, Map<Link, Set<Link>>> entry : calculationTimes.headMap(now - maxLag).entrySet()) {
-        // GlobalAssert.that(entry.getKey() < now - maxLag);
-        // timestoRemove.add(entry.getKey());
-        // for (Entry<Link, Set<Link>> fromentry : entry.getValue().entrySet()) {
-        // fromentry.getValue().forEach(to -> cache.get(fromentry.getKey()).remove(to));
-        // }
-        // }
-        // timestoRemove.forEach(time -> calculationTimes.remove(time));
     }
 
-    // private final Tensor fromTo(Link from, Link to) {
-    // if (!cache.containsKey(from))
-    // cache.put(from, new HashMap<>());
-    // if (cache.get(from).containsKey(to))
-    // return cache.get(from).get(to);
-    // Tensor timeDist = timePathComputation(from, to);
-    // cache.get(from).put(to, timeDist);
-    // addToCalculationTime(now, from, to);
-    // return timeDist;
-    // }
-
-    // private final void addToCalculationTime(Double now, Link from, Link to) {
-    // if (!calculationTimes.containsKey(now))
-    // calculationTimes.put(now, new HashMap<>());
-    // if (!calculationTimes.get(now).containsKey(from))
-    // calculationTimes.get(now).put(from, new HashSet<>());
-    // calculationTimes.get(now).get(from).add(to);
-    // }
-
-    @Override
     public boolean checkTime(double now) {
         return cachedPathComputation.checkTime(now);
-        // return this.now == now;
     }
-
-    // public boolean isForNow(double now) {
-    // return this.now == now;
-    // }
-
-//    private Tensor timePathComputation(Link from, Link to) {
-//        /** path */
-//        Path path = calculator.calcLeastCostPath(from.getFromNode(), to.getToNode(), now, null, null);
-//        /** travel time */
-//        Scalar travelTime = Quantity.of(path.travelTime, SI.SECOND);
-//        /** path length */
-//        double dist = 0.0;
-//        for (Link link : path.links)
-//            dist += link.getLength();
-//        Scalar distance = Quantity.of(dist, SI.METER);
-//        /** return pair */
-//        return Tensors.of(travelTime, distance);
-//    }
 
     @Override
     public Scalar travelTime(Link from, Link to) {

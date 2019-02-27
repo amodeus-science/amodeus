@@ -12,7 +12,7 @@ import org.matsim.core.utils.geometry.CoordUtils;
 
 import ch.ethz.idsc.amodeus.routing.CashedNetworkTimeDistance;
 import ch.ethz.idsc.amodeus.routing.EasyMinDistPathCalculator;
-import ch.ethz.idsc.amodeus.routing.TimeDistPath;
+import ch.ethz.idsc.amodeus.routing.TimeDistanceProperty;
 import ch.ethz.idsc.tensor.Scalar;
 
 /* package */ enum StaticHelper {
@@ -24,7 +24,7 @@ import ch.ethz.idsc.tensor.Scalar;
 
     public static Scalar getMinNetworkTripDistance(TaxiTrip trip, Network network) {
         CashedNetworkTimeDistance lcpc = new CashedNetworkTimeDistance//
-                (EasyMinDistPathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0,TimeDistPath.INSTANCE);
+                (EasyMinDistPathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0,TimeDistanceProperty.INSTANCE);
         // find links
         Link linkStart = NetworkUtils.getNearestLink(network, trip.pickupLoc);
         Link linkEnd = NetworkUtils.getNearestLink(network, trip.dropoffLoc);
