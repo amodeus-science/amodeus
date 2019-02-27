@@ -24,10 +24,8 @@ public class CashedNetworkTimeDistance implements NetworkTimeDistInterface {
     // ---
     private final LeastCostPathCalculator calculator;
     private final Map<Link, Map<Link, Tensor>> cache = new HashMap<>();
-    private final Map<Link, Map<Link, Path>> pathCache = new HashMap<>();
     private final NavigableMap<Double, Map<Link, Set<Link>>> calculationTimes = new TreeMap<>();
     private final double maxLag;
-    private final boolean cachePath;
     // ---
     protected double now = 0.0;
 
@@ -37,11 +35,9 @@ public class CashedNetworkTimeDistance implements NetworkTimeDistInterface {
      * of {@link Link}s.For the routing, different {@link LeastCostPathCalculator}s can be used,
      * e.g., to minimize traveltime or network distance. If the boolean @param cachePath is set to
      * true, then the computed Pathes are stored as well (memory intensive!) */
-    public CashedNetworkTimeDistance(LeastCostPathCalculator calculator, Double maxLag, //
-            boolean cachePath) {
+    public CashedNetworkTimeDistance(LeastCostPathCalculator calculator, Double maxLag) {
         this.calculator = calculator;
         this.maxLag = maxLag;
-        this.cachePath = cachePath;
     }
 
     /** removes computations that happened more time than @param maxLag ago since @param now */
