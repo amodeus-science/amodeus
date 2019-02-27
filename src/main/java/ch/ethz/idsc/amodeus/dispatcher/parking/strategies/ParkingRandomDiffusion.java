@@ -28,6 +28,7 @@ class ParkingRandomDiffusion implements ParkingStrategy {
         this.spatialCapacity = spatialCapacity;
     }
 
+    @Override
     public Map<RoboTaxi, Link> keepFree(Collection<RoboTaxi> stayingRobotaxis, Collection<RoboTaxi> rebalancingRobotaxis, long now) {
         if (now % freeParkingPeriod == 0) {
 
