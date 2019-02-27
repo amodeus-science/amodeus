@@ -68,7 +68,7 @@ public enum ScenarioOptionsBase {
         properties.setProperty(SHAPEFILEIDENTIFIER, "AbsoluteShapeFileName");
         properties.setProperty(PARKINGGENERATORIDENTIFIER, AVSpatialCapacityGenerators.NONE.name());
         properties.setProperty(PARKINGSPOTSTAGIDENTIFIER, "spatialAvCapacity");
-        properties.setProperty(PARKINGSTRATEGYIDENTIFIER, ParkingStrategies.NONE.name());
+        properties.setProperty(PARKINGSTRATEGYIDENTIFIER, ParkingStrategies.LP.name());
         return properties;
     }
 

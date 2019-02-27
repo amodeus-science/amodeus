@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Network;
@@ -18,12 +19,15 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.DemandSupplyBalancingDispatcher;
+import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedRebalancingDispatcher;
+import ch.ethz.idsc.amodeus.dispatcher.parking.strategies.ParkingStrategy;
 import ch.ethz.idsc.amodeus.dispatcher.shared.BeamExtensionForSharing;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
+import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
 import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
@@ -49,7 +53,6 @@ import ch.ethz.matsim.av.router.AVRouter;
 public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatcher {
 
     private final int dispatchPeriod;
-    private final long freeParkingPeriod;
 
     /** ride sharing parameters */
     /** the sharing period says every how many seconds the dispatcher should chekc if
@@ -58,7 +61,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
     private final BeamExtensionForSharing beamExtensionForSharing;
 
     /** PARKING EXTENSION */
-    private final ParkingMaintainer parkingMaintainer;
+    private final ParkingStrategy parkingStrategy;
     /** PARKING EXTENSION */
 
     /** the maximal angle between the two directions which is allowed that sharing
@@ -71,23 +74,24 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
     protected RestrictedLinkCapacityDispatcher(Network network, //
             Config config, AVDispatcherConfig avDispatcherConfig, //
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, //
-            MatsimAmodeusDatabase db, AVSpatialCapacityAmodeus avSpatialCapacityAmodeus) {
+            MatsimAmodeusDatabase db, ParkingStrategy parkingStrategy) {
         super(config, avDispatcherConfig, travelTime, router, eventsManager, db);
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 60);
         sharingPeriod = safeConfig.getInteger("sharingPeriod", 10); // makes sense to choose this value similar to the
                                                                     // pickup duration
-        freeParkingPeriod = safeConfig.getInteger("freeParkingPeriod", 10);
-
         double rMax = safeConfig.getDouble("rMax", 1000.0);
-        double phiMax = Pi.in(1000).multiply(RealScalar.of(safeConfig.getDouble("phiMaxDeg", 5.0) / 180.0)).number().doubleValue();
-
+        double phiMax = Pi.in(100).multiply(RealScalar.of(safeConfig.getDouble("phiMaxDeg", 5.0) / 180.0)).number().doubleValue();
         beamExtensionForSharing = new BeamExtensionForSharing(rMax, phiMax);
         this.networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
         this.requestMaintainer = new TreeMaintainer<>(networkBounds, this::getLocation);
 
         /** PARKING EXTENSION */
-        parkingMaintainer = new ParkingMaintainer(avSpatialCapacityAmodeus);
+        this.parkingStrategy = parkingStrategy;
+        DispatcherConfig dispatcherConfig = DispatcherConfig.wrap(avDispatcherConfig);
+        DistanceHeuristics distanceHeuristics = //
+                dispatcherConfig.getDistanceHeuristics(DistanceHeuristics.ASTARLANDMARKS);
+        this.parkingStrategy.setRunntimeParameters(network, distanceHeuristics.getDistanceFunction(network));
         /** PARKING EXTENSION */
     }
 
@@ -95,25 +99,21 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
     protected void redispatch(double now) {
         final long round_now = Math.round(now);
 
-        /** PARKING EXTENSION */
-        if (round_now % freeParkingPeriod == 0) {
-            parkingMaintainer.keepFree(getRoboTaxiSubset(RoboTaxiStatus.STAY)).forEach((rt, l) -> setRoboTaxiRebalance(rt, l));
-        }
-        /** PARKING EXTENSION */
-
         if (round_now % dispatchPeriod == 0) {
             // STANDARD DEMAND SUPPLY IMPLEMENTATION
             /** get open requests and available vehicles */
             Collection<RoboTaxi> robotaxisDivertable = getDivertableUnassignedRoboTaxis();
             TreeMaintainer<RoboTaxi> unassignedRoboTaxis = new TreeMaintainer<>(networkBounds, this::getRoboTaxiLoc);
 
-            robotaxisDivertable.stream().forEach(unassignedRoboTaxis::add);
+            robotaxisDivertable.stream().forEach(rt -> unassignedRoboTaxis.add(rt));
 
             List<AVRequest> requests = getUnassignedAVRequests();
-            requests.stream().forEach(requestMaintainer::add);
+            requests.stream().forEach(r -> requestMaintainer.add(r));
 
             /** distinguish over- and undersupply cases */
-            boolean oversupply = unassignedRoboTaxis.size() >= requests.size();
+            boolean oversupply = false;
+            if (unassignedRoboTaxis.size() >= requests.size())
+                oversupply = true;
 
             if (unassignedRoboTaxis.size() > 0 && requests.size() > 0) {
                 /** oversupply case */
@@ -145,11 +145,13 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
 
             Collection<RoboTaxi> unassignedRoboTaxisNow = new HashSet<>(unassignedRoboTaxis.getValues());
 
-            for (RoboTaxi robotaxi : unassignedRoboTaxisNow)
-                if (!robotaxi.getStatus().equals(RoboTaxiStatus.STAY))
-                    if (unassignedRoboTaxis.contains(robotaxi)) // TODO <- check should be obsolete
+            for (RoboTaxi robotaxi : unassignedRoboTaxisNow) {
+                if (!robotaxi.getStatus().equals(RoboTaxiStatus.STAY)) {
+                    if (unassignedRoboTaxis.contains(robotaxi)) {
                         unassignedRoboTaxis.remove(robotaxi);
-
+                    }
+                }
+            }
         }
 
         // ADDITIONAL SHARING POSSIBILITY AT EACH PICKUP
@@ -167,6 +169,10 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
             }
         }
 
+        /** PARKING EXTENSION */
+        parkingStrategy.keepFree(getRoboTaxiSubset(RoboTaxiStatus.STAY), getRoboTaxiSubset(RoboTaxiStatus.REBALANCEDRIVE), round_now)
+                .forEach((rt, l) -> setRoboTaxiRebalance(rt, l));
+        /** PARKING EXTENSION */
     }
 
     /** @param request
@@ -202,7 +208,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
         private MatsimAmodeusDatabase db;
 
         @Inject(optional = true)
-        private AVSpatialCapacityAmodeus avSpatialCapacityAmodeus;
+        private ParkingStrategy parkingStrategy;
 
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
@@ -214,7 +220,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
             @SuppressWarnings("unused")
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceFunction.INSTANCE);
 
-            return new RestrictedLinkCapacityDispatcher(network, config, avconfig, travelTime, router, eventsManager, db, avSpatialCapacityAmodeus);
+            return new RestrictedLinkCapacityDispatcher(network, config, avconfig, travelTime, router, eventsManager, db, Objects.requireNonNull(parkingStrategy));
         }
     }
 }

@@ -48,6 +48,7 @@ import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.data.LocationSpec;
 import ch.ethz.idsc.amodeus.data.ReferenceFrame;
+import ch.ethz.idsc.amodeus.dispatcher.parking.AmodeusParkingModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDatabaseModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDispatcherModule;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusModule;
@@ -82,9 +83,18 @@ public class StandardMATSimScenarioTest {
         // working properly
 
         // ATTENTION: DriveByDispatcher is not tested, because of long runtime.
-        return Arrays.asList(new Object[][] { { "SingleHeuristic" }, { "DemandSupplyBalancingDispatcher" }, { "GlobalBipartiteMatchingDispatcher" },
-                // { "AdaptiveRealTimeRebalancingPolicy" }, // TODO TEST @Sebastian, is the input data correct? LP fails sometimes, (depening on order)
-                { "FeedforwardFluidicRebalancingPolicy" }, { "DynamicRideSharingStrategy" }, { "FirstComeFirstServedStrategy" }, { "ExtDemandSupplyBeamSharing" } });
+        return Arrays.asList(new Object[][] { //
+                { "SingleHeuristic" }, //
+                { "DemandSupplyBalancingDispatcher" }, //
+                { "GlobalBipartiteMatchingDispatcher" }, //
+                { "AdaptiveRealTimeRebalancingPolicy" }, //
+                { "FeedforwardFluidicRebalancingPolicy" }, //
+                { "DynamicRideSharingStrategy" }, //
+                { "FirstComeFirstServedStrategy" }, //
+                { "ExtDemandSupplyBeamSharing" }, //
+                { "RestrictedLinkCapacityDispatcher" }, //
+                { "HighCapacityDispatcher" }, //
+                { "TShareDispatcher" } });
     }
 
     final private String dispatcher;
@@ -196,6 +206,7 @@ public class StandardMATSimScenarioTest {
         controler.addOverridingModule(new AmodeusVehicleGeneratorModule());
         controler.addOverridingModule(new AmodeusVehicleToVSGeneratorModule());
         controler.addOverridingModule(new AmodeusDatabaseModule(db));
+        controler.addOverridingModule(new AmodeusParkingModule(simOptions));
 
         controler.addOverridingModule(new AbstractModule() {
             @Override
