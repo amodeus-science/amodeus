@@ -1,4 +1,4 @@
-package ch.ethz.idsc.amodeus.analysis.traces;
+package ch.ethz.idsc.amodeus.analysis.service;
 
 import java.io.BufferedWriter;
 import java.io.File;

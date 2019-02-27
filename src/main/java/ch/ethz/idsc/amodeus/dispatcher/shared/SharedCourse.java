@@ -32,7 +32,6 @@ public class SharedCourse {
      * @param courseId is an unique identifier for an Redirect Course
      * @return */
     public static SharedCourse redirectCourse(Link link, String courseId) {
-        // TODO with Claudio. What would be a good solution for this id? might it be a possibility to at a new AV Request here? new AVRequest()
         return new SharedCourse(STANDARD_REDIRECT_AVREQUEST, link, courseId, SharedMealType.REDIRECT);
     }
 

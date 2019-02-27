@@ -189,7 +189,6 @@ class ParkingLPSolver {
     }
 
     public Map<RoboTaxi, Link> returnSolution() {
-        // TODO: check if correct
         Map<RoboTaxi, Link> result = new HashMap<>();
         Integer j = 1;
         for (Link taxiLink : taxiLinks) {

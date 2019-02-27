@@ -21,7 +21,7 @@ public enum AVSpatialCapacityGenerators implements AVSpatialCapacityGenerator {
         }
     };
 
-    // TODO bad style since assignment of static variable
+    // TODO JPH: bad style since assignment of static variable: what would be a better solution?
     protected ScenarioOptions scenarioOptions = null;
 
     public AVSpatialCapacityGenerators setScenarioOptions(ScenarioOptions scenarioOptions) {
