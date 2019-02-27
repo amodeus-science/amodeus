@@ -23,7 +23,7 @@ import ch.ethz.idsc.tensor.Scalar;
 
     public static Scalar getMinNetworkTripDistance(TaxiTrip trip, Network network) {
         CashedNetworkTimeDistance lcpc = new CashedNetworkTimeDistance//
-                (EasyMinDistPathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0);
+                (EasyMinDistPathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0,false);
         // find links
         Link linkStart = NetworkUtils.getNearestLink(network, trip.pickupLoc);
         Link linkEnd = NetworkUtils.getNearestLink(network, trip.dropoffLoc);

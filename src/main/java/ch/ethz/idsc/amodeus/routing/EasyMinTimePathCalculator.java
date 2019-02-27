@@ -37,6 +37,7 @@ public enum EasyMinTimePathCalculator {
         return calcFactory.createPathCalculator(network, travelMinCost, travelTime);
     }
 
+    // TODO remove this
     public static LeastCostPathCalculator.Path execPathCalculator(LeastCostPathCalculator pathCalc, Node from, Node to) {
         // depending on implementation of traveldisutility and traveltime, starttime,
         // person and vehicle are needed

@@ -22,10 +22,12 @@ import ch.ethz.idsc.tensor.qty.Quantity;
 public class CashedNetworkTimeDistance implements NetworkTimeDistInterface {
 
     // ---
-    protected final LeastCostPathCalculator calculator;
-    protected final Map<Link, Map<Link, Tensor>> cache = new HashMap<>();
-    protected final NavigableMap<Double, Map<Link, Set<Link>>> calculationTimes = new TreeMap<>();
-    protected final double maxLag;
+    private final LeastCostPathCalculator calculator;
+    private final Map<Link, Map<Link, Tensor>> cache = new HashMap<>();
+    private final Map<Link, Map<Link, Path>> pathCache = new HashMap<>();
+    private final NavigableMap<Double, Map<Link, Set<Link>>> calculationTimes = new TreeMap<>();
+    private final double maxLag;
+    private final boolean cachePath;
     // ---
     protected double now = 0.0;
 
@@ -33,12 +35,16 @@ public class CashedNetworkTimeDistance implements NetworkTimeDistInterface {
      * which were calculated no longer ago than @param maxLag. The underlying logic is that in this manner
      * the expensive routing computation has to be done fewer times for identical pairs
      * of {@link Link}s.For the routing, different {@link LeastCostPathCalculator}s can be used,
-     * e.g., to minimize traveltime or network distance. */
-    public CashedNetworkTimeDistance(LeastCostPathCalculator calculator, Double maxLag) {
+     * e.g., to minimize traveltime or network distance. If the boolean @param cachePath is set to
+     * true, then the computed Pathes are stored as well (memory intensive!) */
+    public CashedNetworkTimeDistance(LeastCostPathCalculator calculator, Double maxLag, //
+            boolean cachePath) {
         this.calculator = calculator;
         this.maxLag = maxLag;
+        this.cachePath = cachePath;
     }
 
+    /** removes computations that happened more time than @param maxLag ago since @param now */
     public final void update(Double now) {
         this.now = now;
         Set<Double> timestoRemove = new HashSet<>();
@@ -57,7 +63,6 @@ public class CashedNetworkTimeDistance implements NetworkTimeDistInterface {
             cache.put(from, new HashMap<>());
         if (cache.get(from).containsKey(to))
             return cache.get(from).get(to);
-        // TODO change below
         Tensor timeDist = timePathComputation(from, to);
         cache.get(from).put(to, timeDist);
         addToCalculationTime(now, from, to);
