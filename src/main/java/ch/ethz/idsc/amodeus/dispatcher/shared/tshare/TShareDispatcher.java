@@ -40,6 +40,7 @@ import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 import ch.ethz.idsc.amodeus.routing.EasyMinDistPathCalculator;
 import ch.ethz.idsc.amodeus.routing.EasyMinTimePathCalculator;
 import ch.ethz.idsc.amodeus.routing.EuclideanDistanceFunction;
+import ch.ethz.idsc.amodeus.routing.TimeDistPath;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 import ch.ethz.idsc.tensor.Scalar;
@@ -97,9 +98,9 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         distanceFunction = distanceHeuristics.getDistanceFunction(network);
         distanceCashed = //
-                new CashedNetworkTimeDistance(EasyMinDistPathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0);
+                new CashedNetworkTimeDistance(EasyMinDistPathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0,TimeDistPath.INSTANCE);
         travelTimeCalculator = //
-                new CashedNetworkTimeDistance(EasyMinTimePathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0);
+                new CashedNetworkTimeDistance(EasyMinTimePathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0,TimeDistPath.INSTANCE);
         bipartiteMatchingUtils = new SharedBipartiteMatchingUtils(network);
 
         /** T-Share specific */

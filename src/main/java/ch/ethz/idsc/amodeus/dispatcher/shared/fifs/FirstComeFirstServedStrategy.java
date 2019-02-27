@@ -30,6 +30,7 @@ import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.routing.CashedNetworkTimeDistance;
 import ch.ethz.idsc.amodeus.routing.EasyMinTimePathCalculator;
 import ch.ethz.idsc.amodeus.routing.EuclideanDistanceFunction;
+import ch.ethz.idsc.amodeus.routing.TimeDistPath;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
@@ -80,7 +81,7 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
 
         FastAStarLandmarksFactory factory = new FastAStarLandmarksFactory();
         LeastCostPathCalculator calculator = EasyMinTimePathCalculator.prepPathCalculator(network, factory);
-        timeDb = new CashedNetworkTimeDistance(calculator, MAXLAGTRAVELTIMECALCULATION);
+        timeDb = new CashedNetworkTimeDistance(calculator, MAXLAGTRAVELTIMECALCULATION,TimeDistPath.INSTANCE);
 
         this.kockelmanRebalancing = new BlockRebalancing(network, timeDb, MINNUMBERROBOTAXISINBLOCKTOREBALANCE, BINSIZETRAVELDEMAND, dispatchPeriod, REBALANCINGGRIDDISTANCE);
     }
