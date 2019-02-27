@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.parking.strategies;
 
 import java.util.Collection;
@@ -24,7 +25,7 @@ class ParkingLP implements ParkingStrategy {
     ParkingLP(AVSpatialCapacityAmodeus avSpatialCapacityAmodeus) {
         this.avSpatialCapacityAmodeus = avSpatialCapacityAmodeus;
     }
-    
+
     @Override
     public void setRunntimeParameters(Network network, DistanceFunction distanceFunction) {
         this.distanceFunction = distanceFunction;
@@ -35,7 +36,7 @@ class ParkingLP implements ParkingStrategy {
     public Map<RoboTaxi, Link> keepFree(Collection<RoboTaxi> stayingRobotaxis, Collection<RoboTaxi> rebalancingRobotaxis, long now) {
         GlobalAssert.that(!Objects.isNull(distanceFunction));
         GlobalAssert.that(!Objects.isNull(parkingLPStaticHelper));
-        
+
         if (now % freeParkingPeriod == 0) {
 
             Map<Link, Set<RoboTaxi>> linkStayTaxi = parkingLPStaticHelper.getOccupiedLinks(stayingRobotaxis);
@@ -52,5 +53,5 @@ class ParkingLP implements ParkingStrategy {
         }
         return new HashMap<>();
     }
-    
+
 }
