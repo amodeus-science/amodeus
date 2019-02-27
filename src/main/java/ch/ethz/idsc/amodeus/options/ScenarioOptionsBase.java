@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import ch.ethz.idsc.amodeus.dispatcher.parking.AVSpatialCapacityGenerators;
+import ch.ethz.idsc.amodeus.dispatcher.parking.strategies.ParkingStrategies;
 import ch.ethz.idsc.amodeus.prep.PopulationCutters;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreators;
 import ch.ethz.idsc.amodeus.util.io.FileLines;
@@ -33,6 +34,7 @@ public enum ScenarioOptionsBase {
     // ---
     public static final String PARKINGGENERATORIDENTIFIER = "parkingCapacityGenerator";
     public static final String PARKINGSPOTSTAGIDENTIFIER = "parkingSpotsTagInNetwork";
+    public static final String PARKINGSTRATEGYIDENTIFIER = "parkingStrategy";
     // ---
     public static final String COMPLETEGRAPHIDENTIFIER = "completeGraph";
     public static final String POPULATIONCUTTERIDENTIFIER = "populationCutter";
@@ -66,6 +68,7 @@ public enum ScenarioOptionsBase {
         properties.setProperty(SHAPEFILEIDENTIFIER, "AbsoluteShapeFileName");
         properties.setProperty(PARKINGGENERATORIDENTIFIER, AVSpatialCapacityGenerators.NONE.name());
         properties.setProperty(PARKINGSPOTSTAGIDENTIFIER, "spatialAvCapacity");
+        properties.setProperty(PARKINGSTRATEGYIDENTIFIER, ParkingStrategies.NONE.name());
         return properties;
     }
 

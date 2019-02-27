@@ -7,8 +7,11 @@ import java.util.Properties;
 
 import ch.ethz.idsc.amodeus.data.LocationSpec;
 import ch.ethz.idsc.amodeus.data.LocationSpecDatabase;
+import ch.ethz.idsc.amodeus.dispatcher.parking.AVSpatialCapacityAmodeus;
 import ch.ethz.idsc.amodeus.dispatcher.parking.AVSpatialCapacityGenerator;
 import ch.ethz.idsc.amodeus.dispatcher.parking.AVSpatialCapacityGenerators;
+import ch.ethz.idsc.amodeus.dispatcher.parking.strategies.ParkingStrategies;
+import ch.ethz.idsc.amodeus.dispatcher.parking.strategies.ParkingStrategy;
 import ch.ethz.idsc.amodeus.prep.PopulationCutter;
 import ch.ethz.idsc.amodeus.prep.PopulationCutters;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;
@@ -133,6 +136,10 @@ public class ScenarioOptions {
 
     public String getParkingSpaceTagInNetwork() {
         return getString(ScenarioOptionsBase.PARKINGSPOTSTAGIDENTIFIER);
+    }
+
+    public ParkingStrategy getParkingStrategy(AVSpatialCapacityAmodeus avSpatialCapacityAmodeus) {
+        return ParkingStrategies.valueOf(getString(ScenarioOptionsBase.PARKINGSTRATEGYIDENTIFIER)).generateParkingStrategy(avSpatialCapacityAmodeus);
     }
 
     public File getShapeFile() {
