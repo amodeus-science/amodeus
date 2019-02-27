@@ -51,7 +51,7 @@ import ch.ethz.idsc.amodeus.util.io.LocateUtils;
 
     public static void run(File workingDir) throws Exception {
         /** download of open street map data to create scenario */
-        System.out.println("Downloading open stret map data, this may take a while...");
+        System.out.println("Downloading open street map data, this may take a while...");
         File osmFile = new File(workingDir, ScenarioLabels.osmData);
         OsmLoader osm = new OsmLoader(new File(workingDir, ScenarioLabels.amodeusFile));
         osm.saveIfNotAlreadyExists(osmFile);

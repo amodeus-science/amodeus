@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 public class CsvReader {
     private File file;
     private String delim;
+    private BufferedReader bufferedReader;
 
     protected List<String> headers = new ArrayList<>();
 
@@ -71,7 +72,13 @@ public class CsvReader {
 
     public Stream<String[]> lines() throws IOException {
         GlobalAssert.that(file.isFile());
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+        bufferedReader = new BufferedReader(new FileReader(file));
         return bufferedReader.lines().skip(1).map(line -> line.split(delim));
+    }
+
+    /** needs to be called after lines() to give file free
+     * @throws IOException */
+    public void closeLines() throws IOException {
+        bufferedReader.close();
     }
 }

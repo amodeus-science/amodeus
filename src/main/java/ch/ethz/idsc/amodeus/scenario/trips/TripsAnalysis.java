@@ -50,6 +50,7 @@ public class TripsAnalysis {
             }
             durations.append(RealScalar.of(Double.valueOf(reader.get(line, "Duration")) / 60)); // sec -> min
         });
+        reader.closeLines();
     }
 
     public File printSummary() throws IOException {

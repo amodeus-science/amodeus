@@ -1,8 +1,8 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.scenario;
 
-import ch.ethz.idsc.amodeus.scenario.chicago.OnlineTripsReaderChicago;
-import ch.ethz.idsc.amodeus.scenario.chicago.TripsReaderChicago;
+import ch.ethz.idsc.amodeus.scenario.chicago.ChicagoTripsReaderOnline;
+import ch.ethz.idsc.amodeus.scenario.chicago.ChicagoTripsReader;
 import ch.ethz.idsc.amodeus.scenario.dataclean.AbstractDataCleaner;
 import ch.ethz.idsc.amodeus.scenario.dataclean.CharRemovalDataCorrector;
 import ch.ethz.idsc.amodeus.scenario.dataclean.DataCorrector;
@@ -18,7 +18,7 @@ import ch.ethz.idsc.amodeus.scenario.trips.TripStartTimeResampling;
 import ch.ethz.idsc.tensor.qty.Quantity;
 
 public enum DataOperator {
-    CHICAGO(new TripFleetConverter(), new StandardDataCorrector(), new TripDataCleaner(new TripsReaderChicago())) {
+    CHICAGO(new TripFleetConverter(), new StandardDataCorrector(), new TripDataCleaner(new ChicagoTripsReader())) {
         @Override
         public void setFilters() {
             cleaner.addFilter(new TripStartTimeResampling(15)); // start/end times in 15 min resolution
@@ -29,7 +29,7 @@ public enum DataOperator {
             cleaner.addFilter(new TripDistanceFilter(Quantity.of(500,"m"), Quantity.of(50000,"m")));
         }
     },
-    CHICAGO_ONLINE(new TripFleetConverter(), new CharRemovalDataCorrector("\""), new TripDataCleaner(new OnlineTripsReaderChicago())) {
+    CHICAGO_ONLINE(new TripFleetConverter(), new CharRemovalDataCorrector("\""), new TripDataCleaner(new ChicagoTripsReaderOnline())) {
         @Override
         public void setFilters() {
             cleaner.addFilter(new TripStartTimeResampling(15)); // start/end times in 15 min resolution

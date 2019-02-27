@@ -10,10 +10,14 @@ import org.matsim.api.core.v01.Coord;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.qty.Quantity;
 
-public class TripsReaderChicago extends ChicagoTripsReaderBasic {
+public class ChicagoTripsReader extends ChicagoTripsReaderBasic {
 
-    public TripsReaderChicago() {
+    public ChicagoTripsReader() {
         super(",", new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a"));
+    }
+
+    public final String getTaxiCode(String[] line) {
+        return get(line, "Taxi ID");
     }
 
     public Date getStartTime(String[] line) throws ParseException {
@@ -36,6 +40,10 @@ public class TripsReaderChicago extends ChicagoTripsReaderBasic {
 
     public Scalar getDuration(String[] line) {
         return Quantity.of(Long.valueOf(get(line, "Trip Seconds")), "s");
+    }
+
+    public final Scalar getDistance(String[] line) {
+        return Quantity.of(Double.valueOf(get(line, "Trip_Miles")) * milesToM, "m"); // miles to meters
     }
 
 }

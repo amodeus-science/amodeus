@@ -29,8 +29,8 @@ public enum InitialNetworkPreparer {
         new NetworkCleaner().run(filteredNetwork);
 
         // save the network
-        final File fileExport = new File(processingDir + "/network.xml");
-        final File fileExportGz = new File(processingDir + "/network.xml.gz");
+        final File fileExport = new File(processingDir, "network.xml");
+        final File fileExportGz = new File(processingDir, "network.xml.gz");
         {
             // write the modified population to file
             NetworkWriter nw = new NetworkWriter(filteredNetwork);

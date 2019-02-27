@@ -54,6 +54,8 @@ public class TripDataCleaner extends AbstractDataCleaner<TaxiTrip> {
             });
         }
 
+        reader.closeLines();
+
         return outFile;
     }
 

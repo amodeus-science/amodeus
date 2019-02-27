@@ -24,15 +24,15 @@ public class TripPopulationCreator extends AbstractPopulationCreator {
     protected void processLine(String[] line, Population population, PopulationFactory populationFactory, //
                                QuadTree<Link> qt) throws Exception {
         // Create Person
-        Id<Person> personID = Id.create(reader.get(line, "Id"), Person.class);
+        Id<Person> personID = Id.create(reader.get(line, "id"), Person.class);
 
         Person person = populationFactory.createPerson(personID);
         Plan plan = populationFactory.createPlan();
 
         // TODO Choose alternative
         // Coord to link
-        int linkIndexStart = LinkUtils.getLinkfromCoord(str2coord(reader.get(line, "PickupLoc")), db, qt);
-        int linkIndexEnd = LinkUtils.getLinkfromCoord(str2coord(reader.get(line, "DropoffLoc")), db, qt);
+        int linkIndexStart = LinkUtils.getLinkfromCoord(str2coord(reader.get(line, "pickupLoc")), db, qt);
+        int linkIndexEnd = LinkUtils.getLinkfromCoord(str2coord(reader.get(line, "dropoffLoc")), db, qt);
         Id<Link> idStart = db.getOsmLink(linkIndexStart).link.getId();
         Id<Link> idEnd = db.getOsmLink(linkIndexEnd).link.getId();
         // Alternative 2
@@ -52,7 +52,7 @@ public class TripPopulationCreator extends AbstractPopulationCreator {
         } catch (Exception e) {
             waitTime = 0.;
         }
-        startActivity.setEndTime(dateToSeconds(dateFormat.parse(reader.get(line, "PickupDate"))) - waitTime);
+        startActivity.setEndTime(dateToSeconds(dateFormat.parse(reader.get(line, "pickupDate"))) - waitTime);
 
         // Legs
         Leg leg = populationFactory.createLeg("av");
@@ -62,7 +62,7 @@ public class TripPopulationCreator extends AbstractPopulationCreator {
 
         // End Activity
         Activity endActivity = populationFactory.createActivityFromLinkId("activity", idEnd);
-        endActivity.setStartTime(dateToSeconds(dateFormat.parse(reader.get(line, "DropoffDate"))));
+        endActivity.setStartTime(dateToSeconds(dateFormat.parse(reader.get(line, "dropoffDate"))));
 
         // Put together
         plan.addActivity(startActivity);

@@ -70,6 +70,7 @@ import java.util.stream.Collectors;
                 e.printStackTrace();
             }
         });
+        reader.closeLines();
 
         // Validity Check
         GlobalAssert.that(PopulationHelper.checkAllActivitiesInNetwork(population, network));
