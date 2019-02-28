@@ -1,21 +1,6 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.scenario.population;
 
-import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
-import ch.ethz.idsc.amodeus.scenario.readers.CsvReader;
-import ch.ethz.idsc.amodeus.util.io.GZHandler;
-import ch.ethz.idsc.amodeus.util.math.CreateQuadTree;
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import org.matsim.api.core.v01.Coord;
-import org.matsim.api.core.v01.network.Link;
-import org.matsim.api.core.v01.network.Network;
-import org.matsim.api.core.v01.population.Population;
-import org.matsim.api.core.v01.population.PopulationFactory;
-import org.matsim.core.config.Config;
-import org.matsim.core.population.PopulationUtils;
-import org.matsim.core.population.io.PopulationWriter;
-import org.matsim.core.utils.collections.QuadTree;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -25,6 +10,19 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.matsim.api.core.v01.Coord;
+import org.matsim.api.core.v01.network.Network;
+import org.matsim.api.core.v01.population.Population;
+import org.matsim.api.core.v01.population.PopulationFactory;
+import org.matsim.core.config.Config;
+import org.matsim.core.population.PopulationUtils;
+import org.matsim.core.population.io.PopulationWriter;
+
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
+import ch.ethz.idsc.amodeus.scenario.readers.CsvReader;
+import ch.ethz.idsc.amodeus.util.io.GZHandler;
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 /* package */ abstract class AbstractPopulationCreator {
 
@@ -58,14 +56,11 @@ import java.util.stream.Collectors;
         Population population = PopulationUtils.createPopulation(config, network);
         PopulationFactory populationFactory = population.getFactory();
 
-        // QuadTree init, need for nearest link
-        QuadTree<Link> qt = CreateQuadTree.of(network, db);
-
         // Population creation (iterate trough all id's)
         reader.read(inFile);
         reader.lines().forEachOrdered(line -> {
             try {
-                processLine(line, population, populationFactory, qt);
+                processLine(line, population, populationFactory);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -112,7 +107,6 @@ import java.util.stream.Collectors;
         return cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(Calendar.MINUTE) * 60 + cal.get(Calendar.SECOND);
     }
 
-    abstract protected void processLine(String[] line, Population population, PopulationFactory populationFactory, //
-            QuadTree<Link> qt) throws Exception;
+    abstract protected void processLine(String[] line, Population population, PopulationFactory populationFactory) throws Exception;
 
 }

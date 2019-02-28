@@ -12,13 +12,10 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.shared.Compatibility;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.routing.CashedNetworkTimeDistance;
 import ch.ethz.idsc.amodeus.routing.NetworkTimeDistInterface;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Scalars;
-import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** Implementation of the "Algorithm 2: Insertion feasibility check" is contained in this class for all
@@ -60,6 +57,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         NavigableMap<Scalar, List<SharedCourse>> menuOptions = new TreeMap<>();
         for (int i = 0; i <= length; ++i) {
             for (int j = length; j >= i; j--) {
+                /** creation of new menu */
                 List<SharedCourse> newMenu = new ArrayList<>();
                 for (int k = 0; k <= length; ++k) {
                     if (i == k)
@@ -73,45 +71,27 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
                 /** check compatibility with {@link RoboTaxi} capacity for newMenu */
                 boolean capctyComp = Compatibility.of(newMenu).forCapacity(roboTaxi.getCapacity());
+                if (!capctyComp)
+                    continue;
 
                 /** compute expecte arrival times and check compatibility with time windows */
-                boolean timeComp = true;
-                Scalar timePrev = Quantity.of(timeNow, "s");
-                for (int k = 0; k < newMenu.size(); ++k) {
-                    SharedCourse course = newMenu.get(k);
-                    Scalar travelTime = travelTimeCashed.travelTime(roboTaxi.getLastKnownLocation(), course.getLink());
-                    Scalar timeofCourse = timePrev.add(travelTime);
-                    if (course.getMealType().equals(SharedMealType.PICKUP)) {
-                        Scalar latestPickup = LatestPickup.of(course.getAvRequest(), pickupDelayMax);
-                        if (Scalars.lessThan(latestPickup, timeofCourse)) {
-                            timeComp = false;
-                            break;
-                        }
-                    }
-                    if (course.getMealType().equals(SharedMealType.DROPOFF)) {
-                        Scalar latestDropoff = LatestArrival.of(course.getAvRequest(), drpoffDelayMax, travelTimeCashed);
-                        if (Scalars.lessThan(latestDropoff, timeofCourse)) {
-                            timeComp = false;
-                            break;
-                        }
-                    }
-                    timePrev = timeofCourse;
-                }
+                boolean timeComp = TimeWindowCheck.of(timeNow, newMenu, travelTimeCashed, roboTaxi, //
+                        pickupDelayMax, drpoffDelayMax);
+                if (!timeComp)
+                    continue;
 
-                if (capctyComp && timeComp) {
-                    /** the line below is computationally expensive and calculates the
-                     * path length of the option. */
-                    menuOptions.put(Length.of(roboTaxi, newMenu, distance), newMenu);
-                }
+                /** the line below is computationally expensive and calculates the
+                 * path length of the option. */
+                menuOptions.put(Length.of(roboTaxi, newMenu, distance), newMenu);
             }
         }
 
         /** save the optimal menu */
         if (Objects.nonNull(menuOptions.firstEntry())) {
             optimalMenu = menuOptions.firstEntry().getValue();
+            optimalLength = menuOptions.firstEntry().getKey();
             GlobalAssert.that(optimalMenu.size() == originalMenu.size() + 2);
             GlobalAssert.that(SharedCourseListUtils.checkMenuConsistency(optimalMenu, roboTaxi.getCapacity()));
-            optimalLength = menuOptions.firstEntry().getKey();
         }
     }
 

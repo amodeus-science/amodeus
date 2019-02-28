@@ -2,7 +2,7 @@
 package ch.ethz.idsc.amodeus.scenario.population;
 
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
-import ch.ethz.idsc.amodeus.util.geo.LinkUtils;
+import ch.ethz.idsc.amodeus.util.geo.ClosestLinkSelect;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
@@ -16,13 +16,15 @@ import java.text.DateFormat;
 
 public class TripPopulationCreator extends AbstractPopulationCreator {
 
-    public TripPopulationCreator(File processingDir, Config config, Network network, MatsimAmodeusDatabase db, //
-                                 DateFormat dateFormat) {
+    private final ClosestLinkSelect linkSelect;
+
+    public TripPopulationCreator(File processingDir, Config config, Network network, //
+            MatsimAmodeusDatabase db, DateFormat dateFormat, QuadTree<Link> qt) {
         super(processingDir, config, network, db, dateFormat);
+        this.linkSelect = new ClosestLinkSelect(db, qt);
     }
 
-    protected void processLine(String[] line, Population population, PopulationFactory populationFactory, //
-                               QuadTree<Link> qt) throws Exception {
+    protected void processLine(String[] line, Population population, PopulationFactory populationFactory) throws Exception {
         // Create Person
         Id<Person> personID = Id.create(reader.get(line, "Id"), Person.class);
 
@@ -31,8 +33,8 @@ public class TripPopulationCreator extends AbstractPopulationCreator {
 
         // TODO Choose alternative
         // Coord to link
-        int linkIndexStart = LinkUtils.getLinkfromCoord(str2coord(reader.get(line, "PickupLoc")), db, qt);
-        int linkIndexEnd = LinkUtils.getLinkfromCoord(str2coord(reader.get(line, "DropoffLoc")), db, qt);
+        int linkIndexStart = linkSelect.indexFromWGS84(str2coord(reader.get(line, "PickupLoc")));
+        int linkIndexEnd = linkSelect.indexFromWGS84(str2coord(reader.get(line, "DropoffLoc")));
         Id<Link> idStart = db.getOsmLink(linkIndexStart).link.getId();
         Id<Link> idEnd = db.getOsmLink(linkIndexEnd).link.getId();
         // Alternative 2

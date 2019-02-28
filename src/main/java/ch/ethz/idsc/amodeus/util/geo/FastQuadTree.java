@@ -1,12 +1,12 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.dispatcher.shared.tshare;
+package ch.ethz.idsc.amodeus.util.geo;
 
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.utils.collections.QuadTree;
 
-/* package */ enum FastQuadTree {
+public enum FastQuadTree {
     ;
 
     /** @param network

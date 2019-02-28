@@ -49,7 +49,7 @@ public class CashedNetworkPropertyComputation<T> {
         timestoRemove.forEach(time -> calculationTimes.remove(time));
     }
 
-    protected final T fromTo(Link from, Link to) {
+    public final T fromTo(Link from, Link to) {
         if (!cache.containsKey(from))
             cache.put(from, new HashMap<>());
         if (cache.get(from).containsKey(to))

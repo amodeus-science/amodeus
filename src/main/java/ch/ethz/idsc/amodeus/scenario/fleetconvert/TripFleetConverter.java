@@ -4,9 +4,11 @@ package ch.ethz.idsc.amodeus.scenario.fleetconvert;
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
+import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
+import org.matsim.core.utils.collections.QuadTree;
 
 import ch.ethz.idsc.amodeus.data.ReferenceFrame;
 import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
@@ -16,6 +18,7 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.scenario.DataOperator;
 import ch.ethz.idsc.amodeus.scenario.population.TripPopulationCreator;
 import ch.ethz.idsc.amodeus.util.io.FileDelete;
+import ch.ethz.idsc.amodeus.util.math.CreateQuadTree;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 public class TripFleetConverter implements FleetConverter {
@@ -74,8 +77,9 @@ public class TripFleetConverter implements FleetConverter {
 
         // Create Population
         // ===================================
+        QuadTree<Link> qt = CreateQuadTree.of(network, db);
         TripPopulationCreator populationCreator = new TripPopulationCreator(processingDir, configFull, network, db, //
-                dataOperator.cleaner.dateFormat);
+                dataOperator.cleaner.dateFormat,qt);
         populationCreator.process(cleanTripFile);
     }
 }
