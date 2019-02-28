@@ -110,7 +110,7 @@ public enum NumberPassengerStatusDistribution implements AnalysisExport {
         }
 
         visualSet.setPlotLabel("Number Passengers");
-        visualSet.setRangeAxisLabel("RoboTaxis");
+        visualSet.setAxesLabelY("RoboTaxis");
 
         JFreeChart chart = ch.ethz.idsc.subare.plot.StackedTimedChart.of(visualSet);
 

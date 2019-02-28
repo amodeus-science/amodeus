@@ -50,8 +50,8 @@ import ch.ethz.idsc.tensor.sca.Round;
         visualSet.add(Range.of(0, binCounter.length()).multiply(binSize), binCounter);
         // ---
         visualSet.setPlotLabel(title);
-        visualSet.setRangeAxisLabel("% of requests");
-        visualSet.setDomainAxisLabel(xLabel);
+        visualSet.setAxesLabelY("% of requests");
+        visualSet.setAxesLabelX(xLabel);
 
         final Scalar size = binSize;
         JFreeChart jFreeChart = Histogram.of(visualSet, s -> "[" + s.number() + " , " + s.add(size).number() + ")");

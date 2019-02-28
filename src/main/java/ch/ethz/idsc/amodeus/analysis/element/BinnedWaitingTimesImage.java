@@ -39,8 +39,8 @@ public enum BinnedWaitingTimesImage implements AnalysisExport {
         }
 
         visualSet.setPlotLabel("Binned Waiting Times");
-        visualSet.setDomainAxisLabel("Time");
-        visualSet.setRangeAxisLabel("Waiting Times [min]");
+        visualSet.setAxesLabelX("Time");
+        visualSet.setAxesLabelY("Waiting Times [min]");
 
         JFreeChart chart = TimedChart.of(visualSet);
         chart.getXYPlot().getRangeAxis().setRange(0., //

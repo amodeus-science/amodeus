@@ -36,7 +36,7 @@ public enum StatusDistributionImage implements AnalysisExport {
         }
 
         visualSet.setPlotLabel("Status Distribution");
-        visualSet.setRangeAxisLabel("RoboTaxis");
+        visualSet.setAxesLabelY("RoboTaxis");
 
         JFreeChart chart = ch.ethz.idsc.subare.plot.StackedTimedChart.of(visualSet);
 

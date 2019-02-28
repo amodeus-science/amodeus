@@ -45,8 +45,8 @@ enum PlotDemo {
             // row2.setLabel("row 2");
             row2.setLabel("row 2");
             visualSet.setPlotLabel("title");
-            visualSet.setDomainAxisLabel("x axis");
-            visualSet.setRangeAxisLabel("y axis");
+            visualSet.setAxesLabelX("x axis");
+            visualSet.setAxesLabelY("y axis");
         }
 
         /* amodeus specific */
