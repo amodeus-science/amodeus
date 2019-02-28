@@ -49,6 +49,12 @@ public enum TtlValIdent implements TotalValueIdentifier {
     AVGTRIPDISTANCE("averageTripDistance"), //
     DISTANCERATIO("distanceRatio"), //
     OCCUPANCYRATIO("occupancyRatio"), //
+    MAXROBOTAXIDISTANCEDRIVEN("maxRoboTaxiDistance"), //
+    MINROBOTAXIDISTANCEDRIVEN("minRoboTaxiDistance"), //
+    
+    // MPC
+    MPCPLANNINGHORIZON("planningHorizon"), //
+    MPCTIMESTEP("timeStep"),
 
     // SHARED Values
     REQUESTSSHAREDNUMBERS("requestSharedNumbers");

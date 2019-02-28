@@ -21,6 +21,7 @@ public enum DistanceElementHtml implements HtmlReportElement {
     public Map<String, HtmlBodyElement> process(AnalysisSummary analysisSummary) {
         DistanceElement de = analysisSummary.getDistanceElement();
         Map<String, HtmlBodyElement> bodyElements = new HashMap<>();
+        int numbVerhicles = analysisSummary.getSimulationInformationElement().vehicleSize();
         // Aggregated Results:
         String aRKey = BodyElementKeys.AGGREGATERESULTS;
         HtmlBodyElement aRElement = new HtmlBodyElement();
@@ -33,7 +34,12 @@ public enum DistanceElementHtml implements HtmlReportElement {
                 "\n\tRebalancing:" + //
                 "\n\tPickup:" + //
                 "\n\tParking:" + //
+                "\n\tEmpty Distance:" + //
                 "\n\tWith Customer:" + //
+                "\n" + //
+                "\nMaximum Vehicle Total Distance:" + //
+                "\nMinimum Vehicle Total Distance:" + //
+                "\nMean Vehicle Total Distance:" + //
                 "\n" + //
                 "\nAverage Trip Distance:" //
         );
@@ -47,8 +53,14 @@ public enum DistanceElementHtml implements HtmlReportElement {
                 DECIMAL.format(100 * de.totalDistancePicku / de.totalDistance) + "%)" + //
                 "\n" + DECIMAL.format(de.totalDistanceParki) + " km (" + //
                 DECIMAL.format(100 * de.totalDistanceParki / de.totalDistance) + "%)" + //
+                "\n" + DECIMAL.format(de.totalDistance-de.totalDistanceWtCst) + " km (" + //
+                DECIMAL.format(100 * (de.totalDistance-de.totalDistanceWtCst) / de.totalDistance) + "%)" + //
                 "\n" + DECIMAL.format(de.totalDistanceWtCst) + " km (" + //
                 DECIMAL.format(100 * de.totalDistanceWtCst / de.totalDistance) + "%)" + //
+                "\n" + //
+                "\n" + DECIMAL.format(de.maxDistanceOfVehicle) + " km" + //
+                "\n" + DECIMAL.format(de.minDistanceOfVehicle) + " km" + //
+                "\n" + DECIMAL.format(de.totalDistance/numbVerhicles) + " km" + //
                 "\n" + //
                 "\n" + DECIMAL.format(de.totalDistanceWtCst / de.requestIndices.size()) + " km");
         File img = new File(IMAGE_FOLDER, StackedDistanceChartImage.FILENAME + ".png");

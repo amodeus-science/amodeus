@@ -24,7 +24,9 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.Join;
 import ch.ethz.idsc.tensor.alg.Transpose;
+import ch.ethz.idsc.tensor.red.Max;
 import ch.ethz.idsc.tensor.red.Mean;
+import ch.ethz.idsc.tensor.red.Min;
 import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.InvertUnlessZero;
 
@@ -52,6 +54,8 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
     public double totalDistanceRatio;
     private double avgTripDistance;
     public double avgOccupancy;
+    public double maxDistanceOfVehicle;
+    public double minDistanceOfVehicle;
 
     /** distRatio */
     public Tensor ratios;
@@ -100,6 +104,9 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
 
         // total distances driven per vehicle
         totalDistancesPerVehicle = Tensor.of(list.stream().map(vs -> Total.of(vs.distanceTotal))).multiply(KM2M);
+        
+        maxDistanceOfVehicle = totalDistancesPerVehicle.stream().reduce(Max::of).get().Get().number().doubleValue();
+        minDistanceOfVehicle = totalDistancesPerVehicle.stream().reduce(Min::of).get().Get().number().doubleValue();
 
         // Total Values For one Day
         totalDistance = totalDistancesPerVehicle.stream().reduce(Tensor::add).get().Get().number().doubleValue();
@@ -138,6 +145,8 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
         map.put(TtlValIdent.DISTANCERATIO, String.valueOf(totalDistanceRatio));
         map.put(TtlValIdent.OCCUPANCYRATIO, String.valueOf(avgOccupancy));
         map.put(TtlValIdent.AVGTRIPDISTANCE, String.valueOf(avgTripDistance));
+        map.put(TtlValIdent.MAXROBOTAXIDISTANCEDRIVEN, String.valueOf(maxDistanceOfVehicle));
+        map.put(TtlValIdent.MINROBOTAXIDISTANCEDRIVEN, String.valueOf(minDistanceOfVehicle));
         return map;
     }
 

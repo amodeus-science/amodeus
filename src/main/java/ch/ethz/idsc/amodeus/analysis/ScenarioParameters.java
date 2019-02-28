@@ -47,6 +47,8 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
     public final int redispatchPeriod;
     public final int rebalancingPeriod;
     public final int virtualNodesCount;
+    public final int planningHorizon;
+    public final int timeStep;
 
     public final String dispatcher;
     public final String distanceHeuristic;
@@ -87,6 +89,9 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
         distanceHeuristic = safeConfig.getString(DISTANCEHEURISTICSTRING, UNDEFINED_STRING);
         populationSize = scenario.getPopulation().getPersons().values().size();
         virtualNetworkCreator = scenOptions.getString(ScenarioOptionsBase.VIRTUALNETWORKCREATORIDENTIFIER);
+        
+        planningHorizon = scenOptions.getMPCplanningHorizon();
+        timeStep = scenOptions.getMPCtimeStep();
 
         Network network = scenario.getNetwork();
         if (Objects.isNull(network.getName()))
@@ -126,6 +131,8 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
         map.put(TtlValIdent.VIRTUALNODES, String.valueOf(virtualNodesCount));
         map.put(TtlValIdent.VEHICLEGENERATOR, vehicleGenerator);
         map.put(TtlValIdent.TIMESTAMP, date);
+        map.put(TtlValIdent.MPCPLANNINGHORIZON, String.valueOf(planningHorizon));
+        map.put(TtlValIdent.MPCTIMESTEP, String.valueOf(timeStep));
         return map;
     }
 

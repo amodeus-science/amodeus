@@ -33,11 +33,17 @@ public enum ScenarioParametersHtml implements HtmlReportElement {
         htmlUtils.insertLink("av_config.xml", "AV_Config File");
         htmlUtils.newLine();
         htmlUtils.insertTextLeft("Dispatcher:" + //
-                "\nRebalancing Period:" + //
-                "\nRedispatching Period:");
+                "\nMPC Planning Horizon:" + //
+                "\nMPC Time Step [min]:");
         htmlUtils.insertTextLeft(scenarioParameters.dispatcher + //
-                "\n" + Time.writeTime(scenarioParameters.rebalancingPeriod) + //
-                "\n" + Time.writeTime(scenarioParameters.redispatchPeriod));
+                "\n" + scenarioParameters.planningHorizon + //
+                "\n" + scenarioParameters.timeStep);
+//        htmlUtils.insertTextLeft("Dispatcher:" + //
+//                "\nRebalancing Period:" + //
+//                "\nRedispatching Period:");
+//        htmlUtils.insertTextLeft(scenarioParameters.dispatcher + //
+//                "\n" + Time.writeTime(scenarioParameters.rebalancingPeriod) + //
+//                "\n" + Time.writeTime(scenarioParameters.redispatchPeriod));
         htmlUtils.newLine();
         htmlUtils.insertTextLeft("Network:" + //
                 "\nVirtual Nodes:" + //
