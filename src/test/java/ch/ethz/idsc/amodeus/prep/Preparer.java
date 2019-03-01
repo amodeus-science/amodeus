@@ -13,7 +13,6 @@ import org.matsim.core.scenario.ScenarioUtils;
 
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
-import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 
 /* package */ class Preparer {
 
@@ -22,9 +21,8 @@ import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
     /* package */ final Population population;
     /* package */ final Config config;
 
-    public Preparer() throws IOException {
+    public Preparer(File workingDirectory) throws IOException {
         // Static.setup();
-        File workingDirectory = MultiFileTools.getWorkingDirectory();
 
         /** amodeus options */
         scenOpt = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());

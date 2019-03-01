@@ -12,6 +12,7 @@ import org.matsim.contrib.dvrp.schedule.Task;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.schedule.AVStayTask;
 
+// TODO class not used outside project: document purpose or hide implementation
 public class RoboTaxiPlan implements Serializable {
 
     /* package */ static RoboTaxiPlan of(Schedule schedule, double time) {

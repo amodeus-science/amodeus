@@ -8,7 +8,7 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.img.StrictColorDataIndexed;
 
-public class CustomColorDataCreator {
+/* package */ class CustomColorDataCreator {
     private Tensor tensor = Tensors.empty();
 
     public void append(Color color) {
@@ -18,9 +18,4 @@ public class CustomColorDataCreator {
     public ColorDataIndexed getColorDataIndexed() {
         return StrictColorDataIndexed.create(tensor);
     }
-
-    public int size() {
-        return tensor.length();
-    }
-
 }

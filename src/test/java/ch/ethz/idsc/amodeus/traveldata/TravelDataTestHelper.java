@@ -5,30 +5,34 @@ import java.io.File;
 
 import org.matsim.api.core.v01.network.Link;
 
+import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.tensor.sca.Chop;
 
 public class TravelDataTestHelper {
+    public static final File COMPARISON_FILE_TD = new File("resources/testComparisonFiles/travelData");
 
-    public static TravelDataTestHelper prepare(VirtualNetwork<Link> vNCreated, VirtualNetwork<Link> vNSaved) throws Exception {
-        return new TravelDataTestHelper(vNCreated, vNSaved);
+    public static TravelDataTestHelper prepare(VirtualNetwork<Link> vNCreated, VirtualNetwork<Link> vNSaved, ScenarioOptions scenarioOptions) throws Exception {
+        return new TravelDataTestHelper(vNCreated, vNSaved, scenarioOptions);
     }
 
-    private TravelData tDCreated;
-    private TravelData tDSaved;
-    // private VirtualNetwork<Link> virtualNetworkCreated;
+    // ---
+    private final TravelData tDCreated;
+    private final TravelData tDSaved;
 
-    private TravelDataTestHelper(VirtualNetwork<Link> vNCreated, VirtualNetwork<Link> vNSaved) throws Exception {
-        tDCreated = TravelDataGet.readDefault(vNCreated);
-        tDSaved = TravelDataIO.read(new File("resources/testComparisonFiles/travelData"), vNSaved);
+    private TravelDataTestHelper(VirtualNetwork<Link> vNCreated, VirtualNetwork<Link> vNSaved, ScenarioOptions scenarioOptions) throws Exception {
+        tDCreated = TravelDataGet.readStatic(vNCreated, scenarioOptions);
+        // TODO where is the travel data comparison file created originally?
+        TravelDataIO.writeStatic(COMPARISON_FILE_TD, (StaticTravelData) tDCreated);
+        tDSaved = TravelDataIO.readStatic(COMPARISON_FILE_TD, vNSaved);
     }
 
     public boolean timeIntervalCheck() {
-        return (tDSaved.getTimeIntervalLength() == tDCreated.getTimeIntervalLength());
+        return tDSaved.getTimeIntervalLength() == tDCreated.getTimeIntervalLength();
     }
 
     public boolean timeStepsCheck() {
-        return (tDSaved.getTimeSteps() == tDCreated.getTimeSteps());
+        return tDSaved.getTimeSteps() == tDCreated.getTimeSteps();
     }
 
     public boolean lambdaAbsoluteCheck() {
@@ -42,7 +46,7 @@ public class TravelDataTestHelper {
     public boolean lambdaOutOfRangeCheck() {
         try {
             tDCreated.getLambdaRateAtTime(30 * 3600);
-        } catch (Exception e) {
+        } catch (Exception exception) {
             return true;
         }
         return false;

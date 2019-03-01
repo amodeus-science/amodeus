@@ -96,7 +96,7 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
 
         VirtualNetwork<Link> virtualNetwork = null;
         try {
-            virtualNetwork = VirtualNetworkGet.readDefault(network);
+            virtualNetwork = VirtualNetworkGet.readDefault(network, scenOptions);
 
         } catch (IOException e) {
             System.err.println("INFO not able to load virtual network for report");

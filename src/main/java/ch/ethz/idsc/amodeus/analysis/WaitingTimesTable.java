@@ -8,6 +8,8 @@ import ch.ethz.idsc.amodeus.analysis.element.TravelTimeAnalysis;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.io.TableBuilder;
 
+// TODO add some code that explains the columns in the export folder
+// TODO add units to export UnitExportUtils
 public enum WaitingTimesTable implements AnalysisExport {
     INSTANCE;
 
