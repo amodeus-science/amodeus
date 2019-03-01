@@ -20,6 +20,7 @@ import ch.ethz.idsc.amodeus.analysis.element.BinnedWaitingTimesImage;
 import ch.ethz.idsc.amodeus.analysis.element.DistanceDistributionOverDayImage;
 import ch.ethz.idsc.amodeus.analysis.element.DriveTimeHtml;
 import ch.ethz.idsc.amodeus.analysis.element.EmptyRoboTaxiStatusDistribution;
+import ch.ethz.idsc.amodeus.analysis.element.NumberWaitingRoboTaxi;
 import ch.ethz.idsc.amodeus.analysis.element.OccupancyDistanceRatiosImage;
 import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionImage;
 import ch.ethz.idsc.amodeus.analysis.element.TotalJourneyTimeHtml;
@@ -196,6 +197,7 @@ public class Analysis {
         analysisExports.add(WaitTimeHistoImage.INSTANCE);
         analysisExports.add(DriveTimeImages.INSTANCE);
         analysisExports.add(TotalJourneyTimeImage.INSTANCE);
+        analysisExports.add(NumberWaitingRoboTaxi.INSTANCE);
 
         analysisExports.add(DistancesOverDayTable.INSTANCE);
         analysisExports.add(DistancesRatiosTable.INSTANCE);

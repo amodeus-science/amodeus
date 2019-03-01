@@ -23,6 +23,7 @@ import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.img.ColorDataGradients;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.opt.ScalarTensorFunction;
+import ch.ethz.idsc.tensor.red.Max;
 import ch.ethz.idsc.tensor.red.Total;
 
 public enum EmptyRoboTaxiStatusDistribution implements AnalysisExport {
@@ -31,6 +32,8 @@ public enum EmptyRoboTaxiStatusDistribution implements AnalysisExport {
     public static final String FILENAME = "statusDistributionEmptyRoboTaxi";
     // TODO might be done dependent on the Secnario Options
     public static final ScalarTensorFunction COLOR_DATA_GRADIENT_DEFAULT = ColorDataGradients.SUNSET;
+    
+    public Tensor notWithCustomer;
 
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
@@ -45,7 +48,7 @@ public enum EmptyRoboTaxiStatusDistribution implements AnalysisExport {
 
         /** create values */
         Tensor statusesTensor = Transpose.of(sDE.statusTensor);
-        Tensor notWithCustomer = Tensors.empty();
+        notWithCustomer = Tensors.empty();
         notWithCustomer.append(statusesTensor.get(RoboTaxiStatus.DRIVETOCUSTOMER.ordinal()));
         notWithCustomer.append(statusesTensor.get(RoboTaxiStatus.REBALANCEDRIVE.ordinal()));
         notWithCustomer.append(statusesTensor.get(RoboTaxiStatus.PARKING.ordinal()));
@@ -103,4 +106,9 @@ public enum EmptyRoboTaxiStatusDistribution implements AnalysisExport {
         }
 
     }
+    
+    public Tensor getNotWithCustomer(){
+    	return notWithCustomer;
+    }
+    
 }
