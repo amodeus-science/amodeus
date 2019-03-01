@@ -4,6 +4,7 @@ package ch.ethz.idsc.amodeus.analysis.plot;
 import java.awt.Color;
 import java.awt.Font;
 
+@Deprecated
 public enum DiagramSettings {
     ;
 

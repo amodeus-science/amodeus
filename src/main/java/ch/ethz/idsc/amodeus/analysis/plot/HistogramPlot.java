@@ -20,6 +20,7 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Dimensions;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
+@Deprecated
 public enum HistogramPlot {
     ;
 
