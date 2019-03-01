@@ -23,7 +23,8 @@ public class AVSpatialCapacityAdapter implements AVSpatialCapacityAmodeus {
                 : 0;
     }
 
-    public Collection<Id<Link>> getAvaiableLinks() {
+    @Override
+    public Collection<Id<Link>> getAvailableLinks() {
         return capacities.keySet();
     }
 }

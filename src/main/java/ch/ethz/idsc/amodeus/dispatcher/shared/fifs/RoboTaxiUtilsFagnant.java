@@ -23,8 +23,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param timeDb
      * @param maxTime
      * @return */
-    static NavigableMap<Double, RoboTaxi> getRoboTaxisWithinMaxTime(Link link, Collection<RoboTaxi> robotaxis, TravelTimeCalculatorCached timeDb, double maxTime,
-            RoboTaxiHandler roboTaxiMaintainer) {
+    static NavigableMap<Double, RoboTaxi> getRoboTaxisWithinMaxTime( //
+            Link link, Collection<RoboTaxi> robotaxis, TravelTimeInterface timeDb, double maxTime, RoboTaxiHandler roboTaxiMaintainer) {
         Collection<RoboTaxi> closeRoboTaxis = roboTaxiMaintainer.getRoboTaxisWithinFreeSpeedDisk(link.getCoord(), maxTime).stream().filter(rt -> robotaxis.contains(rt))
                 .collect(Collectors.toSet());
         NavigableMap<Double, RoboTaxi> map = new TreeMap<>();
@@ -50,8 +50,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param now
      * @param timeDb
      * @return */
-    static Optional<RoboTaxi> getClosestUnassignedRoboTaxiWithinMaxTime(RoboTaxiHandler roboTaxiMaintainer, AVRequest avRequest, double maxTime, double now,
-            TravelTimeCalculatorCached timeDb) {
+    static Optional<RoboTaxi> getClosestUnassignedRoboTaxiWithinMaxTime( //
+            RoboTaxiHandler roboTaxiMaintainer, AVRequest avRequest, double maxTime, double now, TravelTimeInterface timeDb) {
         NavigableMap<Double, RoboTaxi> roboTaxis = RoboTaxiUtilsFagnant.getRoboTaxisWithinMaxTime(avRequest.getFromLink(), roboTaxiMaintainer.getUnassignedRoboTaxis(), timeDb,
                 maxTime, roboTaxiMaintainer);
         if (roboTaxis.isEmpty()) {

@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import ch.ethz.idsc.amodeus.dispatcher.shared.Compatibility;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
@@ -53,7 +54,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
     }
 
     public static boolean checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(SharedMenu sharedMenu, int roboTaxiCapacity) {
-        return SharedCourseListUtils.checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(sharedMenu.getRoboTaxiMenu(), roboTaxiCapacity);
+        return Compatibility.of(sharedMenu.getRoboTaxiMenu()).forCapacity(roboTaxiCapacity);
     }
 
     /** @return true if the menu has entries */

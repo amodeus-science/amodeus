@@ -23,6 +23,7 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.testutils.TestUtils;
+import ch.ethz.idsc.amodeus.traveldata.StaticTravelData;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.util.io.ProvideAVConfig;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
@@ -71,9 +72,11 @@ public class VehicleToVSGeneratorTester {
         /** creating dummy config with 10 vehicles */
         avGeneratorConfig = new AVGeneratorConfig(new AVOperatorConfig("id", new AVConfig()), "strategy");
 
-        travelData000 = new TravelData(virtualNetwork.getvNetworkID(), Array.zeros(3, 3, 3), Array.zeros(3, 3, 3), Array.zeros(3, 3, 3), Array.zeros(3), "", endTime);
-        travelData123 = new TravelData(virtualNetwork.getvNetworkID(), Array.zeros(3, 3, 3), Array.zeros(3, 3, 3), Array.zeros(3, 3, 3), Tensors.vector(1, 2, 3), "", endTime);
-        travelData334 = new TravelData(virtualNetwork.getvNetworkID(), Array.zeros(3, 3, 3), Array.zeros(3, 3, 3), Array.zeros(3, 3, 3), Tensors.vector(3, 3, 4), "", endTime);
+        travelData000 = new StaticTravelData(virtualNetwork.getvNetworkID(), Array.zeros(3, 3, 3), Array.zeros(3, 3, 3), Array.zeros(3, 3, 3), Array.zeros(3), "", endTime);
+        travelData123 = new StaticTravelData(virtualNetwork.getvNetworkID(), Array.zeros(3, 3, 3), Array.zeros(3, 3, 3), Array.zeros(3, 3, 3), Tensors.vector(1, 2, 3), "",
+                endTime);
+        travelData334 = new StaticTravelData(virtualNetwork.getvNetworkID(), Array.zeros(3, 3, 3), Array.zeros(3, 3, 3), Array.zeros(3, 3, 3), Tensors.vector(3, 3, 4), "",
+                endTime);
     }
 
     @Test

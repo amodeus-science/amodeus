@@ -26,7 +26,7 @@ public class SharedBipartiteMatchingUtils {
     }
 
     public Tensor executePickup(SharedUniversalDispatcher universalDispatcher, //
-            Function<AVRequest,RoboTaxi> getPickupTaxi, //
+            Function<AVRequest, RoboTaxi> getPickupTaxi, //
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
             Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
             DistanceFunction distanceFunction, Network network) {
@@ -40,7 +40,7 @@ public class SharedBipartiteMatchingUtils {
         return infoLine;
     }
 
-    public Map<RoboTaxi, AVRequest> getGBPMatch(Function<AVRequest,RoboTaxi> getPickupTaxi, //
+    public Map<RoboTaxi, AVRequest> getGBPMatch(Function<AVRequest, RoboTaxi> getPickupTaxi, //
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
             Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
             DistanceFunction distanceFunction, Network network) {

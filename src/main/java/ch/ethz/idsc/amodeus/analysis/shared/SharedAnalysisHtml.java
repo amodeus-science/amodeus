@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
-import ch.ethz.idsc.amodeus.analysis.plot.CompositionStack;
 import ch.ethz.idsc.amodeus.analysis.report.HtmlBodyElement;
 import ch.ethz.idsc.amodeus.analysis.report.HtmlReportElement;
 
@@ -23,7 +22,8 @@ public enum SharedAnalysisHtml implements HtmlReportElement {
         // Fleet Efficency
         HtmlBodyElement sharedElement = new HtmlBodyElement();
         sharedElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + NumberPassengerStatusDistribution.FILENAME + ".png", 800, 600);
-        sharedElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + RideSharingDistributionCompositionStack.FILENAME + ".png", CompositionStack.WIDTH, CompositionStack.HEIGHT);
+        sharedElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + RideSharingDistributionCompositionStack.FILENAME + ".png", RideSharingDistributionCompositionStack.WIDTH,
+                RideSharingDistributionCompositionStack.HEIGHT);
         // fEElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + ExtraDriveTimeImage.FILENAME + ".png", 800, 600);
         bodyElements.put(BodyElementKey, sharedElement);
         return bodyElements;

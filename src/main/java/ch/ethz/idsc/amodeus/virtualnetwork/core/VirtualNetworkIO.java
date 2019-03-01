@@ -4,10 +4,8 @@ package ch.ethz.idsc.amodeus.virtualnetwork.core;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
-import java.util.Objects;
 import java.util.zip.DataFormatException;
 
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.io.Export;
 import ch.ethz.idsc.tensor.io.Import;
 
@@ -31,7 +29,6 @@ public enum VirtualNetworkIO {
     public static <T> VirtualNetwork<T> fromByte(Map<String, T> map, File file)//
             throws ClassNotFoundException, DataFormatException, IOException {
         VirtualNetwork<T> virtualNetwork = Import.object(file);
-        GlobalAssert.that(Objects.nonNull(virtualNetwork));
         virtualNetwork.fillSerializationInfo(map);
         virtualNetwork.checkConsistency();
         return virtualNetwork;

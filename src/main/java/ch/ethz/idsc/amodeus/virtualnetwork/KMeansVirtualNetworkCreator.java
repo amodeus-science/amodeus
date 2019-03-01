@@ -14,7 +14,6 @@ import java.util.function.Function;
 
 import ch.ethz.idsc.amodeus.virtualnetwork.core.AbstractVirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
-import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkImpl;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNodes;
 import ch.ethz.idsc.tensor.Tensor;
@@ -90,7 +89,7 @@ public class KMeansVirtualNetworkCreator<T, U> extends AbstractVirtualNetworkCre
         RandomlyGeneratedInitialMeans init = new RandomlyGeneratedInitialMeans(RandomFactory.get(initSeed));
 
         // initialize new virtual network
-        VirtualNetwork<T> virtualNetwork = new VirtualNetworkImpl<>();
+        // VirtualNetwork<T> virtualNetwork = new VirtualNetworkImpl<>();
 
         // 1) COMPUTE CLUSTERING with k-means method based on the supplied data -> every node with same amount of datapoints
         // adapter to load data from an existing array.

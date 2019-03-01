@@ -9,7 +9,6 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.dispatcher.core.SharedUniversalDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
