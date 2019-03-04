@@ -9,7 +9,7 @@ import java.util.Random;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
-import org.matsim.contrib.dvrp.data.Vehicle;
+import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 
 import com.google.inject.Inject;
 
@@ -89,9 +89,9 @@ public class VehicleToVSGenerator implements AVGenerator {
         /** update placedVehicles */
         placedVehicles.set(v -> v.add(RealScalar.ONE), vNodeIndex);
 
-        Id<Vehicle> id = Id.create("av_" + prefix + String.valueOf(generatedNumberOfVehicles), Vehicle.class);
+        Id<DvrpVehicle> id = Id.create("av_" + prefix + String.valueOf(generatedNumberOfVehicles), DvrpVehicle.class);
 
-        return new AVVehicle(id, linkGen, 4.0, 0.0, Double.POSITIVE_INFINITY);
+        return new AVVehicle(id, linkGen, 4, 0.0, Double.POSITIVE_INFINITY);
     }
 
     /** Returns the index of the first virtual station that is still in need of more vehicles. If all virtual stations have enough, return random index */

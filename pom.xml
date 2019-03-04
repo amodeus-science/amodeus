@@ -11,29 +11,31 @@
 		<skipTests>false</skipTests>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<github.global.server>github</github.global.server>
+		<matsim.version>0.11.0-SNAPSHOT</matsim.version>
+		<av.version>0.3.8</av.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>ch.ethz.matsim</groupId>
 			<artifactId>av</artifactId>
-			<version>0.2.7</version>
+			<version>${av.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.ethz.matsim</groupId>
 			<artifactId>av</artifactId>
-			<version>0.2.7</version>
+			<version>${av.version}</version>
 			<type>test-jar</type>
 		</dependency>
 		<dependency>
 			<groupId>org.matsim</groupId>
 			<artifactId>matsim</artifactId>
-			<version>0.10.1</version>
+			<version>${matsim.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.matsim.contrib</groupId>
 			<artifactId>dvrp</artifactId>
-			<version>0.10.1</version>
+			<version>${matsim.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.ethz.idsc</groupId>
@@ -93,6 +95,11 @@
 			<name>Xypron Release</name>
 			<url>http://rsync.xypron.de/repository</url>
 			<layout>default</layout>
+		</repository>
+		<repository>
+			<id>osgeo</id>
+			<name>Geotools repository</name>
+			<url>http://download.osgeo.org/webdav/geotools</url>
 		</repository>
 	</repositories>
 

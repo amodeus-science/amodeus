@@ -7,7 +7,7 @@ import java.util.Objects;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
-import org.matsim.contrib.dvrp.data.Vehicle;
+import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
@@ -101,7 +101,7 @@ public class RoboTaxi {
     }
 
     /** @return {@Id<Link>} of the RoboTaxi, robotaxi ID is the same as AVVehicle ID */
-    public Id<Vehicle> getId() {
+    public Id<DvrpVehicle> getId() {
         return avVehicle.getId();
     }
 

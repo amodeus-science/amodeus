@@ -6,8 +6,8 @@ import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
-import org.matsim.contrib.dvrp.data.Request;
-import org.matsim.contrib.dvrp.data.Vehicle;
+import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
+import org.matsim.contrib.dvrp.optimizer.Request;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 import org.matsim.core.config.Config;
@@ -118,12 +118,12 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
         LinkTimePair divertableLinkTime = new LinkTimePair(linkDepotOut, 0.0);
 
-        Id<Vehicle> idAv1 = Id.create("av1", Vehicle.class);
+        Id<DvrpVehicle> idAv1 = Id.create("av1", DvrpVehicle.class);
         vehicle1 = new AVVehicle(idAv1, linkDepotOut, seats, 0.0, Double.POSITIVE_INFINITY);
         roboTaxi1 = new RoboTaxi(vehicle1, divertableLinkTime, linkDepotOut, RoboTaxiUsageType.SHARED);
         setFirstStayTask(vehicle1);
 
-        Id<Vehicle> idAv2 = Id.create("av2", Vehicle.class);
+        Id<DvrpVehicle> idAv2 = Id.create("av2", DvrpVehicle.class);
         vehicle2 = new AVVehicle(idAv2, linkDepotOut, seats, 0.0, Double.POSITIVE_INFINITY);
         roboTaxi2 = new RoboTaxi(vehicle2, divertableLinkTime, linkDepotOut, RoboTaxiUsageType.SHARED);
         setFirstStayTask(vehicle2);

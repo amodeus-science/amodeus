@@ -31,6 +31,7 @@ import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.contrib.dvrp.router.DvrpRoutingNetworkProvider;
 import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
+import org.matsim.contrib.dvrp.run.DvrpModule;
 import org.matsim.contrib.dvrp.trafficmonitoring.DvrpTravelTimeModule;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
@@ -71,6 +72,7 @@ import ch.ethz.matsim.av.config.AVGeneratorConfig;
 import ch.ethz.matsim.av.config.AVOperatorConfig;
 import ch.ethz.matsim.av.framework.AVConfigGroup;
 import ch.ethz.matsim.av.framework.AVModule;
+import ch.ethz.matsim.av.framework.AVQSimModule;
 import ch.ethz.matsim.av.scenario.TestScenarioAnalyzer;
 import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
 
@@ -189,8 +191,9 @@ public class StandardMATSimScenarioTest {
         modeParams.setConstant(0.0);
 
         Controler controler = new Controler(scenario);
+        controler.addOverridingModule(new DvrpModule());
         controler.addOverridingModule(new DvrpTravelTimeModule());
-        controler.addOverridingModule(new AVModule());
+        controler.addOverridingModule(new AVModule(false));
         controler.addOverridingModule(new AmodeusModule());
         controler.addOverridingModule(new AmodeusDispatcherModule());
         controler.addOverridingModule(new AmodeusVehicleGeneratorModule());
@@ -298,8 +301,10 @@ public class StandardMATSimScenarioTest {
                 });
             }
         });
-
+        
+        controler.configureQSimComponents(AVQSimModule::configureComponents);
         controler.run();
+        
         if (analyzer.numberOfDepartures != analyzer.numberOfArrivals) {
             System.out.println("numberOfDepartures=" + analyzer.numberOfDepartures);
             System.out.println("numberOfArrivals  =" + analyzer.numberOfArrivals);

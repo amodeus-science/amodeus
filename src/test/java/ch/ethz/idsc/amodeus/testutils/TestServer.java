@@ -7,6 +7,7 @@ import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
+import org.matsim.contrib.dvrp.run.DvrpModule;
 import org.matsim.contrib.dvrp.trafficmonitoring.DvrpTravelTimeModule;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
@@ -37,6 +38,7 @@ import ch.ethz.idsc.amodeus.test.AnalysisTestExport;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.framework.AVConfigGroup;
 import ch.ethz.matsim.av.framework.AVModule;
+import ch.ethz.matsim.av.framework.AVQSimModule;
 import ch.ethz.matsim.av.framework.AVUtils;
 
 public class TestServer {
@@ -111,8 +113,9 @@ public class TestServer {
         MatsimAmodeusDatabase db = MatsimAmodeusDatabase.initialize(network, referenceFrame);
         controler = new Controler(scenario);
 
+        controler.addOverridingModule(new DvrpModule());
         controler.addOverridingModule(new DvrpTravelTimeModule());
-        controler.addOverridingModule(new AVModule());
+        controler.addOverridingModule(new AVModule(false));
         controler.addOverridingModule(new DatabaseModule());
         controler.addOverridingModule(new AmodeusVehicleGeneratorModule());
         controler.addOverridingModule(new AmodeusVehicleToVSGeneratorModule());
@@ -135,6 +138,7 @@ public class TestServer {
         });
 
         // run simulation
+        controler.configureQSimComponents(AVQSimModule::configureComponents);
         controler.run();
 
         // close port for visualization
