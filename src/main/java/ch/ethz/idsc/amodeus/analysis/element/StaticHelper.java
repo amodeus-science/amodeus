@@ -21,13 +21,15 @@ import ch.ethz.idsc.tensor.red.Quantile;
 /* package */ enum StaticHelper {
     ;
 
+    /** @return a {@link Tensor} containing the number of vehicles per
+     *         link {@link RoboTaxiStatus} in the {@link SimulationObject} @param simOjb */
     public static Tensor getNumStatus(SimulationObject simOjb) {
-        Tensor numStatus = Array.zeros(RoboTaxiStatus.values().length);
-        Map<RoboTaxiStatus, List<VehicleContainer>> map = simOjb.vehicles.stream() //
+        Tensor numPerStatus = Array.zeros(RoboTaxiStatus.values().length);
+        Map<RoboTaxiStatus, List<VehicleContainer>> helpMap = simOjb.vehicles.stream() //
                 .collect(Collectors.groupingBy(vehicleContainer -> vehicleContainer.roboTaxiStatus));
-        for (Entry<RoboTaxiStatus, List<VehicleContainer>> entry : map.entrySet())
-            numStatus.set(RealScalar.of(entry.getValue().size()), entry.getKey().ordinal());
-        return numStatus;
+        for (Entry<RoboTaxiStatus, List<VehicleContainer>> entry : helpMap.entrySet())
+            numPerStatus.set(RealScalar.of(entry.getValue().size()), entry.getKey().ordinal());
+        return numPerStatus;
     }
 
     public static Tensor quantiles(Tensor submission, Tensor param) {
