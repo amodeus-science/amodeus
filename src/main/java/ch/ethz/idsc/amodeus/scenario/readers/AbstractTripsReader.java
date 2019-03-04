@@ -1,25 +1,28 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.scenario.readers;
 
-import org.matsim.api.core.v01.Coord;
-
-import ch.ethz.idsc.amodeus.scenario.trips.TaxiTrip;
-import ch.ethz.idsc.tensor.Scalar;
-
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.matsim.api.core.v01.Coord;
+
+import ch.ethz.idsc.amodeus.scenario.trips.TaxiTrip;
+import ch.ethz.idsc.tensor.Scalar;
+
 public abstract class AbstractTripsReader extends CsvReader {
     private Map<String, Integer> taxiIds = new HashMap<>();
 
-    public AbstractTripsReader(String delim, SimpleDateFormat format) {
+    public AbstractTripsReader(String delim, DateTimeFormatter format) {
         super(delim, format);
     }
 
@@ -56,9 +59,9 @@ public abstract class AbstractTripsReader extends CsvReader {
 
     public abstract String getTaxiCode(String[] line);
 
-    public abstract Date getStartTime(String[] line) throws ParseException;
+    public abstract LocalDateTime getStartTime(String[] line) throws ParseException;
 
-    public abstract Date getEndTime(String[] line) throws ParseException;
+    public abstract LocalDateTime getEndTime(String[] line) throws ParseException;
 
     public abstract Coord getPickupLocation(String[] line);
 

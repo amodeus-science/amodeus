@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.scenario.trips;
 
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -24,7 +25,7 @@ import ch.ethz.idsc.tensor.Scalar;
 
     public static Scalar getMinNetworkTripDistance(TaxiTrip trip, Network network) {
         CashedNetworkTimeDistance lcpc = new CashedNetworkTimeDistance//
-                (EasyMinDistPathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0,TimeDistanceProperty.INSTANCE);
+        (EasyMinDistPathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0, TimeDistanceProperty.INSTANCE);
         // find links
         Link linkStart = NetworkUtils.getNearestLink(network, trip.pickupLoc);
         Link linkEnd = NetworkUtils.getNearestLink(network, trip.dropoffLoc);
@@ -32,13 +33,10 @@ import ch.ethz.idsc.tensor.Scalar;
         return lcpc.distance(linkStart, linkEnd);
     }
 
-    public static boolean sameDay(Date date1, Date date2) {
-        Calendar cal1 = Calendar.getInstance();
-        Calendar cal2 = Calendar.getInstance();
-        cal1.setTime(date1);
-        cal2.setTime(date2);
-        return (cal1.get(Calendar.ERA) == cal2.get(Calendar.ERA) && cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
-                && cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR));
+    public static boolean sameDay(LocalDateTime date1, LocalDateTime date2) {
+        return date1.getYear() == date2.getYear() && //
+                date1.getMonth() == date2.getMonth() && //
+                date1.getDayOfMonth() == date2.getDayOfMonth();
     }
 
 }

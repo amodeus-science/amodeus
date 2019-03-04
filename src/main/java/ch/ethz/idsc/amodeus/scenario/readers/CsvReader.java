@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,9 +22,9 @@ public class CsvReader {
 
     protected List<String> headers = new ArrayList<>();
 
-    protected final DateFormat format;
+    protected final DateTimeFormatter format;
 
-    public CsvReader(String delim, DateFormat format) {
+    public CsvReader(String delim, DateTimeFormatter format) {
         this.delim = delim;
         this.format = format;
     }

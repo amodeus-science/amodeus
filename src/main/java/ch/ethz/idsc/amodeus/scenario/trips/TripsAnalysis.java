@@ -4,7 +4,7 @@ package ch.ethz.idsc.amodeus.scenario.trips;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
@@ -31,7 +31,7 @@ public class TripsAnalysis {
     public TripsAnalysis(File tripsFile) throws IOException {
         GlobalAssert.that(tripsFile.isFile());
         this.tripsFile = tripsFile;
-        this.reader = new CsvReader(",", new SimpleDateFormat("dd/MM/yyyy HH:mm:ss"));
+        this.reader = new CsvReader(",", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
         reader.read(tripsFile);
         analyze();
     }

@@ -4,10 +4,9 @@ package ch.ethz.idsc.amodeus.scenario.population;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.text.DateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,7 +28,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     private final String fileName = "population.xml";
 
     protected final CsvReader reader;
-    protected final DateFormat dateFormat;
+    protected final DateTimeFormatter dateFormat;
 
     private final File populationFile;
     private final File populationFileGz;
@@ -38,7 +37,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     protected final MatsimAmodeusDatabase db;
 
     /* package */ AbstractPopulationCreator(File processingDir, Config config, Network network, //
-            MatsimAmodeusDatabase db, DateFormat dateFormat) {
+            MatsimAmodeusDatabase db, DateTimeFormatter dateFormat) {
         populationFile = new File(processingDir, fileName);
         populationFileGz = new File(processingDir, fileName + ".gz");
         this.config = config;
@@ -101,10 +100,8 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
             throw new IOException();
     }
 
-    protected static double dateToSeconds(Date date) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        return cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(Calendar.MINUTE) * 60 + cal.get(Calendar.SECOND);
+    protected static double dateToSeconds(LocalDateTime date) {
+        return date.toLocalTime().getHour() * 3600 + date.toLocalTime().getMinute() * 60 + date.toLocalTime().getSecond();
     }
 
     abstract protected void processLine(String[] line, Population population, PopulationFactory populationFactory) throws Exception;

@@ -7,7 +7,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,15 +37,17 @@ public class TripDataCleaner extends AbstractDataCleaner<TaxiTrip> {
             stream.sorted().forEachOrdered(trip -> {
                 try {
                     bufferedWriter.newLine();
-                    String line = Arrays.stream(trip.getClass().getFields()).map(field -> {
-                        try {
-                            if (field.get(trip) instanceof Date)
-                                return dateFormat.format((Date) field.get(trip));
-                            return String.valueOf(field.get(trip));
-                        } catch (Exception e) {
-                            return "";
-                        }
-                    }).collect(Collectors.joining(","));
+                    String line = "disabledBecauseUnreadable.";
+                    // TODO clean up the things below
+                    // String line = Arrays.stream(trip.getClass().getFields()).map(field -> {
+                    // try {
+                    // if (field.get(trip) instanceof LocalDateTime)
+                    // return LocalDateTime.parse(text, formatter) dateFormat . format((Date) field.get(trip));
+                    // return String.valueOf(field.get(trip));
+                    // } catch (Exception e) {
+                    // return "";
+                    // }
+                    // }).collect(Collectors.joining(","));
                     bufferedWriter.write(line);
                 } catch (IOException e) {
                     e.printStackTrace();

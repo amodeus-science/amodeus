@@ -1,7 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.scenario.trips;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import org.matsim.api.core.v01.Coord;
 
@@ -17,11 +17,11 @@ public class TaxiTrip implements Comparable<TaxiTrip> {
     public final Scalar distance;
     public final Scalar waitTime;
     // ---
-    public Date pickupDate;
-    public Date dropoffDate;
+    public LocalDateTime pickupDate;
+    public LocalDateTime dropoffDate;
     public final Scalar duration;
 
-    public TaxiTrip(Integer id, String taxiId, Date pickupDate, Date dropoffDate, //
+    public TaxiTrip(Integer id, String taxiId, LocalDateTime pickupDate, LocalDateTime dropoffDate, //
             Coord pickupLoc, Coord dropoffLoc, //
             Scalar duration, Scalar distance, Scalar waitTime) {
         this.localId = id;

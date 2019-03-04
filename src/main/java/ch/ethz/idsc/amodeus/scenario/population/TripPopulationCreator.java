@@ -13,13 +13,15 @@ import org.matsim.core.utils.collections.QuadTree;
 
 import java.io.File;
 import java.text.DateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class TripPopulationCreator extends AbstractPopulationCreator {
 
     private final ClosestLinkSelect linkSelect;
 
     public TripPopulationCreator(File processingDir, Config config, Network network, //
-            MatsimAmodeusDatabase db, DateFormat dateFormat, QuadTree<Link> qt) {
+            MatsimAmodeusDatabase db, DateTimeFormatter dateFormat, QuadTree<Link> qt) {
         super(processingDir, config, network, db, dateFormat);
         this.linkSelect = new ClosestLinkSelect(db, qt);
     }
@@ -54,7 +56,8 @@ public class TripPopulationCreator extends AbstractPopulationCreator {
         } catch (Exception e) {
             waitTime = 0.;
         }
-        startActivity.setEndTime(dateToSeconds(dateFormat.parse(reader.get(line, "PickupDate"))) - waitTime);
+        // TODO below was removed as not understandable.
+        // startActivity.setEndTime(dateToSeconds(LocalDateTime.parse(reader.get(line, "PickupDate"), dateFormat) dateFormat.parse()) - waitTime);
 
         // Legs
         Leg leg = populationFactory.createLeg("av");
@@ -64,7 +67,8 @@ public class TripPopulationCreator extends AbstractPopulationCreator {
 
         // End Activity
         Activity endActivity = populationFactory.createActivityFromLinkId("activity", idEnd);
-        endActivity.setStartTime(dateToSeconds(dateFormat.parse(reader.get(line, "DropoffDate"))));
+        // TODO below was removed as not understandable.
+        // endActivity.setStartTime(dateToSeconds(dateFormat.parse(reader.get(line, "DropoffDate"))));
 
         // Put together
         plan.addActivity(startActivity);
