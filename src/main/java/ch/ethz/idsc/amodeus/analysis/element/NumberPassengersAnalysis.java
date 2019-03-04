@@ -58,7 +58,7 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
         }
         Tensor numPassenger = BinCounts.of(numberPassengers);
         passengerDistribution.append(numPassenger);
-        // Controll: OLD Calculation
+        // Control: OLD Calculation
         Tensor numStatus = StaticHelper.getNumStatus(simulationObject);
         Scalar numWithCustomer = numStatus.Get(RoboTaxiStatus.DRIVEWITHCUSTOMER.ordinal());
         GlobalAssert.that(Total.of(numPassenger.extract(1, numPassenger.length())).equals(numWithCustomer));

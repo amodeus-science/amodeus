@@ -56,20 +56,12 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
     public final String user = UserName.get();
     public final String date = DATEFORMAT.format(new Date());
 
-    public ScenarioParameters() {
-        File workingDirectory = null;
-        ScenarioOptions scenOptions = null;
-        try {
-            workingDirectory = new File("").getCanonicalFile();
-            scenOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public ScenarioParameters(File workingDirectory) throws IOException {
+        ScenarioOptions scenOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
         File configFile = new File(workingDirectory, scenOptions.getSimulationConfigName());
         Config config = ConfigUtils.loadConfig(configFile.toString());
 
-        File basePath = new File(config.getContext().getPath()).getParentFile();
-        File configPath = new File(basePath, "av.xml");
+        File configPath = new File(workingDirectory, "av.xml");
         AVConfig avConfig = new AVConfig();
         AVConfigReader reader = new AVConfigReader(avConfig);
         reader.readFile(configPath.getAbsolutePath());
@@ -104,8 +96,7 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
         }
 
         virtualNodesCount = Objects.isNull(virtualNetwork) //
-                ? UNDEFINED_INT
-                : virtualNetwork.getvNodesCount();
+                ? UNDEFINED_INT : virtualNetwork.getvNodesCount();
 
         iterations = config.controler().getLastIteration();
 
