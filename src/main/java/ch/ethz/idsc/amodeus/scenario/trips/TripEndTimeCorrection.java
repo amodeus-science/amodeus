@@ -17,7 +17,7 @@ public class TripEndTimeCorrection implements DataFilter<TaxiTrip> {
             calendar.setTime(trip.pickupDate);
             calendar.add(Calendar.SECOND, Math.round(trip.duration.number().intValue()));
             if (!trip.dropoffDate.equals(calendar.getTime())) {
-                System.out.println("correction: trip " + trip.id + ": dropoff date " + trip.dropoffDate + " -> " //
+                System.out.println("correction: trip " + trip.localId + ": dropoff date " + trip.dropoffDate + " -> " //
                         + calendar.getTime());
                 trip.dropoffDate = calendar.getTime();
             }

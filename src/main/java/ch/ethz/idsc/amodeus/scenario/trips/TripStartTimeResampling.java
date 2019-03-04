@@ -24,7 +24,7 @@ public class TripStartTimeResampling implements DataFilter<TaxiTrip> {
             int offsetSec = RandomVariate.of(UniformDistribution.of(-30 * minuteResolution, 30 * minuteResolution)).number().intValue();
             calendar.add(Calendar.SECOND, offsetSec);
             if (!trip.dropoffDate.equals(calendar.getTime())) {
-                System.out.println("resampling: trip " + trip.id + ": pickup date " + trip.pickupDate + " -> " //
+                System.out.println("resampling: trip " + trip.localId + ": pickup date " + trip.pickupDate + " -> " //
                         + calendar.getTime());
                 trip.pickupDate = calendar.getTime(); // TODO respect time boundaries
             }

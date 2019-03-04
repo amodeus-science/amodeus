@@ -34,7 +34,7 @@ public abstract class AbstractTripsReader extends CsvReader {
                 String taxiCode = getTaxiCode(line);
                 int taxiId = taxiIds.getOrDefault(taxiCode, taxiIds.size());
                 taxiIds.put(taxiCode, taxiId);
-                return new TaxiTrip(tripId, taxiId, //
+                return new TaxiTrip(tripId, Integer.toString(taxiId), //
                         getStartTime(line), //
                         getEndTime(line), //
                         getPickupLocation(line), //

@@ -10,8 +10,8 @@ import ch.ethz.idsc.tensor.Scalar;
 /** The class {@link TaxiTrip} is used to transform taxi trips from databases into scenarios
  * for AMoDeus. It contains the relevant recordings of a typical taxi trip recording. */
 public class TaxiTrip implements Comparable<TaxiTrip> {
-    public final Integer id;
-    public final Integer taxiId;
+    public final Integer localId;
+    public final String taxiId;
     public final Coord pickupLoc;
     public final Coord dropoffLoc;
     public final Scalar distance;
@@ -21,10 +21,10 @@ public class TaxiTrip implements Comparable<TaxiTrip> {
     public Date dropoffDate;
     public final Scalar duration;
 
-    public TaxiTrip(Integer id, Integer taxiId, Date pickupDate, Date dropoffDate, //
+    public TaxiTrip(Integer id, String taxiId, Date pickupDate, Date dropoffDate, //
             Coord pickupLoc, Coord dropoffLoc, //
             Scalar duration, Scalar distance, Scalar waitTime) {
-        this.id = id;
+        this.localId = id;
         this.taxiId = taxiId;
         this.pickupDate = pickupDate;
         this.dropoffDate = dropoffDate;
@@ -42,6 +42,6 @@ public class TaxiTrip implements Comparable<TaxiTrip> {
 
     @Override
     public String toString() {
-        return pickupDate + "\t:\tTrip " + id + "\t(Taxi " + taxiId + ")";
+        return pickupDate + "\t:\tTrip " + localId + "\t(Taxi " + taxiId + ")";
     }
 }
