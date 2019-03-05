@@ -22,8 +22,7 @@ public class TaxiTrip implements Comparable<TaxiTrip> {
     public final Scalar duration;
 
     public TaxiTrip(Integer id, String taxiId, LocalDateTime pickupDate, LocalDateTime dropoffDate, //
-            Coord pickupLoc, Coord dropoffLoc, //
-            Scalar duration, Scalar distance, Scalar waitTime) {
+            Coord pickupLoc, Coord dropoffLoc, Scalar duration, Scalar distance, Scalar waitTime) {
         this.localId = id;
         this.taxiId = taxiId;
         this.pickupDate = pickupDate;
