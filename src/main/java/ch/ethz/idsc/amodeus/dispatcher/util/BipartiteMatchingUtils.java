@@ -20,7 +20,7 @@ public class BipartiteMatchingUtils {
     private final DistanceFunction accDstFctn;
 
     public BipartiteMatchingUtils(Network network) {
-        accDstFctn = new NetworkDistanceFunction(network, new FastAStarLandmarksFactory());
+        accDstFctn = new NetworkMinTimeDistanceFunction(network, new FastAStarLandmarksFactory());
     }
 
     public Tensor executePickup(UniversalDispatcher universalDispatcher, //
@@ -28,16 +28,8 @@ public class BipartiteMatchingUtils {
             Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
             DistanceFunction distanceFunction, Network network) {
         Tensor infoLine = Tensors.empty();
-        Map<RoboTaxi, AVRequest> gbpMatch;
 
-        /** reduction of problem size with kd-tree, helps to downsize problems where n << m or m>> n
-         * for n number of available taxis and m number of available requests */
-        GlobalBipartiteMatching globalBipartiteMatching = new GlobalBipartiteMatching(distanceFunction);
-        gbpMatch = globalBipartiteMatching.match(roboTaxis, requests);
-
-        /** prevent cycling an assignment is only updated if the new distance is smaller than the
-         * old distance */
-        Map<RoboTaxi, AVRequest> gbpMatchCleaned = CyclicSolutionPreventer.apply(gbpMatch, universalDispatcher, accDstFctn);
+        Map<RoboTaxi, AVRequest> gbpMatchCleaned = getGBPMatch(universalDispatcher, roboTaxis, requests, distanceFunction, network);
 
         /** perform dispatching */
         for (Entry<RoboTaxi, AVRequest> entry : gbpMatchCleaned.entrySet())
@@ -51,10 +43,9 @@ public class BipartiteMatchingUtils {
             Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
             DistanceFunction distanceFunction, Network network) {
 
-        // Tensor infoLine = Tensors.empty();
-        Map<RoboTaxi, AVRequest> gbpMatch;
-
-        gbpMatch = ((new GlobalBipartiteMatching(distanceFunction)).match(roboTaxis, requests));
+        /** reduction of problem size with kd-tree, helps to downsize problems where n << m or m>> n
+         * for n number of available taxis and m number of available requests */
+        Map<RoboTaxi, AVRequest> gbpMatch = ((new GlobalBipartiteMatching(distanceFunction)).match(roboTaxis, requests));
 
         /** prevent cycling an assignment is only updated if the new distance is smaller than the
          * old distance */

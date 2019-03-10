@@ -24,8 +24,9 @@ import ch.ethz.idsc.amodeus.analysis.report.TtlValIdent;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkGet;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkGet;
+import ch.ethz.idsc.tensor.io.UserName;
 import ch.ethz.matsim.av.config.AVConfig;
 import ch.ethz.matsim.av.config.AVConfigReader;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
@@ -52,8 +53,8 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
     public final String virtualNetworkCreator;
     public final String vehicleGenerator;
     public final String networkName;
-    public final String user;
-    public final String date;
+    public final String user = UserName.get();
+    public final String date = DATEFORMAT.format(new Date());
 
     public ScenarioParameters() {
         File workingDirectory = null;
@@ -66,9 +67,6 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
         }
         File configFile = new File(workingDirectory, scenOptions.getSimulationConfigName());
         Config config = ConfigUtils.loadConfig(configFile.toString());
-
-        user = System.getProperty("user.name");
-        date = DATEFORMAT.format(new Date());
 
         File basePath = new File(config.getContext().getPath()).getParentFile();
         File configPath = new File(basePath, "av.xml");
@@ -98,7 +96,7 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
 
         VirtualNetwork<Link> virtualNetwork = null;
         try {
-            virtualNetwork = VirtualNetworkGet.readDefault(network);
+            virtualNetwork = VirtualNetworkGet.readDefault(network, scenOptions);
 
         } catch (IOException e) {
             System.err.println("INFO not able to load virtual network for report");

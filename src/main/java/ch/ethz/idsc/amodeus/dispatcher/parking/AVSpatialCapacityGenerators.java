@@ -21,6 +21,7 @@ public enum AVSpatialCapacityGenerators implements AVSpatialCapacityGenerator {
         }
     };
 
+    // TODO bad style since assignment of static variable
     protected ScenarioOptions scenarioOptions = null;
 
     public AVSpatialCapacityGenerators setScenarioOptions(ScenarioOptions scenarioOptions) {

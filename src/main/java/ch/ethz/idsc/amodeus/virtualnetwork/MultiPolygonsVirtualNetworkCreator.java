@@ -14,32 +14,37 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.MultiPolygon;
 
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.AbstractVirtualNetworkCreator;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNodes;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** @param <T> the class on which the {@link VirtualNetwork} is defined, e.g., Link
  * @param <U> */
-public class MultiPolygonsVirtualNetworkCreator<T, U> {
+public class MultiPolygonsVirtualNetworkCreator<T, U> extends AbstractVirtualNetworkCreator<T, U> {
 
-    private final VirtualNetwork<T> virtualNetwork;
+    // private final VirtualNetwork<T> virtualNetwork;
 
     public MultiPolygonsVirtualNetworkCreator(MultiPolygons multipolygons, Collection<T> elements, //
             Function<T, Tensor> locationOf, Function<T, String> nameOf, Map<U, HashSet<T>> uElements, //
             Tensor lbounds, Tensor ubounds, boolean completeGraph) {
-        this.virtualNetwork = createVirtualNetwork( //
-                multipolygons, elements, locationOf, nameOf, uElements, lbounds, ubounds, completeGraph);
+
+        Map<VirtualNode<T>, Set<T>> vNodeTMap = createAssignmentMap( //
+                multipolygons, elements, locationOf, nameOf, uElements, completeGraph);
+
+        /** create */
+        virtualNetwork = createVirtualNetwork(vNodeTMap, elements, uElements, nameOf, completeGraph);
+
     }
 
-    private VirtualNetwork<T> createVirtualNetwork(MultiPolygons multipolygons, //
+    private Map<VirtualNode<T>, Set<T>> createAssignmentMap(MultiPolygons multipolygons, //
             Collection<T> elements, Function<T, Tensor> locationOf, Function<T, String> nameOf, //
-            Map<U, HashSet<T>> uElements, Tensor lbounds, Tensor ubounds, boolean completeGraph) {
+            Map<U, HashSet<T>> uElements, boolean completeGraph) {
 
         System.out.println("creating a virtual network with " + multipolygons.getPolygons().size() //
                 + " multipolygons");
-
-        /** initialize new {@link VirtualNetwork} */
-        VirtualNetwork<T> virtualNetwork = new VirtualNetworkImpl<>();
 
         /** for every polygon, create virtualNode in centroid,add all links in the polygon
          * to the virtualNode */
@@ -75,19 +80,7 @@ public class MultiPolygonsVirtualNetworkCreator<T, U> {
             }
         }
 
-        VirtualNetworkCreatorUtils.addToVNodes(vNodeTMap, nameOf, virtualNetwork);
+        return vNodeTMap;
 
-        // create virtualLinks for complete or neighboring graph
-        VirtualLinkBuilder.build(virtualNetwork, completeGraph, uElements);
-        GlobalAssert.that(VirtualNetworkCheck.virtualLinkConsistencyCheck(virtualNetwork));
-
-        // fill information for serialization
-        VirtualNetworkCreatorUtils.fillSerializationInfo(elements, virtualNetwork, nameOf);
-
-        return virtualNetwork;
-    }
-
-    public VirtualNetwork<T> getVirtualNetwork() {
-        return virtualNetwork;
     }
 }

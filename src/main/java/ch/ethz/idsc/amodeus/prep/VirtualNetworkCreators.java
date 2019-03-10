@@ -7,7 +7,7 @@ import org.matsim.api.core.v01.population.Population;
 
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 
 public enum VirtualNetworkCreators implements VirtualNetworkCreator {
     NONE {
@@ -29,6 +29,15 @@ public enum VirtualNetworkCreators implements VirtualNetworkCreator {
             GlobalAssert.that(scenarioOptions != null);
             return MatsimKMeansVirtualNetworkCreator.createVirtualNetwork( //
                     population, network, scenarioOptions.getNumVirtualNodes(), scenarioOptions.isCompleteGraph());
+        }
+    },
+    RECTANGULAR {
+        @Override
+        public VirtualNetwork<Link> create(Network network, Population population, ScenarioOptions scenarioOptions, int numRoboTaxis, int endTime) {
+            int divLat = Integer.parseInt(scenarioOptions.getString("LATITUDE_NODES"));
+            int divLng = Integer.parseInt(scenarioOptions.getString("LONGITUDE_NODES"));
+            GlobalAssert.that(divLat > 0 && divLng > 0);
+            return MatsimRectangleVirtualNetworkCreator.createVirtualNetwork(population, network, scenarioOptions.isCompleteGraph(), divLat, divLng);
         }
     };
 }

@@ -3,6 +3,7 @@ package ch.ethz.idsc.amodeus.analysis.element;
 
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 
+@FunctionalInterface
 public interface AnalysisElement {
     /** registers a simulation object at each time step
      * 

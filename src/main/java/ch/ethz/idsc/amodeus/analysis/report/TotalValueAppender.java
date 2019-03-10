@@ -7,6 +7,7 @@ import java.util.Map;
  * to the total Values properties file in AMoDeus. To add the values defined
  * in the getTotalValues() function the Appender has to be added with the
  * Analysis.addTotalValue() function. */
+@FunctionalInterface
 public interface TotalValueAppender {
     /** defines pairs of a total values with a total value identifier.
      * 
