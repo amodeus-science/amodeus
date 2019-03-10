@@ -15,6 +15,7 @@ public enum ProvideAVConfig {
 
     public static AVConfig with(Config config, AVConfigGroup configGroup) {
         URL configPath = configGroup.getConfigURL();
+        System.out.println("Config:" + configPath);
         if (configPath == null) {
             configPath = ConfigGroup.getInputFileURL(config.getContext(), configGroup.getConfigPath());
         }
