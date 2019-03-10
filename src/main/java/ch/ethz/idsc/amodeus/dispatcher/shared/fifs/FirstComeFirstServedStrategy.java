@@ -63,7 +63,7 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
     private final Set<AVRequest> extremWaitList = new HashSet<>();
 
     private static final double MAXLAGTRAVELTIMECALCULATION = 1800.0;
-    private final TravelTimeCalculatorCached timeDb;
+    private final TravelTimeComputationCached timeDb;
 
     private final BlockRebalancing kockelmanRebalancing;
 
@@ -79,7 +79,7 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
 
         FastAStarLandmarksFactory factory = new FastAStarLandmarksFactory();
         LeastCostPathCalculator calculator = EasyMinTimePathCalculator.prepPathCalculator(network, factory);
-        timeDb = TravelTimeCalculatorCached.of(calculator, MAXLAGTRAVELTIMECALCULATION);
+        timeDb = TravelTimeComputationCached.of(calculator, MAXLAGTRAVELTIMECALCULATION);
 
         this.kockelmanRebalancing = new BlockRebalancing(network, timeDb, MINNUMBERROBOTAXISINBLOCKTOREBALANCE, BINSIZETRAVELDEMAND, dispatchPeriod, REBALANCINGGRIDDISTANCE);
     }

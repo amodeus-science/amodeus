@@ -26,7 +26,9 @@ import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiUtils;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedPartitionedDispatcher;
-import ch.ethz.idsc.amodeus.dispatcher.shared.fifs.TravelTimeCalculatorCached;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
+import ch.ethz.idsc.amodeus.dispatcher.shared.fifs.TravelTimeComputationCached;
+import ch.ethz.idsc.amodeus.dispatcher.shared.fifs.TravelTimeInterface;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
@@ -53,7 +55,14 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.router.AVRouter;
 
 /** Ma, Shuo, Yu Zheng, and Ouri Wolfson. "T-share: A large-scale dynamic taxi ridesharing service."
- * Data Engineering (ICDE), 2013 IEEE 29th International Conference on. IEEE, 2013. */
+ * Data Engineering (ICDE), 2013 IEEE 29th International Conference on. IEEE, 2013.
+ * 
+ * Changes compared to the original version:
+ * - The version presented in the publication considers only the addition of 1 trip to a trip which is
+ * already being transported by a taxi. In order to operate the policy with taxis with capacity N, in this
+ * version the time windows of all requests already in a taxi are checked before the insertion of a
+ * new request is allowed.
+ * - To limit computation time, a maximum legth of the planned {@link SharedMenu} was introduced. */
 public class TShareDispatcher extends SharedPartitionedDispatcher {
 
     /** general */
@@ -71,7 +80,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
     private final double menuHorizon;
     private final DualSideSearch dualSideSearch;
     private final CashedDistanceCalculator distanceCashed;
-    private final TravelTimeCalculatorCached travelTimeCashed;
+    private final TravelTimeInterface travelTimeCalculator;
 
     protected TShareDispatcher(Network network, //
             Config config, AVDispatcherConfig avDispatcherConfig, //
@@ -79,7 +88,6 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
             MatsimAmodeusDatabase db, //
             VirtualNetwork<Link> virtualNetwork) {
         super(config, avDispatcherConfig, travelTime, router, eventsManager, virtualNetwork, db);
-        /** general parameters */
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
         rebalancePeriod = safeConfig.getInteger("rebalancingPeriod", 1800);
@@ -91,21 +99,20 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
         distanceFunction = distanceHeuristics.getDistanceFunction(network);
         distanceCashed = CashedDistanceCalculator//
                 .of(EasyMinDistPathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0);
-        travelTimeCashed = TravelTimeCalculatorCached//
+        travelTimeCalculator = TravelTimeComputationCached//
                 .of(EasyMinTimePathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0);
-
         bipartiteMatchingUtils = new SharedBipartiteMatchingUtils(network);
 
         /** T-Share specific */
         pickupDelayMax = Quantity.of(safeConfig.getInteger("pickupDelayMax", 10 * 60), "s");
         drpoffDelayMax = Quantity.of(safeConfig.getInteger("drpoffDelayMax", 30 * 60), "s");
-        menuHorizon = safeConfig.getDouble("menuHorizon", 1.2);
+        menuHorizon = safeConfig.getDouble("menuHorizon", 1.5);
 
         /** initialize grid with T-cells */
         QuadTree<Link> linkTree = FastQuadTree.of(network);
         for (VirtualNode<Link> virtualNode : virtualNetwork.getVirtualNodes()) {
             System.out.println("preparing grid cell: " + virtualNode.getIndex());
-            gridCells.put(virtualNode, new GridCell(virtualNode, virtualNetwork, network, distanceCashed, travelTimeCashed, linkTree));
+            gridCells.put(virtualNode, new GridCell(virtualNode, virtualNetwork, network, distanceCashed, travelTimeCalculator, linkTree));
         }
         dualSideSearch = new DualSideSearch(gridCells, virtualNetwork, network);
         System.out.println("According to the reference, a rectangular {@link VirtualNetwork} should be used.");
@@ -141,11 +148,8 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
                     .collect(Collectors.toList());
 
             for (AVRequest avr : sortedRequests) {
-
-                Scalar latestPickup = Quantity.of(avr.getSubmissionTime(), "s").add(pickupDelayMax);
-                // TODO possibly in publication, the simplified grid-cell travel time is used, check and
-                // adapt if needed.
-                Scalar latestArrval = travelTimeCashed.timeFromTo(avr.getFromLink(), avr.getToLink()).add(drpoffDelayMax);
+                Scalar latestPickup = LatestPickup.of(avr, pickupDelayMax);
+                Scalar latestArrval = LatestArrival.of(avr, drpoffDelayMax, travelTimeCalculator);
 
                 /** dual side search */
                 Collection<RoboTaxi> potentialTaxis = //
@@ -153,9 +157,10 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
 
                 /** insertion feasibility check */
                 NavigableMap<Scalar, InsertionCheck> insertions = new TreeMap<>();
-                for (RoboTaxi roboTaxi : potentialTaxis) {
-                    if (roboTaxi.getUnmodifiableViewOfCourses().size() < roboTaxi.getCapacity() * 2 * menuHorizon) {
-                        InsertionCheck check = new InsertionCheck(distanceCashed, roboTaxi, avr);
+                for (RoboTaxi taxi : potentialTaxis) {
+                    if (taxi.getUnmodifiableViewOfCourses().size() < taxi.getCapacity() * 2 * menuHorizon) {
+                        InsertionCheck check = new InsertionCheck(distanceCashed, travelTimeCalculator, taxi, avr, //
+                                pickupDelayMax, drpoffDelayMax, now);
                         if (Objects.nonNull(check.getAddDistance()))
                             insertions.put(check.getAddDistance(), check);
                     }

@@ -1,7 +1,6 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -26,7 +25,6 @@ import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.TensorCoords;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
-import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkGet;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.config.AVGeneratorConfig;
@@ -160,7 +158,9 @@ public class SQMDispatcher extends PartitionedDispatcher {
 
         @Inject
         private Network network;
-        public static VirtualNetwork<Link> virtualNetwork;
+
+        @Inject
+        private VirtualNetwork<Link> virtualNetwork;
 
         @Inject
         private Config config;
@@ -172,12 +172,6 @@ public class SQMDispatcher extends PartitionedDispatcher {
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
             AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
 
-            try {
-                virtualNetwork = VirtualNetworkGet.readDefault(network);
-            } catch (IOException e) {
-                e.printStackTrace();
-                GlobalAssert.that(false);
-            }
             return new SQMDispatcher(config, avconfig, travelTime, generatorConfig, router, eventsManager, network, //
                     virtualNetwork, db);
         }

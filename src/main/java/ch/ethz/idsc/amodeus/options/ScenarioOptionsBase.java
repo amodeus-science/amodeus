@@ -10,6 +10,7 @@ import ch.ethz.idsc.amodeus.dispatcher.parking.AVSpatialCapacityGenerators;
 import ch.ethz.idsc.amodeus.prep.PopulationCutters;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreators;
 import ch.ethz.idsc.amodeus.util.io.FileLines;
+import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 
 public enum ScenarioOptionsBase {
     ;
@@ -68,8 +69,14 @@ public enum ScenarioOptionsBase {
         return properties;
     }
 
+    @Deprecated
+    /** Should not be used in amodeus repository anymore. */
     public static void saveProperties(Properties prop) throws IOException {
-        saveProperties(prop, new File(OPTIONSFILENAME));
+        saveProperties(prop, new File(MultiFileTools.getDefaultWorkingDirectory(), OPTIONSFILENAME));
+    }
+
+    public static void saveProperties(File workingDirectory, Properties prop) throws IOException {
+        saveProperties(prop, new File(workingDirectory, OPTIONSFILENAME));
     }
 
     public static void saveProperties(Properties prop, File file) throws IOException {

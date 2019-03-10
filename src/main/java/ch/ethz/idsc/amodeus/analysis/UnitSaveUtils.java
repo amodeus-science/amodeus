@@ -30,7 +30,8 @@ public enum UnitSaveUtils {
      * @param saveToFolder
      * @param formats
      * @throws Exception */
-    public static void saveFile(Tensor quantityMatrix, String name, File saveToFolder, //
+    public static void saveFile( //
+            Tensor quantityMatrix, String name, File saveToFolder, //
             SaveFormats... formats) throws Exception {
 
         GlobalAssert.that(saveToFolder.isDirectory());

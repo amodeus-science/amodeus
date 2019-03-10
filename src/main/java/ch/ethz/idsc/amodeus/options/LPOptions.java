@@ -6,16 +6,26 @@ import java.io.IOException;
 import java.util.Properties;
 
 import ch.ethz.idsc.amodeus.lp.LPCreator;
+import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 
 public class LPOptions {
-
+    private final File workingDirectory;
     protected final Properties properties;
 
+    @Deprecated
+    /** Should not be used in amodeus repository anymore. */
     protected LPOptions(Properties properties) {
         this.properties = properties;
+
+        try {
+            this.workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public LPOptions(File workingDirectory, Properties fallbackDefault) throws IOException {
+        this.workingDirectory = workingDirectory;
         this.properties = StaticHelper.loadOrCreateLPOptions(workingDirectory, fallbackDefault);
     }
 
@@ -26,7 +36,7 @@ public class LPOptions {
     }
 
     public void saveAndOverwriteLPOptions() throws IOException {
-        LPOptionsBase.saveProperties(properties);
+        LPOptionsBase.saveProperties(workingDirectory, properties);
     }
 
     public void saveToFolder(File folder, String header) throws IOException {

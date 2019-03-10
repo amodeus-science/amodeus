@@ -13,7 +13,7 @@ public class RequestKeyInfo {
     private double deadlineDropOff;
     private boolean allowanceGiven;
 
-    public RequestKeyInfo(AVRequest avRequest, double maxWaitTime, double maxDelay, TravelTimeCalculator ttc) {
+    public RequestKeyInfo(AVRequest avRequest, double maxWaitTime, double maxDelay, TravelTimeComputation ttc) {
         modifiableSubmissionTime = avRequest.getSubmissionTime();
         deadlinePickUp = avRequest.getSubmissionTime() + maxWaitTime;
         deadlineDropOff = avRequest.getSubmissionTime() + ttc.of(avRequest.getFromLink(), avRequest.getToLink(), //
