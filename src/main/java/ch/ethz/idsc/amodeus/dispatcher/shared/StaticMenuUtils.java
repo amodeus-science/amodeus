@@ -13,6 +13,7 @@ import org.matsim.core.network.NetworkUtils;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
+//TODO class not used outside project: document purpose or hide implementation
 public enum StaticMenuUtils {
     ;
 

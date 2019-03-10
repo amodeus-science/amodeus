@@ -53,45 +53,37 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     }
 
     /* package */ boolean contains(RoboTaxi roboTaxi, AVRequest avRequest) {
-        if (!contains(roboTaxi)) {
-            return false;
-        }
-        if (!contains(avRequest)) {
-            return false;
-        }
-        return true;
+        return contains(roboTaxi) && contains(avRequest);
     }
 
     /** Get Functions */
 
     /* package */ Set<AVRequest> getAssignedAvRequests() {
         Set<AVRequest> avRequests = new HashSet<>();
-        for (Map<String, AVRequest> avRequestsMap : register.values()) {
+        for (Map<String, AVRequest> avRequestsMap : register.values())
             avRequests.addAll(avRequestsMap.values());
-        }
+
         return avRequests;
     }
 
     /* package */ Optional<RoboTaxi> getAssignedRoboTaxi(AVRequest avRequest) {
-        for (Entry<RoboTaxi, Map<String, AVRequest>> requestRegisterEntry : register.entrySet()) {
-            if (requestRegisterEntry.getValue().containsKey(avRequest.getId().toString())) {
+        for (Entry<RoboTaxi, Map<String, AVRequest>> requestRegisterEntry : register.entrySet())
+            if (requestRegisterEntry.getValue().containsKey(avRequest.getId().toString()))
                 return Optional.of(requestRegisterEntry.getKey());
-            }
-        }
+
         GlobalAssert.that(false);
-        return Optional.ofNullable(null);
+        return Optional.empty();
     }
 
     /* package */ Map<AVRequest, RoboTaxi> getPickupRegister(Set<AVRequest> pendingRequests) {
         Map<AVRequest, RoboTaxi> pickupRegister = new HashMap<>();
-        for (Entry<RoboTaxi, Map<String, AVRequest>> requestRegisterEntry : register.entrySet()) {
-            for (AVRequest avRequest : requestRegisterEntry.getValue().values()) {
+        for (Entry<RoboTaxi, Map<String, AVRequest>> requestRegisterEntry : register.entrySet())
+            for (AVRequest avRequest : requestRegisterEntry.getValue().values())
                 if (pendingRequests.contains(avRequest)) {
                     GlobalAssert.that(!pickupRegister.containsKey(avRequest)); // In that case some of the logic failed. every request can only be assigned to one vehicle
                     pickupRegister.put(avRequest, requestRegisterEntry.getKey());
                 }
-            }
-        }
+
         return pickupRegister;
     }
 

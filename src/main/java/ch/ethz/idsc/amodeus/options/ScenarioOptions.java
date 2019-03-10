@@ -7,21 +7,36 @@ import java.util.Properties;
 
 import ch.ethz.idsc.amodeus.data.LocationSpec;
 import ch.ethz.idsc.amodeus.data.LocationSpecDatabase;
+import ch.ethz.idsc.amodeus.dispatcher.parking.AVSpatialCapacityGenerator;
+import ch.ethz.idsc.amodeus.dispatcher.parking.AVSpatialCapacityGenerators;
 import ch.ethz.idsc.amodeus.prep.PopulationCutter;
 import ch.ethz.idsc.amodeus.prep.PopulationCutters;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreators;
+import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 
 public class ScenarioOptions {
-
+    private final File workingDirectory;
     protected final Properties properties;
 
+    @Deprecated
+    /** Should not be used in amodeus repository anymore. */
     protected ScenarioOptions(Properties properties) {
-        this.properties = properties;
+        try {
+            this.workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
+            this.properties = properties;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public ScenarioOptions(File workingDirectory, Properties fallbackDefault) throws IOException {
+        this.workingDirectory = workingDirectory;
         this.properties = StaticHelper.loadOrCreateScenarioOptions(workingDirectory, fallbackDefault);
+    }
+
+    public File getWorkingDirectory() {
+        return workingDirectory;
     }
 
     // PROPERTIES FUNCTIONS
@@ -31,7 +46,7 @@ public class ScenarioOptions {
     }
 
     public void saveAndOverwriteAmodeusOptions() throws IOException {
-        ScenarioOptionsBase.saveProperties(properties);
+        ScenarioOptionsBase.saveProperties(workingDirectory, properties);
     }
 
     public void saveToFolder(File folder, String header) throws IOException {
@@ -110,6 +125,14 @@ public class ScenarioOptions {
 
     public void setMaxPopulationSize(int maxNumberPeople) {
         properties.setProperty(ScenarioOptionsBase.MAXPOPULATIONSIZEIDENTIFIER, String.valueOf(maxNumberPeople));
+    }
+
+    public AVSpatialCapacityGenerator getParkingCapacityGenerator() {
+        return AVSpatialCapacityGenerators.valueOf(getString(ScenarioOptionsBase.PARKINGGENERATORIDENTIFIER)).setScenarioOptions(this);
+    }
+
+    public String getParkingSpaceTagInNetwork() {
+        return getString(ScenarioOptionsBase.PARKINGSPOTSTAGIDENTIFIER);
     }
 
     public File getShapeFile() {

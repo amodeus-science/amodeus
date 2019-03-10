@@ -2,6 +2,7 @@
 package ch.ethz.idsc.amodeus.analysis;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import ch.ethz.idsc.amodeus.analysis.element.DistanceElement;
 import ch.ethz.idsc.amodeus.analysis.element.NumberPassengersAnalysis;
@@ -19,9 +20,11 @@ public class AnalysisSummary implements Serializable {
     private final TravelTimeAnalysis travelTimeAnalysis = new TravelTimeAnalysis();
     private final NumberPassengersAnalysis numberPassengersAnalysis = new NumberPassengersAnalysis();
 
-    // TODO Claudio, is public required here? We normally use it as a Part of the Analysis()
-    // Thus an initialization of AnalysisSummary() is superficial..
+    /** @param numVehicles
+     * @param size
+     * @param db non-null */
     public AnalysisSummary(int numVehicles, int size, MatsimAmodeusDatabase db) {
+        Objects.requireNonNull(db);
         distanceElement = new DistanceElement(numVehicles, size, db);
     }
 

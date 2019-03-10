@@ -110,7 +110,7 @@ public class Analysis {
     private final HtmlReport htmlReport;
     private final TotalValues totalValues;
     private final ColorDataIndexed colorDataIndexed;
-    private final ChartTheme chartTheme;
+    // private final StandardChartTheme chartTheme; // <- not used
     private final Set<String> allAmodeusTotalValueIdentifiers = TtlValIdent.getAllIdentifiers();
 
     /** Constructor of the Analysis Class can be called with any combination of null
@@ -153,9 +153,10 @@ public class Analysis {
         // load colorScheme & theme
         colorDataIndexed = ColorDataAmodeus.indexed(scenOptions.getColorScheme());
 
-        chartTheme = ChartTheme.valueOf(scenOptions.getChartTheme());
+        // chartTheme was not used
+        // chartTheme = ChartTheme.valueOf(scenOptions.getChartTheme());
 
-        ChartFactory.setChartTheme(chartTheme.getChartTheme(false));
+        ChartFactory.setChartTheme(ChartTheme.STANDARD);
         BarRenderer.setDefaultBarPainter(new StandardBarPainter());
         BarRenderer.setDefaultShadowsVisible(false);
 
@@ -174,7 +175,7 @@ public class Analysis {
         System.out.println("Found files: " + size);
         int numVehicles = storageSupplier.getSimulationObject(1).vehicles.size();
 
-        analysisSummary = new AnalysisSummary(numVehicles, size, Objects.requireNonNull(db));
+        analysisSummary = new AnalysisSummary(numVehicles, size, db);
 
         // default List of Analysis Elements which will be loaded
         analysisElements.add(analysisSummary.getSimulationInformationElement());
@@ -199,7 +200,7 @@ public class Analysis {
         analysisExports.add(DistancesRatiosTable.INSTANCE);
         analysisExports.add(WaitingTimesTable.INSTANCE);
         analysisExports.add(StatusDistributionTable.INSTANCE);
-        analysisExports.add(VirtualNetworkExport.INSTANCE);
+        analysisExports.add(new VirtualNetworkExport(scenOptions));
         analysisExports.add(TravelTimeExport.INSTANCE);
         analysisExports.add(WaitingCustomerExport.INSTANCE);
 

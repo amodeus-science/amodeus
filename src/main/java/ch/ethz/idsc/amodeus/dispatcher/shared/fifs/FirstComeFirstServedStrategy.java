@@ -22,7 +22,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RebalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
-import ch.ethz.idsc.amodeus.dispatcher.util.EasyPathCalculator;
+import ch.ethz.idsc.amodeus.dispatcher.util.EasyMinTimePathCalculator;
 import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
@@ -63,7 +63,7 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
     private final Set<AVRequest> extremWaitList = new HashSet<>();
 
     private static final double MAXLAGTRAVELTIMECALCULATION = 1800.0;
-    private final TravelTimeCalculatorCached timeDb;
+    private final TravelTimeComputationCached timeDb;
 
     private final BlockRebalancing kockelmanRebalancing;
 
@@ -78,8 +78,8 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
         this.requestsLastHour = new TreeMultipleItems<>(this::getSubmissionTime);
 
         FastAStarLandmarksFactory factory = new FastAStarLandmarksFactory();
-        LeastCostPathCalculator calculator = EasyPathCalculator.prepPathCalculator(network, factory);
-        timeDb = TravelTimeCalculatorCached.of(calculator, MAXLAGTRAVELTIMECALCULATION);
+        LeastCostPathCalculator calculator = EasyMinTimePathCalculator.prepPathCalculator(network, factory);
+        timeDb = TravelTimeComputationCached.of(calculator, MAXLAGTRAVELTIMECALCULATION);
 
         this.kockelmanRebalancing = new BlockRebalancing(network, timeDb, MINNUMBERROBOTAXISINBLOCKTOREBALANCE, BINSIZETRAVELDEMAND, dispatchPeriod, REBALANCINGGRIDDISTANCE);
     }

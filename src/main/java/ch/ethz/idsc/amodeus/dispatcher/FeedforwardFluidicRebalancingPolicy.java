@@ -25,13 +25,14 @@ import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.FeasibleRebalanceCreator;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
+import ch.ethz.idsc.amodeus.lp.LPCreator;
 import ch.ethz.idsc.amodeus.lp.LPTimeInvariant;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualLink;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNode;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualLink;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -85,7 +86,6 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
         super(config, avDispatcherConfig, travelTime, router, eventsManager, virtualNetwork, db);
         virtualNodeDest = abstractVirtualNodeDest;
         vehicleDestMatcher = abstractVehicleDestMatcher;
-        this.travelData = travelData;
 
         this.network = network;
         nVNodes = virtualNetwork.getvNodesCount();
@@ -99,9 +99,16 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
         this.bipartiteMatchingEngine = new BipartiteMatchingUtils(network);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
+        this.travelData = travelData;
         System.out.println(travelData.getLPName());
         System.out.println(LPTimeInvariant.class.getSimpleName());
-        GlobalAssert.that(travelData.getLPName().equals(LPTimeInvariant.class.getSimpleName()));
+        if (!travelData.getLPName().equals(LPTimeInvariant.class.getSimpleName())) {
+            System.err.println("Running the " + this.getClass().getSimpleName() + " requires precomputed data that must be\n"
+                    + "computed in the ScenarioPreparer. Currently the file LPOptions.properties is set to compute the feedforward\n" + "rebalancing data with: ");
+            System.err.println(travelData.getLPName());
+            System.err.println("The correct setting in LPOptions.properties to run this dispatcher is:  " + LPCreator.TIMEINVARIANT.name());
+            GlobalAssert.that(false);
+        }
     }
 
     @Override

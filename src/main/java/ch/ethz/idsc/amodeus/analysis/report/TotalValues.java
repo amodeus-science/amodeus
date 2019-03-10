@@ -60,7 +60,7 @@ public class TotalValues implements AnalysisReport {
     public static Properties loadProperties(File dataDirectory) throws FileNotFoundException, IOException {
         Properties properties = new Properties();
         File propertiesFile = new File(dataDirectory, DEFAULT_FILENAME);
-        if (propertiesFile.exists())
+        if (propertiesFile.isFile())
             properties.load(new FileInputStream(propertiesFile));
         return properties;
     }

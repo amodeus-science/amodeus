@@ -16,6 +16,7 @@ import com.google.inject.name.Named;
 import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
 import ch.ethz.idsc.amodeus.dispatcher.core.PartitionedDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatchingUtils;
@@ -28,9 +29,9 @@ import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.lp.LPMinFlow;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualLink;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNode;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualLink;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -126,9 +127,17 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
                  * v_i excess = vi_own - c_i = v_i + sum_j (v_ji) - c_i */
                 Map<VirtualNode<Link>, List<RoboTaxi>> v_ij_reb = getVirtualNodeRebalancingToRoboTaxis();
                 Map<VirtualNode<Link>, List<RoboTaxi>> v_ij_cust = getVirtualNodeArrivingWithCustomerRoboTaxis();
+
+                /** this was necessary for some scenarios resulting in undivertable vehicles to ensure
+                 * LP feasibility, will not be triggered in most cases */
+                double diffDueUnDivertable = (getRoboTaxiSubset(RoboTaxiStatus.STAY).size() + //
+                        getRoboTaxiSubset(RoboTaxiStatus.DRIVETOCUSTOMER).size() - //
+                        getDivertableNotRebalancingRoboTaxis().size()) / ((double) virtualNetwork.getvNodesCount());
+                int diffCeil = (int) Math.ceil(diffDueUnDivertable);
+
                 Tensor vi_excessT = Array.zeros(virtualNetwork.getvNodesCount());
                 for (VirtualNode<Link> virtualNode : availableVehicles.keySet()) {
-                    int viExcessVal = availableVehicles.get(virtualNode).size() + v_ij_reb.get(virtualNode).size() + v_ij_cust.get(virtualNode).size()
+                    int viExcessVal = availableVehicles.get(virtualNode).size() + v_ij_reb.get(virtualNode).size() + v_ij_cust.get(virtualNode).size() + diffCeil
                             - requests.get(virtualNode).size();
                     vi_excessT.set(RealScalar.of(viExcessVal), virtualNode.getIndex());
                 }

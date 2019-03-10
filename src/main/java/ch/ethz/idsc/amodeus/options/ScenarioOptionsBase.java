@@ -6,9 +6,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import ch.ethz.idsc.amodeus.dispatcher.parking.AVSpatialCapacityGenerators;
 import ch.ethz.idsc.amodeus.prep.PopulationCutters;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreators;
 import ch.ethz.idsc.amodeus.util.io.FileLines;
+import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 
 public enum ScenarioOptionsBase {
     ;
@@ -27,6 +29,10 @@ public enum ScenarioOptionsBase {
     static final String POPULATIONUPDATEDNAMEIDENTIFIER = "PopulationUpdateName";
     static final String LOCATIONSPECIDENTIFIER = "LocationSpec";
     static final String SHAPEFILEIDENTIFIER = "shapeFile";
+
+    // ---
+    public static final String PARKINGGENERATORIDENTIFIER = "parkingCapacityGenerator";
+    public static final String PARKINGSPOTSTAGIDENTIFIER = "parkingSpotsTagInNetwork";
     // ---
     public static final String COMPLETEGRAPHIDENTIFIER = "completeGraph";
     public static final String POPULATIONCUTTERIDENTIFIER = "populationCutter";
@@ -58,11 +64,19 @@ public enum ScenarioOptionsBase {
         properties.setProperty(VIRTUALNETWORKCREATORIDENTIFIER, VirtualNetworkCreators.KMEANS.name());
         properties.setProperty(POPULATIONCUTTERIDENTIFIER, PopulationCutters.NETWORKBASED.name());
         properties.setProperty(SHAPEFILEIDENTIFIER, "AbsoluteShapeFileName");
+        properties.setProperty(PARKINGGENERATORIDENTIFIER, AVSpatialCapacityGenerators.NONE.name());
+        properties.setProperty(PARKINGSPOTSTAGIDENTIFIER, "spatialAvCapacity");
         return properties;
     }
 
+    @Deprecated
+    /** Should not be used in amodeus repository anymore. */
     public static void saveProperties(Properties prop) throws IOException {
-        saveProperties(prop, new File(OPTIONSFILENAME));
+        saveProperties(prop, new File(MultiFileTools.getDefaultWorkingDirectory(), OPTIONSFILENAME));
+    }
+
+    public static void saveProperties(File workingDirectory, Properties prop) throws IOException {
+        saveProperties(prop, new File(workingDirectory, OPTIONSFILENAME));
     }
 
     public static void saveProperties(Properties prop, File file) throws IOException {
