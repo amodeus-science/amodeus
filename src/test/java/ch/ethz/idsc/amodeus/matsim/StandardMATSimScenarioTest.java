@@ -92,7 +92,7 @@ public class StandardMATSimScenarioTest {
                 { "DynamicRideSharingStrategy" }, //
                 { "FirstComeFirstServedStrategy" }, //
                 { "ExtDemandSupplyBeamSharing" }, //
-                { "RestrictedLinkCapacityDispatcher" }, //
+//                { "RestrictedLinkCapacityDispatcher" }, //
                 { "HighCapacityDispatcher" }, //
                 { "TShareDispatcher" } });
     }
