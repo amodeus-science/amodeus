@@ -79,10 +79,6 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
 
     /** Class which handles The Validation of routes. Afterwards The Constraints */
     private final RouteValidation routeValidation;
-    private final double maxWaitTime;
-    private final double maxDriveTimeIncrease;
-    private final double maxRemainingTimeIncrease;
-    private final double newTravelTimeIncreaseAllowed;
     private static final String MAXWAITTIMEIDENTIFIER = "maxWaitTime";
     private static final String MAXDRIVETIMEINCREASEIDENTIFIER = "maxDriveTimeIncrease";
     private static final String MAXREMAININGTIMEINCREASEIDENTIFIER = "maxRemainingTimeIncrease";
@@ -102,10 +98,10 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
         dropoffDuration = avConfig.getTimingParameters().getDropoffDurationPerStop();
         pickupDuration = avConfig.getTimingParameters().getDropoffDurationPerStop();
 
-        maxWaitTime = safeConfig.getInteger(MAXWAITTIMEIDENTIFIER, 300);// Normal is 300
-        maxDriveTimeIncrease = safeConfig.getDouble(MAXDRIVETIMEINCREASEIDENTIFIER, 1.2);// Normal is 1.2
-        maxRemainingTimeIncrease = safeConfig.getDouble(MAXREMAININGTIMEINCREASEIDENTIFIER, 1.4);// Normal is 1.4
-        newTravelTimeIncreaseAllowed = safeConfig.getInteger(MAXABSOLUTETRAVELTIMEINCREASEIDENTIFIER, 180); // Normal is 180= (3min);
+        double maxWaitTime = safeConfig.getInteger(MAXWAITTIMEIDENTIFIER, 300);// Normal is 300
+        double maxDriveTimeIncrease = safeConfig.getDouble(MAXDRIVETIMEINCREASEIDENTIFIER, 1.2);// Normal is 1.2
+        double maxRemainingTimeIncrease = safeConfig.getDouble(MAXREMAININGTIMEINCREASEIDENTIFIER, 1.4);// Normal is 1.4
+        double newTravelTimeIncreaseAllowed = safeConfig.getInteger(MAXABSOLUTETRAVELTIMEINCREASEIDENTIFIER, 180); // Normal is 180= (3min);
 
         roboTaxiHandler = new RoboTaxiHandler(network);
 
@@ -143,7 +139,7 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
 
                 /** THIS IS WHERE WE CALCULATE THE SHARING POSSIBILITIES */
                 Optional<Entry<RoboTaxi, List<SharedCourse>>> rideSharingRoboTaxi = routeValidation.getClosestValidSharingRoboTaxi(robotaxisWithMenu, avRequest, now, timeDb,
-                        requestHandler, roboTaxiHandler, maxWaitTime);
+                        requestHandler, roboTaxiHandler);
 
                 if (rideSharingRoboTaxi.isPresent()) {
                     /** in Case we have a sharing possibility we assign */
