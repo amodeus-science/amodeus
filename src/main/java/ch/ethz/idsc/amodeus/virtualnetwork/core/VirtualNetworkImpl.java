@@ -17,7 +17,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 public class VirtualNetworkImpl<T> implements VirtualNetwork<T>, Serializable {
 
-    private final long virtualNetworkID; // to ensure that other objects dependant on virtualNetwork are derived of that particular network
+    private final long virtualNetworkID; // to ensure that other objects dependent on virtualNetwork are derived of that particular network
     private final Map<Integer, VirtualNode<T>> virtualNodes = new LinkedHashMap<>();
     private final Map<Integer, VirtualLink<T>> virtualLinks = new LinkedHashMap<>();
     // the map is for checking that all links in the network are assigned to one vNode

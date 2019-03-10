@@ -117,7 +117,7 @@ public class TestServer {
         controler.addOverridingModule(new AmodeusVehicleGeneratorModule());
         controler.addOverridingModule(new AmodeusVehicleToVSGeneratorModule());
         controler.addOverridingModule(new AmodeusDispatcherModule());
-        controler.addOverridingModule(new AmodeusVirtualNetworkModule());
+        controler.addOverridingModule(new AmodeusVirtualNetworkModule(scenarioOptions));
         controler.addOverridingModule(new AmodeusDatabaseModule(db));
         controler.addOverridingModule(new AbstractModule() {
             @Override

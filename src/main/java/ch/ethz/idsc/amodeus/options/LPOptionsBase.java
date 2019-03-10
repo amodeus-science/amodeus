@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import ch.ethz.idsc.amodeus.util.io.FileLines;
+import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 
 public enum LPOptionsBase {
     ;
@@ -25,8 +26,14 @@ public enum LPOptionsBase {
         return properties;
     }
 
+    @Deprecated
+    /** Should not be used in amodeus repository anymore. */
     public static void saveProperties(Properties prop) throws IOException {
-        saveProperties(prop, new File(OPTIONSFILENAME));
+        saveProperties(MultiFileTools.getDefaultWorkingDirectory(), prop);
+    }
+
+    public static void saveProperties(File workingDirectory, Properties prop) throws IOException {
+        saveProperties(prop, new File(workingDirectory, OPTIONSFILENAME));
     }
 
     public static void saveProperties(Properties prop, File file) throws IOException {

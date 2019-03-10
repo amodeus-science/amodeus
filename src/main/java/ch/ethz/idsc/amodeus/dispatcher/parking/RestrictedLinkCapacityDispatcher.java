@@ -59,7 +59,8 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
     private final BeamExtensionForSharing beamExtensionForSharing;
 
     /** PARKING EXTENSION */
-    private final ParkingMaintainer parkingMaintainer;
+    // TODO that is why this branch does not belong into master
+//    private final ParkingMaintainer parkingMaintainer;
     /** PARKING EXTENSION */
 
     /** the maximal angle between the two directions which is allowed that sharing
@@ -78,7 +79,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 60);
         sharingPeriod = safeConfig.getInteger("sharingPeriod", 10); // makes sense to choose this value similar to the
                                                                     // pickup duration
-        freeParkingPeriod = (long) safeConfig.getInteger("freeParkingPeriod", 10);
+        freeParkingPeriod = safeConfig.getInteger("freeParkingPeriod", 10);
 
         double rMax = safeConfig.getDouble("rMax", 1000.0);
         double phiMax = Pi.in(1000).multiply(RealScalar.of(safeConfig.getDouble("phiMaxDeg", 5.0) / 180.0)).number().doubleValue();
@@ -88,7 +89,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
         this.requestMaintainer = new TreeMaintainer<>(networkBounds, this::getLocation);
 
         /** PARKING EXTENSION */
-        parkingMaintainer = new ParkingMaintainer(avSpatialCapacityAmodeus);
+//        parkingMaintainer = new ParkingMaintainer(avSpatialCapacityAmodeus);
         /** PARKING EXTENSION */
     }
 
@@ -98,7 +99,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
 
         /** PARKING EXTENSION */
         if (round_now % freeParkingPeriod == 0) {
-            parkingMaintainer.keepFree(getRoboTaxiSubset(RoboTaxiStatus.STAY)).forEach((rt, l) -> setRoboTaxiRebalance(rt, l));
+//            parkingMaintainer.keepFree(getRoboTaxiSubset(RoboTaxiStatus.STAY)).forEach((rt, l) -> setRoboTaxiRebalance(rt, l));
         }
         /** PARKING EXTENSION */
 
@@ -202,7 +203,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
         @Inject
         private MatsimAmodeusDatabase db;
 
-        @Inject (optional = true)
+        @Inject(optional = true)
         private AVSpatialCapacityAmodeus avSpatialCapacityAmodeus;
 
         @Override

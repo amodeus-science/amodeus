@@ -1,33 +1,20 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.analysis;
 
-import java.util.stream.Collectors;
-
-import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.qty.Quantity;
-import ch.ethz.idsc.tensor.qty.Unit;
+import ch.ethz.idsc.tensor.sca.Sign;
 
 /* package */ enum PositiveSubVector {
     ;
 
+    // TODO document why this function is useful?
+    /** @param vector
+     * @return */
     public static Tensor of(Tensor vector) {
-        Unit unit = getUnitof(vector.Get(0));
-        return Tensors.vector(//
-                vector.flatten(-1).//
-                        filter(s -> Scalars.lessEquals(Quantity.of(0, unit), (Scalar) s)).//
-                        map(s -> ((Scalar) s).number()).//
-                        collect(Collectors.toList()))
-                .multiply(Quantity.of(1, unit));//
-    }
+        return Tensor.of(vector.flatten(-1) //
+                .map(Scalar.class::cast) //
+                .filter(Sign::isPositiveOrZero));
 
-    private static Unit getUnitof(Scalar scalar) {
-        if (!(scalar instanceof Quantity))
-            return SI.ONE;
-        Quantity q = (Quantity) scalar;
-        return q.unit();
     }
 }

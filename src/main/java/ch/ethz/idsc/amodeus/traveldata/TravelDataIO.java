@@ -3,6 +3,7 @@ package ch.ethz.idsc.amodeus.traveldata;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InvalidClassException;
 import java.util.Objects;
 import java.util.zip.DataFormatException;
 
@@ -21,7 +22,7 @@ public enum TravelDataIO {
      * @param file
      * @param travelData
      * @throws IOException */
-    public static void write(File file, TravelData travelData) throws IOException {
+    public static void writeStatic(File file, StaticTravelData travelData) throws IOException {
         travelData.checkConsistency();
         Export.object(file, travelData);
     }
@@ -34,12 +35,18 @@ public enum TravelDataIO {
      * @throws ClassNotFoundException
      * @throws DataFormatException
      * @throws IOException */
-    /* package */ static TravelData read(File file, VirtualNetwork<Link> virtualNetwork) //
+    /* package */ static StaticTravelData readStatic(File file, VirtualNetwork<Link> virtualNetwork) //
             throws ClassNotFoundException, DataFormatException, IOException {
-        GlobalAssert.that(Objects.nonNull(virtualNetwork));
-        TravelData travelData = Import.object(file);
-        travelData.checkConsistency();
-        travelData.checkIdenticalVirtualNetworkID(virtualNetwork.getvNetworkID());
-        return travelData;
+        try {
+            GlobalAssert.that(Objects.nonNull(virtualNetwork));
+            StaticTravelData travelData = Import.object(file);
+            travelData.checkConsistency();
+            travelData.checkIdenticalVirtualNetworkID(virtualNetwork.getvNetworkID());
+            return travelData;
+        } catch (InvalidClassException e) {
+            System.err.println(
+                    "You're seeing an InvalidClassException. This is likely the case because the internal class of TravelData has changed. Please re-generated your TravelData input / re-run the preparer.");
+            throw e;
+        }
     }
 }
