@@ -29,7 +29,7 @@ public class AdvancedRTVGenerator {
 
     public List<TripWithVehicle> generateRTV(List<RoboTaxi> roboTaxis, Set<AVRequest> newAddedRequests, Set<AVRequest> removedRequests, //
             double now, Map<AVRequest, RequestKeyInfo> requestKeyInfoMap, Set<Set<AVRequest>> rvEdges, //
-            TravelTimeCalculator ttc, List<TripWithVehicle> lastAssignment, double trafficAllowance) {
+            TravelTimeComputation ttc, List<TripWithVehicle> lastAssignment, double trafficAllowance) {
         List<TripWithVehicle> grossListOfRTVEdges = new ArrayList<>();
         for (RoboTaxi roboTaxi : roboTaxis) {
             // construct collection of single request to check

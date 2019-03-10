@@ -17,7 +17,6 @@ import ch.ethz.idsc.amodeus.data.LocationSpecDatabase;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
-import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.framework.AVConfigGroup;
 
@@ -41,10 +40,10 @@ public class SimulationProperties {
     /** Loads the simulation properties without throwing an exception.
      * 
      * @return {@link SimulationProperties} */
-    public static SimulationProperties load() {
+    public static SimulationProperties load(File workingDirectory) {
         SimulationProperties simulationProperties = null;
         try {
-            simulationProperties = new SimulationProperties();
+            simulationProperties = new SimulationProperties(workingDirectory);
         } catch (IOException e) {
             System.err.println(
                     "Luckily we were able to stop the process before runing the simulation with incomplete settings. Who knows what would happen then... You are our last chance! Help me please I desire to run even more than you do.");
@@ -55,12 +54,11 @@ public class SimulationProperties {
     }
 
     /** To use this class the LocationSpecDatabase has to be set up in advance. This can be done with the Helper Class "Static" */
-    protected SimulationProperties() throws IOException {
+    protected SimulationProperties(File workingDirectory) throws IOException {
         GlobalAssert.that(!LocationSpecDatabase.INSTANCE.isEmpty());
 
-        workingDirectory = MultiFileTools.getWorkingDirectory();
+        this.workingDirectory = workingDirectory;
         scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
-        ;
 
         // Locationspec needs to be set manually in Amodeus.properties
         GlobalAssert.that(!Objects.isNull(scenarioOptions.getLocationSpec()));

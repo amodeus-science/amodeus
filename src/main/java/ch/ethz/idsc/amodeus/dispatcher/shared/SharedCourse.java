@@ -8,7 +8,12 @@ import org.matsim.api.core.v01.network.Link;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** Middle level class in SharedRoboTaxi functionality, a {@link SharedMenu} is
- * composed of {@link SharedCourse}s which internally have a {@link SharedMealType}s */
+ * composed of {@link SharedCourse}s which internally have a {@link SharedMealType}s
+ * A {@link SharedCourse} has the following data:
+ * - 1 {@link AVRequest}
+ * - 1 {@link Link}
+ * - 1 {@link String} unique ID
+ * - 1 {@link SharedMealType} either PICKUP, DROPOFF or REDIRECT} */
 public class SharedCourse {
     protected static final AVRequest STANDARD_REDIRECT_AVREQUEST = null;
 

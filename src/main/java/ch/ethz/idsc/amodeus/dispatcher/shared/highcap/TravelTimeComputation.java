@@ -8,12 +8,12 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.core.router.util.LeastCostPathCalculator;
 import org.matsim.core.router.util.LeastCostPathCalculator.Path;
 
-public class TravelTimeCalculator {
+public class TravelTimeComputation {
 
     private final LeastCostPathCalculator lcpc;
     private final LimitedSizeMap<Link, Map<Link, Double>> travelTimeDataMap;
 
-    public TravelTimeCalculator(LeastCostPathCalculator lcpc, int sizeLimit) {
+    public TravelTimeComputation(LeastCostPathCalculator lcpc, int sizeLimit) {
         this.lcpc = lcpc;
         travelTimeDataMap = new LimitedSizeMap<>(sizeLimit);
     }

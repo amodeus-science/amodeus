@@ -116,7 +116,7 @@ public class VideoGenerator implements Runnable {
 
         /** this is optional and should not cause problems if file does not
          * exist. temporary solution */
-        VirtualNetwork<Link> virtualNetwork = VirtualNetworkGet.readDefault(network); // may be null
+        VirtualNetwork<Link> virtualNetwork = VirtualNetworkGet.readDefault(network, scenarioOptions); // may be null
         System.out.println("has vn: " + (virtualNetwork != null));
         VirtualNetworkLayer virtualNetworkLayer = new VirtualNetworkLayer(amodeusComponent);
         virtualNetworkLayer.setVirtualNetwork(virtualNetwork);

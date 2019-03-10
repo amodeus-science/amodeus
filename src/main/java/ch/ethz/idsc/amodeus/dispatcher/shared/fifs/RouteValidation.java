@@ -13,9 +13,9 @@ import java.util.Set;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiUtils;
+import ch.ethz.idsc.amodeus.dispatcher.shared.Compatibility;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
@@ -42,15 +42,15 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param oldRoute
      * @param newRequestWrap
      * @param now
-     * @param requestMaintainer
+     * @param requestHandler
      * @return true if this is a valid route, false if the rout can not be considered for sharing. */
-    boolean isValidRoute(SharedAvRoute sharedAvRoute, SharedAvRoute oldRoute, RequestWrap newRequestWrap, double now, RequestHandler requestMaintainer) {
-        Map<AVRequest, Double> driveTimes = getDriveTimes(sharedAvRoute, requestMaintainer);
+    boolean isValidRoute(SharedAvRoute sharedAvRoute, SharedAvRoute oldRoute, RequestWrap newRequestWrap, double now, RequestHandler requestHandler) {
+        Map<AVRequest, Double> driveTimes = requestHandler.getDriveTimes(sharedAvRoute);
         AVRequest newAvRequest = newRequestWrap.getAvRequest();
-        double unitCapacityDriveTime = requestMaintainer.getDriveTimeDirectUnitCap(newAvRequest);
+        double unitCapacityDriveTime = requestHandler.getDriveTimeDirectUnitCap(newAvRequest);
         GlobalAssert.that(unitCapacityDriveTime == newRequestWrap.getUnitDriveTime());
         // Requirement 1 Current Passenger Total Travel Time Increase
-        if (rideSharingConstraints.driveTimeCurrentPassengersExceeded(driveTimes, newAvRequest, requestMaintainer))
+        if (rideSharingConstraints.driveTimeCurrentPassengersExceeded(driveTimes, newAvRequest, requestHandler))
             return false;
 
         // Requirement 2 Current Passenger remaining Time Increase
@@ -69,37 +69,16 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         return rideSharingConstraints.combinedConstraintAcceptable(sharedAvRoute, oldRoute, unitCapacityDriveTime);
     }
 
-    private static Map<AVRequest, Double> getDriveTimes(SharedAvRoute route, RequestHandler requestMaintainer) {
-        // Preparation
-        Map<AVRequest, Double> thisPickupTimes = new HashMap<>();
-        route.getRoute().stream() //
-                .filter(srp -> srp.getMealType().equals(SharedMealType.PICKUP)) //
-                .forEach(srp -> thisPickupTimes.put(srp.getAvRequest(), srp.getArrivalTime()));
-        //
-        Map<AVRequest, Double> driveTimes = new HashMap<>();
-        for (SharedRoutePoint sharedRoutePoint : route.getRoute())
-            if (sharedRoutePoint.getMealType().equals(SharedMealType.DROPOFF))
-                if (thisPickupTimes.containsKey(sharedRoutePoint.getAvRequest())) {
-                    // TODO does it include the dropoff or not?
-                    driveTimes.put(sharedRoutePoint.getAvRequest(), sharedRoutePoint.getEndTime() - thisPickupTimes.get(sharedRoutePoint.getAvRequest()));
-                } else {
-                    driveTimes.put(sharedRoutePoint.getAvRequest(), sharedRoutePoint.getEndTime() - requestMaintainer.getPickupTime(sharedRoutePoint.getAvRequest()));
-                }
-
-        return driveTimes;
-    }
-
     /** @param allRoboTaxis
      * @param robotaxisWithMenu
      * @param avRequest
      * @param now
      * @param timeDb
      * @param roboTaxiMaintainer
-     * @param maxTime
      * @param timeSharing
      * @return The Closest RoboTaxi with a Shared Menu associated with it. */
     /* package */ Optional<Entry<RoboTaxi, List<SharedCourse>>> getClosestValidSharingRoboTaxi(Set<RoboTaxi> robotaxisWithMenu, AVRequest avRequest, double now,
-            TravelTimeCalculatorCached timeDb, RequestHandler requestMaintainer, RoboTaxiHandler roboTaxiMaintainer) {
+            TravelTimeComputationCached timeDb, RequestHandler requestMaintainer, RoboTaxiHandler roboTaxiMaintainer) {
 
         GlobalAssert.that(robotaxisWithMenu.stream().allMatch(r -> RoboTaxiUtils.hasNextCourse(r)));
 
@@ -128,7 +107,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         }
         Optional<Entry<RoboTaxi, List<SharedCourse>>> rt = getFastestValidEntry(avRouteHandler, avRequest, oldRoutes, now, requestMaintainer);
         if (rt.isPresent()) {
-            GlobalAssert.that(SharedCourseListUtils.checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(rt.get().getValue(), rt.get().getKey().getCapacity()));
+            GlobalAssert.that(Compatibility.of(rt.get().getValue()).forCapacity(rt.get().getKey().getCapacity()));
         }
         return rt;
     }
@@ -143,7 +122,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
             for (Entry<RoboTaxi, Set<SharedAvRoute>> entry : map.entrySet())
                 for (SharedAvRoute sharedAvRoute : entry.getValue())
                     if (isValidRoute(sharedAvRoute, oldRoutes.get(entry.getKey()), requestMaintainer.getRequestWrap(avRequest), now, requestMaintainer))
-                        if (SharedCourseListUtils.checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(sharedAvRoute.getRoboTaxiMenu(), entry.getKey().getCapacity())) {
+                        if (Compatibility.of(sharedAvRoute.getRoboTaxiMenu()).forCapacity(entry.getKey().getCapacity())) {
                             return Optional.of(new SimpleEntry<>(entry.getKey(), sharedAvRoute.getRoboTaxiMenu()));
                         }
 
@@ -156,7 +135,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     boolean menuFulfillsConstraints( //
             RoboTaxi roboTaxi, List<SharedCourse> newRoute, //
             AVRequest avRequest, double now, //
-            TravelTimeCalculatorCached timeDb, RequestHandler requestMaintainer) {
+            TravelTimeComputationCached timeDb, RequestHandler requestMaintainer) {
         Set<AVRequest> currentRequests = RoboTaxiUtils.getRequestsInMenu(roboTaxi);
         GlobalAssert.that(SharedCourseListUtils.getUniqueAVRequests(newRoute).containsAll(currentRequests));
         SharedAvRoute sharedAvRoute = SharedAvRoute.of(newRoute, roboTaxi.getDivertableLocation(), now, pickupDuration, dropoffDuration, timeDb);

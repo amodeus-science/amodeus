@@ -9,6 +9,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 public enum TotalDelayCalculator {
+
     ;
     /** the function (TotalDelayCalculator.of) intakes the route (a list of stopInRoute)
      * and returns totalDelay (double) which represents the total delay of the route
@@ -18,7 +19,7 @@ public enum TotalDelayCalculator {
      * /* package */
     public static double of(List<StopInRoute> route, //
             Map<AVRequest, RequestKeyInfo> requestKeyInfoMap, //
-            TravelTimeCalculator ttc) {
+            TravelTimeComputation ttc) {
 
         if (Objects.isNull(route))
             return 999999.9; // if (greedy) route is not valid, route generator will return null.
