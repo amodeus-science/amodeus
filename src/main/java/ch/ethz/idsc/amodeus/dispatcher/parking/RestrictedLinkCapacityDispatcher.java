@@ -18,13 +18,13 @@ import org.matsim.core.router.util.TravelTime;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-import ch.ethz.idsc.amodeus.dispatcher.DemandSupplyBalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedRebalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.parking.strategies.ParkingStrategy;
 import ch.ethz.idsc.amodeus.dispatcher.shared.BeamExtensionForSharing;
+import ch.ethz.idsc.amodeus.dispatcher.shared.ExtDemandSupplyBeamSharing;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
@@ -45,9 +45,13 @@ import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.router.AVRouter;
 
-/** this is a first Shared Dispacher.
+/** This is a first Dispatcher which takes the Parking Situation into Account.
  * 
- * It extends the {@link DemandSupplyBalancingDispatcher}. At each pickup it is
+ * To run this dipatcher it is required that
+ * 1. The Matsim Controler (e.g. in the ScenarioServer) uses the {@link AmodeusParkingModule}.
+ * 2. The the
+ * 
+ * It extends the {@link ExtDemandSupplyBeamSharing}. At each pickup it is
  * checked if around this Robotaxi there exist other Open requests with the same
  * direction. Those are then picked up. */
 public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatcher {
@@ -74,7 +78,8 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
     protected RestrictedLinkCapacityDispatcher(Network network, //
             Config config, AVDispatcherConfig avDispatcherConfig, //
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, //
-            MatsimAmodeusDatabase db, ParkingStrategy parkingStrategy) {
+            MatsimAmodeusDatabase db, ParkingStrategy parkingStrategy, //
+            AVSpatialCapacityAmodeus avSpatialCapacityAmodeus) {
         super(config, avDispatcherConfig, travelTime, router, eventsManager, db);
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 60);
@@ -91,7 +96,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
         DispatcherConfig dispatcherConfig = DispatcherConfig.wrap(avDispatcherConfig);
         DistanceHeuristics distanceHeuristics = //
                 dispatcherConfig.getDistanceHeuristics(DistanceHeuristics.ASTARLANDMARKS);
-        this.parkingStrategy.setRunntimeParameters(network, distanceHeuristics.getDistanceFunction(network));
+        this.parkingStrategy.setRunntimeParameters(avSpatialCapacityAmodeus, network, distanceHeuristics.getDistanceFunction(network));
         /** PARKING EXTENSION */
     }
 
@@ -210,6 +215,9 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
         @Inject(optional = true)
         private ParkingStrategy parkingStrategy;
 
+        @Inject(optional = true)
+        private AVSpatialCapacityAmodeus avSpatialCapacityAmodeus;
+
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
             @SuppressWarnings("unused")
@@ -220,7 +228,8 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
             @SuppressWarnings("unused")
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceFunction.INSTANCE);
 
-            return new RestrictedLinkCapacityDispatcher(network, config, avconfig, travelTime, router, eventsManager, db, Objects.requireNonNull(parkingStrategy));
+            return new RestrictedLinkCapacityDispatcher(network, config, avconfig, travelTime, router, eventsManager, db, Objects.requireNonNull(parkingStrategy),
+                    Objects.requireNonNull(avSpatialCapacityAmodeus));
         }
     }
 }

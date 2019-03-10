@@ -28,6 +28,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiUtils;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedRebalancingDispatcher;
+import ch.ethz.idsc.amodeus.dispatcher.parking.AVSpatialCapacityAmodeus;
 import ch.ethz.idsc.amodeus.dispatcher.parking.strategies.ParkingStrategy;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
@@ -98,12 +99,14 @@ public class ParkHighCapacityDispatcher extends SharedRebalancingDispatcher {
 
     /** PARKING EXTENSION
      * 
-     * @param parkingStrategy */
+     * @param parkingStrategy
+     * @param avSpatialCapacityAmodeus */
 
     public ParkHighCapacityDispatcher(Network network, //
             Config config, AVDispatcherConfig avDispatcherConfig, //
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, //
-            MatsimAmodeusDatabase db, ParkingStrategy parkingStrategy) {
+            MatsimAmodeusDatabase db, ParkingStrategy parkingStrategy, //
+            AVSpatialCapacityAmodeus avSpatialCapacityAmodeus) {
 
         super(config, avDispatcherConfig, travelTime, router, eventsManager, db);
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
@@ -126,7 +129,7 @@ public class ParkHighCapacityDispatcher extends SharedRebalancingDispatcher {
         /** PARKING EXTENSION */
         this.parkingStrategy = parkingStrategy;
         DistanceHeuristics distanceHeuristics = DispatcherConfig.wrap(avDispatcherConfig).getDistanceHeuristics(DistanceHeuristics.ASTARLANDMARKS);
-        this.parkingStrategy.setRunntimeParameters(network, distanceHeuristics.getDistanceFunction(network));
+        this.parkingStrategy.setRunntimeParameters(avSpatialCapacityAmodeus, network, distanceHeuristics.getDistanceFunction(network));
         /** PARKING EXTENSION */
 
     }
@@ -312,6 +315,9 @@ public class ParkHighCapacityDispatcher extends SharedRebalancingDispatcher {
         @Inject(optional = true)
         private ParkingStrategy parkingStrategy;
 
+        @Inject(optional = true)
+        private AVSpatialCapacityAmodeus avSpatialCapacityAmodeus;
+
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
             @SuppressWarnings("unused")
@@ -322,7 +328,8 @@ public class ParkHighCapacityDispatcher extends SharedRebalancingDispatcher {
             @SuppressWarnings("unused")
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceFunction.INSTANCE);
 
-            return new ParkHighCapacityDispatcher(network, config, avconfig, travelTime, router, eventsManager, db, Objects.requireNonNull(parkingStrategy));
+            return new ParkHighCapacityDispatcher(network, config, avconfig, travelTime, router, eventsManager, db, Objects.requireNonNull(parkingStrategy),
+                    Objects.requireNonNull(avSpatialCapacityAmodeus));
         }
     }
 }

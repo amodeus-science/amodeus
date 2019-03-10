@@ -8,12 +8,13 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.parking.AVSpatialCapacityAmodeus;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
 
 /** A Parking Startegy is the routine which defines how Parking spaces are tried to keep free. */
 public interface ParkingStrategy {
 
-    /** Function which should take action to keep Parking spaces free and stopp overfilling of the parking spaces.
+    /** Function which should take action to keep Parking spaces free and stop overfilling of the parking spaces.
      * Its normally called in the redispatch function of a dispatcher.
      * 
      * @param stayingRobotaxis
@@ -22,12 +23,13 @@ public interface ParkingStrategy {
      * @return */
     public Map<RoboTaxi, Link> keepFree(Collection<RoboTaxi> stayingRobotaxis, Collection<RoboTaxi> rebalancingRobotaxis, long now);
 
-    /** this function gives the implementation the possibility to use the network and the distance function which will only be available after the construction.
+    /** this function gives the implementation the possibility to use the avSpatialCapacity, the network and the distance function which will only be available
+     * after the construction.
      * Normally this function should be called in the constructor of the dispatcher.
      * 
+     * @param avSpatialCapacityAmodeus
      * @param network
      * @param distanceFunction */
-    default public void setRunntimeParameters(Network network, DistanceFunction distanceFunction) {
-        // -- empty by default. If somene wants to use these variables in a Startegy it has to be overwritten
-    }
+    public void setRunntimeParameters(AVSpatialCapacityAmodeus avSpatialCapacityAmodeus, Network network, DistanceFunction distanceFunction);
+
 }

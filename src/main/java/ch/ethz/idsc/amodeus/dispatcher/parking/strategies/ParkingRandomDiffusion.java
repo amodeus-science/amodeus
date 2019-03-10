@@ -14,19 +14,13 @@ import java.util.Set;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.dispatcher.parking.AVSpatialCapacityAmodeus;
 
-class ParkingRandomDiffusion implements ParkingStrategy {
+class ParkingRandomDiffusion extends ParkingStrategyWithCapacity {
 
     private static final long SEED = 12324;
     private final long freeParkingPeriod = 5;
-    private final AVSpatialCapacityAmodeus spatialCapacity;
 
     private final Random random = new Random(SEED);
-
-    ParkingRandomDiffusion(AVSpatialCapacityAmodeus spatialCapacity) {
-        this.spatialCapacity = spatialCapacity;
-    }
 
     @Override
     public Map<RoboTaxi, Link> keepFree(Collection<RoboTaxi> stayingRobotaxis, Collection<RoboTaxi> rebalancingRobotaxis, long now) {
@@ -49,7 +43,7 @@ class ParkingRandomDiffusion implements ParkingStrategy {
             /** if above flush threshold, then flush the entire link */
             Map<RoboTaxi, Link> directives = new HashMap<>();
             currCount.entrySet().stream().forEach(e -> {
-                if (e.getValue().size() > spatialCapacity.getSpatialCapacity(e.getKey().getId()) * 0.5) {
+                if (e.getValue().size() > avSpatialCapacityAmodeus.getSpatialCapacity(e.getKey().getId()) * 0.5) {
                     e.getValue().stream().//
                     limit(Math.round(e.getValue().size() * 0.5)).//
                     forEach(rt -> {

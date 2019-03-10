@@ -138,8 +138,8 @@ public class ScenarioOptions {
         return getString(ScenarioOptionsBase.PARKINGSPOTSTAGIDENTIFIER);
     }
 
-    public ParkingStrategy getParkingStrategy(AVSpatialCapacityAmodeus avSpatialCapacityAmodeus) {
-        return ParkingStrategies.valueOf(getString(ScenarioOptionsBase.PARKINGSTRATEGYIDENTIFIER)).generateParkingStrategy(avSpatialCapacityAmodeus);
+    public ParkingStrategy getParkingStrategy() {
+        return ParkingStrategies.valueOf(getString(ScenarioOptionsBase.PARKINGSTRATEGYIDENTIFIER)).generateParkingStrategy();
     }
 
     public File getShapeFile() {

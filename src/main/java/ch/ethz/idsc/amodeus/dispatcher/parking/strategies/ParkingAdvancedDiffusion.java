@@ -11,19 +11,16 @@ import java.util.Set;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.dispatcher.parking.AVSpatialCapacityAmodeus;
 
-class ParkingAdvancedDiffusion implements ParkingStrategy {
+class ParkingAdvancedDiffusion extends ParkingStrategyWithCapacity {
 
     private static final long RANDOMSEED = 1234;
 
     private final long freeParkingPeriod = 5;
 
-    private final AVSpatialCapacityAmodeus avSpatialCapacityAmodeus;
     private final Random random;
 
-    ParkingAdvancedDiffusion(AVSpatialCapacityAmodeus avSpatialCapacityAmodeus) {
-        this.avSpatialCapacityAmodeus = avSpatialCapacityAmodeus;
+    ParkingAdvancedDiffusion() {
         this.random = new Random(RANDOMSEED);
     }
 

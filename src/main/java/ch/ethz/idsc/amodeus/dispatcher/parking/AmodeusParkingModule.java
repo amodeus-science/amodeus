@@ -28,13 +28,8 @@ public class AmodeusParkingModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public ParkingStrategy provideParkingStrategy(Network network) {
-        return loadParkingStrategy(network);
-    }
-
-    private ParkingStrategy loadParkingStrategy(Network network) {
-        AVSpatialCapacityAmodeus avSpatialCapacityAmodeus = scenarioOptions.getParkingCapacityGenerator().generate(network);
-        return scenarioOptions.getParkingStrategy(avSpatialCapacityAmodeus);
+    public ParkingStrategy provideParkingStrategy() {
+        return scenarioOptions.getParkingStrategy();
     }
 
     @Provides
