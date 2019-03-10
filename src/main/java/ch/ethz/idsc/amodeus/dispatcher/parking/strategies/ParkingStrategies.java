@@ -9,7 +9,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.dispatcher.parking.AVSpatialCapacityAmodeus;
+import ch.ethz.idsc.amodeus.dispatcher.parking.ParkingCapacityAmodeus;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
 
 public enum ParkingStrategies {
@@ -23,7 +23,7 @@ public enum ParkingStrategies {
                 }
 
                 @Override
-                public void setRunntimeParameters(AVSpatialCapacityAmodeus avSpatialCapacityAmodeus, Network network, DistanceFunction distanceFunction) {
+                public void setRunntimeParameters(ParkingCapacityAmodeus avSpatialCapacityAmodeus, Network network, DistanceFunction distanceFunction) {
                 }
             };
         }

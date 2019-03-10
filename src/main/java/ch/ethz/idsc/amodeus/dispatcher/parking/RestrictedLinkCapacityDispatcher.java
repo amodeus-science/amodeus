@@ -49,7 +49,8 @@ import ch.ethz.matsim.av.router.AVRouter;
  * 
  * To run this dipatcher it is required that
  * 1. The Matsim Controler (e.g. in the ScenarioServer) uses the {@link AmodeusParkingModule}.
- * 2. The the
+ * 2. Set the values for the {@link ParkingCapacityAmodeus} and the {@link ParkingStrategy} in the Scenario Options
+ * 3. Choose the {@link RestrictedLinkCapacityDispatcher} in the AVConfig.xml
  * 
  * It extends the {@link ExtDemandSupplyBeamSharing}. At each pickup it is
  * checked if around this Robotaxi there exist other Open requests with the same
@@ -79,7 +80,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
             Config config, AVDispatcherConfig avDispatcherConfig, //
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, //
             MatsimAmodeusDatabase db, ParkingStrategy parkingStrategy, //
-            AVSpatialCapacityAmodeus avSpatialCapacityAmodeus) {
+            ParkingCapacityAmodeus avSpatialCapacityAmodeus) {
         super(config, avDispatcherConfig, travelTime, router, eventsManager, db);
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 60);
@@ -216,7 +217,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
         private ParkingStrategy parkingStrategy;
 
         @Inject(optional = true)
-        private AVSpatialCapacityAmodeus avSpatialCapacityAmodeus;
+        private ParkingCapacityAmodeus avSpatialCapacityAmodeus;
 
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {

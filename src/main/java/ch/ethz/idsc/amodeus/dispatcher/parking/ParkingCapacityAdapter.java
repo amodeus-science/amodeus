@@ -8,7 +8,7 @@ import java.util.Map;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 
-public class AVSpatialCapacityAdapter implements AVSpatialCapacityAmodeus {
+public class ParkingCapacityAdapter implements ParkingCapacityAmodeus {
 
     /** Storing all the given Capacities in a Map */
     protected final Map<Id<Link>, Long> capacities = new HashMap<>();

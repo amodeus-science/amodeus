@@ -11,7 +11,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.dispatcher.parking.AVSpatialCapacityAmodeus;
+import ch.ethz.idsc.amodeus.dispatcher.parking.ParkingCapacityAmodeus;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
@@ -21,7 +21,7 @@ class ParkingLP extends ParkingStrategyWithCapacity{
     private ParkingLPStaticHelper parkingLPStaticHelper;
 
     @Override
-    public void setRunntimeParameters(AVSpatialCapacityAmodeus avSpatialCapacityAmodeus, Network network, DistanceFunction distanceFunction) {
+    public void setRunntimeParameters(ParkingCapacityAmodeus avSpatialCapacityAmodeus, Network network, DistanceFunction distanceFunction) {
         super.setRunntimeParameters(avSpatialCapacityAmodeus, network, distanceFunction);
         this.parkingLPStaticHelper = new ParkingLPStaticHelper(avSpatialCapacityAmodeus, network);
     }

@@ -11,16 +11,16 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.dispatcher.parking.AVSpatialCapacityAmodeus;
+import ch.ethz.idsc.amodeus.dispatcher.parking.ParkingCapacityAmodeus;
 
 class ParkingLPStaticHelper {
 
     private final static double BOUNDCAPACITY = 0.5;
 
-    private final AVSpatialCapacityAmodeus avSpatialCapacityAmodeus;
+    private final ParkingCapacityAmodeus avSpatialCapacityAmodeus;
     private final Network network;
 
-    ParkingLPStaticHelper(AVSpatialCapacityAmodeus avSpatialCapacityAmodeus, Network network) {
+    ParkingLPStaticHelper(ParkingCapacityAmodeus avSpatialCapacityAmodeus, Network network) {
         this.avSpatialCapacityAmodeus = avSpatialCapacityAmodeus;
         this.network = network;
     }

@@ -6,25 +6,25 @@ import org.matsim.api.core.v01.network.Network;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
-public enum AVSpatialCapacityGenerators implements AVSpatialCapacityGenerator {
+public enum ParkingCapacityGenerators implements ParkingCapacityGenerator {
     NONE {
         @Override
-        public AVSpatialCapacityAmodeus generate(Network network) {
-            return new AVSpatialCapacityInfinity(network);
+        public ParkingCapacityAmodeus generate(Network network) {
+            return new ParkingCapacityInfinity(network);
         }
     },
     NETWORKBASED {
         @Override
-        public AVSpatialCapacityAmodeus generate(Network network) {
+        public ParkingCapacityAmodeus generate(Network network) {
             GlobalAssert.that(scenarioOptions != null);
-            return new AVSpatialCapacityFromNetworkAndIdentifier(network, scenarioOptions.getParkingSpaceTagInNetwork());
+            return new ParkingCapacityFromNetworkAndIdentifier(network, scenarioOptions.getParkingSpaceTagInNetwork());
         }
     };
 
     // TODO JPH: bad style since assignment of static variable: what would be a better solution?
     protected ScenarioOptions scenarioOptions = null;
 
-    public AVSpatialCapacityGenerators setScenarioOptions(ScenarioOptions scenarioOptions) {
+    public ParkingCapacityGenerators setScenarioOptions(ScenarioOptions scenarioOptions) {
         this.scenarioOptions = scenarioOptions;
         return this;
     }

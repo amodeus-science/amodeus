@@ -2,12 +2,12 @@ package ch.ethz.idsc.amodeus.dispatcher.parking.strategies;
 
 import org.matsim.api.core.v01.network.Network;
 
-import ch.ethz.idsc.amodeus.dispatcher.parking.AVSpatialCapacityAmodeus;
+import ch.ethz.idsc.amodeus.dispatcher.parking.ParkingCapacityAmodeus;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
 
 public abstract class ParkingStrategyWithCapacity implements ParkingStrategy {
 
-    protected AVSpatialCapacityAmodeus avSpatialCapacityAmodeus;
+    protected ParkingCapacityAmodeus avSpatialCapacityAmodeus;
     protected Network network;
     protected DistanceFunction distanceFunction;
 
@@ -17,7 +17,7 @@ public abstract class ParkingStrategyWithCapacity implements ParkingStrategy {
      * @param network
      * @param distanceFunction */
     @Override
-    public void setRunntimeParameters(AVSpatialCapacityAmodeus avSpatialCapacityAmodeus, Network network, DistanceFunction distanceFunction) {
+    public void setRunntimeParameters(ParkingCapacityAmodeus avSpatialCapacityAmodeus, Network network, DistanceFunction distanceFunction) {
         this.avSpatialCapacityAmodeus = avSpatialCapacityAmodeus;
         this.network = network;
         this.distanceFunction = distanceFunction;

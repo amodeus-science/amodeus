@@ -93,7 +93,7 @@ public class StandardMATSimScenarioTest {
                 { "FirstComeFirstServedStrategy" }, //
                 { "ExtDemandSupplyBeamSharing" }, //
                 { "RestrictedLinkCapacityDispatcher" }, //
-//                { "HighCapacityDispatcher" }, //
+//                { "HighCapacityDispatcher" }, // Exceeds the length limit of the test online
                 { "TShareDispatcher" } });
     }
 

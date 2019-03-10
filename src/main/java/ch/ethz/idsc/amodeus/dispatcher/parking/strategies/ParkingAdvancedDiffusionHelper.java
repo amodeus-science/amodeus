@@ -16,17 +16,17 @@ import java.util.TreeMap;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.dispatcher.parking.AVSpatialCapacityAmodeus;
+import ch.ethz.idsc.amodeus.dispatcher.parking.ParkingCapacityAmodeus;
 
 class ParkingAdvancedDiffusionHelper {
 
     private final static double BOUNDCAPACITY = 0.5;
 
-    private final AVSpatialCapacityAmodeus avSpatialCapacityAmodeus;
+    private final ParkingCapacityAmodeus avSpatialCapacityAmodeus;
     private final Random random;
     private Map<Link, Set<RoboTaxi>> occMap;
 
-    ParkingAdvancedDiffusionHelper(AVSpatialCapacityAmodeus avSpatialCapacityAmodeus, Collection<RoboTaxi> stayingRobotaxis, Collection<RoboTaxi> rebalancingRobotaxis,
+    ParkingAdvancedDiffusionHelper(ParkingCapacityAmodeus avSpatialCapacityAmodeus, Collection<RoboTaxi> stayingRobotaxis, Collection<RoboTaxi> rebalancingRobotaxis,
             Random random) {
         this.avSpatialCapacityAmodeus = avSpatialCapacityAmodeus;
         this.random = random;

@@ -28,7 +28,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiUtils;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedRebalancingDispatcher;
-import ch.ethz.idsc.amodeus.dispatcher.parking.AVSpatialCapacityAmodeus;
+import ch.ethz.idsc.amodeus.dispatcher.parking.ParkingCapacityAmodeus;
 import ch.ethz.idsc.amodeus.dispatcher.parking.strategies.ParkingStrategy;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
@@ -106,7 +106,7 @@ public class ParkHighCapacityDispatcher extends SharedRebalancingDispatcher {
             Config config, AVDispatcherConfig avDispatcherConfig, //
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, //
             MatsimAmodeusDatabase db, ParkingStrategy parkingStrategy, //
-            AVSpatialCapacityAmodeus avSpatialCapacityAmodeus) {
+            ParkingCapacityAmodeus avSpatialCapacityAmodeus) {
 
         super(config, avDispatcherConfig, travelTime, router, eventsManager, db);
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
@@ -316,7 +316,7 @@ public class ParkHighCapacityDispatcher extends SharedRebalancingDispatcher {
         private ParkingStrategy parkingStrategy;
 
         @Inject(optional = true)
-        private AVSpatialCapacityAmodeus avSpatialCapacityAmodeus;
+        private ParkingCapacityAmodeus avSpatialCapacityAmodeus;
 
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {

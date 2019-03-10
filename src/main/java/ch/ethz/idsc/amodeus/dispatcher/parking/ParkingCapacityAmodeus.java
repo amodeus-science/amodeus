@@ -6,10 +6,10 @@ import java.util.Collection;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 
-/** A {@link AVSpatialCapacityAmodeus} is a storage for the spatial capacity
+/** A {@link ParkingCapacityAmodeus} is a storage for the spatial capacity
  * (i.e. parking spaces) on a Collection of links (e.g. the network). */
 // @FunctionalInterface
-public interface AVSpatialCapacityAmodeus {
+public interface ParkingCapacityAmodeus {
 
     /** An AVSpatialCapacity gives back the Number of Spaces on the Link with
      * the given Id back. It is designed for the usage of parking spaces such

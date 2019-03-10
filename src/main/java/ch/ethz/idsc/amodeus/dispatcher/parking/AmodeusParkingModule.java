@@ -34,7 +34,7 @@ public class AmodeusParkingModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public AVSpatialCapacityAmodeus provideAVSpatialCapacity(Network network) {
+    public ParkingCapacityAmodeus provideAVSpatialCapacity(Network network) {
         try {
             return loadSpatialCapacity(network, scenarioOptions);
         } catch (Exception exception) {
@@ -45,7 +45,7 @@ public class AmodeusParkingModule extends AbstractModule {
         return null;
     }
 
-    private static AVSpatialCapacityAmodeus loadSpatialCapacity(Network network, ScenarioOptions scenarioOptions) {
+    private static ParkingCapacityAmodeus loadSpatialCapacity(Network network, ScenarioOptions scenarioOptions) {
         return scenarioOptions.getParkingCapacityGenerator().generate(network);
     }
 

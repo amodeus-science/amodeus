@@ -8,7 +8,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.dispatcher.parking.AVSpatialCapacityAmodeus;
+import ch.ethz.idsc.amodeus.dispatcher.parking.ParkingCapacityAmodeus;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
 
 /** A Parking Startegy is the routine which defines how Parking spaces are tried to keep free. */
@@ -30,6 +30,6 @@ public interface ParkingStrategy {
      * @param avSpatialCapacityAmodeus
      * @param network
      * @param distanceFunction */
-    public void setRunntimeParameters(AVSpatialCapacityAmodeus avSpatialCapacityAmodeus, Network network, DistanceFunction distanceFunction);
+    public void setRunntimeParameters(ParkingCapacityAmodeus avSpatialCapacityAmodeus, Network network, DistanceFunction distanceFunction);
 
 }

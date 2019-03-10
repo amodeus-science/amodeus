@@ -7,9 +7,9 @@ import java.util.Properties;
 
 import ch.ethz.idsc.amodeus.data.LocationSpec;
 import ch.ethz.idsc.amodeus.data.LocationSpecDatabase;
-import ch.ethz.idsc.amodeus.dispatcher.parking.AVSpatialCapacityAmodeus;
-import ch.ethz.idsc.amodeus.dispatcher.parking.AVSpatialCapacityGenerator;
-import ch.ethz.idsc.amodeus.dispatcher.parking.AVSpatialCapacityGenerators;
+import ch.ethz.idsc.amodeus.dispatcher.parking.ParkingCapacityAmodeus;
+import ch.ethz.idsc.amodeus.dispatcher.parking.ParkingCapacityGenerator;
+import ch.ethz.idsc.amodeus.dispatcher.parking.ParkingCapacityGenerators;
 import ch.ethz.idsc.amodeus.dispatcher.parking.strategies.ParkingStrategies;
 import ch.ethz.idsc.amodeus.dispatcher.parking.strategies.ParkingStrategy;
 import ch.ethz.idsc.amodeus.prep.PopulationCutter;
@@ -130,8 +130,8 @@ public class ScenarioOptions {
         properties.setProperty(ScenarioOptionsBase.MAXPOPULATIONSIZEIDENTIFIER, String.valueOf(maxNumberPeople));
     }
 
-    public AVSpatialCapacityGenerator getParkingCapacityGenerator() {
-        return AVSpatialCapacityGenerators.valueOf(getString(ScenarioOptionsBase.PARKINGGENERATORIDENTIFIER)).setScenarioOptions(this);
+    public ParkingCapacityGenerator getParkingCapacityGenerator() {
+        return ParkingCapacityGenerators.valueOf(getString(ScenarioOptionsBase.PARKINGGENERATORIDENTIFIER)).setScenarioOptions(this);
     }
 
     public String getParkingSpaceTagInNetwork() {
