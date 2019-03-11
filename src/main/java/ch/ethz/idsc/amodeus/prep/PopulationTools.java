@@ -47,7 +47,6 @@ public enum PopulationTools {
                 for (PlanElement planElement : plan.getPlanElements()) {
                     if (planElement instanceof Activity) {
                         Activity act = (Activity) planElement;
-
                         Id<Link> actLink = act.getLinkId();
                         if (!network.getLinks().containsKey(actLink)) {
                             removePerson = true;
