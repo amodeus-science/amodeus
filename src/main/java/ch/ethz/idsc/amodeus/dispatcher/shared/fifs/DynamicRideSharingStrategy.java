@@ -70,7 +70,8 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
     private final RequestHandler requestHandler = new RequestHandler(MAXWAITTIME, WAITLISTTIME, EXTREEMWAITTIME);
     private static final double WAITLISTTIME = 300.0;// [s] Normal: 300, Time after which a request is put on to the wait list
     private static final double MAXWAITTIME = 600.0; // [s] Normal is 600
-    private static final double EXTREEMWAITTIME = 3600.0 * 24; // [s] The extrem wait list is used here as in AMoDeus requests can not be rejected. This list guarantees for
+    private static final double EXTREEMWAITTIME = 3600.0 * 24; // [s] The extrem wait list is used here as in AMoDeus requests can not be rejected. This list
+                                                               // guarantees for
                                                                // requests waiting for more than MaxWaitTime that a taxi can be found
 
     /** Rebalancing Class to make use of a Grid Rebalancing. And its Parameters */
@@ -141,7 +142,7 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
 
                 /** THIS IS WHERE WE CALCULATE THE SHARING POSSIBILITIES */
                 Optional<Entry<RoboTaxi, List<SharedCourse>>> rideSharingRoboTaxi = routeValidation.getClosestValidSharingRoboTaxi(robotaxisWithMenu, avRequest, now, timeDb,
-                        requestHandler, roboTaxiHandler);
+                        requestHandler, roboTaxiHandler, now);
 
                 if (rideSharingRoboTaxi.isPresent()) {
                     /** in Case we have a sharing possibility we assign */
