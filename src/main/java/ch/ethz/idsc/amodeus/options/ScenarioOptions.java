@@ -13,22 +13,10 @@ import ch.ethz.idsc.amodeus.prep.PopulationCutter;
 import ch.ethz.idsc.amodeus.prep.PopulationCutters;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreators;
-import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 
 public class ScenarioOptions {
     private final File workingDirectory;
     protected final Properties properties;
-
-    @Deprecated
-    /** Should not be used in amodeus repository anymore. */
-    protected ScenarioOptions(Properties properties) {
-        try {
-            this.workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
-            this.properties = properties;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public ScenarioOptions(File workingDirectory, Properties fallbackDefault) throws IOException {
         this.workingDirectory = workingDirectory;
@@ -46,12 +34,12 @@ public class ScenarioOptions {
     }
 
     public void saveAndOverwriteAmodeusOptions() throws IOException {
-        ScenarioOptionsBase.saveProperties(workingDirectory, properties);
+        ScenarioOptionsBase.savePropertiesToDirectory(workingDirectory, properties);
     }
 
     public void saveToFolder(File folder, String header) throws IOException {
-        File file = new File(folder, ScenarioOptionsBase.getOptionsFileName());
-        ScenarioOptionsBase.saveProperties(properties, file, header);
+        File file = new File(folder, ScenarioOptionsBase.OPTIONSFILENAME);
+        ScenarioOptionsBase.savePropertiesToFileWithHeader(properties, file, header);
     }
 
     // specific access functions ==============================================

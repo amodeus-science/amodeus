@@ -36,12 +36,12 @@ public class LPOptions {
     }
 
     public void saveAndOverwriteLPOptions() throws IOException {
-        LPOptionsBase.saveProperties(workingDirectory, properties);
+        LPOptionsBase.savePropertiesToDirectory(workingDirectory, properties);
     }
 
     public void saveToFolder(File folder, String header) throws IOException {
-        File file = new File(folder, LPOptionsBase.getOptionsFileName());
-        LPOptionsBase.saveProperties(properties, file, header);
+        File file = new File(folder, LPOptionsBase.OPTIONSFILENAME);
+        LPOptionsBase.savePropertiesToFileWithHeader(properties, file, header);
     }
 
     public double getLPWeightQ() {

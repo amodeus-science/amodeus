@@ -5,41 +5,37 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.function.BiConsumer;
 
-enum StaticHelper {
+/* package */ enum StaticHelper {
     ;
 
-    /** @param directory
-     *            with simulation data and an IDSC.Options.properties file
-     * @return Properties object with default options and any options found in
-     *         folder
+    /** @return Properties object with default options and any options found in
+     *         folder @param directory with simulation data and an AmodeusOptions.properties File
      * @throws IOException */
-    static Properties loadOrCreateScenarioOptions(File directory, Properties simOptions) throws IOException {
-        System.out.println("working in directory \n" + directory.getCanonicalFile());
-
-        File simOptionsFile = new File(directory, ScenarioOptionsBase.OPTIONSFILENAME);
-        if (simOptionsFile.exists()) {
-            simOptions.load(new FileInputStream(simOptionsFile));
-        } else
-            ScenarioOptionsBase.saveProperties(simOptions, simOptionsFile);
-
-        return simOptions;
+    public static Properties loadOrCreateScenarioOptions(File directory, Properties simOptions) throws IOException {
+        return locateOrLoad(directory, simOptions, ScenarioOptionsBase.OPTIONSFILENAME, //
+                ScenarioOptionsBase::savePropertiesToFile);
     }
 
-    /** @param directory
-     *            with simulation data and an IDSC.Options.properties file
-     * @return Properties object with default options and any options found in
-     *         folder
+    /** @return Properties object with default options and any options found in @param directory
+     *         with simulation data and LPOptions.properties file
      * @throws IOException */
-    static Properties loadOrCreateLPOptions(File directory, Properties simOptions) throws IOException {
-        System.out.println("working in directory \n" + directory.getCanonicalFile());
+    public static Properties loadOrCreateLPOptions(File directory, Properties simOptions) throws IOException {
+        return locateOrLoad(directory, simOptions, LPOptionsBase.OPTIONSFILENAME, //
+                LPOptionsBase::savePropertiesToFile);
+    }
 
-        File simOptionsFile = new File(directory, LPOptionsBase.OPTIONSFILENAME);
+    private static Properties locateOrLoad(File directory, Properties properties, //
+            String fileName, BiConsumer<Properties, File> saveDefault) throws IOException {
+        System.out.println("searching file " + fileName + //
+                " in directory " + directory.getCanonicalFile());
+        File simOptionsFile = new File(directory, fileName);
         if (simOptionsFile.exists()) {
-            simOptions.load(new FileInputStream(simOptionsFile));
-        } else
-            LPOptionsBase.saveProperties(simOptions, simOptionsFile);
-
-        return simOptions;
+            properties.load(new FileInputStream(simOptionsFile));
+        } else {
+            LPOptionsBase.savePropertiesToFile(properties, simOptionsFile);
+        }
+        return properties;
     }
 }
