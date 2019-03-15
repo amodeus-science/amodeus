@@ -5,7 +5,12 @@ import java.time.LocalDateTime;
 
 import org.matsim.api.core.v01.Coord;
 
+import ch.ethz.idsc.amodeus.scenario.time.Duration;
+import ch.ethz.idsc.amodeus.scenario.time.LocalDateTimes;
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Scalars;
+import ch.ethz.idsc.tensor.qty.Quantity;
 
 /** The class {@link TaxiTrip} is used to transform taxi trips from databases into scenarios
  * for AMoDeus. It contains the relevant recordings of a typical taxi trip recording. */
@@ -21,10 +26,58 @@ public class TaxiTrip implements Comparable<TaxiTrip> {
     public LocalDateTime dropoffDate;
     public final Scalar duration;
 
-    // TODO rewrite to allow only disambiguous entries, i.e. remove either one of the two dates or
-    // the duration.
-    public TaxiTrip(Integer id, String taxiId, LocalDateTime pickupDate, LocalDateTime dropoffDate, //
-            Coord pickupLoc, Coord dropoffLoc, Scalar duration, Scalar distance, Scalar waitTime) {
+    /** @return a {@link TaxiTrip} for wich the {@link LocalDateTime}s @param pickup
+     *         and @param dropoff are used to calculate the {@link Scalar} duration
+     * @param id
+     * @param taxiId
+     * @param pickupLoc
+     * @param dropoffLoc
+     * @param distance
+     * @param waitTime */
+    public static TaxiTrip of(Integer id, String taxiId, Coord pickupLoc, Coord dropoffLoc, //
+            Scalar distance, Scalar waitTime, //
+            LocalDateTime pickupDate, LocalDateTime dropoffDate) {
+        try {
+            return new TaxiTrip(id, taxiId, pickupLoc, dropoffLoc, //
+                    distance, waitTime, //
+                    pickupDate, dropoffDate, Duration.between(pickupDate, dropoffDate));
+        } catch (Exception exception) {
+            System.err.println("Possible: pickupDate after dropoff date in generation" + //
+                    "of taxi trip..");
+            exception.printStackTrace();
+            return null;
+        }
+    }
+
+    /** @return a {@link TaxiTrip} for wich the {@link LocalDateTime} of the dropoff is determined
+     *         using the @param pickupDate and the trip @param duration
+     * @param id
+     * @param taxiId
+     * @param pickupLoc
+     * @param dropoffLoc
+     * @param distance
+     * @param waitTime */
+    public static TaxiTrip of(Integer id, String taxiId, Coord pickupLoc, Coord dropoffLoc, //
+            Scalar distance, Scalar waitTime, //
+            LocalDateTime pickupDate, Scalar duration) {
+        try {
+            GlobalAssert.that(Scalars.lessEquals(Quantity.of(0, "s"), duration));
+            return new TaxiTrip(id, taxiId, pickupLoc, dropoffLoc, //
+                    distance, waitTime, //
+                    pickupDate, LocalDateTimes.addTo(pickupDate, duration), duration);
+        } catch (Exception exception) {
+            System.err.println("Possible: pickupDate after dropoff date in generation" + //
+                    "of taxi trip..");
+            exception.printStackTrace();
+            return null;
+        }
+    }
+
+    /** This constructor is private as it allows ambiguous entries, of the triple
+     * {pickupDate, dropoffDate, duration} only two are necessary. */
+    private TaxiTrip(Integer id, String taxiId, Coord pickupLoc, Coord dropoffLoc, //
+            Scalar distance, Scalar waitTime, // ,
+            LocalDateTime pickupDate, LocalDateTime dropoffDate, Scalar duration) {
         this.localId = id;
         this.taxiId = taxiId;
         this.pickupDate = pickupDate;
