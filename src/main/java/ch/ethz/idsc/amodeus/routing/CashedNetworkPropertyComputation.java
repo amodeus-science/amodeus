@@ -24,12 +24,13 @@ public class CashedNetworkPropertyComputation<T> {
     // ---
     protected double now = 0.0;
 
-    /** A {@link CashedNetworkPropertyComputation} stores all the calculated values calculated by a {@link NetworkPropertyInterface}
-     * which were calculated no longer ago than @param maxLag. The underlying logic is that in this manner
-     * the expensive routing computation has to be done fewer times for identical pairs
-     * of {@link Link}s.For the routing, different {@link LeastCostPathCalculator}s can be used,
-     * e.g., to minimize travel time or network distance. */
-    public CashedNetworkPropertyComputation(LeastCostPathCalculator calculator, Double maxLag, NetworkPropertyInterface<T> pathInterface) {
+    /** A {@link CashedNetworkPropertyComputation} stores all the calculated values calculated by a
+     * {@link NetworkPropertyInterface} which were calculated no longer ago than @param maxLag. The
+     * underlying logic is that in this manner the expensive routing computation has to be done
+     * fewer times for identical pairs of {@link Link}s.For the routing, different
+     * {@link LeastCostPathCalculator}s can be used, e.g., to minimize travel time or network distance. */
+    public CashedNetworkPropertyComputation(LeastCostPathCalculator calculator, Double maxLag, //
+            NetworkPropertyInterface<T> pathInterface) {
         this.calculator = calculator;
         this.maxLag = maxLag;
         this.pathInterface = pathInterface;

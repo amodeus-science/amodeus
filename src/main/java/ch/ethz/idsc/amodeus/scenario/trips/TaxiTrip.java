@@ -21,6 +21,8 @@ public class TaxiTrip implements Comparable<TaxiTrip> {
     public LocalDateTime dropoffDate;
     public final Scalar duration;
 
+    // TODO rewrite to allow only disambiguous entries, i.e. remove either one of the two dates or
+    // the duration.
     public TaxiTrip(Integer id, String taxiId, LocalDateTime pickupDate, LocalDateTime dropoffDate, //
             Coord pickupLoc, Coord dropoffLoc, Scalar duration, Scalar distance, Scalar waitTime) {
         this.localId = id;

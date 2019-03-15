@@ -61,11 +61,11 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
         Scalar numWithCustomer = StaticHelper.getNumStatus(simulationObject)//
                 .Get(RoboTaxiStatus.DRIVEWITHCUSTOMER.ordinal());
         if (!(Total.of(numPassenger.extract(1, numPassenger.length())).equals(numWithCustomer))) {
-            System.err.println("numWithCustomer from passenger: " + Total.of(numPassenger.extract(1, numPassenger.length())));
-            System.err.println("numWithcustomer: " + numWithCustomer);
-            System.err.println("numStatus: " + StaticHelper.getNumStatus(simulationObject));
-            System.err.println("number of passengers calculated from distribution and robotaxi");
-            System.err.println("status is not coherent, check file NumberPassengersAnalysis.java");
+            // System.err.println("numWithCustomer from passenger: " + Total.of(numPassenger.extract(1, numPassenger.length())));
+            // System.err.println("numWithcustomer: " + numWithCustomer);
+            // System.err.println("numStatus: " + StaticHelper.getNumStatus(simulationObject));
+            // System.err.println("number of passengers calculated from distribution and robotaxi");
+            // System.err.println("status is not coherent, check file NumberPassengersAnalysis.java");
         }
 
         /** AV Request Sharing Rate */
