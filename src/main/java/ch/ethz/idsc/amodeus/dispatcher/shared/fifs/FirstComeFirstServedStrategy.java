@@ -81,7 +81,7 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
 
         FastAStarLandmarksFactory factory = new FastAStarLandmarksFactory();
         LeastCostPathCalculator calculator = EasyMinTimePathCalculator.prepPathCalculator(network, factory);
-        timeDb = new CashedNetworkTimeDistance(calculator, MAXLAGTRAVELTIMECALCULATION,TimeDistanceProperty.INSTANCE);
+        timeDb = new CashedNetworkTimeDistance(calculator, MAXLAGTRAVELTIMECALCULATION, TimeDistanceProperty.INSTANCE);
 
         this.kockelmanRebalancing = new BlockRebalancing(network, timeDb, MINNUMBERROBOTAXISINBLOCKTOREBALANCE, BINSIZETRAVELDEMAND, dispatchPeriod, REBALANCINGGRIDDISTANCE);
     }
@@ -91,7 +91,6 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
         final long round_now = Math.round(now);
 
         if (round_now % dispatchPeriod == 0) {
-            timeDb.update(now);
 
             /** get open requests and available vehicles and put them into the desired
              * structures. Furthermore add all the requests to the one hour bin which is
@@ -118,7 +117,7 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
                 boolean assigned = false;
                 if (unassignedRoboTaxis.size() > 0) {
                     RoboTaxi closestRoboTaxi = unassignedRoboTaxis.getClosest(getLocation(avRequest));
-                    double travelTime = timeDb.travelTime(closestRoboTaxi.getDivertableLocation(), avRequest.getFromLink()).number().doubleValue();
+                    double travelTime = timeDb.travelTime(closestRoboTaxi.getDivertableLocation(), avRequest.getFromLink(), now).number().doubleValue();
                     if (travelTime < WAITTIME.calculate(avRequest, waitList, extremWaitList)) {
                         setRoboTaxiPickup(closestRoboTaxi, avRequest);
                         unassignedRoboTaxis.remove(closestRoboTaxi);

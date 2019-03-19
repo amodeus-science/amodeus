@@ -19,12 +19,9 @@ public enum TimeResolvedPathProperty implements NetworkPropertyInterface<Navigab
     public NavigableMap<Double, Link> fromTo(Link from, Link to, LeastCostPathCalculator calculator, Double now) {
         /** path */
         Path path = calculator.calcLeastCostPath(from.getFromNode(), to.getToNode(), now, null, null);
-
         GlobalAssert.that(path.links.size() == path.nodes.size() - 1);
-
         NavigableMap<Double, Link> linkEntryTimes = new TreeMap<>();
         linkEntryTimes.put(now, from);
-
         Node nodePrev = from.getFromNode();
         Double timePrev = now;
         /** A path will have M nodes but only M-1 links, therefore the index i is used for nodes
@@ -35,6 +32,7 @@ public enum TimeResolvedPathProperty implements NetworkPropertyInterface<Navigab
             nodePrev = path.nodes.get(i);
             linkEntryTimes.put(timePrev, path.links.get(i - 1));
         }
+        GlobalAssert.that(linkEntryTimes.firstKey().equals(now));
         return linkEntryTimes;
     }
 }

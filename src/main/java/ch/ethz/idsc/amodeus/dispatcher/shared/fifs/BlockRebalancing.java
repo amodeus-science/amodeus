@@ -30,8 +30,10 @@ public class BlockRebalancing {
     /** this tree is only used as an lookup to quickly find the corresponding block */
     private final HashMap<Link, Block> linkBlockLookup = new HashMap<>();
 
-    /** The {@link BlockRebalancing} enables calculations of a Grid based Rebalancing strategy. It generates a grid of Blocks over the network and then calculates
-     * at each call of {@link getRebalancingDirectives()} for each of this cells a block balance which is a measure for the need or surplus of robotaxis. Based on
+    /** The {@link BlockRebalancing} enables calculations of a Grid based Rebalancing strategy. It generates a grid of Blocks over the network and then
+     * calculates
+     * at each call of {@link getRebalancingDirectives()} for each of this cells a block balance which is a measure for the need or surplus of robotaxis. Based
+     * on
      * that measure Rebalancing directives are returned. That is a List of directives for Robotaxis to drive to certain links.
      * 
      * Implementation based on: Fagnant, D. J., Kockelman, K. M., & Bansal, P. (2015). Operations of shared autonomous vehicle fleet for austin, texas, market.
@@ -44,7 +46,8 @@ public class BlockRebalancing {
      * @param historicalDataTime duration in seconds over which past requests are collected to predict future requests
      * @param predictedTime duration in seconds for which the future request should be predicted
      * @param gridDistance distance in meter which corresponds to the length of a block */
-    public BlockRebalancing(Network network, CashedNetworkTimeDistance timeDb, int minNumberRobotaxisForRebalance, double historicalDataTime, double predictedTime, double gridDistance) {
+    public BlockRebalancing(Network network, CashedNetworkTimeDistance timeDb, int minNumberRobotaxisForRebalance, double historicalDataTime, double predictedTime,
+            double gridDistance) {
         this.minNumberForRebalance = minNumberRobotaxisForRebalance;
         this.timeDb = timeDb;
 
@@ -92,7 +95,7 @@ public class BlockRebalancing {
         /** Calculate for each block which vehicles will move to which link based on the results of the calculated rebalancing numbers above */
         GlobalAssert.that(timeDb.checkTime(now));
         RebalancingDirectives directives = new RebalancingDirectives(new HashMap<>());
-        blocks.values().forEach(b -> directives.addOtherDirectives(b.executeRebalance(timeDb)));
+        blocks.values().forEach(b -> directives.addOtherDirectives(b.executeRebalance(timeDb, now)));
         return directives;
     }
 
@@ -129,7 +132,8 @@ public class BlockRebalancing {
                 GlobalAssert.that(false);
             }
 
-            /** add the adjacent blocks back to the block balance tree with the updated balance. Btw The current block is not added Anymore as all possible rebalncings have
+            /** add the adjacent blocks back to the block balance tree with the updated balance. Btw The current block is not added Anymore as all possible
+             * rebalncings have
              * been carried out. It could well be that this block still has the highest balance but we have to move on to the next block. */
             calculatedBlocks.add(block);
             block.getAdjacentBlocks().stream().filter(b -> !calculatedBlocks.contains(b)).forEach(b -> blockBalances.add(b));

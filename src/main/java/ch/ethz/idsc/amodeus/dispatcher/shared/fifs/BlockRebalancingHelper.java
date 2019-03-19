@@ -27,14 +27,14 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
      * @param blocks all the adjacent blocks to which pushes are planned
      * @param freeRoboTaxis all the robotaxis which should be considered
      * @param timeDb Travel time calculator */
-    BlockRebalancingHelper(Set<Block> blocks, Set<RoboTaxi> freeRoboTaxis, NetworkTimeDistInterface timeDb) {
+    BlockRebalancingHelper(Set<Block> blocks, Set<RoboTaxi> freeRoboTaxis, NetworkTimeDistInterface timeDb, Double now) {
         GlobalAssert.that(!freeRoboTaxis.isEmpty());
 
         blocks.forEach(b -> blocktravelTimes.put(b, new HashSet<>()));
         freeRoboTaxis.forEach(rt -> allTravelTimesForRoboTaxis.put(rt, new HashMap<>()));
         for (RoboTaxi roboTaxi : freeRoboTaxis) {
             for (Block block : blocks) {
-                double travelTime = timeDb.travelTime(roboTaxi.getDivertableLocation(), block.getCenterLink()).number().doubleValue();
+                double travelTime = timeDb.travelTime(roboTaxi.getDivertableLocation(), block.getCenterLink(), now).number().doubleValue();
                 if (!travelTimesSorted.containsKey(travelTime)) {
                     travelTimesSorted.put(travelTime, new HashMap<>());
                 }

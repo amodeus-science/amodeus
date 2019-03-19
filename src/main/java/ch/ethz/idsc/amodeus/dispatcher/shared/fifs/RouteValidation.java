@@ -85,8 +85,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
         GlobalAssert.that(robotaxisWithMenu.stream().allMatch(r -> RoboTaxiUtils.hasNextCourse(r)));
 
-        NavigableMap<Double, RoboTaxi> robotaxisWithinMaxPickup = RoboTaxiUtilsFagnant.getRoboTaxisWithinMaxTime(avRequest.getFromLink(), robotaxisWithMenu, timeDb, maxPickupTime,
-                roboTaxiMaintainer);
+        NavigableMap<Double, RoboTaxi> robotaxisWithinMaxPickup = RoboTaxiUtilsFagnant.getRoboTaxisWithinMaxTime(avRequest.getFromLink(), //
+                robotaxisWithMenu, timeDb, maxPickupTime, roboTaxiMaintainer, now);
 
         AvRouteHandler avRouteHandler = new AvRouteHandler();
         SharedCourse pickupCourse = SharedCourse.pickupCourse(avRequest);

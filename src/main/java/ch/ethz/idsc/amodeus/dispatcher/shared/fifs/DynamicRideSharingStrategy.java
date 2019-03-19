@@ -123,11 +123,10 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
         requestHandler.updatePickupTimes(getAVRequests(), now);
 
         if (round_now % dispatchPeriod == 0) {
-            timeDb.update(now);
 
             /** prepare the registers for the dispatching */
             roboTaxiHandler.update(getRoboTaxis(), getDivertableUnassignedRoboTaxis());
-            requestHandler.addUnassignedRequests(getUnassignedAVRequests(), timeDb);
+            requestHandler.addUnassignedRequests(getUnassignedAVRequests(), timeDb, now);
             requestHandler.updateLastHourRequests(now, BINSIZETRAVELDEMAND);
 
             /** calculate Rebalance before (!) dispatching */

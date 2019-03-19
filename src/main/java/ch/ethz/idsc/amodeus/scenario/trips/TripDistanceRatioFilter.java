@@ -15,6 +15,7 @@ import ch.ethz.idsc.tensor.Scalars;
  * the trip origin to destination. */
 /* package */ class TripDistanceRatioFilter implements DataFilter<TaxiTrip> {
     private final Scalar networkDistanceRatio;
+    private final Double staticTimeNow = 0.0;
 
     public TripDistanceRatioFilter(Scalar networkDistanceRatio) {
         this.networkDistanceRatio = networkDistanceRatio;
@@ -27,7 +28,7 @@ import ch.ethz.idsc.tensor.Scalars;
             return stream;
         }
         return stream.filter(trip -> {
-            Scalar minDistance = StaticHelper.getMinNetworkTripDistance(trip, network);
+            Scalar minDistance = StaticHelper.getMinNetworkTripDistance(trip, network, staticTimeNow);
             Scalar ratio = trip.distance.divide(minDistance);
             return Scalars.lessEquals(ratio, networkDistanceRatio);
         });

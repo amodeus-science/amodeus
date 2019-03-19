@@ -99,9 +99,9 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         distanceFunction = distanceHeuristics.getDistanceFunction(network);
         distanceCashed = //
-                new CashedNetworkTimeDistance(EasyMinDistPathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0,TimeDistanceProperty.INSTANCE);
+                new CashedNetworkTimeDistance(EasyMinDistPathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0, TimeDistanceProperty.INSTANCE);
         travelTimeCalculator = //
-                new CashedNetworkTimeDistance(EasyMinTimePathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0,TimeDistanceProperty.INSTANCE);
+                new CashedNetworkTimeDistance(EasyMinTimePathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0, TimeDistanceProperty.INSTANCE);
         bipartiteMatchingUtils = new SharedBipartiteMatchingUtils(network);
 
         /** T-Share specific */
@@ -113,7 +113,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
         QuadTree<Link> linkTree = FastQuadTree.of(network);
         for (VirtualNode<Link> virtualNode : virtualNetwork.getVirtualNodes()) {
             System.out.println("preparing grid cell: " + virtualNode.getIndex());
-            gridCells.put(virtualNode, new GridCell(virtualNode, virtualNetwork, network, distanceCashed, travelTimeCalculator, linkTree));
+            gridCells.put(virtualNode, new GridCell(virtualNode, virtualNetwork, network, distanceCashed, travelTimeCalculator, linkTree, 0.0));
         }
         dualSideSearch = new DualSideSearch(gridCells, virtualNetwork, network);
         System.out.println("According to the reference, a rectangular {@link VirtualNetwork} should be used.");
@@ -150,7 +150,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
 
             for (AVRequest avr : sortedRequests) {
                 Scalar latestPickup = LatestPickup.of(avr, pickupDelayMax);
-                Scalar latestArrval = LatestArrival.of(avr, drpoffDelayMax, travelTimeCalculator);
+                Scalar latestArrval = LatestArrival.of(avr, drpoffDelayMax, travelTimeCalculator, now);
 
                 /** dual side search */
                 Collection<RoboTaxi> potentialTaxis = //

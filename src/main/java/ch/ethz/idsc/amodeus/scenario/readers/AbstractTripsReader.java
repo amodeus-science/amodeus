@@ -16,8 +16,13 @@ import java.util.stream.Stream;
 
 import org.matsim.api.core.v01.Coord;
 
+import ch.ethz.idsc.amodeus.scenario.time.Duration;
 import ch.ethz.idsc.amodeus.scenario.trips.TaxiTrip;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Scalars;
+import ch.ethz.idsc.tensor.qty.Quantity;
+import ch.ethz.idsc.tensor.red.Norm;
+import ch.ethz.idsc.tensor.sca.Chop;
 
 public abstract class AbstractTripsReader extends CsvReader {
     private Map<String, Integer> taxiIds = new HashMap<>();
@@ -37,17 +42,23 @@ public abstract class AbstractTripsReader extends CsvReader {
                 String taxiCode = getTaxiCode(line);
                 int taxiId = taxiIds.getOrDefault(taxiCode, taxiIds.size());
                 taxiIds.put(taxiCode, taxiId);
-                return new TaxiTrip(tripId, Integer.toString(taxiId), //
-                        getStartTime(line), //
-                        getEndTime(line), //
-                        getPickupLocation(line), //
-                        getDropoffLocation(line), //
-                        getDuration(line), //
-                        getDistance(line), //
-                        getWaitingTime(line));
+
+                LocalDateTime pickupTime = getStartTime(line);
+                LocalDateTime dropoffTime = getEndTime(line);
+                Scalar durationCompute = Duration.between(pickupTime, dropoffTime);
+                Scalar durationDataset = getDuration(line);
+
+                if (Scalars.lessEquals(Quantity.of(0.1, "s"), Norm._2.of(durationDataset.subtract(durationCompute))))
+                    System.err.println("Mismatch between duration recorded in data and computed duration," + //
+                    "computed duration using start and end time: " + //
+                    pickupTime + " --> " + dropoffTime + " != " + durationDataset);
+
+                TaxiTrip trip = TaxiTrip.of(tripId, Integer.toString(taxiId), getPickupLocation(line), getDropoffLocation(line), //
+                        getDistance(line), getWaitingTime(line), pickupTime, dropoffTime);
+                return trip;
             } catch (Exception e) {
                 System.err.println("discard trip " + tripId + ": [" + IntStream.range(0, headers.size()).mapToObj(i -> //
-                        headers.get(i) + "=" + line[i]).collect(Collectors.joining(", ")) + "]");
+                headers.get(i) + "=" + line[i]).collect(Collectors.joining(", ")) + "]");
                 return null;
             }
         }).filter(Objects::nonNull);

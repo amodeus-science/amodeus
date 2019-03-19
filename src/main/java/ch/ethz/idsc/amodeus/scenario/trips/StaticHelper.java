@@ -23,14 +23,14 @@ import ch.ethz.idsc.tensor.Scalar;
         return CoordUtils.calcEuclideanDistance(trip.pickupLoc, trip.dropoffLoc);
     }
 
-    public static Scalar getMinNetworkTripDistance(TaxiTrip trip, Network network) {
+    public static Scalar getMinNetworkTripDistance(TaxiTrip trip, Network network, Double timeNow) {
         CashedNetworkTimeDistance lcpc = new CashedNetworkTimeDistance//
         (EasyMinDistPathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0, TimeDistanceProperty.INSTANCE);
         // find links
         Link linkStart = NetworkUtils.getNearestLink(network, trip.pickupLoc);
         Link linkEnd = NetworkUtils.getNearestLink(network, trip.dropoffLoc);
         // shortest path
-        return lcpc.distance(linkStart, linkEnd);
+        return lcpc.distance(linkStart, linkEnd, timeNow);
     }
 
     public static boolean sameDay(LocalDateTime date1, LocalDateTime date2) {

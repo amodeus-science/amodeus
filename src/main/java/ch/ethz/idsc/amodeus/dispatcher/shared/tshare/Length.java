@@ -15,13 +15,14 @@ import ch.ethz.idsc.tensor.qty.Quantity;
 /* package */ enum Length {
     ;
 
-    public static Scalar of(RoboTaxi roboTaxi, List<SharedCourse> menu, CashedNetworkTimeDistance distance) {
+    public static Scalar of(RoboTaxi roboTaxi, List<SharedCourse> menu, //
+            CashedNetworkTimeDistance distance, Double now) {
         if (menu.isEmpty())
             return Quantity.of(0.0, SI.METER);
         Scalar length = Quantity.of(0.0, SI.METER);
         Link link = roboTaxi.getDivertableLocation();
         for (SharedCourse course : menu) {
-            length = length.add(distance.distance(link, course.getLink()));
+            length = length.add(distance.distance(link, course.getLink(), now));
             link = course.getLink();
         }
         return length;

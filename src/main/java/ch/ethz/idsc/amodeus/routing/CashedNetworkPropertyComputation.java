@@ -37,7 +37,7 @@ public class CashedNetworkPropertyComputation<T> {
     }
 
     /** removes computations that happened more time than @param maxLag ago since @param now */
-    public final void update(Double now) {
+    private final void update(Double now) {
         this.now = now;
         Set<Double> timestoRemove = new HashSet<>();
         for (Entry<Double, Map<Link, Set<Link>>> entry : calculationTimes.headMap(now - maxLag).entrySet()) {
@@ -50,12 +50,13 @@ public class CashedNetworkPropertyComputation<T> {
         timestoRemove.forEach(time -> calculationTimes.remove(time));
     }
 
-    public final T fromTo(Link from, Link to) {
+    public final T fromTo(Link from, Link to, Double now) {
+        update(now);
         if (!cache.containsKey(from))
             cache.put(from, new HashMap<>());
         if (cache.get(from).containsKey(to))
             return cache.get(from).get(to);
-        T t = pathInterface.fromTo(from, to, calculator, now);// timePathComputation(from, to);
+        T t = pathInterface.fromTo(from, to, calculator, now);
         cache.get(from).put(to, t);
         addToCalculationTime(now, from, to);
         return t;

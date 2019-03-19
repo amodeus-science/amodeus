@@ -7,8 +7,8 @@ import ch.ethz.idsc.tensor.Scalar;
 
 public interface NetworkTimeDistInterface {
 
-    public Scalar travelTime(Link from, Link to);
+    public Scalar travelTime(Link from, Link to, Double now);
 
-    public Scalar distance(Link from, Link to);
+    public Scalar distance(Link from, Link to, Double now);
 
 }

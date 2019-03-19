@@ -46,7 +46,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         }
 
         /** original length */
-        originalLength = Length.of(roboTaxi, originalMenu, distance);
+        originalLength = Length.of(roboTaxi, originalMenu, distance, timeNow);
 
         /** add new requests to end of menu */
         SharedCourse pickupCourse = SharedCourse.pickupCourse(request);
@@ -82,7 +82,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
                 /** the line below is computationally expensive and calculates the
                  * path length of the option. */
-                menuOptions.put(Length.of(roboTaxi, newMenu, distance), newMenu);
+                menuOptions.put(Length.of(roboTaxi, newMenu, distance, timeNow), newMenu);
             }
         }
 

@@ -32,7 +32,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
             double stopDuration = getStopDuration(list.get(i).getMealType(), pickupTime, dropofftime);
             Link fromLink = (i == 0) ? currentLink : list.get(i - 1).getLink();
             Link toLink = list.get(i).getLink();
-            Scalar driveTime = timeDb.travelTime(fromLink, toLink);
+            Scalar driveTime = timeDb.travelTime(fromLink, toLink, now);
             // TODO If the speed becomes to low in the future, here we could improve it by checking
             // the constraints here already to abort a route generation if the constraints are not fulfilled.
             SharedRoutePoint sharedRoutePoint = new SharedRoutePoint(list.get(i), departureTime.add(driveTime).number().doubleValue(), stopDuration);
@@ -42,7 +42,8 @@ import ch.ethz.idsc.tensor.qty.Quantity;
         return SharedAvRoute.of(routePoints);
     }
 
-    /** Creates a Shared Menu which is consistent in itself (e.g. no coureses appear twice, for each request it is secured that the dropoff happens after the pickup
+    /** Creates a Shared Menu which is consistent in itself (e.g. no coureses appear twice, for each request it is secured that the dropoff happens after the
+     * pickup
      * 
      * @param list of {@link SharedCourse}
      * @return */

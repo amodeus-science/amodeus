@@ -21,7 +21,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
         Scalar timePrev = Quantity.of(timeNow, "s");
         for (int k = 0; k < newMenu.size(); ++k) {
             SharedCourse course = newMenu.get(k);
-            Scalar travelTime = travelTimeCashed.travelTime(roboTaxi.getLastKnownLocation(), course.getLink());
+            Scalar travelTime = travelTimeCashed.travelTime(roboTaxi.getLastKnownLocation(), course.getLink(), timeNow);
             Scalar timeofCourse = timePrev.add(travelTime);
             if (course.getMealType().equals(SharedMealType.PICKUP)) {
                 Scalar latestPickup = LatestPickup.of(course.getAvRequest(), pickupDelayMax);
@@ -31,7 +31,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
                 }
             }
             if (course.getMealType().equals(SharedMealType.DROPOFF)) {
-                Scalar latestDropoff = LatestArrival.of(course.getAvRequest(), drpoffDelayMax, travelTimeCashed);
+                Scalar latestDropoff = LatestArrival.of(course.getAvRequest(), drpoffDelayMax, travelTimeCashed, timeNow);
                 if (Scalars.lessThan(latestDropoff, timeofCourse)) {
                     timeComp = false;
                     break;
