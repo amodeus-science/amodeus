@@ -16,14 +16,6 @@ import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 public enum VirtualNetworkGet {
     ;
 
-    @Deprecated
-    /** Should not be used in amodeus repository anymore. */
-    public static VirtualNetwork<Link> readDefault(Network network) throws IOException {
-        File workingDirectory = MultiFileTools.getWorkingDirectory();
-        ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
-        return readDefault(network, scenarioOptions);
-    }
-
     /** @param network
      * @return null if file does not exist
      * @throws IOException */
