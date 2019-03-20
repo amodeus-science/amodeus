@@ -11,16 +11,10 @@ public enum MultiFileTools {
     ;
 
     /** @return default working directory as set in the Runtime configurations, please use this
-     *         function only in main functions 
+     *         function only in main functions
      * 
      * @throws IOException */
     public static File getDefaultWorkingDirectory() throws IOException {
-        return new File(".").getCanonicalFile();
-    }
-
-    @Deprecated
-    /** Should not be used in amodeus repository anymore! */
-    public static File getWorkingDirectory() throws IOException {
         return new File(".").getCanonicalFile();
     }
 
