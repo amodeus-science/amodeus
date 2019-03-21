@@ -58,9 +58,6 @@ public class Analysis {
      * @param workingDirectory
      *            default: current working directory. Is the file where the config
      *            file, AmodeusOptions file and the outputfolder are located
-     * @param configFile
-     *            default: SimulationConfig file as defined in AmodeusOptions.
-     *            Stores the data of the corresponding outputdirectory and Network.
      * @param outputDirectory:
      *            default: value stored in the Simulation Config file. Can be
      *            changed if for example an other outputfolder from the Sequential
@@ -70,9 +67,9 @@ public class Analysis {
      *            runtime if the Network was already loaded in a previous step (e.g.
      *            Scenario Server)
      * @throws Exception */
-    public static Analysis setup(ScenarioOptions scenarioOptions, File configFile, File outputDirectory, //
+    public static Analysis setup(ScenarioOptions scenarioOptions, File outputDirectory, //
             Network network, MatsimAmodeusDatabase db) throws Exception {
-        return new Analysis(scenarioOptions, configFile, outputDirectory, network, db);
+        return new Analysis(scenarioOptions, outputDirectory, network, db);
     }
 
     // List of Analysis Elements which will be loaded
@@ -97,9 +94,6 @@ public class Analysis {
      * @param workingDirectory
      *            default: current working directory. Is the file where the config
      *            file, AmodeusOptions file and the outputfolder are located
-     * @param configFile
-     *            default: SimulationConfig file as defined in AmodeusOptions.
-     *            Stores the data of the corresponding outputdirectory and Network.
      * @param outputDirectory:
      *            default: value stored in the Simulation Config file. Can be
      *            changed if for example an other outputfolder from the Sequential
@@ -110,19 +104,19 @@ public class Analysis {
      *            Scenario Server)
      * @throws Exception */
 
-    private Analysis(ScenarioOptions scenarioOptions, File configFile, File outputDirectory, //
+    private Analysis(ScenarioOptions scenarioOptions, File outputDirectory, //
             Network network, MatsimAmodeusDatabase db) throws Exception {
         if (Objects.isNull(scenarioOptions))
             throw new RuntimeException("Analysis requires a ScenarioOptions object as input.");
         Objects.requireNonNull(scenarioOptions.getWorkingDirectory());
         File workingDirectory = scenarioOptions.getWorkingDirectory();
+        File configFile = new File(scenarioOptions.getSimulationConfigName());
+        Objects.requireNonNull(configFile);
 
         // if (Objects.isNull(workingDirectory) || !workingDirectory.isDirectory())
         // workingDirectory = new File("").getCanonicalFile();
         System.out.println("workingDirectory in Analysis: " + workingDirectory.getAbsolutePath());
         ScenarioOptions scenOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
-        if (configFile == null || !configFile.isFile())
-            configFile = new File(workingDirectory, scenOptions.getSimulationConfigName());
         if (outputDirectory == null || !outputDirectory.isDirectory()) {
             Config config = ConfigUtils.loadConfig(configFile.toString());
             String outputDirectoryName = config.controler().getOutputDirectory();
