@@ -51,28 +51,6 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
 public class Analysis {
-//    /** Use this method to create an standalone Analysis with all the default values
-//     * stored in the current Working Directory
-//     * 
-//     * @return
-//     * @throws Exception */
-//    public static Analysis setup() throws Exception {
-//        return setup(null, null, null, null);
-//    }
-
-    /** Use this method in the Simulation Server as the network was already loaded
-     * 
-     * @param network
-     * @return
-     * @throws Exception */
-    public static Analysis setup(Network network, MatsimAmodeusDatabase db) throws Exception {
-        return setup(null, null, null, network, db);
-    }
-
-//    public static Analysis setup(scenarioOptions, File configFile, //
-//            File outputDirectory, MatsimAmodeusDatabase db) throws Exception {
-//        return new Analysis(scenarioOptions, configFile, outputDirectory, null, db);
-//    }
 
     /** returns an Instance of the Analysis Class can be called with any combination
      * of null and the respective parameter(s).
@@ -132,13 +110,15 @@ public class Analysis {
      *            Scenario Server)
      * @throws Exception */
 
-    protected Analysis(ScenarioOptions scenarioOptions, File configFile, File outputDirectory, //
+    private Analysis(ScenarioOptions scenarioOptions, File configFile, File outputDirectory, //
             Network network, MatsimAmodeusDatabase db) throws Exception {
+        if (Objects.isNull(scenarioOptions))
+            throw new RuntimeException("Analysis requires a ScenarioOptions object as input.");
         Objects.requireNonNull(scenarioOptions.getWorkingDirectory());
         File workingDirectory = scenarioOptions.getWorkingDirectory();
-        
-//        if (Objects.isNull(workingDirectory) || !workingDirectory.isDirectory())
-//            workingDirectory = new File("").getCanonicalFile();
+
+        // if (Objects.isNull(workingDirectory) || !workingDirectory.isDirectory())
+        // workingDirectory = new File("").getCanonicalFile();
         System.out.println("workingDirectory in Analysis: " + workingDirectory.getAbsolutePath());
         ScenarioOptions scenOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
         if (configFile == null || !configFile.isFile())
