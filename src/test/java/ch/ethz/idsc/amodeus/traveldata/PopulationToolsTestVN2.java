@@ -58,7 +58,7 @@ public class PopulationToolsTestVN2 {
 
         /* input data */
         scenarioOptions = new ScenarioOptions(scenarioDirectory, ScenarioOptionsBase.getDefault());
-        File configFile = new File(scenarioDirectory, scenarioOptions.getPreparerConfigName());
+        File configFile = new File(scenarioOptions.getPreparerConfigName());
         AVConfigGroup avCg = new AVConfigGroup();
         Config config = ConfigUtils.loadConfig(configFile.getAbsolutePath(), avCg);
         AVConfig avC = ProvideAVConfig.with(config, avCg);

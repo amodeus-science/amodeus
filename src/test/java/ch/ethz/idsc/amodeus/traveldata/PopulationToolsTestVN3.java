@@ -58,7 +58,7 @@ public class PopulationToolsTestVN3 {
         /* input data */
         scenarioDirectory = new File(LocateUtils.getSuperFolder("amodeus"), "resources/testScenario");
         scenarioOptions = new ScenarioOptions(scenarioDirectory, ScenarioOptionsBase.getDefault());
-        File configFile = new File(scenarioDirectory, scenarioOptions.getPreparerConfigName());
+        File configFile = new File(scenarioOptions.getPreparerConfigName());
         AVConfigGroup avCg = new AVConfigGroup();
         Config config = ConfigUtils.loadConfig(configFile.getAbsolutePath(), avCg);
         AVConfig avC = ProvideAVConfig.with(config, avCg);

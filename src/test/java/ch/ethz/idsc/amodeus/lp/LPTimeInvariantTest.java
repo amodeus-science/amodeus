@@ -45,14 +45,15 @@ public class LPTimeInvariantTest {
         System.out.println(LPTimeInvariant.class.getName());
         // copy scenario data into main directory
         File scenarioDirectory = new File(LocateUtils.getSuperFolder("amodeus"), "resources/testScenario");
+        System.out.println("scenarioDirectory: " +  scenarioDirectory);
         File workingDirectory = LocateUtils.getWorkingDirectory();
         GlobalAssert.that(workingDirectory.isDirectory());
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
 
         /* input data */
-        scenarioDirectory = new File(LocateUtils.getSuperFolder("amodeus"), "resources/testScenario");
         scenarioOptions = new ScenarioOptions(scenarioDirectory, ScenarioOptionsBase.getDefault());
-        File configFile = new File(scenarioDirectory, scenarioOptions.getPreparerConfigName());
+        File configFile = new File(scenarioOptions.getPreparerConfigName());
+        System.out.println("configFile: " +  configFile.getAbsolutePath());
         AVConfigGroup avCg = new AVConfigGroup();
         Config config = ConfigUtils.loadConfig(configFile.getAbsolutePath(), avCg);
         AVConfig avC = ProvideAVConfig.with(config, avCg);

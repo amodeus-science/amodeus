@@ -37,7 +37,7 @@ public class RequestTest {
         /* input data */
         File scenarioDirectory = new File(LocateUtils.getSuperFolder("amodeus"), "resources/testScenario");
         ScenarioOptions scenarioOptions = new ScenarioOptions(scenarioDirectory, ScenarioOptionsBase.getDefault());
-        File configFile = new File(scenarioDirectory, scenarioOptions.getPreparerConfigName());
+        File configFile = new File(scenarioOptions.getPreparerConfigName());
         Config config = ConfigUtils.loadConfig(configFile.getAbsolutePath());
         Scenario scenario = ScenarioUtils.loadScenario(config);
         network = scenario.getNetwork();
