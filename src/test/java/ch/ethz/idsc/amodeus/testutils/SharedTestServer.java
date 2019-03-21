@@ -69,7 +69,7 @@ public class SharedTestServer {
 
     private void simulate() throws Exception {
         boolean waitForClients = scenarioOptions.getBoolean("waitForClients");
-        configFile = new File(workingDirectory, scenarioOptions.getSimulationConfigName());
+        configFile = new File(scenarioOptions.getSimulationConfigName());
         StaticHelper.setup();
 
         LocationSpec locationSpec = scenarioOptions.getLocationSpec();

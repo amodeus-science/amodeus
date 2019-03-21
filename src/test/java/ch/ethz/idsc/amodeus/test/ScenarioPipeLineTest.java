@@ -23,6 +23,7 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.testutils.TestPreparer;
 import ch.ethz.idsc.amodeus.testutils.TestServer;
 import ch.ethz.idsc.amodeus.util.io.LocateUtils;
+import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -53,7 +54,7 @@ public class ScenarioPipeLineTest {
 
         // copy scenario data into main directory
         File scenarioDirectory = new File(LocateUtils.getSuperFolder("amodeus"), "resources/testScenario");
-        File workingDirectory = LocateUtils.getWorkingDirectory();
+        File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         GlobalAssert.that(workingDirectory.isDirectory());
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
 
@@ -103,11 +104,12 @@ public class ScenarioPipeLineTest {
         System.out.print("Server Test:\t");
 
         // scenario options
-        File workingDirectory = LocateUtils.getWorkingDirectory();
+        File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
-        assertEquals("config.xml", scenarioOptions.getSimulationConfigName());
-        assertEquals("preparedNetwork", scenarioOptions.getPreparedNetworkName());
-        assertEquals("preparedPopulation", scenarioOptions.getPreparedPopulationName());
+
+        assertEquals(workingDirectory.getAbsolutePath() + "/config.xml", scenarioOptions.getSimulationConfigName());
+        assertEquals(workingDirectory.getAbsolutePath() + "/preparedNetwork", scenarioOptions.getPreparedNetworkName());
+        assertEquals(workingDirectory.getAbsolutePath() + "/preparedPopulation", scenarioOptions.getPreparedPopulationName());
 
         // simulation objects should exist after simulation (simulation data)
         File simobj = new File("output/001/simobj/it.00");
@@ -140,24 +142,16 @@ public class ScenarioPipeLineTest {
         Scalar occupancyRatio = Mean.of(ate.getDistancElement().ratios).Get(0);
         Scalar distanceRatio = Mean.of(ate.getDistancElement().ratios).Get(1);
 
-        // TODO CleanUps
-        // assertEquals(0.08269953703703704, occupancyRatio.number().doubleValue(), 0.0);
-        // assertEquals(0.6796628382756873, distanceRatio.number().doubleValue(), 0.0);
         //
         scalarAssert.add(RealScalar.of(0.08269953703703704), occupancyRatio);
         scalarAssert.add(RealScalar.of(0.6796628382756873), distanceRatio);
 
         /** fleet distances */
         assertTrue(ate.getDistancElement().totalDistance >= 0.0);
-        // assertEquals(34429.271548560515, ate.getDistancElement().totalDistance, 0.0);
         assertTrue(ate.getDistancElement().totalDistanceWtCst >= 0.0);
-        // assertEquals(28980.70185154435, ate.getDistancElement().totalDistanceWtCst, 0.0);
         assertTrue(ate.getDistancElement().totalDistancePicku > 0.0);
-        // assertEquals(5448.5696970161725, ate.getDistancElement().totalDistancePicku, 0.0);
         assertTrue(ate.getDistancElement().totalDistanceRebal >= 0.0);
-        // assertEquals(0.0, ate.getDistancElement().totalDistanceRebal, 0.0);
         assertTrue(ate.getDistancElement().totalDistanceRatio >= 0.0);
-        // assertEquals(0.8417460070471933, ate.getDistancElement().totalDistanceRatio, 0.0);
         ate.getDistancElement().totalDistancesPerVehicle.flatten(-1).forEach(s -> //
         assertTrue(Scalars.lessEquals(RealScalar.ZERO, (Scalar) s)));
         assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).number().doubleValue() //
@@ -187,18 +181,15 @@ public class ScenarioPipeLineTest {
         assertTrue(Scalars.lessEquals(ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(0), ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(1)));
         assertTrue(Scalars.lessEquals(ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(1), ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(2)));
         assertTrue(Scalars.lessEquals(Quantity.of(0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1)));
-        // assertEquals(287.18, ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1).number().doubleValue(), 0);
-        // assertEquals(3261.0, ate.getTravelTimeAnalysis().getWaitAggrgte().Get(2).number().doubleValue(), 0);
-        // assertEquals(892.875, ate.getTravelTimeAnalysis().getDrveAggrgte().Get(1).number().doubleValue(), 0);
-        // assertEquals(3670.0, ate.getTravelTimeAnalysis().getDrveAggrgte().Get(2).number().doubleValue(), 0);
 
         scalarAssert.add(Quantity.of(287.18, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1));
         scalarAssert.add(Quantity.of(3261.0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(2));
         scalarAssert.add(Quantity.of(893.155, SI.SECOND), ate.getTravelTimeAnalysis().getDrveAggrgte().Get(1));
         scalarAssert.add(Quantity.of(3670.0, SI.SECOND), ate.getTravelTimeAnalysis().getDrveAggrgte().Get(2));
 
-        /* TODO: Have a look at {AmodeusModule::install}. At some point the travel time calculation in DVRP has been improved. Unfortunately, this improvement breaks
-         * these tests. The reference numbers here should be adjusted at some point so that the fallback in {AmodeusModule::install} can be removed again.
+        /* TODO: Have a look at {AmodeusModule::install}. At some point the travel time calculation in DVRP has been improved.
+         * Unfortunately, this improvement breaks these tests. The reference numbers here should be adjusted at some point so that the fallback in
+         * {AmodeusModule::install} can be removed again.
          * (Nevertheless, we're talking about a different in routed time of +/-1 second). /sebhoerl */
         scalarAssert.consolidate();
 

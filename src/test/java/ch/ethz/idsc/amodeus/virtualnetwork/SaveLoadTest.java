@@ -20,6 +20,7 @@ import ch.ethz.idsc.amodeus.test.TestFileHandling;
 import ch.ethz.idsc.amodeus.testutils.TestPreparer;
 import ch.ethz.idsc.amodeus.traveldata.TravelDataTestHelper;
 import ch.ethz.idsc.amodeus.util.io.LocateUtils;
+import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkGet;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkIO;
@@ -35,7 +36,7 @@ public class SaveLoadTest {
 
     @BeforeClass
     public static void before() throws Exception {
-        File workingDirectory = LocateUtils.getWorkingDirectory();
+        File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         File scenarioDirectory = new File(LocateUtils.getSuperFolder("amodeus"), "resources/testScenario");
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
         scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());

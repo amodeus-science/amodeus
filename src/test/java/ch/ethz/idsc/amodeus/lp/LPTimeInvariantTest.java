@@ -24,6 +24,7 @@ import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.test.TestFileHandling;
 import ch.ethz.idsc.amodeus.util.io.ProvideAVConfig;
 import ch.ethz.idsc.amodeus.util.io.LocateUtils;
+import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -45,15 +46,15 @@ public class LPTimeInvariantTest {
         System.out.println(LPTimeInvariant.class.getName());
         // copy scenario data into main directory
         File scenarioDirectory = new File(LocateUtils.getSuperFolder("amodeus"), "resources/testScenario");
-        System.out.println("scenarioDirectory: " +  scenarioDirectory);
-        File workingDirectory = LocateUtils.getWorkingDirectory();
+        System.out.println("scenarioDirectory: " + scenarioDirectory);
+        File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         GlobalAssert.that(workingDirectory.isDirectory());
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
 
         /* input data */
         scenarioOptions = new ScenarioOptions(scenarioDirectory, ScenarioOptionsBase.getDefault());
         File configFile = new File(scenarioOptions.getPreparerConfigName());
-        System.out.println("configFile: " +  configFile.getAbsolutePath());
+        System.out.println("configFile: " + configFile.getAbsolutePath());
         AVConfigGroup avCg = new AVConfigGroup();
         Config config = ConfigUtils.loadConfig(configFile.getAbsolutePath(), avCg);
         AVConfig avC = ProvideAVConfig.with(config, avCg);

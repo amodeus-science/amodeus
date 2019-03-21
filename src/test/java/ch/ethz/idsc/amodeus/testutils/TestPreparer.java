@@ -44,7 +44,7 @@ public class TestPreparer {
         ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
 
         // load Settings from IDSC Options
-        File configFile = new File(workingDirectory, scenarioOptions.getPreparerConfigName());
+        File configFile = new File(scenarioOptions.getPreparerConfigName());
 
         AVConfigGroup avConfigGroup = new AVConfigGroup();
         Config config = ConfigUtils.loadConfig(configFile.getAbsolutePath(), avConfigGroup);
