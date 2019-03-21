@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.matsim.core.config.Config;
+
 import ch.ethz.idsc.amodeus.data.LocationSpec;
 import ch.ethz.idsc.amodeus.data.LocationSpecDatabase;
 import ch.ethz.idsc.amodeus.dispatcher.parking.AVSpatialCapacityGenerator;
@@ -43,16 +45,41 @@ public class ScenarioOptions {
     }
 
     // specific access functions ==============================================
+    public String getOutputDirectory(Config config){
+        return new File(workingDirectory, config.controler().getOutputDirectory()).getAbsolutePath();
+    }
+    
+    
     public String getSimulationConfigName() {
-        return getString(ScenarioOptionsBase.SIMUCONFIGIDENTIFIER);
+        return new File(workingDirectory,getString(ScenarioOptionsBase.SIMUCONFIGIDENTIFIER)).getAbsolutePath();
     }
 
     public String getPreparerConfigName() {
-        return getString(ScenarioOptionsBase.FULLCONFIGIDENTIFIER);
+        return new File(workingDirectory,getString(ScenarioOptionsBase.FULLCONFIGIDENTIFIER)).getAbsolutePath();
     }
 
+    public String getVirtualNetworkDirectoryName() {
+        return new File(workingDirectory,getString(ScenarioOptionsBase.VIRTUALNETWORKNAMEIDENTIFIER)).getAbsolutePath();
+    }
+    
     public String getVirtualNetworkName() {
         return getString(ScenarioOptionsBase.VIRTUALNETWORKNAMEIDENTIFIER);
+    }
+    
+    public String getTravelDataName() {
+        return getString(ScenarioOptionsBase.TRAVELDATAFILENAME);
+    }
+    
+    public String getLinkSpeedDataName() {
+        return new File(workingDirectory,getString(ScenarioOptionsBase.LINKSPEEDDATAFILENAME)).getAbsolutePath();
+    }
+    
+    public String getPreparedNetworkName() {
+        return new File(workingDirectory,getString(ScenarioOptionsBase.NETWORKUPDATEDNAMEIDENTIFIER)).getAbsolutePath();
+    }
+    
+    public String getPreparedPopulationName() {
+        return new File(workingDirectory,getString(ScenarioOptionsBase.POPULATIONUPDATEDNAMEIDENTIFIER)).getAbsolutePath();
     }
 
     public int getNumVirtualNodes() {
@@ -63,13 +90,6 @@ public class ScenarioOptions {
         return getBoolean(ScenarioOptionsBase.COMPLETEGRAPHIDENTIFIER);
     }
 
-    public String getTravelDataName() {
-        return getString(ScenarioOptionsBase.TRAVELDATAFILENAME);
-    }
-
-    public String getLinkSpeedDataName() {
-        return getString(ScenarioOptionsBase.LINKSPEEDDATAFILENAME);
-    }
 
     public String getColorScheme() {
         return getString(ScenarioOptionsBase.COLORSCHEMEIDENTIFIER);
@@ -83,13 +103,6 @@ public class ScenarioOptions {
         return getInt(ScenarioOptionsBase.DTTRAVELDATAIDENTIFIER);
     }
 
-    public String getPreparedNetworkName() {
-        return getString(ScenarioOptionsBase.NETWORKUPDATEDNAMEIDENTIFIER);
-    }
-
-    public String getPreparedPopulationName() {
-        return getString(ScenarioOptionsBase.POPULATIONUPDATEDNAMEIDENTIFIER);
-    }
 
     /** Hint: upcase instance of LocationSpec if necessary
      * 

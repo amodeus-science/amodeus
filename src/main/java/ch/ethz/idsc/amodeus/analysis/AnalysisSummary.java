@@ -1,7 +1,6 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.analysis;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Objects;
@@ -12,6 +11,7 @@ import ch.ethz.idsc.amodeus.analysis.element.RequestRobotaxiInformationElement;
 import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionElement;
 import ch.ethz.idsc.amodeus.analysis.element.TravelTimeAnalysis;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
+import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 
 public class AnalysisSummary implements Serializable {
 
@@ -24,12 +24,13 @@ public class AnalysisSummary implements Serializable {
 
     /** @param numVehicles
      * @param size
-     * @param db non-null 
+     * @param db non-null
      * @throws IOException */
-    public AnalysisSummary(int numVehicles, int size, MatsimAmodeusDatabase db, File workingDirectory) throws IOException {
+    public AnalysisSummary(int numVehicles, int size, MatsimAmodeusDatabase db, //
+            ScenarioOptions scenarioOptions) throws IOException {
         Objects.requireNonNull(db);
         distanceElement = new DistanceElement(numVehicles, size, db);
-        scenarioParameters = new ScenarioParameters(workingDirectory);
+        scenarioParameters = new ScenarioParameters(scenarioOptions);
     }
 
     public ScenarioParameters getScenarioParameters() {

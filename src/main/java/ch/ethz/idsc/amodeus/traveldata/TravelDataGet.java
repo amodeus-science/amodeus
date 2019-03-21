@@ -18,7 +18,7 @@ public enum TravelDataGet {
 
     public static StaticTravelData readStatic(VirtualNetwork<Link> virtualNetwork, ScenarioOptions scenarioOptions) {
         GlobalAssert.that(Objects.nonNull(virtualNetwork));
-        final File travelDataFile = new File(scenarioOptions.getVirtualNetworkName(), //
+        final File travelDataFile = new File(scenarioOptions.getVirtualNetworkDirectoryName(), //
                 scenarioOptions.getTravelDataName());
         System.out.println("loading travelData from " + travelDataFile.getAbsoluteFile());
         try {

@@ -51,14 +51,14 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
 public class Analysis {
-    /** Use this method to create an standalone Analysis with all the default values
-     * stored in the current Working Directory
-     * 
-     * @return
-     * @throws Exception */
-    public static Analysis setup() throws Exception {
-        return setup(null, null, null, null);
-    }
+//    /** Use this method to create an standalone Analysis with all the default values
+//     * stored in the current Working Directory
+//     * 
+//     * @return
+//     * @throws Exception */
+//    public static Analysis setup() throws Exception {
+//        return setup(null, null, null, null);
+//    }
 
     /** Use this method in the Simulation Server as the network was already loaded
      * 
@@ -69,10 +69,10 @@ public class Analysis {
         return setup(null, null, null, network, db);
     }
 
-    public static Analysis setup(File workingDirectory, File configFile, //
-            File outputDirectory, MatsimAmodeusDatabase db) throws Exception {
-        return new Analysis(workingDirectory, configFile, outputDirectory, null, db);
-    }
+//    public static Analysis setup(scenarioOptions, File configFile, //
+//            File outputDirectory, MatsimAmodeusDatabase db) throws Exception {
+//        return new Analysis(scenarioOptions, configFile, outputDirectory, null, db);
+//    }
 
     /** returns an Instance of the Analysis Class can be called with any combination
      * of null and the respective parameter(s).
@@ -92,9 +92,9 @@ public class Analysis {
      *            runtime if the Network was already loaded in a previous step (e.g.
      *            Scenario Server)
      * @throws Exception */
-    public static Analysis setup(File workingDirectory, File configFile, File outputDirectory, //
+    public static Analysis setup(ScenarioOptions scenarioOptions, File configFile, File outputDirectory, //
             Network network, MatsimAmodeusDatabase db) throws Exception {
-        return new Analysis(workingDirectory, configFile, outputDirectory, network, db);
+        return new Analysis(scenarioOptions, configFile, outputDirectory, network, db);
     }
 
     // List of Analysis Elements which will be loaded
@@ -132,10 +132,13 @@ public class Analysis {
      *            Scenario Server)
      * @throws Exception */
 
-    protected Analysis(File workingDirectory, File configFile, File outputDirectory, //
+    protected Analysis(ScenarioOptions scenarioOptions, File configFile, File outputDirectory, //
             Network network, MatsimAmodeusDatabase db) throws Exception {
-        if (Objects.isNull(workingDirectory) || !workingDirectory.isDirectory())
-            workingDirectory = new File("").getCanonicalFile();
+        Objects.requireNonNull(scenarioOptions.getWorkingDirectory());
+        File workingDirectory = scenarioOptions.getWorkingDirectory();
+        
+//        if (Objects.isNull(workingDirectory) || !workingDirectory.isDirectory())
+//            workingDirectory = new File("").getCanonicalFile();
         System.out.println("workingDirectory in Analysis: " + workingDirectory.getAbsolutePath());
         ScenarioOptions scenOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
         if (configFile == null || !configFile.isFile())
@@ -145,6 +148,7 @@ public class Analysis {
             String outputDirectoryName = config.controler().getOutputDirectory();
             outputDirectory = new File(workingDirectory, outputDirectoryName);
         }
+        System.out.println("Outputdirectory chosen in Analysis: " + outputDirectory.getAbsolutePath());
 
         if (Objects.isNull(network)) {
             network = NetworkLoader.fromConfigFile(configFile);
@@ -175,7 +179,7 @@ public class Analysis {
         System.out.println("Found files: " + size);
         int numVehicles = storageSupplier.getSimulationObject(1).vehicles.size();
 
-        analysisSummary = new AnalysisSummary(numVehicles, size, db, workingDirectory);
+        analysisSummary = new AnalysisSummary(numVehicles, size, db, scenarioOptions);
 
         // default List of Analysis Elements which will be loaded
         analysisElements.add(analysisSummary.getSimulationInformationElement());
@@ -205,7 +209,7 @@ public class Analysis {
         analysisExports.add(WaitingCustomerExport.INSTANCE);
 
         // default list of analysis reports
-        htmlReport = new HtmlReport(configFile, outputDirectory, scenOptions);
+        htmlReport = new HtmlReport(outputDirectory, scenOptions);
         htmlReport.addHtmlReportElement(ScenarioParametersHtml.INSTANCE);
         htmlReport.addHtmlReportElement(SimulationInformationHtml.INSTANCE);
         htmlReport.addHtmlReportElement(DistanceElementHtml.INSTANCE);
@@ -275,4 +279,5 @@ public class Analysis {
         /** generate reports */
         analysisReports.forEach(analysisReport -> analysisReport.generate(analysisSummary));
     }
+
 }

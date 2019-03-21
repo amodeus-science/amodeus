@@ -56,12 +56,15 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
     public final String user = UserName.get();
     public final String date = DATEFORMAT.format(new Date());
 
-    public ScenarioParameters(File workingDirectory) throws IOException {
-        ScenarioOptions scenOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
-        File configFile = new File(workingDirectory, scenOptions.getSimulationConfigName());
-        Config config = ConfigUtils.loadConfig(configFile.toString());
+    public ScenarioParameters(ScenarioOptions scenOptions) throws IOException {
+//        ScenarioOptions scenOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
+//        File configFile = new File(workingDirectory, scenOptions.getSimulationConfigName());
+        System.out.println("scenOptions.getSimulationConfigName: " +  scenOptions.getSimulationConfigName());
+        Config config = ConfigUtils.loadConfig(scenOptions.getSimulationConfigName());
+//        scenOptions.getcon
+//        Config config = ConfigUtils.loadConfig(configFile.toString());
 
-        File configPath = new File(workingDirectory, "av.xml");
+        File configPath = new File(scenOptions.getWorkingDirectory(), "av.xml");
         AVConfig avConfig = new AVConfig();
         AVConfigReader reader = new AVConfigReader(avConfig);
         reader.readFile(configPath.getAbsolutePath());

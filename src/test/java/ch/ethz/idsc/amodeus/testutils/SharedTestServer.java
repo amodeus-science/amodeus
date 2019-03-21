@@ -137,7 +137,7 @@ public class SharedTestServer {
         // close port for visualization
         SimulationServer.INSTANCE.stopAccepting();
 
-        Analysis analysis = Analysis.setup(workingDirectory, configFile, //
+        Analysis analysis = Analysis.setup(scenarioOptions, configFile, //
                 new File(workingDirectory, "output/001"), network, db);
         ate = new AnalysisTestExport();
         analysis.addAnalysisExport(ate);
