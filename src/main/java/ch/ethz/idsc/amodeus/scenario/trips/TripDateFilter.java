@@ -2,7 +2,6 @@
 package ch.ethz.idsc.amodeus.scenario.trips;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.stream.Stream;
 
 import org.matsim.api.core.v01.network.Network;

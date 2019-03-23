@@ -1,6 +1,6 @@
 # cd.ethz.idsc.amodeus <a href="https://travis-ci.org/idsc-frazzoli/amodeus"><img src="https://travis-ci.org/idsc-frazzoli/amodeus.svg?branch=master" alt="Build Status"></a>
 
-Autonomous mobility-on-demand simulation library, version `1.6.6`
+Autonomous mobility-on-demand simulation library, version `1.6.7`
 
 ## Purpose
 

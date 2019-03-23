@@ -3,8 +3,6 @@ package ch.ethz.idsc.amodeus.scenario.dataclean;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,14 +14,14 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 public abstract class AbstractDataCleaner<T> {
-    public final DateTimeFormatter dateFormat =  DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+    public final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
     private final List<DataFilter<T>> filters = new ArrayList<>();
 
     public void addFilter(DataFilter<T> filter) {
         filters.add(filter);
     }
 
-    public File clean(File file, ScenarioOptions simOptions, Network network) throws IOException{
+    public File clean(File file, ScenarioOptions simOptions, Network network) throws IOException {
         GlobalAssert.that(file.exists());
         System.out.println("Start to clean " + file.getAbsolutePath() + " data.");
         Stream<T> stream = readFile(file);

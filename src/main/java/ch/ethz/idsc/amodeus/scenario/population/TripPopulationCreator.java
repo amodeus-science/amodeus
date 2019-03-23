@@ -1,20 +1,24 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.scenario.population;
 
-import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
-import ch.ethz.idsc.amodeus.util.geo.ClosestLinkSelect;
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import java.io.File;
+import java.time.format.DateTimeFormatter;
+
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
-import org.matsim.api.core.v01.population.*;
+import org.matsim.api.core.v01.population.Activity;
+import org.matsim.api.core.v01.population.Leg;
+import org.matsim.api.core.v01.population.Person;
+import org.matsim.api.core.v01.population.Plan;
+import org.matsim.api.core.v01.population.Population;
+import org.matsim.api.core.v01.population.PopulationFactory;
 import org.matsim.core.config.Config;
 import org.matsim.core.utils.collections.QuadTree;
 
-import java.io.File;
-import java.text.DateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
+import ch.ethz.idsc.amodeus.util.geo.ClosestLinkSelect;
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 public class TripPopulationCreator extends AbstractPopulationCreator {
 

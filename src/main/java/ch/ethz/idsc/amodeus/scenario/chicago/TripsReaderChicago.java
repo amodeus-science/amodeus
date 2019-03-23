@@ -2,7 +2,6 @@
 package ch.ethz.idsc.amodeus.scenario.chicago;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -14,7 +13,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
 public class TripsReaderChicago extends ChicagoTripsReaderBasic {
 
     public TripsReaderChicago() {
-        super(",", DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss a"));        
+        super(",", DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss a"));
     }
 
     public LocalDateTime getStartTime(String[] line) throws ParseException {
@@ -22,7 +21,7 @@ public class TripsReaderChicago extends ChicagoTripsReaderBasic {
     }
 
     public LocalDateTime getEndTime(String[] line) throws ParseException {
-        return LocalDateTime.parse(get(line, "Trip End Timestamp"),format);
+        return LocalDateTime.parse(get(line, "Trip End Timestamp"), format);
     }
 
     public Coord getPickupLocation(String[] line) {

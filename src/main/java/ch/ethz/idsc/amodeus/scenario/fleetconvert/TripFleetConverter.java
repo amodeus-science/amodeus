@@ -79,7 +79,7 @@ public class TripFleetConverter implements FleetConverter {
         // ===================================
         QuadTree<Link> qt = CreateQuadTree.of(network, db);
         TripPopulationCreator populationCreator = new TripPopulationCreator(processingDir, configFull, network, db, //
-                dataOperator.cleaner.dateFormat,qt);
+                dataOperator.cleaner.dateFormat, qt);
         populationCreator.process(cleanTripFile);
     }
 }

@@ -1,18 +1,17 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.scenario.readers;
 
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
+
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 // TODO remove
 @Deprecated // surely we have this implemented somewhere...

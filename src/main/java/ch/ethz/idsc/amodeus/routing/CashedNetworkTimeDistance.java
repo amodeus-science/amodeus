@@ -20,10 +20,10 @@ public class CashedNetworkTimeDistance implements NetworkTimeDistInterface {
         this.cachedPathComputation = new CashedNetworkPropertyComputation<Tensor>(calculator, maxLag, pathInterface);
     }
 
-//    /** removes computations that happened more time than @param maxLag ago since @param now */
-//    public final void update(Double now) {
-//        cachedPathComputation.update(now);
-//    }
+    // /** removes computations that happened more time than @param maxLag ago since @param now */
+    // public final void update(Double now) {
+    // cachedPathComputation.update(now);
+    // }
 
     public boolean checkTime(double now) {
         return cachedPathComputation.checkTime(now);

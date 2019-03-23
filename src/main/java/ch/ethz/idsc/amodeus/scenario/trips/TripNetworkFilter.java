@@ -24,7 +24,7 @@ public class TripNetworkFilter implements DataFilter<TaxiTrip> {
             return stream;
         }
         return stream.filter(trip -> //
-                inBounds(minCoord, maxCoord, trip.pickupLoc) && inBounds(minCoord, maxCoord, trip.dropoffLoc));
+        inBounds(minCoord, maxCoord, trip.pickupLoc) && inBounds(minCoord, maxCoord, trip.dropoffLoc));
     }
 
     private boolean inBounds(Coord minCoord, Coord maxCoord, Coord loc) {
