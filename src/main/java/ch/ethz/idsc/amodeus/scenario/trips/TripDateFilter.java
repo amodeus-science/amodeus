@@ -16,6 +16,7 @@ public class TripDateFilter implements DataFilter<TaxiTrip> {
         this.date = date;
     }
 
+    @Override
     public Stream<TaxiTrip> filter(Stream<TaxiTrip> stream, ScenarioOptions simOptions, Network network) {
         return stream.filter(trip -> //
         StaticHelper.sameDay(date, trip.pickupDate) && StaticHelper.sameDay(date, trip.dropoffDate));

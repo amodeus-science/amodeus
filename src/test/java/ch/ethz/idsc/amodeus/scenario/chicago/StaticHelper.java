@@ -11,7 +11,6 @@ import ch.ethz.idsc.amodeus.util.io.FileDelete;
 import ch.ethz.idsc.amodeus.util.io.LocateUtils;
 
 /* package */ class StaticHelper {
-    ;
 
     public static void setupTest(File workingDir) throws Exception {
         ChicagoGeoInformation.setup();

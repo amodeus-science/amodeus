@@ -19,6 +19,7 @@ public class TripDurationFilter implements DataFilter<TaxiTrip> {
         this.maxTripDuration = maxTripDuration;
     }
 
+    @Override
     public Stream<TaxiTrip> filter(Stream<TaxiTrip> stream, ScenarioOptions simOptions, Network network) {
         return stream.filter(trip -> Scalars.lessEquals(trip.duration, maxTripDuration));
     }

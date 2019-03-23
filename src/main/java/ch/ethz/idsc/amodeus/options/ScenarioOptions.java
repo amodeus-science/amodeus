@@ -35,11 +35,11 @@ public class ScenarioOptions {
         properties.setProperty(key, value);
     }
 
-    public void saveAndOverwriteAmodeusOptions() throws IOException {
+    public void saveAndOverwriteAmodeusOptions() {
         ScenarioOptionsBase.savePropertiesToDirectory(workingDirectory, properties);
     }
 
-    public void saveToFolder(File folder, String header) throws IOException {
+    public void saveToFolder(File folder, String header) {
         File file = new File(folder, ScenarioOptionsBase.OPTIONSFILENAME);
         ScenarioOptionsBase.savePropertiesToFileWithHeader(properties, file, header);
     }

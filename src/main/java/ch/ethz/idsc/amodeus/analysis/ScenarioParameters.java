@@ -56,7 +56,7 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
     public final String user = UserName.get();
     public final String date = DATEFORMAT.format(new Date());
 
-    public ScenarioParameters(ScenarioOptions scenOptions) throws IOException {
+    public ScenarioParameters(ScenarioOptions scenOptions) {
         // ScenarioOptions scenOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
         // File configFile = new File(workingDirectory, scenOptions.getSimulationConfigName());
         System.out.println("scenOptions.getSimulationConfigName: " + scenOptions.getSimulationConfigName());

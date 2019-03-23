@@ -23,6 +23,7 @@ public class TripDistanceFilter implements DataFilter<TaxiTrip> {
         this.maxTripDistance = maxTripDistance;
     }
 
+    @Override
     public Stream<TaxiTrip> filter(Stream<TaxiTrip> stream, ScenarioOptions simOptions, Network network) {
         return stream//
                 .filter(trip -> Scalars.lessEquals(minTripDistance, trip.distance))//

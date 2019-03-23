@@ -17,7 +17,7 @@ public class CashedNetworkTimeDistance implements NetworkTimeDistInterface {
      * e.g., to minimize traveltime or network distance. If the boolean @param cachePath is set to
      * true, then the computed Pathes are stored as well (memory intensive!) */
     public CashedNetworkTimeDistance(LeastCostPathCalculator calculator, Double maxLag, NetworkPropertyInterface<Tensor> pathInterface) {
-        this.cachedPathComputation = new CashedNetworkPropertyComputation<Tensor>(calculator, maxLag, pathInterface);
+        this.cachedPathComputation = new CashedNetworkPropertyComputation<>(calculator, maxLag, pathInterface);
     }
 
     // /** removes computations that happened more time than @param maxLag ago since @param now */
