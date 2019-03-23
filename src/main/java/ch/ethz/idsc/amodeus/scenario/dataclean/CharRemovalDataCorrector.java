@@ -1,9 +1,14 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.scenario.dataclean;
 
-import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
-import java.io.*;
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 
 public class CharRemovalDataCorrector implements DataCorrector {
     private final String string;
@@ -15,8 +20,7 @@ public class CharRemovalDataCorrector implements DataCorrector {
     @Override
     public File correctFile(File taxiData, MatsimAmodeusDatabase db) throws Exception {
         File outFile = new File(taxiData.getAbsolutePath().replace(".csv", "_corrected.csv"));
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(taxiData));
-             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outFile))) {
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(taxiData)); BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outFile))) {
             System.out.println("INFO start data correction");
 
             bufferedReader.lines().forEachOrdered(line -> {

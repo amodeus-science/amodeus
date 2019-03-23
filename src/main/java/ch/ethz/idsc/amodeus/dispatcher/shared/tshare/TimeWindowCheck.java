@@ -11,7 +11,6 @@ import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.qty.Quantity;
 
 /* package */ class TimeWindowCheck {
-    ;
 
     /** compute expecte arrival times and check compatibility with time windows */
     public static boolean of(Double timeNow, List<SharedCourse> newMenu, //

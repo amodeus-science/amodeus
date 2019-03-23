@@ -22,7 +22,6 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.red.Norm;
-import ch.ethz.idsc.tensor.sca.Chop;
 
 public abstract class AbstractTripsReader extends CsvReader {
     private Map<String, Integer> taxiIds = new HashMap<>();

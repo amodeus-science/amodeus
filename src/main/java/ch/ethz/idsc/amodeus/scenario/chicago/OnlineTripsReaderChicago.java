@@ -19,24 +19,29 @@ public class OnlineTripsReaderChicago extends ChicagoTripsReaderBasic {
         super(",", DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"));
     }
 
+    @Override
     public LocalDateTime getStartTime(String[] line) throws ParseException {
         return LocalDateTime.parse(get(line, "trip_start_timestamp"), format);
     }
 
+    @Override
     public LocalDateTime getEndTime(String[] line) throws ParseException {
         return LocalDateTime.parse(get(line, "trip_end_timestamp"), format);
     }
 
+    @Override
     public Coord getPickupLocation(String[] line) {
         return new Coord(Double.valueOf(get(line, "pickup_centroid_longitude")), //
                 Double.valueOf(get(line, "pickup_centroid_latitude")));
     }
 
+    @Override
     public Coord getDropoffLocation(String[] line) {
         return new Coord(Double.valueOf(get(line, "dropoff_centroid_longitude")), //
                 Double.valueOf(get(line, "dropoff_centroid_latitude")));
     }
 
+    @Override
     public Scalar getDuration(String[] line) {
         return Quantity.of(Long.valueOf(get(line, "trip_seconds")), "s");
     }

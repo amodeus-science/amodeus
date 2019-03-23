@@ -1,12 +1,16 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.scenario;
 
-import ch.ethz.idsc.amodeus.util.io.FileDelete;
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+
+import ch.ethz.idsc.amodeus.util.io.FileDelete;
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 public enum ScenarioAssembler {
     ;

@@ -18,6 +18,6 @@ public enum Duration {
         long sec1 = ldt1.toEpochSecond(ZoneOffset.of("Z"));
         long sec2 = ldt2.toEpochSecond(ZoneOffset.of("Z"));
         return Quantity.of(sec2 - sec1, "s");
-    };
+    }
 
 }

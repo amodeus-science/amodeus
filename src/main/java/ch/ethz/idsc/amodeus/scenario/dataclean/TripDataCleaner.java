@@ -22,10 +22,12 @@ public class TripDataCleaner extends AbstractDataCleaner<TaxiTrip> {
         this.reader = reader;
     }
 
+    @Override
     public Stream<TaxiTrip> readFile(File file) throws IOException {
         return reader.getTripStream(file);
     }
 
+    @Override
     public File writeFile(File inFile, Stream<TaxiTrip> stream) throws IOException {
         String fileName = FilenameUtils.getBaseName(inFile.getPath()) + "_clean." + FilenameUtils.getExtension(inFile.getPath());
         File outFile = new File(inFile.getParentFile(), fileName);

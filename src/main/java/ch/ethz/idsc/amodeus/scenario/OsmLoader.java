@@ -1,10 +1,6 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.scenario;
 
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.Tensors;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,6 +14,10 @@ import java.util.Arrays;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.Tensors;
+
 public class OsmLoader {
     private final double[] bbox;
 
@@ -26,16 +26,16 @@ public class OsmLoader {
         checkBbox();
     }
 
-    public OsmLoader(File propertiesFile) throws FileNotFoundException, IOException {        
+    public OsmLoader(File propertiesFile) throws FileNotFoundException, IOException {
         Properties props = new Properties();
         props.load(new FileInputStream(propertiesFile));
         GlobalAssert.that(propertiesFile.exists());
         System.out.println(propertiesFile.getAbsolutePath());
         Tensor boundBox = Tensors.fromString(props.getProperty("boundingBox"));
-        this.bbox = new double[]{boundBox.Get(0).number().doubleValue(),//
-                boundBox.Get(1).number().doubleValue(),//
-                boundBox.Get(2).number().doubleValue(),//
-                boundBox.Get(3).number().doubleValue()};
+        this.bbox = new double[] { boundBox.Get(0).number().doubleValue(), //
+                boundBox.Get(1).number().doubleValue(), //
+                boundBox.Get(2).number().doubleValue(), //
+                boundBox.Get(3).number().doubleValue() };
         checkBbox();
     }
 

@@ -14,14 +14,17 @@ public abstract class ChicagoTripsReaderBasic extends AbstractTripsReader {
         super(delim, format);
     }
 
+    @Override
     public final String getTaxiCode(String[] line) {
         return get(line, "Taxi ID");
     }
 
+    @Override
     public final Scalar getDistance(String[] line) {
         return Quantity.of(Double.valueOf(get(line, "trip_miles")) * milesToM, "m"); // miles to meters
     }
 
+    @Override
     public final Scalar getWaitingTime(String[] line) {
         return null;
     }
