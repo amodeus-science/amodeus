@@ -22,8 +22,6 @@ public class TravelDataTestHelper {
 
     private TravelDataTestHelper(VirtualNetwork<Link> vNCreated, VirtualNetwork<Link> vNSaved, ScenarioOptions scenarioOptions) throws Exception {
         tDCreated = TravelDataGet.readStatic(vNCreated, scenarioOptions);
-        // TODO where is the travel data comparison file created originally?
-//        TravelDataIO.writeStatic(COMPARISON_FILE_TD, (StaticTravelData) tDCreated);
         tDSaved = TravelDataIO.readStatic(COMPARISON_FILE_TD, vNSaved);
     }
 
