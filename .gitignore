@@ -77,8 +77,3 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
-
-# Files modified during tests
-resources/testComparisonFiles/travelData
-resources/testComparisonFiles/virtualNetwork
-
