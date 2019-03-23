@@ -24,12 +24,12 @@ import ch.ethz.idsc.amodeus.dispatcher.core.SharedRebalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.BeamExtensionForSharing;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
-import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.TreeMaintainer;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
+import ch.ethz.idsc.amodeus.routing.EuclideanDistanceFunction;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -147,8 +147,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
 
             for (RoboTaxi robotaxi : unassignedRoboTaxisNow)
                 if (!robotaxi.getStatus().equals(RoboTaxiStatus.STAY))
-                    if (unassignedRoboTaxis.contains(robotaxi)) // TODO <- check should be obsolete
-                        unassignedRoboTaxis.remove(robotaxi);
+                    unassignedRoboTaxis.remove(robotaxi);
 
         }
 

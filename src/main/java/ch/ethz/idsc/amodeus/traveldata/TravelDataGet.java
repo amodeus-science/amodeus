@@ -16,17 +16,9 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 public enum TravelDataGet {
     ;
 
-    @Deprecated
-    /** Should not be used in amodeus repository anymore! */
-    public static TravelData readStatic(VirtualNetwork<Link> virtualNetwork) throws IOException {
-        File workingDirectory = MultiFileTools.getWorkingDirectory();
-        ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
-        return readStatic(virtualNetwork, scenarioOptions);
-    }
-
     public static StaticTravelData readStatic(VirtualNetwork<Link> virtualNetwork, ScenarioOptions scenarioOptions) {
         GlobalAssert.that(Objects.nonNull(virtualNetwork));
-        final File travelDataFile = new File(scenarioOptions.getVirtualNetworkName(), //
+        final File travelDataFile = new File(scenarioOptions.getVirtualNetworkDirectoryName(), //
                 scenarioOptions.getTravelDataName());
         System.out.println("loading travelData from " + travelDataFile.getAbsoluteFile());
         try {

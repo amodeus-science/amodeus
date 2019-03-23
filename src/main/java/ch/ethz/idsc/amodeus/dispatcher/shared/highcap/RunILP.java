@@ -22,7 +22,7 @@ public enum RunILP {
         List<Double> outputList = iLPCode.writeLPSolution();
         iLPCode.closeLP();
 
-        System.out.println(outputList);
+        // System.out.println(outputList);
         return outputList;
     }
 }

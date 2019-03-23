@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.routing.NetworkTimeDistInterface;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
@@ -24,12 +25,13 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param maxTime
      * @return */
     static NavigableMap<Double, RoboTaxi> getRoboTaxisWithinMaxTime( //
-            Link link, Collection<RoboTaxi> robotaxis, TravelTimeInterface timeDb, double maxTime, RoboTaxiHandler roboTaxiMaintainer) {
+            Link link, Collection<RoboTaxi> robotaxis, NetworkTimeDistInterface timeDb, double maxTime, //
+            RoboTaxiHandler roboTaxiMaintainer, Double now) {
         Collection<RoboTaxi> closeRoboTaxis = roboTaxiMaintainer.getRoboTaxisWithinFreeSpeedDisk(link.getCoord(), maxTime).stream().filter(rt -> robotaxis.contains(rt))
                 .collect(Collectors.toSet());
         NavigableMap<Double, RoboTaxi> map = new TreeMap<>();
         for (RoboTaxi roboTaxi : closeRoboTaxis) {
-            double travelTimeToLink = timeDb.timeFromTo(link, roboTaxi.getDivertableLocation()).number().doubleValue();
+            double travelTimeToLink = timeDb.travelTime(link, roboTaxi.getDivertableLocation(), now).number().doubleValue();
             if (travelTimeToLink < maxTime) {
                 map.put(travelTimeToLink, roboTaxi);
             }
@@ -51,14 +53,14 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param timeDb
      * @return */
     static Optional<RoboTaxi> getClosestUnassignedRoboTaxiWithinMaxTime( //
-            RoboTaxiHandler roboTaxiMaintainer, AVRequest avRequest, double maxTime, double now, TravelTimeInterface timeDb) {
+            RoboTaxiHandler roboTaxiMaintainer, AVRequest avRequest, double maxTime, double now, NetworkTimeDistInterface timeDb) {
         NavigableMap<Double, RoboTaxi> roboTaxis = RoboTaxiUtilsFagnant.getRoboTaxisWithinMaxTime(avRequest.getFromLink(), roboTaxiMaintainer.getUnassignedRoboTaxis(), timeDb,
-                maxTime, roboTaxiMaintainer);
+                maxTime, roboTaxiMaintainer,now);
         if (roboTaxis.isEmpty()) {
             return Optional.empty();
         }
         GlobalAssert.that(roboTaxis.firstKey() < maxTime);
-        GlobalAssert.that(timeDb.timeFromTo(avRequest.getFromLink(), roboTaxis.firstEntry().getValue().getDivertableLocation()).number().doubleValue() < maxTime);
+        GlobalAssert.that(timeDb.travelTime(avRequest.getFromLink(), roboTaxis.firstEntry().getValue().getDivertableLocation(), now).number().doubleValue() < maxTime);
         return Optional.of(roboTaxis.firstEntry().getValue());
     }
 }

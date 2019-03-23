@@ -25,12 +25,14 @@ import ch.ethz.idsc.amodeus.dispatcher.core.SharedRebalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
-import ch.ethz.idsc.amodeus.dispatcher.util.EasyMinTimePathCalculator;
-import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
+import ch.ethz.idsc.amodeus.routing.CashedNetworkTimeDistance;
+import ch.ethz.idsc.amodeus.routing.EasyMinTimePathCalculator;
+import ch.ethz.idsc.amodeus.routing.EuclideanDistanceFunction;
+import ch.ethz.idsc.amodeus.routing.TimeDistanceProperty;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AVConfig;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
@@ -68,7 +70,8 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
     private final RequestHandler requestHandler = new RequestHandler(MAXWAITTIME, WAITLISTTIME, EXTREEMWAITTIME);
     private static final double WAITLISTTIME = 300.0;// [s] Normal: 300, Time after which a request is put on to the wait list
     private static final double MAXWAITTIME = 600.0; // [s] Normal is 600
-    private static final double EXTREEMWAITTIME = 3600.0 * 24; // [s] The extrem wait list is used here as in AMoDeus requests can not be rejected. This list guarantees for
+    private static final double EXTREEMWAITTIME = 3600.0 * 24; // [s] The extrem wait list is used here as in AMoDeus requests can not be rejected. This list
+                                                               // guarantees for
                                                                // requests waiting for more than MaxWaitTime that a taxi can be found
 
     /** Rebalancing Class to make use of a Grid Rebalancing. And its Parameters */
@@ -85,7 +88,7 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
     private static final String MAXABSOLUTETRAVELTIMEINCREASEIDENTIFIER = "maxAbsolutDriveTimeIncrease";
 
     /** Travel Time Calculation */
-    private final TravelTimeComputationCached timeDb;
+    private final CashedNetworkTimeDistance timeDb;
     private static final double MAXLAGTRAVELTIMECALCULATION = 180000.0;
 
     protected DynamicRideSharingStrategy(Network network, //
@@ -107,7 +110,7 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
 
         FastAStarLandmarksFactory factory = new FastAStarLandmarksFactory();
         LeastCostPathCalculator calculator = EasyMinTimePathCalculator.prepPathCalculator(network, factory);
-        timeDb = TravelTimeComputationCached.of(calculator, MAXLAGTRAVELTIMECALCULATION);
+        timeDb = new CashedNetworkTimeDistance(calculator, MAXLAGTRAVELTIMECALCULATION, TimeDistanceProperty.INSTANCE);
 
         rebalancing = new BlockRebalancing(network, timeDb, MINNUMBERROBOTAXISINBLOCKTOREBALANCE, BINSIZETRAVELDEMAND, dispatchPeriod, REBALANCINGGRIDDISTANCE);
 
@@ -120,11 +123,10 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
         requestHandler.updatePickupTimes(getAVRequests(), now);
 
         if (round_now % dispatchPeriod == 0) {
-            timeDb.update(now);
 
             /** prepare the registers for the dispatching */
             roboTaxiHandler.update(getRoboTaxis(), getDivertableUnassignedRoboTaxis());
-            requestHandler.addUnassignedRequests(getUnassignedAVRequests(), timeDb);
+            requestHandler.addUnassignedRequests(getUnassignedAVRequests(), timeDb, now);
             requestHandler.updateLastHourRequests(now, BINSIZETRAVELDEMAND);
 
             /** calculate Rebalance before (!) dispatching */
@@ -139,7 +141,7 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
 
                 /** THIS IS WHERE WE CALCULATE THE SHARING POSSIBILITIES */
                 Optional<Entry<RoboTaxi, List<SharedCourse>>> rideSharingRoboTaxi = routeValidation.getClosestValidSharingRoboTaxi(robotaxisWithMenu, avRequest, now, timeDb,
-                        requestHandler, roboTaxiHandler);
+                        requestHandler, roboTaxiHandler, now);
 
                 if (rideSharingRoboTaxi.isPresent()) {
                     /** in Case we have a sharing possibility we assign */

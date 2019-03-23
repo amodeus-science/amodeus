@@ -168,7 +168,7 @@ public class RoboTaxi {
     /** @return {@Schedule} of the RoboTaxi, to be used only inside core package,
      *         the schedule will be used automatically for all updates
      *         associated to pickups, rebalance tasks */
-    /* package */ Schedule getSchedule() {
+    public Schedule getSchedule() {
         return avVehicle.getSchedule();
     }
 

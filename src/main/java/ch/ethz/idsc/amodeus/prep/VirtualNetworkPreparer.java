@@ -24,15 +24,16 @@ public enum VirtualNetworkPreparer implements VirtualNetworkCreator {
     public VirtualNetwork<Link> create(Network network, Population population, ScenarioOptions scenarioOptions, int numVehicles, int endTime) {
         VirtualNetworkCreator virtualNetworkCreators = scenarioOptions.getVirtualNetworkCreator();
         VirtualNetwork<Link> virtualNetwork = virtualNetworkCreators.create(network, population, scenarioOptions, numVehicles, endTime);
+        GlobalAssert.that(Objects.nonNull(virtualNetwork));
 
-        final File vnDir = new File(scenarioOptions.getVirtualNetworkName());
+        final File vnDir = new File(scenarioOptions.getVirtualNetworkDirectoryName());
         System.out.println("vnDir = " + vnDir.getAbsolutePath());
         vnDir.mkdir(); // create folder if necessary
-        GlobalAssert.that(Objects.nonNull(virtualNetwork));
+        GlobalAssert.that(vnDir.isDirectory());
 
         try {
             VirtualNetworkIO.toByte(new File(vnDir, scenarioOptions.getVirtualNetworkName()), virtualNetwork);
-            System.out.println("saved virtual network byte format to : " + new File(vnDir, scenarioOptions.getVirtualNetworkName()));
+            System.out.println("saved virtual network byte format to : " + new File(vnDir, scenarioOptions.getVirtualNetworkDirectoryName()));
 
             virtualNetwork.printVirtualNetworkInfo();
             System.out.println("successfully converted simulation data files from in " + scenarioOptions.getWorkingDirectory());
@@ -41,7 +42,7 @@ public enum VirtualNetworkPreparer implements VirtualNetworkCreator {
             StaticTravelData travelData = StaticTravelDataCreator.create(scenarioOptions.getWorkingDirectory(), virtualNetwork, network, population,
                     scenarioOptions.getdtTravelData(), numVehicles, endTime);
 
-            File travelDataFile = new File(scenarioOptions.getVirtualNetworkName(), scenarioOptions.getTravelDataName());
+            File travelDataFile = new File(scenarioOptions.getVirtualNetworkDirectoryName(), scenarioOptions.getTravelDataName());
             TravelDataIO.writeStatic(travelDataFile, travelData);
 
         } catch (Exception exception) {

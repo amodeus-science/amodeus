@@ -13,7 +13,8 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.utils.collections.QuadTree;
 
-import ch.ethz.idsc.amodeus.dispatcher.shared.fifs.TravelTimeInterface;
+import ch.ethz.idsc.amodeus.routing.CashedNetworkTimeDistance;
+import ch.ethz.idsc.amodeus.routing.NetworkTimeDistInterface;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
@@ -31,14 +32,15 @@ import ch.ethz.idsc.tensor.qty.Quantity;
     private final Map<VirtualNode<Link>, Scalar> temporalLookupMap = new HashMap<>();
 
     public GridCell(VirtualNode<Link> virtualNode, VirtualNetwork<Link> virtualNetwork, Network network, //
-            CashedDistanceCalculator minDist, TravelTimeInterface minTime, QuadTree<Link> linkTree) {
+            CashedNetworkTimeDistance minDist, NetworkTimeDistInterface minTime, QuadTree<Link> linkTree, //
+            Double now) {
         this.myVNode = virtualNode;
         // this.virtualNetwork = virtualNetwork;
-        computeMaps(virtualNetwork, linkTree, minDist, minTime);
+        computeMaps(virtualNetwork, linkTree, minDist, minTime, now);
     }
 
     private void computeMaps(VirtualNetwork<Link> virtualNetwork, QuadTree<Link> links, //
-            CashedDistanceCalculator minDist, TravelTimeInterface minTime) {
+            CashedNetworkTimeDistance minDist, NetworkTimeDistInterface minTime, Double now) {
         /** calculate distances and travel times to other nodes */
         for (VirtualNode<Link> toNode : virtualNetwork.getVirtualNodes()) {
             Link fromLink = links.getClosest(//
@@ -47,8 +49,8 @@ import ch.ethz.idsc.tensor.qty.Quantity;
             Link toLink = links.getClosest(//
                     toNode.getCoord().Get(0).number().doubleValue(), //
                     toNode.getCoord().Get(1).number().doubleValue());
-            Scalar time = minTime.timeFromTo(fromLink, toLink);
-            Scalar distance = minDist.distFromTo(fromLink, toLink);
+            Scalar time = minTime.travelTime(fromLink, toLink, now);
+            Scalar distance = minDist.distance(fromLink, toLink, now);
             temporalSortedMap.put(time, toNode);
             temporalLookupMap.put(toNode, time);
             distanceSortedMap.put(distance, toNode);
