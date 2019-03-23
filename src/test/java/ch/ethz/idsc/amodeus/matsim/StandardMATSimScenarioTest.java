@@ -90,13 +90,13 @@ public class StandardMATSimScenarioTest {
                 { "FeedforwardFluidicRebalancingPolicy" }, //
                 { "AdaptiveRealTimeRebalancingPolicy" }, //
                 { "ExtDemandSupplyBeamSharing" }, //
-                { "TShareDispatcher" }, //
-                { "HighCapacityDispatcher" } });
+                { "TShareDispatcher" } //
+        });
 
         // TODO add these and all other missing strategies again:
         // { "FirstComeFirstServedStrategy" }
         // { "DynamicRideSharingStrategy" }
-        //
+        // { "HighCapacityDispatcher" }
 
     }
 
