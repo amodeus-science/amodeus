@@ -44,7 +44,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         this.network = network;
         this.db = db;
         this.dateFormat = dateFormat;
-        reader = new CsvReader(",", dateFormat);
+        reader = new CsvReader(",");
     }
 
     public void process(File inFile) throws MalformedURLException, Exception {

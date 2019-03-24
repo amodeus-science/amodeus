@@ -1,7 +1,5 @@
 package ch.ethz.idsc.amodeus.scenario.chicago;
 
-import java.time.format.DateTimeFormatter;
-
 import ch.ethz.idsc.amodeus.scenario.readers.AbstractTripsReader;
 import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Scalar;
@@ -11,8 +9,8 @@ public abstract class ChicagoTripsReaderBasic extends AbstractTripsReader {
 
     private final double milesToM = 1609.34;
 
-    public ChicagoTripsReaderBasic(String delim, DateTimeFormatter format) {
-        super(delim, format);
+    public ChicagoTripsReaderBasic(String delim) {
+        super(delim);
     }
 
     @Override

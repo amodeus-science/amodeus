@@ -12,9 +12,11 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.qty.Quantity;
 
 public class TripsReaderChicago extends ChicagoTripsReaderBasic {
+    private static final DateTimeFormatter format = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss a");
 
     public TripsReaderChicago() {
-        super(",", DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss a"));
+        super(",");
+
     }
 
     @Override

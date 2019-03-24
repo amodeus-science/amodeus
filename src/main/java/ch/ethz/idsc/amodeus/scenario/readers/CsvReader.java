@@ -5,7 +5,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,19 +12,13 @@ import java.util.stream.Stream;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
-// TODO remove
-@Deprecated // surely we have this implemented somewhere...
 public class CsvReader {
     private File file;
-    private String delim;
-
+    private final String delim;
     protected List<String> headers = new ArrayList<>();
 
-    protected final DateTimeFormatter format;
-
-    public CsvReader(String delim, DateTimeFormatter format) {
+    public CsvReader(String delim) {
         this.delim = delim;
-        this.format = format;
     }
 
     public void read(File file) {
@@ -43,35 +36,15 @@ public class CsvReader {
         }
     }
 
-    public String[] getRow(int row) {
-        GlobalAssert.that(!headers.isEmpty());
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
-            String line;
-            int index = -1;
-            while ((line = bufferedReader.readLine()) != null) {
-                GlobalAssert.that(index <= row);
-                if (index == row)
-                    return line.split(delim);
-                index++;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     public String get(String[] row, String key) {
         GlobalAssert.that(headers.contains(key));
         return row[headers.indexOf(key)];
     }
 
-    public String get(int row, String key) {
-        return get(getRow(row), key);
-    }
-
     public Stream<String[]> lines() throws IOException {
         GlobalAssert.that(file.isFile());
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-        return bufferedReader.lines().skip(1).map(line -> line.split(delim));
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
+            return bufferedReader.lines().skip(1).map(line -> line.split(delim));
+        }
     }
 }

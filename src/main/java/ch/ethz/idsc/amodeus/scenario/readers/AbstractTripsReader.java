@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -27,8 +26,8 @@ import ch.ethz.idsc.tensor.red.Norm;
 public abstract class AbstractTripsReader extends CsvReader {
     private Map<String, Integer> taxiIds = new HashMap<>();
 
-    public AbstractTripsReader(String delim, DateTimeFormatter format) {
-        super(delim, format);
+    public AbstractTripsReader(String delim) {
+        super(delim);
     }
 
     public Stream<TaxiTrip> getTripStream(File file) throws IOException {
