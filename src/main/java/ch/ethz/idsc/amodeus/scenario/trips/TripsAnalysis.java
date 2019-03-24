@@ -38,17 +38,17 @@ public class TripsAnalysis {
 
     private void analyze() throws IOException {
         reader.lines().forEachOrdered(line -> {
-            requests.add(Integer.valueOf(reader.get(line, "Id")));
-            taxis.add(Integer.valueOf(reader.get(line, "TaxiId")));
-            distances.append(RealScalar.of(Double.valueOf(reader.get(line, "Distance")) / 1000)); // m -> km
-            String waitingTime = reader.get(line, "WaitTime");
+            requests.add(Integer.valueOf(line.get("Id")));
+            taxis.add(Integer.valueOf(line.get("TaxiId")));
+            distances.append(RealScalar.of(Double.valueOf(line.get("Distance")) / 1000)); // m -> km
+            String waitingTime = line.get("WaitTime");
             try {
                 waitingTimes.append(RealScalar.of(Double.valueOf(waitingTime)));
             } catch (NumberFormatException e) {
                 if (!waitingTime.equals("null"))
                     System.err.println("WARN unexpected value encountered: WaitTime = " + waitingTime);
             }
-            durations.append(RealScalar.of(Double.valueOf(reader.get(line, "Duration")) / 60)); // sec -> min
+            durations.append(RealScalar.of(Double.valueOf(line.get("Duration")) / 60)); // sec -> min
         });
     }
 

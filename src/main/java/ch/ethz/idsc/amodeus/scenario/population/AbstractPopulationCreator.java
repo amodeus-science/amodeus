@@ -27,7 +27,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
     private final String fileName = "population.xml";
 
-    protected final CsvReader reader;
+    // protected final
     protected final DateTimeFormatter dateFormat;
 
     private final File populationFile;
@@ -44,7 +44,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         this.network = network;
         this.db = db;
         this.dateFormat = dateFormat;
-        reader = new CsvReader(",");
+
     }
 
     public void process(File inFile) throws MalformedURLException, Exception {
@@ -56,10 +56,11 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         PopulationFactory populationFactory = population.getFactory();
 
         // Population creation (iterate trough all id's)
+        CsvReader reader = new CsvReader(",");
         reader.read(inFile);
-        reader.lines().forEachOrdered(line -> {
+        reader.lines().forEachOrdered(row -> {
             try {
-                processLine(line, population, populationFactory);
+                processLine(row, population, populationFactory);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -104,6 +105,6 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         return date.toLocalTime().getHour() * 3600 + date.toLocalTime().getMinute() * 60 + date.toLocalTime().getSecond();
     }
 
-    abstract protected void processLine(String[] line, Population population, PopulationFactory populationFactory) throws Exception;
+    abstract protected void processLine(CsvReader.Row line, Population population, PopulationFactory populationFactory) throws Exception;
 
 }

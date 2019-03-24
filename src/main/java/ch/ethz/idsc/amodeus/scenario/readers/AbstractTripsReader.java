@@ -9,8 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.matsim.api.core.v01.Coord;
@@ -56,8 +54,9 @@ public abstract class AbstractTripsReader extends CsvReader {
                         getDistance(line), getWaitingTime(line), pickupTime, dropoffTime);
                 return trip;
             } catch (Exception e) {
-                System.err.println("discard trip " + tripId + ": [" + IntStream.range(0, headers.size()).mapToObj(i -> //
-                headers.get(i) + "=" + line[i]).collect(Collectors.joining(", ")) + "]");
+                // TODO
+                // System.err.println("discard trip " + tripId + ": [" + IntStream.range(0, headers().size()).mapToObj(i -> //
+                // headers.get(i) + "=" + line[i]).collect(Collectors.joining(", ")) + "]");
                 return null;
             }
         }).filter(Objects::nonNull);
@@ -67,19 +66,19 @@ public abstract class AbstractTripsReader extends CsvReader {
         return taxiIds.size();
     }
 
-    public abstract String getTaxiCode(String[] line);
+    public abstract String getTaxiCode(CsvReader.Row line);
 
-    public abstract LocalDateTime getStartTime(String[] line) throws ParseException;
+    public abstract LocalDateTime getStartTime(CsvReader.Row line) throws ParseException;
 
-    public abstract LocalDateTime getEndTime(String[] line) throws ParseException;
+    public abstract LocalDateTime getEndTime(CsvReader.Row line) throws ParseException;
 
-    public abstract Coord getPickupLocation(String[] line);
+    public abstract Coord getPickupLocation(CsvReader.Row line);
 
-    public abstract Coord getDropoffLocation(String[] line);
+    public abstract Coord getDropoffLocation(CsvReader.Row line);
 
-    public abstract Scalar getDuration(String[] line);
+    public abstract Scalar getDuration(CsvReader.Row line);
 
-    public abstract Scalar getDistance(String[] line);
+    public abstract Scalar getDistance(CsvReader.Row line);
 
-    public abstract Scalar getWaitingTime(String[] line);
+    public abstract Scalar getWaitingTime(CsvReader.Row line);
 }
