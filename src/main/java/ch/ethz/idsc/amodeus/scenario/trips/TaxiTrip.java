@@ -8,6 +8,7 @@ import org.matsim.api.core.v01.Coord;
 import ch.ethz.idsc.amodeus.scenario.time.Duration;
 import ch.ethz.idsc.amodeus.scenario.time.LocalDateTimes;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.qty.Quantity;
@@ -61,7 +62,7 @@ public class TaxiTrip implements Comparable<TaxiTrip> {
             Scalar distance, Scalar waitTime, //
             LocalDateTime pickupDate, Scalar duration) {
         try {
-            GlobalAssert.that(Scalars.lessEquals(Quantity.of(0, "s"), duration));
+            GlobalAssert.that(Scalars.lessEquals(Quantity.of(0, SI.SECOND), duration));
             return new TaxiTrip(id, taxiId, pickupLoc, dropoffLoc, //
                     distance, waitTime, //
                     pickupDate, LocalDateTimes.addTo(pickupDate, duration), duration);

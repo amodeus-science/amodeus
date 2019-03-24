@@ -12,7 +12,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.shared.Compatibility;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
-import ch.ethz.idsc.amodeus.routing.CashedNetworkTimeDistance;
+import ch.ethz.idsc.amodeus.routing.CachedNetworkTimeDistance;
 import ch.ethz.idsc.amodeus.routing.NetworkTimeDistInterface;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Scalar;
@@ -28,7 +28,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     private Scalar optimalLength;
     private Scalar originalLength;
 
-    public InsertionCheck(CashedNetworkTimeDistance distance, NetworkTimeDistInterface travelTimeCashed, //
+    public InsertionCheck(CachedNetworkTimeDistance distance, NetworkTimeDistInterface travelTimeCashed, //
             RoboTaxi roboTaxi, AVRequest request, Scalar pickupDelayMax, Scalar drpoffDelayMax, double timeNow) {
         this.roboTaxi = roboTaxi;
         this.request = request;

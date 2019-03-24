@@ -1,77 +1,64 @@
-/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.scenario.readers;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+/** first line in csv file must consist of header names */
+public final class CsvReader {
+    private final File file;
+    private final String delim;
+    private final Map<String, Integer> headers = new HashMap<>();
 
-// TODO remove
-@Deprecated // surely we have this implemented somewhere...
-public class CsvReader {
-    private File file;
-    private String delim;
-
-    protected List<String> headers = new ArrayList<>();
-
-    protected final DateTimeFormatter format;
-
-    public CsvReader(String delim, DateTimeFormatter format) {
-        this.delim = delim;
-        this.format = format;
-    }
-
-    public void read(File file) {
+    public CsvReader(File file, String delim) throws FileNotFoundException, IOException {
         this.file = file;
-        readHeaders();
-    }
-
-    private void readHeaders() {
+        this.delim = delim;
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
-            String line;
-            if ((line = bufferedReader.readLine()) != null)
-                headers = Arrays.asList(line.split(delim));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public String[] getRow(int row) {
-        GlobalAssert.that(!headers.isEmpty());
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
-            String line;
-            int index = -1;
-            while ((line = bufferedReader.readLine()) != null) {
-                GlobalAssert.that(index <= row);
-                if (index == row)
-                    return line.split(delim);
-                index++;
+            String line = bufferedReader.readLine();
+            if (Objects.nonNull(line)) {
+                String[] splits = line.split(delim);
+                IntStream.range(0, splits.length).forEach(index -> headers.put(splits[index], index));
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-        return null;
     }
 
-    public String get(String[] row, String key) {
-        GlobalAssert.that(headers.contains(key));
-        return row[headers.indexOf(key)];
+    public Stream<Row> rows() throws IOException {
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
+            return bufferedReader.lines().skip(1).map(line -> new Row(line.split(delim)));
+        }
     }
 
-    public String get(int row, String key) {
-        return get(getRow(row), key);
+    public Collection<String> headers() {
+        return Collections.unmodifiableCollection(headers.keySet());
     }
 
-    public Stream<String[]> lines() throws IOException {
-        GlobalAssert.that(file.isFile());
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-        return bufferedReader.lines().skip(1).map(line -> line.split(delim));
+    public class Row {
+        private final String[] row;
+
+        private Row(String[] row) {
+            this.row = row;
+        }
+
+        /** @param key
+         * @return
+         * @throws Exception if key is not an element in the header row */
+        public String get(String key) {
+            return row[headers.get(key)];
+        }
+
+        public String get(int col) {
+            return row[col];
+        }
+
     }
 }
