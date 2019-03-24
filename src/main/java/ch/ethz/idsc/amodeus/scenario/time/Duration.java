@@ -3,6 +3,7 @@ package ch.ethz.idsc.amodeus.scenario.time;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
+import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.qty.Quantity;
 
@@ -17,7 +18,7 @@ public enum Duration {
                     + ": cannot compute duration.");
         long sec1 = ldt1.toEpochSecond(ZoneOffset.of("Z"));
         long sec2 = ldt2.toEpochSecond(ZoneOffset.of("Z"));
-        return Quantity.of(sec2 - sec1, "s");
+        return Quantity.of(sec2 - sec1, SI.SECOND);
     }
 
 }

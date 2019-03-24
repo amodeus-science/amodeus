@@ -10,6 +10,7 @@ import java.util.Date;
 
 import org.matsim.api.core.v01.Coord;
 
+import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.qty.Quantity;
 
@@ -43,7 +44,7 @@ public class OnlineTripsReaderChicago extends ChicagoTripsReaderBasic {
 
     @Override
     public Scalar getDuration(String[] line) {
-        return Quantity.of(Long.valueOf(get(line, "trip_seconds")), "s");
+        return Quantity.of(Long.valueOf(get(line, "trip_seconds")), SI.SECOND);
     }
 
     public static void main(String[] args) throws ParseException {

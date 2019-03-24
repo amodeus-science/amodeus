@@ -3,6 +3,7 @@ package ch.ethz.idsc.amodeus.scenario.chicago;
 import java.time.format.DateTimeFormatter;
 
 import ch.ethz.idsc.amodeus.scenario.readers.AbstractTripsReader;
+import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.qty.Quantity;
 
@@ -21,7 +22,7 @@ public abstract class ChicagoTripsReaderBasic extends AbstractTripsReader {
 
     @Override
     public final Scalar getDistance(String[] line) {
-        return Quantity.of(Double.valueOf(get(line, "trip_miles")) * milesToM, "m"); // miles to meters
+        return Quantity.of(Double.valueOf(get(line, "trip_miles")) * milesToM, SI.METER); // miles to meters
     }
 
     @Override

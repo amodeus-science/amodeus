@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter;
 
 import org.matsim.api.core.v01.Coord;
 
+import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.qty.Quantity;
 
@@ -40,7 +41,7 @@ public class TripsReaderChicago extends ChicagoTripsReaderBasic {
 
     @Override
     public Scalar getDuration(String[] line) {
-        return Quantity.of(Long.valueOf(get(line, "Trip Seconds")), "s");
+        return Quantity.of(Long.valueOf(get(line, "Trip Seconds")), SI.SECOND);
     }
 
 }

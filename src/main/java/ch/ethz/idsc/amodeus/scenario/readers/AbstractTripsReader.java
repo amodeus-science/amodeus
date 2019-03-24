@@ -18,6 +18,7 @@ import org.matsim.api.core.v01.Coord;
 
 import ch.ethz.idsc.amodeus.scenario.time.Duration;
 import ch.ethz.idsc.amodeus.scenario.trips.TaxiTrip;
+import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.qty.Quantity;
@@ -47,7 +48,7 @@ public abstract class AbstractTripsReader extends CsvReader {
                 Scalar durationCompute = Duration.between(pickupTime, dropoffTime);
                 Scalar durationDataset = getDuration(line);
 
-                if (Scalars.lessEquals(Quantity.of(0.1, "s"), Norm._2.of(durationDataset.subtract(durationCompute))))
+                if (Scalars.lessEquals(Quantity.of(0.1, SI.SECOND), Norm._2.of(durationDataset.subtract(durationCompute))))
                     System.err.println("Mismatch between duration recorded in data and computed duration," + //
                     "computed duration using start and end time: " + //
                     pickupTime + " --> " + dropoffTime + " != " + durationDataset);

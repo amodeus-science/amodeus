@@ -6,6 +6,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.routing.NetworkTimeDistInterface;
+import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.qty.Quantity;
@@ -17,7 +18,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
             NetworkTimeDistInterface travelTimeCashed, RoboTaxi roboTaxi, //
             Scalar pickupDelayMax, Scalar drpoffDelayMax) {
         boolean timeComp = true;
-        Scalar timePrev = Quantity.of(timeNow, "s");
+        Scalar timePrev = Quantity.of(timeNow, SI.SECOND);
         for (int k = 0; k < newMenu.size(); ++k) {
             SharedCourse course = newMenu.get(k);
             Scalar travelTime = travelTimeCashed.travelTime(roboTaxi.getLastKnownLocation(), course.getLink(), timeNow);
