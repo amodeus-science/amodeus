@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 
 import org.matsim.api.core.v01.Coord;
 
+import ch.ethz.idsc.amodeus.scenario.readers.CsvReader.Row;
 import ch.ethz.idsc.amodeus.scenario.time.Duration;
 import ch.ethz.idsc.amodeus.scenario.trips.TaxiTrip;
 import ch.ethz.idsc.amodeus.util.math.SI;
@@ -21,37 +22,37 @@ import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.red.Norm;
 
-public abstract class AbstractTripsReader extends CsvReader {
-    private Map<String, Integer> taxiIds = new HashMap<>();
+public abstract class AbstractTripsReader {
+    private final String delim;
+    private final Map<String, Integer> taxiIds = new HashMap<>();
 
     public AbstractTripsReader(String delim) {
-        super(delim);
+        this.delim = delim;
     }
 
     public Stream<TaxiTrip> getTripStream(File file) throws IOException {
-        read(file);
         final AtomicInteger tripIds = new AtomicInteger(0);
-        return lines().map(line -> {
+        return new CsvReader(file, delim).rows().map(row -> {
             int tripId = tripIds.getAndIncrement();
             if (tripId % 1000 == 0)
                 System.out.println("trips: " + tripId);
             try {
-                String taxiCode = getTaxiCode(line);
+                String taxiCode = getTaxiCode(row);
                 int taxiId = taxiIds.getOrDefault(taxiCode, taxiIds.size());
                 taxiIds.put(taxiCode, taxiId);
 
-                LocalDateTime pickupTime = getStartTime(line);
-                LocalDateTime dropoffTime = getEndTime(line);
+                LocalDateTime pickupTime = getStartTime(row);
+                LocalDateTime dropoffTime = getEndTime(row);
                 Scalar durationCompute = Duration.between(pickupTime, dropoffTime);
-                Scalar durationDataset = getDuration(line);
+                Scalar durationDataset = getDuration(row);
 
                 if (Scalars.lessEquals(Quantity.of(0.1, SI.SECOND), Norm._2.of(durationDataset.subtract(durationCompute))))
                     System.err.println("Mismatch between duration recorded in data and computed duration," + //
                     "computed duration using start and end time: " + //
                     pickupTime + " --> " + dropoffTime + " != " + durationDataset);
 
-                TaxiTrip trip = TaxiTrip.of(tripId, Integer.toString(taxiId), getPickupLocation(line), getDropoffLocation(line), //
-                        getDistance(line), getWaitingTime(line), pickupTime, dropoffTime);
+                TaxiTrip trip = TaxiTrip.of(tripId, Integer.toString(taxiId), getPickupLocation(row), getDropoffLocation(row), //
+                        getDistance(row), getWaitingTime(row), pickupTime, dropoffTime);
                 return trip;
             } catch (Exception e) {
                 // TODO
@@ -66,19 +67,19 @@ public abstract class AbstractTripsReader extends CsvReader {
         return taxiIds.size();
     }
 
-    public abstract String getTaxiCode(CsvReader.Row line);
+    public abstract String getTaxiCode(Row row);
 
-    public abstract LocalDateTime getStartTime(CsvReader.Row line) throws ParseException;
+    public abstract LocalDateTime getStartTime(Row row) throws ParseException;
 
-    public abstract LocalDateTime getEndTime(CsvReader.Row line) throws ParseException;
+    public abstract LocalDateTime getEndTime(Row row) throws ParseException;
 
-    public abstract Coord getPickupLocation(CsvReader.Row line);
+    public abstract Coord getPickupLocation(Row row);
 
-    public abstract Coord getDropoffLocation(CsvReader.Row line);
+    public abstract Coord getDropoffLocation(Row row);
 
-    public abstract Scalar getDuration(CsvReader.Row line);
+    public abstract Scalar getDuration(Row row);
 
-    public abstract Scalar getDistance(CsvReader.Row line);
+    public abstract Scalar getDistance(Row row);
 
-    public abstract Scalar getWaitingTime(CsvReader.Row line);
+    public abstract Scalar getWaitingTime(Row row);
 }

@@ -10,7 +10,7 @@ import java.util.Date;
 
 import org.matsim.api.core.v01.Coord;
 
-import ch.ethz.idsc.amodeus.scenario.readers.CsvReader;
+import ch.ethz.idsc.amodeus.scenario.readers.CsvReader.Row;
 import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.qty.Quantity;
@@ -23,29 +23,29 @@ public class OnlineTripsReaderChicago extends ChicagoTripsReaderBasic {
     }
 
     @Override
-    public LocalDateTime getStartTime(CsvReader.Row line) throws ParseException {
+    public LocalDateTime getStartTime(Row line) throws ParseException {
         return LocalDateTime.parse(line.get("trip_start_timestamp"), format);
     }
 
     @Override
-    public LocalDateTime getEndTime(CsvReader.Row line) throws ParseException {
+    public LocalDateTime getEndTime(Row line) throws ParseException {
         return LocalDateTime.parse(line.get("trip_end_timestamp"), format);
     }
 
     @Override
-    public Coord getPickupLocation(CsvReader.Row line) {
+    public Coord getPickupLocation(Row line) {
         return new Coord(Double.valueOf(line.get("pickup_centroid_longitude")), //
                 Double.valueOf(line.get("pickup_centroid_latitude")));
     }
 
     @Override
-    public Coord getDropoffLocation(CsvReader.Row line) {
+    public Coord getDropoffLocation(Row line) {
         return new Coord(Double.valueOf(line.get("dropoff_centroid_longitude")), //
                 Double.valueOf(line.get("dropoff_centroid_latitude")));
     }
 
     @Override
-    public Scalar getDuration(CsvReader.Row line) {
+    public Scalar getDuration(Row line) {
         return Quantity.of(Long.valueOf(line.get("trip_seconds")), SI.SECOND);
     }
 

@@ -32,8 +32,8 @@ public abstract class AbstractDataCleaner<T> {
         return outFile;
     }
 
-    abstract Stream<T> readFile(File file) throws IOException;
+    public abstract Stream<T> readFile(File file) throws IOException;
 
-    abstract File writeFile(File inFile, Stream<T> stream) throws IOException;
+    public abstract File writeFile(File inFile, Stream<T> stream) throws IOException;
 
 }

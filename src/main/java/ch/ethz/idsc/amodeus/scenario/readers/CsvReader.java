@@ -1,4 +1,4 @@
-/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.scenario.readers;
 
 import java.io.BufferedReader;
@@ -14,17 +14,15 @@ import java.util.Objects;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public class CsvReader {
-    private File file;
+/** first line in csv file must consist of header names */
+public final class CsvReader {
+    private final File file;
     private final String delim;
     private final Map<String, Integer> headers = new HashMap<>();
 
-    public CsvReader(String delim) {
-        this.delim = delim;
-    }
-
-    public void read(File file) throws FileNotFoundException, IOException {
+    public CsvReader(File file, String delim) throws FileNotFoundException, IOException {
         this.file = file;
+        this.delim = delim;
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
             String line = bufferedReader.readLine();
             if (Objects.nonNull(line)) {
@@ -34,7 +32,7 @@ public class CsvReader {
         }
     }
 
-    public Stream<Row> lines() throws IOException {
+    public Stream<Row> rows() throws IOException {
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
             return bufferedReader.lines().skip(1).map(line -> new Row(line.split(delim)));
         }
@@ -47,10 +45,13 @@ public class CsvReader {
     public class Row {
         private final String[] row;
 
-        Row(String[] row) {
+        private Row(String[] row) {
             this.row = row;
         }
 
+        /** @param key
+         * @return
+         * @throws Exception if key is not an element in the header row */
         public String get(String key) {
             return row[headers.get(key)];
         }

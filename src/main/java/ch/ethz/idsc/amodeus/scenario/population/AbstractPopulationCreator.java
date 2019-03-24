@@ -56,9 +56,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         PopulationFactory populationFactory = population.getFactory();
 
         // Population creation (iterate trough all id's)
-        CsvReader reader = new CsvReader(",");
-        reader.read(inFile);
-        reader.lines().forEachOrdered(row -> {
+        new CsvReader(inFile, ",").rows().forEachOrdered(row -> {
             try {
                 processLine(row, population, populationFactory);
             } catch (Exception e) {
