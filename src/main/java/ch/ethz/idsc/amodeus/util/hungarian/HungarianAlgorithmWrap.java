@@ -13,6 +13,8 @@ public enum HungarianAlgorithmWrap {
     }
 
     public static int[] matching(double[][] distancematrix, double eps) {
+        System.out.println("distanceMatrix: " +  distancematrix.length);       
+        System.exit(1);
         try {
             FastHungarianAlgorithm fastHungarianAlgorithm = new FastHungarianAlgorithm(distancematrix, eps);
             return fastHungarianAlgorithm.execute();
