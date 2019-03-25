@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -16,6 +17,7 @@ import javax.swing.JCheckBox;
 
 import org.matsim.api.core.v01.Coord;
 
+import ch.ethz.idsc.amodeus.dispatcher.core.RequestStatus;
 import ch.ethz.idsc.amodeus.net.OsmLink;
 import ch.ethz.idsc.amodeus.net.RequestContainer;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
@@ -143,7 +145,9 @@ public class RequestsLayer extends ViewerLayer {
     @Override
     protected void hud(Graphics2D graphics, SimulationObject ref) {
         if (ref != null) {
-            InfoString infoString = new InfoString(String.format("%5d %s", ref.requests.size(), "open requests"));
+            // InfoString infoString = new InfoString(String.format("%5d %s", ref.requests.size(), "open requests"));
+            InfoString infoString = new InfoString(String.format("%5d %s", //
+                    ref.requests.stream().filter(rc -> isUnserved(rc.requestStatus)).count(), "open requests"));
             infoString.color = Color.BLACK; // new Color(204, 122, 0);
             amodeusComponent.append(infoString);
         }
@@ -230,6 +234,16 @@ public class RequestsLayer extends ViewerLayer {
         requestHeatMap.setColorSchemes(settings.sourceColorSchemes);
         requestDestMap.setShow(settings.sinkShow);
         requestDestMap.setColorSchemes(settings.sinkColorSchemes);
+    }
+
+    private static boolean isUnserved(Collection<RequestStatus> statii) {
+        boolean unserved = false;
+        for (RequestStatus status : statii) {
+            if (status.isUnserved())
+                unserved = true;
+            break;
+        }
+        return unserved;
     }
 
 }
