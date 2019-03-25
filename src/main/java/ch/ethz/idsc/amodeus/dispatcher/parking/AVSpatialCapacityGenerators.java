@@ -2,6 +2,7 @@
 package ch.ethz.idsc.amodeus.dispatcher.parking;
 
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.api.core.v01.population.Population;
 
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
@@ -9,13 +10,13 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 public enum AVSpatialCapacityGenerators implements AVSpatialCapacityGenerator {
     NONE {
         @Override
-        public AVSpatialCapacityAmodeus generate(Network network) {
+        public AVSpatialCapacityAmodeus generate(Network network, Population population) {
             return new AVSpatialCapacityInfinity(network);
         }
     },
     NETWORKBASED {
         @Override
-        public AVSpatialCapacityAmodeus generate(Network network) {
+        public AVSpatialCapacityAmodeus generate(Network network, Population population) {
             GlobalAssert.that(scenarioOptions != null);
             return new AVSpatialCapacityFromNetworkAndIdentifier(network, scenarioOptions.getParkingSpaceTagInNetwork());
         }

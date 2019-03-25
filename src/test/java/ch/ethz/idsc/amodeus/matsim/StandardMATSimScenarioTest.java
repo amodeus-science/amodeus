@@ -60,9 +60,10 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.prep.MatsimKMeansVirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.test.TestFileHandling;
-import ch.ethz.idsc.amodeus.testutils.TestUtils;
 import ch.ethz.idsc.amodeus.traveldata.StaticTravelDataCreator;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
+import ch.ethz.idsc.amodeus.util.io.LocateUtils;
+import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.matsim.av.config.AVConfig;
@@ -82,9 +83,21 @@ public class StandardMATSimScenarioTest {
         // working properly
 
         // ATTENTION: DriveByDispatcher is not tested, because of long runtime.
-        return Arrays.asList(new Object[][] { { "SingleHeuristic" }, { "DemandSupplyBalancingDispatcher" }, { "GlobalBipartiteMatchingDispatcher" },
-                // { "AdaptiveRealTimeRebalancingPolicy" }, // TODO TEST @Sebastian, is the input data correct? LP fails sometimes, (depening on order)
-                { "FeedforwardFluidicRebalancingPolicy" }, { "DynamicRideSharingStrategy" }, { "FirstComeFirstServedStrategy" }, { "ExtDemandSupplyBeamSharing" } });
+        return Arrays.asList(new Object[][] { //
+                { "SingleHeuristic" }, //
+                { "DemandSupplyBalancingDispatcher" }, //
+                { "GlobalBipartiteMatchingDispatcher" }, //
+                { "FeedforwardFluidicRebalancingPolicy" }, //
+                { "AdaptiveRealTimeRebalancingPolicy" }, //
+                { "ExtDemandSupplyBeamSharing" }, //
+                { "TShareDispatcher" } //
+        });
+
+        // TODO add these and all other missing strategies again:
+        // { "FirstComeFirstServedStrategy" }
+        // { "DynamicRideSharingStrategy" }
+        // { "HighCapacityDispatcher" }
+
     }
 
     final private String dispatcher;
@@ -160,8 +173,8 @@ public class StandardMATSimScenarioTest {
     @BeforeClass
     public static void setUp() throws IOException {
         // copy scenario data into main directory
-        File scenarioDirectory = new File(TestUtils.getSuperFolder("amodeus"), "resources/testScenario");
-        File workingDirectory = TestUtils.getWorkingDirectory();
+        File scenarioDirectory = new File(LocateUtils.getSuperFolder("amodeus"), "resources/testScenario");
+        File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         GlobalAssert.that(workingDirectory.isDirectory());
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
     }
@@ -177,7 +190,7 @@ public class StandardMATSimScenarioTest {
         Config config = ConfigUtils.createConfig(new AVConfigGroup(), new DvrpConfigGroup());
         Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
 
-        File workingDirectory = TestUtils.getWorkingDirectory();
+        File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         ScenarioOptions simOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
         LocationSpec locationSpec = simOptions.getLocationSpec();
         ReferenceFrame referenceFrame = locationSpec.referenceFrame();

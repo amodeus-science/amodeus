@@ -2,6 +2,7 @@
 package ch.ethz.idsc.amodeus.dispatcher.parking;
 
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.controler.AbstractModule;
 
 import com.google.inject.Provides;
@@ -24,9 +25,9 @@ public class AVSpatialCapacityModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public AVSpatialCapacityAmodeus provideAVSpatialCapacity(Network network) {
+    public AVSpatialCapacityAmodeus provideAVSpatialCapacity(Network network, Population population) {
         try {
-            return loadSpatialCapacity(network, scenarioOptions);
+            return loadSpatialCapacity(network, population, scenarioOptions);
         } catch (Exception exception) {
             System.err.println("We could not load the Spatial Capacity of all the Links");
             exception.printStackTrace();
@@ -35,8 +36,9 @@ public class AVSpatialCapacityModule extends AbstractModule {
         return null;
     }
 
-    private static AVSpatialCapacityAmodeus loadSpatialCapacity(Network network, ScenarioOptions scenarioOptions) {
-        return scenarioOptions.getParkingCapacityGenerator().generate(network);
+    private static AVSpatialCapacityAmodeus loadSpatialCapacity( //
+            Network network, Population population, ScenarioOptions scenarioOptions) {
+        return scenarioOptions.getParkingCapacityGenerator().generate(network, population);
     }
 
 }

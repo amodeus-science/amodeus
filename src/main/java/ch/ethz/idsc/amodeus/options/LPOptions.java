@@ -35,13 +35,13 @@ public class LPOptions {
         properties.setProperty(key, value);
     }
 
-    public void saveAndOverwriteLPOptions() throws IOException {
-        LPOptionsBase.saveProperties(workingDirectory, properties);
+    public void saveAndOverwriteLPOptions() {
+        LPOptionsBase.savePropertiesToDirectory(workingDirectory, properties);
     }
 
-    public void saveToFolder(File folder, String header) throws IOException {
-        File file = new File(folder, LPOptionsBase.getOptionsFileName());
-        LPOptionsBase.saveProperties(properties, file, header);
+    public void saveToFolder(File folder, String header) {
+        File file = new File(folder, LPOptionsBase.OPTIONSFILENAME);
+        LPOptionsBase.savePropertiesToFileWithHeader(properties, file, header);
     }
 
     public double getLPWeightQ() {

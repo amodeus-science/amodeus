@@ -6,6 +6,10 @@ import org.matsim.core.router.FastAStarEuclideanFactory;
 import org.matsim.core.router.FastAStarLandmarksFactory;
 import org.matsim.core.router.FastDijkstraFactory;
 
+import ch.ethz.idsc.amodeus.routing.DistanceFunction;
+import ch.ethz.idsc.amodeus.routing.EuclideanDistanceFunction;
+import ch.ethz.idsc.amodeus.routing.NetworkMinTimeDistanceFunction;
+
 public enum DistanceHeuristics {
     EUCLIDEAN {
         @Override

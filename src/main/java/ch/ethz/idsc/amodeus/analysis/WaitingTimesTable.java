@@ -27,9 +27,8 @@ public enum WaitingTimesTable implements AnalysisExport {
         try {
             UnitSaveUtils.saveFile(tableBuilder.toTable(), identifier, relativeDirectory);
             File dataFolder = new File(relativeDirectory, identifier);
-            SaveFormats.CSV.save(
-                    Tensors.fromString("time step, " + Quantiles.LBL[0] + ", " //
-                            + Quantiles.LBL[1] + ", " + Quantiles.LBL[2] + ", mean wait time"), //
+            SaveFormats.CSV.save(Tensors.fromString("time step, " + Quantiles.LBL[0] + ", " //
+                    + Quantiles.LBL[1] + ", " + Quantiles.LBL[2] + ", mean wait time"), //
                     dataFolder, "description");
         } catch (Exception e) {
             e.printStackTrace();
