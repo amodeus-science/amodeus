@@ -28,9 +28,8 @@ public enum DistancesOverDayTable implements AnalysisExport {
         try {
             UnitSaveUtils.saveFile(tableBuilder.toTable(), identifier, relativeDirectory);
             File dataFolder = new File(relativeDirectory, identifier);
-            SaveFormats.CSV.save(
-                    Tensors.fromString("time step, total distance, distance with customer, "//
-                            + "pickup distance, rebalancing distance, distance ratio"), //
+            SaveFormats.CSV.save(Tensors.fromString("time step, total distance, distance with customer, "//
+                    + "pickup distance, rebalancing distance, distance ratio"), //
                     dataFolder, "description");
         } catch (Exception e) {
             e.printStackTrace();

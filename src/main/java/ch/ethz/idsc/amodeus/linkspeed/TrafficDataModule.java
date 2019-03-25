@@ -35,10 +35,7 @@ public class TrafficDataModule extends AbstractModule {
     @Singleton
     public DefaultTaxiTrafficData provideTaxiTrafficData(Network network, TravelTimeCalculatorConfigGroup config) {
         Objects.requireNonNull(config);
-        return new DefaultTaxiTrafficData( //
-                lsData, //
-                config.getTraveltimeBinSize(), //
-                network);
+        return new DefaultTaxiTrafficData(lsData, config.getTraveltimeBinSize(), network);
     }
 
     @Override
