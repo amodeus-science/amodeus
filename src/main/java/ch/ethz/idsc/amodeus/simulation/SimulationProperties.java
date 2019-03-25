@@ -64,7 +64,7 @@ public class SimulationProperties {
         GlobalAssert.that(!Objects.isNull(scenarioOptions.getLocationSpec()));
 
         // load MATSim configs - including av.xml where dispatcher is selected.
-        configFile = new File(workingDirectory, scenarioOptions.getSimulationConfigName());
+        configFile = new File(scenarioOptions.getSimulationConfigName());
         System.out.println("loading config file " + configFile.getAbsoluteFile());
         GlobalAssert.that(configFile.exists()); // Test whether the config file directory exists
 
