@@ -10,7 +10,7 @@ import org.matsim.core.router.FastAStarLandmarksFactory;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
-import ch.ethz.idsc.amodeus.routing.CashedNetworkTimeDistance;
+import ch.ethz.idsc.amodeus.routing.CachedNetworkTimeDistance;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 import ch.ethz.idsc.amodeus.routing.NetworkMinTimeDistanceFunction;
 import ch.ethz.idsc.tensor.Tensor;
@@ -38,7 +38,7 @@ public class BipartiteMatchingUtils {
     public Tensor executeCached(UniversalDispatcher universalDispatcher, //
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
             Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
-            CashedNetworkTimeDistance distanceCashed, Network network, double now) {
+            CachedNetworkTimeDistance distanceCashed, Network network, double now) {
         // time irrelevant for this call
         return executeGeneralPickup(universalDispatcher, roboTaxis, requests, null, distanceCashed, network, now, true);
     }
@@ -46,7 +46,7 @@ public class BipartiteMatchingUtils {
     private Tensor executeGeneralPickup(UniversalDispatcher universalDispatcher, //
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
             Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
-            DistanceFunction distanceFunction, CashedNetworkTimeDistance distanceCashed, Network network, double time, boolean cached) {
+            DistanceFunction distanceFunction, CachedNetworkTimeDistance distanceCashed, Network network, double time, boolean cached) {
         Tensor infoLine = Tensors.empty();
 
         Map<RoboTaxi, AVRequest> gbpMatchCleaned = cached ? //
@@ -79,7 +79,7 @@ public class BipartiteMatchingUtils {
     public Map<RoboTaxi, AVRequest> getGBPMatchCached(UniversalDispatcher universalDispatcher, //
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
             Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
-            CashedNetworkTimeDistance distanceCashed, Network network, double now) {
+            CachedNetworkTimeDistance distanceCashed, Network network, double now) {
 
         /** reduction of problem size with kd-tree, helps to downsize problems where n << m or m>> n
          * for n number of available taxis and m number of available requests */
