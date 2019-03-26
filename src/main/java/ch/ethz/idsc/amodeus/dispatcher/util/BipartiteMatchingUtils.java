@@ -10,6 +10,7 @@ import org.matsim.core.router.FastAStarLandmarksFactory;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
+import ch.ethz.idsc.amodeus.routing.CachedNetworkTimeDistance;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 import ch.ethz.idsc.amodeus.routing.NetworkMinTimeDistanceFunction;
 import ch.ethz.idsc.tensor.Tensor;
@@ -29,9 +30,28 @@ public class BipartiteMatchingUtils {
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
             Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
             DistanceFunction distanceFunction, Network network) {
+        // time irrelevant for this call
+        return executeGeneralPickup(universalDispatcher, roboTaxis, requests, distanceFunction, null, network, -10.0, false);
+
+    }
+
+    public Tensor executeCached(UniversalDispatcher universalDispatcher, //
+            Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
+            Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
+            CachedNetworkTimeDistance distanceCashed, Network network, double now) {
+        // time irrelevant for this call
+        return executeGeneralPickup(universalDispatcher, roboTaxis, requests, null, distanceCashed, network, now, true);
+    }
+
+    private Tensor executeGeneralPickup(UniversalDispatcher universalDispatcher, //
+            Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
+            Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
+            DistanceFunction distanceFunction, CachedNetworkTimeDistance distanceCashed, Network network, double time, boolean cached) {
         Tensor infoLine = Tensors.empty();
 
-        Map<RoboTaxi, AVRequest> gbpMatchCleaned = getGBPMatch(universalDispatcher, roboTaxis, requests, distanceFunction, network);
+        Map<RoboTaxi, AVRequest> gbpMatchCleaned = cached ? //
+                getGBPMatchCached(universalDispatcher, roboTaxis, requests, distanceCashed, network, time) : //
+                getGBPMatch(universalDispatcher, roboTaxis, requests, distanceFunction, network);
 
         /** perform dispatching */
         for (Entry<RoboTaxi, AVRequest> entry : gbpMatchCleaned.entrySet())
@@ -55,4 +75,17 @@ public class BipartiteMatchingUtils {
 
         return gbpMatchCleaned;
     }
+
+    public Map<RoboTaxi, AVRequest> getGBPMatchCached(UniversalDispatcher universalDispatcher, //
+            Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
+            Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
+            CachedNetworkTimeDistance distanceCashed, Network network, double now) {
+
+        /** reduction of problem size with kd-tree, helps to downsize problems where n << m or m>> n
+         * for n number of available taxis and m number of available requests */
+        Map<RoboTaxi, AVRequest> gbpMatch = ((new GlobalBipartiteMatchingCached(distanceCashed)).match(roboTaxis, requests, now));
+
+        return gbpMatch;
+    }
+
 }
