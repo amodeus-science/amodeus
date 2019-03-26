@@ -16,16 +16,18 @@ import ch.ethz.idsc.amodeus.scenario.readers.AbstractTripsReader;
 import ch.ethz.idsc.amodeus.scenario.trips.TaxiTrip;
 
 public class TripDataCleaner extends AbstractDataCleaner<TaxiTrip> {
-    private final AbstractTripsReader reader;
+    private final AbstractTripsReader abstractTripsReader;
 
-    public TripDataCleaner(AbstractTripsReader reader) {
-        this.reader = reader;
+    public TripDataCleaner(AbstractTripsReader abstractTripsReader) {
+        this.abstractTripsReader = abstractTripsReader;
     }
 
+    @Override // from AbstractDataCleaner
     public Stream<TaxiTrip> readFile(File file) throws IOException {
-        return reader.getTripStream(file);
+        return abstractTripsReader.getTripStream(file);
     }
 
+    @Override // from AbstractDataCleaner
     public File writeFile(File inFile, Stream<TaxiTrip> stream) throws IOException {
         String fileName = FilenameUtils.getBaseName(inFile.getPath()) + "_clean." + FilenameUtils.getExtension(inFile.getPath());
         File outFile = new File(inFile.getParentFile(), fileName);

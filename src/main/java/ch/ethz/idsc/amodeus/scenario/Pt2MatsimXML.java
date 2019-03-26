@@ -11,7 +11,6 @@ import org.jdom.Element;
 import ch.ethz.idsc.amodeus.matsim.xml.XmlModifier;
 
 public class Pt2MatsimXML {
-    ;
 
     public static void toLocalFileSystem(File xmlFile, String systemSpecificPath) throws Exception {
 

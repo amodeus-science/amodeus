@@ -35,51 +35,50 @@ public class ScenarioOptions {
         properties.setProperty(key, value);
     }
 
-    public void saveAndOverwriteAmodeusOptions() throws IOException {
+    public void saveAndOverwriteAmodeusOptions() {
         ScenarioOptionsBase.savePropertiesToDirectory(workingDirectory, properties);
     }
 
-    public void saveToFolder(File folder, String header) throws IOException {
+    public void saveToFolder(File folder, String header) {
         File file = new File(folder, ScenarioOptionsBase.OPTIONSFILENAME);
         ScenarioOptionsBase.savePropertiesToFileWithHeader(properties, file, header);
     }
 
     // specific access functions ==============================================
-    public String getOutputDirectory(Config config){
+    public String getOutputDirectory(Config config) {
         return new File(workingDirectory, config.controler().getOutputDirectory()).getAbsolutePath();
     }
-    
-    
+
     public String getSimulationConfigName() {
-        return new File(workingDirectory,getString(ScenarioOptionsBase.SIMUCONFIGIDENTIFIER)).getAbsolutePath();
+        return new File(workingDirectory, getString(ScenarioOptionsBase.SIMUCONFIGIDENTIFIER)).getAbsolutePath();
     }
 
     public String getPreparerConfigName() {
-        return new File(workingDirectory,getString(ScenarioOptionsBase.FULLCONFIGIDENTIFIER)).getAbsolutePath();
+        return new File(workingDirectory, getString(ScenarioOptionsBase.FULLCONFIGIDENTIFIER)).getAbsolutePath();
     }
 
     public String getVirtualNetworkDirectoryName() {
-        return new File(workingDirectory,getString(ScenarioOptionsBase.VIRTUALNETWORKNAMEIDENTIFIER)).getAbsolutePath();
+        return new File(workingDirectory, getString(ScenarioOptionsBase.VIRTUALNETWORKNAMEIDENTIFIER)).getAbsolutePath();
     }
-    
+
     public String getVirtualNetworkName() {
         return getString(ScenarioOptionsBase.VIRTUALNETWORKNAMEIDENTIFIER);
     }
-    
+
     public String getTravelDataName() {
         return getString(ScenarioOptionsBase.TRAVELDATAFILENAME);
     }
-    
+
     public String getLinkSpeedDataName() {
-        return new File(workingDirectory,getString(ScenarioOptionsBase.LINKSPEEDDATAFILENAME)).getAbsolutePath();
+        return new File(workingDirectory, getString(ScenarioOptionsBase.LINKSPEEDDATAFILENAME)).getAbsolutePath();
     }
-    
+
     public String getPreparedNetworkName() {
-        return new File(workingDirectory,getString(ScenarioOptionsBase.NETWORKUPDATEDNAMEIDENTIFIER)).getAbsolutePath();
+        return new File(workingDirectory, getString(ScenarioOptionsBase.NETWORKUPDATEDNAMEIDENTIFIER)).getAbsolutePath();
     }
-    
+
     public String getPreparedPopulationName() {
-        return new File(workingDirectory,getString(ScenarioOptionsBase.POPULATIONUPDATEDNAMEIDENTIFIER)).getAbsolutePath();
+        return new File(workingDirectory, getString(ScenarioOptionsBase.POPULATIONUPDATEDNAMEIDENTIFIER)).getAbsolutePath();
     }
 
     public int getNumVirtualNodes() {
@@ -89,7 +88,6 @@ public class ScenarioOptions {
     public boolean isCompleteGraph() {
         return getBoolean(ScenarioOptionsBase.COMPLETEGRAPHIDENTIFIER);
     }
-
 
     public String getColorScheme() {
         return getString(ScenarioOptionsBase.COLORSCHEMEIDENTIFIER);
@@ -102,7 +100,6 @@ public class ScenarioOptions {
     public int getdtTravelData() {
         return getInt(ScenarioOptionsBase.DTTRAVELDATAIDENTIFIER);
     }
-
 
     /** Hint: upcase instance of LocationSpec if necessary
      * 

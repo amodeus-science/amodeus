@@ -2,7 +2,6 @@
 package ch.ethz.idsc.amodeus.scenario.trips;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.stream.Stream;
 
 import org.matsim.api.core.v01.network.Network;
@@ -17,6 +16,7 @@ public class TripDateFilter implements DataFilter<TaxiTrip> {
         this.date = date;
     }
 
+    @Override
     public Stream<TaxiTrip> filter(Stream<TaxiTrip> stream, ScenarioOptions simOptions, Network network) {
         return stream.filter(trip -> //
         StaticHelper.sameDay(date, trip.pickupDate) && StaticHelper.sameDay(date, trip.dropoffDate));

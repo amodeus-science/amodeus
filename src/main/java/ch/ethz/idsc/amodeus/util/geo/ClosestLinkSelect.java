@@ -25,9 +25,8 @@ public class ClosestLinkSelect {
         Coord local = db.referenceFrame.coords_fromWGS84().transform(wgs84location);
         return db.getLinkIndex(qt.getClosest(local.getX(), local.getY()));
     }
-    
-    
-    public Link linkFromWGS84(Coord wgs84location){
+
+    public Link linkFromWGS84(Coord wgs84location) {
         Coord local = db.referenceFrame.coords_fromWGS84().transform(wgs84location);
         return qt.getClosest(local.getX(), local.getY());
     }

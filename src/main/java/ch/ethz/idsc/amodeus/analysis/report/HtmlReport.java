@@ -19,7 +19,7 @@ public class HtmlReport implements AnalysisReport {
     // ---
     private final File reportFolder;
     private final HtmlGenerator htmlGenerator;
-    // Storage for all the Body Elements which are filld during Runntime by Analysis Elements
+    // Storage for all the Body Elements which are filled during Runtime by Analysis Elements
     private final Map<String, HtmlBodyElement> bodyElements = new LinkedHashMap<>();
     public final List<HtmlReportElement> htmlReportElements = new LinkedList<>();
 

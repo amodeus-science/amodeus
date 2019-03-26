@@ -36,8 +36,8 @@ public class AVSpatialCapacityModule extends AbstractModule {
         return null;
     }
 
-    private static AVSpatialCapacityAmodeus loadSpatialCapacity(Network network, Population population, //
-            ScenarioOptions scenarioOptions) {
+    private static AVSpatialCapacityAmodeus loadSpatialCapacity( //
+            Network network, Population population, ScenarioOptions scenarioOptions) {
         return scenarioOptions.getParkingCapacityGenerator().generate(network, population);
     }
 

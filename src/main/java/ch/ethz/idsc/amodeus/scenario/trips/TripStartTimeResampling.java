@@ -18,6 +18,7 @@ public class TripStartTimeResampling implements DataFilter<TaxiTrip> {
         this.minuteResolution = minuteResolution;
     }
 
+    @Override
     public Stream<TaxiTrip> filter(Stream<TaxiTrip> stream, ScenarioOptions simOptions, Network network) {
         return stream.peek(trip -> {
             int offsetSec = RandomVariate.of(UniformDistribution.of(-30 * minuteResolution, 30 * minuteResolution)).number().intValue();

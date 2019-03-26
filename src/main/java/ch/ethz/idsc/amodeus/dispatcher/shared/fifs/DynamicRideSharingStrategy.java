@@ -29,7 +29,7 @@ import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
-import ch.ethz.idsc.amodeus.routing.CashedNetworkTimeDistance;
+import ch.ethz.idsc.amodeus.routing.CachedNetworkTimeDistance;
 import ch.ethz.idsc.amodeus.routing.EasyMinTimePathCalculator;
 import ch.ethz.idsc.amodeus.routing.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.routing.TimeDistanceProperty;
@@ -88,7 +88,7 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
     private static final String MAXABSOLUTETRAVELTIMEINCREASEIDENTIFIER = "maxAbsolutDriveTimeIncrease";
 
     /** Travel Time Calculation */
-    private final CashedNetworkTimeDistance timeDb;
+    private final CachedNetworkTimeDistance timeDb;
     private static final double MAXLAGTRAVELTIMECALCULATION = 180000.0;
 
     protected DynamicRideSharingStrategy(Network network, //
@@ -110,7 +110,7 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
 
         FastAStarLandmarksFactory factory = new FastAStarLandmarksFactory();
         LeastCostPathCalculator calculator = EasyMinTimePathCalculator.prepPathCalculator(network, factory);
-        timeDb = new CashedNetworkTimeDistance(calculator, MAXLAGTRAVELTIMECALCULATION, TimeDistanceProperty.INSTANCE);
+        timeDb = new CachedNetworkTimeDistance(calculator, MAXLAGTRAVELTIMECALCULATION, TimeDistanceProperty.INSTANCE);
 
         rebalancing = new BlockRebalancing(network, timeDb, MINNUMBERROBOTAXISINBLOCKTOREBALANCE, BINSIZETRAVELDEMAND, dispatchPeriod, REBALANCINGGRIDDISTANCE);
 

@@ -4,7 +4,6 @@ package ch.ethz.idsc.amodeus.scenario.trips;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
@@ -19,36 +18,33 @@ import ch.ethz.idsc.tensor.red.Median;
 import ch.ethz.idsc.tensor.red.Norm;
 
 public class TripsAnalysis {
-    private final CsvReader reader;
     private final File tripsFile;
 
-    private Set<Integer> requests = new HashSet<>();
-    private Set<Integer> taxis = new HashSet<>();
-    private Tensor distances = Tensors.empty();
-    private Tensor waitingTimes = Tensors.empty();
-    public Tensor durations = Tensors.empty();
+    private final Set<Integer> requests = new HashSet<>();
+    private final Set<Integer> taxis = new HashSet<>();
+    private final Tensor distances = Tensors.empty();
+    private final Tensor waitingTimes = Tensors.empty();
+    public final Tensor durations = Tensors.empty();
 
     public TripsAnalysis(File tripsFile) throws IOException {
         GlobalAssert.that(tripsFile.isFile());
         this.tripsFile = tripsFile;
-        this.reader = new CsvReader(",", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
-        reader.read(tripsFile);
         analyze();
     }
 
     private void analyze() throws IOException {
-        reader.lines().forEachOrdered(line -> {
-            requests.add(Integer.valueOf(reader.get(line, "Id")));
-            taxis.add(Integer.valueOf(reader.get(line, "TaxiId")));
-            distances.append(RealScalar.of(Double.valueOf(reader.get(line, "Distance")) / 1000)); // m -> km
-            String waitingTime = reader.get(line, "WaitTime");
+        new CsvReader(tripsFile, ",").rows().forEachOrdered(row -> {
+            requests.add(Integer.valueOf(row.get("Id")));
+            taxis.add(Integer.valueOf(row.get("TaxiId")));
+            distances.append(RealScalar.of(Double.valueOf(row.get("Distance")) / 1000)); // m -> km
+            String waitingTime = row.get("WaitTime");
             try {
                 waitingTimes.append(RealScalar.of(Double.valueOf(waitingTime)));
             } catch (NumberFormatException e) {
                 if (!waitingTime.equals("null"))
                     System.err.println("WARN unexpected value encountered: WaitTime = " + waitingTime);
             }
-            durations.append(RealScalar.of(Double.valueOf(reader.get(line, "Duration")) / 60)); // sec -> min
+            durations.append(RealScalar.of(Double.valueOf(row.get("Duration")) / 60)); // sec -> min
         });
     }
 

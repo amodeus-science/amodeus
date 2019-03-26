@@ -9,7 +9,7 @@ import ch.ethz.idsc.amodeus.data.ReferenceFrame;
 /* package */ enum ChicagoLocationSpecs implements LocationSpec {
     CHICAGO( //
             ChicagoReferenceFrames.CHICAGO, //
-            new Coord(-74.005, 40.712))//, // Updated), // <- no cutting
+            new Coord(-74.005, 40.712))// , // Updated), // <- no cutting
     ;
 
     private final ReferenceFrame referenceFrame;
