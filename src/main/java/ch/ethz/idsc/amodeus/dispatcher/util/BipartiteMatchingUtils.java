@@ -71,9 +71,10 @@ public class BipartiteMatchingUtils {
 
         /** prevent cycling an assignment is only updated if the new distance is smaller than the
          * old distance */
-        Map<RoboTaxi, AVRequest> gbpMatchCleaned = CyclicSolutionPreventer.apply(gbpMatch, universalDispatcher, accDstFctn);
+        // Map<RoboTaxi, AVRequest> gbpMatchCleaned = CyclicSolutionPreventer.apply(gbpMatch, universalDispatcher, accDstFctn);
 
-        return gbpMatchCleaned;
+        // return gbpMatchCleaned;
+        return gbpMatch;
     }
 
     public Map<RoboTaxi, AVRequest> getGBPMatchCached(UniversalDispatcher universalDispatcher, //
