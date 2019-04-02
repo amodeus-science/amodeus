@@ -183,15 +183,15 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
         GlobalAssert.that(robotaxi.isWithoutDirective());
         robotaxi.setStatus(status);
 
-        reRouteInternal(robotaxi, destination);
+        reRouteInternal(robotaxi, destination, false);
     }
 
     /** reroutes the {@link RoboTaxi} @param roboTaxi again using the standard {@link AVRouter} */
     protected void reRoute(RoboTaxi roboTaxi) {
-        reRouteInternal(roboTaxi, roboTaxi.getCurrentDriveDestination());
+        reRouteInternal(roboTaxi, roboTaxi.getCurrentDriveDestination(), true);
     }
 
-    private final void reRouteInternal(RoboTaxi robotaxi, Link destination) {
+    private final void reRouteInternal(RoboTaxi robotaxi, Link destination, boolean forceReroute) {
 
         /** update {@link Schedule} of {@link RoboTaxi} */
         final Schedule schedule = robotaxi.getSchedule();
@@ -199,7 +199,7 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
         new RoboTaxiTaskAdapter(task) {
             @Override
             public void handle(AVDriveTask avDriveTask) {
-                if (!avDriveTask.getPath().getToLink().equals(destination)) { // ignore when vehicle is already going there
+                if (forceReroute || !avDriveTask.getPath().getToLink().equals(destination)) { // ignore when vehicle is already going there
                     FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer( //
                             robotaxi.getDivertableLocation(), destination, robotaxi.getDivertableTime());
                     robotaxi.assignDirective(new DriveVehicleDiversionDirective(robotaxi, destination, futurePathContainer));
@@ -209,7 +209,7 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
 
             @Override
             public void handle(AVStayTask avStayTask) {
-                if (!avStayTask.getLink().equals(destination)) { // ignore request where location == target
+                if (forceReroute || !avStayTask.getLink().equals(destination)) { // ignore request where location == target
                     FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer( //
                             robotaxi.getDivertableLocation(), destination, robotaxi.getDivertableTime());
                     robotaxi.assignDirective(new StayVehicleDiversionDirective(robotaxi, destination, futurePathContainer));
