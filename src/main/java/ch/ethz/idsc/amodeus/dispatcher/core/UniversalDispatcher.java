@@ -183,6 +183,16 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
         GlobalAssert.that(robotaxi.isWithoutDirective());
         robotaxi.setStatus(status);
 
+        reRouteInternal(robotaxi, destination);
+    }
+
+    /** reroutes the {@link RoboTaxi} @param roboTaxi again using the standard {@link AVRouter} */
+    protected void reRoute(RoboTaxi roboTaxi) {
+        reRouteInternal(roboTaxi, roboTaxi.getCurrentDriveDestination());
+    }
+
+    private final void reRouteInternal(RoboTaxi robotaxi, Link destination) {
+
         /** update {@link Schedule} of {@link RoboTaxi} */
         final Schedule schedule = robotaxi.getSchedule();
         Task task = schedule.getCurrentTask();

@@ -63,7 +63,7 @@
 		<dependency>
 			<groupId>org.matsim</groupId>
 			<artifactId>pt2matsim</artifactId>
-			<version>19.1</version>
+			<version>19.2</version>
 		</dependency>
 
 		<dependency><!-- workaround since jaxb api is not part of java 9 -->
