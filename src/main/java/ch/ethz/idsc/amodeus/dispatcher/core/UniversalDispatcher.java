@@ -183,13 +183,25 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
         GlobalAssert.that(robotaxi.isWithoutDirective());
         robotaxi.setStatus(status);
 
+        routingForDiversion(robotaxi, destination, false);
+    }
+
+    /** this function will re-route the taxi if it is not in stay task (for congestion relieving purpose) */
+    protected void reRoute(RoboTaxi robotaxi) {
+        if (!robotaxi.isInStayTask())
+            routingForDiversion(robotaxi, robotaxi.getCurrentDriveDestination(), true);
+    }
+
+    // the function below is for internal use only!
+    private final void routingForDiversion(RoboTaxi robotaxi, Link destination, boolean reRoute) {
         /** update {@link Schedule} of {@link RoboTaxi} */
+        // the 3rd parameter "reRoute" is added for re-routing the taxi to avoid congestion
         final Schedule schedule = robotaxi.getSchedule();
         Task task = schedule.getCurrentTask();
         new RoboTaxiTaskAdapter(task) {
             @Override
             public void handle(AVDriveTask avDriveTask) {
-                if (!avDriveTask.getPath().getToLink().equals(destination)) { // ignore when vehicle is already going there
+                if (reRoute || !avDriveTask.getPath().getToLink().equals(destination)) { // ignore when vehicle is already going there
                     FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer( //
                             robotaxi.getDivertableLocation(), destination, robotaxi.getDivertableTime());
                     robotaxi.assignDirective(new DriveVehicleDiversionDirective(robotaxi, destination, futurePathContainer));
