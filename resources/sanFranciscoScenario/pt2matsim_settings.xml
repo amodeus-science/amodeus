@@ -37,7 +37,7 @@
 
 		<parameterset type="wayDefaultParams" >
 			<param name="allowedTransportModes" value="car" />
-			<param name="freespeed" value="33.528" />
+			<param name="freespeed" value="100" />
 			<param name="freespeedFactor" value="1.0" />
 			<param name="laneCapacity" value="2000.0" />
 			<param name="lanes" value="2.0" />
@@ -48,7 +48,7 @@
 
 		<parameterset type="wayDefaultParams" >
 			<param name="allowedTransportModes" value="car" />
-			<param name="freespeed" value="33.528" />
+			<param name="freespeed" value="100" />
 			<param name="freespeedFactor" value="1.0" />
 			<param name="laneCapacity" value="1500.0" />
 			<param name="lanes" value="1.0" />
@@ -62,7 +62,7 @@
 
 		<parameterset type="wayDefaultParams" >
 			<param name="allowedTransportModes" value="car" />
-			<param name="freespeed" value="29.0576" />
+			<param name="freespeed" value="100" />
 			<param name="freespeedFactor" value="1.0" />
 			<param name="laneCapacity" value="1500.0" />
 			<param name="lanes" value="1.0" />
@@ -74,7 +74,7 @@
 
 		<parameterset type="wayDefaultParams" >
 			<param name="allowedTransportModes" value="car" />
-			<param name="freespeed" value="24.5872" />
+			<param name="freespeed" value="100" />
 			<param name="freespeedFactor" value="1.0" />
 			<param name="laneCapacity" value="1500.0" />
 			<param name="lanes" value="1.0" />
@@ -86,7 +86,7 @@
 		<!--  Highway Trunk-->
 		<parameterset type="wayDefaultParams" >
 			<param name="allowedTransportModes" value="car" />
-			<param name="freespeed" value="24.5872" />
+			<param name="freespeed" value="100" />
 			<param name="freespeedFactor" value="1.0" />
 			<param name="laneCapacity" value="2000.0" />
 			<param name="lanes" value="2.0" />
@@ -96,7 +96,7 @@
 		</parameterset>
 		<parameterset type="wayDefaultParams" >
 			<param name="allowedTransportModes" value="car" />
-			<param name="freespeed" value="24.5872" />
+			<param name="freespeed" value="100" />
 			<param name="freespeedFactor" value="1.0" />
 			<param name="laneCapacity" value="1500.0" />
 			<param name="lanes" value="1.0" />
