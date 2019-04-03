@@ -114,17 +114,6 @@
 		</parameterset>		
 		
 		
-		<!--  Highway Residential-->
-		<parameterset type="wayDefaultParams" >
-			<param name="allowedTransportModes" value="car" />
-			<param name="freespeed" value="37.9984" />
-			<param name="freespeedFactor" value="1.0" />
-			<param name="laneCapacity" value="600.0" />
-			<param name="lanes" value="1.0" />
-			<param name="oneway" value="false" />
-			<param name="osmKey" value="highway" />
-			<param name="osmValue" value="residential" />
-		</parameterset>
 		
 
 		<!--  Highway Motorway Link-->
@@ -189,12 +178,27 @@
 			<param name="osmKey" value="highway" />
 			<param name="osmValue" value="tertiary_link" />
 		</parameterset>
-
 		
-		<!--  Highway Living Street-->
+		
+		<!--  Highway Road-->
 		<parameterset type="wayDefaultParams" >
 			<param name="allowedTransportModes" value="car" />
-			<param name="freespeed" value="37.9984" />
+			<param name="freespeed" value="200" />
+			<param name="freespeedFactor" value="1.0" />
+			<param name="laneCapacity" value="300.0" />
+			<param name="lanes" value="1.0" />
+			<param name="oneway" value="false" />
+			<param name="osmKey" value="highway" />
+			<param name="osmValue" value="road" />
+		</parameterset>
+		
+
+		
+		<!--  Highway Living Street, see https://www.visitcalifornia.com/attraction/driving-california 
+		usually it is 25 mph in residential areas-->
+		<parameterset type="wayDefaultParams" >
+			<param name="allowedTransportModes" value="car" />
+			<param name="freespeed" value="11.176" />
 			<param name="freespeedFactor" value="1.0" />
 			<param name="laneCapacity" value="300.0" />
 			<param name="lanes" value="1.0" />
@@ -204,7 +208,21 @@
 		</parameterset>
 
 
-		<!--  Highway Living Street-->
+		<!--  Highway Residential, see https://www.visitcalifornia.com/attraction/driving-california 
+		usually it is 25 mph in residential areas-->
+		<parameterset type="wayDefaultParams" >
+			<param name="allowedTransportModes" value="car" />
+			<param name="freespeed" value="11.176" />
+			<param name="freespeedFactor" value="1.0" />
+			<param name="laneCapacity" value="600.0" />
+			<param name="lanes" value="1.0" />
+			<param name="oneway" value="false" />
+			<param name="osmKey" value="highway" />
+			<param name="osmValue" value="residential" />
+		</parameterset>
+
+
+		<!--  Highway Service (Generally for access to a building, service station, beach, campsite, industrial estate,)-->
 		<parameterset type="wayDefaultParams" >
 			<param name="allowedTransportModes" value="car" />
 			<param name="freespeed" value="200" />
@@ -217,17 +235,6 @@
 		</parameterset>
 
 
-		<!--  Highway Road-->
-		<parameterset type="wayDefaultParams" >
-			<param name="allowedTransportModes" value="car" />
-			<param name="freespeed" value="200" />
-			<param name="freespeedFactor" value="1.0" />
-			<param name="laneCapacity" value="300.0" />
-			<param name="lanes" value="1.0" />
-			<param name="oneway" value="false" />
-			<param name="osmKey" value="highway" />
-			<param name="osmValue" value="road" />
-		</parameterset>
 
 		
 
