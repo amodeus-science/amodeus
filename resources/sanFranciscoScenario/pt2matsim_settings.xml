@@ -172,7 +172,7 @@
 		<!--  Highway Unclassified (= Public access road, non-residential)-->
 		<parameterset type="wayDefaultParams" >
 			<param name="allowedTransportModes" value="car" />
-			<param name="freespeed" value="100" />
+			<param name="freespeed" value="15.6464" />
 			<param name="freespeedFactor" value="1.0" />
 			<param name="laneCapacity" value="600.0" />
 			<param name="lanes" value="1.0" />
@@ -186,7 +186,7 @@
 		<!--  Highway Road-->
 		<parameterset type="wayDefaultParams" >
 			<param name="allowedTransportModes" value="car" />
-			<param name="freespeed" value="200" />
+			<param name="freespeed" value="15.6464" />
 			<param name="freespeedFactor" value="1.0" />
 			<param name="laneCapacity" value="300.0" />
 			<param name="lanes" value="1.0" />
