@@ -247,15 +247,15 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
 
 			@Override
 			public void handle(AVStayTask avStayTask) {
-				if (!reRoute) { // if we are calling this because of reroute, then do nothing
-					if (!avStayTask.getLink().equals(destination)) { // ignore request where location == target
-						FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer( //
-								robotaxi.getDivertableLocation(), destination, robotaxi.getDivertableTime());
-						robotaxi.assignDirective(
-								new StayVehicleDiversionDirective(robotaxi, destination, futurePathContainer));
-					} else
-						robotaxi.assignDirective(EmptyDirective.INSTANCE);
-				}
+//				if (!reRoute) {/** a staying vehicle cannot be rerouted */
+				if (!avStayTask.getLink().equals(destination)) { // ignore request where location == target
+					FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer( //
+							robotaxi.getDivertableLocation(), destination, robotaxi.getDivertableTime());
+					robotaxi.assignDirective(
+							new StayVehicleDiversionDirective(robotaxi, destination, futurePathContainer));
+				} else
+					robotaxi.assignDirective(EmptyDirective.INSTANCE);
+//				}
 			}
 		};
 	}
