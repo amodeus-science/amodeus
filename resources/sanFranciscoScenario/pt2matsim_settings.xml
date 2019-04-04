@@ -101,7 +101,7 @@
 		</parameterset>
 		
 
-		<!--  Highway Unclassified-->
+		<!--  Highway Unclassified (= Public access road, non-residential)-->
 		<parameterset type="wayDefaultParams" >
 			<param name="allowedTransportModes" value="car" />
 			<param name="freespeed" value="100" />
@@ -112,8 +112,6 @@
 			<param name="osmKey" value="highway" />
 			<param name="osmValue" value="unclassified" />
 		</parameterset>		
-		
-		
 		
 
 		<!--  Highway Motorway Link-->
@@ -222,9 +220,17 @@
 		</parameterset>
 
 
-		<!--  Highway Service (Generally for access to a building, service station, beach, campsite, industrial estate,)-->
+
+
+
+		
+
+		<!-- ====================================================================== -->
+		<!--  Not for Car, only other modes, e.g., bus, walk -->
+		
+		<!--  Highway Service (Generally for access to a building, service station, beach, camping site, industrial estate,)-->
 		<parameterset type="wayDefaultParams" >
-			<param name="allowedTransportModes" value="car" />
+			<param name="allowedTransportModes" value="walk" />
 			<param name="freespeed" value="200" />
 			<param name="freespeedFactor" value="1.0" />
 			<param name="laneCapacity" value="300.0" />
@@ -233,13 +239,9 @@
 			<param name="osmKey" value="highway" />
 			<param name="osmValue" value="service" />
 		</parameterset>
-
-
-
 		
-
-		<!-- ====================================================================== -->
-		<!--  Not for Car, only other modes, e.g., bus, walk -->
+		
+		
 		
 		<!--  Highway bus_stop-->
 		<parameterset type="wayDefaultParams" >
