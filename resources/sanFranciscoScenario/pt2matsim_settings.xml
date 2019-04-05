@@ -149,7 +149,7 @@
 		<!-- Highway Tertiary (= A road linking small settlements, or the local centres of a large town or city.) -->
 		<parameterset type="wayDefaultParams">
 			<param name="allowedTransportModes" value="car" />
-			<param name="freespeed" value="24.5872" />
+			<param name="freespeed" value="15.6464" />
 			<param name="freespeedFactor" value="1.0" />
 			<param name="laneCapacity" value="600.0" />
 			<param name="lanes" value="1.0" />
