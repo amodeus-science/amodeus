@@ -56,7 +56,7 @@
 		<!-- Highway Motorway Link (= The link roads (sliproads / ramps) leading to and from a motorway.) -->
 		<parameterset type="wayDefaultParams">
 			<param name="allowedTransportModes" value="car" />
-			<param name="freespeed" value="24.5872" />
+			<param name="freespeed" value="15.6464" />
 			<param name="freespeedFactor" value="1.0" />
 			<param name="laneCapacity" value="1500.0" />
 			<param name="lanes" value="1.0" />
@@ -82,7 +82,7 @@
 		<!-- Highway Trunk Link (= Driveways or descents of an expressway) -->
 		<parameterset type="wayDefaultParams">
 			<param name="allowedTransportModes" value="car" />
-			<param name="freespeed" value="24.5872" />
+			<param name="freespeed" value="15.6464" />
 			<param name="freespeedFactor" value="1.0" />
 			<param name="laneCapacity" value="1500.0" />
 			<param name="lanes" value="1.0" />
@@ -108,7 +108,7 @@
 		<!-- Highway Primary Link (= Connecting or connecting ramp of a highway) -->
 		<parameterset type="wayDefaultParams">
 			<param name="allowedTransportModes" value="car" />
-			<param name="freespeed" value="24.5872" />
+			<param name="freespeed" value="15.6464" />
 			<param name="freespeedFactor" value="1.0" />
 			<param name="laneCapacity" value="1500.0" />
 			<param name="lanes" value="1.0" />
@@ -135,7 +135,7 @@
 		<!-- Highway Secondary Link (= 	 Connecting roads of minor roads) -->
 		<parameterset type="wayDefaultParams">
 			<param name="allowedTransportModes" value="car" />
-			<param name="freespeed" value="24.5872" />
+			<param name="freespeed" value="15.6464" />
 			<param name="freespeedFactor" value="1.0" />
 			<param name="laneCapacity" value="1000.0" />
 			<param name="lanes" value="1.0" />
@@ -162,7 +162,7 @@
 		<!-- Highway Tertiary Link (= Connecting roads of minor roads) -->
 		<parameterset type="wayDefaultParams">
 			<param name="allowedTransportModes" value="car" />
-			<param name="freespeed" value="24.5872" />
+			<param name="freespeed" value="15.6464" />
 			<param name="freespeedFactor" value="1.0" />
 			<param name="laneCapacity" value="600.0" />
 			<param name="lanes" value="1.0" />
