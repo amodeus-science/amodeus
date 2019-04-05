@@ -41,7 +41,7 @@
 
 		<!-- This is a good overview of commonly used tags: https://taginfo.openstreetmap.org/keys/highway#values -->
 
-		<!-- Motorway -->
+		<!-- Motorway (= High capacity highways designed to safely carry fast motor traffic.) -->
 		<parameterset type="wayDefaultParams">
 			<param name="allowedTransportModes" value="car" />
 			<param name="freespeed" value="24.5872" />
@@ -53,7 +53,7 @@
 			<param name="osmValue" value="motorway" />
 		</parameterset>
 
-		<!-- Highway Motorway Link -->
+		<!-- Highway Motorway Link (= The link roads (sliproads / ramps) leading to and from a motorway.) -->
 		<parameterset type="wayDefaultParams">
 			<param name="allowedTransportModes" value="car" />
 			<param name="freespeed" value="24.5872" />
@@ -66,7 +66,7 @@
 		</parameterset>
 
 
-		<!-- Highway Trunk -->
+		<!-- Highway Trunk (= Important roads that are not motorways.) -->
 		<parameterset type="wayDefaultParams">
 			<param name="allowedTransportModes" value="car" />
 			<param name="freespeed" value="24.5872" />
@@ -79,7 +79,7 @@
 		</parameterset>
 
 
-		<!-- Highway Trunk Link -->
+		<!-- Highway Trunk Link (= Driveways or descents of an expressway) -->
 		<parameterset type="wayDefaultParams">
 			<param name="allowedTransportModes" value="car" />
 			<param name="freespeed" value="24.5872" />
@@ -92,7 +92,7 @@
 		</parameterset>
 
 
-		<!-- Highway Primary -->
+		<!-- Highway Primary (= A highway linking large towns.) -->
 		<parameterset type="wayDefaultParams">
 			<param name="allowedTransportModes" value="car" />
 			<param name="freespeed" value="24.5872" />
@@ -105,7 +105,7 @@
 		</parameterset>
 
 
-		<!-- Highway Primary Link -->
+		<!-- Highway Primary Link (= Connecting or connecting ramp of a highway) -->
 		<parameterset type="wayDefaultParams">
 			<param name="allowedTransportModes" value="car" />
 			<param name="freespeed" value="24.5872" />
@@ -119,7 +119,7 @@
 
 
 
-		<!-- Highway Secondary -->
+		<!-- Highway Secondary (= A highway linking large towns.) -->
 		<parameterset type="wayDefaultParams">
 			<param name="allowedTransportModes" value="car" />
 			<param name="freespeed" value="24.5872" />
@@ -132,7 +132,7 @@
 		</parameterset>
 
 
-		<!-- Highway Secondary Link -->
+		<!-- Highway Secondary Link (= 	 Connecting roads of minor roads) -->
 		<parameterset type="wayDefaultParams">
 			<param name="allowedTransportModes" value="car" />
 			<param name="freespeed" value="24.5872" />
@@ -146,7 +146,7 @@
 
 
 
-		<!-- Highway Tertiary -->
+		<!-- Highway Tertiary (= A road linking small settlements, or the local centres of a large town or city.) -->
 		<parameterset type="wayDefaultParams">
 			<param name="allowedTransportModes" value="car" />
 			<param name="freespeed" value="24.5872" />
@@ -159,7 +159,7 @@
 		</parameterset>
 
 
-		<!-- Highway Tertiary Link -->
+		<!-- Highway Tertiary Link (= Connecting roads of minor roads) -->
 		<parameterset type="wayDefaultParams">
 			<param name="allowedTransportModes" value="car" />
 			<param name="freespeed" value="24.5872" />
