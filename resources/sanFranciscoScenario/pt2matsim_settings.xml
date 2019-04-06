@@ -40,8 +40,12 @@
 
 
 		<!-- This is a good overview of commonly used tags: https://taginfo.openstreetmap.org/keys/highway#values -->
+		<!-- General US speed limit info: https://en.wikipedia.org/wiki/Speed_limits_in_the_United_States -->
 
-		<!-- Motorway (= High capacity highways designed to safely carry fast motor traffic.) -->
+
+
+		<!-- Motorway (= High capacity highways designed to safely carry fast motor 
+			traffic.) -->
 		<parameterset type="wayDefaultParams">
 			<param name="allowedTransportModes" value="car" />
 			<param name="freespeed" value="24.5872" />
@@ -53,7 +57,8 @@
 			<param name="osmValue" value="motorway" />
 		</parameterset>
 
-		<!-- Highway Motorway Link (= The link roads (sliproads / ramps) leading to and from a motorway.) -->
+		<!-- Highway Motorway Link (= The link roads (sliproads / ramps) leading 
+			to and from a motorway.) -->
 		<parameterset type="wayDefaultParams">
 			<param name="allowedTransportModes" value="car" />
 			<param name="freespeed" value="15.6464" />
@@ -132,7 +137,7 @@
 		</parameterset>
 
 
-		<!-- Highway Secondary Link (= 	 Connecting roads of minor roads) -->
+		<!-- Highway Secondary Link (= Connecting roads of minor roads) -->
 		<parameterset type="wayDefaultParams">
 			<param name="allowedTransportModes" value="car" />
 			<param name="freespeed" value="15.6464" />
@@ -146,7 +151,8 @@
 
 
 
-		<!-- Highway Tertiary (= A road linking small settlements, or the local centres of a large town or city.) -->
+		<!-- Highway Tertiary (= A road linking small settlements, or the local 
+			centres of a large town or city.) -->
 		<parameterset type="wayDefaultParams">
 			<param name="allowedTransportModes" value="car" />
 			<param name="freespeed" value="15.6464" />
