@@ -74,6 +74,7 @@ public class BipartiteMatchingUtils {
         Map<RoboTaxi, AVRequest> gbpMatchCleaned = CyclicSolutionPreventer.apply(gbpMatch, universalDispatcher, accDstFctn);
 
         return gbpMatchCleaned;
+
     }
 
     public Map<RoboTaxi, AVRequest> getGBPMatchCached(UniversalDispatcher universalDispatcher, //

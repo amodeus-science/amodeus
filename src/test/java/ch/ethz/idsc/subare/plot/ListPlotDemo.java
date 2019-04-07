@@ -1,5 +1,5 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.subare;
+package ch.ethz.idsc.subare.plot;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,8 +9,6 @@ import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 
 import ch.ethz.idsc.amodeus.analysis.plot.ChartTheme;
-import ch.ethz.idsc.subare.plot.ListPlot;
-import ch.ethz.idsc.subare.plot.VisualSet;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;

@@ -1,5 +1,5 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.virtualnetwork;
+package ch.ethz.idsc.amodeus.virtualnetwork.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -21,11 +21,8 @@ import ch.ethz.idsc.amodeus.testutils.TestPreparer;
 import ch.ethz.idsc.amodeus.traveldata.TravelDataTestHelper;
 import ch.ethz.idsc.amodeus.util.io.LocateUtils;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
-import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
-import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkGet;
-import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkIO;
 
-public class SaveLoadTest {
+public class VirtualNetworkIOTest {
     public static final File COMPARISON_VN_FILE = new File("resources/testComparisonFiles/virtualNetwork");
 
     private static TravelDataTestHelper travelDataTestHelper;
