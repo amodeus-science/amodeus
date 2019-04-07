@@ -1,5 +1,5 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.traveldata;
+package ch.ethz.idsc.amodeus.prep;
 
 import static org.junit.Assert.assertEquals;
 
@@ -22,7 +22,6 @@ import org.matsim.core.scenario.ScenarioUtils;
 
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
-import ch.ethz.idsc.amodeus.prep.Request;
 import ch.ethz.idsc.amodeus.util.io.LocateUtils;
 
 public class RequestTest {
