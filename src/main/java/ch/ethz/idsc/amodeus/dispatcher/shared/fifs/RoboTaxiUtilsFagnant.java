@@ -55,7 +55,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     static Optional<RoboTaxi> getClosestUnassignedRoboTaxiWithinMaxTime( //
             RoboTaxiHandler roboTaxiMaintainer, AVRequest avRequest, double maxTime, double now, NetworkTimeDistInterface timeDb) {
         NavigableMap<Double, RoboTaxi> roboTaxis = RoboTaxiUtilsFagnant.getRoboTaxisWithinMaxTime(avRequest.getFromLink(), roboTaxiMaintainer.getUnassignedRoboTaxis(), timeDb,
-                maxTime, roboTaxiMaintainer,now);
+                maxTime, roboTaxiMaintainer, now);
         if (roboTaxis.isEmpty()) {
             return Optional.empty();
         }

@@ -44,9 +44,10 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
         time.append(RealScalar.of(simulationObject.now));
 
         Map<Integer, List<RequestContainer>> map = simulationObject.requests.stream()//
+                // TODO extract filter predicate to static function
                 .filter(rc -> (rc.requestStatus.contains(RequestStatus.PICKUP) //
-                        || rc.requestStatus.contains(RequestStatus.DRIVING)) && //
-                        !rc.requestStatus.contains(RequestStatus.DROPOFF)) //
+                        || rc.requestStatus.contains(RequestStatus.DRIVING)) //
+                        && !rc.requestStatus.contains(RequestStatus.DROPOFF)) //
                 .collect(Collectors.groupingBy(reqcontainer -> reqcontainer.associatedVehicle));
 
         /** number Passenger Distribution over day */

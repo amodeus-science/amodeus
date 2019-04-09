@@ -5,60 +5,59 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.matsim.api.core.v01.Coord;
 
+import ch.ethz.idsc.amodeus.scenario.readers.CsvReader.Row;
 import ch.ethz.idsc.amodeus.scenario.time.Duration;
 import ch.ethz.idsc.amodeus.scenario.trips.TaxiTrip;
+import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.red.Norm;
-import ch.ethz.idsc.tensor.sca.Chop;
 
-public abstract class AbstractTripsReader extends CsvReader {
-    private Map<String, Integer> taxiIds = new HashMap<>();
+public abstract class AbstractTripsReader {
+    private final String delim;
+    private final Map<String, Integer> taxiIds = new HashMap<>();
 
-    public AbstractTripsReader(String delim, DateTimeFormatter format) {
-        super(delim, format);
+    public AbstractTripsReader(String delim) {
+        this.delim = delim;
     }
 
     public Stream<TaxiTrip> getTripStream(File file) throws IOException {
-        read(file);
         final AtomicInteger tripIds = new AtomicInteger(0);
-        return lines().map(line -> {
+        return new CsvReader(file, delim).rows().map(row -> {
             int tripId = tripIds.getAndIncrement();
             if (tripId % 1000 == 0)
                 System.out.println("trips: " + tripId);
             try {
-                String taxiCode = getTaxiCode(line);
+                String taxiCode = getTaxiCode(row);
                 int taxiId = taxiIds.getOrDefault(taxiCode, taxiIds.size());
                 taxiIds.put(taxiCode, taxiId);
 
-                LocalDateTime pickupTime = getStartTime(line);
-                LocalDateTime dropoffTime = getEndTime(line);
+                LocalDateTime pickupTime = getStartTime(row);
+                LocalDateTime dropoffTime = getEndTime(row);
                 Scalar durationCompute = Duration.between(pickupTime, dropoffTime);
-                Scalar durationDataset = getDuration(line);
+                Scalar durationDataset = getDuration(row);
 
-                if (Scalars.lessEquals(Quantity.of(0.1, "s"), Norm._2.of(durationDataset.subtract(durationCompute))))
+                if (Scalars.lessEquals(Quantity.of(0.1, SI.SECOND), Norm._2.of(durationDataset.subtract(durationCompute))))
                     System.err.println("Mismatch between duration recorded in data and computed duration," + //
                     "computed duration using start and end time: " + //
                     pickupTime + " --> " + dropoffTime + " != " + durationDataset);
 
-                TaxiTrip trip = TaxiTrip.of(tripId, Integer.toString(taxiId), getPickupLocation(line), getDropoffLocation(line), //
-                        getDistance(line), getWaitingTime(line), pickupTime, dropoffTime);
+                TaxiTrip trip = TaxiTrip.of(tripId, Integer.toString(taxiId), getPickupLocation(row), getDropoffLocation(row), //
+                        getDistance(row), getWaitingTime(row), pickupTime, dropoffTime);
                 return trip;
             } catch (Exception e) {
-                System.err.println("discard trip " + tripId + ": [" + IntStream.range(0, headers.size()).mapToObj(i -> //
-                headers.get(i) + "=" + line[i]).collect(Collectors.joining(", ")) + "]");
+                // TODO
+                // System.err.println("discard trip " + tripId + ": [" + IntStream.range(0, headers().size()).mapToObj(i -> //
+                // headers.get(i) + "=" + line[i]).collect(Collectors.joining(", ")) + "]");
                 return null;
             }
         }).filter(Objects::nonNull);
@@ -68,19 +67,19 @@ public abstract class AbstractTripsReader extends CsvReader {
         return taxiIds.size();
     }
 
-    public abstract String getTaxiCode(String[] line);
+    public abstract String getTaxiCode(Row row);
 
-    public abstract LocalDateTime getStartTime(String[] line) throws ParseException;
+    public abstract LocalDateTime getStartTime(Row row) throws ParseException;
 
-    public abstract LocalDateTime getEndTime(String[] line) throws ParseException;
+    public abstract LocalDateTime getEndTime(Row row) throws ParseException;
 
-    public abstract Coord getPickupLocation(String[] line);
+    public abstract Coord getPickupLocation(Row row);
 
-    public abstract Coord getDropoffLocation(String[] line);
+    public abstract Coord getDropoffLocation(Row row);
 
-    public abstract Scalar getDuration(String[] line);
+    public abstract Scalar getDuration(Row row);
 
-    public abstract Scalar getDistance(String[] line);
+    public abstract Scalar getDistance(Row row);
 
-    public abstract Scalar getWaitingTime(String[] line);
+    public abstract Scalar getWaitingTime(Row row);
 }

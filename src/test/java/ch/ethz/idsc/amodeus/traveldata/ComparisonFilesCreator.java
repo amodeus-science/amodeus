@@ -10,10 +10,10 @@ import ch.ethz.idsc.amodeus.test.TestFileHandling;
 import ch.ethz.idsc.amodeus.testutils.TestPreparer;
 import ch.ethz.idsc.amodeus.util.io.LocateUtils;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
-import ch.ethz.idsc.amodeus.virtualnetwork.SaveLoadTest;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkGet;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkIO;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkIOTest;
 
 public enum ComparisonFilesCreator {
     ;
@@ -39,7 +39,7 @@ public enum ComparisonFilesCreator {
 
         VirtualNetwork<Link> vNCreated = VirtualNetworkGet.readDefault(testPreparer.getPreparedNetwork(), scenarioOptions);
         /** create virtual network */
-        VirtualNetworkIO.toByte(SaveLoadTest.COMPARISON_VN_FILE, vNCreated);
+        VirtualNetworkIO.toByte(VirtualNetworkIOTest.COMPARISON_VN_FILE, vNCreated);
         /** create travel data */
         TravelData tDCreated = TravelDataGet.readStatic(vNCreated, scenarioOptions);
         TravelDataIO.writeStatic(TravelDataTestHelper.COMPARISON_FILE_TD, (StaticTravelData) tDCreated);

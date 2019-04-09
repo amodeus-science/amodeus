@@ -12,7 +12,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
-import ch.ethz.idsc.amodeus.routing.CashedNetworkTimeDistance;
+import ch.ethz.idsc.amodeus.routing.CachedNetworkTimeDistance;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Scalar;
@@ -25,7 +25,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
     static SharedAvRoute of( //
             List<SharedCourse> list, Link currentLink, //
             double now, double pickupTime, double dropofftime, //
-            CashedNetworkTimeDistance timeDb) {
+            CachedNetworkTimeDistance timeDb) {
         List<SharedRoutePoint> routePoints = new ArrayList<>();
         Scalar departureTime = Quantity.of(now, SI.SECOND);
         for (int i = 0; i < list.size(); i++) {

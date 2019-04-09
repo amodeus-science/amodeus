@@ -13,6 +13,7 @@ import ch.ethz.idsc.amodeus.scenario.dataclean.DataFilter;
 
 public class TripNetworkFilter implements DataFilter<TaxiTrip> {
 
+    @Override
     public Stream<TaxiTrip> filter(Stream<TaxiTrip> stream, ScenarioOptions simOptions, Network network) {
         ReferenceFrame rf = simOptions.getLocationSpec().referenceFrame();
         double[] networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
@@ -24,10 +25,10 @@ public class TripNetworkFilter implements DataFilter<TaxiTrip> {
             return stream;
         }
         return stream.filter(trip -> //
-                inBounds(minCoord, maxCoord, trip.pickupLoc) && inBounds(minCoord, maxCoord, trip.dropoffLoc));
+        inBounds(minCoord, maxCoord, trip.pickupLoc) && inBounds(minCoord, maxCoord, trip.dropoffLoc));
     }
 
-    private boolean inBounds(Coord minCoord, Coord maxCoord, Coord loc) {
+    private static boolean inBounds(Coord minCoord, Coord maxCoord, Coord loc) {
         return (loc.getX() >= minCoord.getX() && loc.getX() <= maxCoord.getX() && // in x Coord
                 loc.getY() >= minCoord.getY() && loc.getY() <= maxCoord.getY()); // in y Coord
     }

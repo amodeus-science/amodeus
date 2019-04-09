@@ -2,14 +2,11 @@
 package ch.ethz.idsc.amodeus.traveldata;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Objects;
 
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
-import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
-import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 

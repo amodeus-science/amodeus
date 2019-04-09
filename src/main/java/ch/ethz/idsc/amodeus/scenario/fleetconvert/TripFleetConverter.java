@@ -2,6 +2,7 @@
 package ch.ethz.idsc.amodeus.scenario.fleetconvert;
 
 import java.io.File;
+import java.time.format.DateTimeFormatter;
 
 import org.apache.commons.io.FileUtils;
 import org.matsim.api.core.v01.network.Link;
@@ -22,6 +23,8 @@ import ch.ethz.idsc.amodeus.util.math.CreateQuadTree;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 public class TripFleetConverter implements FleetConverter {
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = //
+            DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
     @Override
     public void run(File processingDir, File tripFile, DataOperator dataOperator) throws Exception {
@@ -79,7 +82,7 @@ public class TripFleetConverter implements FleetConverter {
         // ===================================
         QuadTree<Link> qt = CreateQuadTree.of(network, db);
         TripPopulationCreator populationCreator = new TripPopulationCreator(processingDir, configFull, network, db, //
-                dataOperator.cleaner.dateFormat,qt);
+                DATE_TIME_FORMATTER, qt);
         populationCreator.process(cleanTripFile);
     }
 }

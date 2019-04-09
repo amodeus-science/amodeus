@@ -8,7 +8,7 @@ import com.google.inject.Singleton;
 
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 
-/** provides the AMoDeus {@link ScenarioOptions} in case needed in a dispatcher*/
+/** provides the AMoDeus {@link ScenarioOptions} in case needed in a dispatcher */
 public class AmodeusOptionsModule extends AbstractModule {
     private final ScenarioOptions scenarioOptions;
 

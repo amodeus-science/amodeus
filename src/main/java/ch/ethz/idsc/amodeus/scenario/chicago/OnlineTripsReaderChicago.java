@@ -10,35 +10,43 @@ import java.util.Date;
 
 import org.matsim.api.core.v01.Coord;
 
+import ch.ethz.idsc.amodeus.scenario.readers.CsvReader.Row;
+import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.qty.Quantity;
 
 public class OnlineTripsReaderChicago extends ChicagoTripsReaderBasic {
+    private static final DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
     public OnlineTripsReaderChicago() {
-        super(",", DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"));
+        super(",");
     }
 
-    public LocalDateTime getStartTime(String[] line) throws ParseException {
-        return LocalDateTime.parse(get(line, "trip_start_timestamp"), format);
+    @Override
+    public LocalDateTime getStartTime(Row line) throws ParseException {
+        return LocalDateTime.parse(line.get("trip_start_timestamp"), format);
     }
 
-    public LocalDateTime getEndTime(String[] line) throws ParseException {
-        return LocalDateTime.parse(get(line, "trip_end_timestamp"), format);
+    @Override
+    public LocalDateTime getEndTime(Row line) throws ParseException {
+        return LocalDateTime.parse(line.get("trip_end_timestamp"), format);
     }
 
-    public Coord getPickupLocation(String[] line) {
-        return new Coord(Double.valueOf(get(line, "pickup_centroid_longitude")), //
-                Double.valueOf(get(line, "pickup_centroid_latitude")));
+    @Override
+    public Coord getPickupLocation(Row line) {
+        return new Coord(Double.valueOf(line.get("pickup_centroid_longitude")), //
+                Double.valueOf(line.get("pickup_centroid_latitude")));
     }
 
-    public Coord getDropoffLocation(String[] line) {
-        return new Coord(Double.valueOf(get(line, "dropoff_centroid_longitude")), //
-                Double.valueOf(get(line, "dropoff_centroid_latitude")));
+    @Override
+    public Coord getDropoffLocation(Row line) {
+        return new Coord(Double.valueOf(line.get("dropoff_centroid_longitude")), //
+                Double.valueOf(line.get("dropoff_centroid_latitude")));
     }
 
-    public Scalar getDuration(String[] line) {
-        return Quantity.of(Long.valueOf(get(line, "trip_seconds")), "s");
+    @Override
+    public Scalar getDuration(Row line) {
+        return Quantity.of(Long.valueOf(line.get("trip_seconds")), SI.SECOND);
     }
 
     public static void main(String[] args) throws ParseException {

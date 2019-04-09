@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.routing;
 
 import java.util.HashMap;
@@ -13,7 +14,7 @@ import org.matsim.core.router.util.LeastCostPathCalculator;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
-public class CashedNetworkPropertyComputation<T> {
+public class CachedNetworkPropertyComputation<T> {
 
     // ---
     private final LeastCostPathCalculator calculator;
@@ -24,12 +25,12 @@ public class CashedNetworkPropertyComputation<T> {
     // ---
     protected double now = 0.0;
 
-    /** A {@link CashedNetworkPropertyComputation} stores all the calculated values calculated by a
+    /** A {@link CachedNetworkPropertyComputation} stores all the calculated values calculated by a
      * {@link NetworkPropertyInterface} which were calculated no longer ago than @param maxLag. The
      * underlying logic is that in this manner the expensive routing computation has to be done
      * fewer times for identical pairs of {@link Link}s.For the routing, different
      * {@link LeastCostPathCalculator}s can be used, e.g., to minimize travel time or network distance. */
-    public CashedNetworkPropertyComputation(LeastCostPathCalculator calculator, Double maxLag, //
+    public CachedNetworkPropertyComputation(LeastCostPathCalculator calculator, Double maxLag, //
             NetworkPropertyInterface<T> pathInterface) {
         this.calculator = calculator;
         this.maxLag = maxLag;

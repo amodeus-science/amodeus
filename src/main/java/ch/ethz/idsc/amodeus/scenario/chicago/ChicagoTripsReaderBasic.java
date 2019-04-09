@@ -1,8 +1,9 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.scenario.chicago;
 
-import java.time.format.DateTimeFormatter;
-
 import ch.ethz.idsc.amodeus.scenario.readers.AbstractTripsReader;
+import ch.ethz.idsc.amodeus.scenario.readers.CsvReader.Row;
+import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.qty.Quantity;
 
@@ -10,19 +11,22 @@ public abstract class ChicagoTripsReaderBasic extends AbstractTripsReader {
 
     private final double milesToM = 1609.34;
 
-    public ChicagoTripsReaderBasic(String delim, DateTimeFormatter format) {
-        super(delim, format);
+    public ChicagoTripsReaderBasic(String delim) {
+        super(delim);
     }
 
-    public final String getTaxiCode(String[] line) {
-        return get(line, "Taxi ID");
+    @Override
+    public final String getTaxiCode(Row row) {
+        return row.get("Taxi ID");
     }
 
-    public final Scalar getDistance(String[] line) {
-        return Quantity.of(Double.valueOf(get(line, "trip_miles")) * milesToM, "m"); // miles to meters
+    @Override
+    public final Scalar getDistance(Row row) {
+        return Quantity.of(Double.valueOf(row.get("trip_miles")) * milesToM, SI.METER); // miles to meters
     }
 
-    public final Scalar getWaitingTime(String[] line) {
+    @Override
+    public final Scalar getWaitingTime(Row row) {
         return null;
     }
 

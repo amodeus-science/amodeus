@@ -3,8 +3,8 @@ package ch.ethz.idsc.amodeus.routing;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
-import org.matsim.api.core.v01.network.Node;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.api.core.v01.network.Node;
 import org.matsim.core.router.util.LeastCostPathCalculator;
 import org.matsim.core.router.util.LeastCostPathCalculator.Path;
 

@@ -35,11 +35,11 @@ public class LPOptions {
         properties.setProperty(key, value);
     }
 
-    public void saveAndOverwriteLPOptions() throws IOException {
+    public void saveAndOverwriteLPOptions() {
         LPOptionsBase.savePropertiesToDirectory(workingDirectory, properties);
     }
 
-    public void saveToFolder(File folder, String header) throws IOException {
+    public void saveToFolder(File folder, String header) {
         File file = new File(folder, LPOptionsBase.OPTIONSFILENAME);
         LPOptionsBase.savePropertiesToFileWithHeader(properties, file, header);
     }
