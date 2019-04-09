@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 import ch.ethz.idsc.amodeus.scenario.Pt2MatsimXML;
 import ch.ethz.idsc.amodeus.scenario.ScenarioLabels;
-import ch.ethz.idsc.amodeus.util.io.CopySomeFiles;
+import ch.ethz.idsc.amodeus.util.io.CopyFiles;
 import ch.ethz.idsc.amodeus.util.io.FileDelete;
 import ch.ethz.idsc.amodeus.util.io.LocateUtils;
 
@@ -16,14 +16,14 @@ import ch.ethz.idsc.amodeus.util.io.LocateUtils;
         ChicagoGeoInformation.setup();
         /** copy relevant files containing settings for scenario generation */
         File settingsDir = new File(LocateUtils.getSuperFolder("amodeus"), "resources/chicagoScenarioTest");
-        CopySomeFiles.now(settingsDir.getAbsolutePath(), workingDir.getAbsolutePath(), //
+        CopyFiles.now(settingsDir.getAbsolutePath(), workingDir.getAbsolutePath(), //
                 Arrays.asList(new String[] { ScenarioLabels.avFile, ScenarioLabels.config, //
                         ScenarioLabels.pt2MatSettings }),
                 true);
         /** AmodeusOptions.properties is not replaced as it might be changed by user during
          * scenario generation process. */
         if (!new File(workingDir, ScenarioLabels.amodeusFile).exists())
-            CopySomeFiles.now(settingsDir.getAbsolutePath(), workingDir.getAbsolutePath(), //
+            CopyFiles.now(settingsDir.getAbsolutePath(), workingDir.getAbsolutePath(), //
                     Arrays.asList(new String[] { ScenarioLabels.amodeusFile }), false);
         Pt2MatsimXML.toLocalFileSystem(new File(workingDir, ScenarioLabels.pt2MatSettings), //
                 workingDir.getAbsolutePath());

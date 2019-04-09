@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import ch.ethz.idsc.amodeus.util.io.CopySomeFiles;
+import ch.ethz.idsc.amodeus.util.io.CopyFiles;
 import ch.ethz.idsc.amodeus.util.io.FileDelete;
 
 public enum TestFileHandling {
@@ -16,7 +16,7 @@ public enum TestFileHandling {
     // TODO cleanup
     public static void copyScnearioToMainDirectory(String scenarioDir, String mainDir) throws IOException {
 
-        CopySomeFiles.now(scenarioDir, mainDir, //
+        CopyFiles.now(scenarioDir, mainDir, //
                 Arrays.asList(new String[] { "AmodeusOptions.properties", "av.xml", //
                         "av_v1.dtd", "config_full.xml", "linkSpeedData.bin", //
                         "network.xml", "population.xml" }),

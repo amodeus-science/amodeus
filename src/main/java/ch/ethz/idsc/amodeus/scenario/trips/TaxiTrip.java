@@ -15,6 +15,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
 
 /** The class {@link TaxiTrip} is used to transform taxi trips from databases into scenarios
  * for AMoDeus. It contains the relevant recordings of a typical taxi trip recording. */
+// TODO better explanation of entries, localID, pickup,dropofLoc in WGS, renames...
 public class TaxiTrip implements Comparable<TaxiTrip> {
     public final Integer localId;
     public final String taxiId;
