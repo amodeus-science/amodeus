@@ -12,7 +12,6 @@ import org.matsim.core.trafficmonitoring.TravelTimeDataArrayFactory;
 
 import com.google.inject.Singleton;
 
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Tensor;
 
 @Singleton
@@ -63,12 +62,12 @@ import ch.ethz.idsc.tensor.Tensor;
             for (Integer time : lsData.getRecordedTimes()) {
                 Tensor speedRecordings = lsData.getSpeedsAt(time);
                 double speedRecorded = speedRecordings.Get(0).number().doubleValue();
-                if(speedRecorded<=0.0){
-                    System.err.println("recorded speed:" +  speedRecorded);
+                if (speedRecorded <= 0.0) {
+                    System.err.println("recorded speed:" + speedRecorded);
                     System.err.println("will be overridden by freeflow speed.");
                     speedRecorded = link.getFreespeed();
                 }
-//                GlobalAssert.that(speedRecorded > 0.0);
+                // GlobalAssert.that(speedRecorded > 0.0);
                 double travelTime = link.getLength() / speedRecorded;
                 ttData.setTravelTime(trafficData.getTimeSlot(time), travelTime);
             }

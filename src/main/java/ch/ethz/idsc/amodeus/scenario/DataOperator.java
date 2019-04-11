@@ -18,6 +18,7 @@ import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.qty.Quantity;
 
 public enum DataOperator {
+    // FIXME design is prohibitive !!! list of filters is going with every call !!!
     CHICAGO(new TripFleetConverter(), new StandardDataCorrector(), new TripDataCleaner(new TripsReaderChicago())) {
         @Override
         public void setFilters() {
