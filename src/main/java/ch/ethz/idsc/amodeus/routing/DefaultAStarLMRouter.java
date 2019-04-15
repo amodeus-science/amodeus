@@ -55,17 +55,10 @@ public class DefaultAStarLMRouter implements AVRouter {
 
         @Override
         public AVRouter createRouter() {
-
-            Objects.requireNonNull(travelTime);
-
             return new DefaultAStarLMRouter(DefaultParallelLeastCostPathCalculator.//
                     create((int) config.getParallelRouters(), new FastAStarLandmarksFactory(), network, //
-                            new OnlyTimeDependentTravelDisutility(travelTime), travelTime));
+                            new OnlyTimeDependentTravelDisutilityFixed(travelTime), travelTime));
 
-            // THIS WORKS, BUT IS ANOTHER COST FUNCTION...
-            // return new DefaultAStarLMRouter(DefaultParallelLeastCostPathCalculator.//
-            // create((int) config.getParallelRouters(), new FastAStarLandmarksFactory(), network, //
-            // new DistanceAsTravelDisutility(), travelTime));
         }
     }
 }
