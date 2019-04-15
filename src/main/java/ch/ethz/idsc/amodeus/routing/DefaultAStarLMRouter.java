@@ -1,12 +1,14 @@
 package ch.ethz.idsc.amodeus.routing;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.concurrent.Future;
 
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
 import org.matsim.api.core.v01.population.Person;
-import org.matsim.core.router.DijkstraFactory;
+import org.matsim.contrib.dvrp.router.DistanceAsTravelDisutility;
+import org.matsim.core.router.FastAStarLandmarksFactory;
 import org.matsim.core.router.costcalculators.OnlyTimeDependentTravelDisutility;
 import org.matsim.core.router.util.LeastCostPathCalculator.Path;
 import org.matsim.core.router.util.TravelTime;
@@ -53,8 +55,17 @@ public class DefaultAStarLMRouter implements AVRouter {
 
         @Override
         public AVRouter createRouter() {
-            return new DefaultAStarLMRouter(DefaultParallelLeastCostPathCalculator.create((int) config.getParallelRouters(), new DijkstraFactory(), network,
-                    new OnlyTimeDependentTravelDisutility(travelTime), travelTime));
+
+            Objects.requireNonNull(travelTime);
+
+            return new DefaultAStarLMRouter(DefaultParallelLeastCostPathCalculator.//
+                    create((int) config.getParallelRouters(), new FastAStarLandmarksFactory(), network, //
+                            new OnlyTimeDependentTravelDisutility(travelTime), travelTime));
+
+            // THIS WORKS, BUT IS ANOTHER COST FUNCTION...
+            // return new DefaultAStarLMRouter(DefaultParallelLeastCostPathCalculator.//
+            // create((int) config.getParallelRouters(), new FastAStarLandmarksFactory(), network, //
+            // new DistanceAsTravelDisutility(), travelTime));
         }
     }
 }
