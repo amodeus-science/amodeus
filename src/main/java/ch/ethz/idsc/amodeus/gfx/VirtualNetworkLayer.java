@@ -69,7 +69,7 @@ public class VirtualNetworkLayer extends ViewerLayer {
                 break;
             case VehicleCount: {
                 Tensor count = new VehicleCountVirtualNodeFunction(amodeusComponent.db, virtualNetwork).evaluate(ref);
-                Tensor prob = StaticHelper.normalize1Norm224Contrast(count);                
+                Tensor prob = StaticHelper.normalize1Norm224Contrast(count);
                 for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet()) {
                     final int i = 255 - prob.Get(entry.getKey().getIndex()).number().intValue();
                     graphics.setColor(halfAlpha(colorSchemes.colorScheme.get(i)));

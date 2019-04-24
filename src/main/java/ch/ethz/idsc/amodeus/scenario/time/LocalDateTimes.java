@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.scenario.time;
 
 import java.time.LocalDateTime;
@@ -14,8 +15,8 @@ public enum LocalDateTimes {
     /** @return true if the {@link LocalDateTime} @param ldt1 is less than or equal to
      *         the {@link LocalDateTime} @param ldt2 and false otherwise. */
     public static boolean lessEquals(LocalDateTime ldt1, LocalDateTime ldt2) {
-        return lessThan(ldt1, ldt2) || ldt1.toInstant(ZoneOffset.UTC).toEpochMilli() == //
-        ldt2.toInstant(ZoneOffset.UTC).toEpochMilli();
+        return lessThan(ldt1, ldt2) //
+                || ldt1.toInstant(ZoneOffset.UTC).toEpochMilli() == ldt2.toInstant(ZoneOffset.UTC).toEpochMilli();
     }
 
     /** @return true if the {@link LocalDateTime} @param ldt1 is strictly less than

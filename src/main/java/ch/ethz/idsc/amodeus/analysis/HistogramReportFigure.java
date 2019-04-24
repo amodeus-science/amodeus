@@ -41,6 +41,7 @@ import ch.ethz.idsc.tensor.sca.Round;
         Scalar binNmbrScaling = RealScalar.of(1.0 / binNmbr);
         Scalar binSize = Round.of(maxVal.multiply(binNmbrScaling));
         /** for very low values, resolve in decimal steps */
+        // TODO use Scalars.isZero(binSize) ?
         if (((Quantity) binSize).value().equals(RealScalar.ZERO))
             binSize = maxVal.multiply(binNmbrScaling);
         Tensor binCounter = BinCounts.of(vals, binSize);
