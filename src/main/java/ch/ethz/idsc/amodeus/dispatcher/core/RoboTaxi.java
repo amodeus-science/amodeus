@@ -119,7 +119,6 @@ public class RoboTaxi {
     public int getCapacity() {
         return (int) avVehicle.getCapacity();
     }
-    
 
     // ===================================================================================
     // methods to be used by Core package

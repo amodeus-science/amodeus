@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.routing;
 
 import org.matsim.api.core.v01.network.Link;
@@ -8,9 +9,13 @@ import org.matsim.core.router.util.LeastCostPathCalculator;
  * time. The computation is done via a {@link LeastCostPathCalculator}. */
 public interface NetworkPropertyInterface<T> {
 
-    /** @return the property T of the network defined between the {@link Link}s @param from
+    /** @param from
+     * @param to
+     * @param calculator
+     * @param now
+     * @return the property T of the network defined between the {@link Link}s @param from
      *         and @param to at time @param now using the {@link LeastCostPathCalculator} @param calculator.
      *         The resulting property T may then be cached to speed up computation times. */
-    public T fromTo(Link from, Link to, LeastCostPathCalculator calculator, Double now);
+    T fromTo(Link from, Link to, LeastCostPathCalculator calculator, Double now);
 
 }

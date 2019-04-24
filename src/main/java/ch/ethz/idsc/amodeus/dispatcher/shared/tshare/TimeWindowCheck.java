@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared.tshare;
 
 import java.util.List;
@@ -14,7 +15,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
 /* package */ class TimeWindowCheck {
 
     /** compute expecte arrival times and check compatibility with time windows */
-    public static boolean of(Double timeNow, List<SharedCourse> newMenu, //
+    public static boolean of(double timeNow, List<SharedCourse> newMenu, //
             NetworkTimeDistInterface travelTimeCashed, RoboTaxi roboTaxi, //
             Scalar pickupDelayMax, Scalar drpoffDelayMax) {
         boolean timeComp = true;
