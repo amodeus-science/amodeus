@@ -479,8 +479,18 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
                         robotaxi.setDivertableLinkTime(linkTimePair); // contains null check
                         robotaxi.setCurrentDriveDestination(avDriveTask.getPath().getToLink());
                         GlobalAssert.that(!robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
-                    } else
+                    } else {
+                        //new added by luc for rerouting purpose: update divertable location for 
+                        //DRIVEWITHCUSTOMER vehicles as well
+                        TaskTracker taskTracker = avDriveTask.getTaskTracker();
+                        AmodeusDriveTaskTracker onlineDriveTaskTracker = (AmodeusDriveTaskTracker) taskTracker;
+                        LinkTimePair linkTimePair = onlineDriveTaskTracker.getSafeDiversionPoint();
+                        robotaxi.setDivertableLinkTime(linkTimePair); // contains null check
+                        robotaxi.setCurrentDriveDestination(avDriveTask.getPath().getToLink());
+                        //new added code ends here
                         GlobalAssert.that(robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
+                    }
+                        
                 }
 
                 @Override

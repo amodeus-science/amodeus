@@ -93,6 +93,7 @@ public class AmodeusDriveTaskTracker implements OnlineDriveTaskTracker {
         if (getDiversionPoint() != null)
             return getDiversionPoint();
         return getPathEndDiversionPoint();
+
     }
 
     /** @author Claudio Ruch
@@ -115,7 +116,7 @@ public class AmodeusDriveTaskTracker implements OnlineDriveTaskTracker {
             throw new IllegalArgumentException("links dont match: " + newSubPath.getFromLink().getId() + "!=" + diversionPoint.link.getId());
         }
         if (newSubPath.getDepartureTime() != diversionPoint.time) {
-            throw new IllegalArgumentException("times dont match");
+            throw new IllegalArgumentException("times dont match" + newSubPath.getDepartureTime() + "!=" + diversionPoint.time);
         }
 
         int diversionLinkIdx = getDiversionLinkIndex();
