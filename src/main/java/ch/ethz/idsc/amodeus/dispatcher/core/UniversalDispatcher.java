@@ -218,7 +218,11 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
                                                                                          // already going there
                     FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer( //
                             robotaxi.getDivertableLocation(), destination, robotaxi.getDivertableTime());
-                    robotaxi.assignDirective(new DriveVehicleDiversionDirective(robotaxi, destination, futurePathContainer));
+                    if (reRoute) {
+                        robotaxi.assignDirective(new DriveVehicleRerouteDirective(futurePathContainer, robotaxi));
+                    } else {
+                        robotaxi.assignDirective(new DriveVehicleDiversionDirective(robotaxi, destination, futurePathContainer));
+                    }
                 } else
                     robotaxi.assignDirective(EmptyDirective.INSTANCE);
             }
