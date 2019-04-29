@@ -4,6 +4,7 @@ package ch.ethz.idsc.amodeus.analysis.element;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifier;
@@ -20,7 +21,7 @@ public class StatusDistributionElement implements AnalysisElement, TotalValueApp
     public final Tensor statusTensor = Tensors.empty();
     public final Tensor occupancyTensor = Tensors.empty();
 
-    @Override
+    @Override // from AnalysisElement
     public void register(SimulationObject simulationObject) {
 
         /** Get the TimeStep */
@@ -31,21 +32,24 @@ public class StatusDistributionElement implements AnalysisElement, TotalValueApp
         statusTensor.append(numStatus);
 
         /** Get the Occupancy Ratio per TimeStep */
-        Scalar occupancyRatio = numStatus.Get(RoboTaxiStatus.DRIVEWITHCUSTOMER.ordinal()).//
-                divide(RealScalar.of(simulationObject.vehicles.size()));
+        Scalar occupancyRatio = numStatus.Get(RoboTaxiStatus.DRIVEWITHCUSTOMER.ordinal()) //
+                .divide(RealScalar.of(simulationObject.vehicles.size()));
         occupancyTensor.append(Tensors.vector(simulationObject.now, occupancyRatio.number().doubleValue()));
     }
 
-    @Override
+    @Override // from AnalysisElement
     public void consolidate() {
         // TODO Who? Check these Calculations!!!!! DOES NOT WORK YET!!!
         int timeStep = time.Get(1).subtract(time.Get(0)).number().intValue();
         Map<RoboTaxiStatus, Integer> timeStepsPerStatus = new HashMap<>();
-        for (RoboTaxiStatus roboTaxiStatus : RoboTaxiStatus.values()) {
+        for (RoboTaxiStatus roboTaxiStatus : RoboTaxiStatus.values())
             timeStepsPerStatus.put(roboTaxiStatus, getTimeStepsInStatus(roboTaxiStatus));
-        }
+
         @SuppressWarnings("unused")
-        double totalDriveTime = timeStepsPerStatus.entrySet().stream().filter(e -> e.getKey().isDriving()).mapToDouble(e -> e.getValue()).sum() * timeStep;
+        double totalDriveTime = timeStepsPerStatus.entrySet().stream() //
+                .filter(e -> e.getKey().isDriving()) //
+                .mapToDouble(Entry::getValue) //
+                .sum() * timeStep;
         // totalValues.put(TotalValueIdentifiersAmodeus.TOTALROBOTAXIDRIVETIME,
         // String.valueOf(totalDriveTime));
     }
@@ -54,7 +58,7 @@ public class StatusDistributionElement implements AnalysisElement, TotalValueApp
         return statusTensor.get(roboTaxiStatus.ordinal()).stream().reduce(Tensor::add).get().Get().number().intValue();
     }
 
-    @Override
+    @Override // from TotalValueAppender
     public Map<TotalValueIdentifier, String> getTotalValues() {
         return Collections.emptyMap();
     }

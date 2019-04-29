@@ -5,11 +5,10 @@ import java.util.Objects;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RequestStatus;
 import ch.ethz.idsc.amodeus.net.RequestContainer;
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.qty.Quantity;
+import ch.ethz.idsc.tensor.sca.Sign;
 
 /** TODO Who? currently only the last and successful pickup attempt is recorded.
  * Additionally, it is possible to record also all pickup attempts in a
@@ -61,25 +60,19 @@ public class TravelHistory {
     public Scalar getTotalTravelTime() {
         Objects.requireNonNull(submsnTime);
         Objects.requireNonNull(drpOffTime);
-        Scalar totalTravelTime = drpOffTime.subtract(submsnTime);
-        GlobalAssert.that(Scalars.lessEquals(Quantity.of(0, SI.SECOND), totalTravelTime));
-        return totalTravelTime;
+        return Sign.requirePositiveOrZero(drpOffTime.subtract(submsnTime));
     }
 
     public Scalar getDriveTime() {
         Objects.requireNonNull(waitEndTme);
         Objects.requireNonNull(drpOffTime);
-        Scalar driveTime = drpOffTime.subtract(waitEndTme);
-        GlobalAssert.that(Scalars.lessEquals(Quantity.of(0, SI.SECOND), driveTime));
-        return driveTime;
+        return Sign.requirePositiveOrZero(drpOffTime.subtract(waitEndTme));
     }
 
     public Scalar getWaitTime() {
         Objects.requireNonNull(waitEndTme);
         Objects.requireNonNull(submsnTime);
-        Scalar waitTime = waitEndTme.subtract(submsnTime);
-        GlobalAssert.that(Scalars.lessEquals(Quantity.of(0, SI.SECOND), waitTime));
-        return waitTime;
+        return Sign.requirePositiveOrZero(waitEndTme.subtract(submsnTime));
     }
 
     public Scalar getAssignmentTime() {

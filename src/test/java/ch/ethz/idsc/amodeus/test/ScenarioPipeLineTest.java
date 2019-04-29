@@ -171,6 +171,7 @@ public class ScenarioPipeLineTest {
 
         /** wait times, drive times */
         assertTrue(Scalars.lessEquals(Quantity.of(0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(2)));
+        // FIXME the code below only checks units but not sign
         ate.getTravelTimeAnalysis().getWaitTimes().flatten(-1).forEach(t -> {
             Scalars.lessEquals(Quantity.of(0, SI.SECOND), (Scalar) t);
             Scalars.lessEquals((Scalar) t, ate.getTravelTimeAnalysis().getWaitAggrgte().Get(2));
