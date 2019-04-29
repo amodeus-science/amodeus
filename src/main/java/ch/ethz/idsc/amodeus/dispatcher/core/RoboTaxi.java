@@ -210,7 +210,7 @@ public class RoboTaxi {
         // Added cases when on pickup and dropoff task For shared taxis
         if (avT instanceof AVDriveTask) {
             AVDriveTask avDT = (AVDriveTask) avT;
-            return avDT.getPath().getLinkCount() != 1; //TODO seems it is different to the same function in AmodeusDriveTaskTracker
+            return avDT.getPath().getLinkCount() != 1; // TODO seems it is different to the same function in AmodeusDriveTaskTracker
         }
         if (avT instanceof AVPickupTask || avT instanceof AVDropoffTask)
             return false;
@@ -232,20 +232,13 @@ public class RoboTaxi {
     // **********************************************
 
     public boolean isDivertable() {
-        if (usageType.equals(RoboTaxiUsageType.SINGLEUSED))
-            return isWithoutDirective() && isWithoutCustomer() && notDrivingOnLastLink();
-        if (usageType.equals(RoboTaxiUsageType.SHARED))
-            return isWithoutDirective() && notDrivingOnLastLink();
-        throw new IllegalArgumentException("Robo Taxi Usage Type is not defined");
+        return (canReroute() && usageType.equals(RoboTaxiUsageType.SHARED) || //
+                (canReroute() && isWithoutCustomer()));
     }
 
     // added by luc for rerouting purpose
     public boolean canReroute() {
-        if (usageType.equals(RoboTaxiUsageType.SINGLEUSED))
-            return isWithoutDirective() && notDrivingOnLastLink();
-        if (usageType.equals(RoboTaxiUsageType.SHARED))
-            return isWithoutDirective() && notDrivingOnLastLink();
-        throw new IllegalArgumentException("Robo Taxi Usage Type is not defined");
+        return isWithoutDirective() && notDrivingOnLastLink();
     }
 
     // **********************************************
