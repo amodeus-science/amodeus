@@ -27,9 +27,6 @@ final class DriveVehicleRerouteDirective extends FuturePathDirective {
         final AVDriveTask avDriveTask = (AVDriveTask) schedule.getCurrentTask(); // <- implies that task is started
         TaskTracker taskTracker = avDriveTask.getTaskTracker();
         OnlineDriveTaskTracker onlineDriveTaskTracker = (OnlineDriveTaskTracker) taskTracker;
-
         onlineDriveTaskTracker.divertPath(vrpPathWithTravelData);
-
     }
-
 }

@@ -472,25 +472,16 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
                 @Override
                 public void handle(AVDriveTask avDriveTask) {
                     // for empty cars the drive task is second to last task
+                    TaskTracker taskTracker = avDriveTask.getTaskTracker();
+                    AmodeusDriveTaskTracker onlineDriveTaskTracker = (AmodeusDriveTaskTracker) taskTracker;
+                    LinkTimePair linkTimePair = onlineDriveTaskTracker.getSafeDiversionPoint();
+                    robotaxi.setDivertableLinkTime(linkTimePair); // contains null check
+                    robotaxi.setCurrentDriveDestination(avDriveTask.getPath().getToLink());
                     if (ScheduleUtils.isNextToLastTask(schedule, avDriveTask)) {
-                        TaskTracker taskTracker = avDriveTask.getTaskTracker();
-                        AmodeusDriveTaskTracker onlineDriveTaskTracker = (AmodeusDriveTaskTracker) taskTracker;
-                        LinkTimePair linkTimePair = onlineDriveTaskTracker.getSafeDiversionPoint();
-                        robotaxi.setDivertableLinkTime(linkTimePair); // contains null check
-                        robotaxi.setCurrentDriveDestination(avDriveTask.getPath().getToLink());
                         GlobalAssert.that(!robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
                     } else {
-                        // new added by luc for rerouting purpose: update divertable location for
-                        // DRIVEWITHCUSTOMER vehicles as well
-                        TaskTracker taskTracker = avDriveTask.getTaskTracker();
-                        AmodeusDriveTaskTracker onlineDriveTaskTracker = (AmodeusDriveTaskTracker) taskTracker;
-                        LinkTimePair linkTimePair = onlineDriveTaskTracker.getSafeDiversionPoint();
-                        robotaxi.setDivertableLinkTime(linkTimePair); // contains null check
-                        robotaxi.setCurrentDriveDestination(avDriveTask.getPath().getToLink());
-                        // new added code ends here
                         GlobalAssert.that(robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
                     }
-
                 }
 
                 @Override
