@@ -92,6 +92,7 @@ public class AmodeusDriveTaskTracker implements OnlineDriveTaskTracker {
     public LinkTimePair getSafeDiversionPoint() {
         if (getDiversionPoint() != null)
             return getDiversionPoint();
+        System.err.println("Getting path end Diversion point now. This is not a big problem, but it shouldn't happen.");
         return getPathEndDiversionPoint();
 
     }

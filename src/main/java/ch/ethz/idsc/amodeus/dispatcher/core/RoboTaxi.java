@@ -210,7 +210,7 @@ public class RoboTaxi {
         // Added cases when on pickup and dropoff task For shared taxis
         if (avT instanceof AVDriveTask) {
             AVDriveTask avDT = (AVDriveTask) avT;
-            return avDT.getPath().getLinkCount() != 1;
+            return avDT.getPath().getLinkCount() != 1; //TODO seems it is different to the same function in AmodeusDriveTaskTracker
         }
         if (avT instanceof AVPickupTask || avT instanceof AVDropoffTask)
             return false;
