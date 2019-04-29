@@ -101,7 +101,7 @@ public enum NumberPassengerStatusDistribution implements AnalysisExport {
         /** plot image */
         VisualSet visualSet = new VisualSet(colorDataIndexed);
         for (int i = 0; i < statusLabels.length; ++i) {
-            Tensor vals = Transpose.of(valuesComplet).get(i);
+            Tensor vals = valuesComplet.get(Tensor.ALL, i);
             vals = StaticHelper.FILTER_ON //
                     ? MeanFilter.of(vals, StaticHelper.FILTERSIZE)
                     : vals;

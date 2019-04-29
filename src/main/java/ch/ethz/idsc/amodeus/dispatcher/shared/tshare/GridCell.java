@@ -20,8 +20,8 @@ import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.qty.Quantity;
+import ch.ethz.idsc.tensor.sca.Sign;
 
 /* package */ class GridCell {
 
@@ -90,8 +90,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
     }
 
     public List<VirtualNode<Link>> nodesReachableWithin(Scalar time) {
-        GlobalAssert.that(Scalars.lessEquals(Quantity.of(0, SI.SECOND), time));
-        return this.nodesWithinLessThan.lowerEntry(time).getValue();
+        return nodesWithinLessThan.lowerEntry(Sign.requirePositiveOrZero(time)).getValue();
 
         //// NavigableMap<Scalar,List<VirtualNode<Link>>> nodesWithinLessthan = new TreeMap<>();
         //// return nodesWithinLessthan(time);

@@ -16,7 +16,7 @@ import org.jfree.ui.RectangleEdge;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.alg.Transpose;
+import ch.ethz.idsc.tensor.Unprotect;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
 public enum StackedTimeChart {
@@ -30,8 +30,9 @@ public enum StackedTimeChart {
             String[] labels, String yAxisLabel, Tensor time, Tensor values, ColorDataIndexed colorDataIndexed) throws Exception {
 
         GlobalAssert.that(time.length() == values.length());
-        GlobalAssert.that(Transpose.of(values).length() == labels.length);
-        GlobalAssert.that(Transpose.of(values).length() == scale.length);
+
+        GlobalAssert.that(Unprotect.dimension1(values) == labels.length);
+        GlobalAssert.that(Unprotect.dimension1(values) == scale.length);
 
         // filter if required
         Tensor valuesPlot = filter ? StaticHelper.filtered(values, filterSize) : values;
@@ -39,7 +40,8 @@ public enum StackedTimeChart {
         // fill data to plotting function
         final TimeTableXYDataset dataset = new TimeTableXYDataset();
         double dataPoint;
-        for (int i = 0; i < Transpose.of(valuesPlot).length(); i++) {
+        int dimension1 = Unprotect.dimension1(valuesPlot);
+        for (int i = 0; i < dimension1; i++) {
             for (int j = 0; j < time.length(); j++) {
                 dataPoint = valuesPlot.get(j).Get(i).number().doubleValue() * scale[i];
                 dataset.add(StaticHelper.toTime(time.Get(j).number().doubleValue()), //

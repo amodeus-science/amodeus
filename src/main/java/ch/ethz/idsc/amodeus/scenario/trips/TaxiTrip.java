@@ -7,11 +7,8 @@ import org.matsim.api.core.v01.Coord;
 
 import ch.ethz.idsc.amodeus.scenario.time.Duration;
 import ch.ethz.idsc.amodeus.scenario.time.LocalDateTimes;
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Scalars;
-import ch.ethz.idsc.tensor.qty.Quantity;
+import ch.ethz.idsc.tensor.sca.Sign;
 
 /** The class {@link TaxiTrip} is used to transform taxi trips from databases into scenarios
  * for AMoDeus. It contains the relevant recordings of a typical taxi trip recording. */
@@ -63,10 +60,10 @@ public class TaxiTrip implements Comparable<TaxiTrip> {
             Scalar distance, Scalar waitTime, //
             LocalDateTime pickupDate, Scalar duration) {
         try {
-            GlobalAssert.that(Scalars.lessEquals(Quantity.of(0, SI.SECOND), duration));
             return new TaxiTrip(id, taxiId, pickupLoc, dropoffLoc, //
                     distance, waitTime, //
-                    pickupDate, LocalDateTimes.addTo(pickupDate, duration), duration);
+                    pickupDate, LocalDateTimes.addTo(pickupDate, duration), //
+                    Sign.requirePositiveOrZero(duration));
         } catch (Exception exception) {
             System.err.println("Possible: pickupDate after dropoff date in generation" + //
                     "of taxi trip..");
