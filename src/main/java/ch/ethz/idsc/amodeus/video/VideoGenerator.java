@@ -59,7 +59,7 @@ public class VideoGenerator implements Runnable {
             ReferenceFrame referenceFrame = scenarioOptions.getLocationSpec().referenceFrame();
             /** reference frame needs to be set manually in IDSCOptions.properties file */
 
-            Network network = NetworkLoader.fromNetworkFile(new File(workingDirectory, config.network().getInputFile()));
+            Network network = NetworkLoader.fromNetworkFile(new File(config.network().getInputFile()));
 
             export(network, referenceFrame, scenarioOptions, outputSubDirectory);
 
