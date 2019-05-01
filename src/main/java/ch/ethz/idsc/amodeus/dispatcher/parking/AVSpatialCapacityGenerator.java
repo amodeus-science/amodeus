@@ -12,6 +12,6 @@ public interface AVSpatialCapacityGenerator {
      * 
      * @param network The Network for which the {@link AVSpatialCapacityAmodeus} should be generated
      * @return */
-    AVSpatialCapacityAmodeus generate(Network network, Population population);
+    ParkingCapacityAmodeus generate(Network network, Population population);
 
 }
