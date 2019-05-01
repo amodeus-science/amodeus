@@ -70,10 +70,9 @@ class ParkingAdvancedDiffusionHelper {
             Link destination = secondNeighbors.get(0);
             refreshOccMap(rt, destination);
             return destination;
-        } else {
-            Link destination = destMap.lastEntry().getValue();
-            return destination;
         }
+        Link destination = destMap.lastEntry().getValue();
+        return destination;
     }
 
     private void refreshOccMap(RoboTaxi rt, Link destination) {

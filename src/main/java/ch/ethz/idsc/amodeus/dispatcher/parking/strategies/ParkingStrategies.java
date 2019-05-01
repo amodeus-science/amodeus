@@ -24,6 +24,7 @@ public enum ParkingStrategies {
 
                 @Override
                 public void setRunntimeParameters(ParkingCapacityAmodeus avSpatialCapacityAmodeus, Network network, DistanceFunction distanceFunction) {
+                    // ---
                 }
             };
         }
