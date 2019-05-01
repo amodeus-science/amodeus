@@ -32,15 +32,12 @@ public class Pt2MatsimXML {
                     String old = theAttributes.get(1).getValue();
                     theAttributes.get(1).setValue(systemSpecificPath + "/" + old);
                     System.out.println(theAttributes.get(1).getValue());
-                    System.err.println("haha");
                 }
 
                 if (theAttributes.get(0).getValue().equals("outputNetworkFile")) {
                     String old = theAttributes.get(1).getValue();
                     theAttributes.get(1).setValue(systemSpecificPath + "/" + old);
-                    System.err.println("haha");
                 }
-
             }
         }
     }

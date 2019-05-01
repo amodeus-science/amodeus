@@ -34,7 +34,7 @@ public class TripFleetConverter implements FleetConverter {
         // ===================================
         ScenarioOptions simOptions = new ScenarioOptions(processingDir, ScenarioOptionsBase.getDefault());
 
-        File configFile = new File(processingDir, simOptions.getPreparerConfigName());
+        File configFile = new File(simOptions.getPreparerConfigName());
         GlobalAssert.that(configFile.exists());
         Config configFull = ConfigUtils.loadConfig(configFile.toString());
         Network network = NetworkLoader.fromNetworkFile(new File(processingDir, configFull.network().getInputFile())); // loadNetwork(configFile);

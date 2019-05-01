@@ -35,7 +35,7 @@ public enum ScenarioAssembler {
         /** copy initial config files */
         CopyOption[] options = new CopyOption[] { StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES };
         String[] fileNames = new String[] { "AmodeusOptions.properties", "av.xml", //
-                "config_full.xml", "config.xml", "network.xml" };
+                "config_full.xml", "network.xml" };
 
         for (String fileName : fileNames) {
             File sourceFile = new File(dataDir, fileName);
