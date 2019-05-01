@@ -17,7 +17,7 @@ import org.gnu.glpk.glp_prob;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
+import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 class ParkingLPSolver {

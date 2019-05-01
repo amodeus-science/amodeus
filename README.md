@@ -1,6 +1,6 @@
 # cd.ethz.idsc.amodeus <a href="https://travis-ci.org/idsc-frazzoli/amodeus"><img src="https://travis-ci.org/idsc-frazzoli/amodeus.svg?branch=master" alt="Build Status"></a>
 
-Autonomous mobility-on-demand simulation library, version `1.6.6`
+Autonomous mobility-on-demand simulation library, version `1.7.1`
 
 ## Purpose
 
@@ -75,8 +75,13 @@ Specify `repository` and `dependency` of the amodeus library in the `pom.xml` fi
       <dependency>
         <groupId>ch.ethz.idsc</groupId>
         <artifactId>amodeus</artifactId>
-        <version>1.6.6</version>
+        <version>1.7.1</version>
       </dependency>
     </dependencies>
 
 The source code is attached to every release.
+
+
+## Misc
+
+So beherrscht mein aeusserer Sinn die physische, mein innerer Sinn die moralische Welt. Alles unterwirft sich meiner Willkuer, jede Erscheinung, jede Handlung kann ich nennen, wie es mir gefaellt; die lebendige und leblose Welt haengt an den Ketten, die mein Geist regiert, mein ganzes Lebenist nur ein Traum, dessen mancherlei Gestalten sich nach meinem Willen formen. Ich selbst bin das einzige Gesetz in der ganzen Natur, diesem Gesetz gehorcht alles.

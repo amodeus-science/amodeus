@@ -8,6 +8,7 @@ import com.google.common.io.Files;
 
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
+import ch.ethz.idsc.amodeus.util.io.MultiFileReader;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
 public class VirtualNetworkExport implements AnalysisExport {
@@ -19,37 +20,19 @@ public class VirtualNetworkExport implements AnalysisExport {
 
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
-        final File virtualNetworkFolder = new File(scenarioOptions.getWorkingDirectory(), scenarioOptions.getVirtualNetworkName());
-
+        final File virtualNetworkFolder = new File(scenarioOptions.getVirtualNetworkDirectoryName());
+        System.out.println("virtualNetworkFolder:  " + virtualNetworkFolder.getAbsolutePath());
         try {//
-            File virtualNetworkFile = new File(virtualNetworkFolder, scenarioOptions.getVirtualNetworkName());
-            File copyTo = new File(relativeDirectory, scenarioOptions.getVirtualNetworkName());
-            // GlobalAssert.that(virtualNetworkFile.exists());
-            // GlobalAssert.that(copyTo.getParentFile().isDirectory());
-            System.out.println(virtualNetworkFile);
-            System.out.println(copyTo);
-            Files.copy(virtualNetworkFile, copyTo);
+            File copyToDir = new File(relativeDirectory, virtualNetworkFolder.getName());
+            copyToDir.delete();
+            copyToDir.mkdirs();
+            for (File file : new MultiFileReader(virtualNetworkFolder).getFolderFiles()) {
+                Files.copy(file, new File(copyToDir + "/" + file.getName()));
+            }
         } catch (IOException exception) {
-            System.err.println("The virtual network file was not copied to the data directory as");
-            System.err.println("it was not found. A possible reason is that no virtualnetwork was");
-            System.err.println("created in this simulation. ");
+            System.err.println("The virtual network file was not copied to the data directory...");
+            System.err.println("Some I/O error, check class ch.ethz.idsc.amodeus.analysis.VirtualNetworkExport");
+            exception.printStackTrace();
         }
-
-        // if (virtualNetworkFolder.isDirectory()) {
-        // File virtualNetworkFile = new File(virtualNetworkFolder, scenOptions.getVirtualNetworkName());
-        // File copyTo = new File(relativeDirectory, scenOptions.getVirtualNetworkName());
-        // GlobalAssert.that(virtualNetworkFile.exists());
-        // GlobalAssert.that(copyTo.getParentFile().isDirectory());
-        // try {
-        // System.out.println(virtualNetworkFile);
-        // System.out.println(copyTo);
-        // Files.copy(virtualNetworkFile, copyTo);
-        // } catch (IOException e) {
-        // GlobalAssert.that(false);
-        // }
-        // } else
-        // System.err.println("virtual directory not found");
-
     }
-
 }

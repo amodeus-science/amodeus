@@ -10,7 +10,7 @@ import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.parking.ParkingCapacityAmodeus;
-import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
+import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 
 public enum ParkingStrategies {
     NONE() {

@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ch.ethz.idsc</groupId>
 	<artifactId>amodeus</artifactId>
-	<version>1.6.6</version>
+	<version>1.7.1</version>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -38,7 +38,7 @@
 		<dependency>
 			<groupId>ch.ethz.idsc</groupId>
 			<artifactId>tensor</artifactId>
-			<version>0.6.9</version>
+			<version>0.7.1</version>
 		</dependency>
 		<dependency>
 			<groupId>de.lmu.ifi.dbs.elki</groupId>
@@ -59,6 +59,11 @@
 			<groupId>io.humble</groupId>
 			<artifactId>humble-video-all</artifactId>
 			<version>0.2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.matsim</groupId>
+			<artifactId>pt2matsim</artifactId>
+			<version>19.2</version>
 		</dependency>
 
 		<dependency><!-- workaround since jaxb api is not part of java 9 -->
@@ -93,6 +98,10 @@
 			<name>Xypron Release</name>
 			<url>http://rsync.xypron.de/repository</url>
 			<layout>default</layout>
+		</repository>
+		<repository>
+			<id>pt2matsim</id>
+			<url>http://dl.bintray.com/polettif/matsim</url>
 		</repository>
 	</repositories>
 

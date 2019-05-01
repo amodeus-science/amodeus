@@ -66,7 +66,7 @@ public class TreeMultipleItems<T> {
                 newSet.add(t);
                 tree.put(submission, newSet);
             }
-            // TODO add check for tree
+            // TODO add check for tree, clruch @ datahaki, is the TODO clear for you?
             GlobalAssert.that(setok);
         }
     }

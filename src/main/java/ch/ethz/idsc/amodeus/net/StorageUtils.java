@@ -21,6 +21,7 @@ public class StorageUtils {
     private final File directory;
 
     public StorageUtils(File outputdirectory) {
+        System.out.println("StorageUtils output directory location: " + outputdirectory.getAbsolutePath());
         if (outputdirectory.isDirectory()) {
             output = outputdirectory;
 

@@ -28,12 +28,12 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.ExtDemandSupplyBeamSharing;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
-import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.TreeMaintainer;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
+import ch.ethz.idsc.amodeus.routing.EuclideanDistanceFunction;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -151,13 +151,10 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
 
             Collection<RoboTaxi> unassignedRoboTaxisNow = new HashSet<>(unassignedRoboTaxis.getValues());
 
-            for (RoboTaxi robotaxi : unassignedRoboTaxisNow) {
-                if (!robotaxi.getStatus().equals(RoboTaxiStatus.STAY)) {
-                    if (unassignedRoboTaxis.contains(robotaxi)) {
-                        unassignedRoboTaxis.remove(robotaxi);
-                    }
-                }
-            }
+            for (RoboTaxi robotaxi : unassignedRoboTaxisNow)
+                if (!robotaxi.getStatus().equals(RoboTaxiStatus.STAY))
+                    unassignedRoboTaxis.remove(robotaxi);
+
         }
 
         // ADDITIONAL SHARING POSSIBILITY AT EACH PICKUP
