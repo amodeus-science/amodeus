@@ -2,18 +2,20 @@
 package ch.ethz.idsc.amodeus.analysis.shared;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.amodeus.analysis.element.NumberPassengersAnalysis;
 import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionElement;
-import ch.ethz.idsc.amodeus.analysis.plot.StackedTimeChart;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.subare.plot.VisualRow;
+import ch.ethz.idsc.subare.plot.VisualSet;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -22,6 +24,7 @@ import ch.ethz.idsc.tensor.alg.Reverse;
 import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.img.ColorDataGradients;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
+import ch.ethz.idsc.tensor.img.MeanFilter;
 import ch.ethz.idsc.tensor.opt.ScalarTensorFunction;
 import ch.ethz.idsc.tensor.red.Total;
 
@@ -31,6 +34,8 @@ public enum NumberPassengerStatusDistribution implements AnalysisExport {
     public static final String FILENAME = "statusDistributionNumPassengers";
     // TODO might be done dependent on the Secnario Options
     public static final ScalarTensorFunction COLOR_DATA_GRADIENT_DEFAULT = ColorDataGradients.SUNSET;
+    public static final int WIDTH = 1000; /* Width of the image */
+    public static final int HEIGHT = 750; /* Height of the image */
 
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
@@ -79,30 +84,11 @@ public enum NumberPassengerStatusDistribution implements AnalysisExport {
         colorDataCreator.append(nPCS.of(RoboTaxiStatus.REBALANCEDRIVE));
         colorDataCreator.append(nPCS.of(RoboTaxiStatus.STAY));
         colorDataCreator.append(nPCS.of(RoboTaxiStatus.OFFSERVICE));
-        ColorDataIndexed colorScheme = colorDataCreator.getColorDataIndexed();
+        // ColorDataIndexed colorScheme = colorDataCreator.getColorDataIndexed();
 
         /** create scaling factor */
-        Double[] scale = new Double[statusLabels.length];
-        Arrays.fill(scale, 1.0);
-
-        /** plot image */
-        try {
-            StackedTimeChart.of( //
-                    relativeDirectory, //
-                    FILENAME, //
-                    "Number Passengers", //
-                    StaticHelper.FILTER_ON, //
-                    StaticHelper.FILTERSIZE, //
-                    scale, //
-                    statusLabels, //
-                    "RoboTaxis", //
-                    time, //
-                    valuesComplet, //
-                    colorScheme);
-        } catch (Exception e1) {
-            System.err.println("The Modular number Passenger Tensor was not carried out!!");
-            e1.printStackTrace();
-        }
+        // double[] scale = new double[statusLabels.length];
+        // Arrays.fill(scale, 1.0);
 
         /** Store Tensor */
         try {
@@ -112,5 +98,30 @@ public enum NumberPassengerStatusDistribution implements AnalysisExport {
             e.printStackTrace();
         }
 
+        /** plot image */
+        VisualSet visualSet = new VisualSet(colorDataIndexed);
+        for (int i = 0; i < statusLabels.length; ++i) {
+            Tensor vals = valuesComplet.get(Tensor.ALL, i);
+            vals = StaticHelper.FILTER_ON //
+                    ? MeanFilter.of(vals, StaticHelper.FILTERSIZE)
+                    : vals;
+            VisualRow visualRow = visualSet.add(time, vals);
+            visualRow.setLabel(statusLabels[i]);
+        }
+
+        visualSet.setPlotLabel("Number Passengers");
+        visualSet.setRangeAxisLabel("RoboTaxis");
+
+        JFreeChart chart = ch.ethz.idsc.subare.plot.StackedTimedChart.of(visualSet);
+
+        try {
+            File fileChart = new File(relativeDirectory, FILENAME + ".png");
+            ChartUtilities.saveChartAsPNG(fileChart, chart, WIDTH, HEIGHT);
+            GlobalAssert.that(fileChart.isFile());
+            System.out.println("Exported " + FILENAME + ".png");
+        } catch (Exception exception) {
+            System.err.println("Plotting " + FILENAME + " failed");
+            exception.printStackTrace();
+        }
     }
 }

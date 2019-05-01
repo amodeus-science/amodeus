@@ -9,7 +9,6 @@ import java.util.Map;
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.StackedDistanceChartImage;
 import ch.ethz.idsc.amodeus.analysis.element.DistanceElement;
-import ch.ethz.idsc.amodeus.analysis.plot.CompositionStack;
 
 public enum DistanceElementHtml implements HtmlReportElement {
     INSTANCE;
@@ -49,7 +48,8 @@ public enum DistanceElementHtml implements HtmlReportElement {
                 "\n" + //
                 "\n" + DECIMAL.format(de.totalDistanceWtCst / de.requestIndices.size()) + " km");
         File img = new File(IMAGE_FOLDER, StackedDistanceChartImage.FILENAME + ".png");
-        aRElement.getHTMLGenerator().insertImg(img.getPath(), CompositionStack.WIDTH, CompositionStack.HEIGHT);
+        aRElement.getHTMLGenerator() //
+                .insertImg(img.getPath(), StackedDistanceChartImage.WIDTH, StackedDistanceChartImage.HEIGHT);
         bodyElements.put(aRKey, aRElement);
         return bodyElements;
     }

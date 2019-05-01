@@ -12,7 +12,9 @@ import java.util.stream.Collectors;
 
 import org.matsim.api.core.v01.network.Link;
 
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.util.TreeMultipleItems;
+import ch.ethz.idsc.amodeus.routing.NetworkTimeDistInterface;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** A {@link RequestHandler} takes care of all the requests in the scenario. It allows to quickly access the desired subgoups such as unassigned Requests or
@@ -48,15 +50,15 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         this.waitListTime = waitListTime;
     }
 
-    void addUnassignedRequests(Collection<AVRequest> unassignedAVRequests, TravelTimeCalculatorCached timeDb) {
+    void addUnassignedRequests(Collection<AVRequest> unassignedAVRequests, NetworkTimeDistInterface timeDb, Double now) {
         unassignedAVRequests.stream().forEach(r -> {
             unassignedRequests.add(r);
             requestsLastHour.add(r);
-            driveTimesSingle.put(r, timeDb.timeFromTo(r.getFromLink(), r.getToLink()).number().doubleValue());
+            driveTimesSingle.put(r, timeDb.travelTime(r.getFromLink(), r.getToLink(), now).number().doubleValue());
         });
 
         unassignedAVRequests.stream().filter(avr -> !requests.containsKey(avr)).forEach(avr -> requests.put(avr, new RequestWrap(avr)));
-        unassignedAVRequests.forEach(avr -> requests.get(avr).setUnitCapDriveTime(timeDb.timeFromTo(avr.getFromLink(), avr.getToLink()).number().doubleValue()));
+        unassignedAVRequests.forEach(avr -> requests.get(avr).setUnitCapDriveTime(timeDb.travelTime(avr.getFromLink(), avr.getToLink(), now).number().doubleValue()));
     }
 
     void updatePickupTimes(Collection<AVRequest> avRequests, double now) {
@@ -100,6 +102,26 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
     double getDriveTimeDirectUnitCap(AVRequest avRequest) {
         return driveTimesSingle.get(avRequest);
+    }
+
+    Map<AVRequest, Double> getDriveTimes(SharedAvRoute route) {
+        // Preparation
+        Map<AVRequest, Double> thisPickupTimes = new HashMap<>();
+        route.getRoute().stream() //
+                .filter(srp -> srp.getMealType().equals(SharedMealType.PICKUP)) //
+                .forEach(srp -> thisPickupTimes.put(srp.getAvRequest(), srp.getArrivalTime()));
+        //
+        Map<AVRequest, Double> driveTimes = new HashMap<>();
+        for (SharedRoutePoint sharedRoutePoint : route.getRoute())
+            if (sharedRoutePoint.getMealType().equals(SharedMealType.DROPOFF))
+                if (thisPickupTimes.containsKey(sharedRoutePoint.getAvRequest())) {
+                    // TODO does it include the dropoff or not?
+                    driveTimes.put(sharedRoutePoint.getAvRequest(), sharedRoutePoint.getEndTime() - thisPickupTimes.get(sharedRoutePoint.getAvRequest()));
+                } else {
+                    driveTimes.put(sharedRoutePoint.getAvRequest(), sharedRoutePoint.getEndTime() - getPickupTime(sharedRoutePoint.getAvRequest()));
+                }
+
+        return driveTimes;
     }
 
     double getPickupTime(AVRequest avRequest) {

@@ -1,7 +1,9 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.analysis;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.Objects;
 
 import ch.ethz.idsc.amodeus.analysis.element.DistanceElement;
 import ch.ethz.idsc.amodeus.analysis.element.NumberPassengersAnalysis;
@@ -9,20 +11,26 @@ import ch.ethz.idsc.amodeus.analysis.element.RequestRobotaxiInformationElement;
 import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionElement;
 import ch.ethz.idsc.amodeus.analysis.element.TravelTimeAnalysis;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
+import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 
 public class AnalysisSummary implements Serializable {
 
-    private final ScenarioParameters scenarioParameters = new ScenarioParameters();
+    private final ScenarioParameters scenarioParameters;
     private final RequestRobotaxiInformationElement simulationInformationElement = new RequestRobotaxiInformationElement();
     private final StatusDistributionElement statusDistribution = new StatusDistributionElement();
     private final DistanceElement distanceElement;
     private final TravelTimeAnalysis travelTimeAnalysis = new TravelTimeAnalysis();
     private final NumberPassengersAnalysis numberPassengersAnalysis = new NumberPassengersAnalysis();
 
-    // TODO Claudio, is public required here? We normally use it as a Part of the Analysis()
-    // Thus an initialization of AnalysisSummary() is superficial..
-    public AnalysisSummary(int numVehicles, int size, MatsimAmodeusDatabase db) {
+    /** @param numVehicles
+     * @param size
+     * @param db non-null
+     * @throws IOException */
+    public AnalysisSummary(int numVehicles, int size, MatsimAmodeusDatabase db, //
+            ScenarioOptions scenarioOptions) throws IOException {
+        Objects.requireNonNull(db);
         distanceElement = new DistanceElement(numVehicles, size, db);
+        scenarioParameters = new ScenarioParameters(scenarioOptions);
     }
 
     public ScenarioParameters getScenarioParameters() {

@@ -12,6 +12,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
+import ch.ethz.idsc.amodeus.routing.CachedNetworkTimeDistance;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Scalar;
@@ -24,14 +25,14 @@ import ch.ethz.idsc.tensor.qty.Quantity;
     static SharedAvRoute of( //
             List<SharedCourse> list, Link currentLink, //
             double now, double pickupTime, double dropofftime, //
-            TravelTimeCalculatorCached timeDb) {
+            CachedNetworkTimeDistance timeDb) {
         List<SharedRoutePoint> routePoints = new ArrayList<>();
         Scalar departureTime = Quantity.of(now, SI.SECOND);
         for (int i = 0; i < list.size(); i++) {
             double stopDuration = getStopDuration(list.get(i).getMealType(), pickupTime, dropofftime);
             Link fromLink = (i == 0) ? currentLink : list.get(i - 1).getLink();
             Link toLink = list.get(i).getLink();
-            Scalar driveTime = timeDb.timeFromTo(fromLink, toLink);
+            Scalar driveTime = timeDb.travelTime(fromLink, toLink, now);
             // TODO If the speed becomes to low in the future, here we could improve it by checking
             // the constraints here already to abort a route generation if the constraints are not fulfilled.
             SharedRoutePoint sharedRoutePoint = new SharedRoutePoint(list.get(i), departureTime.add(driveTime).number().doubleValue(), stopDuration);
@@ -41,7 +42,8 @@ import ch.ethz.idsc.tensor.qty.Quantity;
         return SharedAvRoute.of(routePoints);
     }
 
-    /** Creates a Shared Menu which is consistent in itself (e.g. no coureses appear twice, for each request it is secured that the dropoff happens after the pickup
+    /** Creates a Shared Menu which is consistent in itself (e.g. no coureses appear twice, for each request it is secured that the dropoff happens after the
+     * pickup
      * 
      * @param list of {@link SharedCourse}
      * @return */

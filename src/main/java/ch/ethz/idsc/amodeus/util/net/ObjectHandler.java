@@ -4,6 +4,7 @@
 package ch.ethz.idsc.amodeus.util.net;
 
 /** callback function for use with ObjectSocket, and ObjectClient */
+@FunctionalInterface
 public interface ObjectHandler {
     /** @param object received via socket */
     void handle(Object object);

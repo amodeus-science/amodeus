@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.analysis.element;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -18,7 +19,6 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Join;
-import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.io.TableBuilder;
 import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.red.Max;
@@ -109,17 +109,17 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
 
     /** @return {@link Tensor} containing all recorded wait times of the simulation */
     public Tensor getWaitTimes() {
-        return Transpose.of(travelTimes.toTable()).get(1);
+        return travelTimes.toTable().get(Tensor.ALL, 1);
     }
 
     /** @return {@link Tensor} containing all recorded drive times of the simulation */
     public Tensor getDriveTimes() {
-        return Transpose.of(travelTimes.toTable()).get(2);
+        return travelTimes.toTable().get(Tensor.ALL, 2);
     }
 
     /** @return {@link Tensor} containing all recorded total journey times of the simulation */
     public Tensor getTotalJourneyTimes() {
-        return Transpose.of(travelTimes.toTable()).get(3);
+        return travelTimes.toTable().get(Tensor.ALL, 3);
     }
 
     /** @return {@link Tensor} containing
@@ -141,6 +141,11 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
      *         chosen quantiles defined in {@link Quantiles} */
     public Tensor getTotJAggrgte() {
         return totJTAgg;
+    }
+
+    /** @return and unmodifiable Map on the travel histories with the Request Index as key and the {@link TravelHistory} as value */
+    public Map<Integer, TravelHistory> getTravelHistories() {
+        return Collections.unmodifiableMap(travelHistories);
     }
 
     @Override

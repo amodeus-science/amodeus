@@ -18,7 +18,7 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.MultiPolygons;
 import ch.ethz.idsc.amodeus.virtualnetwork.MultiPolygonsVirtualNetworkCreator;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.tensor.Tensor;
 
 public enum MatsimShapeFileVirtualNetworkCreator {

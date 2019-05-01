@@ -10,10 +10,12 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 public enum MultiFileTools {
     ;
 
-    /** @return {@link File} of current working directory
+    /** @return default working directory as set in the Runtime configurations, please use this
+     *         function only in main functions
+     * 
      * @throws IOException */
-    public static File getWorkingDirectory() throws IOException {
-        return new File("").getCanonicalFile();
+    public static File getDefaultWorkingDirectory() throws IOException {
+        return new File(".").getCanonicalFile();
     }
 
     /** @return all directories in filesDirectory sorted by name */

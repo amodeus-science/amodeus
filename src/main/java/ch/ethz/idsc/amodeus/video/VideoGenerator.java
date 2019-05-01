@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.video;
 
 import java.awt.Dimension;
@@ -29,8 +30,8 @@ import ch.ethz.idsc.amodeus.net.StorageUtils;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkGet;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkGet;
 
 public class VideoGenerator implements Runnable {
     Thread thread;
@@ -58,7 +59,7 @@ public class VideoGenerator implements Runnable {
             ReferenceFrame referenceFrame = scenarioOptions.getLocationSpec().referenceFrame();
             /** reference frame needs to be set manually in IDSCOptions.properties file */
 
-            Network network = NetworkLoader.fromNetworkFile(new File(workingDirectory, config.network().getInputFile()));
+            Network network = NetworkLoader.fromNetworkFile(new File(config.network().getInputFile()));
 
             export(network, referenceFrame, scenarioOptions, outputSubDirectory);
 
@@ -115,7 +116,7 @@ public class VideoGenerator implements Runnable {
 
         /** this is optional and should not cause problems if file does not
          * exist. temporary solution */
-        VirtualNetwork<Link> virtualNetwork = VirtualNetworkGet.readDefault(network); // may be null
+        VirtualNetwork<Link> virtualNetwork = VirtualNetworkGet.readDefault(network, scenarioOptions); // may be null
         System.out.println("has vn: " + (virtualNetwork != null));
         VirtualNetworkLayer virtualNetworkLayer = new VirtualNetworkLayer(amodeusComponent);
         virtualNetworkLayer.setVirtualNetwork(virtualNetwork);

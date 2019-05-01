@@ -16,6 +16,7 @@ import org.matsim.core.utils.collections.QuadTree.Rect;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.shared.fifs.BlockRebalancingHelper.ShortestTrip;
+import ch.ethz.idsc.amodeus.routing.NetworkTimeDistInterface;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 /** A {@link Block} is the central Element for the Block Rebalancing- It is a virtual rectangular zone placed in a grid. Thus it has four adjacent blocks.
@@ -151,7 +152,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
     /** This function gives back the rebalance directives based on all the planed Movements of Robotaxis which were done with the {@link pushRobotaxiTo()}
      * method. */
-    RebalancingDirectives executeRebalance(TravelTimeCalculator timeDb) {
+    RebalancingDirectives executeRebalance(NetworkTimeDistInterface timeDb, Double now) {
         Map<RoboTaxi, Link> rebalanceDirectives = new HashMap<>();
         /** calculate the number of pushes from this block */
         int numRebalancings = getNumberPushingVehicles();
@@ -159,7 +160,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
         if (numRebalancings > 0) {
             Set<Block> blocks = adjacentBlocks.keySet().stream().filter(b -> adjacentBlocks.get(b).intValue() > 0).collect(Collectors.toSet());
-            BlockRebalancingHelper blockHelper = new BlockRebalancingHelper(blocks, freeRoboTaxis, timeDb);
+            BlockRebalancingHelper blockHelper = new BlockRebalancingHelper(blocks, freeRoboTaxis, timeDb, now);
             /** for all planed pushes */
             for (int i = 0; i < numRebalancings; i++) {
                 /** find the shortest possible trip for all Robotaxis and blocks which need roboTaxis from this blcok */

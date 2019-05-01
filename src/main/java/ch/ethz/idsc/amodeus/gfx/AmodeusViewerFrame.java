@@ -33,13 +33,14 @@ import ch.ethz.idsc.amodeus.net.IterationFolder;
 import ch.ethz.idsc.amodeus.net.SimulationFolderUtils;
 import ch.ethz.idsc.amodeus.net.StorageSupplier;
 import ch.ethz.idsc.amodeus.net.StorageUtils;
+import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.util.gui.RowPanel;
 import ch.ethz.idsc.amodeus.util.gui.SpinnerLabel;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.view.jmapviewer.Coordinate;
 import ch.ethz.idsc.amodeus.view.jmapviewer.JMapViewer;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetworkGet;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkGet;
 import ch.ethz.idsc.tensor.RealScalar;
 
 /** Demonstrates the usage of {@link JMapViewer} */
@@ -55,6 +56,7 @@ public class AmodeusViewerFrame implements Runnable {
     private int playbackSpeed = 50;
     private final Thread thread;
     private StorageUtils storageUtils;
+    private final ScenarioOptions scenarioOptions;
 
     public final JFrame jFrame = new JFrame();
     private StorageSupplier storageSupplier = new DummyStorageSupplier();
@@ -68,8 +70,8 @@ public class AmodeusViewerFrame implements Runnable {
     private final Network network;
 
     /** the new constructor is public AmodeusViewerFrame(AmodeusComponent amodeusComponent, File workingDirectory, File defaultDirectory) */
-    public AmodeusViewerFrame(AmodeusComponent amodeusComponent, File outputDirectory, Network network) {
-        this(amodeusComponent, outputDirectory, outputDirectory, network);
+    public AmodeusViewerFrame(AmodeusComponent amodeusComponent, File outputDirectory, Network network, ScenarioOptions scenarioOptions) {
+        this(amodeusComponent, outputDirectory, outputDirectory, network, scenarioOptions);
     }
 
     /** Constructs the {@code Demo}.
@@ -78,8 +80,9 @@ public class AmodeusViewerFrame implements Runnable {
      * @param outputDirectory
      * @param defaultDirectory TODO Joel document difference to outputDirectory
      * @param network */
-    public AmodeusViewerFrame(AmodeusComponent amodeusComponent, File outputDirectory, File defaultDirectory, Network network) {
+    public AmodeusViewerFrame(AmodeusComponent amodeusComponent, File outputDirectory, File defaultDirectory, Network network, ScenarioOptions scenarioOptions) {
         this.network = network;
+        this.scenarioOptions = scenarioOptions;
         this.amodeusComponent = amodeusComponent;
         // ---
         jFrame.setTitle(TITLE);
@@ -232,7 +235,7 @@ public class AmodeusViewerFrame implements Runnable {
 
     void setVirtualNetwork(File selectedDirectory) {
         try {
-            amodeusComponent.virtualNetworkLayer.setVirtualNetwork(VirtualNetworkGet.readFromOutputDirectory(network, selectedDirectory));
+            amodeusComponent.virtualNetworkLayer.setVirtualNetwork(VirtualNetworkGet.readFromOutputDirectory(network, selectedDirectory, scenarioOptions));
         } catch (IOException e) {
             GlobalAssert.that(false);
         }

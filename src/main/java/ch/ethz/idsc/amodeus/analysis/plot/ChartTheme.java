@@ -12,41 +12,53 @@ import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.chart.renderer.xy.StandardXYBarPainter;
 import org.jfree.ui.RectangleInsets;
 
-public enum ChartTheme {
-    STANDARD {
-        @Override
-        public StandardChartTheme getChartTheme(boolean shadow) {
-            StandardChartTheme theme = new StandardChartTheme("amodeus");
-            theme.setExtraLargeFont(new Font("Dialog", Font.BOLD, 24));
-            theme.setLargeFont(new Font("Dialog", Font.PLAIN, 18));
-            theme.setRegularFont(new Font("Dialog", Font.PLAIN, 14));
-            theme.setSmallFont(new Font("Dialog", Font.PLAIN, 10));
-            theme.setTitlePaint(Color.BLACK);
-            theme.setSubtitlePaint(Color.BLACK);
-            theme.setLegendBackgroundPaint(Color.WHITE);
-            theme.setLegendItemPaint(Color.BLACK);
-            theme.setChartBackgroundPaint(Color.WHITE);
-            theme.setDrawingSupplier(new DefaultDrawingSupplier());
-            theme.setPlotBackgroundPaint(Color.WHITE);
-            theme.setPlotOutlinePaint(Color.BLACK);
-            theme.setLabelLinkStyle(PieLabelLinkStyle.STANDARD);
-            theme.setAxisOffset(new RectangleInsets(4, 4, 4, 4));
-            theme.setDomainGridlinePaint(Color.WHITE);
-            theme.setRangeGridlinePaint(Color.WHITE);
-            theme.setBaselinePaint(Color.BLACK);
-            theme.setCrosshairPaint(Color.BLACK);
-            theme.setAxisLabelPaint(Color.DARK_GRAY);
-            theme.setTickLabelPaint(Color.DARK_GRAY);
-            theme.setBarPainter(new StandardBarPainter());
-            theme.setXYBarPainter(new StandardXYBarPainter());
-            theme.setShadowVisible(shadow);
-            theme.setItemLabelPaint(Color.BLACK);
-            theme.setThermometerPaint(Color.WHITE);
-            theme.setWallPaint(BarRenderer3D.DEFAULT_WALL_PAINT);
-            theme.setErrorIndicatorPaint(Color.RED);
-            return theme;
-        }
-    };
+public class ChartTheme {
 
-    public abstract StandardChartTheme getChartTheme(boolean shadow);
+    private static StandardChartTheme getChartTheme(StandardChartTheme standardChartTheme, boolean shadow) {
+        standardChartTheme.setExtraLargeFont(new Font(Font.DIALOG, Font.BOLD, 24));
+        standardChartTheme.setLargeFont(new Font(Font.DIALOG, Font.PLAIN, 18));
+        standardChartTheme.setRegularFont(new Font(Font.DIALOG, Font.PLAIN, 14));
+        standardChartTheme.setSmallFont(new Font(Font.DIALOG, Font.PLAIN, 10));
+        standardChartTheme.setTitlePaint(Color.BLACK);
+        standardChartTheme.setSubtitlePaint(Color.BLACK);
+        standardChartTheme.setLegendBackgroundPaint(Color.WHITE);
+        standardChartTheme.setLegendItemPaint(Color.BLACK);
+        standardChartTheme.setChartBackgroundPaint(Color.WHITE);
+        standardChartTheme.setDrawingSupplier(new DefaultDrawingSupplier());
+        standardChartTheme.setPlotBackgroundPaint(Color.WHITE);
+        standardChartTheme.setPlotOutlinePaint(Color.BLACK);
+        standardChartTheme.setLabelLinkStyle(PieLabelLinkStyle.STANDARD);
+        standardChartTheme.setAxisOffset(new RectangleInsets(4, 4, 4, 4));
+        standardChartTheme.setDomainGridlinePaint(Color.LIGHT_GRAY);
+        standardChartTheme.setRangeGridlinePaint(Color.LIGHT_GRAY);
+        standardChartTheme.setBaselinePaint(Color.BLACK);
+        standardChartTheme.setCrosshairPaint(Color.BLACK);
+        standardChartTheme.setAxisLabelPaint(Color.DARK_GRAY);
+        standardChartTheme.setTickLabelPaint(Color.DARK_GRAY);
+        standardChartTheme.setBarPainter(new StandardBarPainter());
+        standardChartTheme.setXYBarPainter(new StandardXYBarPainter());
+        standardChartTheme.setShadowVisible(shadow);
+        standardChartTheme.setItemLabelPaint(Color.BLACK);
+        standardChartTheme.setThermometerPaint(Color.WHITE);
+        standardChartTheme.setWallPaint(BarRenderer3D.DEFAULT_WALL_PAINT);
+        standardChartTheme.setErrorIndicatorPaint(Color.RED);
+        return standardChartTheme;
+    }
+
+    public static final StandardChartTheme STANDARD = getChartTheme(new StandardChartTheme("amodeus"), false);
+    public static final StandardChartTheme SHADOWS = getChartTheme(new StandardChartTheme("amodeus_shadows"), true);
+
+    public static StandardChartTheme valueOf(String string) {
+        switch (string) {
+        case "STANDARD":
+            return STANDARD;
+        case "SHADOWS":
+            return SHADOWS;
+        }
+        throw new IllegalArgumentException(string);
+    }
+
+    private ChartTheme() {
+        // ---
+    }
 }

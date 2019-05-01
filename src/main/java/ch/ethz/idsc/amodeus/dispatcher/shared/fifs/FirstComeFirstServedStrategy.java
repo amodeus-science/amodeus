@@ -22,13 +22,15 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RebalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
-import ch.ethz.idsc.amodeus.dispatcher.util.EasyPathCalculator;
-import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.TreeMaintainer;
 import ch.ethz.idsc.amodeus.dispatcher.util.TreeMultipleItems;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
+import ch.ethz.idsc.amodeus.routing.CachedNetworkTimeDistance;
+import ch.ethz.idsc.amodeus.routing.EasyMinTimePathCalculator;
+import ch.ethz.idsc.amodeus.routing.EuclideanDistanceFunction;
+import ch.ethz.idsc.amodeus.routing.TimeDistanceProperty;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
@@ -63,7 +65,7 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
     private final Set<AVRequest> extremWaitList = new HashSet<>();
 
     private static final double MAXLAGTRAVELTIMECALCULATION = 1800.0;
-    private final TravelTimeCalculatorCached timeDb;
+    private final CachedNetworkTimeDistance timeDb;
 
     private final BlockRebalancing kockelmanRebalancing;
 
@@ -78,8 +80,8 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
         this.requestsLastHour = new TreeMultipleItems<>(this::getSubmissionTime);
 
         FastAStarLandmarksFactory factory = new FastAStarLandmarksFactory();
-        LeastCostPathCalculator calculator = EasyPathCalculator.prepPathCalculator(network, factory);
-        timeDb = TravelTimeCalculatorCached.of(calculator, MAXLAGTRAVELTIMECALCULATION);
+        LeastCostPathCalculator calculator = EasyMinTimePathCalculator.prepPathCalculator(network, factory);
+        timeDb = new CachedNetworkTimeDistance(calculator, MAXLAGTRAVELTIMECALCULATION, TimeDistanceProperty.INSTANCE);
 
         this.kockelmanRebalancing = new BlockRebalancing(network, timeDb, MINNUMBERROBOTAXISINBLOCKTOREBALANCE, BINSIZETRAVELDEMAND, dispatchPeriod, REBALANCINGGRIDDISTANCE);
     }
@@ -89,7 +91,6 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
         final long round_now = Math.round(now);
 
         if (round_now % dispatchPeriod == 0) {
-            timeDb.update(now);
 
             /** get open requests and available vehicles and put them into the desired
              * structures. Furthermore add all the requests to the one hour bin which is
@@ -116,7 +117,7 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
                 boolean assigned = false;
                 if (unassignedRoboTaxis.size() > 0) {
                     RoboTaxi closestRoboTaxi = unassignedRoboTaxis.getClosest(getLocation(avRequest));
-                    double travelTime = timeDb.timeFromTo(closestRoboTaxi.getDivertableLocation(), avRequest.getFromLink()).number().doubleValue();
+                    double travelTime = timeDb.travelTime(closestRoboTaxi.getDivertableLocation(), avRequest.getFromLink(), now).number().doubleValue();
                     if (travelTime < WAITTIME.calculate(avRequest, waitList, extremWaitList)) {
                         setRoboTaxiPickup(closestRoboTaxi, avRequest);
                         unassignedRoboTaxis.remove(closestRoboTaxi);

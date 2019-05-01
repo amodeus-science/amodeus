@@ -98,7 +98,7 @@ public enum SharedCourseListUtils {
     }
 
     public static boolean checkMenuConsistency(List<? extends SharedCourse> courses, int capacity) {
-        return checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(courses, capacity);
+        return Compatibility.of(courses).forCapacity(capacity);
     }
 
     /** @return false if any dropoff occurs after pickup in the menu.
@@ -114,25 +114,6 @@ public enum SharedCourseListUtils {
                     System.err.println("The SharedRoboTaxiMenu contains a pickup after its dropoff. Stopping Execution.");
                     return false;
                 }
-            }
-        }
-        return true;
-    }
-
-    public static boolean checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(List<? extends SharedCourse> courses, int roboTaxiCapacity) {
-        long futureNumberCustomers = SharedCourseListUtils.getNumberCustomersOnBoard(courses);
-        for (SharedCourse sharedAVCourse : courses) {
-            if (sharedAVCourse.getMealType().equals(SharedMealType.PICKUP)) {
-                futureNumberCustomers++;
-            } else if (sharedAVCourse.getMealType().equals(SharedMealType.DROPOFF)) {
-                futureNumberCustomers--;
-            } else if (sharedAVCourse.getMealType().equals(SharedMealType.REDIRECT)) {
-                // --
-            } else {
-                throw new IllegalArgumentException("Unknown SharedAVMealType -- please specify it !!!--");
-            }
-            if (futureNumberCustomers > roboTaxiCapacity) {
-                return false;
             }
         }
         return true;

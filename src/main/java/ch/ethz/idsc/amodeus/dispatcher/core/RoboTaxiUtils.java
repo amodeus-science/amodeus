@@ -47,8 +47,8 @@ public enum RoboTaxiUtils {
         return SharedCourseListUtils.getSecondCourse(roboTaxi.getUnmodifiableViewOfCourses());
     }
 
-    public static Link getStarterLink(RoboTaxi sRoboTaxi) {
-        Optional<SharedCourse> currentCourse = RoboTaxiUtils.getStarterCourse(sRoboTaxi);
+    public static Link getStarterLink(RoboTaxi roboTaxi) {
+        Optional<SharedCourse> currentCourse = RoboTaxiUtils.getStarterCourse(roboTaxi);
         GlobalAssert.that(currentCourse.isPresent());
         return currentCourse.get().getLink();
     }

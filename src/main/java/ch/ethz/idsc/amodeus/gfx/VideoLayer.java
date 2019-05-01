@@ -4,6 +4,7 @@ package ch.ethz.idsc.amodeus.gfx;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics2D;
+import java.io.File;
 import java.io.IOException;
 import java.util.stream.IntStream;
 
@@ -13,18 +14,19 @@ import javax.swing.JPanel;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.util.gui.RowPanel;
 import ch.ethz.idsc.amodeus.util.gui.SpinnerLabel;
-import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.video.VideoGenerator;
 
 /** Head Up Display */
 public class VideoLayer extends ViewerLayer {
+    private final File workingDirectory;
 
     private int fps;
     private int startTime;
     private int endTime;
 
-    public VideoLayer(AmodeusComponent amodeusComponent) {
+    public VideoLayer(AmodeusComponent amodeusComponent, File workingDirectory) {
         super(amodeusComponent);
+        this.workingDirectory = workingDirectory;
     }
 
     @Override
@@ -40,7 +42,7 @@ public class VideoLayer extends ViewerLayer {
             jButton.addActionListener(event -> {
                 try {
                     ViewerConfig viewerConfig = ViewerConfig.fromDefaults(amodeusComponent.db);
-                    viewerConfig.save(amodeusComponent, MultiFileTools.getWorkingDirectory());
+                    viewerConfig.save(amodeusComponent, workingDirectory);
                     System.out.println(viewerConfig);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -52,11 +54,7 @@ public class VideoLayer extends ViewerLayer {
             JButton jButton = new JButton("record");
             jButton.setToolTipText("record video with settings found in working directory or defaults");
             jButton.addActionListener(event -> {
-                try {
-                    (new VideoGenerator(MultiFileTools.getWorkingDirectory())).start();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                (new VideoGenerator(workingDirectory)).start();
             });
             rowPanel.add(jButton);
         }
