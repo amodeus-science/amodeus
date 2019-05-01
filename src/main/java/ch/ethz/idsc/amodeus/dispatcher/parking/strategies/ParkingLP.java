@@ -15,7 +15,7 @@ import ch.ethz.idsc.amodeus.dispatcher.parking.ParkingCapacityAmodeus;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
-class ParkingLP extends ParkingStrategyWithCapacity{
+class ParkingLP extends ParkingStrategyWithCapacity {
     private final long freeParkingPeriod = 5;
 
     private ParkingLPStaticHelper parkingLPStaticHelper;
@@ -25,7 +25,7 @@ class ParkingLP extends ParkingStrategyWithCapacity{
         super.setRunntimeParameters(avSpatialCapacityAmodeus, network, distanceFunction);
         this.parkingLPStaticHelper = new ParkingLPStaticHelper(avSpatialCapacityAmodeus, network);
     }
-    
+
     @Override
     public Map<RoboTaxi, Link> keepFree(Collection<RoboTaxi> stayingRobotaxis, Collection<RoboTaxi> rebalancingRobotaxis, long now) {
         GlobalAssert.that(!Objects.isNull(distanceFunction));
