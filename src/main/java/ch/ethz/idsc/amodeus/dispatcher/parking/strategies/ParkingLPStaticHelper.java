@@ -80,7 +80,7 @@ class ParkingLPStaticHelper {
         return rtLink;
     }
 
-    private Set<RoboTaxi> addRoboTaxiToSet(Link link, RoboTaxi rt, Map<Link, Set<RoboTaxi>> result) {
+    private static Set<RoboTaxi> addRoboTaxiToSet(Link link, RoboTaxi rt, Map<Link, Set<RoboTaxi>> result) {
         if (result.containsKey(link)) {
             result.get(link).add(rt);
             return result.get(link);
@@ -90,7 +90,7 @@ class ParkingLPStaticHelper {
         return set;
     }
 
-    private Map<Link, Integer> getRebalancingDestinations(Collection<RoboTaxi> rebalancingTaxis) {
+    private static Map<Link, Integer> getRebalancingDestinations(Collection<RoboTaxi> rebalancingTaxis) {
         Map<Link, Integer> result = new HashMap<>();
         rebalancingTaxis.stream().forEach(rt -> {
             Link link = rt.getCurrentDriveDestination();

@@ -32,11 +32,11 @@ public class AVTraceListener
         this.writer = writer;
     }
 
-    private boolean isRelevantId(String id) {
+    private static boolean isRelevantId(String id) {
         return id.startsWith("av_") || id.startsWith("prav_");
     }
 
-    private String getVehicleType(String id) {
+    private static String getVehicleType(String id) {
         if (id.startsWith("av_")) {
             return "sav";
         } else if (id.startsWith("prav_")) {
