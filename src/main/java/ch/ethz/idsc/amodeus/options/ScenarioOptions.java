@@ -9,8 +9,10 @@ import org.matsim.core.config.Config;
 
 import ch.ethz.idsc.amodeus.data.LocationSpec;
 import ch.ethz.idsc.amodeus.data.LocationSpecDatabase;
-import ch.ethz.idsc.amodeus.dispatcher.parking.AVSpatialCapacityGenerator;
-import ch.ethz.idsc.amodeus.dispatcher.parking.AVSpatialCapacityGenerators;
+import ch.ethz.idsc.amodeus.dispatcher.parking.ParkingCapacityGenerator;
+import ch.ethz.idsc.amodeus.dispatcher.parking.ParkingCapacityGenerators;
+import ch.ethz.idsc.amodeus.dispatcher.parking.strategies.ParkingStrategies;
+import ch.ethz.idsc.amodeus.dispatcher.parking.strategies.ParkingStrategy;
 import ch.ethz.idsc.amodeus.prep.PopulationCutter;
 import ch.ethz.idsc.amodeus.prep.PopulationCutters;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;
@@ -125,12 +127,16 @@ public class ScenarioOptions {
         properties.setProperty(ScenarioOptionsBase.MAXPOPULATIONSIZEIDENTIFIER, String.valueOf(maxNumberPeople));
     }
 
-    public AVSpatialCapacityGenerator getParkingCapacityGenerator() {
-        return AVSpatialCapacityGenerators.valueOf(getString(ScenarioOptionsBase.PARKINGGENERATORIDENTIFIER)).setScenarioOptions(this);
+    public ParkingCapacityGenerator getParkingCapacityGenerator() {
+        return ParkingCapacityGenerators.valueOf(getString(ScenarioOptionsBase.PARKINGGENERATORIDENTIFIER)).setScenarioOptions(this);
     }
 
     public String getParkingSpaceTagInNetwork() {
         return getString(ScenarioOptionsBase.PARKINGSPOTSTAGIDENTIFIER);
+    }
+
+    public ParkingStrategy getParkingStrategy() {
+        return ParkingStrategies.valueOf(getString(ScenarioOptionsBase.PARKINGSTRATEGYIDENTIFIER)).generateParkingStrategy();
     }
 
     public File getShapeFile() {

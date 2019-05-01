@@ -3,9 +3,9 @@ package ch.ethz.idsc.amodeus.dispatcher.parking;
 
 import org.matsim.api.core.v01.network.Network;
 
-public class AVSpatialCapacityInfinity extends AVSpatialCapacityAdapter {
+public class ParkingCapacityInfinity extends ParkingCapacityAdapter {
 
-    public AVSpatialCapacityInfinity(Network network) {
+    public ParkingCapacityInfinity(Network network) {
         network.getLinks().values().forEach(link -> capacities.put(link.getId(), Long.MAX_VALUE));
     }
 

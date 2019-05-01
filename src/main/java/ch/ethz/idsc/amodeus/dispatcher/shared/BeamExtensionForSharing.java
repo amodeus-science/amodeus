@@ -26,8 +26,8 @@ import ch.ethz.idsc.tensor.red.VectorAngle;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 public class BeamExtensionForSharing {
-    // TODO code/api style is bad: previouslyNotWithCustomerTaxis
-    private Collection<RoboTaxi> previouslyNotWithCustomerTaxis = new HashSet<>();
+    // TODO code/api style is bad: lastEmptyTaxis
+    private Collection<RoboTaxi> lastEmptyTaxis = new HashSet<>();
     // TODO code/api style is bad: addedAvRequests
     final Map<AVRequest, RoboTaxi> addedAvRequests = new HashMap<>();
     private Double phiMax;
@@ -67,7 +67,7 @@ public class BeamExtensionForSharing {
         for (RoboTaxi roboTaxi : driveWithCustomerRoboTaxis) {
             AtomicInteger numberAdded = new AtomicInteger(0);
             GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
-            if (previouslyNotWithCustomerTaxis.contains(roboTaxi)) {
+            if (lastEmptyTaxis.contains(roboTaxi)) {
                 /** The RoboTaxi just picked up a customer! Lets see if we find close requests with similar direction */
                 for (AVRequest avRequest : avRequests) {
                     if (checkIfPossibleSharing(roboTaxi, avRequest, numberAdded) && !addedAvRequests.containsKey(avRequest)) {
@@ -78,7 +78,7 @@ public class BeamExtensionForSharing {
 
             }
         }
-        previouslyNotWithCustomerTaxis = allRoboTaxis.stream().filter(rt -> !rt.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER)).collect(Collectors.toSet());
+        lastEmptyTaxis = allRoboTaxis.stream().filter(rt -> !rt.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER)).collect(Collectors.toSet());
 
         return addedAvRequests;
     }
