@@ -16,9 +16,9 @@ import ch.ethz.idsc.tensor.sca.Chop;
 import ch.ethz.idsc.tensor.sca.Round;
 import ch.ethz.idsc.tensor.sca.Sign;
 
-public enum LPUtils {
+/* package */ enum LPUtils {
     ;
-    /* package */ static final Scalar AVERAGE_VEL = Quantity.of(30, "km*h^-1");
+    static final Scalar AVERAGE_VEL = Quantity.of(30, "km*h^-1");
 
     /** Takes the Euclidean distance between the centers of the virtual stations
      * and derives the travel time for a given constant velocity.
@@ -27,7 +27,7 @@ public enum LPUtils {
      * @param velocity non-zero
      * @return tensor with travel time between the virtual stations in [s], e.g. output.get(i,j) is the travel
      *         time from virtual station i to j */
-    /* package */ static Tensor getEuclideanTravelTimeBetweenVSCenters(VirtualNetwork<Link> virtualNetwork, Scalar velocity) {
+    static Tensor getEuclideanTravelTimeBetweenVSCenters(VirtualNetwork<Link> virtualNetwork, Scalar velocity) {
         double velocityMperS = Magnitude.VELOCITY.toDouble(velocity); // in m/s
         int nVNodes = virtualNetwork.getvNodesCount();
         Tensor travelTime = Array.zeros(nVNodes, nVNodes);
@@ -41,7 +41,7 @@ public enum LPUtils {
 
     /** @param tensor
      * @return the rounded vector where non-negativity and almost integer elements are required, else an exception is thrown */
-    /* package */ static Tensor getRoundedRequireNonNegative(Tensor tensor) {
+    static Tensor getRoundedRequireNonNegative(Tensor tensor) {
         Tensor rounded = getRounded(tensor);
         rounded.flatten(-1).map(Scalar.class::cast).forEach(Sign::requirePositiveOrZero);
         return rounded;
@@ -49,7 +49,7 @@ public enum LPUtils {
 
     /** @param tensor
      * @return the rounded vector where almost integer elements are required, else an exception is thrown */
-    /* package */ static Tensor getRounded(Tensor tensor) {
+    static Tensor getRounded(Tensor tensor) {
         Tensor rounded = Round.of(tensor);
         GlobalAssert.that(Chop._04.close(tensor, rounded));
         return rounded;

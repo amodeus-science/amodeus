@@ -18,8 +18,10 @@ import ch.ethz.matsim.av.config.AVConfig;
 import ch.ethz.matsim.av.config.AVGeneratorConfig;
 import ch.ethz.matsim.av.framework.AVConfigGroup;
 
-/** Class which loads and stores the most important Properties used in a Scenario Preparer (such as the three configs(AmodeusOptions, Matsimconfig.xml and
+/** Class which loads and stores the most important Properties used in a Scenario Preparer
+ * (such as the three configs(AmodeusOptions, Matsimconfig.xml and
  * Av.xml) and the scenario (network and population)). */
+// TODO class is not used at all
 public class PreparerProperties {
 
     /** The Three configs */
