@@ -22,7 +22,6 @@ public class RequestContainer implements Serializable {
     public int fromLinkIndex = -1; // where the person is now
     public double submissionTime = -1;
     public int toLinkIndex = -1; // where the person wants to go
-    // TODO Claudio document how to interpret the set of requestStatus
-    public Set<RequestStatus> requestStatus;
+    public Set<RequestStatus> requestStatus; // union of all statii held by the request in time interval of recording
     public int associatedVehicle; // vehicle currently associated to request, e.g., assigned for pickup
 }

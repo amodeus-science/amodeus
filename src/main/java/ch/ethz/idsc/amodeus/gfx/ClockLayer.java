@@ -18,6 +18,10 @@ public class ClockLayer extends ViewerLayer {
     /** opacity of clock background */
     public int alpha = 255;
 
+    public ClockLayer(AmodeusComponent amodeusComponent) {
+        super(amodeusComponent);
+    }
+
     @Override
     protected void paint(Graphics2D graphics, SimulationObject ref) {
         if (show) {
@@ -40,5 +44,17 @@ public class ClockLayer extends ViewerLayer {
     private void setShow(boolean selected) {
         show = selected;
         amodeusComponent.repaint();
+    }
+
+    @Override
+    public void updateSettings(ViewerSettings settings) {
+        settings.show = show;
+        settings.alpha = alpha;
+    }
+
+    @Override
+    public void loadSettings(ViewerSettings settings) {
+        setShow(settings.show);
+        alpha = settings.alpha;
     }
 }

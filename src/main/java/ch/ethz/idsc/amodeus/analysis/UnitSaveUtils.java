@@ -30,7 +30,8 @@ public enum UnitSaveUtils {
      * @param saveToFolder
      * @param formats
      * @throws Exception */
-    public static void saveFile(Tensor quantityMatrix, String name, File saveToFolder, //
+    public static void saveFile( //
+            Tensor quantityMatrix, String name, File saveToFolder, //
             SaveFormats... formats) throws Exception {
 
         GlobalAssert.that(saveToFolder.isDirectory());
@@ -53,7 +54,7 @@ public enum UnitSaveUtils {
     private static File createFileDir(String name, File saveToFolder) {
         /** rename existing folder if exists */
         File folder = new File(saveToFolder, name);
-        if (folder.exists() && folder.isDirectory()) {
+        if (folder.isDirectory()) {
             long ts = System.currentTimeMillis();
             folder.renameTo(new File(folder + "_" + ts));
         }

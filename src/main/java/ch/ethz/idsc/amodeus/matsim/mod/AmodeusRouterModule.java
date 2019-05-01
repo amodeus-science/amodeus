@@ -3,6 +3,9 @@ package ch.ethz.idsc.amodeus.matsim.mod;
 
 import org.matsim.core.controler.AbstractModule;
 
+import ch.ethz.idsc.amodeus.routing.DefaultAStarLMRouter;
+import ch.ethz.matsim.av.framework.AVUtils;
+
 public class AmodeusRouterModule extends AbstractModule {
     @Override
     public void install() {
@@ -13,5 +16,7 @@ public class AmodeusRouterModule extends AbstractModule {
          * 
          * bind(MyOwnRouter.Factory.class);
          * AVUtils.bindRouterFactory(binder(), MyOwnRouter.class.getSimpleName()).to(MyOwnRouter.Factory.class); */
+        bind(DefaultAStarLMRouter.Factory.class);
+        AVUtils.bindRouterFactory(binder(), DefaultAStarLMRouter.class.getSimpleName()).to(DefaultAStarLMRouter.Factory.class);
     }
 }

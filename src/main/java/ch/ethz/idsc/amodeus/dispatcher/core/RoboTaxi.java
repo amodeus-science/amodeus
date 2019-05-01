@@ -1,8 +1,8 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
@@ -13,6 +13,7 @@ import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
@@ -23,7 +24,7 @@ import ch.ethz.matsim.av.schedule.AVDropoffTask;
 import ch.ethz.matsim.av.schedule.AVPickupTask;
 import ch.ethz.matsim.av.schedule.AVStayTask;
 
-/** RoboTaxi is central classs to be used in all dispatchers. Dispatchers control
+/** RoboTaxi is central class to be used in all dispatchers. Dispatchers control
  * a fleet of RoboTaxis, each is uniquely associated to an AVVehicle object in
  * MATSim. */
 public class RoboTaxi {
@@ -41,17 +42,18 @@ public class RoboTaxi {
     private LinkTimePair divertableLinkTime;
     private AbstractDirective directive;
 
-    /** capacity > 1 fields */
-    // TODO Lukas remove this field as it is redundant information to the RoboTaxiMenu
-    private int onBoardCustomers = 0;
-    private final SharedMenu menu = new SharedMenu();
+    /** shared fields The Shared menu contains a lot of information. These can be
+     * extracted with the Utils functions in RoboTaxiUtils and SharedCourseLItsUtils */
+    private SharedMenu menu = SharedMenu.empty();
+    private boolean dropoffInProgress = false;
 
     /** Standard constructor
      * 
      * @param avVehicle binding association to MATSim AVVehicle object
      * @param linkTimePair
      * @param driveDestination */
-    RoboTaxi(AVVehicle avVehicle, LinkTimePair divertableLinkTime, Link driveDestination, RoboTaxiUsageType usageType) {
+    // TODO make this package again
+    public RoboTaxi(AVVehicle avVehicle, LinkTimePair divertableLinkTime, Link driveDestination, RoboTaxiUsageType usageType) {
         this.avVehicle = avVehicle;
         this.divertableLinkTime = divertableLinkTime;
         this.driveDestination = Objects.requireNonNull(driveDestination);
@@ -67,8 +69,8 @@ public class RoboTaxi {
     // ===================================================================================
     // methods to be used by dispatchers, public
 
-    /** @return {@link} location at which robotaxi can be diverted, i.e. a Link
-     *         with an endnode at which the robotaxi path can be altered */
+    /** @return {@link} location at which robotaxi can be diverted, i.e. a Link with
+     *         an endnode at which the robotaxi path can be altered */
     public Link getDivertableLocation() {
         return divertableLinkTime.link;
     }
@@ -78,9 +80,8 @@ public class RoboTaxi {
         return divertableLinkTime.time;
     }
 
-    /** @return null if vehicle is currently not driving, else the final
-     *         {@link Link} of the path that the vehicles is currently driving
-     *         on */
+    /** @return null if vehicle is currently not driving, else the final {@link Link}
+     *         of the path that the vehicles is currently driving on */
     public Link getCurrentDriveDestination() {
         return driveDestination;
     }
@@ -108,7 +109,9 @@ public class RoboTaxi {
         return status;
     }
 
-    /** Gets the capacity of the avVehicle. Now its an Integer and not a double as in Matsim
+    /** Gets the capacity of the avVehicle. Now its an Integer and not a double as in
+     * MATSim, the current number of people on board can be accessed with
+     * {@link RoboTaxiUtils.getNumberOnBoardRequests(roboTaxi)}
      * 
      * @return */
     public int getCapacity() {
@@ -125,8 +128,8 @@ public class RoboTaxi {
         this.divertableLinkTime = Objects.requireNonNull(divertableLinkTime);
     }
 
-    /** @return RoboTaxiPlan with RoboTaxiPlan.plans() Navigable Map containing all RoboTaxiPlanEntry
-     *         elements sorted according to begin time */
+    /** @return RoboTaxiPlan with RoboTaxiPlan.plans() Navigable Map containing all
+     *         RoboTaxiPlanEntry elements sorted according to begin time */
     /* package */ RoboTaxiPlan getCurrentPlans(double time) {
         return RoboTaxiPlan.of(getSchedule(), time);
     }
@@ -138,56 +141,53 @@ public class RoboTaxi {
         this.lastKnownLocation = Objects.requireNonNull(currentLocation);
     }
 
-    /** @param currentDriveDestination
-     *            {@link} roboTaxi is driving to, to be used only by core
-     *            package, use setVehiclePickup and setVehicleRebalance in
-     *            dispatchers */
+    /** @param currentDriveDestination {@link} roboTaxi is driving to, to be used
+     *            only by core package, use setVehiclePickup and
+     *            setVehicleRebalance in dispatchers */
     /* package */ void setCurrentDriveDestination(Link currentDriveDestination) {
         this.driveDestination = Objects.requireNonNull(currentDriveDestination);
     }
 
-    /** @param {@AVStatus}
-     *            for robotaxi to be updated to, to be used only by core
+    /** @param {@AVStatus} for robotaxi to be updated to, to be used only by core
      *            package, in dispatcher implementations, status will be adapted
      *            automatically. */
     /* package */ void setStatus(RoboTaxiStatus status) {
+        GlobalAssert.that(!usageType.equals(RoboTaxiUsageType.SHARED));
         this.status = Objects.requireNonNull(status);
     }
 
     /** @return true if robotaxi is without a customer */
     /* package */ boolean isWithoutCustomer() {
-        // For now this works with universal dispatcher i.e. single used robotaxis as number of customers is never changed
-        return !status.equals(RoboTaxiStatus.DRIVEWITHCUSTOMER) && getCurrentNumberOfCustomersOnBoard() == 0;
+        // For now this works with universal dispatcher i.e. single used robotaxis as
+        // number of customers is never changed
+        return !status.equals(RoboTaxiStatus.DRIVEWITHCUSTOMER) && RoboTaxiUtils.getNumberOnBoardRequests(this) == 0;
     }
 
-    /** @return {@Schedule} of the RoboTaxi, to be used only inside core package,
-     *         the schedule will be used automatically for all updates
-     *         associated to pickups, rebalance tasks */
-    /* package */ Schedule getSchedule() {
+    /** @return {@Schedule} of the RoboTaxi, to be used only inside core package, the
+     *         schedule will be used automatically for all updates associated to
+     *         pickups, rebalance tasks */
+    public Schedule getSchedule() {
         return avVehicle.getSchedule();
     }
 
-    /** @param abstractDirective
-     *            to be issued to RoboTaxi when commands change, to be used only
-     *            in the core package, directives will be issued automatically
-     *            when setVehiclePickup, setVehicleRebalance are called. */
+    /** @param abstractDirective to be issued to RoboTaxi when commands change, to be
+     *            used only in the core package, directives will be
+     *            issued automatically when setVehiclePickup,
+     *            setVehicleRebalance are called. */
     /* package */ void assignDirective(AbstractDirective abstractDirective) {
-        if (!isWithoutDirective()) {
-            System.out.println("here");
-        }
         GlobalAssert.that(isWithoutDirective());
         this.directive = abstractDirective;
     }
 
-    /** @return true if RoboTaxi is without an unexecuted directive, to be used
-     *         only inside core package */
+    /** @return true if RoboTaxi is without an unexecuted directive, to be used only
+     *         inside core package */
     /* package */ boolean isWithoutDirective() {
         return directive == null;
     }
 
     /** @return true if robotaxi is not driving on the last link of its drive task,
-     *         used for filtering purposes as currently the roboTaxis cannot be rerouted
-     *         when driving on the last link of their route */
+     *         used for filtering purposes as currently the roboTaxis cannot be
+     *         rerouted when driving on the last link of their route */
     /* package */ boolean notDrivingOnLastLink() {
         if (status.equals(RoboTaxiStatus.STAY))
             return true;
@@ -203,16 +203,27 @@ public class RoboTaxi {
 
         // TODO Who? check why this appears often
         if (avT instanceof AVStayTask) {
+<<<<<<< HEAD
             // TODO MISC For now, this works, but probably needs fixing somewhere upfront /sh, apr 2018
             //logger.warn("RoboTaxiStatus != STAY, but Schedule.getCurrentTask() == AVStayTask; probably needs fixing");
             //System.out.println("status: " + status);
+=======
+            // TODO MISC For now, this works, but probably needs fixing somewhere upfront
+            // /sh, apr 2018
+            if (!usageType.equals(RoboTaxiUsageType.SHARED)) { // for shared this is allowed e.g. when a new course is
+                                                               // added but the it has not been executed
+                                                               // yet
+                logger.warn("RoboTaxiStatus != STAY, but Schedule.getCurrentTask() == AVStayTask; probably needs fixing");
+                System.out.println("status: " + status);
+            }
+>>>>>>> master
             return true;
         }
 
         // Added cases when on pickup and dropoff task For shared taxis
         if (avT instanceof AVDriveTask) {
             AVDriveTask avDT = (AVDriveTask) avT;
-            return avDT.getPath().getLinkCount() != 1;
+            return avDT.getPath().getLinkCount() != 1; // TODO seems it is different to the same function in AmodeusDriveTaskTracker
         }
         if (avT instanceof AVPickupTask || avT instanceof AVDropoffTask)
             return false;
@@ -234,36 +245,81 @@ public class RoboTaxi {
     // **********************************************
 
     public boolean isDivertable() {
-        if (usageType.equals(RoboTaxiUsageType.SINGLEUSED))
-            return isWithoutDirective() && isWithoutCustomer() && notDrivingOnLastLink();
-        if (usageType.equals(RoboTaxiUsageType.SHARED))
-            return isWithoutDirective() && notDrivingOnLastLink();
-        throw new IllegalArgumentException("Robo Taxi Usage Type is not defined");
+        return (canReroute() && usageType.equals(RoboTaxiUsageType.SHARED) || //
+                (canReroute() && isWithoutCustomer()));
+    }
+
+    // added by luc for rerouting purpose
+    public boolean canReroute() {
+        return isWithoutDirective() && notDrivingOnLastLink();
     }
 
     // **********************************************
     // Shared Functionalities, needed here because of capacity
     // **********************************************
 
-    public SharedMenu getMenu() {
-        return menu;
+    /** Gives full information of the future menu (i.e. plans) of the
+     * {@link RoboTaxi}. This Information contains for example the number of
+     * customers on Board or the possibility to pick up new customers. To get all
+     * this Information the {@link SharedCourseListUtils} class offers some of the
+     * standard functionalities. Similar Functionalities are Offered as well by the
+     * {@link RoboTaxiUtils} class. Take a look at these two clases when
+     * implementing Dispatchers Further information can be pulled from this menu by
+     * using standard List functionalities.
+     * 
+     * @return An unmodifiable {@link List} of {@link SharedCourse}s which can only
+     *         be read but not modified */
+    public List<SharedCourse> getUnmodifiableViewOfCourses() {
+        return menu.getRoboTaxiMenu();
     }
 
-    public boolean canPickupNewCustomer() {
-        return getCurrentNumberOfCustomersOnBoard() >= 0 && getCurrentNumberOfCustomersOnBoard() < getCapacity();
+    /** Modifies the menu of the RoboTaxi. The given course is moved up in the menu
+     * by one position.
+     * 
+     * @param sharedCourse */
+    public void moveAVCourseToPrev(SharedCourse sharedCourse) {
+        setMenu(SharedMenuUtils.moveAVCourseToPrev(menu, sharedCourse));
     }
 
-    public Set<String> getAVRequestIdsOnBoard() {
-        return menu.getOnBoardRequestIds();
+    /** Modifies the menu of the RoboTaxi. The given course is moved down in the menu
+     * by one position.
+     * 
+     * @param sharedCourse */
+    public void moveAVCourseToNext(SharedCourse sharedCourse) {
+        setMenu(SharedMenuUtils.moveAVCourseToNext(menu, sharedCourse));
     }
 
-    /* package */ void pickupNewCustomerOnBoard() {
-        GlobalAssert.that(canPickupNewCustomer());
-        GlobalAssert.that(menu.getStarterCourse().getMealType().equals(SharedMealType.PICKUP));
-        onBoardCustomers++;
-        menu.removeAVCourse(0);
+    /** This function allows to update the menu of the RoboTaxi with a new orderd
+     * menu. Thereby the new menu has to fulfill the following conditions: 1. The
+     * exact same Courses have to be in the Menu. 2. The menu can not plan to pickup
+     * more persons than the capacity of the Robo Taxi at any Time
+     * 
+     * @param menu */
+    private void updateMenu(SharedMenu menu) {
+        GlobalAssert.that(SharedMenuUtils.containSameCourses(this.menu, menu));
+        GlobalAssert.that(SharedCourseListUtils.checkMenuConsistency(getUnmodifiableViewOfCourses(), getCapacity()));
+        setMenu(menu);
     }
 
+    /** This function allows to update the menu of the RoboTaxi with a new List of
+     * Shared Courses. Thereby the new menu has to fulfill the following conditions:
+     * 1. The exact same Courses have to be in the Menu. 2. The menu can not plan to
+     * pickup more persons than the capacity of the Robo Taxi at any Time 3. The
+     * menu has to be consistent in itself (i.e. for each pickup a dropoff of the
+     * same request is present, for each request the dropoff occurs after the pickup
+     * and no course apears exactely once)
+     * 
+     * If a Dropoff is currently in progress then this course can not be moved away
+     * from the first position. All other changes are still possible. If a dropoff
+     * is in progress if the divertable link of the robotaxi equals the link of the
+     * Dropoff Course.
+     * 
+     * @param List<SharedCourse> */
+    public void updateMenu(List<SharedCourse> list) {
+        updateMenu(SharedMenu.of(list));
+    }
+
+<<<<<<< HEAD
     /* package */ void dropOffCustomer() {
         GlobalAssert.that(getCurrentNumberOfCustomersOnBoard() > 0);
         GlobalAssert.that(getCurrentNumberOfCustomersOnBoard() <= getCapacity());
@@ -300,32 +356,98 @@ public class RoboTaxi {
             }
             if (futureNumberCustomers > getCapacity()) {
                 return false;
+=======
+    /** This function is only for internal use. It should not be allowed that the
+     * menu can be changed from outside of the RoboTaxi directly.
+     * 
+     * @param menu */
+    private final void setMenu(SharedMenu menu) {
+        GlobalAssert.that(SharedMenuUtils.checkMenuConsistencyWithRoboTaxi(menu, getCapacity()));
+        if (dropoffInProgress) {
+            GlobalAssert.that(this.menu.getRoboTaxiMenu().get(0).equals(menu.getRoboTaxiMenu().get(0)));
+        }
+        this.menu = menu;
+        this.status = RoboTaxiUtils.calculateStatusFromMenu(this);
+    }
+
+    /* package */ void addAVRequestToMenu(AVRequest avRequest) {
+        // TODO Lukas, with Claudio, Carl, what is the wanted behaviour? shouldnt the
+        // dispatcher take care of this
+        // We could bring it into the rebalancing dispatcher, there we can add a
+        // function which is called: addAVrequestandRemoveFirstRebalancing(AVrequest)
+        if (status.equals(RoboTaxiStatus.REBALANCEDRIVE)) {
+            GlobalAssert.that(RoboTaxiUtils.getStarterCourse(this).get().getMealType().equals(SharedMealType.REDIRECT));
+            if (getUnmodifiableViewOfCourses().size() == 1) {
+                finishRedirection();
+>>>>>>> master
             }
         }
-        return true;
+        SharedCourse pickupCourse = SharedCourse.pickupCourse(avRequest);
+        SharedCourse dropoffCourse = SharedCourse.dropoffCourse(avRequest);
+        setMenu(SharedMenuUtils.addAVCoursesAsDessert(menu, pickupCourse, dropoffCourse));
     }
 
-    public void addAVRequestToMenu(AVRequest avRequest) {
-        menu.addAVCourseAsDessert(SharedCourse.pickupCourse(avRequest));
-        menu.addAVCourseAsDessert(SharedCourse.dropoffCourse(avRequest));
+    /* package */ void addRedirectCourseToMenu(SharedCourse redirectCourse) {
+        GlobalAssert.that(redirectCourse.getMealType().equals(SharedMealType.REDIRECT));
+        setMenu(SharedMenuUtils.addAVCoursesAsDessert(menu, redirectCourse));
     }
 
-    /** Removes an AV Request from the Robo Taxi Menu. This function can only be called if the Request has not been picked up
+    /* package */ void addRedirectCourseToMenuAtBegining(SharedCourse redirectCourse) {
+        GlobalAssert.that(redirectCourse.getMealType().equals(SharedMealType.REDIRECT));
+        setMenu(SharedMenuUtils.addAVCoursesAsStarter(menu, redirectCourse));
+    }
+
+    /* package */ void pickupNewCustomerOnBoard() {
+        GlobalAssert.that(RoboTaxiUtils.canPickupNewCustomer(this));
+        GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.PICKUP));
+        GlobalAssert.that(RoboTaxiUtils.getStarterLink(this).equals(getDivertableLocation()));
+        setMenu(SharedMenuUtils.removeStarterCourse(menu));
+    }
+
+    /* package */ void dropOffCustomer() {
+        checkAbilityToDropOff();
+        dropoffInProgress = false;
+        setMenu(SharedMenuUtils.removeStarterCourse(menu));
+    }
+
+    private void checkAbilityToDropOff() {
+        GlobalAssert.that(RoboTaxiUtils.getNumberOnBoardRequests(this) > 0);
+        GlobalAssert.that(RoboTaxiUtils.getNumberOnBoardRequests(this) <= getCapacity());
+        GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.DROPOFF));
+        GlobalAssert.that(RoboTaxiUtils.getStarterLink(this).equals(getDivertableLocation()));
+    }
+
+    /* package */ void startDropoff() {
+        checkAbilityToDropOff();
+        dropoffInProgress = true;
+    }
+
+    /* package */ void finishRedirection() {
+        GlobalAssert.that(RoboTaxiUtils.hasNextCourse(this));
+        GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.REDIRECT));
+        setMenu(SharedMenuUtils.removeStarterCourse(menu));
+    }
+
+    /** Removes an AV Request from the Robo Taxi Menu. This function can only be
+     * called if the Request has not been picked up
      * 
      * @param avRequest */
-    public void removeAVRequestFromMenu(AVRequest avRequest) {
-        SharedCourse sharedAVCoursePickUp = SharedCourse.pickupCourse(avRequest);
-        SharedCourse sharedAVCourseDropoff = SharedCourse.dropoffCourse(avRequest);
-        GlobalAssert.that(menu.containsCourse(sharedAVCoursePickUp) && menu.containsCourse(sharedAVCoursePickUp));
-        menu.removeAVCourse(sharedAVCoursePickUp);
-        menu.removeAVCourse(sharedAVCourseDropoff);
+    /* package */ void removeAVRequestFromMenu(AVRequest avRequest) {
+        SharedCourse pickupCourse = SharedCourse.pickupCourse(avRequest);
+        SharedCourse dropoffCourse = SharedCourse.dropoffCourse(avRequest);
+        GlobalAssert.that(menu.getRoboTaxiMenu().contains(pickupCourse) && menu.getRoboTaxiMenu().contains(dropoffCourse));
+        setMenu(SharedMenuUtils.removeAVCourses(menu, pickupCourse, dropoffCourse));
     }
 
-    public void finishRedirection() {
-        GlobalAssert.that(menu.hasStarter());
-        GlobalAssert.that(menu.getStarterCourse().getMealType().equals(SharedMealType.REDIRECT));
-        GlobalAssert.that(menu.getStarterCourse().getLink().equals(getDivertableLocation()));
-        getMenu().removeAVCourse(0);
+    /** This function deletes all the current Courses from the menu.
+     * 
+     * @return all the courses which have been removed */
+    /* package */ List<SharedCourse> cleanAndAbandonMenu() {
+        GlobalAssert.that(RoboTaxiUtils.getNumberOnBoardRequests(this) == 0);
+        GlobalAssert.that(isDivertable());
+        List<SharedCourse> oldMenu = SharedCourseListUtils.copy(menu.getRoboTaxiMenu());
+        setMenu(SharedMenu.empty());
+        return oldMenu;
     }
 
 }

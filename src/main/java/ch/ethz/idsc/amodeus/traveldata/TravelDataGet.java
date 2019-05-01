@@ -2,29 +2,24 @@
 package ch.ethz.idsc.amodeus.traveldata;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Objects;
 
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
-import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
-import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 
 public enum TravelDataGet {
     ;
 
-    public static TravelData readDefault(VirtualNetwork<Link> virtualNetwork) throws IOException {
+    public static StaticTravelData readStatic(VirtualNetwork<Link> virtualNetwork, ScenarioOptions scenarioOptions) {
         GlobalAssert.that(Objects.nonNull(virtualNetwork));
-        File workingDirectory = MultiFileTools.getWorkingDirectory();
-        ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
-        final File travelDataFile = new File(scenarioOptions.getVirtualNetworkName(), //
+        final File travelDataFile = new File(scenarioOptions.getVirtualNetworkDirectoryName(), //
                 scenarioOptions.getTravelDataName());
         System.out.println("loading travelData from " + travelDataFile.getAbsoluteFile());
         try {
-            return TravelDataIO.read(travelDataFile, virtualNetwork);
+            return TravelDataIO.readStatic(travelDataFile, virtualNetwork);
         } catch (Exception e) {
             System.err.println("cannot load default " + travelDataFile);
             e.printStackTrace();

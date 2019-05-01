@@ -15,7 +15,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
 
-/* package */ class VehicleStatistic {
+public class VehicleStatistic {
 
     private final MatsimAmodeusDatabase db;
 

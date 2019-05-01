@@ -15,7 +15,7 @@ public class TotalAllTest extends TestCase {
     public void testFail() {
         try {
             TotalAll.of(RealScalar.of(6));
-            assertTrue(false);
+            fail();
         } catch (Exception exception) {
             // ---
         }

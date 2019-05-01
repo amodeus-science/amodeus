@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.util.io;
 
 import java.net.URL;
@@ -14,6 +15,7 @@ public enum ProvideAVConfig {
 
     public static AVConfig with(Config config, AVConfigGroup configGroup) {
         URL configPath = configGroup.getConfigURL();
+        System.out.println("Config:" + configPath);
         if (configPath == null) {
             configPath = ConfigGroup.getInputFileURL(config.getContext(), configGroup.getConfigPath());
         }

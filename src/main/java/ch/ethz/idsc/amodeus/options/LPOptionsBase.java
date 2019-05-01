@@ -3,7 +3,6 @@ package ch.ethz.idsc.amodeus.options;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Properties;
 
 import ch.ethz.idsc.amodeus.util.io.FileLines;
@@ -11,7 +10,7 @@ import ch.ethz.idsc.amodeus.util.io.FileLines;
 public enum LPOptionsBase {
     ;
 
-    static final String OPTIONSFILENAME = "LPOptions.properties";
+    public static final String OPTIONSFILENAME = "LPOptions.properties";
     // ---
     public static final String LPSOLVER = "LPSolver";
     public static final String LPWEIGHTQ = "LPWeightQ";
@@ -19,30 +18,28 @@ public enum LPOptionsBase {
 
     public static Properties getDefault() {
         Properties properties = new Properties();
-        properties.setProperty(LPSOLVER, "none");
+        properties.setProperty(LPSOLVER, "TIMEINVARIANT");
         properties.setProperty(LPWEIGHTQ, "0.99");
         properties.setProperty(LPWEIGHTR, "0.01");
         return properties;
     }
 
-    public static void saveProperties(Properties prop) throws IOException {
-        saveProperties(prop, new File(OPTIONSFILENAME));
+    public static void savePropertiesToDirectory(File workingDirectory, Properties prop) {
+        savePropertiesToFile(prop, new File(workingDirectory, OPTIONSFILENAME));
     }
 
-    public static void saveProperties(Properties prop, File file) throws IOException {
-        String header = "This is a default config file that needs to be modified. In order to work properly LPSolver needs to be set, e.g., LPSolver=timeInvariant \n";
-        saveProperties(prop, file, header);
+    public static void savePropertiesToFile(Properties prop, File file) {
+        String header = "This is a default config file that needs to be modified. In order" //
+                + " to work properly LPSolver needs to be set, e.g., LPSolver=timeInvariant \n";
+        savePropertiesToFileWithHeader(prop, file, header);
     }
 
-    public static void saveProperties(Properties prop, File file, String headerString) throws IOException {
+    public static void savePropertiesToFileWithHeader(Properties prop, File file, String headerString) {
         try (FileOutputStream ostream = new FileOutputStream(file)) {
             prop.store(ostream, headerString);
+            FileLines.sort(file);
+        } catch (Exception exception) {
+            System.err.println("Could not save file " + file.getName() + ", in ch.ethz.idsc.amodeus.options.LPOptionsBase");
         }
-        FileLines.sort(file);
     }
-
-    public static String getOptionsFileName() {
-        return OPTIONSFILENAME;
-    }
-
 }

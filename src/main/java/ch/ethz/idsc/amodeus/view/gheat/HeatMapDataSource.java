@@ -26,6 +26,7 @@
 
 package ch.ethz.idsc.amodeus.view.gheat;
 
+@FunctionalInterface
 public interface HeatMapDataSource {
     PointLatLng[] getList(DataPoint tlb, DataPoint lrb, int zoom, Projections projection);
 }

@@ -2,7 +2,6 @@
 package ch.ethz.idsc.amodeus.analysis.report;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -20,28 +19,27 @@ public class HtmlReport implements AnalysisReport {
     // ---
     private final File reportFolder;
     private final HtmlGenerator htmlGenerator;
-    // Storage for all the Body Elements which are filld during Runntime by Analysis Elements
+    // Storage for all the Body Elements which are filled during Runtime by Analysis Elements
     private final Map<String, HtmlBodyElement> bodyElements = new LinkedHashMap<>();
     public final List<HtmlReportElement> htmlReportElements = new LinkedList<>();
 
-    public HtmlReport(File configFile, File outputdirectory, ScenarioOptions scenarioOptions) {
-        reportFolder = new File(outputdirectory, REPORT_NAME);
-        reportFolder.mkdir();
+    public HtmlReport(File outputdirectory, ScenarioOptions scenarioOptions) {
+        reportFolder = new File(outputdirectory, REPORT_NAME + "/");
+        reportFolder.mkdirs();
+        if (!reportFolder.canWrite())
+            throw new RuntimeException("The application does not have write access in the folder: \n" + reportFolder.getAbsolutePath());
+        System.out.println("Generating AMoDeus report in: \n" + reportFolder.getAbsolutePath());
         GlobalAssert.that(reportFolder.isDirectory());
 
-        // extract necessary data
+        /** copy the MATSim config file and the av.xml config file to the report folder of the simulation */
         try {
-            saveConfigs(configFile, scenarioOptions);
-        } catch (IOException e1) {
-            System.err.println("Scenario Parameters could not be found");
-            e1.printStackTrace();
-        } catch (Exception e) {
-            System.err.println("Error while coping the Config file into the report folder");
-            e.printStackTrace();
+            saveConfigs(scenarioOptions);
+
+        } catch (Exception ex) {
+            System.err.println("Unable to copy MATSim config and av.xml config to report folder.");
+            ex.printStackTrace();
         }
-
         htmlGenerator = new HtmlGenerator();
-
     }
 
     public void addHtmlReportElement(HtmlReportElement htmlReportElement) {
@@ -76,6 +74,7 @@ public class HtmlReport implements AnalysisReport {
 
         /** report footer elements **/
         htmlGenerator.footer();
+        htmlGenerator.insertLink("https://www.amodeus.science/", "www.amodeus.science");
         htmlGenerator.insertLink("http://www.idsc.ethz.ch/", "www.idsc.ethz.ch");
         htmlGenerator.footer();
         htmlGenerator.body();
@@ -103,18 +102,18 @@ public class HtmlReport implements AnalysisReport {
         }
     }
 
-    private void saveConfigs(File configFile, ScenarioOptions scenarioOptions) throws Exception {
-        { // copy configFile
-            File dest = new File(reportFolder, scenarioOptions.getSimulationConfigName());
-            dest.delete();
-            Files.copy(configFile.toPath(), dest.toPath());
-        }
-        { // copy av.xml file
-            File dest = new File(reportFolder, "av.xml");
-            dest.delete();
-            File avFile = new File(configFile.getParentFile(), "av.xml");
-            Files.copy(avFile.toPath(), dest.toPath());
-        }
+    private void saveConfigs(ScenarioOptions scenarioOptions) throws Exception {
+        File configFile = new File(scenarioOptions.getSimulationConfigName());
+        /** copy configFile */
+        File configCopy = new File(reportFolder, configFile.getName());
+        configCopy.delete();
+        Files.copy(configFile.toPath(), configCopy.toPath());
+        /** copy av.xml file */
+        // TODO remove av.xml hardcode
+        File avFile = new File(configFile.getParentFile(), "av.xml");
+        File avCopy = new File(reportFolder, avFile.getName());
+        avCopy.delete();
+        Files.copy(avFile.toPath(), avCopy.toPath());
     }
 
 }

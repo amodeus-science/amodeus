@@ -6,6 +6,10 @@ import org.matsim.core.router.FastAStarEuclideanFactory;
 import org.matsim.core.router.FastAStarLandmarksFactory;
 import org.matsim.core.router.FastDijkstraFactory;
 
+import ch.ethz.idsc.amodeus.routing.DistanceFunction;
+import ch.ethz.idsc.amodeus.routing.EuclideanDistanceFunction;
+import ch.ethz.idsc.amodeus.routing.NetworkMinTimeDistanceFunction;
+
 public enum DistanceHeuristics {
     EUCLIDEAN {
         @Override
@@ -16,19 +20,19 @@ public enum DistanceHeuristics {
     DIJKSTRA {
         @Override
         public DistanceFunction getDistanceFunction(Network network) {
-            return new NetworkDistanceFunction(network, new FastDijkstraFactory());
+            return new NetworkMinTimeDistanceFunction(network, new FastDijkstraFactory());
         }
     },
     ASTAR {
         @Override
         public DistanceFunction getDistanceFunction(Network network) {
-            return new NetworkDistanceFunction(network, new FastAStarEuclideanFactory());
+            return new NetworkMinTimeDistanceFunction(network, new FastAStarEuclideanFactory());
         }
     },
     ASTARLANDMARKS {
         @Override
         public DistanceFunction getDistanceFunction(Network network) {
-            return new NetworkDistanceFunction(network, new FastAStarLandmarksFactory());
+            return new NetworkMinTimeDistanceFunction(network, new FastAStarLandmarksFactory());
         }
     };
 

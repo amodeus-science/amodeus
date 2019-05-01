@@ -7,6 +7,8 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,24 +21,37 @@ import org.matsim.api.core.v01.Coord;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.util.gui.GraphicsUtil;
+import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.view.jmapviewer.AmodeusHeatMap;
+import ch.ethz.idsc.amodeus.view.jmapviewer.Coordinate;
 import ch.ethz.idsc.amodeus.view.jmapviewer.JMapViewer;
 import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.ICoordinate;
 
 public class AmodeusComponent extends JMapViewer {
 
+    @Deprecated
+    /** Should not be used in amodeus repository anymore */
+    public static AmodeusComponent createDefault(MatsimAmodeusDatabase db) {
+        try {
+            return createDefault(db, MultiFileTools.getDefaultWorkingDirectory());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     /** @param db
      * @return instance of MatsimMapComponent with default sequence of {@link ViewerLayer}s */
-    public static AmodeusComponent createDefault(MatsimAmodeusDatabase db) {
+    public static AmodeusComponent createDefault(MatsimAmodeusDatabase db, File workingDirectory) {
         AmodeusComponent amodeusComponent = new AmodeusComponent(db);
-        amodeusComponent.addLayer(new TilesLayer());
-        amodeusComponent.addLayer(new VirtualNetworkLayer());
-        amodeusComponent.addLayer(new VehiclesLayer());
-        amodeusComponent.addLayer(new RequestsLayer());
-        amodeusComponent.addLayer(new LinkLayer());
-        amodeusComponent.addLayer(new LoadLayer());
-        amodeusComponent.addLayer(new HudLayer());
-        amodeusComponent.addLayer(new ClockLayer());
+        amodeusComponent.addLayer(new TilesLayer(amodeusComponent));
+        amodeusComponent.addLayer(new VirtualNetworkLayer(amodeusComponent));
+        amodeusComponent.addLayer(new VehiclesLayer(amodeusComponent));
+        amodeusComponent.addLayer(new RequestsLayer(amodeusComponent));
+        amodeusComponent.addLayer(new LinkLayer(amodeusComponent));
+        amodeusComponent.addLayer(new LoadLayer(amodeusComponent));
+        amodeusComponent.addLayer(new HudLayer(amodeusComponent));
+        amodeusComponent.addLayer(new ClockLayer(amodeusComponent));
+        amodeusComponent.addLayer(new VideoLayer(amodeusComponent, workingDirectory));
         return amodeusComponent;
     }
 
@@ -49,10 +64,12 @@ public class AmodeusComponent extends JMapViewer {
 
     public final List<ViewerLayer> viewerLayers = new ArrayList<>();
     private final List<InfoString> infoStrings = new LinkedList<>();
-    private int infoFontSize = 13;
+    private int infoFontSize;
 
     public final JLabel jLabel = new JLabel(" ");
     final AmodeusComponentMouse amodeusComponentMouse = new AmodeusComponentMouse(this);
+
+    final ViewerConfig defaultConfig;
 
     /** constructs an component without any {@link ViewerLayer}s
      * 
@@ -61,19 +78,23 @@ public class AmodeusComponent extends JMapViewer {
      * @param db */
     public AmodeusComponent(MatsimAmodeusDatabase db) {
         this.db = db;
+        defaultConfig = ViewerConfig.fromDefaults(db);
+        infoFontSize = defaultConfig.settings.infoFontSize;
         // ---
         addMouseListener(amodeusComponentMouse);
         addMouseMotionListener(amodeusComponentMouse);
     }
 
     public void addLayer(ViewerLayer viewerLayer) {
-        viewerLayer.amodeusComponent = this; // wow such bad style
         viewerLayers.add(viewerLayer);
         for (AmodeusHeatMap m : viewerLayer.getHeatmaps())
             matsimHeatmaps.add(m);
-        // ---
-        if (viewerLayer instanceof VirtualNetworkLayer) // wow such bad style
-            virtualNetworkLayer = (VirtualNetworkLayer) viewerLayer;
+    }
+
+    public void reorientMap(ViewerConfig viewerConfig) {
+        setDisplayPosition( //
+                new Coordinate(viewerConfig.settings.coord.getY(), viewerConfig.settings.coord.getX()), //
+                viewerConfig.settings.zoom);
     }
 
     /** @param coord

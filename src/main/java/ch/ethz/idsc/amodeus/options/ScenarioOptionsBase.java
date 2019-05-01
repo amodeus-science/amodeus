@@ -3,9 +3,10 @@ package ch.ethz.idsc.amodeus.options;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Properties;
 
+import ch.ethz.idsc.amodeus.dispatcher.parking.ParkingCapacityGenerators;
+import ch.ethz.idsc.amodeus.dispatcher.parking.strategies.ParkingStrategies;
 import ch.ethz.idsc.amodeus.prep.PopulationCutters;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreators;
 import ch.ethz.idsc.amodeus.util.io.FileLines;
@@ -13,20 +14,25 @@ import ch.ethz.idsc.amodeus.util.io.FileLines;
 public enum ScenarioOptionsBase {
     ;
 
-    static final String OPTIONSFILENAME = "AmodeusOptions.properties";
+    public static final String OPTIONSFILENAME = "AmodeusOptions.properties";
 
     // ---
-    static final String FULLCONFIGIDENTIFIER = "fullConfig";
-    static final String SIMUCONFIGIDENTIFIER = "simuConfig";
-    static final String VIRTUALNETWORKNAMEIDENTIFIER = "virtualNetwork";
-    static final String TRAVELDATAFILENAME = "travelDataFileName";
-    static final String LINKSPEEDDATAFILENAME = "linkSpeedDataFileName";
-    static final String COLORSCHEMEIDENTIFIER = "colorScheme";
-    static final String CHARTTHEMEIDENTIFIER = "chartTheme";
-    static final String NETWORKUPDATEDNAMEIDENTIFIER = "NetworkUpdateName";
-    static final String POPULATIONUPDATEDNAMEIDENTIFIER = "PopulationUpdateName";
-    static final String LOCATIONSPECIDENTIFIER = "LocationSpec";
-    static final String SHAPEFILEIDENTIFIER = "shapeFile";
+    /* package */ static final String FULLCONFIGIDENTIFIER = "fullConfig";
+    /* package */ static final String SIMUCONFIGIDENTIFIER = "simuConfig";
+    /* package */ static final String VIRTUALNETWORKNAMEIDENTIFIER = "virtualNetwork";
+    /* package */ static final String TRAVELDATAFILENAME = "travelDataFileName";
+    /* package */ static final String LINKSPEEDDATAFILENAME = "linkSpeedDataFileName";
+    /* package */ static final String COLORSCHEMEIDENTIFIER = "colorScheme";
+    /* package */ static final String CHARTTHEMEIDENTIFIER = "chartTheme";
+    /* package */ static final String NETWORKUPDATEDNAMEIDENTIFIER = "NetworkUpdateName";
+    /* package */ static final String POPULATIONUPDATEDNAMEIDENTIFIER = "PopulationUpdateName";
+    /* package */ static final String LOCATIONSPECIDENTIFIER = "LocationSpec";
+    /* package */ static final String SHAPEFILEIDENTIFIER = "shapeFile";
+
+    // ---
+    public static final String PARKINGGENERATORIDENTIFIER = "parkingCapacityGenerator";
+    public static final String PARKINGSPOTSTAGIDENTIFIER = "parkingSpotsTagInNetwork";
+    public static final String PARKINGSTRATEGYIDENTIFIER = "parkingStrategy";
     // ---
     public static final String COMPLETEGRAPHIDENTIFIER = "completeGraph";
     public static final String POPULATIONCUTTERIDENTIFIER = "populationCutter";
@@ -58,27 +64,28 @@ public enum ScenarioOptionsBase {
         properties.setProperty(VIRTUALNETWORKCREATORIDENTIFIER, VirtualNetworkCreators.KMEANS.name());
         properties.setProperty(POPULATIONCUTTERIDENTIFIER, PopulationCutters.NETWORKBASED.name());
         properties.setProperty(SHAPEFILEIDENTIFIER, "AbsoluteShapeFileName");
+        properties.setProperty(PARKINGGENERATORIDENTIFIER, ParkingCapacityGenerators.NONE.name());
+        properties.setProperty(PARKINGSPOTSTAGIDENTIFIER, "spatialAvCapacity");
+        properties.setProperty(PARKINGSTRATEGYIDENTIFIER, ParkingStrategies.LP.name());
         return properties;
     }
 
-    public static void saveProperties(Properties prop) throws IOException {
-        saveProperties(prop, new File(OPTIONSFILENAME));
+    public static void savePropertiesToDirectory(File workingDirectory, Properties prop) {
+        savePropertiesToFile(prop, new File(workingDirectory, OPTIONSFILENAME));
     }
 
-    public static void saveProperties(Properties prop, File file) throws IOException {
-        String header = "This is a default config file that needs to be modified. In order to" + "work properly a LocationSpec needs to be set, e.g., LocationSpec=SANFRANCISCO \n";
-        saveProperties(prop, file, header);
+    public static void savePropertiesToFile(Properties prop, File file) {
+        String header = "This is a default config file that needs to be modified. In order to" + //
+                "work properly a LocationSpec needs to be set, e.g., LocationSpec=SANFRANCISCO \n";
+        savePropertiesToFileWithHeader(prop, file, header);
     }
 
-    public static void saveProperties(Properties prop, File file, String headerString) throws IOException {
+    public static void savePropertiesToFileWithHeader(Properties prop, File file, String headerString) {
         try (FileOutputStream ostream = new FileOutputStream(file)) {
             prop.store(ostream, headerString);
+            FileLines.sort(file);
+        } catch (Exception exception) {
+            System.err.println("Could not save file " + file.getAbsolutePath() + " in ch.ethz.idsc.amodeus.options.ScenarioOptionsBase");
         }
-        FileLines.sort(file);
     }
-
-    public static String getOptionsFileName() {
-        return OPTIONSFILENAME;
-    }
-
 }

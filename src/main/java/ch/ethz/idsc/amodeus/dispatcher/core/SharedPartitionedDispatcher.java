@@ -11,16 +11,14 @@ import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
 
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNetwork;
-import ch.ethz.idsc.amodeus.virtualnetwork.VirtualNode;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
 /** All dispatchers wich perform rebalancing and use a virtualNetwork dividing the city into zones are derived from {@link PartitionedDispatcher}.
- * A {@link PartitionedDispatcher} always has a {@link VirtualNetwork}
- *
- * @author Nicolo Ormezzano, Lukas Sieber */
+ * A {@link PartitionedDispatcher} always has a {@link VirtualNetwork} */
 public abstract class SharedPartitionedDispatcher extends SharedRebalancingDispatcher {
     protected final VirtualNetwork<Link> virtualNetwork; //
 
