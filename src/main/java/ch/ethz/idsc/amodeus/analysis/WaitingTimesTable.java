@@ -13,7 +13,7 @@ import ch.ethz.idsc.tensor.io.TableBuilder;
 
 /** The {@link WaitingTimesTable} stores a table for postprocessing which contains for each
  * time step 3 wait time quantiles and the mean wait time. */
-public enum WaitingTimesTable implements AnalysisExport {
+/* package */ enum WaitingTimesTable implements AnalysisExport {
     INSTANCE;
 
     private final String identifier = "WaitingTimes";

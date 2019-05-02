@@ -12,7 +12,7 @@ import com.google.inject.util.Modules;
 import ch.ethz.matsim.av.framework.AVQSimModule;
 import ch.ethz.matsim.av.schedule.AVOptimizer;
 
-public class AmodeusQSimModule extends AbstractModule {
+/* package */ class AmodeusQSimModule extends AbstractModule {
     @Override
     protected void configure() {
         /* Basically, we install the QSimModule that is provided by the AV package, but

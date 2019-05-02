@@ -18,7 +18,7 @@ import ch.ethz.idsc.amodeus.view.gheat.gui.ColorSchemes;
 import ch.ethz.idsc.amodeus.view.jmapviewer.AmodeusHeatMap;
 
 /** class is intended to serve as base class for extension outside of amodeus library */
-public abstract class ViewerLayer {
+/* package */ abstract class ViewerLayer {
 
     public static final int DEFAULT_HEIGHT = 20;
 

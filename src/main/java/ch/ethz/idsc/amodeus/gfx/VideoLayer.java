@@ -17,7 +17,7 @@ import ch.ethz.idsc.amodeus.util.gui.SpinnerLabel;
 import ch.ethz.idsc.amodeus.video.VideoGenerator;
 
 /** Head Up Display */
-public class VideoLayer extends ViewerLayer {
+/* package */ class VideoLayer extends ViewerLayer {
     private final File workingDirectory;
 
     private int fps;

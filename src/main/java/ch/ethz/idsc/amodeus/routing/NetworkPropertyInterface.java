@@ -7,7 +7,7 @@ import org.matsim.core.router.util.LeastCostPathCalculator;
 /** A {@link NetworkPropertyInterface} is used in the {@link CachedNetworkPropertyComputation}
  * to compute a property @param <T> of the network defined on a pair of {@link Link}s and a
  * time. The computation is done via a {@link LeastCostPathCalculator}. */
-public interface NetworkPropertyInterface<T> {
+/* package */ interface NetworkPropertyInterface<T> {
 
     /** @param from
      * @param to

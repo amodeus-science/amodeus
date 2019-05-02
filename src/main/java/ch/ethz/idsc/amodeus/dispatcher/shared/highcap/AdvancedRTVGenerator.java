@@ -13,7 +13,7 @@ import org.matsim.api.core.v01.network.Link;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-public class AdvancedRTVGenerator {
+/* package */ class AdvancedRTVGenerator {
     private static final double MAX_RANGE = 999999.8;
     // ---
     private final Map<RoboTaxi, Set<AVRequest>> feasibleOpenRequestFromLastStepMap = new HashMap<>();

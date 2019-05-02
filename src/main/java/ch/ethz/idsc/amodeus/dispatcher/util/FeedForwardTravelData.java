@@ -25,7 +25,7 @@ import ch.ethz.matsim.av.config.AVConfig;
 import ch.ethz.matsim.av.config.AVGeneratorConfig;
 import ch.ethz.matsim.av.framework.AVConfigGroup;
 
-public enum FeedForwardTravelData {
+/* package */ enum FeedForwardTravelData {
     ;
 
     public static void overwriteIfRequired(LPCreator lpCreator, StaticTravelData travelData, VirtualNetwork<Link> virtualNetwork, ScenarioOptions scenarioOptions) {

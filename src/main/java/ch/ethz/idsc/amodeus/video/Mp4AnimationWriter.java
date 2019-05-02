@@ -20,7 +20,7 @@ import io.humble.video.Rational;
 import io.humble.video.awt.MediaPictureConverter;
 import io.humble.video.awt.MediaPictureConverterFactory;
 
-public class Mp4AnimationWriter implements AnimationWriter {
+/* package */ class Mp4AnimationWriter implements AnimationWriter {
     private final Muxer muxer;
     private final Encoder encoder;
     private MediaPictureConverter converter = null;

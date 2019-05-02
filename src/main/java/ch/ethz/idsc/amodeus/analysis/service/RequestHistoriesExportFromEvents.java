@@ -10,7 +10,7 @@ import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
-public class RequestHistoriesExportFromEvents implements AnalysisExport {
+/* package */ class RequestHistoriesExportFromEvents implements AnalysisExport {
 
     // TODO Sebastian/Lukas: take from controler or config if possible
     private static final String FILENAME_MANUAL = "/output_events.xml.gz";

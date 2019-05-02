@@ -5,7 +5,7 @@ import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.vehicles.Vehicle;
 
-public class AVTraceItem {
+/* package */ class AVTraceItem {
     public Id<Vehicle> vehicleId;
     public String vehicleType;
 

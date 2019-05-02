@@ -16,7 +16,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** mean request waiting time */
-public class RequestWaitingVirtualNodeFunction extends AbstractVirtualNodeFunction {
+/* package */ class RequestWaitingVirtualNodeFunction extends AbstractVirtualNodeFunction {
 
     private final Function<Tensor, Scalar> function;
 

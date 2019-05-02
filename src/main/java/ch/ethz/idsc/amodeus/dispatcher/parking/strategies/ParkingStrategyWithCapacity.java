@@ -6,7 +6,7 @@ import org.matsim.api.core.v01.network.Network;
 import ch.ethz.idsc.amodeus.dispatcher.parking.ParkingCapacityAmodeus;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 
-public abstract class ParkingStrategyWithCapacity implements ParkingStrategy {
+/* package */ abstract class ParkingStrategyWithCapacity implements ParkingStrategy {
 
     protected ParkingCapacityAmodeus avSpatialCapacityAmodeus;
     protected Network network;

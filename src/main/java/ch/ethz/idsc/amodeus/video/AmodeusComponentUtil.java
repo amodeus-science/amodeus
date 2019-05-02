@@ -16,7 +16,7 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.view.jmapviewer.Coordinate;
 import ch.ethz.idsc.amodeus.view.jmapviewer.JMapViewer;
 
-public enum AmodeusComponentUtil {
+/* package */ enum AmodeusComponentUtil {
     ;
 
     public static void adjustMapZoom(AmodeusComponent amodeusComponent, Network network, //

@@ -18,7 +18,7 @@ import org.matsim.api.core.v01.events.handler.PersonLeavesVehicleEventHandler;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.vehicles.Vehicle;
 
-public class AVTraceListener
+/* package */ class AVTraceListener
         implements ActivityStartEventHandler, ActivityEndEventHandler, LinkEnterEventHandler, PersonEntersVehicleEventHandler, PersonLeavesVehicleEventHandler {
     final private Network network;
     final private AVTraceWriter writer;

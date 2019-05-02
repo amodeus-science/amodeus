@@ -12,7 +12,7 @@ import ch.ethz.idsc.amodeus.util.gui.GraphicsUtil;
 
 /** @author onicolo 06-2018
  *         Runnable script for making video renderers of Amod simulation directly from simulation objects. */
-public class SimulationObjectsVideo implements AutoCloseable {
+/* package */ class SimulationObjectsVideo implements AutoCloseable {
     public static final Dimension RESOLUTION_4K = new Dimension(3840, 2160);
     public static final Dimension RESOLUTION_FullHD = new Dimension(1920, 1080);
     // ---

@@ -7,7 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
-public class AVTraceWriter {
+/* package */ class AVTraceWriter {
     final private BufferedWriter writer;
 
     public AVTraceWriter(File path) {

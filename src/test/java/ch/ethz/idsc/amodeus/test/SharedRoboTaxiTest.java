@@ -17,7 +17,7 @@ import org.junit.Test;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
-import ch.ethz.idsc.amodeus.analysis.ScenarioParametersExport;
+import ch.ethz.idsc.amodeus.analysis.AnalysisConstants;
 import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
@@ -180,7 +180,7 @@ public class SharedRoboTaxiTest {
         assertTrue(new File(data, "occAndDistRatios.png").exists());
         assertTrue(new File(data, "stackedDistance.png").exists());
         assertTrue(new File(data, "statusDistribution.png").exists());
-        assertTrue(new File(data, ScenarioParametersExport.FILENAME).exists());
+        assertTrue(new File(data, AnalysisConstants.ParametersExportFilename).exists());
         assertTrue(new File(data, "WaitingTimes").isDirectory());
         assertTrue(new File(data, "WaitingTimes/WaitingTimes.mathematica").exists());
         assertTrue(new File(data, "StatusDistribution").isDirectory());

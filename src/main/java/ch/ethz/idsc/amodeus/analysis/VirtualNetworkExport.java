@@ -11,7 +11,7 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.util.io.MultiFileReader;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
-public class VirtualNetworkExport implements AnalysisExport {
+/* package */ class VirtualNetworkExport implements AnalysisExport {
     private final ScenarioOptions scenarioOptions;
 
     public VirtualNetworkExport(ScenarioOptions scenarioOptions) {

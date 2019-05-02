@@ -14,7 +14,7 @@ import ch.ethz.idsc.tensor.io.TableBuilder;
  * contains the total distance, distance with customer, pickup ditance and rebalancing
  * distance driven as well as the ratio between productive distance (with customer) and
  * empty distance (pickup and rebalancing) */
-public enum DistancesOverDayTable implements AnalysisExport {
+/* package */ enum DistancesOverDayTable implements AnalysisExport {
     INSTANCE;
 
     private final String identifier = "DistancesOverDay";

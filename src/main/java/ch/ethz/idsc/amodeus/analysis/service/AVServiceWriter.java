@@ -9,7 +9,7 @@ import java.io.OutputStreamWriter;
 
 import org.matsim.core.utils.geometry.CoordUtils;
 
-public class AVServiceWriter {
+/* package */ class AVServiceWriter {
     final private BufferedWriter writer;
 
     public AVServiceWriter(File path) {

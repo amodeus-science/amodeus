@@ -5,7 +5,7 @@ import ch.ethz.matsim.av.config.AVGeneratorConfig;
 import ch.ethz.matsim.av.config.AVOperatorConfig;
 
 /** @author Nicolo Ormezzano, Lukas Sieber */
-public class SharedAVGeneratorConfig extends AVGeneratorConfig {
+/* package */ class SharedAVGeneratorConfig extends AVGeneratorConfig {
 
     final static String NUMBER_OF_SHARED_VEHICLES = "numberOfSharedVehicles";
     private long numberOfSharedVehicles = 0;

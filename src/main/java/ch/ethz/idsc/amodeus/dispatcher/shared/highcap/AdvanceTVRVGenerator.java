@@ -11,7 +11,7 @@ import java.util.stream.DoubleStream;
 
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-public class AdvanceTVRVGenerator {
+/* package */ class AdvanceTVRVGenerator {
     private final Set<Set<AVRequest>> rvEdges = new HashSet<>();
     private final double pickupDurationPerStop;
     private final double dropoffDurationPerStop;

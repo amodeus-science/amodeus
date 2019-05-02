@@ -25,7 +25,7 @@ import org.matsim.vehicles.Vehicle;
 
 import ch.ethz.matsim.av.schedule.AVTransitEvent;
 
-public class AVServiceListener implements PersonDepartureEventHandler, PersonArrivalEventHandler, GenericEventHandler, PersonEntersVehicleEventHandler,
+/* package */ class AVServiceListener implements PersonDepartureEventHandler, PersonArrivalEventHandler, GenericEventHandler, PersonEntersVehicleEventHandler,
         PersonLeavesVehicleEventHandler, LinkEnterEventHandler {
     final private Network network;
     final private AVServiceWriter writer;
