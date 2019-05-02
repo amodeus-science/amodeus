@@ -10,7 +10,7 @@ import org.matsim.core.router.util.LeastCostPathCalculator;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-public abstract class NetworkDistanceFunction implements DistanceFunction {
+/* package */ abstract class NetworkDistanceFunction implements DistanceFunction {
 
     private final LeastCostPathCalculator pathCalc;
 

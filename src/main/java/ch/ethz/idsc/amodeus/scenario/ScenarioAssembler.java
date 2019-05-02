@@ -12,7 +12,7 @@ import java.nio.file.StandardCopyOption;
 import ch.ethz.idsc.amodeus.util.io.FileDelete;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
-public enum ScenarioAssembler {
+/* package */ enum ScenarioAssembler {
     ;
 
     public static void copyInitialFiles(File processingDirectory, File dataDir) throws Exception {

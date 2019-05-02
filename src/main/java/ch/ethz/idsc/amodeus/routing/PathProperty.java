@@ -5,7 +5,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.core.router.util.LeastCostPathCalculator;
 import org.matsim.core.router.util.LeastCostPathCalculator.Path;
 
-public enum PathProperty implements NetworkPropertyInterface<Path> {
+/* package */ enum PathProperty implements NetworkPropertyInterface<Path> {
     INSTANCE;
 
     @Override // from NetworkPropertyInterface

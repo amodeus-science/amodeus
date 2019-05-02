@@ -12,7 +12,7 @@ import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
 import ch.ethz.idsc.amodeus.util.io.GZHandler;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
-public enum InitialNetworkPreparer {
+/* package */ enum InitialNetworkPreparer {
     ;
 
     public static Network run(File processingDir) {

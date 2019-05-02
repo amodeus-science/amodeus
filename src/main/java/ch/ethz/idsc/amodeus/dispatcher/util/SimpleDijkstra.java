@@ -14,7 +14,7 @@ import org.matsim.core.router.util.TravelDisutility;
 import org.matsim.core.router.util.TravelTime;
 import org.matsim.vehicles.Vehicle;
 
-public enum SimpleDijkstra {
+/* package */ enum SimpleDijkstra {
     ;
     public static LeastCostPathCalculator prepDijkstra(Network network) {
         PreProcessDijkstra preProcessData = new PreProcessDijkstra();

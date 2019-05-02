@@ -12,7 +12,7 @@ import ch.ethz.idsc.amodeus.routing.CachedNetworkTimeDistance;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-public class GlobalBipartiteMatchingCached {
+/* package */ class GlobalBipartiteMatchingCached {
 
     private final CachedNetworkTimeDistance distanceCashed;
 

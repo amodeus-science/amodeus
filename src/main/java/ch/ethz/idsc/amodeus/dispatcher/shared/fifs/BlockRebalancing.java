@@ -18,7 +18,7 @@ import ch.ethz.idsc.amodeus.routing.CachedNetworkTimeDistance;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-public class BlockRebalancing {
+/* package */ class BlockRebalancing {
 
     /** General Settings */
     private final int minNumberForRebalance;

@@ -16,7 +16,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.matsim.av.router.AVRouter;
 
-public enum ExpectedArrival {
+/* package */ enum ExpectedArrival {
     ;
 
     /** @param roboTaxi

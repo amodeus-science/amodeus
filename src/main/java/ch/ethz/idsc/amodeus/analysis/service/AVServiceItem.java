@@ -13,6 +13,7 @@ public class AVServiceItem {
 
     public Link originLink;
     public Link destinationLink;
+    
     public double departureTime;
 
     public double waitingTime;

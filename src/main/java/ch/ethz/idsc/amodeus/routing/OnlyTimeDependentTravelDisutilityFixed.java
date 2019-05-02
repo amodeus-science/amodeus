@@ -8,7 +8,7 @@ import org.matsim.core.router.util.TravelTime;
 /** A Travel Cost Calculator that uses the travel times as travel disutility.
  * 
  * @author cdobler */
-public class OnlyTimeDependentTravelDisutilityFixed extends OnlyTimeDependentTravelDisutility {
+/* package */ class OnlyTimeDependentTravelDisutilityFixed extends OnlyTimeDependentTravelDisutility {
 
     public OnlyTimeDependentTravelDisutilityFixed(TravelTime travelTime) {
         super(travelTime);

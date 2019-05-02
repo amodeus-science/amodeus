@@ -10,7 +10,7 @@ import com.google.inject.Module;
 
 import ch.ethz.matsim.av.framework.AVQSimPlugin;
 
-public class AmodeusQSimPlugin extends AVQSimPlugin {
+/* package */ class AmodeusQSimPlugin extends AVQSimPlugin {
     public AmodeusQSimPlugin(Config config) {
         super(config);
     }
