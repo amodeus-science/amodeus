@@ -8,7 +8,7 @@ import ch.ethz.idsc.amodeus.analysis.element.DistanceElement;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.io.TableBuilder;
 
-public enum DistancesRatiosTable implements AnalysisExport {
+/* package */ enum DistancesRatiosTable implements AnalysisExport {
     INSTANCE;
 
     @Override

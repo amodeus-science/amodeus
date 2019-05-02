@@ -8,18 +8,18 @@ import org.matsim.api.core.v01.population.Person;
 import ch.ethz.matsim.av.data.AVOperator;
 
 public class AVServiceItem {
-    Id<Person> personId;
-    int tripIndex;
+    public Id<Person> personId;
+    public int tripIndex;
 
-    Link originLink;
-    Link destinationLink;
-    double departureTime;
+    public Link originLink;
+    public Link destinationLink;
+    public double departureTime;
 
-    double waitingTime;
-    double inVehicleTime;
+    public double waitingTime;
+    public double inVehicleTime;
 
-    double distance = 0.0;
-    double chargedDistance = 0.0;
+    public double distance = 0.0;
+    public double chargedDistance = 0.0;
 
-    Id<AVOperator> operatorId;
+    public Id<AVOperator> operatorId;
 }

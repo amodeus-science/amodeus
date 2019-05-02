@@ -14,7 +14,7 @@ import ch.ethz.idsc.tensor.io.TableBuilder;
  * contains the total distance, distance with customer, pickup ditance and rebalancing
  * distance driven as well as the ratio between productive distance (with customer) and
  * empty distance (pickup and rebalancing) */
-public enum DistancesOverDayTable implements AnalysisExport {
+/* package */ enum DistancesOverDayTable implements AnalysisExport {
     INSTANCE;
 
     private final String identifier = "DistancesOverDay";
@@ -28,8 +28,9 @@ public enum DistancesOverDayTable implements AnalysisExport {
         try {
             UnitSaveUtils.saveFile(tableBuilder.toTable(), identifier, relativeDirectory);
             File dataFolder = new File(relativeDirectory, identifier);
-            SaveFormats.CSV.save(Tensors.fromString("time step, total distance, distance with customer, "//
-                    + "pickup distance, rebalancing distance, distance ratio"), //
+            SaveFormats.CSV.save(
+                    Tensors.fromString("time step, total distance, distance with customer, "//
+                            + "pickup distance, rebalancing distance, distance ratio"), //
                     dataFolder, "description");
         } catch (Exception e) {
             e.printStackTrace();

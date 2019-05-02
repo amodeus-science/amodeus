@@ -7,17 +7,15 @@ import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.io.Export;
 
-public enum ScenarioParametersExport implements AnalysisExport {
+/* package */ enum ScenarioParametersExport implements AnalysisExport {
     INSTANCE;
-
-    public static final String FILENAME = "scenarioParameters.obj";
 
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
         ScenarioParameters scenarioParameters = analysisSummary.getScenarioParameters();
 
         try {
-            Export.object(new File(relativeDirectory, FILENAME), scenarioParameters);
+            Export.object(new File(relativeDirectory, AnalysisConstants.ParametersExportFilename), scenarioParameters);
         } catch (Exception exception) {
             exception.printStackTrace();
             throw new RuntimeException();
