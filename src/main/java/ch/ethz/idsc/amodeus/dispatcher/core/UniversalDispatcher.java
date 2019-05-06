@@ -200,7 +200,7 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
     /** this function will re-route the taxi if it is not in stay task (for
      * congestion relieving purpose) */
     protected void reRoute(RoboTaxi robotaxi) {
-        if (!robotaxi.isInStayTask())
+        if (!robotaxi.isInStayTask() && robotaxi.canReroute())
             routingForDiversion(robotaxi, robotaxi.getCurrentDriveDestination(), true);
     }
 
