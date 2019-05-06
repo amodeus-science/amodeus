@@ -22,13 +22,14 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
 /*package*/ enum SharedRoboTaxiDiversionHelper {
     ;
 
-    /* package */ static void adaptMenuToDirective(RoboTaxi roboTaxi, FuturePathFactory futurePathFactory, double now, EventsManager eventsManager) {
+    /* package */ static void adaptMenuToDirective(RoboTaxi roboTaxi, FuturePathFactory futurePathFactory, double now, //
+            EventsManager eventsManager, boolean reRoute) {
         // Check that we are not already on the link of the redirectino (this can only happen if a command was given in redispatch to the current location)
         removeRedirectionToDivertableLocationInBeginning(roboTaxi);
 
         Optional<Link> link = getToLink(roboTaxi, now);
         if (link.isPresent()) {
-            setRoboTaxiDiversion(roboTaxi, link.get(), futurePathFactory, now, eventsManager);
+            setRoboTaxiDiversion(roboTaxi, link.get(), futurePathFactory, now, eventsManager, reRoute);
         }
 
     }
@@ -175,7 +176,8 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
      *            {@link} the {@link AVStatus} the {@link RoboTaxi} has after
      *            the diversion, depends if used from {@link setRoboTaxiPickup} or
      *            {@link setRoboTaxiRebalance} */
-    /* package */ final static void setRoboTaxiDiversion(RoboTaxi sRoboTaxi, Link destination, FuturePathFactory futurePathFactory, double now, EventsManager eventsManager) {
+    /* package */ final static void setRoboTaxiDiversion(RoboTaxi sRoboTaxi, Link destination, FuturePathFactory futurePathFactory, //
+            double now, EventsManager eventsManager, boolean reRoute) {
         GlobalAssert.that(RoboTaxiUtils.hasNextCourse(sRoboTaxi));
         // update Status Of Robo Taxi
         // In Handle
@@ -187,14 +189,16 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
 
             @Override
             public void handle(AVDriveTask avDriveTask) {
-                if (!avDriveTask.getPath().getToLink().equals(destination)) { // ignore when vehicle is already going
+                if (reRoute || !avDriveTask.getPath().getToLink().equals(destination)) { // ignore when vehicle is already going
                     FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer( //
                             sRoboTaxi.getDivertableLocation(), destination, sRoboTaxi.getDivertableTime());
-
-                    sRoboTaxi.assignDirective(new DriveVehicleDiversionDirective(sRoboTaxi, destination, futurePathContainer));
+                    if (reRoute && avDriveTask.getPath().getToLink().equals(destination)) {
+                        sRoboTaxi.assignDirective(new DriveVehicleRerouteDirective(futurePathContainer, sRoboTaxi));
+                    } else {
+                        sRoboTaxi.assignDirective(new DriveVehicleDiversionDirective(sRoboTaxi, destination, futurePathContainer));
+                    }
                 } else
                     sRoboTaxi.assignDirective(EmptyDirective.INSTANCE);
-
             }
 
             @Override
