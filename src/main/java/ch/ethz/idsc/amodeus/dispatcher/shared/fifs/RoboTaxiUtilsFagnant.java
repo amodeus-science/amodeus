@@ -17,14 +17,14 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 /* package */ enum RoboTaxiUtilsFagnant {
     ;
 
-    /** Finds all the robotaxis which can reach a specific link within the maximal Time specified
+    /** Finds all the {@link RoboTaxi}s which can reach a specific link within the maximal Time specified
      * 
      * @param link
      * @param robotaxis
      * @param timeDb
      * @param maxTime
      * @return */
-    static NavigableMap<Double, RoboTaxi> getRoboTaxisWithinMaxTime( //
+    public static NavigableMap<Double, RoboTaxi> getRoboTaxisWithinMaxTime( //
             Link link, Collection<RoboTaxi> robotaxis, NetworkTimeDistInterface timeDb, double maxTime, //
             RoboTaxiHandler roboTaxiMaintainer, Double now) {
         Collection<RoboTaxi> closeRoboTaxis = roboTaxiMaintainer.getRoboTaxisWithinFreeSpeedDisk(link.getCoord(), maxTime).stream().filter(rt -> robotaxis.contains(rt))
@@ -52,7 +52,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param now
      * @param timeDb
      * @return */
-    static Optional<RoboTaxi> getClosestUnassignedRoboTaxiWithinMaxTime( //
+    public static Optional<RoboTaxi> getClosestUnassignedRoboTaxiWithinMaxTime( //
             RoboTaxiHandler roboTaxiMaintainer, AVRequest avRequest, double maxTime, double now, NetworkTimeDistInterface timeDb) {
         NavigableMap<Double, RoboTaxi> roboTaxis = RoboTaxiUtilsFagnant.getRoboTaxisWithinMaxTime(avRequest.getFromLink(), roboTaxiMaintainer.getUnassignedRoboTaxis(), timeDb,
                 maxTime, roboTaxiMaintainer, now);

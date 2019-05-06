@@ -22,7 +22,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
  * It is similar to a {@link SharedMenu} in the Robotaxi.
  * But it has more information stored such as the predicted travel time. */
 /* package */ class SharedAvRoute {
-    static SharedAvRoute of( //
+    public static SharedAvRoute of( //
             List<SharedCourse> list, Link currentLink, //
             double now, double pickupTime, double dropofftime, //
             CachedNetworkTimeDistance timeDb) {
@@ -59,12 +59,12 @@ import ch.ethz.idsc.tensor.qty.Quantity;
         route = Collections.unmodifiableList((Objects.isNull(list)) ? new ArrayList<>() : list);
     }
 
-    List<SharedRoutePoint> getRoute() {
+    public List<SharedRoutePoint> getRoute() {
         return route;
     }
 
     /** @return an unmodifiable view of the menu */
-    List<SharedCourse> getRoboTaxiMenu() {
+    public List<SharedCourse> getRoboTaxiMenu() {
         return castToCourseList(route);
     }
 
@@ -83,7 +83,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
         return new ArrayList<>(list);
     }
 
-    Double getEndTime() {
+    public Double getEndTime() {
         return route.get(route.size() - 1).getEndTime();
     }
 
