@@ -123,4 +123,14 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
         totalValues.put(TtlValIdent.REQUESTSSHAREDNUMBERS, sharedRateString);
         return totalValues;
     }
+    
+    
+    
+    public static void main(String[] args){
+        Tensor vector = Tensors.vector(0,0,1,1,1,2,2,2,2,0,1,2);
+        System.out.println(BinCounts.of(vector));
+        
+        
+    }
+    
 }
