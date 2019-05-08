@@ -8,17 +8,18 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
     private final double arrivalTime;
     private final double stopDuration;
 
-    SharedRoutePoint(SharedCourse sharedCourse, double arrivalTime, double stopDuration) {
-        super(sharedCourse.getAvRequest(), sharedCourse.getLink(), sharedCourse.getCourseId(), sharedCourse.getMealType());
+    public SharedRoutePoint(SharedCourse sharedCourse, double arrivalTime, double stopDuration) {
+        super(sharedCourse.getAvRequest(), sharedCourse.getLink(), sharedCourse.getCourseId(), //
+                sharedCourse.getMealType());
         this.arrivalTime = arrivalTime;
         this.stopDuration = stopDuration;
     }
 
-    double getArrivalTime() {
+    public double getArrivalTime() {
         return arrivalTime;
     }
 
-    double getEndTime() {
+    public double getEndTime() {
         return arrivalTime + stopDuration;
     }
 }

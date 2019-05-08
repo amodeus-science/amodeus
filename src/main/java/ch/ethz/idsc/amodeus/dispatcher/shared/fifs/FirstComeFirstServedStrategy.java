@@ -41,7 +41,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.router.AVRouter;
 
 /** Implementation of the Algorithm presented in:
- * Fagnant, D. J., Kockelman, K. M., & Bansal, P. (2015). Operations of shared autonomous vehicle fleet for austin, texas, market. Transportation Research
+ * Fagnant, D. J., Kockelman, K. M., & Bansal, P. (2015). Operations of shared autonomous vehicle fleet for
+ * Austin, Texas, market. Transportation Research
  * Record: Journal of the Transportation Research Board, (2536), 98-106. */
 public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
 
@@ -94,7 +95,7 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
 
             /** get open requests and available vehicles and put them into the desired
              * structures. Furthermore add all the requests to the one hour bin which is
-             * used for Rebalancing */
+             * used for rebalancing */
 
             /** prepare the registers for the dispatching */
             getDivertableUnassignedRoboTaxis().stream().forEach(rt -> unassignedRoboTaxis.add(rt));
@@ -110,7 +111,7 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
                     lastHourRequests, //
                     unassignedRequests.getValues(), unassignedRoboTaxis.getValues());
 
-            /** for all AV Requests in the order of their submision, try to find the closest
+            /** for all {@link AVRequest}s in the order of their submission, try to find the closest
              * vehicle and assign */
             Set<AVRequest> requestsToRemove = new HashSet<>();
             for (AVRequest avRequest : unassignedRequests.getTsInOrderOfValue()) {
@@ -125,13 +126,13 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
                         assigned = true;
                     }
                 }
-                /** If we can not assign a robotaxi put the request on the wait list */
+                /** If no {@link RoboTaxi} can be assigned, put the request on the wait list */
                 if (assigned) {
                     requestsToRemove.add(avRequest);
                 } else {
                     if (!waitList.contains(avRequest)) {
                         waitList.add(avRequest);
-                    } else { // and if it was already on the wait list put it to the extrem wait list
+                    } else { // and if it was already on the wait list put it to the extreme wait list
                         extremWaitList.add(avRequest);
                     }
                 }

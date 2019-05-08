@@ -28,7 +28,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
     private final RideSharingConstraints rideSharingConstraints;
 
-    RouteValidation(double maxPickupTime, double maxDriveTimeIncrease, double maxRemainingTimeIncreas, double dropoffTime, double pickupDuration,
+    public RouteValidation(double maxPickupTime, double maxDriveTimeIncrease, double maxRemainingTimeIncreas, double dropoffTime, double pickupDuration,
             double newTravelerMinIncreaseAllowed) {
         this.maxPickupTime = maxPickupTime;
         this.dropoffDuration = dropoffTime;
@@ -45,7 +45,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param now
      * @param requestHandler
      * @return true if this is a valid route, false if the rout can not be considered for sharing. */
-    boolean isValidRoute(SharedAvRoute sharedAvRoute, SharedAvRoute oldRoute, RequestWrap newRequestWrap, double now, RequestHandler requestHandler) {
+    public boolean isValidRoute(SharedAvRoute sharedAvRoute, SharedAvRoute oldRoute, RequestWrap newRequestWrap, double now, RequestHandler requestHandler) {
         Map<AVRequest, Double> driveTimes = requestHandler.getDriveTimes(sharedAvRoute);
         AVRequest newAvRequest = newRequestWrap.getAvRequest();
         double unitCapacityDriveTime = requestHandler.getDriveTimeDirectUnitCap(newAvRequest);
@@ -135,7 +135,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         return Optional.empty();
     }
 
-    boolean menuFulfillsConstraints( //
+    public boolean menuFulfillsConstraints( //
             RoboTaxi roboTaxi, List<SharedCourse> newRoute, //
             AVRequest avRequest, double now, //
             CachedNetworkTimeDistance timeDb, RequestHandler requestMaintainer) {

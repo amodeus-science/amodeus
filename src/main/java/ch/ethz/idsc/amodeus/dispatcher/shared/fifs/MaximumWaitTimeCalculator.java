@@ -8,22 +8,22 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 /* package */ class MaximumWaitTimeCalculator {
     private final double maxWaitTime;
     private final double waitListTime;
-    private final double extremWaitListTime;
+    private final double extremeWaitListTime;
 
-    MaximumWaitTimeCalculator(double maxWaitTime, double waitListTime, double extremWaitListTime) {
+    public MaximumWaitTimeCalculator(double maxWaitTime, double waitListTime, double extremWaitListTime) {
         this.maxWaitTime = maxWaitTime;
         this.waitListTime = waitListTime;
-        this.extremWaitListTime = extremWaitListTime;
+        this.extremeWaitListTime = extremWaitListTime;
     }
 
-    double calculate(AVRequest avRequest, Set<AVRequest> waitList, Set<AVRequest> extremWaitList) {
-        if (extremWaitList == null)
+    public double calculate(AVRequest avRequest, Set<AVRequest> waitList, Set<AVRequest> extremeWaitList) {
+        if (extremeWaitList == null)
             return calculate(avRequest, waitList);
-        return (extremWaitList.contains(avRequest)) ? extremWaitListTime : calculate(avRequest, waitList);
+        return (extremeWaitList.contains(avRequest)) ? extremeWaitListTime : calculate(avRequest, waitList);
 
     }
 
-    double calculate(AVRequest avRequest, Set<AVRequest> waitLists) {
+    public double calculate(AVRequest avRequest, Set<AVRequest> waitLists) {
         return waitLists.contains(avRequest) ? maxWaitTime : waitListTime;
     }
 }

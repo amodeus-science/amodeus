@@ -140,7 +140,7 @@ public class ScenarioOptions {
     }
 
     public File getShapeFile() {
-        File shapeFile = new File(getString(ScenarioOptionsBase.SHAPEFILEIDENTIFIER));
+        File shapeFile = new File(workingDirectory,getString(ScenarioOptionsBase.SHAPEFILEIDENTIFIER));
         System.out.println("shapeFile = " + shapeFile.getAbsolutePath());
         return shapeFile.exists() ? shapeFile : null;
     }
