@@ -83,7 +83,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
         return new ArrayList<>(list);
     }
 
-    public Double getEndTime() {
+    public double getEndTime() {
         return route.get(route.size() - 1).getEndTime();
     }
 
