@@ -63,6 +63,8 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
     private final RequestRegister requestRegister = new RequestRegister();
     /** contains all Requests which are assigned to a RoboTaxi */
 
+    private final Set<RoboTaxi> timeStepReroute = new HashSet<>();
+
     // Registers for Simulation Objects
     private final Set<AVRequest> periodPickedUpRequests = new HashSet<>();
     private final Map<AVRequest, RoboTaxi> periodFulfilledRequests = new HashMap<>(); // A request is removed from the requestRegister at dropoff. So here we
@@ -212,6 +214,13 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
         }
     }
 
+    /** this function will re-route the taxi if it is not in stay task (for
+     * congestion relieving purpose) */
+    protected void reRoute(RoboTaxi robotaxi) {
+        if (!robotaxi.isInStayTask() && robotaxi.canReroute())
+            timeStepReroute.add(robotaxi);
+    }
+
     // ***********************************************************************************************
     // ********************* INTERNAL Methods, do not call from derived dispatchers*******************
     // ***********************************************************************************************
@@ -227,8 +236,12 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
          * - do not yet Plan to go to the link of this starter
          * b) if they do not have a starter but are on the way to a location they are stoped */
         for (RoboTaxi roboTaxi : getRoboTaxis()) {
-            SharedRoboTaxiDiversionHelper.adaptMenuToDirective(roboTaxi, futurePathFactory, now, eventsManager);
+            if (timeStepReroute.contains(roboTaxi))
+                SharedRoboTaxiDiversionHelper.adaptMenuToDirective(roboTaxi, futurePathFactory, now, eventsManager, true);
+            else
+                SharedRoboTaxiDiversionHelper.adaptMenuToDirective(roboTaxi, futurePathFactory, now, eventsManager, false);
         }
+        timeStepReroute.clear();
     }
 
     /** complete all matchings if a {@link RoboTaxi} has arrived at the
