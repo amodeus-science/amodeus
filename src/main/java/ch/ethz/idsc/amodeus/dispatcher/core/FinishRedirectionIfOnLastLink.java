@@ -3,6 +3,7 @@ package ch.ethz.idsc.amodeus.dispatcher.core;
 import java.util.Optional;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 
 /* package */ enum FinishRedirectionIfOnLastLink {
@@ -10,7 +11,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 
     /* package */ static final void now(RoboTaxi roboTaxi) {
         if (RoboTaxiUtils.hasNextCourse(roboTaxi)) {
-            Optional<SharedCourse> currentCourse = RoboTaxiUtils.getStarterCourse(roboTaxi);
+            Optional<SharedCourse> currentCourse = SharedCourseListUtils.getStarterCourse(roboTaxi);
             /** search redirect courses */
             if (currentCourse.get().getMealType().equals(SharedMealType.REDIRECT)) {
                 /** search if arrived at redirect destination */
