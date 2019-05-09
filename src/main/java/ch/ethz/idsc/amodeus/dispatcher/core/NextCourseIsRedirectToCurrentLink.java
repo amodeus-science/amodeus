@@ -7,7 +7,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 
 /* package */ enum NextCourseIsRedirectToCurrentLink {
     ;
-    
+
     public static boolean check(RoboTaxi roboTaxi) {
         Optional<SharedCourse> redirectCourseCheck = RoboTaxiUtils.getStarterCourse(roboTaxi);
         if (!redirectCourseCheck.isPresent())

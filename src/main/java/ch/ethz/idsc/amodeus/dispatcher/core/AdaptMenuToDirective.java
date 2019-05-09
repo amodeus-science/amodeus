@@ -8,7 +8,7 @@ import org.matsim.core.api.experimental.events.EventsManager;
 /* package */ enum AdaptMenuToDirective {
     ;
 
-    /* package */ static void now(RoboTaxi roboTaxi, FuturePathFactory futurePathFactory, double now, //
+    public static void now(RoboTaxi roboTaxi, FuturePathFactory futurePathFactory, double now, //
             EventsManager eventsManager, boolean reRoute) {
         // Check that we are not already on the link of the redirectino (this can only happen if a command was given in redispatch to the current location)
         removeRedirectionToDivertableLocationInBeginning(roboTaxi);

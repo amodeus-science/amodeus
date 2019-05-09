@@ -14,7 +14,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 /* package */ enum PickupIfOnLastLink {
     ;
 
-    /* package */ static Optional<AVRequest> apply(RoboTaxi roboTaxi, double timeNow, double pickupDurationPerStop, FuturePathFactory futurePathFactory) {
+    public static Optional<AVRequest> apply(RoboTaxi roboTaxi, double timeNow, double pickupDurationPerStop, FuturePathFactory futurePathFactory) {
         // Same for dropoffs
         Link pickupVehicleLink = roboTaxi.getDivertableLocation();
         // SHARED note that waiting for last staytask adds a one second staytask before

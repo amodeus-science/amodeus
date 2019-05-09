@@ -15,8 +15,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 /* package */ enum AssignDropoffDirective {
     ;
 
-    /* package */ static final Optional<AVRequest> apply(RoboTaxi roboTaxi, double now, double dropoffDurationPerStop,
-            FuturePathFactory futurePathFactory) {
+    public static final Optional<AVRequest> apply(RoboTaxi roboTaxi, double now, double dropoffDurationPerStop, FuturePathFactory futurePathFactory) {
         Link dropoffVehicleLink = roboTaxi.getDivertableLocation();
         // SHARED note that waiting for last staytask adds a one second staytask before
         // switching to dropoffTask
@@ -56,6 +55,5 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         roboTaxi.assignDirective(new SharedGeneralDropoffDirective(roboTaxi, avRequest, futurePathContainer, now, dropoffDurationPerStop));
 
     }
-
 
 }
