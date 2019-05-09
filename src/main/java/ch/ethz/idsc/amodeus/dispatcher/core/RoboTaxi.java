@@ -153,7 +153,7 @@ public class RoboTaxi {
      *            package, in dispatcher implementations, status will be adapted
      *            automatically. */
     /* package */ void setStatus(RoboTaxiStatus status) {
-        GlobalAssert.that(!usageType.equals(RoboTaxiUsageType.SHARED));
+        GlobalAssert.that(!usageType.equals(RoboTaxiUsageType.SHARED)); //TODO which code handles shared taxi status?????
         this.status = Objects.requireNonNull(status);
     }
 
@@ -335,9 +335,15 @@ public class RoboTaxi {
         SharedCourse dropoffCourse = SharedCourse.dropoffCourse(avRequest);
         setMenu(SharedMenuUtils.addAVCoursesAsDessert(menu, pickupCourse, dropoffCourse));
     }
-
+    
+    // we should only allow one redirect course at the menu. --Luc, on 9 May 2019, after one 
+    // afternoon's debugging.
     /* package */ void addRedirectCourseToMenu(SharedCourse redirectCourse) {
         GlobalAssert.that(redirectCourse.getMealType().equals(SharedMealType.REDIRECT));
+        // this if statment is added by Luc and that fix the problem
+        if (status.equals(RoboTaxiStatus.REBALANCEDRIVE)) {
+                finishRedirection();
+        }
         setMenu(SharedMenuUtils.addAVCoursesAsDessert(menu, redirectCourse));
     }
 
