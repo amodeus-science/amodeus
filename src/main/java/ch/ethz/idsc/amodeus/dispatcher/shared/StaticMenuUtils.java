@@ -13,7 +13,7 @@ import org.matsim.core.network.NetworkUtils;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
-enum StaticMenuUtils {
+public enum StaticMenuUtils {
     ;
 
     /** Changes Order of the Menue such that first all Pickups and then All Dropoffs occur. The order is kept. The Redirect Courses are put at the end */
