@@ -10,7 +10,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
     ;
 
     public static void of(SharedMenu sharedMenu) {
-        of(sharedMenu.getRoboTaxiMenu());
+        of(sharedMenu.getCourseList());
     }
 
     public static void of(List<SharedCourse> sharedMenu) {

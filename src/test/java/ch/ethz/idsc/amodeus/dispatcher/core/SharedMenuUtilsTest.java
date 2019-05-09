@@ -36,13 +36,13 @@ public class SharedMenuUtilsTest extends TestCase {
         assertEquals(SharedMenuUtils.getStarterCourse(menu1).get(), pickupCourse1);
         assertTrue(SharedMenuUtils.checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(menu1, 1));
         assertTrue(SharedMenuUtils.checkNoPickupAfterDropoffOfSameRequest(menu1));
-        assertTrue(SharedMenuCheck.checkAllCoursesAppearOnlyOnce(menu1.getRoboTaxiMenu()));
+        assertTrue(SharedMenuCheck.checkAllCoursesAppearOnlyOnce(menu1.getCourseList()));
 
         SharedMenu menu2 = SharedCourseMove.moveAVCourseToNext(menu1, dropoffCourse1);
         assertTrue(SharedMenuUtils.containSameCourses(menu1, menu2));
         SharedMenu menu2Check = SharedMenu.of(Arrays.asList(pickupCourse1, pickupCourse2, dropoffCourse1, dropoffCourse2));
-        assertFalse(menu1.getRoboTaxiMenu().equals(menu2.getRoboTaxiMenu()));
-        assertTrue(menu2.getRoboTaxiMenu().equals(menu2Check.getRoboTaxiMenu()));
+        assertFalse(menu1.getCourseList().equals(menu2.getCourseList()));
+        assertTrue(menu2.getCourseList().equals(menu2Check.getCourseList()));
 
         List<SharedCourse> listInvalid = Arrays.asList(dropoffCourse1, pickupCourse1);
 

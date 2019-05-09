@@ -43,7 +43,7 @@ public class SharedMenu {
     }
 
     /** @return an unmodifiable view of the menu */
-    public List<SharedCourse> getRoboTaxiMenu() {
+    public List<SharedCourse> getCourseList() {
         return roboTaxiMenu;
     }
 

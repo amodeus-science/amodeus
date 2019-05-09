@@ -17,30 +17,29 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     ;
 
     public static List<SharedCourse> fastPickupTour(List<SharedCourse> unmodifiableSharedMenu, Coord startCoord) {
-        List<SharedCourse> sharedMenu = new ArrayList<>(unmodifiableSharedMenu);
+        List<SharedCourse> originalSharedCourses = new ArrayList<>(unmodifiableSharedMenu);
 
-        GlobalAssert.that(StaticHelper.checkAllPickupsFirst(sharedMenu));
-        int originalSize = sharedMenu.size();
-        Collection<SharedCourse> sharedCourses = sharedMenu.stream().filter(sc -> sc.getMealType().equals(SharedMealType.PICKUP)).collect(Collectors.toList());
+        GlobalAssert.that(StaticHelper.checkAllPickupsFirst(originalSharedCourses));
+        int originalSize = originalSharedCourses.size();
+        Collection<SharedCourse> sharedCourses = originalSharedCourses.stream()//
+                .filter(sc -> sc.getMealType().equals(SharedMealType.PICKUP)).collect(Collectors.toList());
 
         for (SharedCourse sharedCourse : sharedCourses) {
-            SharedCourseRemove.removeAVCourse(sharedMenu, sharedCourse);
+            SharedCourseRemove.specific(originalSharedCourses, sharedCourse);
         }
 
         int currentIndex = 0;
         Coord nextCoord = startCoord;
         while (!sharedCourses.isEmpty()) {
             SharedCourse closestCourse = StaticHelper.getClosestCourse(sharedCourses, nextCoord);
-            SharedCourseAdd.atIndex(sharedMenu, closestCourse, currentIndex);
+            SharedCourseAdd.atIndexList(originalSharedCourses, closestCourse, currentIndex);
             currentIndex++;
             nextCoord = closestCourse.getLink().getCoord();
             sharedCourses.remove(closestCourse);
         }
 
-        GlobalAssert.that(originalSize == sharedMenu.size());
-        return sharedMenu;
+        GlobalAssert.that(originalSize == originalSharedCourses.size());
+        return originalSharedCourses;
     }
-    
-    
 
 }

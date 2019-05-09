@@ -17,30 +17,30 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     ;
 
     public static List<SharedCourse> fastDropoffTour(List<SharedCourse> unmodifiableSharedMenu) {
-        List<SharedCourse> sharedMenu = new ArrayList<>(unmodifiableSharedMenu);
-        GlobalAssert.that(StaticHelper.checkAllPickupsFirst(sharedMenu));
-        GlobalAssert.that(!sharedMenu.stream().anyMatch(sc -> sc.getMealType().equals(SharedMealType.REDIRECT)));
+        List<SharedCourse> sharedCourses = new ArrayList<>(unmodifiableSharedMenu);
+        GlobalAssert.that(StaticHelper.checkAllPickupsFirst(sharedCourses));
+        GlobalAssert.that(!sharedCourses.stream().anyMatch(sc -> sc.getMealType().equals(SharedMealType.REDIRECT)));
 
-        Coord lastPickupCoord = getLastPickup(sharedMenu).getLink().getCoord();
+        Coord lastPickupCoord = getLastPickup(sharedCourses).getLink().getCoord();
         Set<SharedCourse> set = new HashSet<>();
-        for (SharedCourse sharedCourse : sharedMenu) {
+        for (SharedCourse sharedCourse : sharedCourses) {
             if (sharedCourse.getMealType().equals(SharedMealType.DROPOFF)) {
                 set.add(sharedCourse);
             }
         }
 
         for (SharedCourse sharedCourse : set) {
-            SharedCourseRemove.removeAVCourse(sharedMenu, sharedCourse);
+            SharedCourseRemove.specific(sharedCourses, sharedCourse);
         }
 
         int numIter = set.size();
         for (int i = 0; i < numIter; i++) {
             SharedCourse sharedCourse = StaticHelper.getClosestCourse(set, lastPickupCoord);
-            SharedCourseAdd.asDessert(sharedMenu, sharedCourse);
+            SharedCourseAdd.asDessertList(sharedCourses, sharedCourse);
             set.remove(sharedCourse);
         }
         GlobalAssert.that(set.isEmpty());
-        return sharedMenu;
+        return sharedCourses;
     }
 
     private static SharedCourse getLastPickup(List<SharedCourse> sharedMenu) {

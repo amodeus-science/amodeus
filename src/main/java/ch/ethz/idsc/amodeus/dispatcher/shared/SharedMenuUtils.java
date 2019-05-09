@@ -17,12 +17,12 @@ public enum SharedMenuUtils {
      * 
      * @return */
     public static Optional<SharedCourse> getStarterCourse(SharedMenu sharedMenu) {
-        return SharedCourseListUtils.getStarterCourse(sharedMenu.getRoboTaxiMenu());
+        return SharedCourseListUtils.getStarterCourse(sharedMenu.getCourseList());
     }
     
     /** @return true if the menu has entries */
     public static boolean hasStarter(SharedMenu sharedMenu) {
-        return SharedCourseListUtils.hasStarter(sharedMenu.getRoboTaxiMenu());
+        return SharedCourseListUtils.hasStarter(sharedMenu.getCourseList());
     }
 
 
@@ -31,20 +31,20 @@ public enum SharedMenuUtils {
     // **************************************************
     // TODO naming is wrong, this is only a one-sided inclusion check. Name accordingly.
     public static boolean containSameCourses(SharedMenu sharedMenu1, SharedMenu sharedMenu2) {
-        return sharedMenu1.getRoboTaxiMenu().size() == sharedMenu2.getRoboTaxiMenu().size() && //
-                sharedMenu1.getRoboTaxiMenu().containsAll(sharedMenu2.getRoboTaxiMenu());
+        return sharedMenu1.getCourseList().size() == sharedMenu2.getCourseList().size() && //
+                sharedMenu1.getCourseList().containsAll(sharedMenu2.getCourseList());
     }
 
     public static boolean checkNoPickupAfterDropoffOfSameRequest(SharedMenu sharedMenu) {
-        return SharedMenuCheck.checkNoPickupAfterDropoffOfSameRequest(sharedMenu.getRoboTaxiMenu());
+        return SharedMenuCheck.checkNoPickupAfterDropoffOfSameRequest(sharedMenu.getCourseList());
     }
 
     public static boolean checkMenuConsistencyWithRoboTaxi(SharedMenu sharedMenu, int roboTaxiCapacity) {
-        return SharedMenuCheck.checkMenuConsistency(sharedMenu.getRoboTaxiMenu(), roboTaxiCapacity);
+        return SharedMenuCheck.checkMenuConsistency(sharedMenu.getCourseList(), roboTaxiCapacity);
     }
 
     public static boolean checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(SharedMenu sharedMenu, int roboTaxiCapacity) {
-        return Compatibility.of(sharedMenu.getRoboTaxiMenu()).forCapacity(roboTaxiCapacity);
+        return Compatibility.of(sharedMenu.getCourseList()).forCapacity(roboTaxiCapacity);
     }
 
 
