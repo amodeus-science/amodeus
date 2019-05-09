@@ -13,19 +13,17 @@ import org.matsim.core.api.experimental.events.EventsManager;
         // Check that we are not already on the link of the redirectino (this can only happen if a command was given in redispatch to the current location)
         removeRedirectionToDivertableLocationInBeginning(roboTaxi);
 
-        Optional<Link> link = SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, now);
+        Optional<Link> link = RetrieveToLink.forShared(roboTaxi, now);
         if (link.isPresent()) {
-            SharedRoboTaxiDiversionHelper.setRoboTaxiDiversion(roboTaxi, link.get(), futurePathFactory, now, eventsManager, reRoute);
+            SetSharedRoboTaxiDiversion.now(roboTaxi, link.get(), futurePathFactory, now, eventsManager, reRoute);
         }
 
     }
-    
-    
+
     private static void removeRedirectionToDivertableLocationInBeginning(RoboTaxi roboTaxi) {
         while (NextCourseIsRedirectToCurrentLink.check(roboTaxi)) {
             roboTaxi.finishRedirection();
         }
     }
-
 
 }
