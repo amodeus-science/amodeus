@@ -391,6 +391,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
                         // System.out.println(roboTaxi.getDivertableLocation().getId().toString());
                         // }
                         GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE));
+                        //TODO maybe consider remove this? But be very careful!!!!!!
                     }
                 }
             }
