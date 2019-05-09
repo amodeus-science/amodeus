@@ -78,6 +78,9 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
     private int total_matchedRequests = 0; // TODO Shared what is the use of this?
     private int total_dropedOffRequests = 0;//
 
+    private final OnboardPassengerCheck onboardPassengerCheck = //
+            new OnboardPassengerCheck(total_matchedRequests, total_dropedOffRequests);
+
     // Simulation Properties
     private final MatsimAmodeusDatabase db;
     private final FuturePathFactory futurePathFactory;
@@ -456,9 +459,8 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
         }));
         GlobalAssert.that(uniqueRegisterRequests.size() == uniqueMenuRequests.size());
 
-        /** check that the number of customers in vehicles equals
-         * the number of picked up minus droped off customers. */
-        GlobalAssert.that(total_matchedRequests - total_dropedOffRequests == getRoboTaxis().stream().mapToInt(rt -> RoboTaxiUtils.getNumberOnBoardRequests(rt)).sum());
+        /** onboard customers must equal total_matchedRequests - total_dropedOffRequests */
+        onboardPassengerCheck.now(total_matchedRequests, total_dropedOffRequests, getRoboTaxis());
 
     }
 

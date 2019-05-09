@@ -25,6 +25,7 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.red.VectorAngle;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
+// TODO move to an application package and separate from core classes.
 public class BeamExtensionForSharing {
     // TODO code/api style is bad: lastEmptyTaxis
     private Collection<RoboTaxi> lastEmptyTaxis = new HashSet<>();
