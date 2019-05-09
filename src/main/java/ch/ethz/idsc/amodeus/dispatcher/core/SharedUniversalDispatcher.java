@@ -255,7 +255,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
                 .collect(Collectors.toList());
         for (RoboTaxi roboTaxi : pickupUniqueRoboTaxis) {
 
-            Optional<AVRequest> avRequest = SharedRoboTaxiHelper.pickupIfOnLastLink(roboTaxi, getTimeNow(), pickupDurationPerStop, futurePathFactory);
+            Optional<AVRequest> avRequest = PickupIfOnLastLink.apply(roboTaxi, getTimeNow(), pickupDurationPerStop, futurePathFactory);
             if (avRequest.isPresent()) {
                 GlobalAssert.that(pendingRequests.contains(avRequest.get()));
                 // Update the registers
@@ -279,7 +279,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
         Map<RoboTaxi, Map<String, AVRequest>> requestRegisterCopy = new HashMap<>(requestRegister.getRegister());
         for (RoboTaxi roboTaxi : requestRegisterCopy.keySet()) {
 
-            Optional<AVRequest> avRequest = SharedRoboTaxiHelper.assignDropoffDirectiveIfOnLink(roboTaxi, getTimeNow(), dropoffDurationPerStop, futurePathFactory);
+            Optional<AVRequest> avRequest = AssignDropoffDirective.apply(roboTaxi, getTimeNow(), dropoffDurationPerStop, futurePathFactory);
             if (avRequest.isPresent()) {
                 GlobalAssert.that(requestRegister.contains(roboTaxi, avRequest.get()));
                 roboTaxi.startDropoff();
@@ -325,7 +325,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
     @Override
     void executeRedirects() {
         for (RoboTaxi roboTaxi : getRoboTaxis()) {
-            SharedRoboTaxiHelper.finishRedirectionIfOnLastLink(roboTaxi);
+            FinishRedirectionIfOnLastLink.now(roboTaxi);
         }
     }
 
