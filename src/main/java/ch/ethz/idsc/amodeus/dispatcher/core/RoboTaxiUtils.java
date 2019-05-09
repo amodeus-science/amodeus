@@ -19,6 +19,16 @@ public enum RoboTaxiUtils {
         GlobalAssert.that(onBoard >= 0);
         return onBoard < roboTaxi.getCapacity();
     }
+    
+    public static Set<AVRequest> getAvRequestsOnBoard(RoboTaxi roboTaxi) {
+        return SharedCourseListUtils.getOnBoardRequests(roboTaxi.getUnmodifiableViewOfCourses());
+    }
+
+    public static int getNumberOnBoardRequests(RoboTaxi roboTaxi) {
+        return (int) SharedCourseListUtils.getNumberCustomersOnBoard(roboTaxi.getUnmodifiableViewOfCourses());
+    }
+
+    
 
     public static boolean checkMenuConsistency(RoboTaxi roboTaxi) {
         return SharedCourseListUtils.checkMenuConsistency(roboTaxi.getUnmodifiableViewOfCourses(), roboTaxi.getCapacity());
@@ -65,13 +75,6 @@ public enum RoboTaxiUtils {
         return SharedCourseListUtils.getUniqueAVRequests(roboTaxi.getUnmodifiableViewOfCourses());
     }
 
-    public static Set<AVRequest> getAvRequestsOnBoard(RoboTaxi roboTaxi) {
-        return SharedCourseListUtils.getOnBoardRequests(roboTaxi.getUnmodifiableViewOfCourses());
-    }
-
-    public static int getNumberOnBoardRequests(RoboTaxi roboTaxi) {
-        return (int) SharedCourseListUtils.getNumberCustomersOnBoard(roboTaxi.getUnmodifiableViewOfCourses());
-    }
 
     /* package */ static RoboTaxiStatus calculateStatusFromMenu(RoboTaxi roboTaxi) {
         Optional<SharedCourse> nextCourseOptional = getStarterCourse(roboTaxi);
