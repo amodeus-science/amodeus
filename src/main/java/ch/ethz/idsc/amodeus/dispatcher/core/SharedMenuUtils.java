@@ -30,7 +30,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
     }
 
     public static long getNumberCustomersOnBoard(SharedMenu sharedMenu) {
-        return OnboardRequests.getNumberCustomersOnBoard(sharedMenu.getRoboTaxiMenu());
+        return OnboardRequests.getNumberOnBoardCustomers(sharedMenu.getRoboTaxiMenu());
     }
 
     // **************************************************

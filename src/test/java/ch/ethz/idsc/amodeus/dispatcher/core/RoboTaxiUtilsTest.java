@@ -150,7 +150,7 @@ public class RoboTaxiUtilsTest extends TestCase {
         s.roboTaxi1.pickupNewCustomerOnBoard();
         assertEquals(OnboardRequests.getNumberOnBoardRequests(s.roboTaxi1), 2);
 
-        assertEquals(OnboardRequests.getAvRequestsOnBoard(s.roboTaxi1), new HashSet<>(Arrays.asList(s.avRequest1, s.avRequest3)));
+        assertEquals(OnboardRequests.getOnBoardAvRequests(s.roboTaxi1), new HashSet<>(Arrays.asList(s.avRequest1, s.avRequest3)));
         assertEquals(RoboTaxiUtils.getStarterCourse(s.roboTaxi1).get(), SharedCourse.pickupCourse(s.avRequest2));
         assertTrue(RoboTaxiUtils.nextCourseIsOfType(s.roboTaxi1, SharedMealType.PICKUP));
         assertEquals(RoboTaxiUtils.getRequestsInMenu(s.roboTaxi1), new HashSet<>(Arrays.asList(s.avRequest1, s.avRequest2, s.avRequest3, s.avRequest4)));

@@ -10,7 +10,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
 public enum OnboardRequests {
     ;
-    
+
     public static Set<AVRequest> getOnBoardRequests(List<? extends SharedCourse> courses) {
         Set<AVRequest> pickups = getRequestsWithMealType(courses, SharedMealType.PICKUP);
         Set<AVRequest> dropoffs = getRequestsWithMealType(courses, SharedMealType.DROPOFF);
@@ -18,21 +18,31 @@ public enum OnboardRequests {
             boolean removeOk = dropoffs.remove(avRequestIDpickup);
             GlobalAssert.that(removeOk);
         }
-        GlobalAssert.that(getNumberCustomersOnBoard(courses) == dropoffs.size());
+        GlobalAssert.that(getNumberOnBoardCustomers(courses) == dropoffs.size());
         return dropoffs;
     }
-
     
-    private static Set<AVRequest> getRequestsWithMealType(List<? extends SharedCourse> courses, SharedMealType sharedMealType) {
-        return courses.stream().filter(sc -> sc.getMealType().equals(sharedMealType)).map(sc -> sc.getAvRequest()).collect(Collectors.toSet());
+    
+//    getOnBoardRequests(roboTaxi.getUnmodifiableViewOfCourses())
+    
+    public static Set<AVRequest> getOnBoardAvRequests(RoboTaxi roboTaxi) {
+        return OnboardRequests.getOnBoardRequests(roboTaxi.getUnmodifiableViewOfCourses());
     }
 
-    
-    public static long getNumberCustomersOnBoard(List<? extends SharedCourse> courses) {
+
+    // --
+
+    public static long getNumberOnBoardCustomers(List<? extends SharedCourse> courses) {
         return getNumberDropoffs(courses) - getNumberPickups(courses);
     }
 
-    
+    public static int getNumberOnBoardRequests(RoboTaxi roboTaxi) {
+        return (int) OnboardRequests.getNumberOnBoardCustomers(roboTaxi.getUnmodifiableViewOfCourses());
+    }
+
+
+    // --
+
     public static long getNumberPickups(List<? extends SharedCourse> courses) {
         return getNumberSharedMealType(courses, SharedMealType.PICKUP);
     }
@@ -40,29 +50,25 @@ public enum OnboardRequests {
     public static long getNumberDropoffs(List<? extends SharedCourse> courses) {
         return getNumberSharedMealType(courses, SharedMealType.DROPOFF);
     }
-    
-    private static long getNumberSharedMealType(List<? extends SharedCourse> courses, SharedMealType sharedMealType) {
-        return courses.stream().filter(sc -> sc.getMealType().equals(sharedMealType)).count();
-    }
-    
+
     public static long getNumberRedirections(List<? extends SharedCourse> courses) {
         return getNumberSharedMealType(courses, SharedMealType.REDIRECT);
     }
-    
-    
+
     public static boolean canPickupNewCustomer(RoboTaxi roboTaxi) {
         int onBoard = getNumberOnBoardRequests(roboTaxi);
         GlobalAssert.that(onBoard >= 0);
         return onBoard < roboTaxi.getCapacity();
     }
 
-    public static Set<AVRequest> getAvRequestsOnBoard(RoboTaxi roboTaxi) {
-        return OnboardRequests.getOnBoardRequests(roboTaxi.getUnmodifiableViewOfCourses());
+    /** private */
+
+    private static long getNumberSharedMealType(List<? extends SharedCourse> courses, SharedMealType sharedMealType) {
+        return courses.stream().filter(sc -> sc.getMealType().equals(sharedMealType)).count();
     }
 
-    public static int getNumberOnBoardRequests(RoboTaxi roboTaxi) {
-        return (int) OnboardRequests.getNumberCustomersOnBoard(roboTaxi.getUnmodifiableViewOfCourses());
+    private static Set<AVRequest> getRequestsWithMealType(List<? extends SharedCourse> courses, SharedMealType sharedMealType) {
+        return courses.stream().filter(sc -> sc.getMealType().equals(sharedMealType)).map(sc -> sc.getAvRequest()).collect(Collectors.toSet());
     }
-
 
 }
