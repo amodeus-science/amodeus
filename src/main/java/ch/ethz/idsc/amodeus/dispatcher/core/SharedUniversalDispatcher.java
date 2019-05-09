@@ -460,7 +460,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
         }));
         GlobalAssert.that(uniqueRegisterRequests.size() == uniqueMenuRequests.size());
 
-        /** onboard customers must equal total_matchedRequests - total_dropedOffRequests */
+        /** on-board customers must equal total_matchedRequests - total_dropedOffRequests */
         onboardPassengerCheck.now(total_matchedRequests, total_dropedOffRequests, getRoboTaxis());
 
     }
