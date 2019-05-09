@@ -80,7 +80,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         for (Entry<RoboTaxi, Map<String, AVRequest>> requestRegisterEntry : register.entrySet())
             for (AVRequest avRequest : requestRegisterEntry.getValue().values())
                 if (pendingRequests.contains(avRequest)) {
-                    GlobalAssert.that(!pickupRegister.containsKey(avRequest)); // In that case some of the logic failed. every request can only be assigned to one vehicle
+                    GlobalAssert.that(!pickupRegister.containsKey(avRequest)); // In that case some of the logic failed. every request can only be assigned to
+                                                                               // one vehicle
                     pickupRegister.put(avRequest, requestRegisterEntry.getKey());
                 }
 

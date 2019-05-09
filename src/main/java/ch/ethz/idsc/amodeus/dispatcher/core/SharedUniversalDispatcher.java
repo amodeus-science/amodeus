@@ -237,9 +237,9 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
          * b) if they do not have a starter but are on the way to a location they are stoped */
         for (RoboTaxi roboTaxi : getRoboTaxis()) {
             if (timeStepReroute.contains(roboTaxi))
-                SharedRoboTaxiDiversionHelper.adaptMenuToDirective(roboTaxi, futurePathFactory, now, eventsManager, true);
+                AdaptMenuToDirective.now(roboTaxi, futurePathFactory, now, eventsManager, true);
             else
-                SharedRoboTaxiDiversionHelper.adaptMenuToDirective(roboTaxi, futurePathFactory, now, eventsManager, false);
+                AdaptMenuToDirective.now(roboTaxi, futurePathFactory, now, eventsManager, false);
         }
         timeStepReroute.clear();
     }
@@ -255,7 +255,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
                 .collect(Collectors.toList());
         for (RoboTaxi roboTaxi : pickupUniqueRoboTaxis) {
 
-            Optional<AVRequest> avRequest = SharedRoboTaxiHelper.pickupIfOnLastLink(roboTaxi, getTimeNow(), pickupDurationPerStop, futurePathFactory);
+            Optional<AVRequest> avRequest = PickupIfOnLastLink.apply(roboTaxi, getTimeNow(), pickupDurationPerStop, futurePathFactory);
             if (avRequest.isPresent()) {
                 GlobalAssert.that(pendingRequests.contains(avRequest.get()));
                 // Update the registers
@@ -279,7 +279,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
         Map<RoboTaxi, Map<String, AVRequest>> requestRegisterCopy = new HashMap<>(requestRegister.getRegister());
         for (RoboTaxi roboTaxi : requestRegisterCopy.keySet()) {
 
-            Optional<AVRequest> avRequest = SharedRoboTaxiHelper.assignDropoffDirectiveIfOnLink(roboTaxi, getTimeNow(), dropoffDurationPerStop, futurePathFactory);
+            Optional<AVRequest> avRequest = AssignDropoffDirective.apply(roboTaxi, getTimeNow(), dropoffDurationPerStop, futurePathFactory);
             if (avRequest.isPresent()) {
                 GlobalAssert.that(requestRegister.contains(roboTaxi, avRequest.get()));
                 roboTaxi.startDropoff();
@@ -325,7 +325,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
     @Override
     void executeRedirects() {
         for (RoboTaxi roboTaxi : getRoboTaxis()) {
-            SharedRoboTaxiHelper.finishRedirectionIfOnLastLink(roboTaxi);
+            FinishRedirectionIfOnLastLink.now(roboTaxi);
         }
     }
 
@@ -373,7 +373,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
 
             Schedule schedule = roboTaxi.getSchedule();
             Task task = schedule.getCurrentTask();
-            GlobalAssert.that(SharedRoboTaxiDiversionHelper.maxTwoMoreTaskAfterThisOneWhichEnds(schedule, task, getTimeNow(), SIMTIMESTEP));
+            GlobalAssert.that(MaxTwoMoreTasksAfterEndingOne.check(schedule, task, getTimeNow(), SIMTIMESTEP));
 
             GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiUtils.calculateStatusFromMenu(roboTaxi)));
             Optional<SharedCourse> nextCourseOptional = RoboTaxiUtils.getStarterCourse(roboTaxi);
