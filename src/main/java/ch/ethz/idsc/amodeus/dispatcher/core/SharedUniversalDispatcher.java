@@ -237,9 +237,9 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
          * b) if they do not have a starter but are on the way to a location they are stoped */
         for (RoboTaxi roboTaxi : getRoboTaxis()) {
             if (timeStepReroute.contains(roboTaxi))
-                SharedRoboTaxiDiversionHelper.adaptMenuToDirective(roboTaxi, futurePathFactory, now, eventsManager, true);
+                AdaptMenuToDirective.now(roboTaxi, futurePathFactory, now, eventsManager, true);
             else
-                SharedRoboTaxiDiversionHelper.adaptMenuToDirective(roboTaxi, futurePathFactory, now, eventsManager, false);
+                AdaptMenuToDirective.now(roboTaxi, futurePathFactory, now, eventsManager, false);
         }
         timeStepReroute.clear();
     }
@@ -373,7 +373,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
 
             Schedule schedule = roboTaxi.getSchedule();
             Task task = schedule.getCurrentTask();
-            GlobalAssert.that(SharedRoboTaxiDiversionHelper.maxTwoMoreTaskAfterThisOneWhichEnds(schedule, task, getTimeNow(), SIMTIMESTEP));
+            GlobalAssert.that(MaxTwoMoreTasksAfterEndingOne.check(schedule, task, getTimeNow(), SIMTIMESTEP));
 
             GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiUtils.calculateStatusFromMenu(roboTaxi)));
             Optional<SharedCourse> nextCourseOptional = RoboTaxiUtils.getStarterCourse(roboTaxi);

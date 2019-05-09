@@ -22,39 +22,16 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
 /*package*/ enum SharedRoboTaxiDiversionHelper {
     ;
 
-    /* package */ static void adaptMenuToDirective(RoboTaxi roboTaxi, FuturePathFactory futurePathFactory, double now, //
-            EventsManager eventsManager, boolean reRoute) {
-        // Check that we are not already on the link of the redirectino (this can only happen if a command was given in redispatch to the current location)
-        removeRedirectionToDivertableLocationInBeginning(roboTaxi);
-
-        Optional<Link> link = getToLink(roboTaxi, now);
-        if (link.isPresent()) {
-            setRoboTaxiDiversion(roboTaxi, link.get(), futurePathFactory, now, eventsManager, reRoute);
-        }
-
-    }
-
-    /* package */static boolean maxTwoMoreTaskAfterThisOneWhichEnds(Schedule schedule, Task task, double now, double timeStep) {
-        if (thisIsLastTimeStep(task, now, timeStep)) {
-            return task.getTaskIdx() >= schedule.getTaskCount() - 3;
-        }
-        return task.getTaskIdx() >= schedule.getTaskCount() - 2;
-    }
-
-    private static boolean thisIsLastTimeStep(Task task, double now, double timeStep) {
-        return task.getEndTime() < now + timeStep;
-    }
-
     /* package */ static Optional<Link> getToLink(RoboTaxi roboTaxi, double now) {
 
-        GlobalAssert.that(!nextCourseIsRedirectToCurrentLink(roboTaxi));
+        GlobalAssert.that(!NextCourseIsRedirectToCurrentLink.check(roboTaxi));
 
         Optional<SharedCourse> currentCourse = RoboTaxiUtils.getStarterCourse(roboTaxi);
         final Schedule schedule = roboTaxi.getSchedule();
         final Task currentTask = schedule.getCurrentTask();
         boolean isOnLastTask = currentTask == Schedules.getLastTask(schedule);
         boolean isSecondLastTask = ScheduleUtils.isNextToLastTask(schedule, currentTask);
-        boolean taskEndsNow = thisIsLastTimeStep(currentTask, now, SharedUniversalDispatcher.SIMTIMESTEP);
+        boolean taskEndsNow = LastTimeStep.check(currentTask, now, SharedUniversalDispatcher.SIMTIMESTEP);
 
         if (currentCourse.isPresent()) {
             if (roboTaxi.isWithoutDirective()) {
@@ -92,7 +69,8 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
                     }
                 }
 
-                // SECOND C): If We are on a Pickup or Dropoff Task currently, we should wait until we reach the end of this task as we are not going to abort. But then The
+                // SECOND C): If We are on a Pickup or Dropoff Task currently, we should wait until we reach the end of this task as we are not going to abort.
+                // But then The
                 // First part helps us.
 
                 // THIRD AND FINAL: Divert If Required
@@ -110,7 +88,8 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
                 final AVTask avTask = (AVTask) currentTask;
                 if (avTask.getAVTaskType().equals(AVTaskType.DRIVE)) {
                     AVDriveTask avDriveTask = (AVDriveTask) avTask;
-                    // AS there is no task after this one and the currend destinadtion is not the current location we have to divert the robo taxi to the current location
+                    // AS there is no task after this one and the currend destinadtion is not the current location we have to divert the robo taxi to the
+                    // current location
                     if (!roboTaxi.getDivertableLocation().equals(avDriveTask.getPath().getToLink())) {
                         SharedCourse redirectCourse = SharedCourse.redirectCourse(roboTaxi.getDivertableLocation(),
                                 Double.toString(now) + "_currentLink_" + roboTaxi.getId().toString());
@@ -134,7 +113,8 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
                 final AVTask avTask = (AVTask) currentTask;
                 if (avTask.getAVTaskType().equals(AVTaskType.DRIVE)) {
                     AVDriveTask avDriveTask = (AVDriveTask) avTask;
-                    // AS there is no task after this one and the currend destinadtion is not the current location we have to divert the robo taxi to the current location
+                    // AS there is no task after this one and the currend destinadtion is not the current location we have to divert the robo taxi to the
+                    // current location
                     if (!roboTaxi.getDivertableLocation().equals(avDriveTask.getPath().getToLink())) {
                         SharedCourse redirectCourse = SharedCourse.redirectCourse(roboTaxi.getDivertableLocation(),
                                 Double.toString(now) + "_currentLink_" + roboTaxi.getId().toString());
@@ -145,7 +125,8 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
                     GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.STAY));
                 } else {
                     // We only do it for Drive Tasks. As:
-                    // a) A dropoff Task already finishes by default with a stay task afterwards. Thus The only reason we reach this part is because we are in Dropoff
+                    // a) A dropoff Task already finishes by default with a stay task afterwards. Thus The only reason we reach this part is because we are in
+                    // Dropoff
                     GlobalAssert.that(avTask.getAVTaskType().equals(AVTaskType.DROPOFF));
                     GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
                     // b) A stay task should never be the second last Task.
@@ -243,7 +224,7 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
                 // TODO Lukas think about how to test this
                 // GlobalAssert.that(!dropOffTimes.containsKey(now));
 
-                if (thisIsLastTimeStep(dropOffTask, now, SharedUniversalDispatcher.SIMTIMESTEP)) {
+                if (LastTimeStep.check(dropOffTask, now, SharedUniversalDispatcher.SIMTIMESTEP)) {
                     Link nextLink = RoboTaxiUtils.getStarterLink(sRoboTaxi);
                     handlePickupAndDropoff(sRoboTaxi, task, nextLink, now);
                 }
@@ -257,7 +238,7 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
             }
 
             private void handlePickupAndDropoff(RoboTaxi sRoboTaxi, Task task, Link nextLink, double now) {
-                boolean isOnLastTask = thisIsLastTimeStep(task, now, SharedUniversalDispatcher.SIMTIMESTEP);
+                boolean isOnLastTask = LastTimeStep.check(task, now, SharedUniversalDispatcher.SIMTIMESTEP);
                 boolean isSecondLastTaskAndEndsNow = (task.getEndTime() == now && ScheduleUtils.isNextToLastTask(schedule, task));
                 GlobalAssert.that(isOnLastTask || isSecondLastTaskAndEndsNow);
                 FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer( //
@@ -270,22 +251,7 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
             eventsManager.processEvent(RebalanceVehicleEvent.create(now, sRoboTaxi, destination));
         }
 
-        GlobalAssert.that(maxTwoMoreTaskAfterThisOneWhichEnds(schedule, task, now, SharedUniversalDispatcher.SIMTIMESTEP));
-    }
-
-    private static boolean nextCourseIsRedirectToCurrentLink(RoboTaxi roboTaxi) {
-        Optional<SharedCourse> redirectCourseCheck = RoboTaxiUtils.getStarterCourse(roboTaxi);
-        if (!redirectCourseCheck.isPresent())
-            return false;
-        if (!redirectCourseCheck.get().getMealType().equals(SharedMealType.REDIRECT))
-            return false;
-        return redirectCourseCheck.get().getLink().equals(roboTaxi.getDivertableLocation());
-    }
-
-    private static void removeRedirectionToDivertableLocationInBeginning(RoboTaxi roboTaxi) {
-        while (nextCourseIsRedirectToCurrentLink(roboTaxi)) {
-            roboTaxi.finishRedirection();
-        }
+        GlobalAssert.that(MaxTwoMoreTasksAfterEndingOne.check(schedule, task, now, SharedUniversalDispatcher.SIMTIMESTEP));
     }
 
 }
