@@ -1,5 +1,5 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.dispatcher.shared;
+package ch.ethz.idsc.amodeus.dispatcher.shared.impl;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -18,6 +18,11 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiUtils;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedUniversalDispatcher;
+import ch.ethz.idsc.amodeus.dispatcher.shared.OnboardRequests;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
+import ch.ethz.idsc.amodeus.dispatcher.shared.StaticMenuUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -131,7 +136,8 @@ public class BeamExtensionForSharing {
      * @param numberAdded
      * @return */
     private static boolean oneMorePickupPossible(RoboTaxi roboTaxi, AtomicInteger numberAdded) {
-        return SharedCourseListUtils.getNumberDropoffs(roboTaxi.getUnmodifiableViewOfCourses()) + numberAdded.get() < roboTaxi.getCapacity();
+        return OnboardRequests.getNumberMealTypes(roboTaxi.getUnmodifiableViewOfCourses(),SharedMealType.DROPOFF)//
+                + numberAdded.get() < roboTaxi.getCapacity();
     }
 
     private static Optional<Scalar> directionAngle(RoboTaxi roboTaxi, AVRequest request2) {

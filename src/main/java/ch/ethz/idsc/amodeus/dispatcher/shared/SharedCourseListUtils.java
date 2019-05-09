@@ -24,41 +24,6 @@ public enum SharedCourseListUtils {
     // Get Functions
     // **************************************************
 
-    public static Set<AVRequest> getOnBoardRequests(List<? extends SharedCourse> courses) {
-        Set<AVRequest> pickups = getRequestsWithMealType(courses, SharedMealType.PICKUP);
-        Set<AVRequest> dropoffs = getRequestsWithMealType(courses, SharedMealType.DROPOFF);
-        for (AVRequest avRequestIDpickup : pickups) {
-            boolean removeOk = dropoffs.remove(avRequestIDpickup);
-            GlobalAssert.that(removeOk);
-        }
-        GlobalAssert.that(getNumberCustomersOnBoard(courses) == dropoffs.size());
-        return dropoffs;
-    }
-
-    private static Set<AVRequest> getRequestsWithMealType(List<? extends SharedCourse> courses, SharedMealType sharedMealType) {
-        return courses.stream().filter(sc -> sc.getMealType().equals(sharedMealType)).map(sc -> sc.getAvRequest()).collect(Collectors.toSet());
-    }
-
-    public static long getNumberPickups(List<? extends SharedCourse> courses) {
-        return getNumberSharedMealType(courses, SharedMealType.PICKUP);
-    }
-
-    public static long getNumberDropoffs(List<? extends SharedCourse> courses) {
-        return getNumberSharedMealType(courses, SharedMealType.DROPOFF);
-    }
-
-    public static long getNumberRedirections(List<? extends SharedCourse> courses) {
-        return getNumberSharedMealType(courses, SharedMealType.REDIRECT);
-    }
-
-    private static long getNumberSharedMealType(List<? extends SharedCourse> courses, SharedMealType sharedMealType) {
-        return courses.stream().filter(sc -> sc.getMealType().equals(sharedMealType)).count();
-    }
-
-    public static long getNumberCustomersOnBoard(List<? extends SharedCourse> courses) {
-        return getNumberDropoffs(courses) - getNumberPickups(courses);
-    }
-
     public static Set<AVRequest> getUniqueAVRequests(List<? extends SharedCourse> courses) {
         return courses.stream().filter(sc -> !sc.getMealType().equals(SharedMealType.REDIRECT)).map(sc -> sc.getAvRequest()).collect(Collectors.toSet());//
     }
