@@ -11,6 +11,7 @@ import org.matsim.core.network.NetworkUtils;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiUtils;
+import ch.ethz.idsc.amodeus.dispatcher.shared.OnboardRequests;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
@@ -31,9 +32,9 @@ public enum RouteGenerator {
         nowInThisFunction = now;
         List<StopInRoute> finalRoute = new ArrayList<>();
         List<NextPossibleStop> nextPossibleStopsList = new ArrayList<>();
-        int numberOfPassengerOnboard = RoboTaxiUtils.getNumberOnBoardRequests(roboTaxi); // get initial no. passenger on board.
+        int numberOfPassengerOnboard = OnboardRequests.getNumberOnBoardRequests(roboTaxi); // get initial no. passenger on board.
 
-        for (AVRequest avRequest : RoboTaxiUtils.getAvRequestsOnBoard(roboTaxi))
+        for (AVRequest avRequest : OnboardRequests.getAvRequestsOnBoard(roboTaxi))
             nextPossibleStopsList.add(new NextPossibleStop(avRequest, true));// add all on board request to the set
 
         for (AVRequest avRequest : additionalRequest)

@@ -7,6 +7,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.Compatibility;
+import ch.ethz.idsc.amodeus.dispatcher.shared.OnboardRequests;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
@@ -29,7 +30,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
     }
 
     public static long getNumberCustomersOnBoard(SharedMenu sharedMenu) {
-        return SharedCourseListUtils.getNumberCustomersOnBoard(sharedMenu.getRoboTaxiMenu());
+        return OnboardRequests.getNumberCustomersOnBoard(sharedMenu.getRoboTaxiMenu());
     }
 
     // **************************************************
