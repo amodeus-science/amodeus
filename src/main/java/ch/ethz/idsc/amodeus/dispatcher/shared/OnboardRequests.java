@@ -3,6 +3,7 @@ package ch.ethz.idsc.amodeus.dispatcher.shared;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
@@ -12,8 +13,12 @@ public enum OnboardRequests {
     ;
 
     public static Set<AVRequest> getOnBoardRequests(List<? extends SharedCourse> courses) {
-        Set<AVRequest> pickups = getRequestsWithMealType(courses, SharedMealType.PICKUP);
-        Set<AVRequest> dropoffs = getRequestsWithMealType(courses, SharedMealType.DROPOFF);
+        Set<AVRequest> pickups = courseMealStream(courses, SharedMealType.PICKUP)//
+                .map(sc -> sc.getAvRequest()).collect(Collectors.toSet());
+
+        Set<AVRequest> dropoffs = courseMealStream(courses, SharedMealType.DROPOFF)//
+                .map(sc -> sc.getAvRequest()).collect(Collectors.toSet());
+
         for (AVRequest avRequestIDpickup : pickups) {
             boolean removeOk = dropoffs.remove(avRequestIDpickup);
             GlobalAssert.that(removeOk);
@@ -21,39 +26,21 @@ public enum OnboardRequests {
         GlobalAssert.that(getNumberOnBoardCustomers(courses) == dropoffs.size());
         return dropoffs;
     }
-    
-    
-//    getOnBoardRequests(roboTaxi.getUnmodifiableViewOfCourses())
-    
-    public static Set<AVRequest> getOnBoardAvRequests(RoboTaxi roboTaxi) {
-        return OnboardRequests.getOnBoardRequests(roboTaxi.getUnmodifiableViewOfCourses());
-    }
-
 
     // --
 
     public static long getNumberOnBoardCustomers(List<? extends SharedCourse> courses) {
-        return getNumberDropoffs(courses) - getNumberPickups(courses);
+        long onBoard = getNumberMealTypes(courses, SharedMealType.DROPOFF) - //
+                getNumberMealTypes(courses, SharedMealType.PICKUP);
+        System.err.println("onBoard: " + onBoard);
+        return onBoard;
     }
 
     public static int getNumberOnBoardRequests(RoboTaxi roboTaxi) {
         return (int) OnboardRequests.getNumberOnBoardCustomers(roboTaxi.getUnmodifiableViewOfCourses());
     }
 
-
     // --
-
-    public static long getNumberPickups(List<? extends SharedCourse> courses) {
-        return getNumberSharedMealType(courses, SharedMealType.PICKUP);
-    }
-
-    public static long getNumberDropoffs(List<? extends SharedCourse> courses) {
-        return getNumberSharedMealType(courses, SharedMealType.DROPOFF);
-    }
-
-    public static long getNumberRedirections(List<? extends SharedCourse> courses) {
-        return getNumberSharedMealType(courses, SharedMealType.REDIRECT);
-    }
 
     public static boolean canPickupNewCustomer(RoboTaxi roboTaxi) {
         int onBoard = getNumberOnBoardRequests(roboTaxi);
@@ -61,14 +48,17 @@ public enum OnboardRequests {
         return onBoard < roboTaxi.getCapacity();
     }
 
-    /** private */
-
-    private static long getNumberSharedMealType(List<? extends SharedCourse> courses, SharedMealType sharedMealType) {
-        return courses.stream().filter(sc -> sc.getMealType().equals(sharedMealType)).count();
+    /** @return number of {@link SharedCourse}s @param courses
+     *         with {@link SharedMealType} @param sharedMealType */
+    public static long getNumberMealTypes(List<? extends SharedCourse> courses, SharedMealType type) {
+        return courseMealStream(courses, type).count();
     }
 
-    private static Set<AVRequest> getRequestsWithMealType(List<? extends SharedCourse> courses, SharedMealType sharedMealType) {
-        return courses.stream().filter(sc -> sc.getMealType().equals(sharedMealType)).map(sc -> sc.getAvRequest()).collect(Collectors.toSet());
+    /** @return {@link Stream} of all {@link SharedCourse}s @param courses
+     *         with {@link SharedMealType} @param sharedMealType */
+    private static Stream<? extends SharedCourse> courseMealStream(List<? extends SharedCourse> courses, //
+            SharedMealType sharedMealType) {
+        return courses.stream().filter(sc -> sc.getMealType().equals(sharedMealType));
     }
 
 }

@@ -136,7 +136,8 @@ public class BeamExtensionForSharing {
      * @param numberAdded
      * @return */
     private static boolean oneMorePickupPossible(RoboTaxi roboTaxi, AtomicInteger numberAdded) {
-        return OnboardRequests.getNumberDropoffs(roboTaxi.getUnmodifiableViewOfCourses()) + numberAdded.get() < roboTaxi.getCapacity();
+        return OnboardRequests.getNumberMealTypes(roboTaxi.getUnmodifiableViewOfCourses(),SharedMealType.DROPOFF)//
+                + numberAdded.get() < roboTaxi.getCapacity();
     }
 
     private static Optional<Scalar> directionAngle(RoboTaxi roboTaxi, AVRequest request2) {

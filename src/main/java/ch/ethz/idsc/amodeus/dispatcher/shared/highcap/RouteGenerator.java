@@ -34,7 +34,7 @@ public enum RouteGenerator {
         List<NextPossibleStop> nextPossibleStopsList = new ArrayList<>();
         int numberOfPassengerOnboard = OnboardRequests.getNumberOnBoardRequests(roboTaxi); // get initial no. passenger on board.
 
-        for (AVRequest avRequest : OnboardRequests.getOnBoardAvRequests(roboTaxi))
+        for (AVRequest avRequest : OnboardRequests.getOnBoardRequests(roboTaxi.getUnmodifiableViewOfCourses()))
             nextPossibleStopsList.add(new NextPossibleStop(avRequest, true));// add all on board request to the set
 
         for (AVRequest avRequest : additionalRequest)

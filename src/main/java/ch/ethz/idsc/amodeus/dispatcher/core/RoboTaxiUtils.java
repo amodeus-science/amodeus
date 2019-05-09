@@ -22,7 +22,7 @@ public enum RoboTaxiUtils {
 
     public static boolean plansPickupsOrDropoffs(RoboTaxi roboTaxi) {
         if (hasNextCourse(roboTaxi)) {
-            return OnboardRequests.getNumberDropoffs(roboTaxi.getUnmodifiableViewOfCourses()) > 0;
+            return OnboardRequests.getNumberMealTypes(roboTaxi.getUnmodifiableViewOfCourses(), SharedMealType.DROPOFF) > 0;
         }
         return false;
     }
@@ -71,7 +71,7 @@ public enum RoboTaxiUtils {
                 return RoboTaxiStatus.DRIVETOCUSTOMER;
             } else //
             if (nextCourseOptional.get().getMealType().equals(SharedMealType.REDIRECT)) {
-                if (OnboardRequests.getNumberPickups(roboTaxi.getUnmodifiableViewOfCourses()) > 0) {
+                if (OnboardRequests.getNumberMealTypes(roboTaxi.getUnmodifiableViewOfCourses(), SharedMealType.PICKUP) > 0) {
                     return RoboTaxiStatus.DRIVETOCUSTOMER;
                 }
                 return RoboTaxiStatus.REBALANCEDRIVE;

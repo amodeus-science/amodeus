@@ -29,10 +29,6 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
         return SharedCourseListUtils.getStarterCourse(sharedMenu.getRoboTaxiMenu());
     }
 
-    public static long getNumberCustomersOnBoard(SharedMenu sharedMenu) {
-        return OnboardRequests.getNumberOnBoardCustomers(sharedMenu.getRoboTaxiMenu());
-    }
-
     // **************************************************
     // Check Menus
     // **************************************************
