@@ -32,7 +32,6 @@ public enum OnboardRequests {
     public static long getNumberOnBoardCustomers(List<? extends SharedCourse> courses) {
         long onBoard = getNumberMealTypes(courses, SharedMealType.DROPOFF) - //
                 getNumberMealTypes(courses, SharedMealType.PICKUP);
-        System.err.println("onBoard: " + onBoard);
         return onBoard;
     }
 
