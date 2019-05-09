@@ -1,5 +1,5 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.dispatcher.shared.impl;
+package ch.ethz.idsc.amodeus.dispatcher.shared.beam;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,9 +20,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiUtils;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedUniversalDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.OnboardRequests;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
-import ch.ethz.idsc.amodeus.dispatcher.shared.StaticMenuUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -101,13 +99,13 @@ public class BeamExtensionForSharing {
      * It creates first a fast pickup tour of all the requests and goies afterwards for a fast dropoff tour. */
     public void reorderMenus() {
         for (RoboTaxi roboTaxi : addedAvRequests.values()) {
-            roboTaxi.updateMenu(StaticMenuUtils.firstAllPickupsThenDropoffs(roboTaxi.getUnmodifiableViewOfCourses()));
+            roboTaxi.updateMenu(Reorder.firstAllPickupsThenDropoffs(roboTaxi.getUnmodifiableViewOfCourses()));
             /** lets improve the menu a bit */
             Optional<SharedCourse> nextCourse = RoboTaxiUtils.getStarterCourse(roboTaxi);
             if (nextCourse.isPresent()) {
                 if (nextCourse.get().getMealType().equals(SharedMealType.PICKUP)) {
-                    roboTaxi.updateMenu(StaticMenuUtils.fastPickupTour(roboTaxi.getUnmodifiableViewOfCourses(), roboTaxi.getDivertableLocation().getCoord()));
-                    roboTaxi.updateMenu(StaticMenuUtils.fastDropoffTour(roboTaxi.getUnmodifiableViewOfCourses()));
+                    roboTaxi.updateMenu(FastPickupTour.fastPickupTour(roboTaxi.getUnmodifiableViewOfCourses(), roboTaxi.getDivertableLocation().getCoord()));
+                    roboTaxi.updateMenu(FastDropoffTour.fastDropoffTour(roboTaxi.getUnmodifiableViewOfCourses()));
                     GlobalAssert.that(RoboTaxiUtils.checkMenuConsistency(roboTaxi));
                 }
             }
