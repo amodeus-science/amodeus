@@ -46,7 +46,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         GlobalAssert.that(schedule.getCurrentTask() == Schedules.getLastTask(schedule)); // check that current task is last task in schedule
 
         // Update the Robo Taxi
-        roboTaxi.pickupNewCustomerOnBoard();
+        roboTaxi.pickupNewCustomerOnBoard(); // comments by luc: inside this function, the first course in menu is removed.
         roboTaxi.setCurrentDriveDestination(currentCourse.get().getLink());
 
         // Assign Directive

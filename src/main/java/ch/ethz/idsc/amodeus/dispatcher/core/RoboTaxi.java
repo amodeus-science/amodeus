@@ -351,17 +351,19 @@ public class RoboTaxi {
         GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.PICKUP));
         GlobalAssert.that(RoboTaxiUtils.getStarterLink(this).equals(getDivertableLocation()));
         setMenu(SharedMenuUtils.removeStarterCourse(menu));
+        // TODO to Claudio: a possible place to add something about the capacity.
     }
 
     /* package */ void dropOffCustomer() {
         checkAbilityToDropOff();
         dropoffInProgress = false;
         setMenu(SharedMenuUtils.removeStarterCourse(menu));
+        // TODO to Claudio: a possible place to add something about the capacity.
     }
 
     private void checkAbilityToDropOff() {
         GlobalAssert.that(OnboardRequests.getNumberOnBoardRequests(this) > 0);
-        GlobalAssert.that(OnboardRequests.getNumberOnBoardRequests(this) <= getCapacity());
+        GlobalAssert.that(OnboardRequests.getNumberOnBoardRequests(this) <= getCapacity()); // ? too late to check this here
         GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.DROPOFF));
         GlobalAssert.that(RoboTaxiUtils.getStarterLink(this).equals(getDivertableLocation()));
     }
