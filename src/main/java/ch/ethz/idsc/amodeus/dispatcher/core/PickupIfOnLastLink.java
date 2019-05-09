@@ -8,6 +8,7 @@ import org.matsim.contrib.dvrp.schedule.Schedules;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.OnboardRequests;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
@@ -21,7 +22,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         // SHARED note that waiting for last staytask adds a one second staytask before
         // switching to pickuptask
         if (roboTaxi.getSchedule().getCurrentTask() == Schedules.getLastTask(roboTaxi.getSchedule())) {
-            Optional<SharedCourse> currentCourse = RoboTaxiUtils.getStarterCourse(roboTaxi);
+            Optional<SharedCourse> currentCourse = SharedCourseListUtils.getStarterCourse(roboTaxi);
             GlobalAssert.that(currentCourse.isPresent());
             AVRequest avRequest = currentCourse.get().getAvRequest();
             GlobalAssert.that(currentCourse.get().getMealType().equals(SharedMealType.PICKUP));
@@ -36,7 +37,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
     private static final void pickupAndAssignDirective(RoboTaxi roboTaxi, AVRequest avRequest, double now, double pickupDurationPerStop, FuturePathFactory futurePathFactory) {
         GlobalAssert.that(OnboardRequests.canPickupNewCustomer(roboTaxi));
-        Optional<SharedCourse> currentCourse = RoboTaxiUtils.getStarterCourse(roboTaxi);
+        Optional<SharedCourse> currentCourse = SharedCourseListUtils.getStarterCourse(roboTaxi);
         GlobalAssert.that(currentCourse.isPresent());
         GlobalAssert.that(currentCourse.get().getMealType().equals(SharedMealType.PICKUP));
         GlobalAssert.that(currentCourse.get().getCourseId().equals(avRequest.getId().toString()));

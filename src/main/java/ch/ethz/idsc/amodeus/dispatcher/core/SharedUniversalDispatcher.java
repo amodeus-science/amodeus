@@ -178,7 +178,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
      * @param avRequest */
     public void addSharedRoboTaxiPickup(RoboTaxi roboTaxi, AVRequest avRequest) {
         GlobalAssert.that(pendingRequests.contains(avRequest));
-
+        
         // If the request was already assigned remove it from the current vehicle in the request register and update its menu;
         if (requestRegister.contains(avRequest)) {
             abortAvRequest(avRequest);
@@ -380,17 +380,23 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
             GlobalAssert.that(MaxTwoMoreTasksAfterEndingOne.check(schedule, task, getTimeNow(), SIMTIMESTEP));
 
             GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiUtils.calculateStatusFromMenu(roboTaxi)));
-            Optional<SharedCourse> nextCourseOptional = RoboTaxiUtils.getStarterCourse(roboTaxi);
+            Optional<SharedCourse> nextCourseOptional = SharedCourseListUtils.getStarterCourse(roboTaxi);
             if (nextCourseOptional.isPresent()) {
                 if (nextCourseOptional.get().getMealType().equals(SharedMealType.REDIRECT)) {
                     if (OnboardRequests.getNumberOnBoardRequests(roboTaxi) == 0) {
+                        // if (!roboTaxi.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE)) {// TODO delete after use
+                        // System.out.println(roboTaxi.getStatus().toString());
+                        // System.out.println(roboTaxi.getCurrentDriveDestination().getId().toString());
+                        // System.out.println(roboTaxi.getLastKnownLocation().getId().toString());
+                        // System.out.println(roboTaxi.getDivertableLocation().getId().toString());
+                        // }
                         GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE));
                     }
                 }
             }
 
             if (roboTaxi.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE)) {
-                GlobalAssert.that(RoboTaxiUtils.getStarterCourse(roboTaxi).get().getMealType().equals(SharedMealType.REDIRECT));
+                GlobalAssert.that(SharedCourseListUtils.getStarterCourse(roboTaxi).get().getMealType().equals(SharedMealType.REDIRECT));
             }
         }
 

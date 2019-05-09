@@ -11,7 +11,7 @@ import java.util.function.BiConsumer;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.shared.Compatibility;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenuCheck;
 import ch.ethz.idsc.amodeus.routing.CachedNetworkTimeDistance;
 import ch.ethz.idsc.amodeus.routing.NetworkTimeDistInterface;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
@@ -91,7 +91,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
             optimalMenu = menuOptions.firstEntry().getValue();
             optimalLength = menuOptions.firstEntry().getKey();
             GlobalAssert.that(optimalMenu.size() == originalMenu.size() + 2);
-            GlobalAssert.that(SharedCourseListUtils.checkMenuConsistency(optimalMenu, roboTaxi.getCapacity()));
+            GlobalAssert.that(SharedMenuCheck.checkMenuConsistency(optimalMenu, roboTaxi.getCapacity()));
         }
     }
 
