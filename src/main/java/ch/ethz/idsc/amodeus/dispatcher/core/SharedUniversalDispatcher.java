@@ -380,7 +380,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
             GlobalAssert.that(MaxTwoMoreTasksAfterEndingOne.check(schedule, task, getTimeNow(), SIMTIMESTEP));
 
             GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiUtils.calculateStatusFromMenu(roboTaxi)));
-            Optional<SharedCourse> nextCourseOptional = RoboTaxiUtils.getStarterCourse(roboTaxi);
+            Optional<SharedCourse> nextCourseOptional = SharedCourseListUtils.getStarterCourse(roboTaxi);
             if (nextCourseOptional.isPresent()) {
                 if (nextCourseOptional.get().getMealType().equals(SharedMealType.REDIRECT)) {
                     if (OnboardRequests.getNumberOnBoardRequests(roboTaxi) == 0) {
@@ -390,7 +390,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
             }
 
             if (roboTaxi.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE)) {
-                GlobalAssert.that(RoboTaxiUtils.getStarterCourse(roboTaxi).get().getMealType().equals(SharedMealType.REDIRECT));
+                GlobalAssert.that(SharedCourseListUtils.getStarterCourse(roboTaxi).get().getMealType().equals(SharedMealType.REDIRECT));
             }
         }
 

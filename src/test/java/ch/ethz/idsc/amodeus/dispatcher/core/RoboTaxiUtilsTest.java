@@ -50,7 +50,7 @@ public class RoboTaxiUtilsTest extends TestCase {
         } catch (Exception e) {
             // ---
         }
-        Optional<SharedCourse> secondcourse1 = RoboTaxiUtils.getSecondCourse(s.roboTaxi1);
+        Optional<SharedCourse> secondcourse1 = SharedCourseListUtils.getSecondCourse(s.roboTaxi1.getUnmodifiableViewOfCourses());
         assertTrue(secondcourse1.isPresent());
         assertTrue(secondcourse1.get().equals(SharedCourse.dropoffCourse(s.avRequest1)));
         assertTrue(RoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1).equals(RoboTaxiStatus.DRIVETOCUSTOMER));
@@ -151,7 +151,7 @@ public class RoboTaxiUtilsTest extends TestCase {
         assertEquals(OnboardRequests.getNumberOnBoardRequests(s.roboTaxi1), 2);
 
         assertEquals(OnboardRequests.getOnBoardRequests(s.roboTaxi1.getUnmodifiableViewOfCourses()) , new HashSet<>(Arrays.asList(s.avRequest1, s.avRequest3)));
-        assertEquals(RoboTaxiUtils.getStarterCourse(s.roboTaxi1).get(), SharedCourse.pickupCourse(s.avRequest2));
+        assertEquals(SharedCourseListUtils.getStarterCourse(s.roboTaxi1).get(), SharedCourse.pickupCourse(s.avRequest2));
         assertTrue(RoboTaxiUtils.nextCourseIsOfType(s.roboTaxi1, SharedMealType.PICKUP));
         assertEquals(RoboTaxiUtils.getRequestsInMenu(s.roboTaxi1), new HashSet<>(Arrays.asList(s.avRequest1, s.avRequest2, s.avRequest3, s.avRequest4)));
 
@@ -178,7 +178,7 @@ public class RoboTaxiUtilsTest extends TestCase {
         s.roboTaxi1.startDropoff();
         s.roboTaxi1.addAVRequestToMenu(s.avRequest5);
         try {
-            s.roboTaxi1.moveAVCourseToNext(RoboTaxiUtils.getStarterCourse(s.roboTaxi1).get());
+            s.roboTaxi1.moveAVCourseToNext(SharedCourseListUtils.getStarterCourse(s.roboTaxi1).get());
             assertTrue(false);
         } catch (Exception e) {
             // ---

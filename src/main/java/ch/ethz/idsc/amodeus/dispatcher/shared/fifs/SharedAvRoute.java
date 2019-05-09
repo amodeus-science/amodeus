@@ -9,9 +9,9 @@ import java.util.Objects;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenuCheck;
 import ch.ethz.idsc.amodeus.routing.CachedNetworkTimeDistance;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.util.math.SI;
@@ -48,7 +48,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
      * @param list of {@link SharedCourse}
      * @return */
     private static SharedAvRoute of(List<SharedRoutePoint> list) {
-        GlobalAssert.that(SharedCourseListUtils.consistencyCheck(castToCourseList(list)));
+        GlobalAssert.that(SharedMenuCheck.consistencyCheck(castToCourseList(list)));
         return new SharedAvRoute(list);
     }
 

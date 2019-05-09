@@ -23,7 +23,7 @@ public class SharedMenu {
      * @param list of {@link SharedCourse}
      * @return */
     public static SharedMenu of(List<SharedCourse> list) {
-        GlobalAssert.that(SharedCourseListUtils.consistencyCheck(list));
+        GlobalAssert.that(SharedMenuCheck.consistencyCheck(list));
         return new SharedMenu(new ArrayList<>(list));
     }
 
