@@ -6,6 +6,7 @@ import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.core.api.experimental.events.EventsManager;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.schedule.AVDriveTask;
@@ -66,7 +67,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
                 } else {
                     sRoboTaxi.assignDirective(EmptyDirective.INSTANCE);
-                    SharedCourse nextCourse = RoboTaxiUtils.getStarterCourse(sRoboTaxi).get();
+                    SharedCourse nextCourse = SharedCourseListUtils.getStarterCourse(sRoboTaxi).get();
                     if (nextCourse.getMealType().equals(SharedMealType.REDIRECT)) {
                         GlobalAssert.that(avStayTask.getLink().equals(nextCourse.getLink()));
                         GlobalAssert.that(!sRoboTaxi.getDivertableLocation().equals(nextCourse.getLink()));

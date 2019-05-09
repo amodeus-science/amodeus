@@ -8,7 +8,8 @@ import java.util.Set;
 import org.matsim.api.core.v01.Coord;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAdd;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseRemove;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
@@ -29,13 +30,13 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         }
 
         for (SharedCourse sharedCourse : set) {
-            SharedCourseListUtils.removeAVCourse(sharedMenu, sharedCourse);
+            SharedCourseRemove.removeAVCourse(sharedMenu, sharedCourse);
         }
 
         int numIter = set.size();
         for (int i = 0; i < numIter; i++) {
             SharedCourse sharedCourse = StaticHelper.getClosestCourse(set, lastPickupCoord);
-            SharedCourseListUtils.addAVCourseAsDessert(sharedMenu, sharedCourse);
+            SharedCourseAdd.asDessert(sharedMenu, sharedCourse);
             set.remove(sharedCourse);
         }
         GlobalAssert.that(set.isEmpty());

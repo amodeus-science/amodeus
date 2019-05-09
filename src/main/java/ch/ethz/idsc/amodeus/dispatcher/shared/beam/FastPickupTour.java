@@ -8,7 +8,8 @@ import java.util.stream.Collectors;
 import org.matsim.api.core.v01.Coord;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAdd;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseRemove;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
@@ -23,14 +24,14 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         Collection<SharedCourse> sharedCourses = sharedMenu.stream().filter(sc -> sc.getMealType().equals(SharedMealType.PICKUP)).collect(Collectors.toList());
 
         for (SharedCourse sharedCourse : sharedCourses) {
-            SharedCourseListUtils.removeAVCourse(sharedMenu, sharedCourse);
+            SharedCourseRemove.removeAVCourse(sharedMenu, sharedCourse);
         }
 
         int currentIndex = 0;
         Coord nextCoord = startCoord;
         while (!sharedCourses.isEmpty()) {
             SharedCourse closestCourse = StaticHelper.getClosestCourse(sharedCourses, nextCoord);
-            SharedCourseListUtils.addAVCourseAtIndex(sharedMenu, closestCourse, currentIndex);
+            SharedCourseAdd.atIndex(sharedMenu, closestCourse, currentIndex);
             currentIndex++;
             nextCoord = closestCourse.getLink().getCoord();
             sharedCourses.remove(closestCourse);

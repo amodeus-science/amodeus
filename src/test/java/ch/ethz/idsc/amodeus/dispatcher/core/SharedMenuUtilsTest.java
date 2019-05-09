@@ -5,8 +5,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseMove;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenuCheck;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenuUtils;
 import junit.framework.TestCase;
 
 public class SharedMenuUtilsTest extends TestCase {
@@ -33,9 +36,9 @@ public class SharedMenuUtilsTest extends TestCase {
         assertEquals(SharedMenuUtils.getStarterCourse(menu1).get(), pickupCourse1);
         assertTrue(SharedMenuUtils.checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(menu1, 1));
         assertTrue(SharedMenuUtils.checkNoPickupAfterDropoffOfSameRequest(menu1));
-        assertTrue(SharedMenuUtils.checkAllCoursesAppearOnlyOnce(menu1));
+        assertTrue(SharedMenuCheck.checkAllCoursesAppearOnlyOnce(menu1.getRoboTaxiMenu()));
 
-        SharedMenu menu2 = SharedMenuUtils.moveAVCourseToNext(menu1, dropoffCourse1);
+        SharedMenu menu2 = SharedCourseMove.moveAVCourseToNext(menu1, dropoffCourse1);
         assertTrue(SharedMenuUtils.containSameCourses(menu1, menu2));
         SharedMenu menu2Check = SharedMenu.of(Arrays.asList(pickupCourse1, pickupCourse2, dropoffCourse1, dropoffCourse2));
         assertFalse(menu1.getRoboTaxiMenu().equals(menu2.getRoboTaxiMenu()));

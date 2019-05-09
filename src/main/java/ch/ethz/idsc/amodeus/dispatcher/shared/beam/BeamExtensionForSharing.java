@@ -20,6 +20,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiUtils;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedUniversalDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.OnboardRequests;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Scalar;
@@ -101,7 +102,7 @@ public class BeamExtensionForSharing {
         for (RoboTaxi roboTaxi : addedAvRequests.values()) {
             roboTaxi.updateMenu(Reorder.firstAllPickupsThenDropoffs(roboTaxi.getUnmodifiableViewOfCourses()));
             /** lets improve the menu a bit */
-            Optional<SharedCourse> nextCourse = RoboTaxiUtils.getStarterCourse(roboTaxi);
+            Optional<SharedCourse> nextCourse = SharedCourseListUtils.getStarterCourse(roboTaxi);
             if (nextCourse.isPresent()) {
                 if (nextCourse.get().getMealType().equals(SharedMealType.PICKUP)) {
                     roboTaxi.updateMenu(FastPickupTour.fastPickupTour(roboTaxi.getUnmodifiableViewOfCourses(), roboTaxi.getDivertableLocation().getCoord()));
