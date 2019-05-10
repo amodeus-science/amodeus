@@ -65,6 +65,7 @@ public class SharedCourse {
         return sharedRoboTaxiMealType;
     }
 
+    // TODO make final and allow direct access ?
     public String getCourseId() {
         return courseID;
     }

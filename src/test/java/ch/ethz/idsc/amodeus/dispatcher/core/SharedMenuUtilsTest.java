@@ -4,12 +4,13 @@ package ch.ethz.idsc.amodeus.dispatcher.core;
 import java.util.Arrays;
 import java.util.List;
 
+import ch.ethz.idsc.amodeus.dispatcher.shared.Compatibility;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseMove;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenuCheck;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenuUtils;
 import junit.framework.TestCase;
 
 public class SharedMenuUtilsTest extends TestCase {
@@ -33,16 +34,17 @@ public class SharedMenuUtilsTest extends TestCase {
         List<SharedCourse> list1 = Arrays.asList(pickupCourse1, dropoffCourse1, pickupCourse2, dropoffCourse2);
         SharedMenu menu1 = SharedMenu.of(list1);
 
-        assertEquals(SharedMenuUtils.getStarterCourse(menu1).get(), pickupCourse1);
-        assertTrue(SharedMenuUtils.checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(menu1, 1));
-        assertTrue(SharedMenuUtils.checkNoPickupAfterDropoffOfSameRequest(menu1));
-        assertTrue(SharedMenuCheck.checkAllCoursesAppearOnlyOnce(menu1.getRoboTaxiMenu()));
+        assertEquals(SharedCourseAccess.getStarter(menu1.getCourseList()).get(), pickupCourse1);
+
+        assertTrue(Compatibility.of(menu1.getCourseList()).forCapacity(1));
+        assertTrue(SharedMenuCheck.eachPickupAfterDropoff(menu1.getCourseList()));
+        assertTrue(SharedMenuCheck.coursesAppearOnce(menu1.getCourseList()));
 
         SharedMenu menu2 = SharedCourseMove.moveAVCourseToNext(menu1, dropoffCourse1);
-        assertTrue(SharedMenuUtils.containSameCourses(menu1, menu2));
+        assertTrue(SharedMenuCheck.containSameCourses(menu1, menu2));
         SharedMenu menu2Check = SharedMenu.of(Arrays.asList(pickupCourse1, pickupCourse2, dropoffCourse1, dropoffCourse2));
-        assertFalse(menu1.getRoboTaxiMenu().equals(menu2.getRoboTaxiMenu()));
-        assertTrue(menu2.getRoboTaxiMenu().equals(menu2Check.getRoboTaxiMenu()));
+        assertFalse(menu1.getCourseList().equals(menu2.getCourseList()));
+        assertTrue(menu2.getCourseList().equals(menu2Check.getCourseList()));
 
         List<SharedCourse> listInvalid = Arrays.asList(dropoffCourse1, pickupCourse1);
 

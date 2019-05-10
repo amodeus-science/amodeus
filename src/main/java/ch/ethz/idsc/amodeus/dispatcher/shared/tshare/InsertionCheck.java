@@ -91,7 +91,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
             optimalMenu = menuOptions.firstEntry().getValue();
             optimalLength = menuOptions.firstEntry().getKey();
             GlobalAssert.that(optimalMenu.size() == originalMenu.size() + 2);
-            GlobalAssert.that(SharedMenuCheck.checkMenuConsistency(optimalMenu, roboTaxi.getCapacity()));
+            GlobalAssert.that(Compatibility.of(optimalMenu).forCapacity(roboTaxi.getCapacity()));
         }
     }
 

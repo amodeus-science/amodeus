@@ -27,7 +27,7 @@ public enum OnboardRequests {
         return dropoffs;
     }
 
-    // --
+    // ---
 
     public static long getNumberOnBoardCustomers(List<? extends SharedCourse> courses) {
         long onBoard = getNumberMealTypes(courses, SharedMealType.DROPOFF) - //
@@ -39,7 +39,7 @@ public enum OnboardRequests {
         return (int) OnboardRequests.getNumberOnBoardCustomers(roboTaxi.getUnmodifiableViewOfCourses());
     }
 
-    // --
+    // ---
 
     public static boolean canPickupNewCustomer(RoboTaxi roboTaxi) {
         int onBoard = getNumberOnBoardRequests(roboTaxi);

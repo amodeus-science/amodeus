@@ -16,12 +16,13 @@ import org.matsim.core.network.NetworkUtils;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
-import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiUtils;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedUniversalDispatcher;
+import ch.ethz.idsc.amodeus.dispatcher.shared.Compatibility;
 import ch.ethz.idsc.amodeus.dispatcher.shared.OnboardRequests;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenuCheck;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -102,12 +103,12 @@ public class BeamExtensionForSharing {
         for (RoboTaxi roboTaxi : addedAvRequests.values()) {
             roboTaxi.updateMenu(Reorder.firstAllPickupsThenDropoffs(roboTaxi.getUnmodifiableViewOfCourses()));
             /** lets improve the menu a bit */
-            Optional<SharedCourse> nextCourse = SharedCourseListUtils.getStarterCourse(roboTaxi);
+            Optional<SharedCourse> nextCourse = SharedCourseAccess.getStarter(roboTaxi);
             if (nextCourse.isPresent()) {
                 if (nextCourse.get().getMealType().equals(SharedMealType.PICKUP)) {
                     roboTaxi.updateMenu(FastPickupTour.fastPickupTour(roboTaxi.getUnmodifiableViewOfCourses(), roboTaxi.getDivertableLocation().getCoord()));
                     roboTaxi.updateMenu(FastDropoffTour.fastDropoffTour(roboTaxi.getUnmodifiableViewOfCourses()));
-                    GlobalAssert.that(RoboTaxiUtils.checkMenuConsistency(roboTaxi));
+                    GlobalAssert.that(Compatibility.of(roboTaxi.getUnmodifiableViewOfCourses()).forCapacity(roboTaxi.getCapacity()));
                 }
             }
         }

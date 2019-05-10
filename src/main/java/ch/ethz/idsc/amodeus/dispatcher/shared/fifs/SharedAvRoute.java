@@ -48,7 +48,8 @@ import ch.ethz.idsc.tensor.qty.Quantity;
      * @param list of {@link SharedCourse}
      * @return */
     private static SharedAvRoute of(List<SharedRoutePoint> list) {
-        GlobalAssert.that(SharedMenuCheck.consistencyCheck(castToCourseList(list)));
+        GlobalAssert.that(SharedMenuCheck.coursesAppearOnce(castToCourseList(list)));
+        GlobalAssert.that(SharedMenuCheck.eachPickupAfterDropoff(castToCourseList(list)));
         return new SharedAvRoute(list);
     }
 

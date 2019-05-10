@@ -12,16 +12,17 @@ import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 
+import ch.ethz.idsc.amodeus.dispatcher.shared.Compatibility;
 import ch.ethz.idsc.amodeus.dispatcher.shared.OnboardRequests;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAdd;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseMove;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseRemove;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseUtil;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenuCheck;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenuUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.passenger.AVRequest;
@@ -254,16 +255,16 @@ public class RoboTaxi {
     /** Gives full information of the future menu (i.e. plans) of the
      * {@link RoboTaxi}. This Information contains for example the number of
      * customers on Board or the possibility to pick up new customers. To get all
-     * this Information the {@link SharedCourseListUtils} class offers some of the
+     * this Information the {@link SharedCourseAccess} class offers some of the
      * standard functionalities. Similar Functionalities are Offered as well by the
-     * {@link RoboTaxiUtils} class. Take a look at these two clases when
+     * {@link SharedRoboTaxiUtils} class. Take a look at these two clases when
      * implementing Dispatchers Further information can be pulled from this menu by
      * using standard List functionalities.
      * 
      * @return An unmodifiable {@link List} of {@link SharedCourse}s which can only
      *         be read but not modified */
     public List<SharedCourse> getUnmodifiableViewOfCourses() {
-        return menu.getRoboTaxiMenu();
+        return menu.getCourseList();
     }
 
     /** Modifies the menu of the RoboTaxi. The given course is moved up in the menu
@@ -282,15 +283,15 @@ public class RoboTaxi {
         setMenu(SharedCourseMove.moveAVCourseToNext(menu, sharedCourse));
     }
 
-    /** This function allows to update the menu of the RoboTaxi with a new orderd
+    /** This function allows to update the menu of the RoboTaxi with a new ordered
      * menu. Thereby the new menu has to fulfill the following conditions: 1. The
      * exact same Courses have to be in the Menu. 2. The menu can not plan to pickup
-     * more persons than the capacity of the Robo Taxi at any Time
+     * more persons than the capacity of the RoboTaxi at any time
      * 
      * @param menu */
     private void updateMenu(SharedMenu menu) {
-        GlobalAssert.that(SharedMenuUtils.containSameCourses(this.menu, menu));
-        GlobalAssert.that(SharedMenuCheck.checkMenuConsistency(getUnmodifiableViewOfCourses(), getCapacity()));
+        GlobalAssert.that(SharedMenuCheck.containSameCourses(this.menu, menu));
+        GlobalAssert.that(Compatibility.of(getUnmodifiableViewOfCourses()).forCapacity(getCapacity()));
         setMenu(menu);
     }
 
@@ -317,12 +318,12 @@ public class RoboTaxi {
      * 
      * @param menu */
     private final void setMenu(SharedMenu menu) {
-        GlobalAssert.that(SharedMenuUtils.checkMenuConsistencyWithRoboTaxi(menu, getCapacity()));
+        GlobalAssert.that(Compatibility.of(menu.getCourseList()).forCapacity(getCapacity()));
         if (dropoffInProgress) {
-            GlobalAssert.that(this.menu.getRoboTaxiMenu().get(0).equals(menu.getRoboTaxiMenu().get(0)));
+            GlobalAssert.that(this.menu.getCourseList().get(0).equals(menu.getCourseList().get(0)));
         }
         this.menu = menu;
-        this.status = RoboTaxiUtils.calculateStatusFromMenu(this);
+        this.status = SharedRoboTaxiUtils.calculateStatusFromMenu(this);
     }
 
     /* package */ void addAVRequestToMenu(AVRequest avRequest) {
@@ -331,14 +332,14 @@ public class RoboTaxi {
         // We could bring it into the rebalancing dispatcher, there we can add a
         // function which is called: addAVrequestandRemoveFirstRebalancing(AVrequest)
         if (status.equals(RoboTaxiStatus.REBALANCEDRIVE)) {
-            GlobalAssert.that(SharedCourseListUtils.getStarterCourse(this).get().getMealType().equals(SharedMealType.REDIRECT));
+            GlobalAssert.that(SharedCourseAccess.getStarter(this).get().getMealType().equals(SharedMealType.REDIRECT));
             if (getUnmodifiableViewOfCourses().size() == 1) {
                 finishRedirection();
             }
         }
         SharedCourse pickupCourse = SharedCourse.pickupCourse(avRequest);
         SharedCourse dropoffCourse = SharedCourse.dropoffCourse(avRequest);
-        setMenu(SharedCourseAdd.addAVCoursesAsDessert(menu, pickupCourse, dropoffCourse));
+        setMenu(SharedCourseAdd.asDessert(menu, pickupCourse, dropoffCourse));
     }
 
     // we should only allow one redirect course at the menu. --Luc, on 9 May 2019, after one
@@ -349,33 +350,32 @@ public class RoboTaxi {
         if (status.equals(RoboTaxiStatus.REBALANCEDRIVE)) {
             finishRedirection();
         }
-        setMenu(SharedCourseAdd.addAVCoursesAsDessert(menu, redirectCourse));
-
+        setMenu(SharedCourseAdd.asDessert(menu, redirectCourse));
     }
 
     /* package */ void addRedirectCourseToMenuAtBegining(SharedCourse redirectCourse) {
         GlobalAssert.that(redirectCourse.getMealType().equals(SharedMealType.REDIRECT));
-        setMenu(SharedCourseAdd.addAVCoursesAsStarter(menu, redirectCourse));
+        setMenu(SharedCourseAdd.asStarter(menu, redirectCourse));
     }
 
     /* package */ void pickupNewCustomerOnBoard() {
         GlobalAssert.that(OnboardRequests.canPickupNewCustomer(this));
-        GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.PICKUP));
-        GlobalAssert.that(RoboTaxiUtils.getStarterLink(this).equals(getDivertableLocation()));
-        setMenu(SharedCourseRemove.removeStarterCourse(menu));
+        GlobalAssert.that(SharedRoboTaxiUtils.isNextCourseOfType(this, SharedMealType.PICKUP));
+        GlobalAssert.that(SharedRoboTaxiUtils.getStarterLink(this).equals(getDivertableLocation()));
+        setMenu(SharedCourseRemove.starter(menu));
     }
 
     /* package */ void dropOffCustomer() {
         checkAbilityToDropOff();
         dropoffInProgress = false;
-        setMenu(SharedCourseRemove.removeStarterCourse(menu));
+        setMenu(SharedCourseRemove.starter(menu));
     }
 
     private void checkAbilityToDropOff() {
         GlobalAssert.that(OnboardRequests.getNumberOnBoardRequests(this) > 0);
         GlobalAssert.that(OnboardRequests.getNumberOnBoardRequests(this) <= getCapacity());
-        GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.DROPOFF));
-        GlobalAssert.that(RoboTaxiUtils.getStarterLink(this).equals(getDivertableLocation()));
+        GlobalAssert.that(SharedRoboTaxiUtils.isNextCourseOfType(this, SharedMealType.DROPOFF));
+        GlobalAssert.that(SharedRoboTaxiUtils.getStarterLink(this).equals(getDivertableLocation()));
     }
 
     /* package */ void startDropoff() {
@@ -384,9 +384,9 @@ public class RoboTaxi {
     }
 
     /* package */ void finishRedirection() {
-        GlobalAssert.that(RoboTaxiUtils.hasNextCourse(this));
-        GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.REDIRECT));
-        setMenu(SharedCourseRemove.removeStarterCourse(menu));
+        GlobalAssert.that(SharedCourseAccess.hasStarter(this));
+        GlobalAssert.that(SharedRoboTaxiUtils.isNextCourseOfType(this, SharedMealType.REDIRECT));
+        setMenu(SharedCourseRemove.starter(menu));
     }
 
     /** Removes an AV Request from the Robo Taxi Menu. This function can only be
@@ -396,8 +396,8 @@ public class RoboTaxi {
     /* package */ void removeAVRequestFromMenu(AVRequest avRequest) {
         SharedCourse pickupCourse = SharedCourse.pickupCourse(avRequest);
         SharedCourse dropoffCourse = SharedCourse.dropoffCourse(avRequest);
-        GlobalAssert.that(menu.getRoboTaxiMenu().contains(pickupCourse) && menu.getRoboTaxiMenu().contains(dropoffCourse));
-        setMenu(SharedCourseRemove.removeAVCourses(menu, pickupCourse, dropoffCourse));
+        GlobalAssert.that(menu.getCourseList().contains(pickupCourse) && menu.getCourseList().contains(dropoffCourse));
+        setMenu(SharedCourseRemove.several(menu, pickupCourse, dropoffCourse));
     }
 
     /** This function deletes all the current Courses from the menu.
@@ -406,7 +406,7 @@ public class RoboTaxi {
     /* package */ List<SharedCourse> cleanAndAbandonMenu() {
         GlobalAssert.that(OnboardRequests.getNumberOnBoardRequests(this) == 0);
         GlobalAssert.that(isDivertable());
-        List<SharedCourse> oldMenu = SharedCourseListUtils.copy(menu.getRoboTaxiMenu());
+        List<SharedCourse> oldMenu = SharedCourseUtil.copy(menu.getCourseList());
         setMenu(SharedMenu.empty());
         return oldMenu;
     }

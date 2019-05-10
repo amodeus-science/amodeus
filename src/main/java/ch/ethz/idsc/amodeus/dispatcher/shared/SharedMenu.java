@@ -18,12 +18,14 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 public class SharedMenu {
     private static final SharedMenu EMPTY = new SharedMenu(new ArrayList<>());
 
-    /** Creates a Shared Menu which is consistent in itself (e.g. no coureses appear twice, for each request it is secured that the dropoff happens after the pickup
+    /** Creates a Shared Menu which is consistent in itself (e.g. no coureses appear twice, for each request it is secured that the dropoff happens after the
+     * pickup
      * 
      * @param list of {@link SharedCourse}
      * @return */
     public static SharedMenu of(List<SharedCourse> list) {
-        GlobalAssert.that(SharedMenuCheck.consistencyCheck(list));
+        GlobalAssert.that(SharedMenuCheck.coursesAppearOnce(list));
+        GlobalAssert.that(SharedMenuCheck.eachPickupAfterDropoff(list));
         return new SharedMenu(new ArrayList<>(list));
     }
 
@@ -43,7 +45,7 @@ public class SharedMenu {
     }
 
     /** @return an unmodifiable view of the menu */
-    public List<SharedCourse> getRoboTaxiMenu() {
+    public List<SharedCourse> getCourseList() {
         return roboTaxiMenu;
     }
 
