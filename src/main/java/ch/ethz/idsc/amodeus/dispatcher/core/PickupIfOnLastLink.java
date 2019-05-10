@@ -6,7 +6,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
 
-import ch.ethz.idsc.amodeus.dispatcher.shared.OnboardRequests;
+import ch.ethz.idsc.amodeus.dispatcher.shared.OnMenuRequests;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
@@ -36,7 +36,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     }
 
     private static final void pickupAndAssignDirective(RoboTaxi roboTaxi, AVRequest avRequest, double now, double pickupDurationPerStop, FuturePathFactory futurePathFactory) {
-        GlobalAssert.that(OnboardRequests.canPickupNewCustomer(roboTaxi));
+        GlobalAssert.that(OnMenuRequests.canPickupNewCustomer(roboTaxi));
         Optional<SharedCourse> currentCourse = SharedCourseAccess.getStarter(roboTaxi);
         GlobalAssert.that(currentCourse.isPresent());
         GlobalAssert.that(currentCourse.get().getMealType().equals(SharedMealType.PICKUP));

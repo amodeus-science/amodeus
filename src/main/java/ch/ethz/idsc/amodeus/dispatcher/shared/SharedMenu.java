@@ -39,9 +39,11 @@ public class SharedMenu {
     // ---
     /** Unmodifiable List of Shared Courses */
     private final List<SharedCourse> roboTaxiMenu;
+    public final long menuOnBoardCustomers; 
 
-    private SharedMenu(List<SharedCourse> list) {
+    private SharedMenu(List<SharedCourse> list) {        
         roboTaxiMenu = Collections.unmodifiableList(list);
+        menuOnBoardCustomers = OnMenuRequests.getOnBoardCustomers(list);
     }
 
     /** @return an unmodifiable view of the menu */

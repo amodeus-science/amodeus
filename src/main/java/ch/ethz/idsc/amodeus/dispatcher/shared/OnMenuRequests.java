@@ -9,7 +9,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-public enum OnboardRequests {
+public enum OnMenuRequests {
     ;
 
     public static Set<AVRequest> getOnBoardRequests(List<? extends SharedCourse> courses) {
@@ -23,26 +23,20 @@ public enum OnboardRequests {
             boolean removeOk = dropoffs.remove(avRequestIDpickup);
             GlobalAssert.that(removeOk);
         }
-        GlobalAssert.that(getNumberOnBoardCustomers(courses) == dropoffs.size());
+        GlobalAssert.that(getOnBoardCustomers(courses) == dropoffs.size());
         return dropoffs;
     }
 
     // ---
 
-    public static long getNumberOnBoardCustomers(List<? extends SharedCourse> courses) {
+    public static long getOnBoardCustomers(List<? extends SharedCourse> courses) {
         long onBoard = getNumberMealTypes(courses, SharedMealType.DROPOFF) - //
                 getNumberMealTypes(courses, SharedMealType.PICKUP);
         return onBoard;
     }
 
-    public static int getNumberOnBoardRequests(RoboTaxi roboTaxi) {
-        return (int) OnboardRequests.getNumberOnBoardCustomers(roboTaxi.getUnmodifiableViewOfCourses());
-    }
-
-    // ---
-
     public static boolean canPickupNewCustomer(RoboTaxi roboTaxi) {
-        int onBoard = getNumberOnBoardRequests(roboTaxi);
+        int onBoard = (int) roboTaxi.getMenuOnBoardCustomers();
         GlobalAssert.that(onBoard >= 0);
         return onBoard < roboTaxi.getCapacity();
     }

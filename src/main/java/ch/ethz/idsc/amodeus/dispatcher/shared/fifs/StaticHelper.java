@@ -1,7 +1,7 @@
 package ch.ethz.idsc.amodeus.dispatcher.shared.fifs;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.dispatcher.shared.OnboardRequests;
+import ch.ethz.idsc.amodeus.dispatcher.shared.OnMenuRequests;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 
@@ -10,7 +10,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
     
     public static boolean plansPickupsOrDropoffs(RoboTaxi roboTaxi) {
         if (SharedCourseAccess.hasStarter(roboTaxi.getUnmodifiableViewOfCourses())) {
-            return OnboardRequests.getNumberMealTypes(roboTaxi.getUnmodifiableViewOfCourses(), SharedMealType.DROPOFF) > 0;
+            return OnMenuRequests.getNumberMealTypes(roboTaxi.getUnmodifiableViewOfCourses(), SharedMealType.DROPOFF) > 0;
         }
         return false;
     }
