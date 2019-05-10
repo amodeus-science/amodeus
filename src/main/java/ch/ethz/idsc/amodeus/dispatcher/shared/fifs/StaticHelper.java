@@ -7,7 +7,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 
 /* package */ enum StaticHelper {
     ;
-    
+
     public static boolean plansPickupsOrDropoffs(RoboTaxi roboTaxi) {
         if (SharedCourseAccess.hasStarter(roboTaxi.getUnmodifiableViewOfCourses())) {
             return OnMenuRequests.getNumberMealTypes(roboTaxi.getUnmodifiableViewOfCourses(), SharedMealType.DROPOFF) > 0;

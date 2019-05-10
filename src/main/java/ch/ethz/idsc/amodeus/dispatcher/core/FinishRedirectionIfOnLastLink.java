@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.Optional;
@@ -9,7 +10,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 /* package */ enum FinishRedirectionIfOnLastLink {
     ;
 
-    /* package */ static final void now(RoboTaxi roboTaxi) {
+    /* package */ static void now(RoboTaxi roboTaxi) {
         if (SharedCourseAccess.hasStarter(roboTaxi)) {
             Optional<SharedCourse> currentCourse = SharedCourseAccess.getStarter(roboTaxi);
             /** search redirect courses */

@@ -139,7 +139,7 @@ public class RoboTaxiUtilsTest extends TestCase {
         } catch (Exception e) {
             // ---
         }
-        assertEquals( s.roboTaxi1.getMenuOnBoardCustomers(), 1);
+        assertEquals(s.roboTaxi1.getMenuOnBoardCustomers(), 1);
         assertTrue(OnMenuRequests.canPickupNewCustomer(s.roboTaxi1));
 
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.linkUp, 1.0));

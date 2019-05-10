@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.Optional;
@@ -14,7 +15,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 /* package */ enum PickupIfOnLastLink {
-    //FIXME Make it clear that this is for sharing taxi only!!!!!
+    // FIXME Make it clear that this is for sharing taxi only!!!!!
     ;
 
     public static Optional<AVRequest> apply(RoboTaxi roboTaxi, double timeNow, double pickupDurationPerStop, FuturePathFactory futurePathFactory) {
