@@ -50,7 +50,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
         // Assign Directive To roboTaxi
         final double endDropOffTime = now + dropoffDurationPerStop;
-        Optional<SharedCourse> secondCourse =  SharedCourseAccess.getSecond(roboTaxi.getUnmodifiableViewOfCourses());
+        Optional<SharedCourse> secondCourse = SharedCourseAccess.getSecond(roboTaxi.getUnmodifiableViewOfCourses());
         final Link endLink = (secondCourse.isPresent()) ? secondCourse.get().getLink() : avRequest.getToLink();
         FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer(avRequest.getToLink(), endLink, endDropOffTime);
         roboTaxi.assignDirective(new SharedGeneralDropoffDirective(roboTaxi, avRequest, futurePathContainer, now, dropoffDurationPerStop));

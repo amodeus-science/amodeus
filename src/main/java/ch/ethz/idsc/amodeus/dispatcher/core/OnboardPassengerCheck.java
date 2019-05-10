@@ -2,7 +2,6 @@ package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.List;
 
-import ch.ethz.idsc.amodeus.dispatcher.shared.OnMenuRequests;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 /** This consistency check is very expensive, for this reason, it is only executed when

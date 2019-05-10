@@ -266,12 +266,10 @@ public class RoboTaxi {
     public List<SharedCourse> getUnmodifiableViewOfCourses() {
         return menu.getCourseList();
     }
-    
-    
-    public long getMenuOnBoardCustomers(){
+
+    public long getMenuOnBoardCustomers() {
         return menu.menuOnBoardCustomers;
     }
-    
 
     /** Modifies the menu of the RoboTaxi. The given course is moved up in the menu
      * by one position.
