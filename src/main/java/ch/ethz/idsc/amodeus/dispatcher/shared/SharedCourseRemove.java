@@ -1,5 +1,7 @@
 package ch.ethz.idsc.amodeus.dispatcher.shared;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /** Class to remove {@link SharedCourse}s from a {@link SharedMenu} */
@@ -36,11 +38,13 @@ public enum SharedCourseRemove {
     /** @return {@link SharedMenu} identical to @param sharedMenu without the courses
      *         supplied in @param removeCourses */
     public static SharedMenu several(SharedMenu sharedMenu, SharedCourse... removeCourses) {
-        List<SharedCourse> courses = SharedCourseListUtils.copy(sharedMenu.getCourseList());
-        for (SharedCourse sharedCourse : courses) {
-            specific(courses, sharedCourse);
+        List<SharedCourse> copy = new ArrayList<>();
+        List<SharedCourse> toRemove = Arrays.asList(removeCourses);
+        for (SharedCourse sharedCourse : sharedMenu.getCourseList()) {
+            if (!toRemove.contains(sharedCourse))
+                copy.add(sharedCourse);
         }
-        return SharedMenu.of(courses);
+        return SharedMenu.of(copy);
     }
 
 }
