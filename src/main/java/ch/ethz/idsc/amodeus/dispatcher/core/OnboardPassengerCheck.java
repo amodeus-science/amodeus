@@ -2,7 +2,7 @@ package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.List;
 
-import ch.ethz.idsc.amodeus.dispatcher.shared.OnboardRequests;
+import ch.ethz.idsc.amodeus.dispatcher.shared.OnMenuRequests;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 /** This consistency check is very expensive, for this reason, it is only executed when
@@ -26,7 +26,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
             /** requests are matched once a pickup process is in execution */
             int travelling = total_matchedRequests - total_dropedOffRequests;
             /** onboard requests which are currently in a shared {@link RoboTaxi} */
-            int menuOnboard = allTaxis.stream().mapToInt(rt -> OnboardRequests.getMenuOnBoardCustomers(rt)).sum();
+            int menuOnboard = allTaxis.stream().mapToInt(rt -> OnMenuRequests.getOnBoardCustomers(rt)).sum();
             GlobalAssert.that(travelling == menuOnboard);
         }
 

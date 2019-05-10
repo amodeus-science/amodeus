@@ -25,7 +25,7 @@ public class Compatibility {
     /** @param capacity maximum numbe of seats in the taxi.
      * @return true if the maximum number of seats is never violated with the menu {@link courses}. */
     public boolean forCapacity(int capacity) {
-        long onBoardPassengers = OnboardRequests.getMenuOnBoardCustomers(courses);
+        long onBoardPassengers = OnMenuRequests.getOnBoardCustomers(courses);
         for (SharedCourse course : courses) {
             if (course.getMealType().equals(SharedMealType.PICKUP)) {
                 onBoardPassengers++;

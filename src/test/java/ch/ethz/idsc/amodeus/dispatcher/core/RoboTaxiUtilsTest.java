@@ -9,7 +9,7 @@ import java.util.Optional;
 
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 
-import ch.ethz.idsc.amodeus.dispatcher.shared.OnboardRequests;
+import ch.ethz.idsc.amodeus.dispatcher.shared.OnMenuRequests;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseUtil;
@@ -100,7 +100,7 @@ public class RoboTaxiUtilsTest extends TestCase {
         s.roboTaxi1.pickupNewCustomerOnBoard();
         assertTrue(SharedRoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1).equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
 
-        assertEquals(OnboardRequests.getMenuOnBoardCustomers(s.roboTaxi1), 1);
+        assertEquals(OnMenuRequests.getOnBoardCustomers(s.roboTaxi1), 1);
         assertEquals(s.roboTaxi1.getUnmodifiableViewOfCourses().size(), numcourses - 1);
         try { // It should not be Possible to have a menu which plans to pick up more customers than capacity
             s.roboTaxi1.moveAVCourseToPrev(SharedCourse.pickupCourse(s.avRequest4));
@@ -139,8 +139,8 @@ public class RoboTaxiUtilsTest extends TestCase {
         } catch (Exception e) {
             // ---
         }
-        assertEquals(OnboardRequests.getMenuOnBoardCustomers(s.roboTaxi1), 1);
-        assertTrue(OnboardRequests.canPickupNewCustomer(s.roboTaxi1));
+        assertEquals(OnMenuRequests.getOnBoardCustomers(s.roboTaxi1), 1);
+        assertTrue(OnMenuRequests.canPickupNewCustomer(s.roboTaxi1));
 
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.linkUp, 1.0));
         assertTrue(SharedRoboTaxiUtils.isNextCourseOfType(s.roboTaxi1, SharedMealType.REDIRECT));
@@ -149,9 +149,9 @@ public class RoboTaxiUtilsTest extends TestCase {
         s.roboTaxi1.finishRedirection();
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.avRequest1.getFromLink(), 1.0));
         s.roboTaxi1.pickupNewCustomerOnBoard();
-        assertEquals(OnboardRequests.getMenuOnBoardCustomers(s.roboTaxi1), 2);
+        assertEquals(OnMenuRequests.getOnBoardCustomers(s.roboTaxi1), 2);
 
-        assertEquals(OnboardRequests.getOnBoardRequests(s.roboTaxi1.getUnmodifiableViewOfCourses()), //
+        assertEquals(OnMenuRequests.getOnBoardRequests(s.roboTaxi1.getUnmodifiableViewOfCourses()), //
                 new HashSet<>(Arrays.asList(s.avRequest1, s.avRequest3)));
         assertEquals(SharedCourseAccess.getStarter(s.roboTaxi1).get(), SharedCourse.pickupCourse(s.avRequest2));
         assertTrue(SharedRoboTaxiUtils.isNextCourseOfType(s.roboTaxi1, SharedMealType.PICKUP));
@@ -160,7 +160,7 @@ public class RoboTaxiUtilsTest extends TestCase {
 
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.avRequest2.getFromLink(), 1.0));
         s.roboTaxi1.pickupNewCustomerOnBoard();
-        assertFalse(OnboardRequests.canPickupNewCustomer(s.roboTaxi1));
+        assertFalse(OnMenuRequests.canPickupNewCustomer(s.roboTaxi1));
 
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.avRequest1.getToLink(), 1.0));
         s.roboTaxi1.dropOffCustomer();

@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import org.matsim.api.core.v01.network.Link;
 
-import ch.ethz.idsc.amodeus.dispatcher.shared.OnboardRequests;
+import ch.ethz.idsc.amodeus.dispatcher.shared.OnMenuRequests;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
@@ -39,14 +39,14 @@ public enum SharedRoboTaxiUtils {
     /* package */ static RoboTaxiStatus calculateStatusFromMenu(RoboTaxi roboTaxi) {
         Optional<SharedCourse> nextCourseOptional = SharedCourseAccess.getStarter(roboTaxi);
         if (nextCourseOptional.isPresent()) {
-            if (OnboardRequests.getMenuOnBoardCustomers(roboTaxi) > 0) {
+            if (OnMenuRequests.getOnBoardCustomers(roboTaxi) > 0) {
                 return RoboTaxiStatus.DRIVEWITHCUSTOMER;
             } else //
             if (nextCourseOptional.get().getMealType().equals(SharedMealType.PICKUP)) {
                 return RoboTaxiStatus.DRIVETOCUSTOMER;
             } else //
             if (nextCourseOptional.get().getMealType().equals(SharedMealType.REDIRECT)) {
-                if (OnboardRequests.getNumberMealTypes(roboTaxi.getUnmodifiableViewOfCourses(), SharedMealType.PICKUP) > 0) {
+                if (OnMenuRequests.getNumberMealTypes(roboTaxi.getUnmodifiableViewOfCourses(), SharedMealType.PICKUP) > 0) {
                     return RoboTaxiStatus.DRIVETOCUSTOMER;
                 }
                 return RoboTaxiStatus.REBALANCEDRIVE;

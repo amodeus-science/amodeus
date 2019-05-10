@@ -27,7 +27,7 @@ import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.Compatibility;
-import ch.ethz.idsc.amodeus.dispatcher.shared.OnboardRequests;
+import ch.ethz.idsc.amodeus.dispatcher.shared.OnMenuRequests;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseUtil;
@@ -384,7 +384,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
             Optional<SharedCourse> nextCourseOptional = SharedCourseAccess.getStarter(roboTaxi);
             if (nextCourseOptional.isPresent()) {
                 if (nextCourseOptional.get().getMealType().equals(SharedMealType.REDIRECT)) {
-                    if (OnboardRequests.getMenuOnBoardCustomers(roboTaxi) == 0) {
+                    if (OnMenuRequests.getOnBoardCustomers(roboTaxi) == 0) {
                         // if (!roboTaxi.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE)) {// TODO delete after use
                         // System.out.println(roboTaxi.getStatus().toString());
                         // System.out.println(roboTaxi.getCurrentDriveDestination().getId().toString());

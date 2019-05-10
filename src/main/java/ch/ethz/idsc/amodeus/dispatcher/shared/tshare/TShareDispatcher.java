@@ -25,7 +25,7 @@ import com.google.inject.name.Named;
 import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedPartitionedDispatcher;
-import ch.ethz.idsc.amodeus.dispatcher.shared.OnboardRequests;
+import ch.ethz.idsc.amodeus.dispatcher.shared.OnMenuRequests;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
@@ -135,9 +135,9 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
 
             /** update the roboTaxi planned locations */
             Collection<RoboTaxi> customerCarrying = getDivertableRoboTaxis().stream()//
-                    .filter(rt -> OnboardRequests.getMenuOnBoardCustomers(rt) >= 1)//
-                    .filter(rt -> (rt.getCapacity() - OnboardRequests.getMenuOnBoardCustomers(rt)) >= 1)//
-                    .filter(OnboardRequests::canPickupNewCustomer)//
+                    .filter(rt -> OnMenuRequests.getOnBoardCustomers(rt) >= 1)//
+                    .filter(rt -> (rt.getCapacity() - OnMenuRequests.getOnBoardCustomers(rt)) >= 1)//
+                    .filter(OnMenuRequests::canPickupNewCustomer)//
                     .collect(Collectors.toList());
 
             Map<VirtualNode<Link>, Set<RoboTaxi>> plannedLocations = //

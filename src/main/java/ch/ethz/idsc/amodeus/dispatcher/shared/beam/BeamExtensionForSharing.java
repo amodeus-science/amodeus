@@ -18,7 +18,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedUniversalDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.Compatibility;
-import ch.ethz.idsc.amodeus.dispatcher.shared.OnboardRequests;
+import ch.ethz.idsc.amodeus.dispatcher.shared.OnMenuRequests;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
@@ -136,7 +136,7 @@ public class BeamExtensionForSharing {
      * @param numberAdded
      * @return */
     private static boolean oneMorePickupPossible(RoboTaxi roboTaxi, AtomicInteger numberAdded) {
-        return OnboardRequests.getNumberMealTypes(roboTaxi.getUnmodifiableViewOfCourses(),SharedMealType.DROPOFF)//
+        return OnMenuRequests.getNumberMealTypes(roboTaxi.getUnmodifiableViewOfCourses(),SharedMealType.DROPOFF)//
                 + numberAdded.get() < roboTaxi.getCapacity();
     }
 
