@@ -178,7 +178,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
      * @param avRequest */
     public void addSharedRoboTaxiPickup(RoboTaxi roboTaxi, AVRequest avRequest) {
         GlobalAssert.that(pendingRequests.contains(avRequest));
-
+        
         // If the request was already assigned remove it from the current vehicle in the request register and update its menu;
         if (requestRegister.contains(avRequest)) {
             abortAvRequest(avRequest);
@@ -384,7 +384,14 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
             if (nextCourseOptional.isPresent()) {
                 if (nextCourseOptional.get().getMealType().equals(SharedMealType.REDIRECT)) {
                     if (OnboardRequests.getNumberOnBoardRequests(roboTaxi) == 0) {
+                        // if (!roboTaxi.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE)) {// TODO delete after use
+                        // System.out.println(roboTaxi.getStatus().toString());
+                        // System.out.println(roboTaxi.getCurrentDriveDestination().getId().toString());
+                        // System.out.println(roboTaxi.getLastKnownLocation().getId().toString());
+                        // System.out.println(roboTaxi.getDivertableLocation().getId().toString());
+                        // }
                         GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE));
+                        //TODO maybe consider remove this? But be very careful!!!!!!
                     }
                 }
             }
