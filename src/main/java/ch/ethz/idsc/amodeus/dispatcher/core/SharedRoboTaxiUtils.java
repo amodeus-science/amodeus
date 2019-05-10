@@ -39,7 +39,7 @@ public enum SharedRoboTaxiUtils {
     /* package */ static RoboTaxiStatus calculateStatusFromMenu(RoboTaxi roboTaxi) {
         Optional<SharedCourse> nextCourseOptional = SharedCourseAccess.getStarter(roboTaxi);
         if (nextCourseOptional.isPresent()) {
-            if (OnMenuRequests.getOnBoardCustomers(roboTaxi) > 0) {
+            if (roboTaxi.getMenuOnBoardCustomers() > 0) {
                 return RoboTaxiStatus.DRIVEWITHCUSTOMER;
             } else //
             if (nextCourseOptional.get().getMealType().equals(SharedMealType.PICKUP)) {

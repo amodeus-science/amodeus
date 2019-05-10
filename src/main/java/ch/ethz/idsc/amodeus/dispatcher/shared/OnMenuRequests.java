@@ -9,7 +9,6 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-
 public enum OnMenuRequests {
     ;
 
@@ -36,15 +35,8 @@ public enum OnMenuRequests {
         return onBoard;
     }
 
-    public static int getOnBoardCustomers(RoboTaxi roboTaxi) {
-        return (int) roboTaxi.getMenuOnBoardCustomers();
-//        return (int) OnMenuRequests.getOnBoardCustomers(roboTaxi.getUnmodifiableViewOfCourses());
-    }
-
-    // -----
-
     public static boolean canPickupNewCustomer(RoboTaxi roboTaxi) {
-        int onBoard = getOnBoardCustomers(roboTaxi);
+        int onBoard = (int) roboTaxi.getMenuOnBoardCustomers();
         GlobalAssert.that(onBoard >= 0);
         return onBoard < roboTaxi.getCapacity();
     }
