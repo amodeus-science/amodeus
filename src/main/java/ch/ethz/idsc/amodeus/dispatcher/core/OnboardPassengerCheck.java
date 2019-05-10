@@ -22,7 +22,8 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     public void now(int total_matchedRequests, int total_dropedOffRequests, //
             List<RoboTaxi> allTaxis) {
 
-        if (totalMatched != total_matchedRequests && totalDropoff != total_dropedOffRequests) {
+        /** only test if change happened */
+        if (totalMatched != total_matchedRequests || totalDropoff != total_dropedOffRequests) {
             /** requests are matched once a pickup process is in execution */
             int travelling = total_matchedRequests - total_dropedOffRequests;
             /** onboard requests which are currently in a shared {@link RoboTaxi} */

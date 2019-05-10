@@ -27,7 +27,6 @@ import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.Compatibility;
-import ch.ethz.idsc.amodeus.dispatcher.shared.OnMenuRequests;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseUtil;
@@ -372,49 +371,44 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
     @Override
     protected final void consistencySubCheck() {
 
+        // TODO disable or reduce computational complexity of entire subcheck once API tested for
+        // a longer amount of time.
+
         for (RoboTaxi roboTaxi : getRoboTaxis()) {
-
-            // Check Shedule never has more than two elements on the nexttime step
-
             Schedule schedule = roboTaxi.getSchedule();
             Task task = schedule.getCurrentTask();
+            /** schedule should never have more than two elements on the next timestep */
             GlobalAssert.that(MaxTwoMoreTasksAfterEndingOne.check(schedule, task, getTimeNow(), SIMTIMESTEP));
-
             GlobalAssert.that(roboTaxi.getStatus().equals(SharedRoboTaxiUtils.calculateStatusFromMenu(roboTaxi)));
             Optional<SharedCourse> nextCourseOptional = SharedCourseAccess.getStarter(roboTaxi);
             if (nextCourseOptional.isPresent()) {
                 if (nextCourseOptional.get().getMealType().equals(SharedMealType.REDIRECT)) {
                     if (roboTaxi.getMenuOnBoardCustomers() == 0) {
-                        // if (!roboTaxi.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE)) {// TODO delete after use
-                        // System.out.println(roboTaxi.getStatus().toString());
-                        // System.out.println(roboTaxi.getCurrentDriveDestination().getId().toString());
-                        // System.out.println(roboTaxi.getLastKnownLocation().getId().toString());
-                        // System.out.println(roboTaxi.getDivertableLocation().getId().toString());
-                        // }
+                        /** if a redirect meal is next and no customer on board, this is exactly
+                         * a rebalcne drive and should be recorded accordingly. */
                         GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE));
-                        // TODO maybe consider remove this? But be very careful!!!!!!
                     }
                 }
             }
-
-            if (roboTaxi.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE)) {
+            /** vice versa, if the {@link RoboTaxiStatus} is on REBALANCEDRIVE, it must
+             * be on a redirect task. */
+            if (roboTaxi.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE))
                 GlobalAssert.that(SharedCourseAccess.getStarter(roboTaxi).get().getMealType().equals(SharedMealType.REDIRECT));
-            }
         }
 
         for (AVRequest avRequest : requestRegister.getAssignedAvRequests()) {
             GlobalAssert.that(reqStatuses.containsKey(avRequest));
-            // TODO Shared this could be tested in a analysis in the simulation object. There its crucial to be correct
+            // TODO Shared this could be tested in a analysis in the simulation object.
             if (reqStatuses.get(avRequest).equals(RequestStatus.DRIVING)) {
-                GlobalAssert.that(requestRegister.getAssignedRoboTaxi(avRequest).get().getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
+                GlobalAssert.that(requestRegister.getAssignedRoboTaxi(avRequest).get().getStatus()//
+                        .equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
             }
         }
-        // TODO Shared this is important to work through again as this can save a lot of computatioinal effort
 
-        // check that each Request only appears once in the Request Register
+        /** check that each Request only appears once in the Request Register */
         Set<AVRequest> uniqueAvRequests = new HashSet<>();
-        for (Entry<RoboTaxi, Map<String, AVRequest>> entry : requestRegister.getRegister().entrySet()) {
-            for (AVRequest avRequest : entry.getValue().values()) {
+        for (Map<String, AVRequest> map : requestRegister.getRegister().values()) {
+            for (AVRequest avRequest : map.values()) {
                 if (uniqueAvRequests.contains(avRequest)) {
                     System.out.println("This AV Request Occured Twice in the request Register " + avRequest.getId().toString());
                     GlobalAssert.that(false);
@@ -423,16 +417,16 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
             }
         }
 
-        // there cannot be more pickup requests than open requests
+        /** there cannot be more pickup than open requests */
         GlobalAssert.that(requestRegister.getAssignedPendingRequests(pendingRequests).size() <= pendingRequests.size());
 
-        // there cannot be more pickup vehicles than open requests
+        /** there cannot be more pickup vehicles than open requests */
         GlobalAssert.that(getRoboTaxiSubset(RoboTaxiStatus.DRIVETOCUSTOMER).size() <= pendingRequests.size());
 
-        // all Robotaxi in the request Register have a current course
+        /** all {@link RoboTaxi} in the request Register must have a starter course */
         GlobalAssert.that(requestRegister.getRegister().keySet().stream().allMatch(SharedCourseAccess::hasStarter));
 
-        // containment check pickupRegisterFunction and pendingRequests
+        /** containment check pickupRegisterFunction and pendingRequests */
         requestRegister.getPickupRegister(pendingRequests).keySet().forEach(r -> GlobalAssert.that(pendingRequests.contains(r)));
 
         /** if a request appears in a menu, it must be in the request register */
@@ -448,7 +442,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
             }
         }
 
-        /** test: every request appears only 2 times, pickup and dropff accross all menus */
+        /** test: every request appears only 2 times, pickup and dropoff across all menus */
         List<String> requestsInMenus = new ArrayList<>();
         getRoboTaxis().stream().filter(rt -> SharedCourseAccess.hasStarter(rt)).forEach(//
                 rtx -> SharedCourseUtil.getUniqueAVRequests(rtx.getUnmodifiableViewOfCourses())//
@@ -456,7 +450,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
         Set<String> uniqueMenuRequests = new HashSet<>(requestsInMenus);
         GlobalAssert.that(uniqueMenuRequests.size() == requestsInMenus.size());
 
-        /** request register equals the requests in the menu of each robo taxi */
+        /** request register equals the requests in the menu of each {@link RoboTaxi} */
         Set<String> uniqueRegisterRequests = new HashSet<>();
         requestRegister.getRegister().values().stream().forEach(m -> m.keySet().stream().forEach(s -> {
             uniqueRegisterRequests.add(s);
