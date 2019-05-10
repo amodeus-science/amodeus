@@ -14,6 +14,9 @@ import org.matsim.core.config.Config;
 
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.StorageUtils;
+import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
@@ -31,6 +34,8 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
     private Double private_now = null;
     public InfoLine infoLine = null;
     private final StorageUtils storageUtils;
+
+    private final Tensor times = Array.zeros(12);
 
     RoboTaxiMaintainer(EventsManager eventsManager, Config config, AVDispatcherConfig avDispatcherConfig) {
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
@@ -69,22 +74,76 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
     @Override
     public final void onNextTimestep(double now) {
 
+        long time = System.currentTimeMillis();
+
         private_now = now; // <- time available to derived class via getTimeNow()
         updateInfoLine();
+
+        times.set(times.Get(0).add(RealScalar.of(System.currentTimeMillis() - time)), 0);
+        time = System.currentTimeMillis();
+
         notifySimulationSubscribers(Math.round(now), storageUtils);
+
+        times.set(times.Get(1).add(RealScalar.of(System.currentTimeMillis() - time)), 1);
+        time = System.currentTimeMillis();
+
         consistencyCheck();
+
+        times.set(times.Get(2).add(RealScalar.of(System.currentTimeMillis() - time)), 2);
+        time = System.currentTimeMillis();
+
         beforeStepTasks(); // <- if problems with RoboTaxi Status to Completed consider to set "simEndtimeInterpretation" to "null"
         // The Dropoff is before the pickup because:
         // a) A robotaxi which picks up a customer should not dropoff one at the same time step
         // b) but in the shared case the internal dropoff should be able to finish a dropoff which enables the pickups to be executed
+
+        times.set(times.Get(3).add(RealScalar.of(System.currentTimeMillis() - time)), 3);
+        time = System.currentTimeMillis();
+
         executeDropoffs();
+
+        times.set(times.Get(4).add(RealScalar.of(System.currentTimeMillis() - time)), 4);
+        time = System.currentTimeMillis();
+
         executePickups();
+
+        times.set(times.Get(5).add(RealScalar.of(System.currentTimeMillis() - time)), 5);
+        time = System.currentTimeMillis();
+
         executeRedirects();
+
+        times.set(times.Get(6).add(RealScalar.of(System.currentTimeMillis() - time)), 6);
+        time = System.currentTimeMillis();
+
         redispatch(now);
+
+        times.set(times.Get(7).add(RealScalar.of(System.currentTimeMillis() - time)), 7);
+        time = System.currentTimeMillis();
+
         redispatchInternal(now);
+
+        times.set(times.Get(8).add(RealScalar.of(System.currentTimeMillis() - time)), 8);
+        time = System.currentTimeMillis();
+
         afterStepTasks();
+
+        times.set(times.Get(9).add(RealScalar.of(System.currentTimeMillis() - time)), 9);
+        time = System.currentTimeMillis();
+
         executeDirectives();
+
+        times.set(times.Get(10).add(RealScalar.of(System.currentTimeMillis() - time)), 10);
+        time = System.currentTimeMillis();
+
         consistencyCheck();
+
+        times.set(times.Get(11).add(RealScalar.of(System.currentTimeMillis() - time)), 11);
+        time = System.currentTimeMillis();
+
+        System.err.println(times);
+
+        if (now > 15000)
+            System.exit(1);
 
     }
 

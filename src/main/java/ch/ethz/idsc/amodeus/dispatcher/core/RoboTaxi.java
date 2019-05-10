@@ -297,7 +297,7 @@ public class RoboTaxi {
      * @param menu */
     private void updateMenu(SharedMenu menu) {
         GlobalAssert.that(SharedMenuCheck.containSameCourses(this.menu, menu));
-        GlobalAssert.that(Compatibility.of(getUnmodifiableViewOfCourses()).forCapacity(getCapacity()));
+        GlobalAssert.that(Compatibility.of(this).forCapacity(getCapacity()));
         setMenu(menu);
     }
 

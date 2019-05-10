@@ -213,7 +213,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
             RoboTaxi roboTaxi = oldRoboTaxi.get();
             requestRegister.remove(roboTaxi, avRequest);
             roboTaxi.removeAVRequestFromMenu(avRequest);
-            GlobalAssert.that(Compatibility.of(roboTaxi.getUnmodifiableViewOfCourses()).forCapacity(roboTaxi.getCapacity()));
+            GlobalAssert.that(Compatibility.of(roboTaxi).forCapacity(roboTaxi.getCapacity()));
         } else {
             System.out.println("This place should not be reached");
             GlobalAssert.that(false);

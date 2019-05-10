@@ -109,7 +109,7 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
                     sharedRoboTaxi.moveAVCourseToPrev(redirectCourse);
 
                     /** check consistency and end */
-                    GlobalAssert.that(Compatibility.of(sharedRoboTaxi.getUnmodifiableViewOfCourses()).forCapacity(sharedRoboTaxi.getCapacity()));
+                    GlobalAssert.that(Compatibility.of(sharedRoboTaxi).forCapacity(sharedRoboTaxi.getCapacity()));
                 } else {
                     break;
                 }

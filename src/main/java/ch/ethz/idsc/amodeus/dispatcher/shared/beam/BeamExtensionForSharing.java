@@ -108,7 +108,7 @@ public class BeamExtensionForSharing {
                 if (nextCourse.get().getMealType().equals(SharedMealType.PICKUP)) {
                     roboTaxi.updateMenu(FastPickupTour.fastPickupTour(roboTaxi.getUnmodifiableViewOfCourses(), roboTaxi.getDivertableLocation().getCoord()));
                     roboTaxi.updateMenu(FastDropoffTour.fastDropoffTour(roboTaxi.getUnmodifiableViewOfCourses()));
-                    GlobalAssert.that(Compatibility.of(roboTaxi.getUnmodifiableViewOfCourses()).forCapacity(roboTaxi.getCapacity()));
+                    GlobalAssert.that(Compatibility.of(roboTaxi).forCapacity(roboTaxi.getCapacity()));
                 }
             }
         }
