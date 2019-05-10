@@ -23,9 +23,9 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiUtils;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedRebalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseUtil;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
@@ -201,7 +201,7 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
                 Set<AVRequest> setOfAVRequestInRoute = routeToAssign.stream() //
                         .map(StopInRoute::getavRequest) //
                         .collect(Collectors.toSet());
-                for (AVRequest avRequest : RoboTaxiUtils.getRequestsInMenu(roboTaxiToAssign)) {
+                for (AVRequest avRequest : SharedCourseUtil.getUniqueAVRequests(roboTaxiToAssign.getUnmodifiableViewOfCourses())) {
                     if (!setOfAVRequestInRoute.contains(avRequest)) {
                         abortAvRequest(avRequest);
                     }

@@ -52,7 +52,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
         // Assign Directive
         final double endPickupTime = now + pickupDurationPerStop;
-        FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer(avRequest.getFromLink(), RoboTaxiUtils.getStarterLink(roboTaxi), endPickupTime);
+        FuturePathContainer futurePathContainer = //
+                futurePathFactory.createFuturePathContainer(avRequest.getFromLink(), SharedRoboTaxiUtils.getStarterLink(roboTaxi), endPickupTime);
         roboTaxi.assignDirective(new SharedGeneralPickupDirective(roboTaxi, avRequest, futurePathContainer, now));
 
         GlobalAssert.that(!roboTaxi.isDivertable());

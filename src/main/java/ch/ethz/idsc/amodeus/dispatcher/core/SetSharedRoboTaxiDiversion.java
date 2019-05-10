@@ -34,7 +34,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
      *            {@link setRoboTaxiRebalance} */
     /* package */ final static void now(RoboTaxi sRoboTaxi, Link destination, FuturePathFactory futurePathFactory, //
             double now, EventsManager eventsManager, boolean reRoute) {
-        GlobalAssert.that(RoboTaxiUtils.hasNextCourse(sRoboTaxi));
+        GlobalAssert.that(SharedCourseAccess.hasStarter(sRoboTaxi));
         // update Status Of Robo Taxi
         // In Handle
 
@@ -85,22 +85,22 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
             @Override
             public void handle(AVPickupTask avPickupTask) {
-                GlobalAssert.that(RoboTaxiUtils.hasNextCourse(sRoboTaxi));
-                Link nextLink = RoboTaxiUtils.getStarterLink(sRoboTaxi);
+                GlobalAssert.that(SharedCourseAccess.hasStarter(sRoboTaxi));
+                Link nextLink = SharedRoboTaxiUtils.getStarterLink(sRoboTaxi);
                 GlobalAssert.that(nextLink == destination);
                 handlePickupAndDropoff(sRoboTaxi, task, nextLink, now);
             }
 
             @Override
             public void handle(AVDropoffTask dropOffTask) {
-                GlobalAssert.that(RoboTaxiUtils.hasNextCourse(sRoboTaxi));
+                GlobalAssert.that(SharedCourseAccess.hasStarter(sRoboTaxi));
                 // THIS Would mean the dropoffs of this time Step did not take place. And thus the menu still has dropof
                 // as next course (in dropof case)
                 // TODO Lukas think about how to test this
                 // GlobalAssert.that(!dropOffTimes.containsKey(now));
 
                 if (LastTimeStep.check(dropOffTask, now, SharedUniversalDispatcher.SIMTIMESTEP)) {
-                    Link nextLink = RoboTaxiUtils.getStarterLink(sRoboTaxi);
+                    Link nextLink = SharedRoboTaxiUtils.getStarterLink(sRoboTaxi);
                     handlePickupAndDropoff(sRoboTaxi, task, nextLink, now);
                 }
                 // else {

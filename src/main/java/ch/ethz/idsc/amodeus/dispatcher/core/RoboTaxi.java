@@ -257,7 +257,7 @@ public class RoboTaxi {
      * customers on Board or the possibility to pick up new customers. To get all
      * this Information the {@link SharedCourseAccess} class offers some of the
      * standard functionalities. Similar Functionalities are Offered as well by the
-     * {@link RoboTaxiUtils} class. Take a look at these two clases when
+     * {@link SharedRoboTaxiUtils} class. Take a look at these two clases when
      * implementing Dispatchers Further information can be pulled from this menu by
      * using standard List functionalities.
      * 
@@ -323,7 +323,7 @@ public class RoboTaxi {
             GlobalAssert.that(this.menu.getCourseList().get(0).equals(menu.getCourseList().get(0)));
         }
         this.menu = menu;
-        this.status = RoboTaxiUtils.calculateStatusFromMenu(this);
+        this.status = SharedRoboTaxiUtils.calculateStatusFromMenu(this);
     }
 
     /* package */ void addAVRequestToMenu(AVRequest avRequest) {
@@ -360,8 +360,8 @@ public class RoboTaxi {
 
     /* package */ void pickupNewCustomerOnBoard() {
         GlobalAssert.that(OnboardRequests.canPickupNewCustomer(this));
-        GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.PICKUP));
-        GlobalAssert.that(RoboTaxiUtils.getStarterLink(this).equals(getDivertableLocation()));
+        GlobalAssert.that(SharedRoboTaxiUtils.isNextCourseOfType(this, SharedMealType.PICKUP));
+        GlobalAssert.that(SharedRoboTaxiUtils.getStarterLink(this).equals(getDivertableLocation()));
         setMenu(SharedCourseRemove.starter(menu));
     }
 
@@ -374,8 +374,8 @@ public class RoboTaxi {
     private void checkAbilityToDropOff() {
         GlobalAssert.that(OnboardRequests.getNumberOnBoardRequests(this) > 0);
         GlobalAssert.that(OnboardRequests.getNumberOnBoardRequests(this) <= getCapacity());
-        GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.DROPOFF));
-        GlobalAssert.that(RoboTaxiUtils.getStarterLink(this).equals(getDivertableLocation()));
+        GlobalAssert.that(SharedRoboTaxiUtils.isNextCourseOfType(this, SharedMealType.DROPOFF));
+        GlobalAssert.that(SharedRoboTaxiUtils.getStarterLink(this).equals(getDivertableLocation()));
     }
 
     /* package */ void startDropoff() {
@@ -384,8 +384,8 @@ public class RoboTaxi {
     }
 
     /* package */ void finishRedirection() {
-        GlobalAssert.that(RoboTaxiUtils.hasNextCourse(this));
-        GlobalAssert.that(RoboTaxiUtils.nextCourseIsOfType(this, SharedMealType.REDIRECT));
+        GlobalAssert.that(SharedCourseAccess.hasStarter(this));
+        GlobalAssert.that(SharedRoboTaxiUtils.isNextCourseOfType(this, SharedMealType.REDIRECT));
         setMenu(SharedCourseRemove.starter(menu));
     }
 

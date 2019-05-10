@@ -52,11 +52,11 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
                             divert = true;
                         } else {
                             // TODO remove soon if no errors
-                            GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiUtils.calculateStatusFromMenu(roboTaxi)));
+                            GlobalAssert.that(roboTaxi.getStatus().equals(SharedRoboTaxiUtils.calculateStatusFromMenu(roboTaxi)));
                         }
                     } else {
                         // TODO remove soon if no errors
-                        GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiUtils.calculateStatusFromMenu(roboTaxi)));
+                        GlobalAssert.that(roboTaxi.getStatus().equals(SharedRoboTaxiUtils.calculateStatusFromMenu(roboTaxi)));
                     }
                     if (planedToLink.equals(roboTaxi.getDivertableLocation())) {
                         if (isOnLastTask) {

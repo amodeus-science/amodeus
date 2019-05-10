@@ -20,10 +20,10 @@ public class RoboTaxiUtilsTest extends TestCase {
     public void testSimple() {
         ArtificialScenarioCreator s = new ArtificialScenarioCreator();
 
-        assertTrue(RoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1).equals(RoboTaxiStatus.STAY));
+        assertTrue(SharedRoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1).equals(RoboTaxiStatus.STAY));
         s.roboTaxi1.addRedirectCourseToMenu(SharedCourse.redirectCourse(s.linkUp, "redirect0"));
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.linkUp, 1.0));
-        assertTrue(RoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1).equals(RoboTaxiStatus.REBALANCEDRIVE));
+        assertTrue(SharedRoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1).equals(RoboTaxiStatus.REBALANCEDRIVE));
         s.roboTaxi1.finishRedirection();
 
         s.roboTaxi1.addAVRequestToMenu(s.avRequest1);
@@ -54,7 +54,7 @@ public class RoboTaxiUtilsTest extends TestCase {
         Optional<SharedCourse> secondcourse1 = SharedCourseAccess.getSecond(s.roboTaxi1.getUnmodifiableViewOfCourses());
         assertTrue(secondcourse1.isPresent());
         assertTrue(secondcourse1.get().equals(SharedCourse.dropoffCourse(s.avRequest1)));
-        assertTrue(RoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1).equals(RoboTaxiStatus.DRIVETOCUSTOMER));
+        assertTrue(SharedRoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1).equals(RoboTaxiStatus.DRIVETOCUSTOMER));
         s.roboTaxi1.cleanAndAbandonMenu();
         assertEquals(s.roboTaxi1.getUnmodifiableViewOfCourses(), new ArrayList<>());
 
@@ -98,7 +98,7 @@ public class RoboTaxiUtilsTest extends TestCase {
         }
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.linkRight, 1.0));
         s.roboTaxi1.pickupNewCustomerOnBoard();
-        assertTrue(RoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1).equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
+        assertTrue(SharedRoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1).equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
 
         assertEquals(OnboardRequests.getNumberOnBoardRequests(s.roboTaxi1), 1);
         assertEquals(s.roboTaxi1.getUnmodifiableViewOfCourses().size(), numcourses - 1);
@@ -143,18 +143,20 @@ public class RoboTaxiUtilsTest extends TestCase {
         assertTrue(OnboardRequests.canPickupNewCustomer(s.roboTaxi1));
 
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.linkUp, 1.0));
-        assertTrue(RoboTaxiUtils.nextCourseIsOfType(s.roboTaxi1, SharedMealType.REDIRECT));
-        assertTrue(RoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1).equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
+        assertTrue(SharedRoboTaxiUtils.isNextCourseOfType(s.roboTaxi1, SharedMealType.REDIRECT));
+        assertTrue(SharedRoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1).equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
 
         s.roboTaxi1.finishRedirection();
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.avRequest1.getFromLink(), 1.0));
         s.roboTaxi1.pickupNewCustomerOnBoard();
         assertEquals(OnboardRequests.getNumberOnBoardRequests(s.roboTaxi1), 2);
 
-        assertEquals(OnboardRequests.getOnBoardRequests(s.roboTaxi1.getUnmodifiableViewOfCourses()) , new HashSet<>(Arrays.asList(s.avRequest1, s.avRequest3)));
+        assertEquals(OnboardRequests.getOnBoardRequests(s.roboTaxi1.getUnmodifiableViewOfCourses()), //
+                new HashSet<>(Arrays.asList(s.avRequest1, s.avRequest3)));
         assertEquals(SharedCourseAccess.getStarter(s.roboTaxi1).get(), SharedCourse.pickupCourse(s.avRequest2));
-        assertTrue(RoboTaxiUtils.nextCourseIsOfType(s.roboTaxi1, SharedMealType.PICKUP));
-        assertEquals(RoboTaxiUtils.getRequestsInMenu(s.roboTaxi1), new HashSet<>(Arrays.asList(s.avRequest1, s.avRequest2, s.avRequest3, s.avRequest4)));
+        assertTrue(SharedRoboTaxiUtils.isNextCourseOfType(s.roboTaxi1, SharedMealType.PICKUP));
+        assertEquals(SharedCourseUtil.getUniqueAVRequests(s.roboTaxi1.getUnmodifiableViewOfCourses()),
+                new HashSet<>(Arrays.asList(s.avRequest1, s.avRequest2, s.avRequest3, s.avRequest4)));
 
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.avRequest2.getFromLink(), 1.0));
         s.roboTaxi1.pickupNewCustomerOnBoard();
@@ -171,7 +173,7 @@ public class RoboTaxiUtilsTest extends TestCase {
             // ---
         }
         s.roboTaxi1.addRedirectCourseToMenuAtBegining(SharedCourse.redirectCourse(s.linkDepotIn, "backTodepot"));
-        assertEquals(RoboTaxiUtils.getStarterLink(s.roboTaxi1), s.linkDepotIn);
+        assertEquals(SharedRoboTaxiUtils.getStarterLink(s.roboTaxi1), s.linkDepotIn);
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.linkDepotIn, 1.0));
         s.roboTaxi1.finishRedirection();
 

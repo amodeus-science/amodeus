@@ -134,7 +134,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
     /* package */ static void cleanRTMenu(RoboTaxi roboTaxi) {
         Link originalDivertableLocLink = roboTaxi.getDivertableLocation();
-        while (RoboTaxiUtils.hasNextCourse(roboTaxi)) {
+        while (SharedCourseAccess.hasStarter(roboTaxi)) {
             SharedCourse sharedCourse = SharedCourseAccess.getStarter(roboTaxi).get();
             switch (sharedCourse.getMealType()) {
             case PICKUP:

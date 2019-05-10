@@ -20,7 +20,6 @@ import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.analysis.ScenarioParameters;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiUtils;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedRebalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
@@ -137,7 +136,7 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
             /** for all AV Requests in the order of their submision, try to find the closest
              * vehicle and assign */
             for (AVRequest avRequest : requestHandler.getInOrderOffSubmissionTime()) {
-                Set<RoboTaxi> robotaxisWithMenu = getRoboTaxis().stream().filter(rt -> RoboTaxiUtils.plansPickupsOrDropoffs(rt)).collect(Collectors.toSet());
+                Set<RoboTaxi> robotaxisWithMenu = getRoboTaxis().stream().filter(rt -> StaticHelper.plansPickupsOrDropoffs(rt)).collect(Collectors.toSet());
 
                 /** THIS IS WHERE WE CALCULATE THE SHARING POSSIBILITIES */
                 Optional<Entry<RoboTaxi, List<SharedCourse>>> rideSharingRoboTaxi = routeValidation.getClosestValidSharingRoboTaxi(robotaxisWithMenu, avRequest, now, timeDb,

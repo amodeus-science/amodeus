@@ -23,6 +23,12 @@ public enum SharedCourseAccess {
         return Optional.ofNullable((hasStarter(courses)) ? courses.get(0) : null);
     }
 
+    /** @return true if the {@link RoboTaxi} @param roboTaxi has a starter
+     *         course, otherwise return false */
+    public static boolean hasStarter(RoboTaxi roboTaxi) {
+        return hasStarter(roboTaxi.getUnmodifiableViewOfCourses());
+    }
+
     /** @return true if the {@link List} of {@link SharedCourse}s @param courses has a starter
      *         course, otherwise return false */
     public static boolean hasStarter(List<? extends SharedCourse> courses) {
@@ -33,6 +39,12 @@ public enum SharedCourseAccess {
      *         {@link SharedCourse}s @param courses */
     public static Optional<SharedCourse> getSecond(List<SharedCourse> courses) {
         return Optional.ofNullable((hasSecondCourse(courses)) ? courses.get(1) : null);
+    }
+
+    /** @return true if the {@link RoboTaxi} @param roboTaxi has a second
+     *         course, otherwise return false */
+    public static boolean hasSecondCourse(RoboTaxi roboTaxi) {
+        return hasSecondCourse(roboTaxi.getUnmodifiableViewOfCourses());
     }
 
     /** @return true if the {@link List} of {@link SharedCourse}s @param courses has a second

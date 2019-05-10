@@ -12,9 +12,9 @@ import java.util.Optional;
 import java.util.Set;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiUtils;
 import ch.ethz.idsc.amodeus.dispatcher.shared.Compatibility;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseUtil;
 import ch.ethz.idsc.amodeus.routing.CachedNetworkTimeDistance;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
@@ -83,7 +83,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
             CachedNetworkTimeDistance timeDb, RequestHandler requestMaintainer, RoboTaxiHandler roboTaxiMaintainer, double maxTime) {
 
-        GlobalAssert.that(robotaxisWithMenu.stream().allMatch(r -> RoboTaxiUtils.hasNextCourse(r)));
+        GlobalAssert.that(robotaxisWithMenu.stream().allMatch(r -> SharedCourseAccess.hasStarter(r)));
 
         NavigableMap<Double, RoboTaxi> robotaxisWithinMaxPickup = RoboTaxiUtilsFagnant.getRoboTaxisWithinMaxTime(avRequest.getFromLink(), //
                 robotaxisWithMenu, timeDb, maxPickupTime, roboTaxiMaintainer, now);
@@ -139,7 +139,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
             RoboTaxi roboTaxi, List<SharedCourse> newRoute, //
             AVRequest avRequest, double now, //
             CachedNetworkTimeDistance timeDb, RequestHandler requestMaintainer) {
-        Set<AVRequest> currentRequests = RoboTaxiUtils.getRequestsInMenu(roboTaxi);
+        Set<AVRequest> currentRequests = SharedCourseUtil.getUniqueAVRequests(roboTaxi.getUnmodifiableViewOfCourses());
         GlobalAssert.that(SharedCourseUtil.getUniqueAVRequests(newRoute).containsAll(currentRequests));
         SharedAvRoute sharedAvRoute = SharedAvRoute.of(newRoute, roboTaxi.getDivertableLocation(), now, pickupDuration, dropoffDuration, timeDb);
         SharedAvRoute oldRoute = SharedAvRoute.of(roboTaxi.getUnmodifiableViewOfCourses(), roboTaxi.getDivertableLocation(), now, pickupDuration, dropoffDuration, timeDb);

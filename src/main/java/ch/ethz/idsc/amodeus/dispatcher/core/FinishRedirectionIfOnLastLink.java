@@ -10,7 +10,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
     ;
 
     /* package */ static final void now(RoboTaxi roboTaxi) {
-        if (RoboTaxiUtils.hasNextCourse(roboTaxi)) {
+        if (SharedCourseAccess.hasStarter(roboTaxi)) {
             Optional<SharedCourse> currentCourse = SharedCourseAccess.getStarter(roboTaxi);
             /** search redirect courses */
             if (currentCourse.get().getMealType().equals(SharedMealType.REDIRECT)) {
