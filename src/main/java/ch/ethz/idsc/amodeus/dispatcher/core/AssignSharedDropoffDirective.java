@@ -13,7 +13,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-/* package */ enum AssignDropoffDirective {
+/* package */ enum AssignSharedDropoffDirective {
     ;
 
     public static final Optional<AVRequest> apply(RoboTaxi roboTaxi, double now, double dropoffDurationPerStop, FuturePathFactory futurePathFactory) {
