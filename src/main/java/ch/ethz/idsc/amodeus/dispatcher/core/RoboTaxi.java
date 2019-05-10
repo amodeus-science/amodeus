@@ -359,7 +359,6 @@ public class RoboTaxi {
     }
 
     /* package */ void pickupNewCustomerOnBoard() {
-        GlobalAssert.that(OnboardRequests.canPickupNewCustomer(this));
         GlobalAssert.that(SharedRoboTaxiUtils.isNextCourseOfType(this, SharedMealType.PICKUP));
         GlobalAssert.that(SharedRoboTaxiUtils.getStarterLink(this).equals(getDivertableLocation()));
         setMenu(SharedCourseRemove.starter(menu));
