@@ -13,10 +13,9 @@ import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.Compatibility;
-import ch.ethz.idsc.amodeus.dispatcher.shared.OnMenuRequests;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAdd;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAdd;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseMove;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseRemove;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseUtil;
@@ -167,7 +166,8 @@ public class RoboTaxi {
     /* package */ boolean isWithoutCustomer() {
         // For now this works with universal dispatcher i.e. single used robotaxis as
         // number of customers is never changed
-        return !status.equals(RoboTaxiStatus.DRIVEWITHCUSTOMER) && OnMenuRequests.getOnBoardCustomers(this) == 0;
+        return !status.equals(RoboTaxiStatus.DRIVEWITHCUSTOMER) && //
+                menu.menuOnBoardCustomers == 0;
     }
 
     /** @return {@Schedule} of the RoboTaxi, to be used only inside core package, the
@@ -266,6 +266,12 @@ public class RoboTaxi {
     public List<SharedCourse> getUnmodifiableViewOfCourses() {
         return menu.getCourseList();
     }
+    
+    
+    public long getMenuOnBoardCustomers(){
+        return menu.menuOnBoardCustomers;
+    }
+    
 
     /** Modifies the menu of the RoboTaxi. The given course is moved up in the menu
      * by one position.
@@ -371,8 +377,8 @@ public class RoboTaxi {
     }
 
     private void checkAbilityToDropOff() {
-        GlobalAssert.that(OnMenuRequests.getOnBoardCustomers(this) > 0);
-        GlobalAssert.that(OnMenuRequests.getOnBoardCustomers(this) <= getCapacity());
+        GlobalAssert.that(menu.menuOnBoardCustomers > 0);
+        GlobalAssert.that(menu.menuOnBoardCustomers <= getCapacity());
         GlobalAssert.that(SharedRoboTaxiUtils.isNextCourseOfType(this, SharedMealType.DROPOFF));
         GlobalAssert.that(SharedRoboTaxiUtils.getStarterLink(this).equals(getDivertableLocation()));
     }
@@ -403,7 +409,7 @@ public class RoboTaxi {
      * 
      * @return all the courses which have been removed */
     /* package */ List<SharedCourse> cleanAndAbandonMenu() {
-        GlobalAssert.that(OnMenuRequests.getOnBoardCustomers(this) == 0);
+        GlobalAssert.that(menu.menuOnBoardCustomers == 0);
         GlobalAssert.that(isDivertable());
         List<SharedCourse> oldMenu = SharedCourseUtil.copy(menu.getCourseList());
         setMenu(SharedMenu.empty());

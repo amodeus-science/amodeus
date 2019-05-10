@@ -37,7 +37,8 @@ public enum OnMenuRequests {
     }
 
     public static int getOnBoardCustomers(RoboTaxi roboTaxi) {
-        return (int) OnMenuRequests.getOnBoardCustomers(roboTaxi.getUnmodifiableViewOfCourses());
+        return (int) roboTaxi.getMenuOnBoardCustomers();
+//        return (int) OnMenuRequests.getOnBoardCustomers(roboTaxi.getUnmodifiableViewOfCourses());
     }
 
     // -----
