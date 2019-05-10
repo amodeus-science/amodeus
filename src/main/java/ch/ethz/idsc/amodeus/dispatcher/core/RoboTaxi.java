@@ -12,6 +12,7 @@ import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 
+import ch.ethz.idsc.amodeus.dispatcher.shared.Compatibility;
 import ch.ethz.idsc.amodeus.dispatcher.shared.OnboardRequests;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAdd;
@@ -289,8 +290,8 @@ public class RoboTaxi {
      * 
      * @param menu */
     private void updateMenu(SharedMenu menu) {
-        GlobalAssert.that(SharedMenuUtils.containSameCourses(this.menu, menu));
-        GlobalAssert.that(SharedMenuCheck.checkMenuConsistency(getUnmodifiableViewOfCourses(), getCapacity()));
+        GlobalAssert.that(SharedMenuCheck.containSameCourses(this.menu, menu));
+        GlobalAssert.that(Compatibility.of(getUnmodifiableViewOfCourses()).forCapacity(getCapacity()));
         setMenu(menu);
     }
 
@@ -317,7 +318,7 @@ public class RoboTaxi {
      * 
      * @param menu */
     private final void setMenu(SharedMenu menu) {
-        GlobalAssert.that(SharedMenuUtils.checkMenuConsistencyWithRoboTaxi(menu, getCapacity()));
+        GlobalAssert.that(Compatibility.of(menu.getCourseList()).forCapacity(getCapacity()));
         if (dropoffInProgress) {
             GlobalAssert.that(this.menu.getCourseList().get(0).equals(menu.getCourseList().get(0)));
         }

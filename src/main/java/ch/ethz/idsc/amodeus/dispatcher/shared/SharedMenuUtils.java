@@ -30,22 +30,22 @@ public enum SharedMenuUtils {
     // Check Menus
     // **************************************************
     // TODO naming is wrong, this is only a one-sided inclusion check. Name accordingly.
-    public static boolean containSameCourses(SharedMenu sharedMenu1, SharedMenu sharedMenu2) {
-        return sharedMenu1.getCourseList().size() == sharedMenu2.getCourseList().size() && //
-                sharedMenu1.getCourseList().containsAll(sharedMenu2.getCourseList());
-    }
-
-    public static boolean checkNoPickupAfterDropoffOfSameRequest(SharedMenu sharedMenu) {
-        return SharedMenuCheck.checkNoPickupAfterDropoffOfSameRequest(sharedMenu.getCourseList());
-    }
-
-    public static boolean checkMenuConsistencyWithRoboTaxi(SharedMenu sharedMenu, int roboTaxiCapacity) {
-        return SharedMenuCheck.checkMenuConsistency(sharedMenu.getCourseList(), roboTaxiCapacity);
-    }
-
-    public static boolean checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(SharedMenu sharedMenu, int roboTaxiCapacity) {
-        return Compatibility.of(sharedMenu.getCourseList()).forCapacity(roboTaxiCapacity);
-    }
+//    public static boolean containSameCourses(SharedMenu sharedMenu1, SharedMenu sharedMenu2) {
+//        return sharedMenu1.getCourseList().size() == sharedMenu2.getCourseList().size() && //
+//                sharedMenu1.getCourseList().containsAll(sharedMenu2.getCourseList());
+//    }
+//
+//    public static boolean checkNoPickupAfterDropoffOfSameRequest(SharedMenu sharedMenu) {
+//        return SharedMenuCheck.checkNoPickupAfterDropoffOfSameRequest(sharedMenu.getCourseList());
+//    }
+//
+//    public static boolean checkMenuConsistencyWithRoboTaxi(SharedMenu sharedMenu, int roboTaxiCapacity) {
+//        return SharedMenuCheck.checkMenuConsistency(sharedMenu.getCourseList(), roboTaxiCapacity);
+//    }
+//
+//    public static boolean checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(SharedMenu sharedMenu, int roboTaxiCapacity) {
+//        return Compatibility.of(sharedMenu.getCourseList()).forCapacity(roboTaxiCapacity);
+//    }
 
 
 

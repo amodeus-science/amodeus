@@ -18,10 +18,11 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiUtils;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedRebalancingDispatcher;
+import ch.ethz.idsc.amodeus.dispatcher.shared.Compatibility;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenuCheck;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
@@ -109,7 +110,7 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
                     sharedRoboTaxi.moveAVCourseToPrev(redirectCourse);
 
                     /** check consistency and end */
-                    GlobalAssert.that(RoboTaxiUtils.checkMenuConsistency(sharedRoboTaxi));
+                    GlobalAssert.that(Compatibility.of(sharedRoboTaxi.getUnmodifiableViewOfCourses()).forCapacity(sharedRoboTaxi.getCapacity()));
                 } else {
                     break;
                 }

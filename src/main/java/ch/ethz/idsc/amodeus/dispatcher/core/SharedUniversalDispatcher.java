@@ -26,11 +26,13 @@ import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
 
+import ch.ethz.idsc.amodeus.dispatcher.shared.Compatibility;
 import ch.ethz.idsc.amodeus.dispatcher.shared.OnboardRequests;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenuCheck;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDriveTaskTracker;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
@@ -178,7 +180,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
      * @param avRequest */
     public void addSharedRoboTaxiPickup(RoboTaxi roboTaxi, AVRequest avRequest) {
         GlobalAssert.that(pendingRequests.contains(avRequest));
-        
+
         // If the request was already assigned remove it from the current vehicle in the request register and update its menu;
         if (requestRegister.contains(avRequest)) {
             abortAvRequest(avRequest);
@@ -211,7 +213,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
             RoboTaxi roboTaxi = oldRoboTaxi.get();
             requestRegister.remove(roboTaxi, avRequest);
             roboTaxi.removeAVRequestFromMenu(avRequest);
-            GlobalAssert.that(RoboTaxiUtils.checkMenuConsistency(roboTaxi));
+            GlobalAssert.that(Compatibility.of(roboTaxi.getUnmodifiableViewOfCourses()).forCapacity(roboTaxi.getCapacity()));
         } else {
             System.out.println("This place should not be reached");
             GlobalAssert.that(false);
@@ -391,7 +393,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
                         // System.out.println(roboTaxi.getDivertableLocation().getId().toString());
                         // }
                         GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE));
-                        //TODO maybe consider remove this? But be very careful!!!!!!
+                        // TODO maybe consider remove this? But be very careful!!!!!!
                     }
                 }
             }
@@ -435,7 +437,8 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
         requestRegister.getPickupRegister(pendingRequests).keySet().forEach(r -> GlobalAssert.that(pendingRequests.contains(r)));
 
         // check Menu consistency of each Robo Taxi
-        getRoboTaxis().stream().filter(rt -> RoboTaxiUtils.hasNextCourse(rt)).forEach(rtx -> GlobalAssert.that(RoboTaxiUtils.checkMenuConsistency(rtx)));
+        getRoboTaxis().stream().filter(rt -> RoboTaxiUtils.hasNextCourse(rt))//
+                .forEach(rtx -> GlobalAssert.that(Compatibility.of(rtx.getUnmodifiableViewOfCourses()).forCapacity(rtx.getCapacity())));
 
         /** if a request appears in a menu, it must be in the request register */
         for (RoboTaxi roboTaxi : getRoboTaxis()) {

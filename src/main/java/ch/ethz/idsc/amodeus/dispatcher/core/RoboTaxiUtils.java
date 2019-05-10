@@ -14,12 +14,12 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenuCheck;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
+
+// TODO refactor
 public enum RoboTaxiUtils {
     ;
 
-    public static boolean checkMenuConsistency(RoboTaxi roboTaxi) {
-        return SharedMenuCheck.checkMenuConsistency(roboTaxi.getUnmodifiableViewOfCourses(), roboTaxi.getCapacity());
-    }
+
 
     public static boolean plansPickupsOrDropoffs(RoboTaxi roboTaxi) {
         if (hasNextCourse(roboTaxi)) {
