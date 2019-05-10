@@ -15,7 +15,7 @@ import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.passenger.AVRequest;
@@ -135,7 +135,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     /* package */ static void cleanRTMenu(RoboTaxi roboTaxi) {
         Link originalDivertableLocLink = roboTaxi.getDivertableLocation();
         while (RoboTaxiUtils.hasNextCourse(roboTaxi)) {
-            SharedCourse sharedCourse = SharedCourseListUtils.getStarterCourse(roboTaxi).get();
+            SharedCourse sharedCourse = SharedCourseAccess.getStarter(roboTaxi).get();
             switch (sharedCourse.getMealType()) {
             case PICKUP:
                 roboTaxi.setDivertableLinkTime(new LinkTimePair(sharedCourse.getLink(), 0.0));

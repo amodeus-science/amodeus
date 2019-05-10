@@ -29,10 +29,10 @@ import org.matsim.core.router.util.TravelTime;
 import ch.ethz.idsc.amodeus.dispatcher.shared.Compatibility;
 import ch.ethz.idsc.amodeus.dispatcher.shared.OnboardRequests;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseUtil;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenuCheck;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDriveTaskTracker;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
@@ -382,7 +382,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
             GlobalAssert.that(MaxTwoMoreTasksAfterEndingOne.check(schedule, task, getTimeNow(), SIMTIMESTEP));
 
             GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiUtils.calculateStatusFromMenu(roboTaxi)));
-            Optional<SharedCourse> nextCourseOptional = SharedCourseListUtils.getStarterCourse(roboTaxi);
+            Optional<SharedCourse> nextCourseOptional = SharedCourseAccess.getStarter(roboTaxi);
             if (nextCourseOptional.isPresent()) {
                 if (nextCourseOptional.get().getMealType().equals(SharedMealType.REDIRECT)) {
                     if (OnboardRequests.getNumberOnBoardRequests(roboTaxi) == 0) {
@@ -399,7 +399,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
             }
 
             if (roboTaxi.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE)) {
-                GlobalAssert.that(SharedCourseListUtils.getStarterCourse(roboTaxi).get().getMealType().equals(SharedMealType.REDIRECT));
+                GlobalAssert.that(SharedCourseAccess.getStarter(roboTaxi).get().getMealType().equals(SharedMealType.REDIRECT));
             }
         }
 
@@ -456,7 +456,8 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
         /** test: every request appears only 2 times, pickup and dropff accross all menus */
         List<String> requestsInMenus = new ArrayList<>();
         getRoboTaxis().stream().filter(rt -> RoboTaxiUtils.hasNextCourse(rt)).forEach(//
-                rtx -> SharedCourseListUtils.getUniqueAVRequests(rtx.getUnmodifiableViewOfCourses()).forEach(r -> requestsInMenus.add(r.getId().toString())));
+                rtx -> SharedCourseUtil.getUniqueAVRequests(rtx.getUnmodifiableViewOfCourses())//
+                        .forEach(r -> requestsInMenus.add(r.getId().toString())));
         Set<String> uniqueMenuRequests = new HashSet<>(requestsInMenus);
         GlobalAssert.that(uniqueMenuRequests.size() == requestsInMenus.size());
 

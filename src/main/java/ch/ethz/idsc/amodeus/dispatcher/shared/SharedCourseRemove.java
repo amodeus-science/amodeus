@@ -11,7 +11,7 @@ public enum SharedCourseRemove {
     /** @return {@link SharedMenu} identical to @param sharedMenu without the
      *         first course (the starter course), if the menu is empty, no modification is made */
     public static SharedMenu starter(SharedMenu sharedMenu) {
-        List<SharedCourse> courses = SharedCourseListUtils.copy(sharedMenu.getCourseList());
+        List<SharedCourse> courses = SharedCourseUtil.copy(sharedMenu.getCourseList());
         if (!courses.isEmpty())
             courses.remove(0);
         return SharedMenu.of(courses);
@@ -21,7 +21,7 @@ public enum SharedCourseRemove {
      *         at the index @param index, if the index is less than 0 or higher than the
      *         length of the @param sharedMenu, the request is ignored. */
     public static SharedMenu index(SharedMenu sharedMenu, int index) {
-        List<SharedCourse> courses = SharedCourseListUtils.copy(sharedMenu.getCourseList());
+        List<SharedCourse> courses = SharedCourseUtil.copy(sharedMenu.getCourseList());
         if (index >= 0 && index < courses.size())
             courses.remove(index);
         return SharedMenu.of(courses);

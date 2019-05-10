@@ -11,7 +11,8 @@ import org.matsim.contrib.dvrp.util.LinkTimePair;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.OnboardRequests;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseUtil;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import junit.framework.TestCase;
 
@@ -50,7 +51,7 @@ public class RoboTaxiUtilsTest extends TestCase {
         } catch (Exception e) {
             // ---
         }
-        Optional<SharedCourse> secondcourse1 = SharedCourseListUtils.getSecondCourse(s.roboTaxi1.getUnmodifiableViewOfCourses());
+        Optional<SharedCourse> secondcourse1 = SharedCourseAccess.getSecond(s.roboTaxi1.getUnmodifiableViewOfCourses());
         assertTrue(secondcourse1.isPresent());
         assertTrue(secondcourse1.get().equals(SharedCourse.dropoffCourse(s.avRequest1)));
         assertTrue(RoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1).equals(RoboTaxiStatus.DRIVETOCUSTOMER));
@@ -67,7 +68,7 @@ public class RoboTaxiUtilsTest extends TestCase {
         } catch (Exception e) {
             // ---
         }
-        List<SharedCourse> modifiableList = SharedCourseListUtils.copy(courses);
+        List<SharedCourse> modifiableList = SharedCourseUtil.copy(courses);
         modifiableList.add(0, SharedCourse.pickupCourse(s.avRequest3));
         try { // an update of the menu with a list which does not contain the same courses is invalid
             s.roboTaxi1.updateMenu(modifiableList);
@@ -121,7 +122,7 @@ public class RoboTaxiUtilsTest extends TestCase {
         }
 
         s.roboTaxi1.addRedirectCourseToMenu(SharedCourse.redirectCourse(s.linkUp, "redirect1"));
-        List<SharedCourse> newMenuCourses = SharedCourseListUtils.copy(s.roboTaxi1.getUnmodifiableViewOfCourses());
+        List<SharedCourse> newMenuCourses = SharedCourseUtil.copy(s.roboTaxi1.getUnmodifiableViewOfCourses());
         newMenuCourses.add(0, SharedCourse.redirectCourse(s.linkUp, "redirect1"));
         newMenuCourses.remove(newMenuCourses.size() - 1);
         s.roboTaxi1.updateMenu(newMenuCourses);
@@ -151,7 +152,7 @@ public class RoboTaxiUtilsTest extends TestCase {
         assertEquals(OnboardRequests.getNumberOnBoardRequests(s.roboTaxi1), 2);
 
         assertEquals(OnboardRequests.getOnBoardRequests(s.roboTaxi1.getUnmodifiableViewOfCourses()) , new HashSet<>(Arrays.asList(s.avRequest1, s.avRequest3)));
-        assertEquals(SharedCourseListUtils.getStarterCourse(s.roboTaxi1).get(), SharedCourse.pickupCourse(s.avRequest2));
+        assertEquals(SharedCourseAccess.getStarter(s.roboTaxi1).get(), SharedCourse.pickupCourse(s.avRequest2));
         assertTrue(RoboTaxiUtils.nextCourseIsOfType(s.roboTaxi1, SharedMealType.PICKUP));
         assertEquals(RoboTaxiUtils.getRequestsInMenu(s.roboTaxi1), new HashSet<>(Arrays.asList(s.avRequest1, s.avRequest2, s.avRequest3, s.avRequest4)));
 
@@ -178,7 +179,7 @@ public class RoboTaxiUtilsTest extends TestCase {
         s.roboTaxi1.startDropoff();
         s.roboTaxi1.addAVRequestToMenu(s.avRequest5);
         try {
-            s.roboTaxi1.moveAVCourseToNext(SharedCourseListUtils.getStarterCourse(s.roboTaxi1).get());
+            s.roboTaxi1.moveAVCourseToNext(SharedCourseAccess.getStarter(s.roboTaxi1).get());
             assertTrue(false);
         } catch (Exception e) {
             // ---

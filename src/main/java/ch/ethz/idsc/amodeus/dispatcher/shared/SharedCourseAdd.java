@@ -12,7 +12,7 @@ public enum SharedCourseAdd {
     /** @return {@link SharedMenu} @param sharedMenu in which the {@link SharedCourse}s @param avCourses
      *         are inserted at the beginning (as starters...) */
     public static SharedMenu asStarter(SharedMenu sharedMenu, SharedCourse... avCourses) {
-        List<SharedCourse> list = SharedCourseListUtils.copy(sharedMenu.getCourseList());
+        List<SharedCourse> list = SharedCourseUtil.copy(sharedMenu.getCourseList());
         return updated(list, SharedCourseAdd::asStarterList, avCourses);
     }
 
@@ -23,7 +23,7 @@ public enum SharedCourseAdd {
     /** @return {@link SharedMenu} @param sharedMenu in which the {@link SharedCourse}s @param avCourses
      *         are inserted at the end (as desserts...) */
     public static SharedMenu asDessert(SharedMenu sharedMenu, SharedCourse... avCourses) {
-        List<SharedCourse> list = SharedCourseListUtils.copy(sharedMenu.getCourseList());
+        List<SharedCourse> list = SharedCourseUtil.copy(sharedMenu.getCourseList());
         return updated(list, SharedCourseAdd::asDessertList, avCourses);
     }
 
@@ -34,7 +34,7 @@ public enum SharedCourseAdd {
     /** @return {@link SharedMenu} @param sharedMenu in which the {@link SharedCourse}s @param avCourses
      *         are inserted starting at the position @param courseIndex */
     public static SharedMenu atIndex(SharedMenu sharedMenu, int courseIndex, SharedCourse... avCourses) {
-        List<SharedCourse> list = SharedCourseListUtils.copy(sharedMenu.getCourseList());
+        List<SharedCourse> list = SharedCourseUtil.copy(sharedMenu.getCourseList());
         for (SharedCourse sharedCourse : avCourses)
             SharedCourseAdd.atIndexList(list, sharedCourse, courseIndex);
         return SharedMenu.of(list);

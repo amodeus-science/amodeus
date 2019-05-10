@@ -9,7 +9,7 @@ import org.matsim.contrib.dvrp.schedule.Schedules;
 import org.matsim.contrib.dvrp.schedule.Task;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.schedule.AVDriveTask;
 import ch.ethz.matsim.av.schedule.AVTask;
@@ -22,7 +22,7 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
 
         GlobalAssert.that(!NextCourseIsRedirectToCurrentLink.check(roboTaxi));
 
-        Optional<SharedCourse> currentCourse = SharedCourseListUtils.getStarterCourse(roboTaxi);
+        Optional<SharedCourse> currentCourse = SharedCourseAccess.getStarter(roboTaxi);
         final Schedule schedule = roboTaxi.getSchedule();
         final Task currentTask = schedule.getCurrentTask();
         boolean isOnLastTask = currentTask == Schedules.getLastTask(schedule);

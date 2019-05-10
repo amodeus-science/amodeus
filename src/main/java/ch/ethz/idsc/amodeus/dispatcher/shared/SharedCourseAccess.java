@@ -1,0 +1,47 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
+package ch.ethz.idsc.amodeus.dispatcher.shared;
+
+import java.util.List;
+import java.util.Optional;
+
+import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+
+/** Fast access for {@link SharedCourse}s in a {@link SharedMenu}, most importantly the
+ * starter course, i.e., the next on the {@link SharedMenu} of the {@link RoboTaxi} */
+public enum SharedCourseAccess {
+    ;
+
+    /** @return {@link Optional} {@link SharedCourse} of the first course in the {@link SharedMenu}
+     *         of the {@link RoboTaxi} @param roboTaxi */
+    public static Optional<SharedCourse> getStarter(RoboTaxi roboTaxi) {
+        return SharedCourseAccess.getStarter(roboTaxi.getUnmodifiableViewOfCourses());
+    }
+
+    /** @return {@link Optional} {@link SharedCourse} of the first course in the {@link List} of
+     *         {@link SharedCourse}s @param courses */
+    public static Optional<SharedCourse> getStarter(List<? extends SharedCourse> courses) {
+        return Optional.ofNullable((hasStarter(courses)) ? courses.get(0) : null);
+    }
+
+    /** @return true if the {@link List} of {@link SharedCourse}s @param courses has a starter
+     *         course, otherwise return false */
+    public static boolean hasStarter(List<? extends SharedCourse> courses) {
+        return !courses.isEmpty();
+    }
+
+    /** @return {@link Optional} {@link SharedCourse} of the second course in the {@link List} of
+     *         {@link SharedCourse}s @param courses */
+    public static Optional<SharedCourse> getSecond(List<SharedCourse> courses) {
+        return Optional.ofNullable((hasSecondCourse(courses)) ? courses.get(1) : null);
+    }
+
+    /** @return true if the {@link List} of {@link SharedCourse}s @param courses has a second
+     *         course, otherwise return false */
+    public static boolean hasSecondCourse(List<SharedCourse> courses) {
+        if (hasStarter(courses)) {
+            return courses.size() >= 2;
+        }
+        return false;
+    }
+
+}

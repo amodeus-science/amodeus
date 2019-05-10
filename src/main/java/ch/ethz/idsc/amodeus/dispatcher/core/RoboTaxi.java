@@ -16,9 +16,10 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.Compatibility;
 import ch.ethz.idsc.amodeus.dispatcher.shared.OnboardRequests;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAdd;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseMove;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseRemove;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseUtil;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenuCheck;
@@ -254,7 +255,7 @@ public class RoboTaxi {
     /** Gives full information of the future menu (i.e. plans) of the
      * {@link RoboTaxi}. This Information contains for example the number of
      * customers on Board or the possibility to pick up new customers. To get all
-     * this Information the {@link SharedCourseListUtils} class offers some of the
+     * this Information the {@link SharedCourseAccess} class offers some of the
      * standard functionalities. Similar Functionalities are Offered as well by the
      * {@link RoboTaxiUtils} class. Take a look at these two clases when
      * implementing Dispatchers Further information can be pulled from this menu by
@@ -331,7 +332,7 @@ public class RoboTaxi {
         // We could bring it into the rebalancing dispatcher, there we can add a
         // function which is called: addAVrequestandRemoveFirstRebalancing(AVrequest)
         if (status.equals(RoboTaxiStatus.REBALANCEDRIVE)) {
-            GlobalAssert.that(SharedCourseListUtils.getStarterCourse(this).get().getMealType().equals(SharedMealType.REDIRECT));
+            GlobalAssert.that(SharedCourseAccess.getStarter(this).get().getMealType().equals(SharedMealType.REDIRECT));
             if (getUnmodifiableViewOfCourses().size() == 1) {
                 finishRedirection();
             }
@@ -405,7 +406,7 @@ public class RoboTaxi {
     /* package */ List<SharedCourse> cleanAndAbandonMenu() {
         GlobalAssert.that(OnboardRequests.getNumberOnBoardRequests(this) == 0);
         GlobalAssert.that(isDivertable());
-        List<SharedCourse> oldMenu = SharedCourseListUtils.copy(menu.getCourseList());
+        List<SharedCourse> oldMenu = SharedCourseUtil.copy(menu.getCourseList());
         setMenu(SharedMenu.empty());
         return oldMenu;
     }

@@ -8,9 +8,9 @@ import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.OnboardRequests;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseUtil;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenuCheck;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
@@ -29,23 +29,23 @@ public enum RoboTaxiUtils {
     }
 
     public static boolean hasNextCourse(RoboTaxi roboTaxi) {
-        return SharedCourseListUtils.hasStarter(roboTaxi.getUnmodifiableViewOfCourses());
+        return SharedCourseAccess.hasStarter(roboTaxi.getUnmodifiableViewOfCourses());
     }
 
     public static boolean hasSecondCourse(RoboTaxi roboTaxi) {
-        return SharedCourseListUtils.hasSecondCourse(roboTaxi.getUnmodifiableViewOfCourses());
+        return SharedCourseAccess.hasSecondCourse(roboTaxi.getUnmodifiableViewOfCourses());
     }
 
 
 
     public static Link getStarterLink(RoboTaxi roboTaxi) {
-        Optional<SharedCourse> currentCourse = SharedCourseListUtils.getStarterCourse(roboTaxi);
+        Optional<SharedCourse> currentCourse = SharedCourseAccess.getStarter(roboTaxi);
         GlobalAssert.that(currentCourse.isPresent());
         return currentCourse.get().getLink();
     }
 
     public static boolean nextCourseIsOfType(RoboTaxi roboTaxi, SharedMealType sharedMealType) {
-        Optional<SharedCourse> nextcourse = SharedCourseListUtils.getStarterCourse(roboTaxi);
+        Optional<SharedCourse> nextcourse = SharedCourseAccess.getStarter(roboTaxi);
         if (nextcourse.isPresent()) {
             return nextcourse.get().getMealType().equals(sharedMealType);
         }
@@ -53,11 +53,11 @@ public enum RoboTaxiUtils {
     }
 
     public static Set<AVRequest> getRequestsInMenu(RoboTaxi roboTaxi) {
-        return SharedCourseListUtils.getUniqueAVRequests(roboTaxi.getUnmodifiableViewOfCourses());
+        return SharedCourseUtil.getUniqueAVRequests(roboTaxi.getUnmodifiableViewOfCourses());
     }
 
     /* package */ static RoboTaxiStatus calculateStatusFromMenu(RoboTaxi roboTaxi) {
-        Optional<SharedCourse> nextCourseOptional = SharedCourseListUtils.getStarterCourse(roboTaxi);
+        Optional<SharedCourse> nextCourseOptional = SharedCourseAccess.getStarter(roboTaxi);
         if (nextCourseOptional.isPresent()) {
             if (OnboardRequests.getNumberOnBoardRequests(roboTaxi) > 0) {
                 return RoboTaxiStatus.DRIVEWITHCUSTOMER;
