@@ -40,7 +40,7 @@ public enum OnMenuRequests {
         return (int) OnMenuRequests.getOnBoardCustomers(roboTaxi.getUnmodifiableViewOfCourses());
     }
 
-    // ---
+    // -----
 
     public static boolean canPickupNewCustomer(RoboTaxi roboTaxi) {
         int onBoard = getOnBoardCustomers(roboTaxi);
