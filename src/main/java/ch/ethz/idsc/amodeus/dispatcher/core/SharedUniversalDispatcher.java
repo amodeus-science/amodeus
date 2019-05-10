@@ -436,10 +436,6 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
         // containment check pickupRegisterFunction and pendingRequests
         requestRegister.getPickupRegister(pendingRequests).keySet().forEach(r -> GlobalAssert.that(pendingRequests.contains(r)));
 
-        // check Menu consistency of each Robo Taxi
-        getRoboTaxis().stream().filter(rt -> SharedCourseAccess.hasStarter(rt))//
-                .forEach(rtx -> GlobalAssert.that(Compatibility.of(rtx.getUnmodifiableViewOfCourses()).forCapacity(rtx.getCapacity())));
-
         /** if a request appears in a menu, it must be in the request register */
         for (RoboTaxi roboTaxi : getRoboTaxis()) {
             if (SharedCourseAccess.hasStarter(roboTaxi)) {
@@ -471,7 +467,8 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
         }));
         GlobalAssert.that(uniqueRegisterRequests.size() == uniqueMenuRequests.size());
 
-        /** on-board customers must equal total_matchedRequests - total_dropedOffRequests */
+        /** on-board customers must equal total_matchedRequests - total_dropedOffRequests , this is comptuationally
+         * very expensive and must be chagned eventually . */
         onboardPassengerCheck.now(total_matchedRequests, total_dropedOffRequests, getRoboTaxis());
 
     }
