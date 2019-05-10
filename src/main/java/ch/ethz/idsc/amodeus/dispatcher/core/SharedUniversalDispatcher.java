@@ -385,7 +385,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
             Optional<SharedCourse> nextCourseOptional = SharedCourseAccess.getStarter(roboTaxi);
             if (nextCourseOptional.isPresent()) {
                 if (nextCourseOptional.get().getMealType().equals(SharedMealType.REDIRECT)) {
-                    if (OnboardRequests.getNumberOnBoardRequests(roboTaxi) == 0) {
+                    if (OnboardRequests.getMenuOnBoardCustomers(roboTaxi) == 0) {
                         // if (!roboTaxi.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE)) {// TODO delete after use
                         // System.out.println(roboTaxi.getStatus().toString());
                         // System.out.println(roboTaxi.getCurrentDriveDestination().getId().toString());

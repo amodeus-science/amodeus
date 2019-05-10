@@ -135,8 +135,8 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
 
             /** update the roboTaxi planned locations */
             Collection<RoboTaxi> customerCarrying = getDivertableRoboTaxis().stream()//
-                    .filter(rt -> OnboardRequests.getNumberOnBoardRequests(rt) >= 1)//
-                    .filter(rt -> (rt.getCapacity() - OnboardRequests.getNumberOnBoardRequests(rt)) >= 1)//
+                    .filter(rt -> OnboardRequests.getMenuOnBoardCustomers(rt) >= 1)//
+                    .filter(rt -> (rt.getCapacity() - OnboardRequests.getMenuOnBoardCustomers(rt)) >= 1)//
                     .filter(OnboardRequests::canPickupNewCustomer)//
                     .collect(Collectors.toList());
 

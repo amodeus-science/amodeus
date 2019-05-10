@@ -100,7 +100,7 @@ public class RoboTaxiUtilsTest extends TestCase {
         s.roboTaxi1.pickupNewCustomerOnBoard();
         assertTrue(SharedRoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1).equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
 
-        assertEquals(OnboardRequests.getNumberOnBoardRequests(s.roboTaxi1), 1);
+        assertEquals(OnboardRequests.getMenuOnBoardCustomers(s.roboTaxi1), 1);
         assertEquals(s.roboTaxi1.getUnmodifiableViewOfCourses().size(), numcourses - 1);
         try { // It should not be Possible to have a menu which plans to pick up more customers than capacity
             s.roboTaxi1.moveAVCourseToPrev(SharedCourse.pickupCourse(s.avRequest4));
@@ -139,7 +139,7 @@ public class RoboTaxiUtilsTest extends TestCase {
         } catch (Exception e) {
             // ---
         }
-        assertEquals(OnboardRequests.getNumberOnBoardRequests(s.roboTaxi1), 1);
+        assertEquals(OnboardRequests.getMenuOnBoardCustomers(s.roboTaxi1), 1);
         assertTrue(OnboardRequests.canPickupNewCustomer(s.roboTaxi1));
 
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.linkUp, 1.0));
@@ -149,7 +149,7 @@ public class RoboTaxiUtilsTest extends TestCase {
         s.roboTaxi1.finishRedirection();
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.avRequest1.getFromLink(), 1.0));
         s.roboTaxi1.pickupNewCustomerOnBoard();
-        assertEquals(OnboardRequests.getNumberOnBoardRequests(s.roboTaxi1), 2);
+        assertEquals(OnboardRequests.getMenuOnBoardCustomers(s.roboTaxi1), 2);
 
         assertEquals(OnboardRequests.getOnBoardRequests(s.roboTaxi1.getUnmodifiableViewOfCourses()), //
                 new HashSet<>(Arrays.asList(s.avRequest1, s.avRequest3)));

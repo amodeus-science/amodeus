@@ -167,7 +167,7 @@ public class RoboTaxi {
     /* package */ boolean isWithoutCustomer() {
         // For now this works with universal dispatcher i.e. single used robotaxis as
         // number of customers is never changed
-        return !status.equals(RoboTaxiStatus.DRIVEWITHCUSTOMER) && OnboardRequests.getNumberOnBoardRequests(this) == 0;
+        return !status.equals(RoboTaxiStatus.DRIVEWITHCUSTOMER) && OnboardRequests.getMenuOnBoardCustomers(this) == 0;
     }
 
     /** @return {@Schedule} of the RoboTaxi, to be used only inside core package, the
@@ -372,8 +372,8 @@ public class RoboTaxi {
     }
 
     private void checkAbilityToDropOff() {
-        GlobalAssert.that(OnboardRequests.getNumberOnBoardRequests(this) > 0);
-        GlobalAssert.that(OnboardRequests.getNumberOnBoardRequests(this) <= getCapacity());
+        GlobalAssert.that(OnboardRequests.getMenuOnBoardCustomers(this) > 0);
+        GlobalAssert.that(OnboardRequests.getMenuOnBoardCustomers(this) <= getCapacity());
         GlobalAssert.that(SharedRoboTaxiUtils.isNextCourseOfType(this, SharedMealType.DROPOFF));
         GlobalAssert.that(SharedRoboTaxiUtils.getStarterLink(this).equals(getDivertableLocation()));
     }
@@ -404,7 +404,7 @@ public class RoboTaxi {
      * 
      * @return all the courses which have been removed */
     /* package */ List<SharedCourse> cleanAndAbandonMenu() {
-        GlobalAssert.that(OnboardRequests.getNumberOnBoardRequests(this) == 0);
+        GlobalAssert.that(OnboardRequests.getMenuOnBoardCustomers(this) == 0);
         GlobalAssert.that(isDivertable());
         List<SharedCourse> oldMenu = SharedCourseUtil.copy(menu.getCourseList());
         setMenu(SharedMenu.empty());

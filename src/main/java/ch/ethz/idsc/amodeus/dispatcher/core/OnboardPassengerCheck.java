@@ -26,8 +26,8 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
             /** requests are matched once a pickup process is in execution */
             int travelling = total_matchedRequests - total_dropedOffRequests;
             /** onboard requests which are currently in a shared {@link RoboTaxi} */
-            int onboard = allTaxis.stream().mapToInt(rt -> OnboardRequests.getNumberOnBoardRequests(rt)).sum();
-            GlobalAssert.that(travelling == onboard);
+            int menuOnboard = allTaxis.stream().mapToInt(rt -> OnboardRequests.getMenuOnBoardCustomers(rt)).sum();
+            GlobalAssert.that(travelling == menuOnboard);
         }
 
         this.totalMatched = total_matchedRequests;

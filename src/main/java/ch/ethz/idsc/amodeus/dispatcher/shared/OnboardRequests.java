@@ -23,26 +23,26 @@ public enum OnboardRequests {
             boolean removeOk = dropoffs.remove(avRequestIDpickup);
             GlobalAssert.that(removeOk);
         }
-        GlobalAssert.that(getNumberOnBoardCustomers(courses) == dropoffs.size());
+        GlobalAssert.that(getMenuOnBoardCustomers(courses) == dropoffs.size());
         return dropoffs;
     }
 
     // ---
 
-    public static long getNumberOnBoardCustomers(List<? extends SharedCourse> courses) {
+    public static long getMenuOnBoardCustomers(List<? extends SharedCourse> courses) {
         long onBoard = getNumberMealTypes(courses, SharedMealType.DROPOFF) - //
                 getNumberMealTypes(courses, SharedMealType.PICKUP);
         return onBoard;
     }
 
-    public static int getNumberOnBoardRequests(RoboTaxi roboTaxi) {
-        return (int) OnboardRequests.getNumberOnBoardCustomers(roboTaxi.getUnmodifiableViewOfCourses());
+    public static int getMenuOnBoardCustomers(RoboTaxi roboTaxi) {
+        return (int) OnboardRequests.getMenuOnBoardCustomers(roboTaxi.getUnmodifiableViewOfCourses());
     }
 
     // ---
 
     public static boolean canPickupNewCustomer(RoboTaxi roboTaxi) {
-        int onBoard = getNumberOnBoardRequests(roboTaxi);
+        int onBoard = getMenuOnBoardCustomers(roboTaxi);
         GlobalAssert.that(onBoard >= 0);
         return onBoard < roboTaxi.getCapacity();
     }
