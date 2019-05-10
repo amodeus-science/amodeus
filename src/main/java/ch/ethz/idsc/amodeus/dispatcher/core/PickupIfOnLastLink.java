@@ -14,6 +14,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 /* package */ enum PickupIfOnLastLink {
+    //FIXME Make it clear that this is for sharing taxi only!!!!!
     ;
 
     public static Optional<AVRequest> apply(RoboTaxi roboTaxi, double timeNow, double pickupDurationPerStop, FuturePathFactory futurePathFactory) {
