@@ -22,7 +22,6 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseRemove;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenuCheck;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenuUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.passenger.AVRequest;

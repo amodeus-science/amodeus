@@ -37,6 +37,12 @@ public enum SharedCourseListUtils {
     public static Optional<SharedCourse> getStarterCourse(RoboTaxi roboTaxi) {
         return SharedCourseListUtils.getStarterCourse(roboTaxi.getUnmodifiableViewOfCourses());
     }
+    
+    public static Optional<SharedCourse> getStarterCourse(SharedMenu sharedMenu) {
+        return SharedCourseListUtils.getStarterCourse(sharedMenu.getCourseList());
+    }
+    
+    
 
     public static Optional<SharedCourse> getSecondCourse(List<SharedCourse> courses) {
         return Optional.ofNullable((hasSecondCourse(courses)) ? courses.get(1) : null);

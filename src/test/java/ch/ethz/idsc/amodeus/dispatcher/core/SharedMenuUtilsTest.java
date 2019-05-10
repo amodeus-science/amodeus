@@ -6,11 +6,11 @@ import java.util.List;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.Compatibility;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseMove;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenuCheck;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenuUtils;
 import junit.framework.TestCase;
 
 public class SharedMenuUtilsTest extends TestCase {
@@ -34,7 +34,8 @@ public class SharedMenuUtilsTest extends TestCase {
         List<SharedCourse> list1 = Arrays.asList(pickupCourse1, dropoffCourse1, pickupCourse2, dropoffCourse2);
         SharedMenu menu1 = SharedMenu.of(list1);
 
-        assertEquals(SharedMenuUtils.getStarterCourse(menu1).get(), pickupCourse1);
+        assertEquals(SharedCourseListUtils.getStarterCourse(menu1).get(), pickupCourse1);
+
         assertTrue(Compatibility.of(menu1.getCourseList()).forCapacity(1));
         assertTrue(SharedMenuCheck.eachPickupAfterDropoff(menu1.getCourseList()));
         assertTrue(SharedMenuCheck.coursesAppearOnce(menu1.getCourseList()));
