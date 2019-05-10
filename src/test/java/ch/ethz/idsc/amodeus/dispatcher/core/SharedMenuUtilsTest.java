@@ -4,6 +4,7 @@ package ch.ethz.idsc.amodeus.dispatcher.core;
 import java.util.Arrays;
 import java.util.List;
 
+import ch.ethz.idsc.amodeus.dispatcher.shared.Compatibility;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseMove;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
@@ -34,9 +35,9 @@ public class SharedMenuUtilsTest extends TestCase {
         SharedMenu menu1 = SharedMenu.of(list1);
 
         assertEquals(SharedMenuUtils.getStarterCourse(menu1).get(), pickupCourse1);
-        assertTrue(SharedMenuCheck.checkMenuDoesNotPlanToPickUpMoreCustomersThanCapacity(menu1, 1));
-        assertTrue(SharedMenuCheck.checkNoPickupAfterDropoffOfSameRequest(menu1.getCourseList()));
-        assertTrue(SharedMenuCheck.checkAllCoursesAppearOnlyOnce(menu1.getCourseList()));
+        assertTrue(Compatibility.of(menu1.getCourseList()).forCapacity(1));
+        assertTrue(SharedMenuCheck.eachPickupAfterDropoff(menu1.getCourseList()));
+        assertTrue(SharedMenuCheck.coursesAppearOnce(menu1.getCourseList()));
 
         SharedMenu menu2 = SharedCourseMove.moveAVCourseToNext(menu1, dropoffCourse1);
         assertTrue(SharedMenuCheck.containSameCourses(menu1, menu2));

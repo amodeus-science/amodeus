@@ -283,10 +283,10 @@ public class RoboTaxi {
         setMenu(SharedCourseMove.moveAVCourseToNext(menu, sharedCourse));
     }
 
-    /** This function allows to update the menu of the RoboTaxi with a new orderd
+    /** This function allows to update the menu of the RoboTaxi with a new ordered
      * menu. Thereby the new menu has to fulfill the following conditions: 1. The
      * exact same Courses have to be in the Menu. 2. The menu can not plan to pickup
-     * more persons than the capacity of the Robo Taxi at any Time
+     * more persons than the capacity of the RoboTaxi at any time
      * 
      * @param menu */
     private void updateMenu(SharedMenu menu) {
