@@ -327,10 +327,10 @@ public class RoboTaxi {
     }
 
     /* package */ void addAVRequestToMenu(AVRequest avRequest) {
-        // TODO Lukas, with Claudio, Carl, what is the wanted behaviour? shouldnt the
-        // dispatcher take care of this
-        // We could bring it into the rebalancing dispatcher, there we can add a
-        // function which is called: addAVrequestandRemoveFirstRebalancing(AVrequest)
+        // TODO Lukas, with Claudio, ChengQi, what is the wanted behaviour? shouldn't the
+        // dispatcher take care of this? We could bring it into the rebalancing dispatcher,
+        // there we can add a function which is called:
+        // addAVrequestandRemoveFirstRebalancing(AVrequest)
         if (status.equals(RoboTaxiStatus.REBALANCEDRIVE)) {
             GlobalAssert.that(SharedCourseAccess.getStarter(this).get().getMealType().equals(SharedMealType.REDIRECT));
             if (getUnmodifiableViewOfCourses().size() == 1) {
