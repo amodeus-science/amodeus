@@ -52,6 +52,7 @@ import ch.ethz.matsim.av.router.AVRouter;
  * 
  * at each time dispatcher is called, for each vehicle, all possible trips (adding additional open request to the vehicle) is explored
  * and then ILP is called to choose the optimal assignment. */
+// TODO extend from HighCapacityDispatcher
 /* package */ class ParkHighCapacityDispatcher extends SharedRebalancingDispatcher {
     /** parameters */
 

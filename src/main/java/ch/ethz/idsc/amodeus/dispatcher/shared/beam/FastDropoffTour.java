@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared.beam;
 
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseRemove;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
-/* package */ class FastDropoffTour {
+/* package */ enum FastDropoffTour {
     ;
 
     public static List<SharedCourse> fastDropoffTour(List<SharedCourse> unmodifiableSharedMenu) {

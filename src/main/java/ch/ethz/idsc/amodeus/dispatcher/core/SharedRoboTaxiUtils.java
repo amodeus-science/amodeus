@@ -22,8 +22,7 @@ public enum SharedRoboTaxiUtils {
         Optional<SharedCourse> currentCourse = SharedCourseAccess.getStarter(roboTaxi);
         if (currentCourse.isPresent())
             return currentCourse.get().getLink();
-        else
-            return null;
+        return null;
     }
 
     /** @return true of the next {@link SharedCourse} of the {@link RoboTaxi} @param roboTaxi

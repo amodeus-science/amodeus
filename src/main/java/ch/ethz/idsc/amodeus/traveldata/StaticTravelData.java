@@ -47,7 +47,7 @@ public class StaticTravelData implements Serializable, TravelData {
         this.timeIntervalLength = endTime / timeSteps;
         this.endTime = endTime;
         this.lpName = lpName;
-        timeClip = Clips.interval(0, endTime - 1);
+        timeClip = Clips.positive(endTime - 1);
 
         checkConsistency();
     }
