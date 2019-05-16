@@ -20,7 +20,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
  * network distance increases temporarily. The process repeats itself and leads to unrealistically long
  * waiting times. This class is used to remove such disimproving assignments. It will only take effect
  * if the {@link EuclideanDistanceFunction} was selected */
-/* package */ enum CyclicSolutionPreventer {
+public enum CyclicSolutionPreventer {
     ;
 
     // TODO eliminate duplicate code, only difference is universalDispatcher,
