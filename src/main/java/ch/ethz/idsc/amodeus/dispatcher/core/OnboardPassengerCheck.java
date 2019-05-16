@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.List;
@@ -8,10 +9,9 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
  * the total number of matched requests or dropped off requests has changed in the time
  * step. */
 /* package */ class OnboardPassengerCheck {
-    ;
 
-    private Integer totalMatched = null;
-    private Integer totalDropoff = null;
+    private int totalMatched;
+    private int totalDropoff;
 
     public OnboardPassengerCheck(int total_matchedRequests, int total_dropedOffRequests) {
         this.totalMatched = total_matchedRequests;
