@@ -7,7 +7,7 @@ public enum XmlNumberOfVehiclesChanger {
     ;
 
     public static void of(File simFolder, int vehicleNumber) throws Exception {
-        XmlCustomIntDataChanger.of(simFolder, "generator", "numberOfVehicles", vehicleNumber);
+        XmlCustomDataChanger.of(simFolder, "generator", "numberOfVehicles", Integer.toString(vehicleNumber));
     }
 
 }

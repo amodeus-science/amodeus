@@ -7,7 +7,7 @@ public enum XmlRebalancingPeriodChanger {
     ;
 
     public static void of(File simFolder, int rebalancing) throws Exception {
-        XmlCustomIntDataChanger.of(simFolder, "dispatcher", "rebalancingPeriod", rebalancing);
+        XmlCustomDataChanger.of(simFolder, "dispatcher", "rebalancingPeriod", Integer.toString(rebalancing));
     }
 
 }

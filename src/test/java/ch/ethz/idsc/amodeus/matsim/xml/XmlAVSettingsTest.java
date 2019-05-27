@@ -23,18 +23,19 @@ public class XmlAVSettingsTest {
     public static void prepare() throws Exception {
 
         /** copy av.xml file from test directory */
-        File scenarioDirectory = new File(LocateUtils.getSuperFolder("amodeus"), "resources/testScenario");
         File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
+        File scenarioDirectory = new File(LocateUtils.getSuperFolder("amodeus"), "resources/testScenario");
         GlobalAssert.that(workingDirectory.isDirectory());
         CopyFiles.now(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath(), //
                 Arrays.asList(new String[] { "av.xml" }), true);
 
         /** perform some action on it */
-        XmlNumberOfVehiclesChanger.of(workingDirectory, 558);
-        XmlRebalancingPeriodChanger.of(workingDirectory, 115);
-        XmlDispatchPeriodChanger.of(workingDirectory, 98857);
+        XmlNumberOfVehiclesChanger.of(workingDirectory, 111);
+        XmlRebalancingPeriodChanger.of(workingDirectory, 222);
+        XmlDispatchPeriodChanger.of(workingDirectory, 333);
         XmlGeneratorChanger.of(workingDirectory, "Tannhaeuser");
         XmlDispatcherChanger.of(workingDirectory, "FliegenderHollaender");
+        XmlDistanceHeuristicChanger.of(workingDirectory, "Lohegrin22");
 
         // TODO when less lazy, open and inspect av.xml, write some tests..
 

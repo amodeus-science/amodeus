@@ -8,7 +8,7 @@ import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 
-public enum XmlCustomIntDataChanger {
+public enum XmlCustomDataChanger {
     ;
 
     /** Changes the value @param dataName in @param groupName in the av.xml
@@ -18,12 +18,12 @@ public enum XmlCustomIntDataChanger {
      * 
      * @throws Exception */
 
-    public static void of(File simFolder, String groupName, String dataName, int newValue)//
+    public static void of(File simFolder, String groupName, String dataName, String newValue)//
             throws Exception {
         System.out.println("changing " + dataName + " to " + newValue);
         File xmlFile = new File(simFolder, "av.xml");
         System.out.println("looking for av.xml file at " + xmlFile.getAbsolutePath());
-        try (XmlModifier xmlModifier = new XmlModifier(xmlFile)) {
+        try (XmlCustomModifier xmlModifier = new XmlCustomModifier(xmlFile)) {
             Document doc = xmlModifier.getDocument();
             Element rootNode = doc.getRootElement();
             Element operator = rootNode.getChild("operator");
@@ -34,7 +34,7 @@ public enum XmlCustomIntDataChanger {
                 @SuppressWarnings("unchecked")
                 List<Attribute> theAttributes = element.getAttributes();
                 if (theAttributes.get(0).getValue().equals(dataName)) {
-                    theAttributes.get(1).setValue(Integer.toString(newValue));
+                    theAttributes.get(1).setValue(newValue);
                 }
             }
         }

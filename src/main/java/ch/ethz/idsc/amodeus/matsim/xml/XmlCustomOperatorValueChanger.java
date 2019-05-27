@@ -6,13 +6,13 @@ import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 
-public enum XmlOperatorValueChanger {
+public enum XmlCustomOperatorValueChanger {
     ;
 
     public static void of(File simFolder, String groupName, String newValue)//
             throws Exception {
         File xmlFile = new File(simFolder, "av.xml");
-        try (XmlModifier xmlModifier = new XmlModifier(xmlFile)) {
+        try (XmlCustomModifier xmlModifier = new XmlCustomModifier(xmlFile)) {
             Document doc = xmlModifier.getDocument();
             Element rootNode = doc.getRootElement();
             Element operator = rootNode.getChild("operator");

@@ -10,6 +10,6 @@ public class XmlDispatcherChanger {
      * 
      * @throws Exception */
     public static void of(File simFolder, String newValue) throws Exception {
-        XmlOperatorValueChanger.of(simFolder, "dispatcher", newValue);
+        XmlCustomOperatorValueChanger.of(simFolder, "dispatcher", newValue);
     }
 }

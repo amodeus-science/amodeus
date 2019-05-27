@@ -10,6 +10,6 @@ public class XmlGeneratorChanger {
      * 
      * @throws Exception */
     public static void of(File simFolder, String newValue) throws Exception {
-        XmlOperatorValueChanger.of(simFolder, "generator", newValue);
+        XmlCustomOperatorValueChanger.of(simFolder, "generator", newValue);
     }
 }

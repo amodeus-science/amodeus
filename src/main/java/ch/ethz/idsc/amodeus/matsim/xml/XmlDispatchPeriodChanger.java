@@ -7,6 +7,6 @@ public enum XmlDispatchPeriodChanger {
     ;
 
     public static void of(File simFolder, int dispatch) throws Exception {
-        XmlCustomIntDataChanger.of(simFolder, "dispatcher", "dispatchPeriod", dispatch);
+        XmlCustomDataChanger.of(simFolder, "dispatcher", "dispatchPeriod", Integer.toString(dispatch));
     }
 }
