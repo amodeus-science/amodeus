@@ -22,7 +22,7 @@ public enum XmlCustomIntegerDispatcherDataChanger {
             Document doc = xmlModifier.getDocument();
             Element rootNode = doc.getRootElement();
             Element operator = rootNode.getChild("operator");
-            Element dispatcher = operator.getChild("generator");
+            Element dispatcher = operator.getChild("dispatcher");
             @SuppressWarnings("unchecked")
             List<Element> children = dispatcher.getChildren();
             
