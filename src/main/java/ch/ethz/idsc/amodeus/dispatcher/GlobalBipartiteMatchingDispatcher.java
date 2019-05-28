@@ -11,9 +11,8 @@ import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
 import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
-import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatchingUtils;
-import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatchingUtils2;
-import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatchingUtilsInterface;
+import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatcher;
+import ch.ethz.idsc.amodeus.dispatcher.util.ConfigurableBipartiteMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
@@ -34,7 +33,7 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
     private Tensor printVals = Tensors.empty();
     private final DistanceFunction distanceFunction;
     private final Network network;
-    private final BipartiteMatchingUtilsInterface bipartiteMatchingUtils;
+    private final BipartiteMatcher bipartiteMatcher;
 
     private GlobalBipartiteMatchingDispatcher(Network network, Config config, //
             AVDispatcherConfig avDispatcherConfig, TravelTime travelTime, //
@@ -50,16 +49,18 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
         this.network = network;
         /** matching algorithm */
 
-        SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
-        String matchingAlg = safeConfig.getString("matchingAlgorithm", "HUNGARIAN");
-
-        if (matchingAlg.equals("HUNGARIAN")) {
-            bipartiteMatchingUtils = new BipartiteMatchingUtils(network);
-        } else if (matchingAlg.equals("ILP")) {
-            bipartiteMatchingUtils = new BipartiteMatchingUtils2(network, distanceFunction);
-        } else {
-            bipartiteMatchingUtils = null;
-        }
+        SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);        
+        bipartiteMatcher = new ConfigurableBipartiteMatcher(network, distanceFunction, safeConfig);
+        
+//        String matchingAlg = safeConfig.getString("matchingAlgorithm", "HUNGARIAN");
+//
+//        if (matchingAlg.equals("HUNGARIAN")) {
+//            bipartiteMatcher = new ConfigurableBipartiteMatcher(network);
+//        } else if (matchingAlg.equals("ILP")) {
+//            bipartiteMatcher = new BipartiteMatchingUtilsILP(network, distanceFunction);
+//        } else {
+//            bipartiteMatcher = null;
+//        }
 
     }
 
@@ -67,7 +68,7 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
     public void redispatch(double now) {
         final long round_now = Math.round(now);
         if (round_now % dispatchPeriod == 0) {
-            printVals = bipartiteMatchingUtils.executePickup(this, getDivertableRoboTaxis(), //
+            printVals = bipartiteMatcher.executePickup(this, getDivertableRoboTaxis(), //
                     getAVRequests(), distanceFunction, network);
         }
     }

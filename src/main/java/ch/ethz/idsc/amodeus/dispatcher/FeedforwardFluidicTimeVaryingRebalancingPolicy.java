@@ -18,13 +18,15 @@ import ch.ethz.idsc.amodeus.dispatcher.core.PartitionedDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
-import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatchingUtils;
+import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatcher;
+import ch.ethz.idsc.amodeus.dispatcher.util.ConfigurableBipartiteMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
 import ch.ethz.idsc.amodeus.dispatcher.util.FeasibleRebalanceCreator;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.lp.LPCreator;
 import ch.ethz.idsc.amodeus.lp.LPTimeVariant;
+import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.matsim.mod.VehicleToVSGenerator;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
@@ -57,7 +59,7 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
     private final TravelData travelData;
     private final DistanceFunction distanceFunction;
     private final DistanceHeuristics distanceHeuristics;
-    private final BipartiteMatchingUtils bipartiteMatchingEngine;
+    private final BipartiteMatcher bipartiteMatcher;
     private final int dispatchPeriod;
     private final int rebalancingPeriod;
     private final int nVNodes;
@@ -90,9 +92,9 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(30);
         rebalancingPeriod = dispatcherConfig.getRebalancingPeriod(30);
         distanceHeuristics = dispatcherConfig.getDistanceHeuristics(DistanceHeuristics.EUCLIDEAN);
-        this.bipartiteMatchingEngine = new BipartiteMatchingUtils(network);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
+        this.bipartiteMatcher = new ConfigurableBipartiteMatcher(network, distanceFunction, SafeConfig.wrap(avDispatcherConfig));
         if (!travelData.getLPName().equals(LPTimeVariant.class.getSimpleName())) {
             System.err.println("Running the " + this.getClass().getSimpleName() + " requires precomputed data that must be\n"
                     + "computed in the ScenarioPreparer. Currently the file LPOptions.properties is set to compute the feedforward\n" + "rebalcing data with: ");
@@ -158,7 +160,7 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
         /** Part II: outside rebalancing periods, permanently assign destinations to vehicles using
          * bipartite matching */
         if (round_now % dispatchPeriod == 0) {
-            printVals = bipartiteMatchingEngine.executePickup(this, getDivertableRoboTaxis(), //
+            printVals = bipartiteMatcher.executePickup(this, getDivertableRoboTaxis(), //
                     getAVRequests(), distanceFunction, network);
         }
     }
