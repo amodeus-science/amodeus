@@ -12,7 +12,10 @@ import com.google.inject.name.Named;
 import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
 import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatchingUtils;
+import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatchingUtils2;
+import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatchingUtilsInterface;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
+import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 import ch.ethz.idsc.tensor.Tensor;
@@ -31,7 +34,7 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
     private Tensor printVals = Tensors.empty();
     private final DistanceFunction distanceFunction;
     private final Network network;
-    private final BipartiteMatchingUtils bipartiteMatchingUtils;
+    private final BipartiteMatchingUtilsInterface bipartiteMatchingUtils;
 
     private GlobalBipartiteMatchingDispatcher(Network network, Config config, //
             AVDispatcherConfig avDispatcherConfig, TravelTime travelTime, //
@@ -42,10 +45,22 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(30);
         DistanceHeuristics distanceHeuristics = //
                 dispatcherConfig.getDistanceHeuristics(DistanceHeuristics.EUCLIDEAN);
-        bipartiteMatchingUtils = new BipartiteMatchingUtils(network);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         distanceFunction = distanceHeuristics.getDistanceFunction(network);
         this.network = network;
+        /** matching algorithm */
+
+        SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
+        String matchingAlg = safeConfig.getString("matchingAlgorithm", "HUNGARIAN");
+
+        if (matchingAlg.equals("HUNGARIAN")) {
+            bipartiteMatchingUtils = new BipartiteMatchingUtils(network);
+        } else if (matchingAlg.equals("ILP")) {
+            bipartiteMatchingUtils = new BipartiteMatchingUtils2(network, distanceFunction);
+        } else {
+            bipartiteMatchingUtils = null;
+        }
+
     }
 
     @Override

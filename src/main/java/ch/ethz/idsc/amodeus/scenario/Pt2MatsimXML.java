@@ -8,7 +8,7 @@ import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 
-import ch.ethz.idsc.amodeus.matsim.xml.XmlModifier;
+import ch.ethz.idsc.amodeus.matsim.xml.XmlCustomModifier;
 
 public class Pt2MatsimXML {
 
@@ -16,7 +16,7 @@ public class Pt2MatsimXML {
 
         System.out.println("xml file " + xmlFile.getAbsolutePath());
 
-        try (XmlModifier xmlModifier = new XmlModifier(xmlFile)) {
+        try (XmlCustomModifier xmlModifier = new XmlCustomModifier(xmlFile)) {
             Document doc = xmlModifier.getDocument();
             Element rootNode = doc.getRootElement();
             Element module = rootNode.getChild("module");
