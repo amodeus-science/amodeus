@@ -6,57 +6,34 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.matsim.api.core.v01.network.Network;
-import org.matsim.core.router.FastAStarLandmarksFactory;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
 import ch.ethz.idsc.amodeus.routing.CachedNetworkTimeDistance;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
-import ch.ethz.idsc.amodeus.routing.NetworkMinTimeDistanceFunction;
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 @Deprecated // TODO don-t use, will be deleted by Claudio after BipartiteMatching code refactor
-public class BipartiteMatchingUtils2 implements BipartiteMatchingUtilsInterface {
+public class BipartiteMatchingUtils2 extends BipartiteMatchingUtilsSuper {
 
     /** network distance function used to prevent cycling solutions */
-    private final DistanceFunction accDstFctn;
     private final GlobalBipartiteMatching2 tempGlMatch;
 
     public BipartiteMatchingUtils2(Network network, DistanceFunction distanceFunction) {
-        accDstFctn = new NetworkMinTimeDistanceFunction(network, new FastAStarLandmarksFactory());
+        super(network);
         tempGlMatch = new GlobalBipartiteMatching2(distanceFunction);
     }
 
-    public Tensor executePickup(UniversalDispatcher universalDispatcher, //
+    @Override
+    protected Tensor executeGeneralPickup(UniversalDispatcher universalDispatcher, //
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
             Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
-            DistanceFunction distanceFunction, Network network) {
-        // time irrelevant for this call
-        return executeGeneralPickup(universalDispatcher, roboTaxis, requests, distanceFunction, null, network, -10.0, false);
-
-    }
-
-    public Tensor executeCached(UniversalDispatcher universalDispatcher, //
-            Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
-            Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
-            CachedNetworkTimeDistance distanceCashed, Network network, double now) {
-        // time irrelevant for this call
-        return executeGeneralPickup(universalDispatcher, roboTaxis, requests, null, distanceCashed, network, now, true);
-    }
-
-    private Tensor executeGeneralPickup(UniversalDispatcher universalDispatcher, //
-            Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
-            Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
-            DistanceFunction distanceFunction, CachedNetworkTimeDistance distanceCashed, Network network, double time, boolean cached) {
+            DistanceFunction distanceFunction, CachedNetworkTimeDistance distanceCashed, Network network) {
         Tensor infoLine = Tensors.empty();
 
-        GlobalAssert.that(!cached);
-        Map<RoboTaxi, AVRequest> gbpMatchCleaned = cached ? //
-                null : //
-                getGBPMatch(universalDispatcher, roboTaxis, requests, distanceFunction, network);
+        Map<RoboTaxi, AVRequest> gbpMatchCleaned = getGBPMatch(universalDispatcher, roboTaxis, requests, distanceFunction, network);
 
         /** perform dispatching */
         for (Entry<RoboTaxi, AVRequest> entry : gbpMatchCleaned.entrySet())
@@ -83,3 +60,19 @@ public class BipartiteMatchingUtils2 implements BipartiteMatchingUtilsInterface 
     }
 
 }
+
+// public Tensor executeCached(UniversalDispatcher universalDispatcher, //
+// Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
+// Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
+// CachedNetworkTimeDistance distanceCashed, Network network, double now) {
+//// time irrelevant for this call
+// return executeGeneralPickup(universalDispatcher, roboTaxis, requests, null, distanceCashed, network, now, true);
+// }
+
+// public Tensor executePickup(UniversalDispatcher universalDispatcher, //
+// Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
+// Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
+// DistanceFunction distanceFunction, Network network) {
+// // time irrelevant for this call
+// return executeGeneralPickup(universalDispatcher, roboTaxis, requests, distanceFunction, null, network, -10.0, false);
+// }
