@@ -14,31 +14,25 @@ import ch.ethz.matsim.av.passenger.AVRequest;
  * or {@link Link} using the Hungarian Method */
 public class GlobalBipartiteMatching extends AbstractRoboTaxiDestMatcher {
 
-    private final DistanceFunction distanceFunction;
+    private final GlobalBipartiteWeight specificWeight;
 
     public GlobalBipartiteMatching(DistanceFunction distanceFunction) {
-        this.distanceFunction = distanceFunction;
-    }
-
-    @Override
-    protected Map<RoboTaxi, AVRequest> protected_match(Collection<RoboTaxi> roboTaxis, Collection<AVRequest> requests) {
-        GlobalBipartiteWeight specificWeight = new GlobalBipartiteWeight() {
+        this.specificWeight = new GlobalBipartiteWeight() {
             @Override
             public double between(RoboTaxi roboTaxi, Link link) {
                 return distanceFunction.getDistance(roboTaxi, link);
             }
         };
+    }
+
+    @Override
+    protected Map<RoboTaxi, AVRequest> protected_match(Collection<RoboTaxi> roboTaxis, Collection<AVRequest> requests) {
         return GlobalBipartiteHelper.genericMatch(roboTaxis, requests, AVRequest::getFromLink, specificWeight);
     }
 
     @Override
     protected Map<RoboTaxi, Link> protected_matchLink(Collection<RoboTaxi> roboTaxis, Collection<Link> links) {
-        GlobalBipartiteWeight specificWeight = new GlobalBipartiteWeight() {
-            @Override
-            public double between(RoboTaxi roboTaxi, Link link) {
-                return distanceFunction.getDistance(roboTaxi, link);
-            }
-        };
         return GlobalBipartiteHelper.genericMatch(roboTaxis, links, link -> link, specificWeight);
     }
+
 }

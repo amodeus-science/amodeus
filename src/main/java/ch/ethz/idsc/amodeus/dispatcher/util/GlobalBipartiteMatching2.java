@@ -12,53 +12,28 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** perform a global bipartite matching of {@link RoboTaxi} and {@link AVRequest}
  * or {@link Link} using the Hungarian Method */
-@Deprecated // TODO don-t use, will be deleted by Claudio after BipartiteMatching code refactor
 public class GlobalBipartiteMatching2 extends AbstractRoboTaxiDestMatcher {
 
-    private final DistanceFunction distanceFunction;
-    // private final ILPGlobalBipartiteHelper glpHelper;
-    private double alpha;
-    private double beta;
-    private double gamma;
+    private final GlobalBipartiteWeight specificWeight;
 
-    public GlobalBipartiteMatching2(DistanceFunction distanceFunction, double alpha, double beta, double gamma) {
-        this.alpha = alpha;
-        this.beta = beta;
-        this.gamma = gamma;
-        this.distanceFunction = distanceFunction;
-        
-    }
-    
     public GlobalBipartiteMatching2(DistanceFunction distanceFunction) {
-        alpha = 1;
-        beta = 0.15;
-        gamma = 0.8;
-        this.distanceFunction = distanceFunction;
-        // this.glpHelper = new ILPGlobalBipartiteHelper(new GLPKAssignmentSolver());
-    }
-
-    @Override
-    protected Map<RoboTaxi, AVRequest> protected_match(Collection<RoboTaxi> roboTaxis, Collection<AVRequest> requests) {
-        GlobalBipartiteWeight specificWeight = new GlobalBipartiteWeight() {
+        this.specificWeight = new GlobalBipartiteWeight() {
             @Override
             public double between(RoboTaxi roboTaxi, Link link) {
                 return distanceFunction.getDistance(roboTaxi, link);
             }
         };
+    }
+
+    @Override
+    protected Map<RoboTaxi, AVRequest> protected_match(Collection<RoboTaxi> roboTaxis, Collection<AVRequest> requests) {
         return (new GlobalBipartiteHelperILP<AVRequest>(new GLPKAssignmentSolverBetter()))//
                 .genericMatch(roboTaxis, requests, AVRequest::getFromLink, specificWeight);
     }
 
     @Override
     protected Map<RoboTaxi, Link> protected_matchLink(Collection<RoboTaxi> roboTaxis, Collection<Link> links) {
-        GlobalBipartiteWeight specificWeight = new GlobalBipartiteWeight() {
-            @Override
-            public double between(RoboTaxi roboTaxi, Link link) {
-                return distanceFunction.getDistance(roboTaxi, link);
-            }
-        };
+        // FIXME
         return null;
-//        return (new ILPGlobalBipartiteHelper(new GLPKAssignmentSolverBetter(alpha,beta,gamma)))//
-//                .genericMatch(roboTaxis, links, link -> link, specificWeight);
     }
 }
