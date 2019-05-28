@@ -91,7 +91,7 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
     /** @return {@link Tensor} containing the number of trips that shared the {@link RoboTaxi}
      *         with {0,1,2,..} other requests, e.g., {80,40,20,10} which means that there were a total
      *         of 150 requests out of which 80 were driving alone, and 10 shared the {@link RoboTaxi} with
-     *         3 other passengers. */
+     *         3 other passengers, etc.*/
     public Tensor getSharedOthersDistribution() {
         return BinCounts.of(sharedOtherPassengersPerRequest);
     }
@@ -111,12 +111,6 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
         // }
         totalValues.put(TtlValIdent.REQUESTSSHAREDNUMBERS, getSharedOthersDistribution().toString());
         return totalValues;
-    }
-
-    public static void main(String[] args) {
-        Tensor vector = Tensors.vector(0, 0, 1, 1, 1, 2, 2, 2, 2, 0, 1, 2);
-        System.out.println(BinCounts.of(vector));
-
     }
 
 }
