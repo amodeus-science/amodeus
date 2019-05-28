@@ -47,21 +47,9 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         distanceFunction = distanceHeuristics.getDistanceFunction(network);
         this.network = network;
-        /** matching algorithm */
-
-        SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);        
+        /** matching algorithm - standard is a solution to the assignment problem with the Hungarian method */
+        SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
         bipartiteMatcher = new ConfigurableBipartiteMatcher(network, distanceFunction, safeConfig);
-        
-//        String matchingAlg = safeConfig.getString("matchingAlgorithm", "HUNGARIAN");
-//
-//        if (matchingAlg.equals("HUNGARIAN")) {
-//            bipartiteMatcher = new ConfigurableBipartiteMatcher(network);
-//        } else if (matchingAlg.equals("ILP")) {
-//            bipartiteMatcher = new BipartiteMatchingUtilsILP(network, distanceFunction);
-//        } else {
-//            bipartiteMatcher = null;
-//        }
-
     }
 
     @Override
