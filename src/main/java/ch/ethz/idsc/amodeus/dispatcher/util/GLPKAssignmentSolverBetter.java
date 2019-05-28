@@ -27,14 +27,14 @@ public class GLPKAssignmentSolverBetter {
     private Scalar obj_val;
     private Tensor c_ij;
     private Tensor p_ij;
-    private double alpha = 1;
-    private double beta = 0.15;
-    private double gamma = 0.9;
+    private final double alpha;// = 1;
+    private final double beta;// = 0.15;
+    private final double gamma;// = 0.9;
 
-    public GLPKAssignmentSolverBetter() {
-        alpha = 0.8;
-        beta = 0.45;
-        gamma = 0.9;
+    public GLPKAssignmentSolverBetter(Tensor costFunctionWeights) {
+        alpha = costFunctionWeights.Get(0).number().doubleValue();
+        beta = costFunctionWeights.Get(1).number().doubleValue();
+        gamma = costFunctionWeights.Get(2).number().doubleValue();
         this.lp = GLPK.glp_create_prob(); // Create Problem and assign to problem variable lp
         System.out.println("Problem Created");
         GLPK.glp_set_prob_name(lp, "Tryouts");
@@ -147,11 +147,11 @@ public class GLPKAssignmentSolverBetter {
         return obj_val; // FIXME Should not be a pointer only a value
     }
 
-    public void setObjectiveParams(double alpha, double beta, double gamma) {
-        this.alpha = alpha;
-        this.beta = beta;
-        this.gamma = gamma;
-    }
+    // public void setObjectiveParams(double alpha, double beta, double gamma) {
+    // this.alpha = alpha;
+    // this.beta = beta;
+    // this.gamma = gamma;
+    // }
 
     public Tensor solveAdvanced(Tensor costMatrix, Tensor lastSol) {
         vehicles = Math.abs(costMatrix.get(0).length());

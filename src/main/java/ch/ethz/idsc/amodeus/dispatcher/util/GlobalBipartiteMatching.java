@@ -14,7 +14,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
  * or {@link Link} using the Hungarian Method */
 public class GlobalBipartiteMatching extends AbstractRoboTaxiDestMatcher {
 
-    private final GlobalBipartiteWeight specificWeight;
+    protected final GlobalBipartiteWeight specificWeight;
 
     public GlobalBipartiteMatching(DistanceFunction distanceFunction) {
         this.specificWeight = new GlobalBipartiteWeight() {

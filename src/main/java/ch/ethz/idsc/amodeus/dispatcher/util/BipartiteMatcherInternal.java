@@ -16,12 +16,12 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-/* package */ abstract class BipartiteMatchingUtilsSuper implements BipartiteMatcher {
+/* package */ abstract class BipartiteMatcherInternal implements BipartiteMatcher {
 
     /** network distance function used to prevent cycling solutions */
     protected final DistanceFunction accDstFctn;
 
-    public BipartiteMatchingUtilsSuper(Network network) {
+    public BipartiteMatcherInternal(Network network) {
         accDstFctn = new NetworkMinTimeDistanceFunction(network, new FastAStarLandmarksFactory());
     }
 

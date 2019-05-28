@@ -21,7 +21,7 @@ import ch.ethz.idsc.tensor.alg.Rescale;
 import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-public class GlobalBipartiteHelperILP<T> {
+/* package */ class GlobalBipartiteHelperILP<T> {
 
     private final GLPKAssignmentSolverBetter solver;
     private Map<RoboTaxi, T> previousAssignment = new HashMap<>();
@@ -63,32 +63,21 @@ public class GlobalBipartiteHelperILP<T> {
                     }
                     ++k;
                 }
-                
-                lastSolution.set(RealScalar.ONE, i,k);
+                lastSolution.set(RealScalar.ONE, i, k);
             }
         }
-        
 
         /** TODO add ome explanation of your solution format */
         Tensor tensorCost = Tensors.matrixDouble(costMatrix);
-        
-        
-//        System.out.println("tensorCost:");
-//        System.out.println(Pretty.of(tensorCost));
-//        
-//        
-//        System.out.println("lastSolution:");
-//        System.out.println(Pretty.of(lastSolution));
-        
 
         // previous version, did work and provided same performance as conventional GBM dispatcher
-//         Tensor solution = solver.solve(Rescale.of(tensorCost));
+        // Tensor solution = solver.solve(Rescale.of(tensorCost));
         Tensor solution = solver.solveAdvanced(Rescale.of(tensorCost), lastSolution);
         Map<RoboTaxi, T> map = new HashMap<>();
 
         for (int k = 0; k < n; ++k) {
             Tensor t = solution.get(k);
-//            ExactTensorQ.require(solution);
+            // ExactTensorQ.require(solution);
             Scalar tSum = (Scalar) Total.of(t);
 
             // either the robotaxi at line t is assigned or not, sum must be 0 or 1, no
@@ -104,13 +93,7 @@ public class GlobalBipartiteHelperILP<T> {
                 }
             }
         }
-
-        System.out.println(m);
-        System.out.println(n);
-        System.out.println(map.size());
-
         previousAssignment = map;
         return map;
     }
-
 }
