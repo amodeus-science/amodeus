@@ -11,12 +11,12 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
-public class XmlModifier implements AutoCloseable {
+public class XmlCustomModifier implements AutoCloseable {
 
     private final File xmlFile;
     private final Document document;
 
-    public XmlModifier(File xmlFile) throws JDOMException, IOException {
+    public XmlCustomModifier(File xmlFile) throws JDOMException, IOException {
         if (!xmlFile.isFile())
             throw new RuntimeException("not found: " + xmlFile);
 

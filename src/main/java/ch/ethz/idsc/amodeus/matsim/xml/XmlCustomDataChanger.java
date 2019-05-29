@@ -8,30 +8,34 @@ import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 
-public enum XmlCustomIntegerDispatcherDataChanger {
+public enum XmlCustomDataChanger {
     ;
 
-    public static void of(File simFolder, String dataName, int newValue) throws Exception {
+    /** Changes the value @param dataName in @param groupName in the av.xml
+     * file in {@link File} @param simFolder to @param newValue, usage example:
+     * 
+     * XmlCustomIntegerDispatcherDataChanger.of(simFolder, "numberOfVehicles", "generator",vehicleNumber);
+     * 
+     * @throws Exception */
+
+    public static void of(File simFolder, String groupName, String dataName, String newValue)//
+            throws Exception {
         System.out.println("changing " + dataName + " to " + newValue);
-
         File xmlFile = new File(simFolder, "av.xml");
-
         System.out.println("looking for av.xml file at " + xmlFile.getAbsolutePath());
-
-        try (XmlModifier xmlModifier = new XmlModifier(xmlFile)) {
+        try (XmlCustomModifier xmlModifier = new XmlCustomModifier(xmlFile)) {
             Document doc = xmlModifier.getDocument();
             Element rootNode = doc.getRootElement();
             Element operator = rootNode.getChild("operator");
-            Element dispatcher = operator.getChild("dispatcher");
+            Element group = operator.getChild(groupName);
             @SuppressWarnings("unchecked")
-            List<Element> children = dispatcher.getChildren();
-            
+            List<Element> children = group.getChildren();
             for (Element element : children) {
                 @SuppressWarnings("unchecked")
                 List<Attribute> theAttributes = element.getAttributes();
-
-                if (theAttributes.get(0).getValue().equals(dataName))
-                    theAttributes.get(1).setValue(Integer.toString(newValue));
+                if (theAttributes.get(0).getValue().equals(dataName)) {
+                    theAttributes.get(1).setValue(newValue);
+                }
             }
         }
     }

@@ -36,4 +36,5 @@ public class CachedNetworkTimeDistance implements NetworkTimeDistInterface {
         Tensor timeDist = cachedPathComputation.fromTo(from, to, now);
         return timeDist.Get(1);
     }
+
 }
