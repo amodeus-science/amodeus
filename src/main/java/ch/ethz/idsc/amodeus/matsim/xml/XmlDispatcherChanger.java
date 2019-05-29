@@ -3,9 +3,8 @@ package ch.ethz.idsc.amodeus.matsim.xml;
 
 import java.io.File;
 
-public class XmlDispatcherChanger {
+public enum XmlDispatcherChanger {
     ;
-
     /** Changes dispatcher in "av.xml" file in @param simFolder to the value @param newDispatcher
      * 
      * @throws Exception */

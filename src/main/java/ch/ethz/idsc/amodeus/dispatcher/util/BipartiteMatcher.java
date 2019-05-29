@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.util;
 
 import java.util.Collection;
@@ -10,11 +11,10 @@ import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
+@FunctionalInterface
 public interface BipartiteMatcher {
-
-    public Tensor executePickup(UniversalDispatcher universalDispatcher, //
+    Tensor executePickup(UniversalDispatcher universalDispatcher, //
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
             Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
             DistanceFunction distanceFunction, Network network);
-
 }

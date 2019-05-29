@@ -39,7 +39,7 @@ public class ConfigurableBipartiteMatcher extends BipartiteMatcherInternal {
             globalBipartiteMatcher = new GlobalBipartiteMatching(distanceFunction);
         } else if (matchingAlg.equals("ILP")) {
             hungarian = false;
-            globalBipartiteMatcher = new GlobalBipartiteMatchingILP(distanceFunction,safeConfig);
+            globalBipartiteMatcher = new GlobalBipartiteMatchingILP(distanceFunction, safeConfig);
         } else {
             System.err.println("An invalid option for the matching algorithm was chosen.");
             hungarian = null;
@@ -48,14 +48,14 @@ public class ConfigurableBipartiteMatcher extends BipartiteMatcherInternal {
         }
     }
 
+    @Override
     public Map<RoboTaxi, AVRequest> getGBPMatch(UniversalDispatcher universalDispatcher, //
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
             Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
             DistanceFunction distanceFunction, Network network) {
         if (hungarian)
             return hungarianMatch(universalDispatcher, roboTaxis, requests, distanceFunction, network);
-        else
-            return integerLinearProgramMatch(universalDispatcher, roboTaxis, requests, distanceFunction, network);
+        return integerLinearProgramMatch(universalDispatcher, roboTaxis, requests, distanceFunction, network);
     }
 
     private Map<RoboTaxi, AVRequest> hungarianMatch(UniversalDispatcher universalDispatcher, //

@@ -3,7 +3,7 @@ package ch.ethz.idsc.amodeus.matsim.xml;
 
 import java.io.File;
 
-public class XmlGeneratorChanger {
+public enum XmlGeneratorChanger {
     ;
 
     /** Changes generator in "av.xml" file in @param simFolder to the value @param newGenerator

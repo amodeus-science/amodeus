@@ -17,7 +17,6 @@ import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 public class XmlAVSettingsTest {
-    ;
 
     @BeforeClass
     public static void prepare() throws Exception {

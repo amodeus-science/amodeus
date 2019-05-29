@@ -91,7 +91,7 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
     /** @return {@link Tensor} containing the number of trips that shared the {@link RoboTaxi}
      *         with {0,1,2,..} other requests, e.g., {80,40,20,10} which means that there were a total
      *         of 150 requests out of which 80 were driving alone, and 10 shared the {@link RoboTaxi} with
-     *         3 other passengers, etc.*/
+     *         3 other passengers, etc. */
     public Tensor getSharedOthersDistribution() {
         return BinCounts.of(sharedOtherPassengersPerRequest);
     }

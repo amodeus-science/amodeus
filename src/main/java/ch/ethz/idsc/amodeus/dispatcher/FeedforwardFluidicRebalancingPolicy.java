@@ -100,7 +100,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
         distanceHeuristics = dispatcherConfig.getDistanceHeuristics(DistanceHeuristics.EUCLIDEAN);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
-        this.bipartiteMatcher = new ConfigurableBipartiteMatcher(network,distanceFunction,SafeConfig.wrap(avDispatcherConfig));
+        this.bipartiteMatcher = new ConfigurableBipartiteMatcher(network, distanceFunction, SafeConfig.wrap(avDispatcherConfig));
         this.travelData = travelData;
         System.out.println(travelData.getLPName());
         System.out.println(LPTimeInvariant.class.getSimpleName());
