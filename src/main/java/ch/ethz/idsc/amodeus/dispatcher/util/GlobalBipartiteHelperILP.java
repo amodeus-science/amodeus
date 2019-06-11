@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 import org.matsim.api.core.v01.network.Link;
@@ -93,6 +94,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
                 }
             }
         }
+                
         previousAssignment = map;
         return map;
     }
