@@ -1,11 +1,10 @@
 package ch.ethz.idsc.amodeus.dispatcher.util;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import org.matsim.api.core.v01.network.Link;
-import org.matsim.contrib.dvrp.schedule.Task;
+import org.matsim.contrib.dvrp.schedule.Schedules;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
@@ -18,7 +17,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
  *         otherwise it will not function properly! */
 public class GlobalBipartiteSpaceTimeMatching extends AbstractRoboTaxiDestMatcher {
     // fields
-    private static final double AVERAGE_SPEED = 10.0;
+    private static final double AVERAGE_SPEED = 20.0;
     private static final double EUC_TO_NET_RATIO = 1.414; // euclidean distance to network distance ratio
     private double now = 0.0;
     protected final GlobalBipartiteWeight specificWeight;
@@ -33,11 +32,13 @@ public class GlobalBipartiteSpaceTimeMatching extends AbstractRoboTaxiDestMatche
                 // for passenger carrying vehicles, we take the location and time the car is expecting
                 // to finish dropping off passenger and become available
                 Link divertableLink = roboTaxi.getCurrentDriveDestination();
-                List<? extends Task> listOfSchedules = roboTaxi.getSchedule().getTasks();
-                Task lastTask = listOfSchedules.get(listOfSchedules.size() - 1); // this will be the stay task
-                double divertableTime = lastTask.getBeginTime();
+                double divertableTime = Schedules.getLastTask(roboTaxi.getSchedule()).getBeginTime();
                 double distanceConvertedFromTime = (divertableTime - now) * AVERAGE_SPEED / EUC_TO_NET_RATIO;
-                if (distanceConvertedFromTime < 0) {
+                if (divertableTime - now < -1) {
+                    System.err.println(roboTaxi.getStatus().toString());
+                    System.err.println(roboTaxi.getSchedule().getCurrentTask().toString());
+                    System.err.println(Schedules.getLastTask(roboTaxi.getSchedule()).toString());
+                    System.err.println(divertableTime - now);
                     System.err.println("ATTENTION!!! Something is wrong!!!");
                     distanceConvertedFromTime = 0;
                 }
