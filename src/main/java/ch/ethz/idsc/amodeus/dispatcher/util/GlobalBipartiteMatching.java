@@ -35,4 +35,9 @@ public class GlobalBipartiteMatching extends AbstractRoboTaxiDestMatcher {
         return GlobalBipartiteHelper.genericMatch(roboTaxis, links, link -> link, specificWeight);
     }
 
+    @Override
+    protected void updateCurrentTime(double now) {
+     // nothing to do here
+    }
+
 }
