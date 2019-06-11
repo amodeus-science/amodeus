@@ -40,6 +40,14 @@ public class ConfigurableBipartiteMatcher extends BipartiteMatcherInternal {
         } else if (matchingAlg.equals("ILP")) {
             hungarian = false;
             globalBipartiteMatcher = new GlobalBipartiteMatchingILP(distanceFunction, safeConfig);
+        } else if (matchingAlg.equals("SPACE_TIME")) {
+            hungarian = true;
+            System.out.println("==========================================================");
+            System.out.println("==========================================================");
+            System.out.println("!!!!!SPCACE TIME BIPARTITE MATCHING IS NOW ACTIVATED!!!!!!");
+            System.out.println("==========================================================");
+            System.out.println("==========================================================");
+            globalBipartiteMatcher = new GlobalBipartiteSpaceTimeMatching(distanceFunction);
         } else {
             System.err.println("An invalid option for the matching algorithm was chosen.");
             hungarian = null;
@@ -81,5 +89,9 @@ public class ConfigurableBipartiteMatcher extends BipartiteMatcherInternal {
         /** prevent cycling an assignment is only updated if the new distance is smaller than the
          * old distance */
         return gbpMatch;
+    }
+    
+    public void updateCurrentTime(double now) {
+        globalBipartiteMatcher.updateCurrentTime(now);
     }
 }

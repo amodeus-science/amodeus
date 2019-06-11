@@ -34,4 +34,6 @@ public abstract class AbstractRoboTaxiDestMatcher {
 
     protected abstract Map<RoboTaxi, Link> protected_matchLink(Collection<RoboTaxi> roboTaxis, Collection<Link> links);
 
+    protected abstract void updateCurrentTime(double now);
+    
 }

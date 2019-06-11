@@ -128,6 +128,14 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
                 .filter(RoboTaxi::isDivertable)//
                 .collect(Collectors.toList());
     }
+    
+    /** @return {@Collection} of {@RoboTaxi}s which is in stay task (idling)
+     *          */
+    protected final Collection<RoboTaxi> getStayingTaxi() {
+        return getDivertableUnassignedRoboTaxis().stream() //
+                .filter(RoboTaxi::isInStayTask)//
+                .collect(Collectors.toList());
+    }
 
     /** @return immutable and inverted copy of pickupRegister, displays which
      *         vehicles are currently scheduled to pickup which request */
