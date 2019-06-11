@@ -34,14 +34,20 @@ public class GlobalBipartiteSpaceTimeMatching extends AbstractRoboTaxiDestMatche
                 Link divertableLink = roboTaxi.getCurrentDriveDestination();
                 double divertableTime = Schedules.getLastTask(roboTaxi.getSchedule()).getBeginTime();
                 double distanceConvertedFromTime = (divertableTime - now) * AVERAGE_SPEED / EUC_TO_NET_RATIO;
+                if (divertableTime - now == -1)
+                    distanceConvertedFromTime = 0;
+
+                // DELETE the part below after debugging
                 if (divertableTime - now < -1) {
                     System.err.println(roboTaxi.getStatus().toString());
                     System.err.println(roboTaxi.getSchedule().getCurrentTask().toString());
                     System.err.println(Schedules.getLastTask(roboTaxi.getSchedule()).toString());
                     System.err.println(divertableTime - now);
                     System.err.println("ATTENTION!!! Something is wrong!!!");
-                    distanceConvertedFromTime = 0;
+                    distanceConvertedFromTime = 9999999.9;
                 }
+                // Until here
+
                 double augmentedDistance = //
                         distanceFunction.getDistance(divertableLink, link) + distanceConvertedFromTime;
                 return augmentedDistance;
