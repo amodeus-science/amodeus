@@ -13,6 +13,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Dimensions;
+import ch.ethz.idsc.tensor.io.Pretty;
 import ch.ethz.idsc.tensor.sca.Floor;
 import ch.ethz.idsc.tensor.sca.Sign;
 
@@ -25,16 +26,20 @@ public enum FeasibleRebalanceCreator {
     public static Tensor returnFeasibleRebalance(Tensor rebalanceInput, Map<VirtualNode<Link>, //
             List<RoboTaxi>> availableVehicles) {
 
-        GlobalAssert.that(Dimensions.of(rebalanceInput).get(0) == Dimensions.of(rebalanceInput).get(1));
-        GlobalAssert.that(Dimensions.of(rebalanceInput).get(0) == availableVehicles.size());
+        int dim0 = Dimensions.of(rebalanceInput).get(0);
+        int dim1 = Dimensions.of(rebalanceInput).get(1);
+
+        GlobalAssert.that(dim0 == dim1);
+        GlobalAssert.that(dim0 == availableVehicles.size());
         GlobalAssert.that(rebalanceInput.flatten(-1).map(Scalar.class::cast).allMatch(Sign::isPositiveOrZero));
 
         Tensor feasibleRebalance = rebalanceInput.copy();
-        for (int i = 0; i < Dimensions.of(rebalanceInput).get(0); ++i) {
+
+        for (int i = 0; i < dim0; ++i) {
             // count number of outgoing vehicles per vNode
             double outgoingNmrvNode = 0.0;
             Tensor outgoingVehicles = rebalanceInput.get(i);
-            for (int j = 0; j < Dimensions.of(rebalanceInput).get(0); ++j) {
+            for (int j = 0; j < dim0; ++j) {
                 outgoingNmrvNode = outgoingNmrvNode + outgoingVehicles.Get(j).number().doubleValue();
             }
             int outgoingVeh = (int) outgoingNmrvNode;
@@ -50,5 +55,4 @@ public enum FeasibleRebalanceCreator {
         }
         return feasibleRebalance;
     }
-
 }
