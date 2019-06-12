@@ -5,10 +5,10 @@ import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 
-public interface GlobalBipartiteWeight {
+public interface GlobalBipartiteCost {
 
     /** @return the scalar cost between every pair of a {@link RoboTaxi} @param roboTaxi
      *         and a {@link Link} @param link, e.g., the Euclidean distance */
-    double between(RoboTaxi roboTaxi, Link link);
+    public double between(RoboTaxi roboTaxi, Link link);
 
 }

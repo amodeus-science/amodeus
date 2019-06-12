@@ -13,6 +13,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
 import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.ConfigurableBipartiteMatcher;
+import ch.ethz.idsc.amodeus.dispatcher.util.DistanceCost;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
@@ -49,7 +50,8 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
         this.network = network;
         /** matching algorithm - standard is a solution to the assignment problem with the Hungarian method */
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
-        bipartiteMatcher = new ConfigurableBipartiteMatcher(network, distanceFunction, safeConfig);
+        bipartiteMatcher = new ConfigurableBipartiteMatcher(network, new DistanceCost(distanceFunction), //
+                safeConfig);
     }
 
     @Override

@@ -8,7 +8,6 @@ import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
-import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.matsim.av.passenger.AVRequest;
@@ -17,8 +16,8 @@ public class GlobalBipartiteMatchingILP extends GlobalBipartiteMatching {
 
     private final Tensor costFunctionWeights;
 
-    public GlobalBipartiteMatchingILP(DistanceFunction distanceFunction, SafeConfig safeConfig) {
-        super(distanceFunction);
+    public GlobalBipartiteMatchingILP(GlobalBipartiteCost cost, SafeConfig safeConfig) {
+        super(cost);
         /** extract weights for matching algorithm */
         System.out.println("Retrieving weights from the av.xml file, the dispatcher needs a line in this format:");
         System.out.println("<param name=\"matchingWeight\" value=\"{1,2,3}\" />");
@@ -26,8 +25,8 @@ public class GlobalBipartiteMatchingILP extends GlobalBipartiteMatching {
         System.out.println("[alpha,beta,gamma] = " + costFunctionWeights);
     }
 
-    public GlobalBipartiteMatchingILP(DistanceFunction distanceFunction, Tensor customWeights) {
-        super(distanceFunction);
+    public GlobalBipartiteMatchingILP(GlobalBipartiteCost cost, Tensor customWeights) {
+        super(cost);
         this.costFunctionWeights = customWeights;
     }
 
