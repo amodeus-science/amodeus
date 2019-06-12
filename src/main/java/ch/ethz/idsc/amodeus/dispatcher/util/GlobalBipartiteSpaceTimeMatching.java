@@ -23,7 +23,7 @@ public class GlobalBipartiteSpaceTimeMatching extends AbstractRoboTaxiDestMatche
     // fields
     private static final double AVERAGE_SPEED = 10.0;
     private static final double EUC_TO_NET_RATIO = 1.414; // euclidean distance to network distance ratio
-    private double now = 0.0;
+    double now;
     protected final GlobalBipartiteWeight specificWeight;
 
     // constructor

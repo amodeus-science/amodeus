@@ -42,11 +42,6 @@ public class ConfigurableBipartiteMatcher extends BipartiteMatcherInternal {
             globalBipartiteMatcher = new GlobalBipartiteMatchingILP(distanceFunction, safeConfig);
         } else if (matchingAlg.equals("SPACE_TIME")) {
             hungarian = true;
-            System.out.println("==========================================================");
-            System.out.println("==========================================================");
-            System.out.println("!!!!!SPCACE TIME BIPARTITE MATCHING IS NOW ACTIVATED!!!!!!");
-            System.out.println("==========================================================");
-            System.out.println("==========================================================");
             globalBipartiteMatcher = new GlobalBipartiteSpaceTimeMatching(distanceFunction);
         } else {
             System.err.println("An invalid option for the matching algorithm was chosen.");
