@@ -8,9 +8,9 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 public class ScenarioCreator {
     private final File dataDir;
     private final File taxiData;
-    private final DataOperator dataOperator; // create your own as needed
+    private final DataOperator<?> dataOperator; // create your own as needed
 
-    public ScenarioCreator(File dataDir, File taxiData, DataOperator dataOperator) {
+    public ScenarioCreator(File dataDir, File taxiData, DataOperator<?> dataOperator) {
         GlobalAssert.that(dataDir.isDirectory());
         GlobalAssert.that(taxiData.exists());
         this.dataDir = dataDir;

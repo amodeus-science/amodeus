@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.util;
 
 import java.util.Collection;
@@ -11,11 +12,13 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-/** @author Lu Chengqi This is the space time global bipartite matching module. This is currently for unit
- *         capacity dispatcher only. To use this, special dispatcher is recommended.
- *         First, all the vehicles (including the passenger carrying ones) should be input to the
- *         vehicle side. Second, before doing the matching, remember to update current time "now",
- *         otherwise it will not function properly! */
+/** This is the space time global bipartite matching module. This is currently for unit
+ * capacity dispatcher only. To use this, special dispatcher is recommended.
+ * First, all the vehicles (including the passenger carrying ones) should be input to the
+ * vehicle side. Second, before doing the matching, remember to update current time "now",
+ * otherwise it will not function properly!
+ * 
+ * @author Lu Chengqi */
 public class GlobalBipartiteSpaceTimeMatching extends AbstractRoboTaxiDestMatcher {
     // fields
     private static final double AVERAGE_SPEED = 10.0;

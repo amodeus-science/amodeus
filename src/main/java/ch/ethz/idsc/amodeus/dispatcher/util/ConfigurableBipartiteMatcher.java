@@ -90,7 +90,7 @@ public class ConfigurableBipartiteMatcher extends BipartiteMatcherInternal {
          * old distance */
         return gbpMatch;
     }
-    
+
     public void updateCurrentTime(double now) {
         globalBipartiteMatcher.updateCurrentTime(now);
     }

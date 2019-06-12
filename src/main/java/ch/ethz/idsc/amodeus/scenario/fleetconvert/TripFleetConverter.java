@@ -27,7 +27,7 @@ public class TripFleetConverter implements FleetConverter {
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
     @Override
-    public void run(File processingDir, File tripFile, DataOperator dataOperator) throws Exception {
+    public void run(File processingDir, File tripFile, DataOperator<?> dataOperator) throws Exception {
         GlobalAssert.that(tripFile.isFile());
 
         // Prepare Environment and load all configuration files

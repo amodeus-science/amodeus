@@ -23,7 +23,7 @@ public class GLPKAssignmentSolverBetter {
     private int requests;
     private int vehicles;
     private int variables;
-    private Tensor changes;
+    // private Tensor changes;
     private Scalar obj_val;
     private Tensor c_ij;
     private Tensor p_ij;
@@ -123,7 +123,8 @@ public class GLPKAssignmentSolverBetter {
     public void solveProblem() {
         glp_smcp parm = new glp_smcp();
         GLPK.glp_init_smcp(parm);
-        int ret_val = GLPK.glp_simplex(lp, parm);
+        // int ret_val =
+        GLPK.glp_simplex(lp, parm);
         obj_val = RealScalar.of(GLPK.glp_get_obj_val(lp));
 
         int var_counter = 1;

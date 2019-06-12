@@ -37,7 +37,7 @@ public class GlobalBipartiteMatching extends AbstractRoboTaxiDestMatcher {
 
     @Override
     protected void updateCurrentTime(double now) {
-     // nothing to do here
+        // nothing to do here
     }
 
 }

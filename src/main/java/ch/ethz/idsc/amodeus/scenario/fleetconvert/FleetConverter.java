@@ -7,6 +7,6 @@ import ch.ethz.idsc.amodeus.scenario.DataOperator;
 
 public interface FleetConverter {
 
-    void run(File processingDir, File tripFile, DataOperator dataOperator) throws Exception;
+    void run(File processingDir, File tripFile, DataOperator<?> dataOperator) throws Exception;
 
 }
