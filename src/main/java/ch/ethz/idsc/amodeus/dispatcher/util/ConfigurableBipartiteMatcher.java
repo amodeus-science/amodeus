@@ -40,9 +40,6 @@ public class ConfigurableBipartiteMatcher extends BipartiteMatcherInternal {
         } else if (matchingAlg.equals("ILP")) {
             hungarian = false;
             globalBipartiteMatcher = new GlobalBipartiteMatchingILP(distanceFunction, safeConfig);
-        } else if (matchingAlg.equals("SPACE_TIME")) {
-            hungarian = true;
-            globalBipartiteMatcher = new GlobalBipartiteSpaceTimeMatching(distanceFunction);
         } else {
             System.err.println("An invalid option for the matching algorithm was chosen.");
             hungarian = null;
@@ -86,7 +83,4 @@ public class ConfigurableBipartiteMatcher extends BipartiteMatcherInternal {
         return gbpMatch;
     }
 
-    public void updateCurrentTime(double now) {
-        globalBipartiteMatcher.updateCurrentTime(now);
-    }
 }

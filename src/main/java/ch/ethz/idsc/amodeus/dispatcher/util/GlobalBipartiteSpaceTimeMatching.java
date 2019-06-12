@@ -62,10 +62,4 @@ public class GlobalBipartiteSpaceTimeMatching extends AbstractRoboTaxiDestMatche
         return GlobalBipartiteHelper.genericMatch(roboTaxis, links, link -> link, specificWeight);
     }
 
-    // IMPORTANT!!! This function has to be implemented in the dispatcher, otherwise it won't work properly!!!
-    @Override
-    protected void updateCurrentTime(double now) {
-        this.now = now;
-    }
-
 }
