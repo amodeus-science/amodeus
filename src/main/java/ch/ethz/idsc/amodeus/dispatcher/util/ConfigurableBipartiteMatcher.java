@@ -31,15 +31,15 @@ public class ConfigurableBipartiteMatcher extends BipartiteMatcherInternal {
      * 
      * The values are retrieved via @param safeConfig, other parameters necessary for instantiation are
      * the network @param network, and the distance function @param distanceFunction */
-    public ConfigurableBipartiteMatcher(Network network, DistanceFunction distanceFunction, SafeConfig safeConfig) {
+    public ConfigurableBipartiteMatcher(Network network, GlobalBipartiteCost cost, SafeConfig safeConfig) {
         super(network);
         String matchingAlg = safeConfig.getString("matchingAlgorithm", "HUNGARIAN");
         if (matchingAlg.equals("HUNGARIAN")) {
             hungarian = true;
-            globalBipartiteMatcher = new GlobalBipartiteMatching(distanceFunction);
+            globalBipartiteMatcher = new GlobalBipartiteMatching(cost);
         } else if (matchingAlg.equals("ILP")) {
             hungarian = false;
-            globalBipartiteMatcher = new GlobalBipartiteMatchingILP(distanceFunction, safeConfig);
+            globalBipartiteMatcher = new GlobalBipartiteMatchingILP(cost, safeConfig);
         } else {
             System.err.println("An invalid option for the matching algorithm was chosen.");
             hungarian = null;

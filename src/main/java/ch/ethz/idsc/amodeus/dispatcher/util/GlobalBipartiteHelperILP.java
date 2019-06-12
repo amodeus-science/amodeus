@@ -31,7 +31,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     }
 
     public Map<RoboTaxi, T> genericMatch(Collection<RoboTaxi> roboTaxis, Collection<T> linkObjects, //
-            Function<T, Link> linkOfT, GlobalBipartiteWeight weight) {
+            Function<T, Link> linkOfT, GlobalBipartiteCost weight) {
         /** storage in {@link List} as {@link Collection} does not guarantee order */
         final List<RoboTaxi> orderedRoboTaxis = new ArrayList<>(roboTaxis);
         final List<T> ordered_linkObjects = new ArrayList<>(linkObjects);

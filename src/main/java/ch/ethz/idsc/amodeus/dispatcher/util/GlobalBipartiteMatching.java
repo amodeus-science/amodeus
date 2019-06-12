@@ -7,22 +7,16 @@ import java.util.Map;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** perform a global bipartite matching of {@link RoboTaxi} and {@link AVRequest}
  * or {@link Link} using the Hungarian Method */
 public class GlobalBipartiteMatching extends AbstractRoboTaxiDestMatcher {
 
-    protected final GlobalBipartiteWeight specificWeight;
+    protected final GlobalBipartiteCost specificWeight;
 
-    public GlobalBipartiteMatching(DistanceFunction distanceFunction) {
-        this.specificWeight = new GlobalBipartiteWeight() {
-            @Override
-            public double between(RoboTaxi roboTaxi, Link link) {
-                return distanceFunction.getDistance(roboTaxi, link);
-            }
-        };
+    public GlobalBipartiteMatching(GlobalBipartiteCost specificWeight) {
+        this.specificWeight = specificWeight;
     }
 
     @Override

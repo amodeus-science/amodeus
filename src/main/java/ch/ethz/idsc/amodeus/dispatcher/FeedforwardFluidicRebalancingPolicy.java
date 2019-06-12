@@ -20,9 +20,12 @@ import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.ConfigurableBipartiteMatcher;
+import ch.ethz.idsc.amodeus.dispatcher.util.DistanceCost;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
+import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceCost;
 import ch.ethz.idsc.amodeus.dispatcher.util.FeasibleRebalanceCreator;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
+import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteCost;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.lp.LPCreator;
 import ch.ethz.idsc.amodeus.lp.LPTimeInvariant;
@@ -100,7 +103,8 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
         distanceHeuristics = dispatcherConfig.getDistanceHeuristics(DistanceHeuristics.EUCLIDEAN);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
-        this.bipartiteMatcher = new ConfigurableBipartiteMatcher(network, distanceFunction, SafeConfig.wrap(avDispatcherConfig));
+        this.bipartiteMatcher = new ConfigurableBipartiteMatcher(network, new DistanceCost(distanceFunction), //
+                SafeConfig.wrap(avDispatcherConfig));
         this.travelData = travelData;
         System.out.println(travelData.getLPName());
         System.out.println(LPTimeInvariant.class.getSimpleName());
@@ -208,10 +212,8 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
             AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
-
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
-            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceFunction.INSTANCE);
-
+            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceCost.INSTANCE);
             return new FeedforwardFluidicRebalancingPolicy(config, avconfig, generatorConfig, travelTime, router, eventsManager, network, virtualNetwork, abstractVirtualNodeDest,
                     abstractVehicleDestMatcher, travelData, db);
         }
