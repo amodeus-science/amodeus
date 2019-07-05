@@ -23,7 +23,7 @@ import org.matsim.core.scenario.ScenarioUtils;
 
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
-import ch.ethz.idsc.amodeus.prep.PopulationTools;
+import ch.ethz.idsc.amodeus.prep.PopulationArrivalRate;
 import ch.ethz.idsc.amodeus.prep.Request;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.test.TestFileHandling;
@@ -89,14 +89,14 @@ public class PopulationToolsTestVN2 {
     @Test
     public void testInvalid() {
         try {
-            PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(requestsSingle3, virtualNetwork2, 3601, endTime);
+            PopulationArrivalRate.getVNodeAndInterval(requestsSingle3, virtualNetwork2, 3601, endTime);
             assertTrue(false);
         } catch (Exception exception) {
             // ---
         }
 
         try {
-            PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(requestsSingle3, virtualNetwork2, -1, endTime);
+            PopulationArrivalRate.getVNodeAndInterval(requestsSingle3, virtualNetwork2, -1, endTime);
             assertTrue(false);
         } catch (Exception exception) {
             // ---
@@ -105,16 +105,16 @@ public class PopulationToolsTestVN2 {
 
     @Test
     public void testEmpty() {
-        Tensor lambda = PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(requestsEmpty, virtualNetwork2, 3600, endTime);
+        Tensor lambda = PopulationArrivalRate.getVNodeAndInterval(requestsEmpty, virtualNetwork2, 3600, endTime);
         assertEquals(lambda, Array.zeros(30, 2, 2));
     }
 
     @Test
     public void testVirtualNetwork2() {
-        Tensor lambda = PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(requestsSingle3, virtualNetwork2, 15 * 3600, endTime);
+        Tensor lambda = PopulationArrivalRate.getVNodeAndInterval(requestsSingle3, virtualNetwork2, 15 * 3600, endTime);
         assertEquals(lambda, Tensors.of(Tensors.of(Tensors.vector(0, 1), Tensors.vector(0, 0)), Tensors.of(Tensors.vector(0, 0), Tensors.vector(0, 0))));
 
-        lambda = PopulationTools.getLambdaInVirtualNodesAndTimeIntervals(requests3, virtualNetwork2, 15 * 3600, endTime);
+        lambda = PopulationArrivalRate.getVNodeAndInterval(requests3, virtualNetwork2, 15 * 3600, endTime);
         assertEquals(lambda, Tensors.of(Tensors.of(Tensors.vector(1, 1), Tensors.vector(1, 0)), Tensors.of(Tensors.vector(0, 0), Tensors.vector(1, 0))));
     }
 
