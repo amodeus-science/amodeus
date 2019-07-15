@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.routing.NetworkTimeDistInterface;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 /** helper Class for a Block to translate planned pushes and pulls into directives of Robotaxis to Links.
@@ -26,14 +27,14 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
      * @param blocks all the adjacent blocks to which pushes are planned
      * @param freeRoboTaxis all the robotaxis which should be considered
      * @param timeDb Travel time calculator */
-    BlockRebalancingHelper(Set<Block> blocks, Set<RoboTaxi> freeRoboTaxis, TravelTimeInterface timeDb) {
+    public BlockRebalancingHelper(Set<Block> blocks, Set<RoboTaxi> freeRoboTaxis, NetworkTimeDistInterface timeDb, Double now) {
         GlobalAssert.that(!freeRoboTaxis.isEmpty());
 
         blocks.forEach(b -> blocktravelTimes.put(b, new HashSet<>()));
         freeRoboTaxis.forEach(rt -> allTravelTimesForRoboTaxis.put(rt, new HashMap<>()));
         for (RoboTaxi roboTaxi : freeRoboTaxis) {
             for (Block block : blocks) {
-                double travelTime = timeDb.timeFromTo(roboTaxi.getDivertableLocation(), block.getCenterLink()).number().doubleValue();
+                double travelTime = timeDb.travelTime(roboTaxi.getDivertableLocation(), block.getCenterLink(), now).number().doubleValue();
                 if (!travelTimesSorted.containsKey(travelTime)) {
                     travelTimesSorted.put(travelTime, new HashMap<>());
                 }
@@ -51,7 +52,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
      * 
      * @param shortestTrip shortest Trip which was used outside
      * @param updatedPushing value of how many pushes are still required to the block in shortest trip. */
-    void update(ShortestTrip shortestTrip, int updatedPushing) {
+    public void update(ShortestTrip shortestTrip, int updatedPushing) {
         // remove All The entries where the just added RoboTaxi Occured
         for (Entry<Block, Double> entry : allTravelTimesForRoboTaxis.get(shortestTrip.roboTaxi).entrySet()) {
             removeRoboTaxiFromMap(entry.getValue(), entry.getKey(), shortestTrip.roboTaxi);
@@ -94,13 +95,13 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     /** gets the currently shortest trip in the data structure. If some trips have equal length a random choice is made.
      * 
      * @return */
-    ShortestTrip getShortestTrip() {
+    public ShortestTrip getShortestTrip() {
         GlobalAssert.that(!travelTimesSorted.isEmpty());
         return new ShortestTrip();
     }
 
     /** Helper class to wrap the three elements Travel Time, Block and roboTaxi */
-    class ShortestTrip {
+    public class ShortestTrip {
         final Double travelTime;
         final Block block;
         final RoboTaxi roboTaxi;

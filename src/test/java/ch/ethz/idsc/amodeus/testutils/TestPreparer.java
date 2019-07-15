@@ -44,7 +44,7 @@ public class TestPreparer {
         ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
 
         // load Settings from IDSC Options
-        File configFile = new File(workingDirectory, scenarioOptions.getPreparerConfigName());
+        File configFile = new File(scenarioOptions.getPreparerConfigName());
 
         AVConfigGroup avConfigGroup = new AVConfigGroup();
         Config config = ConfigUtils.loadConfig(configFile.getAbsolutePath(), avConfigGroup);
@@ -73,7 +73,7 @@ public class TestPreparer {
                 scenarioOptions.getWorkingDirectory(), //
                 virtualNetwork, networkPrepared, populationPrepared, //
                 scenarioOptions.getdtTravelData(), numRt, endTime);
-        File travelDataFile = new File(scenarioOptions.getVirtualNetworkName(), scenarioOptions.getTravelDataName());
+        File travelDataFile = new File(scenarioOptions.getVirtualNetworkDirectoryName(), scenarioOptions.getTravelDataName());
         TravelDataIO.writeStatic(travelDataFile, travelData);
 
         // 5) save a simulation config file

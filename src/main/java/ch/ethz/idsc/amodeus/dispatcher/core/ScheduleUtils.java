@@ -9,15 +9,15 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
 /* package */ enum ScheduleUtils {
     ;
-    static boolean isLastTask(Schedule schedule, Task task) {
+    public static boolean isLastTask(Schedule schedule, Task task) {
         return task.getTaskIdx() == schedule.getTaskCount() - 1;
     }
 
-    static boolean isNextToLastTask(Schedule schedule, Task task) {
+    public static boolean isNextToLastTask(Schedule schedule, Task task) {
         return task.getTaskIdx() == schedule.getTaskCount() - 2;
     }
 
-    static String scheduleOf(RoboTaxi robotaxi) {
+    public static String scheduleOf(RoboTaxi robotaxi) {
         Schedule schedule = robotaxi.getSchedule();
         return toString(schedule);
     }
@@ -26,7 +26,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
      * @param taskEndTime has to be strictly less than scheduleEndTime
      * @param scheduleEndTime
      * @param destination */
-    static void makeWhole( //
+    public static void makeWhole( //
             RoboTaxi robotaxi, double taskEndTime, double scheduleEndTime, Link destination) {
         if (taskEndTime < scheduleEndTime) {
             Schedule schedule = robotaxi.getSchedule();
@@ -40,7 +40,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
      * 
      * @param schedule
      * @return */
-    static String toString(Schedule schedule) {
+    public static String toString(Schedule schedule) {
         StringBuilder stringBuilder = new StringBuilder();
         boolean flag = false;
         int hiddenCount = 0;

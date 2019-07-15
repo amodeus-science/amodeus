@@ -15,6 +15,7 @@ import org.matsim.contrib.dvrp.util.LinkTimePair;
 import org.matsim.contrib.dvrp.vrpagent.VrpLeg;
 import org.matsim.core.mobsim.framework.MobsimTimer;
 
+import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 public class AmodeusDriveTaskTracker implements OnlineDriveTaskTracker {
@@ -72,32 +73,31 @@ public class AmodeusDriveTaskTracker implements OnlineDriveTaskTracker {
      */
     @Override
     public LinkTimePair getDiversionPoint() {
-        if (vrpDynLeg.canChangeNextLink()) {
+        if (vrpDynLeg.canChangeNextLink())
             return new LinkTimePair(path.getLink(currentLinkIdx), predictLinkExitTime());
-        }
 
-        if (path.getLinkCount() == currentLinkIdx + 1) {// the current link is
-                                                        // the last one
-            return null;// too late to divert (reason: cannot change the next
-                        // link)
-        }
+        // the current link is the last one
+        if (path.getLinkCount() == currentLinkIdx + 1)
+            // too late to divert (reason: cannot change the next link)
+            return null;
 
         double nextLinkTT = path.getLinkTravelTime(currentLinkIdx + 1);
         double predictedNextLinkExitTime = predictLinkExitTime() + nextLinkTT;
         return new LinkTimePair(path.getLink(currentLinkIdx + 1), predictedNextLinkExitTime);
     }
 
-    /** @author Claudio Ruch
-     * @return */
+    /** @return {@link LinkTimePair} on which the {@link RoboTaxi} can be
+     *         diverted, i.e., its patch can be changed at this link. */
     public LinkTimePair getSafeDiversionPoint() {
-        if (getDiversionPoint() != null)
-            return getDiversionPoint();
-        return getPathEndDiversionPoint();
+        return (Objects.nonNull(getDiversionPoint())) ? //
+                getDiversionPoint() : //
+                getPathEndDiversionPoint();
     }
 
-    /** @author Claudio Ruch
-     * @return diversion point at end of path */
+    /** @return {@link LinkTimePair} at which the {@link RoboTaxi} ends its
+     *         current path as a backup diversion point. */
     private LinkTimePair getPathEndDiversionPoint() {
+        System.err.println("Diversionpoint was null, returning path end point as diversion point.");
         LinkTimePair returnPair = new LinkTimePair(path.getToLink(), predictLinkExitTime());
         GlobalAssert.that(Objects.nonNull(returnPair));
         return returnPair;
@@ -115,7 +115,7 @@ public class AmodeusDriveTaskTracker implements OnlineDriveTaskTracker {
             throw new IllegalArgumentException("links dont match: " + newSubPath.getFromLink().getId() + "!=" + diversionPoint.link.getId());
         }
         if (newSubPath.getDepartureTime() != diversionPoint.time) {
-            throw new IllegalArgumentException("times dont match");
+            throw new IllegalArgumentException("times dont match" + newSubPath.getDepartureTime() + "!=" + diversionPoint.time);
         }
 
         int diversionLinkIdx = getDiversionLinkIndex();

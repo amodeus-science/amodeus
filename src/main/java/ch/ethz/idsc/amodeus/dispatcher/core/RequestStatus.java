@@ -1,6 +1,8 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
+import ch.ethz.matsim.av.passenger.AVRequest;
+
 public enum RequestStatus {
     /** REGULAR REQUEST PROCESS */
     /** Request entered system. */
@@ -37,4 +39,13 @@ public enum RequestStatus {
         return tag;
     }
 
+    /** @return true if the customer is not yet served, false otherwise.
+     *         A {@link AVRequest} is counted as served as soon as the "moment of impatience"
+     *         for the customer is over and the customer is together with the car, i.e.,
+     *         in pickup process, driving or during dropoff */
+    public boolean isUnserved() {
+        return !(this.equals(RequestStatus.DRIVING) || //
+                this.equals(RequestStatus.PICKUP) || //
+                this.equals(RequestStatus.DROPOFF));
+    }
 }

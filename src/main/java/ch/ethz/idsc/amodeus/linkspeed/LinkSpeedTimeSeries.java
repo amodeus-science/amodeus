@@ -21,6 +21,7 @@ public class LinkSpeedTimeSeries implements Serializable {
     private /* non-final */ SortedMap<Integer, Tensor> data;
 
     public LinkSpeedTimeSeries(int time, double speed) {
+        GlobalAssert.that(time >= 0);
         data = new TreeMap<>();
         data.put(time, Tensors.vector(speed));
     }

@@ -10,7 +10,7 @@ import org.matsim.api.core.v01.network.Link;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 
 /** Helper Class to wrap rebalancing Directives. */
-public class RebalancingDirectives {
+/* package */ class RebalancingDirectives {
     private final Map<RoboTaxi, Link> directives;
 
     public RebalancingDirectives() {

@@ -17,13 +17,14 @@ import org.junit.Test;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
-import ch.ethz.idsc.amodeus.analysis.ScenarioParametersExport;
+import ch.ethz.idsc.amodeus.analysis.AnalysisConstants;
 import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.testutils.SharedTestServer;
 import ch.ethz.idsc.amodeus.testutils.TestPreparer;
-import ch.ethz.idsc.amodeus.testutils.TestUtils;
+import ch.ethz.idsc.amodeus.util.io.LocateUtils;
+import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkGet;
@@ -47,8 +48,8 @@ public class SharedRoboTaxiTest {
         System.out.println(GLPK.glp_version());
 
         // copy scenario data into main directory
-        File scenarioDirectory = new File(TestUtils.getSuperFolder("amodeus"), "resources/testScenario");
-        File workingDirectory = TestUtils.getWorkingDirectory();
+        File scenarioDirectory = new File(LocateUtils.getSuperFolder("amodeus"), "resources/testScenario");
+        File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         GlobalAssert.that(workingDirectory.isDirectory());
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
 
@@ -92,15 +93,18 @@ public class SharedRoboTaxiTest {
     public void testServer() throws Exception {
         System.out.print("GLPK version is: ");
         System.out.println(GLPK.glp_version());
-
         System.out.print("Server Test:\t");
 
         /** scenario options */
-        File workingDirectory = TestUtils.getWorkingDirectory();
+        File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
-        assertEquals("config.xml", scenarioOptions.getSimulationConfigName());
-        assertEquals("preparedNetwork", scenarioOptions.getPreparedNetworkName());
-        assertEquals("preparedPopulation", scenarioOptions.getPreparedPopulationName());
+        // assertEquals("config.xml", scenarioOptions.getSimulationConfigName());
+        // assertEquals("preparedNetwork", scenarioOptions.getPreparedNetworkName());
+        // assertEquals("preparedPopulation", scenarioOptions.getPreparedPopulationName());
+
+        assertEquals(workingDirectory.getAbsolutePath() + "/config.xml", scenarioOptions.getSimulationConfigName());
+        assertEquals(workingDirectory.getAbsolutePath() + "/preparedNetwork", scenarioOptions.getPreparedNetworkName());
+        assertEquals(workingDirectory.getAbsolutePath() + "/preparedPopulation", scenarioOptions.getPreparedPopulationName());
 
         /** simulation objects should exist after simulation (simulation data) */
         File simobj = new File("output/001/simobj/it.00");
@@ -136,31 +140,17 @@ public class SharedRoboTaxiTest {
         scalarAssert.add(RealScalar.of(0.2048), RealScalar.of(occupancyRatio.number()));
         scalarAssert.add(RealScalar.of(0.3223596160244375), distanceRatio);
 
-        // TODO Shared Clean Up
-        // assertEquals(0.2048194444444444, occupancyRatio.number().doubleValue(), 0.0);
-        // assertEquals(0.3188073794232303, distanceRatio.number().doubleValue(), 0.0);
-
         /** fleet distances */
         assertTrue(ate.getDistancElement().totalDistance >= 0.0);
-        // assertEquals(262121.29277006662, ate.getDistancElement().totalDistance, 0.0);
         scalarAssert.add(RealScalar.of(259599.98379885187), RealScalar.of(ate.getDistancElement().totalDistance));
-
         assertTrue(ate.getDistancElement().totalDistanceWtCst >= 0.0);
-        // assertEquals(83251.71235895174, ate.getDistancElement().totalDistanceWtCst, 0.0);
         scalarAssert.add(RealScalar.of(83246.42252739928), RealScalar.of(ate.getDistancElement().totalDistanceWtCst));
-
         assertTrue(ate.getDistancElement().totalDistancePicku > 0.0);
-        // assertEquals(10440.749239659945, ate.getDistancElement().totalDistancePicku, 0.0);
         scalarAssert.add(RealScalar.of(10328.03604749948), RealScalar.of(ate.getDistancElement().totalDistancePicku));
-
         assertTrue(ate.getDistancElement().totalDistanceRebal >= 0.0);
-        // assertEquals(168428.8311714545, ate.getDistancElement().totalDistanceRebal, 0.0);
         scalarAssert.add(RealScalar.of(166025.52522395225), RealScalar.of(ate.getDistancElement().totalDistanceRebal));
-
         assertTrue(ate.getDistancElement().totalDistanceRatio >= 0.0);
-        // assertEquals(0.31760759104747865, ate.getDistancElement().totalDistanceRatio, 0.0);
         scalarAssert.add(RealScalar.of(0.32067190956337593), RealScalar.of(ate.getDistancElement().totalDistanceRatio));
-
         scalarAssert.consolidate();
 
         ate.getDistancElement().totalDistancesPerVehicle.flatten(-1).forEach(s -> //
@@ -190,7 +180,7 @@ public class SharedRoboTaxiTest {
         assertTrue(new File(data, "occAndDistRatios.png").exists());
         assertTrue(new File(data, "stackedDistance.png").exists());
         assertTrue(new File(data, "statusDistribution.png").exists());
-        assertTrue(new File(data, ScenarioParametersExport.FILENAME).exists());
+        assertTrue(new File(data, AnalysisConstants.ParametersExportFilename).exists());
         assertTrue(new File(data, "WaitingTimes").isDirectory());
         assertTrue(new File(data, "WaitingTimes/WaitingTimes.mathematica").exists());
         assertTrue(new File(data, "StatusDistribution").isDirectory());

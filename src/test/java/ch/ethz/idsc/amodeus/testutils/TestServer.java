@@ -74,7 +74,7 @@ public class TestServer {
 
     private void simulate() throws Exception {
         boolean waitForClients = scenarioOptions.getBoolean("waitForClients");
-        configFile = new File(workingDirectory, scenarioOptions.getSimulationConfigName());
+        configFile = new File(scenarioOptions.getSimulationConfigName());
         StaticHelper.setup();
 
         LocationSpec locationSpec = scenarioOptions.getLocationSpec();
@@ -144,8 +144,7 @@ public class TestServer {
         // close port for visualization
         SimulationServer.INSTANCE.stopAccepting();
 
-        Analysis analysis = Analysis.setup(workingDirectory, configFile, //
-                new File(workingDirectory, "output/001"), network, db);
+        Analysis analysis = Analysis.setup(scenarioOptions, new File(workingDirectory, "output/001"), network, db);
         ate = new AnalysisTestExport();
         analysis.addAnalysisExport(ate);
         analysis.run();

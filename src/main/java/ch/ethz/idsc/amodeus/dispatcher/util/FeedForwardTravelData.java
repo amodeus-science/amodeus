@@ -25,7 +25,7 @@ import ch.ethz.matsim.av.config.AVConfig;
 import ch.ethz.matsim.av.config.AVGeneratorConfig;
 import ch.ethz.matsim.av.framework.AVConfigGroup;
 
-public enum FeedForwardTravelData {
+/* package */ enum FeedForwardTravelData {
     ;
 
     public static void overwriteIfRequired(LPCreator lpCreator, StaticTravelData travelData, VirtualNetwork<Link> virtualNetwork, ScenarioOptions scenarioOptions) {
@@ -69,7 +69,7 @@ public enum FeedForwardTravelData {
                 travelData = new StaticTravelData(virtualNetwork.getvNetworkID(), lambdaAbsolute, alphaAbsolute, fAbsolute, v0_i, lpName, endTime);
 
                 System.out.println("Write New Travel Data");
-                File travelDataFile = new File(scenarioOptions.getVirtualNetworkName(), scenarioOptions.getTravelDataName());
+                File travelDataFile = new File(scenarioOptions.getVirtualNetworkDirectoryName(), scenarioOptions.getTravelDataName());
                 TravelDataIO.writeStatic(travelDataFile, travelData);
             } catch (FileNotFoundException fileNotFoundException) {
                 System.err.println("could not find the file");

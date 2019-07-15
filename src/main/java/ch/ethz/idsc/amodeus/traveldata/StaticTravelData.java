@@ -12,6 +12,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Dimensions;
 import ch.ethz.idsc.tensor.sca.Chop;
 import ch.ethz.idsc.tensor.sca.Clip;
+import ch.ethz.idsc.tensor.sca.Clips;
 import ch.ethz.idsc.tensor.sca.Round;
 import ch.ethz.idsc.tensor.sca.Sign;
 
@@ -46,7 +47,7 @@ public class StaticTravelData implements Serializable, TravelData {
         this.timeIntervalLength = endTime / timeSteps;
         this.endTime = endTime;
         this.lpName = lpName;
-        timeClip = Clip.function(0, endTime - 1);
+        timeClip = Clips.positive(endTime - 1);
 
         checkConsistency();
     }

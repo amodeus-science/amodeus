@@ -9,7 +9,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.util.math.IntPoint;
 import ch.ethz.idsc.tensor.red.Norm;
 
-public enum VirtualLinkBuilder {
+/* package */ enum VirtualLinkBuilder {
     ;
 
     public static <T, U> void build( //

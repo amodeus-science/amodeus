@@ -22,7 +22,9 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.sca.Clip;
+import ch.ethz.idsc.tensor.sca.Clips;
 
+// TODO shorten this class and refactor
 public enum PopulationTools {
     ;
     private static final Logger log = Logger.getLogger(PopulationTools.class);
@@ -47,7 +49,6 @@ public enum PopulationTools {
                 for (PlanElement planElement : plan.getPlanElements()) {
                     if (planElement instanceof Activity) {
                         Activity act = (Activity) planElement;
-
                         Id<Link> actLink = act.getLinkId();
                         if (!network.getLinks().containsKey(actLink)) {
                             removePerson = true;
@@ -63,7 +64,7 @@ public enum PopulationTools {
 
     /** Removes all persons that have legs with departure time or the end time of its predecessor activity outside the time interval [0,endTime) */
     public static void removeOutsideTimeInterval(Population population, int endTime) {
-        Clip timeClip = Clip.function(0, endTime - 1);
+        Clip timeClip = Clips.positive(endTime - 1);
         log.info("All people in population  which have activities outside the time interval [0, " + endTime + ") are removed.");
 
         Iterator<? extends Person> itPerson = population.getPersons().values().iterator();
@@ -107,7 +108,7 @@ public enum PopulationTools {
      * @return the set of all AV requests in the population */
     public static Set<Request> getAVRequests(Population population, Network network, int endTime) {
         Set<Request> requests = new HashSet<>();
-        Clip timeClip = Clip.function(0, endTime - 1);
+        Clip timeClip = Clips.positive(endTime - 1);
         // fill based on population file
         for (Person person : population.getPersons().values()) {
             for (Plan plan : person.getPlans()) {

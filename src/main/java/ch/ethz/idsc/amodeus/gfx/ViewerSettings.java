@@ -9,6 +9,8 @@ import org.matsim.api.core.v01.Coord;
 
 import ch.ethz.idsc.amodeus.view.gheat.gui.ColorSchemes;
 
+/** Class contains all settings for the AMoDeus viewer, used for exporting / importing
+ * a user-defined choice of settings. */
 public class ViewerSettings implements Serializable {
 
     public int zoom = 12;

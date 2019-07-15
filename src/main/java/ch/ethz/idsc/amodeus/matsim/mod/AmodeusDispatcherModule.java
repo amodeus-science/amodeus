@@ -11,8 +11,8 @@ import ch.ethz.idsc.amodeus.dispatcher.FeedforwardFluidicTimeVaryingRebalancingP
 import ch.ethz.idsc.amodeus.dispatcher.GlobalBipartiteMatchingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.SQMDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.parking.RestrictedLinkCapacityDispatcher;
-import ch.ethz.idsc.amodeus.dispatcher.shared.ExtDemandSupplyBeamSharing;
-import ch.ethz.idsc.amodeus.dispatcher.shared.NorthPoleSharedDispatcher;
+import ch.ethz.idsc.amodeus.dispatcher.shared.basic.ExtDemandSupplyBeamSharing;
+import ch.ethz.idsc.amodeus.dispatcher.shared.basic.NorthPoleSharedDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.fifs.DynamicRideSharingStrategy;
 import ch.ethz.idsc.amodeus.dispatcher.shared.fifs.FirstComeFirstServedStrategy;
 import ch.ethz.idsc.amodeus.dispatcher.shared.highcap.HighCapacityDispatcher;

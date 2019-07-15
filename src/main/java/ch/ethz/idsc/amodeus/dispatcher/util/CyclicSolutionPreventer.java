@@ -10,6 +10,8 @@ import java.util.function.Function;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
+import ch.ethz.idsc.amodeus.routing.DistanceFunction;
+import ch.ethz.idsc.amodeus.routing.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
@@ -18,7 +20,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
  * network distance increases temporarily. The process repeats itself and leads to unrealistically long
  * waiting times. This class is used to remove such disimproving assignments. It will only take effect
  * if the {@link EuclideanDistanceFunction} was selected */
-/* package */ enum CyclicSolutionPreventer {
+public enum CyclicSolutionPreventer {
     ;
 
     // TODO eliminate duplicate code, only difference is universalDispatcher,

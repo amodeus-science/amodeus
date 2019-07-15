@@ -8,7 +8,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
 /** color schemes for RoboTaxiStatus */
-public enum RoboTaxiStatusColors {
+/* package */ enum RoboTaxiStatusColors {
     Standard(ColorDataAmodeusSpecific.STANDARD.cyclic()), //
     Mild(ColorDataAmodeusSpecific.MILD.cyclic()), //
     /*** New poppy color set */

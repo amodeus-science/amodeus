@@ -9,7 +9,7 @@ import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.Line2D;
 
-/* package */ enum IdscClockDisplay {
+public enum IdscClockDisplay {
     INSTANCE;
     // ---
 
@@ -24,7 +24,7 @@ import java.awt.geom.Line2D;
     int secRadIn = 15;
     int secCirc = 10;
 
-    void drawClock(Graphics2D graphics, long now, Point c, int alpha) {
+    public void drawClock(Graphics2D graphics, long now, Point c, int alpha) {
         SecondsToHMS hms = new SecondsToHMS(now);
         // code to draw the clock was stolen from https://processing.org/examples/clock.html
         // code adapted by jph

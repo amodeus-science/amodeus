@@ -2,6 +2,7 @@
 package ch.ethz.idsc.amodeus.dispatcher.parking;
 
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.api.core.v01.population.Population;
 
 @FunctionalInterface
 public interface AVSpatialCapacityGenerator {
@@ -11,6 +12,6 @@ public interface AVSpatialCapacityGenerator {
      * 
      * @param network The Network for which the {@link AVSpatialCapacityAmodeus} should be generated
      * @return */
-    AVSpatialCapacityAmodeus generate(Network network);
+    ParkingCapacityAmodeus generate(Network network, Population population);
 
 }

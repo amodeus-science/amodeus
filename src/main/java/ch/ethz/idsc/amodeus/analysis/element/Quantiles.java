@@ -11,7 +11,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Flatten;
 
-/* package */ enum Quantiles {
+public enum Quantiles {
     ;
     private static final double LOW = 0.1;
     private static final double MID = 0.5;
@@ -24,7 +24,7 @@ import ch.ethz.idsc.tensor.alg.Flatten;
             "Mean" };
 
     // ---
-    static String lblString(String textInBold) {
+    /* package */ static String lblString(String textInBold) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(HtmlGenerator.bold(textInBold) + "\n\t");
         Stream.of(LBL).forEach(string -> stringBuilder.append(string + "\n\t"));
@@ -33,7 +33,7 @@ import ch.ethz.idsc.tensor.alg.Flatten;
 
     }
 
-    static String formatAggregates(Tensor aggregates) {
+    /* package */ static String formatAggregates(Tensor aggregates) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(" \n");
         Tensor vector = Flatten.of(aggregates);

@@ -69,7 +69,7 @@ public class VirtualNetworkLayer extends ViewerLayer {
                 break;
             case VehicleCount: {
                 Tensor count = new VehicleCountVirtualNodeFunction(amodeusComponent.db, virtualNetwork).evaluate(ref);
-                Tensor prob = StaticHelper.normalize1Norm224(count);
+                Tensor prob = StaticHelper.normalize1Norm224Contrast(count);
                 for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet()) {
                     final int i = 255 - prob.Get(entry.getKey().getIndex()).number().intValue();
                     graphics.setColor(halfAlpha(colorSchemes.colorScheme.get(i)));
@@ -79,7 +79,7 @@ public class VirtualNetworkLayer extends ViewerLayer {
             }
             case RequestCount: {
                 Tensor count = new RequestCountVirtualNodeFunction(amodeusComponent.db, virtualNetwork).evaluate(ref);
-                Tensor prob = StaticHelper.normalize1Norm224(count);
+                Tensor prob = StaticHelper.normalize1Norm224Contrast(count);
                 for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet()) {
                     // graphics.setColor(new Color(128, 128, 128, prob.Get(entry.getKey().index).number().intValue()));
                     final int i = 255 - prob.Get(entry.getKey().getIndex()).number().intValue();
@@ -90,7 +90,7 @@ public class VirtualNetworkLayer extends ViewerLayer {
             }
             case MeanRequestDistance: {
                 Tensor count = new MeanRequestDistanceVirtualNodeFunction(amodeusComponent.db, virtualNetwork).evaluate(ref);
-                Tensor prob = StaticHelper.normalize1Norm224(count);
+                Tensor prob = StaticHelper.normalize1Norm224Contrast(count);
                 for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet()) {
                     // graphics.setColor(new Color(128, 128, 128, prob.Get(entry.getKey().index).number().intValue()));
                     final int i = 255 - prob.Get(entry.getKey().getIndex()).number().intValue();
@@ -103,7 +103,7 @@ public class VirtualNetworkLayer extends ViewerLayer {
                 Tensor count = new RequestWaitingVirtualNodeFunction( //
                         amodeusComponent.db, virtualNetwork, //
                         StaticHelper::meanOrZero).evaluate(ref);
-                Tensor prob = StaticHelper.normalize1Norm224(count);
+                Tensor prob = StaticHelper.normalize1Norm224Contrast(count);
                 for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet()) {
                     // graphics.setColor(new Color(128, 128, 128, prob.Get(entry.getKey().index).number().intValue()));
                     final int i = 255 - prob.Get(entry.getKey().getIndex()).number().intValue();
@@ -116,7 +116,7 @@ public class VirtualNetworkLayer extends ViewerLayer {
                 Tensor count = new RequestWaitingVirtualNodeFunction( //
                         amodeusComponent.db, virtualNetwork, //
                         StaticHelper::medianOrZero).evaluate(ref);
-                Tensor prob = StaticHelper.normalize1Norm224(count);
+                Tensor prob = StaticHelper.normalize1Norm224Contrast(count);
                 for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet()) {
                     // graphics.setColor(new Color(128, 128, 128, prob.Get(entry.getKey().index).number().intValue()));
                     final int i = 255 - prob.Get(entry.getKey().getIndex()).number().intValue();
@@ -129,7 +129,7 @@ public class VirtualNetworkLayer extends ViewerLayer {
                 Tensor count = new RequestWaitingVirtualNodeFunction( //
                         amodeusComponent.db, virtualNetwork, //
                         StaticHelper::maxOrZero).evaluate(ref);
-                Tensor prob = StaticHelper.normalize1Norm224(count);
+                Tensor prob = StaticHelper.normalize1Norm224Contrast(count);
                 for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet()) {
                     // graphics.setColor(new Color(128, 128, 128, prob.Get(entry.getKey().index).number().intValue()));
                     final int i = 255 - prob.Get(entry.getKey().getIndex()).number().intValue();

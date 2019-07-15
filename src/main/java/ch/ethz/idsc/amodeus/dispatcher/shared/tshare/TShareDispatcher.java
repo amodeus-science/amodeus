@@ -24,23 +24,27 @@ import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiUtils;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedPartitionedDispatcher;
+import ch.ethz.idsc.amodeus.dispatcher.shared.OnMenuRequests;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
-import ch.ethz.idsc.amodeus.dispatcher.shared.fifs.TravelTimeComputationCached;
-import ch.ethz.idsc.amodeus.dispatcher.shared.fifs.TravelTimeInterface;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
-import ch.ethz.idsc.amodeus.dispatcher.util.DistanceFunction;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
-import ch.ethz.idsc.amodeus.dispatcher.util.EasyMinDistPathCalculator;
-import ch.ethz.idsc.amodeus.dispatcher.util.EasyMinTimePathCalculator;
-import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceFunction;
+import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceCost;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
+import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteCost;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.SharedBipartiteMatchingUtils;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
+import ch.ethz.idsc.amodeus.routing.CachedNetworkTimeDistance;
+import ch.ethz.idsc.amodeus.routing.DistanceFunction;
+import ch.ethz.idsc.amodeus.routing.EasyMinDistPathCalculator;
+import ch.ethz.idsc.amodeus.routing.EasyMinTimePathCalculator;
+import ch.ethz.idsc.amodeus.routing.EuclideanDistanceFunction;
+import ch.ethz.idsc.amodeus.routing.TimeDistanceProperty;
+import ch.ethz.idsc.amodeus.util.geo.FastQuadTree;
+import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 import ch.ethz.idsc.tensor.Scalar;
@@ -79,8 +83,8 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
     private final Scalar drpoffDelayMax;
     private final double menuHorizon;
     private final DualSideSearch dualSideSearch;
-    private final CashedDistanceCalculator distanceCashed;
-    private final TravelTimeInterface travelTimeCalculator;
+    private final CachedNetworkTimeDistance distanceCashed;
+    private final CachedNetworkTimeDistance travelTimeCalculator;
 
     protected TShareDispatcher(Network network, //
             Config config, AVDispatcherConfig avDispatcherConfig, //
@@ -97,22 +101,22 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
                 dispatcherConfig.getDistanceHeuristics(DistanceHeuristics.EUCLIDEAN);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         distanceFunction = distanceHeuristics.getDistanceFunction(network);
-        distanceCashed = CashedDistanceCalculator//
-                .of(EasyMinDistPathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0);
-        travelTimeCalculator = TravelTimeComputationCached//
-                .of(EasyMinTimePathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0);
+        distanceCashed = //
+                new CachedNetworkTimeDistance(EasyMinDistPathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0, TimeDistanceProperty.INSTANCE);
+        travelTimeCalculator = //
+                new CachedNetworkTimeDistance(EasyMinTimePathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0, TimeDistanceProperty.INSTANCE);
         bipartiteMatchingUtils = new SharedBipartiteMatchingUtils(network);
 
         /** T-Share specific */
-        pickupDelayMax = Quantity.of(safeConfig.getInteger("pickupDelayMax", 10 * 60), "s");
-        drpoffDelayMax = Quantity.of(safeConfig.getInteger("drpoffDelayMax", 30 * 60), "s");
+        pickupDelayMax = Quantity.of(safeConfig.getInteger("pickupDelayMax", 10 * 60), SI.SECOND);
+        drpoffDelayMax = Quantity.of(safeConfig.getInteger("drpoffDelayMax", 30 * 60), SI.SECOND);
         menuHorizon = safeConfig.getDouble("menuHorizon", 1.5);
 
         /** initialize grid with T-cells */
         QuadTree<Link> linkTree = FastQuadTree.of(network);
         for (VirtualNode<Link> virtualNode : virtualNetwork.getVirtualNodes()) {
             System.out.println("preparing grid cell: " + virtualNode.getIndex());
-            gridCells.put(virtualNode, new GridCell(virtualNode, virtualNetwork, network, distanceCashed, travelTimeCalculator, linkTree));
+            gridCells.put(virtualNode, new GridCell(virtualNode, virtualNetwork, network, distanceCashed, travelTimeCalculator, linkTree, 0.0));
         }
         dualSideSearch = new DualSideSearch(gridCells, virtualNetwork, network);
         System.out.println("According to the reference, a rectangular {@link VirtualNetwork} should be used.");
@@ -133,9 +137,9 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
 
             /** update the roboTaxi planned locations */
             Collection<RoboTaxi> customerCarrying = getDivertableRoboTaxis().stream()//
-                    .filter(rt -> RoboTaxiUtils.getNumberOnBoardRequests(rt) >= 1)//
-                    .filter(rt -> (rt.getCapacity() - RoboTaxiUtils.getNumberOnBoardRequests(rt)) >= 1)//
-                    .filter(RoboTaxiUtils::canPickupNewCustomer)//
+                    .filter(rt -> rt.getMenuOnBoardCustomers() >= 1)//
+                    .filter(rt -> (rt.getCapacity() - rt.getMenuOnBoardCustomers()) >= 1)//
+                    .filter(OnMenuRequests::canPickupNewCustomer)//
                     .collect(Collectors.toList());
 
             Map<VirtualNode<Link>, Set<RoboTaxi>> plannedLocations = //
@@ -149,7 +153,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
 
             for (AVRequest avr : sortedRequests) {
                 Scalar latestPickup = LatestPickup.of(avr, pickupDelayMax);
-                Scalar latestArrval = LatestArrival.of(avr, drpoffDelayMax, travelTimeCalculator);
+                Scalar latestArrval = LatestArrival.of(avr, drpoffDelayMax, travelTimeCalculator, now);
 
                 /** dual side search */
                 Collection<RoboTaxi> potentialTaxis = //
@@ -221,7 +225,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
             @SuppressWarnings("unused")
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
             @SuppressWarnings("unused")
-            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceFunction.INSTANCE);
+            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceCost.INSTANCE);
             return new TShareDispatcher(network, config, avconfig, travelTime, router, eventsManager, db, virtualNetwork);
         }
     }

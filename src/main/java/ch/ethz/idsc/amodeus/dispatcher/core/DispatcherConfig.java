@@ -29,6 +29,10 @@ public class DispatcherConfig extends SafeConfig {
         return getInteger(REBALANCING_PERIOD, alt);
     }
 
+    public int getCustomDataInteger(int alt, String dataName) {
+        return getInteger(dataName, alt);
+    }
+
     public DistanceHeuristics getDistanceHeuristics(DistanceHeuristics alt) {
         try {
             return DistanceHeuristics.valueOf(getString(DISTANCE_HEURISTICS, null).toUpperCase());

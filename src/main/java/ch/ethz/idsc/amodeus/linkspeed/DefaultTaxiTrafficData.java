@@ -10,11 +10,10 @@ import org.matsim.api.core.v01.network.Network;
 
 import com.google.inject.Singleton;
 
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Tensor;
 
 @Singleton
-public class DefaultTaxiTrafficData implements TaxiTrafficData {
+/* package */ class DefaultTaxiTrafficData implements TaxiTrafficData {
 
     private final LinkSpeedDataContainer lsData;
     private final int timeBinSize;
@@ -48,11 +47,11 @@ public class DefaultTaxiTrafficData implements TaxiTrafficData {
             Id<Link> linkID = Id.createLinkId(entry.getKey());
             Link link = network.getLinks().get(linkID);
             if (Objects.isNull(link)) {
-                System.err.println("link with id " + linkID.toString() + " not found.");
-                System.err.println("you are possibly using a linkSpeedData file which is not\n " + "made for your scenario");
-                System.err.println("stopping execution.");
-                GlobalAssert.that(false);
+                throw new RuntimeException("\n link with id " + linkID.toString() + " not found.\n" + //
+                        "you are possibly using a TaxiTrafficDataContainer file which is not\n " + //
+                        "made for your scenario, stopping execution.");
             }
+            Objects.requireNonNull(link);
 
             LinkSpeedData ttData = new LinkSpeedData(link, numSlots);
 
@@ -60,7 +59,12 @@ public class DefaultTaxiTrafficData implements TaxiTrafficData {
             for (Integer time : lsData.getRecordedTimes()) {
                 Tensor speedRecordings = lsData.getSpeedsAt(time);
                 double speedRecorded = speedRecordings.Get(0).number().doubleValue();
-                GlobalAssert.that(speedRecorded > 0.0);
+                if (speedRecorded <= 0.0) {
+                    System.err.println("recorded speed:" + speedRecorded);
+                    System.err.println("will be overridden by freeflow speed.");
+                    speedRecorded = link.getFreespeed();
+                }
+                // GlobalAssert.that(speedRecorded > 0.0);
                 double travelTime = link.getLength() / speedRecorded;
                 ttData.setTravelTime(trafficData.getTimeSlot(time), travelTime);
             }

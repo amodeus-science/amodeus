@@ -34,7 +34,6 @@ import ch.ethz.idsc.amodeus.net.SimulationFolderUtils;
 import ch.ethz.idsc.amodeus.net.StorageSupplier;
 import ch.ethz.idsc.amodeus.net.StorageUtils;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
-import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.util.gui.RowPanel;
 import ch.ethz.idsc.amodeus.util.gui.SpinnerLabel;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
@@ -69,30 +68,6 @@ public class AmodeusViewerFrame implements Runnable {
     private final SpinnerLabel<Integer> spinnerLabelSpeed = new SpinnerLabel<>();
     private final JSlider jSlider = new JSlider(0, 1, 0);
     private final Network network;
-
-    @Deprecated
-    /** Should not be used in amodeus repository anymore. */
-    public AmodeusViewerFrame(AmodeusComponent amodeusComponent, File outputDirectory, Network network) {
-        this(amodeusComponent, outputDirectory, outputDirectory, network);
-    }
-
-    @Deprecated
-    /** Should not be used in amodeus repository anymore. */
-    public AmodeusViewerFrame(AmodeusComponent amodeusComponent, File outputDirectory, File defaultDirectory, Network network) {
-        // We need to do the detour through that function here, because there cannot be a try block wrapping the delegated constructor
-        this(amodeusComponent, outputDirectory, defaultDirectory, network, createDeprecatedScenarioOptions());
-    }
-
-    @Deprecated
-    private static ScenarioOptions createDeprecatedScenarioOptions() {
-        try {
-            File workingDirectory = MultiFileTools.getWorkingDirectory();
-            return new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
-        } catch (IOException e) {
-            GlobalAssert.that(false);
-            return null;
-        }
-    }
 
     /** the new constructor is public AmodeusViewerFrame(AmodeusComponent amodeusComponent, File workingDirectory, File defaultDirectory) */
     public AmodeusViewerFrame(AmodeusComponent amodeusComponent, File outputDirectory, Network network, ScenarioOptions scenarioOptions) {
