@@ -28,8 +28,8 @@ import ch.ethz.matsim.av.config.AVGeneratorConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.generator.AVGenerator;
 
-/** class generates {@link AVVehicle}s. It takes the required minimal initial vehicle numbers from {@link TravelData}.
- * To each virtual station it places the required number of vehicles.
+/** class generates {@link AVVehicle}s. It takes the required minimal initial vehicle numbers from
+ * {@link TravelData}. In each virtual station it places the required number of vehicles.
  * Within the virtual station a random link is chosen as initial destination.
  * If the minimal required vehicle numbers are reached,
  * the rest of the vehicles is distributed randomly among the virtual stations.
