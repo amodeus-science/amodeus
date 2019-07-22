@@ -9,7 +9,6 @@ import java.util.Map;
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.StackedDistanceChartImage;
 import ch.ethz.idsc.amodeus.analysis.element.DistanceElement;
-import ch.ethz.idsc.tensor.RationalScalar;
 
 public enum DistanceElementHtml implements HtmlReportElement {
     INSTANCE;
@@ -36,18 +35,18 @@ public enum DistanceElementHtml implements HtmlReportElement {
                 "\n" + //
                 "\nAverage Trip Distance:" //
         );
-        aRElement.getHTMLGenerator().insertTextLeft("\n" + DECIMAL.format(de.totalDistanceRatio.multiply(RationalScalar.of(100, 1)) .number().doubleValue()) + "%" + //
-                "\n" + DECIMAL.format(de.avgOccupancy.multiply(RationalScalar.of(100, 1)).number().doubleValue()) + " %" + //
+        aRElement.getHTMLGenerator().insertTextLeft("\n" + DECIMAL.format(de.totalDistanceRatio.number().doubleValue() * 100) + "%" + //
+                "\n" + DECIMAL.format(de.avgOccupancy.number().doubleValue() * 100) + " %" + //
                 "\n\n" + //
                 "\n" + DECIMAL.format(de.totalDistance.number().doubleValue()) + " km" + //
                 "\n" + DECIMAL.format(de.totalDistanceRebal.number().doubleValue()) + " km (" + //
-                DECIMAL.format(de.totalDistanceRebal.divide(de.totalDistance).multiply(RationalScalar.of(100, 1)).number().doubleValue()) + "%)" + //
+                DECIMAL.format(100 * de.totalDistanceRebal.number().doubleValue() / de.totalDistance.number().doubleValue()) + "%)" + //
                 "\n" + DECIMAL.format(de.totalDistancePicku.number().doubleValue()) + " km (" + //
-                DECIMAL.format(de.totalDistancePicku.divide(de.totalDistance).multiply(RationalScalar.of(100, 1)).number().doubleValue()) + "%)" + //
+                DECIMAL.format(100 * de.totalDistancePicku.number().doubleValue() / de.totalDistance.number().doubleValue()) + "%)" + //
                 "\n" + DECIMAL.format(de.totalDistanceWtCst.number().doubleValue()) + " km (" + //
-                DECIMAL.format(de.totalDistanceWtCst.divide(de.totalDistance).multiply(RationalScalar.of(100, 1)).number().doubleValue() + "%)" + //
-                        "\n" + //
-                        "\n" + DECIMAL.format(de.totalDistanceWtCst.divide(RationalScalar.of(de.requestIndices.size(), 1)).number().doubleValue()) + " km"));
+                DECIMAL.format(100 * de.totalDistanceWtCst.number().doubleValue() / de.totalDistance.number().doubleValue()) + "%)" + //
+                "\n" + //
+                "\n" + DECIMAL.format(de.totalDistanceWtCst.number().doubleValue() / de.requestIndices.size()) + " km");
         File img = new File(IMAGE_FOLDER, StackedDistanceChartImage.FILENAME + ".png");
         aRElement.getHTMLGenerator() //
                 .insertImg(img.getPath(), StackedDistanceChartImage.WIDTH, StackedDistanceChartImage.HEIGHT);
