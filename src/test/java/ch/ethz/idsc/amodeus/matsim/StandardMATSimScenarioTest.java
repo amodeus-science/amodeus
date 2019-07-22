@@ -314,10 +314,10 @@ public class StandardMATSimScenarioTest {
                 });
             }
         });
-        
+
         controler.configureQSimComponents(AVQSimModule::configureComponents);
         controler.run();
-        
+
         if (analyzer.numberOfDepartures != analyzer.numberOfArrivals) {
             System.out.println("numberOfDepartures=" + analyzer.numberOfDepartures);
             System.out.println("numberOfArrivals  =" + analyzer.numberOfArrivals);

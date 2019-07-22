@@ -14,9 +14,8 @@ public class LinkSpeedData {
     public double getTravelTime(final int timeSlot, final double now) {
         if (travelTime[timeSlot] == 0.0) {
             return link.getLength() / link.getFreespeed(now);
-        } else {
-            return travelTime[timeSlot];
         }
+        return travelTime[timeSlot];
     }
 
     public void setTravelTime(int timeSlot, double value) {

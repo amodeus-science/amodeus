@@ -21,11 +21,9 @@ public class Pt2MatsimXML {
             Element rootNode = doc.getRootElement();
             Element module = rootNode.getChild("module");
 
-            @SuppressWarnings("unchecked")
             List<Element> children = module.getChildren();
 
             for (Element element : children) {
-                @SuppressWarnings("unchecked")
                 List<Attribute> theAttributes = element.getAttributes();
 
                 if (theAttributes.get(0).getValue().equals("osmFile")) {

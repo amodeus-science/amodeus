@@ -138,6 +138,7 @@ public class AmodeusDriveTaskTracker implements OnlineDriveTaskTracker {
         return Math.max(timer.getTimeOfDay(), linkEnterTime + path.getLinkTravelTime(currentLinkIdx));
     }
 
+    @Override
     public int getCurrentLinkIdx() {
         return currentLinkIdx;
     }
@@ -148,6 +149,6 @@ public class AmodeusDriveTaskTracker implements OnlineDriveTaskTracker {
 
     @Override
     public VrpPath getPath() {
-       return path;
+        return path;
     }
 }
