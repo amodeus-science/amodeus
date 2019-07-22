@@ -44,13 +44,13 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
     /** fields assigned in compile */
     public Tensor totalDistancesPerVehicle;
     public Tensor distancesOverDay;
-    public double totalDistance;
-    public double totalDistanceWtCst;
-    public double totalDistancePicku;
-    public double totalDistanceRebal;
-    public double totalDistanceRatio;
-    private double avgTripDistance;
-    public double avgOccupancy;
+    public Scalar totalDistance;
+    public Scalar totalDistanceWtCst;
+    public Scalar totalDistancePicku;
+    public Scalar totalDistanceRebal;
+    public Scalar totalDistanceRatio;
+    private Scalar avgTripDistance;
+    public Scalar avgOccupancy;
 
     /** distRatio */
     public Tensor ratios;
@@ -75,7 +75,7 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
         Scalar occupancyRatio = numStatus.Get(RoboTaxiStatus.DRIVEWITHCUSTOMER.ordinal()).//
                 divide(RealScalar.of(simulationObject.vehicles.size()));
         occupancyTensor.append(occupancyRatio);
-        avgOccupancy = Mean.of(occupancyTensor).Get().number().doubleValue();
+        avgOccupancy = Mean.of(occupancyTensor).Get();
 
         /** register Simulation Object for distance analysis */
         for (VehicleContainer vehicleContainer : simulationObject.vehicles)
@@ -100,12 +100,12 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
         totalDistancesPerVehicle = Tensor.of(list.stream().map(vs -> Total.of(vs.distanceTotal))).multiply(KM2M);
 
         // Total Values For one Day
-        totalDistance = totalDistancesPerVehicle.stream().reduce(Tensor::add).get().Get().number().doubleValue();
-        totalDistanceWtCst = distWtCst.stream().reduce(Tensor::add).get().Get().number().doubleValue();
-        totalDistancePicku = distPicku.stream().reduce(Tensor::add).get().Get().number().doubleValue();
-        totalDistanceRebal = distRebal.stream().reduce(Tensor::add).get().Get().number().doubleValue();
-        totalDistanceRatio = totalDistanceWtCst / totalDistance;
-        avgTripDistance = totalDistanceWtCst / requestIndices.size();
+        totalDistance = totalDistancesPerVehicle.stream().reduce(Tensor::add).get().Get();
+        totalDistanceWtCst = distWtCst.stream().reduce(Tensor::add).get().Get();
+        totalDistancePicku = distPicku.stream().reduce(Tensor::add).get().Get();
+        totalDistanceRebal = distRebal.stream().reduce(Tensor::add).get().Get();
+        totalDistanceRatio = totalDistanceWtCst.divide( totalDistance);
+        avgTripDistance = totalDistanceWtCst.divide(RealScalar.of(requestIndices.size()));
         ratios = Transpose.of(Join.of(Tensors.of(occupancyTensor), Tensors.of(distRatio)));
         consolidated = true;
     }

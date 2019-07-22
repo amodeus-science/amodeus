@@ -4,9 +4,9 @@ package ch.ethz.idsc.amodeus.scenario;
 import java.io.File;
 import java.util.List;
 
-import org.jdom.Attribute;
-import org.jdom.Document;
-import org.jdom.Element;
+import org.jdom2.Attribute;
+import org.jdom2.Document;
+import org.jdom2.Element;
 
 import ch.ethz.idsc.amodeus.matsim.xml.XmlCustomModifier;
 

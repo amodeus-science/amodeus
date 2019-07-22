@@ -3,9 +3,9 @@ package ch.ethz.idsc.amodeus.matsim.xml;
 
 import java.io.File;
 
-import org.jdom.Attribute;
-import org.jdom.Document;
-import org.jdom.Element;
+import org.jdom2.Attribute;
+import org.jdom2.Document;
+import org.jdom2.Element;
 
 public enum XmlCustomOperatorValueChanger {
     ;

@@ -6,11 +6,10 @@ import java.util.TreeMap;
 
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
-import org.matsim.core.trafficmonitoring.TravelTimeData;
 
 /* package */ class TaxiTrafficDataContainer {
     private final int numSlots;
-    private final Map<Id<Link>, TravelTimeData> trafficData = new TreeMap<>();
+    private final Map<Id<Link>, LinkSpeedData> trafficData = new TreeMap<>();
 
     public TaxiTrafficDataContainer(int numSlots) {
         this.numSlots = numSlots;
@@ -22,7 +21,7 @@ import org.matsim.core.trafficmonitoring.TravelTimeData;
         return link.getLength() / link.getFreespeed(now);
     }
 
-    public void addData(Id<Link> linkID, TravelTimeData ttData) {
+    public void addData(Id<Link> linkID, LinkSpeedData ttData) {
         trafficData.put(linkID, ttData);
     }
 

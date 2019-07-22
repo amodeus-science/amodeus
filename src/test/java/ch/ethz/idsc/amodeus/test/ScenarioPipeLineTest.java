@@ -14,7 +14,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
-import org.matsim.core.gbl.MatsimRandom;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisConstants;
 import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
@@ -26,6 +25,7 @@ import ch.ethz.idsc.amodeus.util.io.LocateUtils;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.util.math.SI;
+import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
@@ -42,12 +42,18 @@ public class ScenarioPipeLineTest {
 
     @BeforeClass
     public static void setUpOnce() throws Exception {
-        // TODO TEST This reset call should eventually be removed. Right now we need this to reset the random number generator for MATSim.
-        // In general, this is not necessary, because all MATSim components use MatsimRandom.getLocalInstance(). However,
-        // the PopulationDensity strategy in the av package uses MatsimRandom.getRandom(), which is NOT reset between
-        // simulations and iterations. Once the av package makes proper use of MatsimRandom generator, this can be removed
-        // here (should happen once av:0.1.5 is used here). /shoerl mar18
-        MatsimRandom.reset();
+
+        /** TODO remove all of this commented below if no problems occur and Oct-1-2019 has passed,
+         * This line was originally added to remove problems that tests failed only during certain iterations
+         * - hard to find bug. But should be resolved with newer MATSim and AV versions used.
+         * 
+         * 
+         * // TODO TEST This reset call should eventually be removed. Right now we need this to reset the random number generator for MATSim.
+         * // In general, this is not necessary, because all MATSim components use MatsimRandom.getLocalInstance(). However,
+         * // the PopulationDensity strategy in the av package uses MatsimRandom.getRandom(), which is NOT reset between
+         * // simulations and iterations. Once the av package makes proper use of MatsimRandom generator, this can be removed
+         * // here (should happen once av:0.1.5 is used here). /shoerl mar18
+         * MatsimRandom.reset(); */
 
         System.out.print("GLPK version is: ");
         System.out.println(GLPK.glp_version());
@@ -143,53 +149,54 @@ public class ScenarioPipeLineTest {
         Scalar distanceRatio = Mean.of(ate.getDistancElement().ratios).Get(1);
 
         //
-        scalarAssert.add(RealScalar.of(0.08269953703703704), occupancyRatio);
-        scalarAssert.add(RealScalar.of(0.6796628382756873), distanceRatio);
+        scalarAssert.add(RationalScalar.of(19867, 240000), occupancyRatio);
+        scalarAssert.add(RealScalar.of(0.6793393747789954), distanceRatio);
 
         /** fleet distances */
-        assertTrue(ate.getDistancElement().totalDistance >= 0.0);
-        assertTrue(ate.getDistancElement().totalDistanceWtCst >= 0.0);
-        assertTrue(ate.getDistancElement().totalDistancePicku > 0.0);
-        assertTrue(ate.getDistancElement().totalDistanceRebal >= 0.0);
-        assertTrue(ate.getDistancElement().totalDistanceRatio >= 0.0);
+        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistance));
+        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistanceWtCst)   );
+        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistancePicku)   );
+        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistanceRebal)   );
+        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistanceRatio)   );
         ate.getDistancElement().totalDistancesPerVehicle.flatten(-1).forEach(s -> //
         assertTrue(Scalars.lessEquals(RealScalar.ZERO, (Scalar) s)));
-        assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).number().doubleValue() //
-        == ate.getDistancElement().totalDistance);
-        assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).number().doubleValue() //
-        == ate.getDistancElement().totalDistance);
+        assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).equals( //
+                ate.getDistancElement().totalDistance));
+        assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).equals( //
+                ate.getDistancElement().totalDistance));
 
-        scalarAssert.add(RealScalar.of(34429.271548560515), RealScalar.of(ate.getDistancElement().totalDistance));
-        scalarAssert.add(RealScalar.of(28980.70185154435), RealScalar.of(ate.getDistancElement().totalDistanceWtCst));
-        scalarAssert.add(RealScalar.of(5448.5696970161725), RealScalar.of(ate.getDistancElement().totalDistancePicku));
-        scalarAssert.add(RealScalar.of(0.0), RealScalar.of(ate.getDistancElement().totalDistanceRebal));
+        scalarAssert.add(RealScalar.of(34448.67404638585), ate.getDistancElement().totalDistance);
+        scalarAssert.add(RealScalar.of(28988.105236355772), ate.getDistancElement().totalDistanceWtCst);
+        scalarAssert.add(RealScalar.of(5460.568810030107), ate.getDistancElement().totalDistancePicku);
+        scalarAssert.add(RealScalar.of(0.0), ate.getDistancElement().totalDistanceRebal);
+        scalarAssert.add(RealScalar.of(0.8414868217372514), ate.getDistancElement().totalDistanceRatio);
 
-        scalarAssert.add(RealScalar.of(0.0), RealScalar.of(ate.getDistancElement().totalDistanceRebal));
-        scalarAssert.add(RealScalar.of(0.8417460070471933), RealScalar.of(ate.getDistancElement().totalDistanceRatio));
 
-        scalarAssert.add((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle), RealScalar.of(ate.getDistancElement().totalDistance));
+        scalarAssert.add((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle), //
+                ate.getDistancElement().totalDistance);
 
         /** wait times, drive times */
         assertTrue(Scalars.lessEquals(Quantity.of(0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(2)));
-        // FIXME the code below only checks units but not sign
         ate.getTravelTimeAnalysis().getWaitTimes().flatten(-1).forEach(t -> {
-            Scalars.lessEquals(Quantity.of(0, SI.SECOND), (Scalar) t);
-            Scalars.lessEquals((Scalar) t, ate.getTravelTimeAnalysis().getWaitAggrgte().Get(2));
-
+            Scalars.lessEquals(Quantity.of(0, SI.SECOND), (Quantity) t);
+            Scalars.lessEquals((Quantity) t, ate.getTravelTimeAnalysis().getWaitAggrgte().Get(2));
         });
 
         assertTrue(Scalars.lessEquals(Quantity.of(0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(0)));
-        assertTrue(Scalars.lessEquals(ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(0), ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(1)));
-        assertTrue(Scalars.lessEquals(ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(1), ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(2)));
+        assertTrue(Scalars.lessEquals(ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(0), //
+                ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(1)));
+        assertTrue(Scalars.lessEquals(ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(1), //
+                ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(2)));
         assertTrue(Scalars.lessEquals(Quantity.of(0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1)));
 
-        scalarAssert.add(Quantity.of(287.18, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1));
+        scalarAssert.add(Quantity.of(289.065, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1));
         scalarAssert.add(Quantity.of(3261.0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(2));
-        scalarAssert.add(Quantity.of(893.155, SI.SECOND), ate.getTravelTimeAnalysis().getDrveAggrgte().Get(1));
+        scalarAssert.add(Quantity.of(RationalScalar.of(178803, 200), SI.SECOND), ate.getTravelTimeAnalysis().getDrveAggrgte().Get(1));
         scalarAssert.add(Quantity.of(3670.0, SI.SECOND), ate.getTravelTimeAnalysis().getDrveAggrgte().Get(2));
 
         /* TODO: Have a look at {AmodeusModule::install}. At some point the travel time calculation in DVRP has been improved.
-         * Unfortunately, this improvement breaks these tests. The reference numbers here should be adjusted at some point so that the fallback in
+         * Unfortunately, this improvement breaks these tests.
+         * The reference numbers here should be adjusted at some point so that the fallback in
          * {AmodeusModule::install} can be removed again.
          * (Nevertheless, we're talking about a different in routed time of +/-1 second). /sebhoerl */
         scalarAssert.consolidate();

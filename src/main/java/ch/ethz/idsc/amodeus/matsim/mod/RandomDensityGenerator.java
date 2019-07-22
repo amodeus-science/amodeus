@@ -8,7 +8,7 @@ import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
-import org.matsim.contrib.dvrp.data.Vehicle;
+import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.core.gbl.MatsimRandom;
 
 import com.google.inject.Inject;
@@ -56,9 +56,9 @@ public class RandomDensityGenerator implements AVGenerator {
 
         LOGGER.info("car placed at link " + linkGen);
 
-        Id<Vehicle> id = Id.create("av_" + prefix + String.valueOf(generatedNumberOfVehicles), Vehicle.class);
+        Id<DvrpVehicle> id = Id.create("av_" + prefix + String.valueOf(generatedNumberOfVehicles), DvrpVehicle.class);
         // In the future increase flexibility by adding capacity parameter as parameter in av.xml
-        AVVehicle vehicle = new AVVehicle(id, linkGen, 4.0, 0.0, Double.POSITIVE_INFINITY);
+        AVVehicle vehicle = new AVVehicle(id, linkGen, 4, 0.0, Double.POSITIVE_INFINITY);
         return vehicle;
     }
 

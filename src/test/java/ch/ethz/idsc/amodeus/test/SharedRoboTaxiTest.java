@@ -27,7 +27,6 @@ import ch.ethz.idsc.amodeus.util.io.LocateUtils;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.util.math.SI;
-import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkGet;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
@@ -62,7 +61,7 @@ public class SharedRoboTaxiTest {
         // prepare travel data test
         // TODO the call VirtualNetworkGet.readDefault below should not be necessary
         // ... or why is it necessary?
-        VirtualNetworkGet.readDefault(testPreparer.getPreparedNetwork(), new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault()));
+        // VirtualNetworkGet.readDefault(testPreparer.getPreparedNetwork(), new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault()));
         Map<String, Link> map = new HashMap<>();
         testPreparer.getPreparedNetwork().getLinks().entrySet().forEach(e -> map.put(e.getKey().toString(), e.getValue()));
     }
@@ -98,10 +97,6 @@ public class SharedRoboTaxiTest {
         /** scenario options */
         File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
-        // assertEquals("config.xml", scenarioOptions.getSimulationConfigName());
-        // assertEquals("preparedNetwork", scenarioOptions.getPreparedNetworkName());
-        // assertEquals("preparedPopulation", scenarioOptions.getPreparedPopulationName());
-
         assertEquals(workingDirectory.getAbsolutePath() + "/config.xml", scenarioOptions.getSimulationConfigName());
         assertEquals(workingDirectory.getAbsolutePath() + "/preparedNetwork", scenarioOptions.getPreparedNetworkName());
         assertEquals(workingDirectory.getAbsolutePath() + "/preparedPopulation", scenarioOptions.getPreparedPopulationName());
@@ -137,28 +132,28 @@ public class SharedRoboTaxiTest {
         Scalar distanceRatio = Mean.of(ate.getDistancElement().ratios).Get(1);
 
         ScalarAssert scalarAssert = new ScalarAssert();
-        scalarAssert.add(RealScalar.of(0.2048), RealScalar.of(occupancyRatio.number()));
-        scalarAssert.add(RealScalar.of(0.3223596160244375), distanceRatio);
+        scalarAssert.add(RealScalar.of(0.2049606481481481), occupancyRatio);
+        scalarAssert.add(RealScalar.of(0.32270381440449386), distanceRatio);
 
         /** fleet distances */
-        assertTrue(ate.getDistancElement().totalDistance >= 0.0);
-        scalarAssert.add(RealScalar.of(259599.98379885187), RealScalar.of(ate.getDistancElement().totalDistance));
-        assertTrue(ate.getDistancElement().totalDistanceWtCst >= 0.0);
-        scalarAssert.add(RealScalar.of(83246.42252739928), RealScalar.of(ate.getDistancElement().totalDistanceWtCst));
-        assertTrue(ate.getDistancElement().totalDistancePicku > 0.0);
-        scalarAssert.add(RealScalar.of(10328.03604749948), RealScalar.of(ate.getDistancElement().totalDistancePicku));
-        assertTrue(ate.getDistancElement().totalDistanceRebal >= 0.0);
-        scalarAssert.add(RealScalar.of(166025.52522395225), RealScalar.of(ate.getDistancElement().totalDistanceRebal));
-        assertTrue(ate.getDistancElement().totalDistanceRatio >= 0.0);
-        scalarAssert.add(RealScalar.of(0.32067190956337593), RealScalar.of(ate.getDistancElement().totalDistanceRatio));
+        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistance));
+        scalarAssert.add(RealScalar.of(259325.0250891894), ate.getDistancElement().totalDistance);
+        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistanceWtCst));
+        scalarAssert.add(RealScalar.of(83273.27878169769), ate.getDistancElement().totalDistanceWtCst);
+        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistancePicku));
+        scalarAssert.add(RealScalar.of(10072.30125325476), ate.getDistancElement().totalDistancePicku);
+        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistanceRebal));
+        scalarAssert.add(RealScalar.of(165979.44505423668), ate.getDistancElement().totalDistanceRebal);
+        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistanceRatio));
+        scalarAssert.add(RealScalar.of(0.3211154756586164), ate.getDistancElement().totalDistanceRatio);
         scalarAssert.consolidate();
 
         ate.getDistancElement().totalDistancesPerVehicle.flatten(-1).forEach(s -> //
         assertTrue(Scalars.lessEquals(RealScalar.ZERO, (Scalar) s)));
-        assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).number().doubleValue() //
-        == ate.getDistancElement().totalDistance);
-        assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).number().doubleValue() //
-        == ate.getDistancElement().totalDistance);
+        assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).equals( //
+                ate.getDistancElement().totalDistance));
+        assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).equals( //
+                ate.getDistancElement().totalDistance));
 
         /** waiting Times */
         assertTrue(Scalars.lessEquals(Quantity.of(0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(2)));

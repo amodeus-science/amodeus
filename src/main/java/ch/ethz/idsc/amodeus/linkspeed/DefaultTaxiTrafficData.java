@@ -7,8 +7,6 @@ import java.util.Objects;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
-import org.matsim.core.trafficmonitoring.TravelTimeData;
-import org.matsim.core.trafficmonitoring.TravelTimeDataArrayFactory;
 
 import com.google.inject.Singleton;
 
@@ -43,7 +41,6 @@ import ch.ethz.idsc.tensor.Tensor;
         System.out.println("\tTimeBinSize:\t" + timeBinSize);
 
         // Instantiate new TTDF to create new TTDA objects
-        TravelTimeDataArrayFactory factory = new TravelTimeDataArrayFactory(network, numSlots);
         TaxiTrafficDataContainer trafficData = new TaxiTrafficDataContainer(numSlots);
 
         for (Entry<Integer, LinkSpeedTimeSeries> entry : lsData.getLinkSet().entrySet()) {
@@ -56,7 +53,7 @@ import ch.ethz.idsc.tensor.Tensor;
             }
             Objects.requireNonNull(link);
 
-            TravelTimeData ttData = factory.createTravelTimeData(linkID);
+            LinkSpeedData ttData = new LinkSpeedData(link, numSlots);
 
             LinkSpeedTimeSeries lsData = entry.getValue();
             for (Integer time : lsData.getRecordedTimes()) {

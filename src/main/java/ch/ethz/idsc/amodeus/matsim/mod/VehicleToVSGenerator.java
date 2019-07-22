@@ -9,7 +9,7 @@ import java.util.Random;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
-import org.matsim.contrib.dvrp.data.Vehicle;
+import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 
 import com.google.inject.Inject;
 
@@ -28,8 +28,8 @@ import ch.ethz.matsim.av.config.AVGeneratorConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.generator.AVGenerator;
 
-/** class generates {@link AVVehicle}s. It takes the required minimal initial vehicle numbers from {@link TravelData}.
- * To each virtual station it places the required number of vehicles.
+/** class generates {@link AVVehicle}s. It takes the required minimal initial vehicle numbers from
+ * {@link TravelData}. In each virtual station it places the required number of vehicles.
  * Within the virtual station a random link is chosen as initial destination.
  * If the minimal required vehicle numbers are reached,
  * the rest of the vehicles is distributed randomly among the virtual stations.
@@ -89,9 +89,9 @@ public class VehicleToVSGenerator implements AVGenerator {
         /** update placedVehicles */
         placedVehicles.set(v -> v.add(RealScalar.ONE), vNodeIndex);
 
-        Id<Vehicle> id = Id.create("av_" + prefix + String.valueOf(generatedNumberOfVehicles), Vehicle.class);
+        Id<DvrpVehicle> id = Id.create("av_" + prefix + String.valueOf(generatedNumberOfVehicles), DvrpVehicle.class);
 
-        return new AVVehicle(id, linkGen, 4.0, 0.0, Double.POSITIVE_INFINITY);
+        return new AVVehicle(id, linkGen, 4, 0.0, Double.POSITIVE_INFINITY);
     }
 
     /** Returns the index of the first virtual station that is still in need of more vehicles. If all virtual stations have enough, return random index */
