@@ -16,9 +16,9 @@ public class PopulationCutterNetworkBased implements PopulationCutterFunction {
 
     @Override
     public void process(Population population) {
-        PopulationTools.removeOutsideNetwork(population, network);
+        PopulationReduce.outsideNetwork(population, network);
         System.out.println("population size after removing all people outside the network: " + population.getPersons().size());
-        PopulationTools.removeOutsideTimeInterval(population, endTime);
+        PopulationTimeInterval.removeOutside(population, endTime);
         System.out.println("population size after removing all people outside the time interval: " + population.getPersons().size());
     }
 
