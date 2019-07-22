@@ -9,8 +9,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-import ch.ethz.idsc.amodeus.util.io.FileDelete;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.tensor.io.DeleteDirectory;
 
 /* package */ enum ScenarioAssembler {
     ;
@@ -27,7 +27,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
                 Thread.sleep(1000);
                 System.err.println(i + " seconds");
             }
-            FileDelete.of(processingDirectory, 2, 14);
+            DeleteDirectory.of(processingDirectory, 2, 14);
             processingDirectory.mkdir();
         } else
             GlobalAssert.that(processingDirectory.mkdir());
@@ -57,7 +57,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         File destinDirFile = new File(destinDir);
 
         if (destinDirFile.exists()) {
-            FileDelete.of(destinDirFile, 2, 10);
+            DeleteDirectory.of(destinDirFile, 2, 10);
         }
         destinDirFile.mkdir();
 

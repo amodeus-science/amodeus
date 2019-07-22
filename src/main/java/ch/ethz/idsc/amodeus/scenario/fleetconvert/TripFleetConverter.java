@@ -18,9 +18,9 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.scenario.DataOperator;
 import ch.ethz.idsc.amodeus.scenario.population.TripPopulationCreator;
-import ch.ethz.idsc.amodeus.util.io.FileDelete;
 import ch.ethz.idsc.amodeus.util.math.CreateQuadTree;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.tensor.io.DeleteDirectory;
 
 public class TripFleetConverter implements FleetConverter {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = //
@@ -54,7 +54,7 @@ public class TripFleetConverter implements FleetConverter {
                     Thread.sleep(1000);
                     System.err.println(i + " seconds");
                 }
-                FileDelete.of(outputDirectory, 2, 10);
+                DeleteDirectory.of(outputDirectory, 2, 10);
             }
             outputDirectory.mkdirs();
 
