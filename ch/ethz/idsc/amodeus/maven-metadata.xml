@@ -3,10 +3,10 @@
   <groupId>ch.ethz.idsc</groupId>
   <artifactId>amodeus</artifactId>
   <versioning>
-    <release>1.7.8</release>
+    <release>1.7.9</release>
     <versions>
-      <version>1.7.8</version>
+      <version>1.7.9</version>
     </versions>
-    <lastUpdated>20190612124600</lastUpdated>
+    <lastUpdated>20190722103823</lastUpdated>
   </versioning>
 </metadata>
