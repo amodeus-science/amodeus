@@ -104,7 +104,7 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
         totalDistanceWtCst = distWtCst.stream().reduce(Tensor::add).get().Get();
         totalDistancePicku = distPicku.stream().reduce(Tensor::add).get().Get();
         totalDistanceRebal = distRebal.stream().reduce(Tensor::add).get().Get();
-        totalDistanceRatio = totalDistanceWtCst.divide( totalDistance);
+        totalDistanceRatio = totalDistanceWtCst.divide(totalDistance);
         avgTripDistance = totalDistanceWtCst.divide(RealScalar.of(requestIndices.size()));
         ratios = Transpose.of(Join.of(Tensors.of(occupancyTensor), Tensors.of(distRatio)));
         consolidated = true;

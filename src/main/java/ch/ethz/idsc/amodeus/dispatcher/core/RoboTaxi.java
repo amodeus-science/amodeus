@@ -121,7 +121,7 @@ public class RoboTaxi {
      * 
      * @return */
     public int getCapacity() {
-        return (int) avVehicle.getCapacity();
+        return avVehicle.getCapacity();
     }
 
     // ===================================================================================

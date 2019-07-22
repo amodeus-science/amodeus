@@ -28,10 +28,8 @@ public enum XmlCustomDataChanger {
             Element rootNode = doc.getRootElement();
             Element operator = rootNode.getChild("operator");
             Element group = operator.getChild(groupName);
-            @SuppressWarnings("unchecked")
             List<Element> children = group.getChildren();
             for (Element element : children) {
-                @SuppressWarnings("unchecked")
                 List<Attribute> theAttributes = element.getAttributes();
                 if (theAttributes.get(0).getValue().equals(dataName)) {
                     theAttributes.get(1).setValue(newValue);

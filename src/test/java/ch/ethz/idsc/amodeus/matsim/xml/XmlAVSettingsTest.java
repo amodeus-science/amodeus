@@ -11,10 +11,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ch.ethz.idsc.amodeus.util.io.CopyFiles;
-import ch.ethz.idsc.amodeus.util.io.FileDelete;
 import ch.ethz.idsc.amodeus.util.io.LocateUtils;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.tensor.io.DeleteDirectory;
 
 public class XmlAVSettingsTest {
 
@@ -47,7 +47,7 @@ public class XmlAVSettingsTest {
 
     @AfterClass
     public static void swipeFloor() throws IOException {
-        FileDelete.of(new File("av.xml"), 1, 1);
+        DeleteDirectory.of(new File("av.xml"), 1, 1);
     }
 
 }

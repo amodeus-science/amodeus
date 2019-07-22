@@ -19,7 +19,7 @@ public class AmodeusModule extends AbstractModule {
          * but it was not when Amodeus' unit tests had been written. Hence, to leave the unit tests intact, we add here the old FreeSpeedTravelTime. For reference, the
          * MATSim commit, that introduced the new TravelTime implementation in DVRP is be380cfc72e1c29d840fcc6b71a4bebeb3e567c1 . */
         addTravelTimeBinding(DvrpTravelTimeModule.DVRP_INITIAL).toInstance(new FreeSpeedTravelTime());
-        
+
         installQSimModule(new AmodeusQSimModule());
     }
 

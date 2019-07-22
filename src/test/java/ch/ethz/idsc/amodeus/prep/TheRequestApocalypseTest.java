@@ -5,7 +5,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-import ch.ethz.idsc.amodeus.util.io.FileDelete;
+import ch.ethz.idsc.tensor.io.DeleteDirectory;
 import junit.framework.TestCase;
 
 public class TheRequestApocalypseTest extends TestCase {
@@ -44,6 +44,6 @@ public class TheRequestApocalypseTest extends TestCase {
                 new File("population.xml.gz"));
         for (File file : list)
             if (file.exists())
-                FileDelete.of(file, 1, 1);
+                DeleteDirectory.of(file, 1, 1);
     }
 }
