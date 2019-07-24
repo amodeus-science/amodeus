@@ -56,7 +56,7 @@
 		<dependency><!-- necessary to test scenarioPreparer -->
 			<groupId>org.gnu.glpk</groupId>
 			<artifactId>glpk-java</artifactId>
-			<version>1.5.0</version>
+			<version>1.12.0</version>
 		</dependency>
 		<dependency>
 			<groupId>io.humble</groupId>
@@ -68,13 +68,11 @@
 			<artifactId>pt2matsim</artifactId>
 			<version>19.2</version>
 		</dependency>
-
 		<dependency><!-- workaround since jaxb api is not part of java 9 -->
 			<groupId>javax.xml.bind</groupId>
 			<artifactId>jaxb-api</artifactId>
 			<version>2.2.8</version>
 		</dependency>
-
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
