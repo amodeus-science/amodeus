@@ -14,8 +14,9 @@ import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 /** A Parking Startegy is the routine which defines how Parking spaces are tried to keep free. */
 public interface ParkingStrategy {
 
-    /** Function which should take action to keep Parking spaces free and stop overfilling of the parking spaces.
-     * Its normally called in the redispatch function of a dispatcher.
+    /** Function which should take action to keep Parking spaces free and stop
+     * overfilling of the parking spaces, it's normally called in the redispatch
+     * function of a dispatcher.
      * 
      * @param stayRoboTaxis
      * @param rebRoboTaxis
@@ -23,8 +24,8 @@ public interface ParkingStrategy {
      * @return */
     public Map<RoboTaxi, Link> keepFree(Collection<RoboTaxi> stayRoboTaxis, Collection<RoboTaxi> rebRoboTaxis, long now);
 
-    /** this function gives the implementation the possibility to use the avSpatialCapacity, the network and the distance function which will only be available
-     * after the construction.
+    /** This function gives the implementation the possibility to use the avSpatialCapacity,
+     * the network and the distance function which will only be available after the construction.
      * Normally this function should be called in the constructor of the dispatcher.
      * 
      * @param parkingCapacity

@@ -284,7 +284,6 @@ import ch.ethz.matsim.av.router.AVRouter;
                     setRoboTaxiRebalance(rebalanceRoboTaxi, destinationOfRebalance);
                 }
             }
-
         }
 
         /** PARKING EXTENSION */

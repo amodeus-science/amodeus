@@ -8,7 +8,7 @@ import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 
 /* package */ abstract class ParkingStrategyWithCapacity implements ParkingStrategy {
 
-    protected ParkingCapacityAmodeus avSpatialCapacityAmodeus;
+    protected ParkingCapacityAmodeus parkingCapacity;
     protected Network network;
     protected DistanceFunction distanceFunction;
 
@@ -19,7 +19,7 @@ import ch.ethz.idsc.amodeus.routing.DistanceFunction;
      * @param distanceFunction */
     @Override
     public void setRunntimeParameters(ParkingCapacityAmodeus avSpatialCapacityAmodeus, Network network, DistanceFunction distanceFunction) {
-        this.avSpatialCapacityAmodeus = avSpatialCapacityAmodeus;
+        this.parkingCapacity = avSpatialCapacityAmodeus;
         this.network = network;
         this.distanceFunction = distanceFunction;
     }

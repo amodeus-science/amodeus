@@ -17,10 +17,12 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 
 /* package */ class ParkingRandomDiffusion extends ParkingStrategyWithCapacity {
 
-    private static final long SEED = 12324;
     private final long freeParkingPeriod = 5;
+    private final Random random;
 
-    private final Random random = new Random(SEED);
+    public ParkingRandomDiffusion(Random random) {
+        this.random = random;
+    }
 
     @Override
     public Map<RoboTaxi, Link> keepFree(Collection<RoboTaxi> stayingRobotaxis, Collection<RoboTaxi> rebalancingRobotaxis, long now) {
@@ -43,7 +45,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
             /** if above flush threshold, then flush the entire link */
             Map<RoboTaxi, Link> directives = new HashMap<>();
             currCount.entrySet().stream().forEach(e -> {
-                if (e.getValue().size() > avSpatialCapacityAmodeus.getSpatialCapacity(e.getKey().getId()) * 0.5) {
+                if (e.getValue().size() > parkingCapacity.getSpatialCapacity(e.getKey().getId()) * 0.5) {
                     e.getValue().stream().//
                     limit(Math.round(e.getValue().size() * 0.5)).//
                     forEach(rt -> {

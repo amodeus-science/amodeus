@@ -1,6 +1,8 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.parking.strategies;
 
+import java.util.Random;
+
 public enum ParkingStrategies {
     NONE() {
         @Override
@@ -11,13 +13,13 @@ public enum ParkingStrategies {
     RANDOMDIFUSION {
         @Override
         public ParkingStrategy generateParkingStrategy() {
-            return new ParkingRandomDiffusion();
+            return new ParkingRandomDiffusion(new Random(RANDOMSEED));
         }
     }, //
     DIRECTEDDIFUSION {
         @Override
         public ParkingStrategy generateParkingStrategy() {
-            return new ParkingDirectedDiffusion();
+            return new ParkingDirectedDiffusion(new Random(RANDOMSEED));
         }
     }, //
     LP {
@@ -26,6 +28,8 @@ public enum ParkingStrategies {
             return new ParkingLP();
         }
     };
+    
+    private static final long RANDOMSEED = 1234;
 
     public abstract ParkingStrategy generateParkingStrategy();
 

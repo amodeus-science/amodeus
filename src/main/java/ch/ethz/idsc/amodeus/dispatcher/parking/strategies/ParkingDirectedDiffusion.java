@@ -14,30 +14,23 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 
 /* package */ class ParkingDirectedDiffusion extends ParkingStrategyWithCapacity {
 
-    private static final long RANDOMSEED = 1234;
-
     private final long freeParkingPeriod = 5;
-
     private final Random random;
 
-    ParkingDirectedDiffusion() {
-        this.random = new Random(RANDOMSEED);
+    ParkingDirectedDiffusion(Random random) {
+        this.random = random;
     }
 
     @Override
     public Map<RoboTaxi, Link> keepFree(Collection<RoboTaxi> stayingRobotaxis, Collection<RoboTaxi> rebalancingRobotaxis, long now) {
-
         if (now % freeParkingPeriod == 0) {
-
             Map<Link, Set<RoboTaxi>> currCount = getOccupiedLinks(stayingRobotaxis);
-            ParkingDirectedDiffusionHelper parkingAdvancedDiffusionHelper = new ParkingDirectedDiffusionHelper(avSpatialCapacityAmodeus, stayingRobotaxis, rebalancingRobotaxis,
-                    random);
-
+            ParkingDirectedDiffusionHelper parkingAdvancedDiffusionHelper = //
+                    new ParkingDirectedDiffusionHelper(parkingCapacity, stayingRobotaxis, rebalancingRobotaxis, random);
             Map<RoboTaxi, Link> directives = new HashMap<>();
-
             currCount.entrySet().stream()//
                     .forEach(linkTaxiPair -> {
-                        if (linkTaxiPair.getValue().size() > avSpatialCapacityAmodeus.getSpatialCapacity(linkTaxiPair.getKey().getId()) * 0.5) {
+                        if (linkTaxiPair.getValue().size() > parkingCapacity.getSpatialCapacity(linkTaxiPair.getKey().getId()) * 0.5) {
                             linkTaxiPair.getValue().stream()//
                                     .limit(Math.round(linkTaxiPair.getValue().size() * 0.5))//
                                     .forEach(rt -> {
@@ -45,7 +38,6 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
                                     });
                         }
                     });
-
             return directives;
         }
         return new HashMap<>();

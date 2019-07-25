@@ -6,7 +6,9 @@ import org.matsim.api.core.v01.network.Network;
 
 public class ParkingCapacityFromNetworkAndIdentifier extends ParkingCapacityAdapter {
 
-    /** Reads the spatial capacities from the Network file. If the given tag for the spatialCapacity is found its corresponding value is taken for the AV Spatial
+    /** Reads the spatial capacities from the Network file.
+     * If the given tag for the spatialCapacity is found its
+     * corresponding value is taken for the AV Spatial
      * Capacity.
      * 
      * @param network
