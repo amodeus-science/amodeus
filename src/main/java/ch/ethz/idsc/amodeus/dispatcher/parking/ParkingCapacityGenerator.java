@@ -11,6 +11,6 @@ public interface ParkingCapacityGenerator {
      * 
      * @param network The Network for which the {@link ParkingCapacityAmodeus} should be generated
      * @return */
-    ParkingCapacityAmodeus generate(Network network);
+    public ParkingCapacityAmodeus generate(Network network);
 
 }

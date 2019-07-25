@@ -17,19 +17,19 @@ public interface ParkingStrategy {
     /** Function which should take action to keep Parking spaces free and stop overfilling of the parking spaces.
      * Its normally called in the redispatch function of a dispatcher.
      * 
-     * @param stayingRobotaxis
-     * @param rebalancingRobotaxis
+     * @param stayRoboTaxis
+     * @param rebRoboTaxis
      * @param now
      * @return */
-    public Map<RoboTaxi, Link> keepFree(Collection<RoboTaxi> stayingRobotaxis, Collection<RoboTaxi> rebalancingRobotaxis, long now);
+    public Map<RoboTaxi, Link> keepFree(Collection<RoboTaxi> stayRoboTaxis, Collection<RoboTaxi> rebRoboTaxis, long now);
 
     /** this function gives the implementation the possibility to use the avSpatialCapacity, the network and the distance function which will only be available
      * after the construction.
      * Normally this function should be called in the constructor of the dispatcher.
      * 
-     * @param avSpatialCapacityAmodeus
+     * @param parkingCapacity
      * @param network
      * @param distanceFunction */
-    public void setRunntimeParameters(ParkingCapacityAmodeus avSpatialCapacityAmodeus, Network network, DistanceFunction distanceFunction);
+    public void setRunntimeParameters(ParkingCapacityAmodeus parkingCapacity, Network network, DistanceFunction distanceFunction);
 
 }

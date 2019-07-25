@@ -12,7 +12,7 @@ import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 
-class ParkingAdvancedDiffusion extends ParkingStrategyWithCapacity {
+/* package */ class ParkingDirectedDiffusion extends ParkingStrategyWithCapacity {
 
     private static final long RANDOMSEED = 1234;
 
@@ -20,7 +20,7 @@ class ParkingAdvancedDiffusion extends ParkingStrategyWithCapacity {
 
     private final Random random;
 
-    ParkingAdvancedDiffusion() {
+    ParkingDirectedDiffusion() {
         this.random = new Random(RANDOMSEED);
     }
 
@@ -30,7 +30,7 @@ class ParkingAdvancedDiffusion extends ParkingStrategyWithCapacity {
         if (now % freeParkingPeriod == 0) {
 
             Map<Link, Set<RoboTaxi>> currCount = getOccupiedLinks(stayingRobotaxis);
-            ParkingAdvancedDiffusionHelper parkingAdvancedDiffusionHelper = new ParkingAdvancedDiffusionHelper(avSpatialCapacityAmodeus, stayingRobotaxis, rebalancingRobotaxis,
+            ParkingDirectedDiffusionHelper parkingAdvancedDiffusionHelper = new ParkingDirectedDiffusionHelper(avSpatialCapacityAmodeus, stayingRobotaxis, rebalancingRobotaxis,
                     random);
 
             Map<RoboTaxi, Link> directives = new HashMap<>();

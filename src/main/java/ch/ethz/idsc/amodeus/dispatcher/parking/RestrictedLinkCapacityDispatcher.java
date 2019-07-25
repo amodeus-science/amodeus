@@ -45,15 +45,16 @@ import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.router.AVRouter;
 
-/** This is a first Dispatcher which takes the Parking Situation into Account.
+/** This dispatcher takes the Parking Situation into Account.
  * 
  * To run this dipatcher it is required that
- * 1. The Matsim Controler (e.g. in the ScenarioServer) uses the {@link AmodeusParkingModule}.
- * 2. Set the values for the {@link ParkingCapacityAmodeus} and the {@link ParkingStrategy} in the Scenario Options
- * 3. Choose the {@link RestrictedLinkCapacityDispatcher} in the AVConfig.xml
+ * 1. The MATSim controler (e.g. in the ScenarioServer) uses the {@link AmodeusParkingModule}.
+ * 2. Set the values for the {@link ParkingCapacityAmodeus} and the {@link ParkingStrategy} in the
+ * AMoDeusOptions.properties file
+ * 3. Choose the {@link RestrictedLinkCapacityDispatcher} in the av.xml configuration
  * 
  * It extends the {@link ExtDemandSupplyBeamSharing}. At each pickup it is
- * checked if around this Robotaxi there exist other Open requests with the same
+ * checked if around this {@link RoboTaxi} there exist other Open requests with the same
  * direction. Those are then picked up. */
 public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatcher {
 
@@ -173,7 +174,8 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
         }
 
         /** PARKING EXTENSION */
-        parkingStrategy.keepFree(getRoboTaxiSubset(RoboTaxiStatus.STAY), getRoboTaxiSubset(RoboTaxiStatus.REBALANCEDRIVE), round_now)
+        parkingStrategy.keepFree(getRoboTaxiSubset(RoboTaxiStatus.STAY), //
+                getRoboTaxiSubset(RoboTaxiStatus.REBALANCEDRIVE), round_now)//
                 .forEach((rt, l) -> setRoboTaxiRebalance(rt, l));
         /** PARKING EXTENSION */
     }

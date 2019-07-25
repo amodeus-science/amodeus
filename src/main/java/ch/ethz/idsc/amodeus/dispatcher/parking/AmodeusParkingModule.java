@@ -10,13 +10,12 @@ import com.google.inject.Singleton;
 import ch.ethz.idsc.amodeus.dispatcher.parking.strategies.ParkingStrategy;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 
-/** This Matsim Module is Required for all dispatchers which take Parking into consideration.
- * It provides the Parking Capacities of all the Links and provides as well the strategy to avoid overfilling. */
+/** This MATSim {@link AbstractModule} is required for all dispatchers which take parking into
+ * consideration. It provides the parking capacities of all the {@link Link}s and provides
+ * as well the strategy to avoid overfilling. */
 public class AmodeusParkingModule extends AbstractModule {
     private final ScenarioOptions scenarioOptions;
 
-    /** This Matsim Module is Required for all dispatchers which take Parking into consideration.
-     * It provides the Parking Capacities of all the Links and provides as well the strategy to avoid overfilling. */
     public AmodeusParkingModule(ScenarioOptions scenarioOptions) {
         this.scenarioOptions = scenarioOptions;
     }

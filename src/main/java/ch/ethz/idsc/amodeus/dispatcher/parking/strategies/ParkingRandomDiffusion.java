@@ -15,7 +15,7 @@ import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 
-class ParkingRandomDiffusion extends ParkingStrategyWithCapacity {
+/* package */ class ParkingRandomDiffusion extends ParkingStrategyWithCapacity {
 
     private static final long SEED = 12324;
     private final long freeParkingPeriod = 5;
