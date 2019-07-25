@@ -29,11 +29,13 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
     protected final EventsManager eventsManager;
     private final List<RoboTaxi> roboTaxis = new ArrayList<>();
     private Double private_now = null;
+    private Double qsimStartTime = 0.0;
     public InfoLine infoLine = null;
     private final StorageUtils storageUtils;
 
     RoboTaxiMaintainer(EventsManager eventsManager, Config config, AVDispatcherConfig avDispatcherConfig) {
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
+        this.qsimStartTime = config.qsim().getStartTime();
         this.eventsManager = eventsManager;
         this.infoLine = new InfoLine(safeConfig.getInteger("infoLinePeriod", 10));
         String outputdirectory = config.controler().getOutputDirectory();
@@ -109,7 +111,7 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
     private void beforeStepTasks() {
         updateDivertableLocations();
-        if (private_now > 0) { // at time 0, tasks are not started.
+        if (private_now > this.qsimStartTime) { // at time 0, tasks are not started.
             updateCurrentLocations();
         }
     }
