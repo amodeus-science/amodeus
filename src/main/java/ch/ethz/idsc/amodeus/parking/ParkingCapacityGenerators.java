@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.parking;
 
+import java.util.Objects;
 import java.util.Random;
 
 import org.matsim.api.core.v01.network.Network;
@@ -9,6 +10,7 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacityConstant;
+import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacityFromNetworkDistribution;
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacityFromNetworkIdentifier;
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacityInfinity;
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacityLinkLength;
@@ -48,8 +50,20 @@ public enum ParkingCapacityGenerators implements ParkingCapacityGenerator {
     NETWORKBASED {
         @Override
         public ParkingCapacity generate(Network network, ScenarioOptions scenarioOptions) {
+            Objects.requireNonNull(scenarioOptions);
+            long seed = scenarioOptions.getRandomSeed();
+            return new ParkingCapacityFromNetworkIdentifier(network, //
+                    scenarioOptions.getParkingSpaceTagInNetwork(), new Random(seed));
+        }
+    },
+    NETWORKBASEDRANDOM {
+        @Override
+        public ParkingCapacity generate(Network network, ScenarioOptions scenarioOptions) {
             GlobalAssert.that(scenarioOptions != null);
-            return new ParkingCapacityFromNetworkIdentifier(network, scenarioOptions.getParkingSpaceTagInNetwork());
+            long capacity = scenarioOptions.getInt(ScenarioOptionsBase.PARKINGTOTALSPACES);
+            long seed = scenarioOptions.getRandomSeed();
+            return new ParkingCapacityFromNetworkDistribution(network, scenarioOptions.getParkingSpaceTagInNetwork(), //
+                    new Random(seed), capacity);
         }
     };
 }

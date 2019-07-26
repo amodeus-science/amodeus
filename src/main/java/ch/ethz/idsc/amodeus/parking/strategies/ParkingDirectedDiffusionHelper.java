@@ -26,15 +26,14 @@ import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
     private final Random random;
     private Map<Link, Set<RoboTaxi>> occMap;
 
-    ParkingDirectedDiffusionHelper(ParkingCapacity avSpatialCapacityAmodeus, Collection<RoboTaxi> stayingRobotaxis, Collection<RoboTaxi> rebalancingRobotaxis,
-            Random random) {
+    public ParkingDirectedDiffusionHelper(ParkingCapacity avSpatialCapacityAmodeus, //
+            Collection<RoboTaxi> stayingRobotaxis, Collection<RoboTaxi> rebalancingRobotaxis, Random random) {
         this.avSpatialCapacityAmodeus = avSpatialCapacityAmodeus;
         this.random = random;
         this.occMap = getOccMap(stayingRobotaxis, rebalancingRobotaxis);
-
     }
 
-    Link getDestinationLink(RoboTaxi rt) {
+    public Link getDestinationLink(RoboTaxi rt) {
 
         List<Link> firstNeighbors = new ArrayList<>(rt.getDivertableLocation().getToNode().getOutLinks().values());
         List<Link> secondNeighbors = getNeighborLinks(firstNeighbors, rt);
@@ -108,7 +107,8 @@ import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
         return secondNeighbors;
     }
 
-    private static Map<Link, Set<RoboTaxi>> getOccMap(Collection<RoboTaxi> stayingRobotaxis, Collection<RoboTaxi> rebalancingRobotaxis) {
+    private static Map<Link, Set<RoboTaxi>> getOccMap(Collection<RoboTaxi> stayingRobotaxis, //
+            Collection<RoboTaxi> rebalancingRobotaxis) {
         Map<Link, Set<RoboTaxi>> occMap = new HashMap<>();
 
         for (RoboTaxi stayRT : stayingRobotaxis) {

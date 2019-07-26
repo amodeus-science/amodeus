@@ -22,7 +22,8 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
     }
 
     @Override
-    public Map<RoboTaxi, Link> keepFree(Collection<RoboTaxi> stayingRobotaxis, Collection<RoboTaxi> rebalancingRobotaxis, long now) {
+    public Map<RoboTaxi, Link> keepFree(Collection<RoboTaxi> stayingRobotaxis, //
+            Collection<RoboTaxi> rebalancingRobotaxis, long now) {
         if (now % freeParkingPeriod == 0) {
             Map<Link, Set<RoboTaxi>> currCount = getOccupiedLinks(stayingRobotaxis);
             ParkingDirectedDiffusionHelper parkingAdvancedDiffusionHelper = //
