@@ -7,6 +7,7 @@ import org.matsim.api.core.v01.population.Population;
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
 
 @FunctionalInterface
+@Deprecated // TODO delete if turns out not to be needed.
 public interface AVSpatialCapacityGenerator {
 
     /** Generates a {@link AVSpatialCapacityAmodeus} for a given Network. This could for example be by searching for a given link attribute in the network or by

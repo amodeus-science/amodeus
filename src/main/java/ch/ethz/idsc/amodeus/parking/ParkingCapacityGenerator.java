@@ -3,18 +3,17 @@ package ch.ethz.idsc.amodeus.parking;
 
 import org.matsim.api.core.v01.network.Network;
 
+import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
 
 @FunctionalInterface
 public interface ParkingCapacityGenerator {
 
-    /** Generates a {@link ParkingCapacity} for a given Network.
-     * This could for example be by searching for a given link attribute
-     * in the network or by using the length of the link as a indication
-     * of its capacity.
+    /** @returns a {@link ParkingCapacity} for a given {@link Network} @param network.
+     *          Some generators require additional {@link ScenarioOption}s @param scenarioOptions
      * 
-     * @param network The Network for which the {@link ParkingCapacity} should be generated
-     * @return */
-    public ParkingCapacity generate(Network network);
+     *          Generation could for example be by searching for a given link attribute in the network
+     *          or by using the length of the link as a indication of its capacity. */
+    public ParkingCapacity generate(Network network, ScenarioOptions scenarioOptions);
 
 }

@@ -128,7 +128,7 @@ public class ScenarioOptions {
     }
 
     public ParkingCapacityGenerator getParkingCapacityGenerator() {
-        return ParkingCapacityGenerators.valueOf(getString(ScenarioOptionsBase.PARKINGGENERATORIDENTIFIER)).setScenarioOptions(this);
+        return ParkingCapacityGenerators.valueOf(getString(ScenarioOptionsBase.PARKINGGENERATORIDENTIFIER));
     }
 
     public String getParkingSpaceTagInNetwork() {
@@ -143,6 +143,10 @@ public class ScenarioOptions {
         File shapeFile = new File(workingDirectory, getString(ScenarioOptionsBase.SHAPEFILEIDENTIFIER));
         System.out.println("shapeFile = " + shapeFile.getAbsolutePath());
         return shapeFile.exists() ? shapeFile : null;
+    }
+
+    public long getRandomSeed() {
+        return Long.parseLong(properties.getProperty(ScenarioOptionsBase.RANDOMSEED));
     }
 
     // base access functions ==================================================

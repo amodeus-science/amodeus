@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
+@Deprecated // TODO this may be a duplicate from  ParkingCapacityFromNetworkIdentifier, eventually delete..
 /* package */ class ParkingCapacityFromNetwork extends ParkingCapacityAbstract {
 
     public ParkingCapacityFromNetwork(Network network, String string, double limit) {

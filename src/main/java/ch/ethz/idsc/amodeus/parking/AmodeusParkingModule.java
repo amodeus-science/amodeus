@@ -37,17 +37,12 @@ public class AmodeusParkingModule extends AbstractModule {
     @Singleton
     public ParkingCapacity provideAVSpatialCapacity(Network network) {
         try {
-            return loadSpatialCapacity(network, scenarioOptions);
+            ParkingCapacityGenerator generator = scenarioOptions.getParkingCapacityGenerator();
+            return generator.generate(network, scenarioOptions);
         } catch (Exception exception) {
-            System.err.println("We could not load the Spatial Capacity of all the Links");
+            System.err.println("Unable to load parking capacity for all links, returning null.");
             exception.printStackTrace();
-            new RuntimeException();
         }
         return null;
     }
-
-    private static ParkingCapacity loadSpatialCapacity(Network network, ScenarioOptions scenarioOptions) {
-        return scenarioOptions.getParkingCapacityGenerator().generate(network);
-    }
-
 }

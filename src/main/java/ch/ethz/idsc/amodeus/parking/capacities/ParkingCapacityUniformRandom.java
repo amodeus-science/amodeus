@@ -9,10 +9,10 @@ import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
-/* package */ class ParkingCapacityUniformDistributed extends ParkingCapacityAbstract {
+public class ParkingCapacityUniformRandom extends ParkingCapacityAbstract {
 
     // TODO rebuild to allow not only 2 but n spaces per link
-    public ParkingCapacityUniformDistributed(Network network, int totSpaces, Random random) {
+    public ParkingCapacityUniformRandom(Network network, long totSpaces, Random random) {
 
         /** get links */
         List<Id<Link>> allLinks = new ArrayList<>();
@@ -24,7 +24,7 @@ import org.matsim.api.core.v01.network.Network;
         Collections.shuffle(allLinks, random);
 
         /** assign 2 spaces to every link */
-        int remainingSpaces = totSpaces;
+        long remainingSpaces = totSpaces;
         int i = 1;
         while (remainingSpaces != 0) {
             capacities.put(allLinks.get(i), (long) 2);
