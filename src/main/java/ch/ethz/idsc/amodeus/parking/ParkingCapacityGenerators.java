@@ -52,5 +52,4 @@ public enum ParkingCapacityGenerators implements ParkingCapacityGenerator {
             return new ParkingCapacityFromNetworkIdentifier(network, scenarioOptions.getParkingSpaceTagInNetwork());
         }
     };
-
 }
