@@ -15,9 +15,9 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
+import ch.ethz.idsc.amodeus.dispatcher.core.RebalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
-import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.TreeMaintainer;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.tensor.Tensor;
@@ -30,15 +30,19 @@ import ch.ethz.matsim.av.router.AVRouter;
 
 /** Implementation of the "demand-supply-balancing" dispatching heuristic presented in
  * Maciejewski, Michal, and Joschka Bischoff. "Large-scale microscopic simulation of taxi services."
- * Procedia Computer Science 52 (2015): 358-364. */
-public class DemandSupplyBalancingDispatcher extends UniversalDispatcher {
+ * Procedia Computer Science 52 (2015): 358-364.
+ * 
+ * This dispatcher is not a dispatcher with rebalancing functionality, it could also be derived from
+ * the UniversalDispatcher, but in order to allow extended versions to use the setRoboTaxiRebalance
+ * functionality, it was extended from the abstract RebalancingDispatcher. */
+public class DemandSupplyBalancingDispatcher extends RebalancingDispatcher {
 
     private final int dispatchPeriod;
     /** data structures are used to enable fast "contains" searching */
     private final TreeMaintainer<AVRequest> requestMaintainer;
     private final TreeMaintainer<RoboTaxi> unassignedRoboTaxis;
 
-    private DemandSupplyBalancingDispatcher(Config config, AVDispatcherConfig avDispatcherConfig, //
+    protected DemandSupplyBalancingDispatcher(Config config, AVDispatcherConfig avDispatcherConfig, //
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, Network network, //
             MatsimAmodeusDatabase db) {
         super(config, avDispatcherConfig, travelTime, router, eventsManager, db);
