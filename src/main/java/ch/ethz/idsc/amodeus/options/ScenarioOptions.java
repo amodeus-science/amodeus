@@ -9,10 +9,10 @@ import org.matsim.core.config.Config;
 
 import ch.ethz.idsc.amodeus.data.LocationSpec;
 import ch.ethz.idsc.amodeus.data.LocationSpecDatabase;
-import ch.ethz.idsc.amodeus.dispatcher.parking.ParkingCapacityGenerator;
-import ch.ethz.idsc.amodeus.dispatcher.parking.ParkingCapacityGenerators;
-import ch.ethz.idsc.amodeus.dispatcher.parking.strategies.ParkingStrategies;
-import ch.ethz.idsc.amodeus.dispatcher.parking.strategies.ParkingStrategy;
+import ch.ethz.idsc.amodeus.parking.ParkingCapacityGenerator;
+import ch.ethz.idsc.amodeus.parking.ParkingCapacityGenerators;
+import ch.ethz.idsc.amodeus.parking.strategies.ParkingStrategies;
+import ch.ethz.idsc.amodeus.parking.strategies.ParkingStrategy;
 import ch.ethz.idsc.amodeus.prep.PopulationCutter;
 import ch.ethz.idsc.amodeus.prep.PopulationCutters;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;

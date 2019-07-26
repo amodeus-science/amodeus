@@ -27,8 +27,6 @@ import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedRebalancingDispatcher;
-import ch.ethz.idsc.amodeus.dispatcher.parking.ParkingCapacityAmodeus;
-import ch.ethz.idsc.amodeus.dispatcher.parking.strategies.ParkingStrategy;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseUtil;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
@@ -39,6 +37,8 @@ import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
+import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
+import ch.ethz.idsc.amodeus.parking.strategies.ParkingStrategy;
 import ch.ethz.idsc.amodeus.routing.EasyMinTimePathCalculator;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.config.AVGeneratorConfig;
@@ -107,7 +107,7 @@ import ch.ethz.matsim.av.router.AVRouter;
             Config config, AVDispatcherConfig avDispatcherConfig, //
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, //
             MatsimAmodeusDatabase db, ParkingStrategy parkingStrategy, //
-            ParkingCapacityAmodeus avSpatialCapacityAmodeus) {
+            ParkingCapacity avSpatialCapacityAmodeus) {
 
         super(config, avDispatcherConfig, travelTime, router, eventsManager, db);
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
@@ -316,7 +316,7 @@ import ch.ethz.matsim.av.router.AVRouter;
         private ParkingStrategy parkingStrategy;
 
         @Inject(optional = true)
-        private ParkingCapacityAmodeus avSpatialCapacityAmodeus;
+        private ParkingCapacity avSpatialCapacityAmodeus;
 
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {

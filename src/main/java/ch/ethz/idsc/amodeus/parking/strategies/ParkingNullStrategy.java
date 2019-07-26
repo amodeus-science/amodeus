@@ -1,4 +1,4 @@
-package ch.ethz.idsc.amodeus.dispatcher.parking.strategies;
+package ch.ethz.idsc.amodeus.parking.strategies;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -8,7 +8,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.dispatcher.parking.ParkingCapacityAmodeus;
+import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 
 /** Default parking strategy that not doing any action. */
@@ -20,7 +20,7 @@ import ch.ethz.idsc.amodeus.routing.DistanceFunction;
     }
 
     @Override
-    public void setRunntimeParameters(ParkingCapacityAmodeus avSpatialCapacityAmodeus, Network network, DistanceFunction distanceFunction) {
+    public void setRunntimeParameters(ParkingCapacity avSpatialCapacityAmodeus, Network network, DistanceFunction distanceFunction) {
         // ---
     }
 }

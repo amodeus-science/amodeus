@@ -5,8 +5,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Properties;
 
-import ch.ethz.idsc.amodeus.dispatcher.parking.ParkingCapacityGenerators;
-import ch.ethz.idsc.amodeus.dispatcher.parking.strategies.ParkingStrategies;
+import ch.ethz.idsc.amodeus.parking.ParkingCapacityGenerators;
+import ch.ethz.idsc.amodeus.parking.strategies.ParkingStrategies;
 import ch.ethz.idsc.amodeus.prep.PopulationCutters;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreators;
 import ch.ethz.idsc.amodeus.util.io.FileLines;

@@ -1,5 +1,5 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.dispatcher.parking.strategies;
+package ch.ethz.idsc.amodeus.parking.strategies;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,17 +16,17 @@ import java.util.TreeMap;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.dispatcher.parking.ParkingCapacityAmodeus;
+import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
 
 /* package */ class ParkingDirectedDiffusionHelper {
 
     private final static double BOUNDCAPACITY = 0.5;
 
-    private final ParkingCapacityAmodeus avSpatialCapacityAmodeus;
+    private final ParkingCapacity avSpatialCapacityAmodeus;
     private final Random random;
     private Map<Link, Set<RoboTaxi>> occMap;
 
-    ParkingDirectedDiffusionHelper(ParkingCapacityAmodeus avSpatialCapacityAmodeus, Collection<RoboTaxi> stayingRobotaxis, Collection<RoboTaxi> rebalancingRobotaxis,
+    ParkingDirectedDiffusionHelper(ParkingCapacity avSpatialCapacityAmodeus, Collection<RoboTaxi> stayingRobotaxis, Collection<RoboTaxi> rebalancingRobotaxis,
             Random random) {
         this.avSpatialCapacityAmodeus = avSpatialCapacityAmodeus;
         this.random = random;

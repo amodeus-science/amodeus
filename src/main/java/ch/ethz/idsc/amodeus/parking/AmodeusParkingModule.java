@@ -1,5 +1,5 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.dispatcher.parking;
+package ch.ethz.idsc.amodeus.parking;
 
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.controler.AbstractModule;
@@ -7,11 +7,13 @@ import org.matsim.core.controler.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 
-import ch.ethz.idsc.amodeus.dispatcher.parking.strategies.ParkingStrategy;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
+import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
+import ch.ethz.idsc.amodeus.parking.strategies.ParkingStrategy;
 
 /** This MATSim {@link AbstractModule} is required for all dispatchers which take parking into
- * consideration. It provides the parking capacities of all the {@link Link}s and provides
+ * consideration, i.e., the ones with an additional {@link ParkingStrategy}.
+ * It provides the parking capacities of all the {@link Link}s and provides
  * as well the strategy to avoid overfilling. */
 public class AmodeusParkingModule extends AbstractModule {
     private final ScenarioOptions scenarioOptions;
@@ -33,7 +35,7 @@ public class AmodeusParkingModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public ParkingCapacityAmodeus provideAVSpatialCapacity(Network network) {
+    public ParkingCapacity provideAVSpatialCapacity(Network network) {
         try {
             return loadSpatialCapacity(network, scenarioOptions);
         } catch (Exception exception) {
@@ -44,7 +46,7 @@ public class AmodeusParkingModule extends AbstractModule {
         return null;
     }
 
-    private static ParkingCapacityAmodeus loadSpatialCapacity(Network network, ScenarioOptions scenarioOptions) {
+    private static ParkingCapacity loadSpatialCapacity(Network network, ScenarioOptions scenarioOptions) {
         return scenarioOptions.getParkingCapacityGenerator().generate(network);
     }
 

@@ -1,5 +1,5 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.dispatcher.parking.strategies;
+package ch.ethz.idsc.amodeus.parking.strategies;
 
 import java.util.Collection;
 import java.util.Map;
@@ -8,7 +8,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.dispatcher.parking.ParkingCapacityAmodeus;
+import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 
 /** A Parking Startegy is the routine which defines how Parking spaces are tried to keep free. */
@@ -31,6 +31,6 @@ public interface ParkingStrategy {
      * @param parkingCapacity
      * @param network
      * @param distanceFunction */
-    public void setRunntimeParameters(ParkingCapacityAmodeus parkingCapacity, Network network, DistanceFunction distanceFunction);
+    public void setRunntimeParameters(ParkingCapacity parkingCapacity, Network network, DistanceFunction distanceFunction);
 
 }

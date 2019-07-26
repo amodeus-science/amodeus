@@ -1,8 +1,10 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.dispatcher.parking;
+package ch.ethz.idsc.amodeus.parking;
 
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
+
+import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
 
 @FunctionalInterface
 public interface AVSpatialCapacityGenerator {
@@ -12,6 +14,6 @@ public interface AVSpatialCapacityGenerator {
      * 
      * @param network The Network for which the {@link AVSpatialCapacityAmodeus} should be generated
      * @return */
-    public ParkingCapacityAmodeus generate(Network network, Population population);
+    public ParkingCapacity generate(Network network, Population population);
 
 }

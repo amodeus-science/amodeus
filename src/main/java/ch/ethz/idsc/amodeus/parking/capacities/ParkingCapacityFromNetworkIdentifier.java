@@ -1,22 +1,20 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.dispatcher.parking;
+package ch.ethz.idsc.amodeus.parking.capacities;
 
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
-public class ParkingCapacityFromNetworkAndIdentifier extends ParkingCapacityAdapter {
+public class ParkingCapacityFromNetworkIdentifier extends ParkingCapacityAbstract {
 
     /** Reads the spatial capacities from the Network file.
      * If the given tag for the spatialCapacity is found its
-     * corresponding value is taken for the AV Spatial
-     * Capacity.
+     * corresponding value is taken for the  capacity.
      * 
      * @param network
      * @param spatialAvCapacityString */
-    public ParkingCapacityFromNetworkAndIdentifier(Network network, String spatialAvCapacityString) {
+    public ParkingCapacityFromNetworkIdentifier(Network network, String spatialAvCapacityString) {
         for (Link link : network.getLinks().values()) {
             Long spots = (Long) link.getAttributes().getAttribute(spatialAvCapacityString);
-
             if (spots != null && spots > 0)
                 capacities.put(link.getId(), spots);
         }
