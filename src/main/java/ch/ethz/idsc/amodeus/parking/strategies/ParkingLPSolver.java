@@ -39,7 +39,7 @@ class ParkingLPSolver {
 
     private final Map<Integer, Double> solution;
 
-    ParkingLPSolver(Map<Link, Set<RoboTaxi>> taxisToGo, Map<Link, Long> freeSpacesToGo, DistanceFunction distanceFunction) {
+    public ParkingLPSolver(Map<Link, Set<RoboTaxi>> taxisToGo, Map<Link, Long> freeSpacesToGo, DistanceFunction distanceFunction) {
         this.taxisToGo = taxisToGo;
         this.freeSpacesToGo = freeSpacesToGo;
         this.distanceFunction = distanceFunction;
@@ -51,7 +51,8 @@ class ParkingLPSolver {
 
         this.taxiLinks = new ArrayList<>(taxisToGo.keySet());
         this.freeSpacesLinks = new ArrayList<>(freeSpacesToGo.keySet());
-
+        
+        System.out.println("starting to define lp");
         Long time = System.currentTimeMillis();
         this.lp = defineLP();
         Long time2 = System.currentTimeMillis();
