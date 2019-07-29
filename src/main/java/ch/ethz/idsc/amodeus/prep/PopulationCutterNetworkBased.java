@@ -18,6 +18,7 @@ public class PopulationCutterNetworkBased implements PopulationCutterFunction {
     public void process(Population population) {
         PopulationReduce.outsideNetwork(population, network);
         System.out.println("population size after removing all people outside the network: " + population.getPersons().size());
+        // TODO why is this here? check and remove TODO big TODO massive TODO
         PopulationTimeInterval.removeOutside(population, endTime);
         System.out.println("population size after removing all people outside the time interval: " + population.getPersons().size());
     }

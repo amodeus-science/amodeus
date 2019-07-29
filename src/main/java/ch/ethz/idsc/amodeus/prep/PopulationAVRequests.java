@@ -46,7 +46,7 @@ public enum PopulationAVRequests {
                             double startTime = leg.getDepartureTime();
                             if (startTime == Double.NEGATIVE_INFINITY) {
                                 Activity actBefore = (Activity) planElMins;
-                                startTime = actBefore.getEndTime();
+                                startTime = Math.max(0.0, actBefore.getEndTime());
                             }
                             timeClip.requireInside(RealScalar.of(startTime));
 
