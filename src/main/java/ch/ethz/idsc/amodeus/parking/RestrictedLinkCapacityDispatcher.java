@@ -1,5 +1,5 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.dispatcher.parking;
+package ch.ethz.idsc.amodeus.parking;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -22,7 +22,6 @@ import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedRebalancingDispatcher;
-import ch.ethz.idsc.amodeus.dispatcher.parking.strategies.ParkingStrategy;
 import ch.ethz.idsc.amodeus.dispatcher.shared.basic.ExtDemandSupplyBeamSharing;
 import ch.ethz.idsc.amodeus.dispatcher.shared.beam.BeamExtensionForSharing;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
@@ -34,6 +33,8 @@ import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.TreeMaintainer;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
+import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
+import ch.ethz.idsc.amodeus.parking.strategies.ParkingStrategy;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -45,15 +46,16 @@ import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.router.AVRouter;
 
-/** This is a first Dispatcher which takes the Parking Situation into Account.
+/** This dispatcher takes the Parking Situation into Account.
  * 
  * To run this dipatcher it is required that
- * 1. The Matsim Controler (e.g. in the ScenarioServer) uses the {@link AmodeusParkingModule}.
- * 2. Set the values for the {@link ParkingCapacityAmodeus} and the {@link ParkingStrategy} in the Scenario Options
- * 3. Choose the {@link RestrictedLinkCapacityDispatcher} in the AVConfig.xml
+ * 1. The MATSim controler (e.g. in the ScenarioServer) uses the {@link AmodeusParkingModule}.
+ * 2. Set the values for the {@link ParkingCapacity} and the {@link ParkingStrategy} in the
+ * AMoDeusOptions.properties file
+ * 3. Choose the {@link RestrictedLinkCapacityDispatcher} in the av.xml configuration
  * 
  * It extends the {@link ExtDemandSupplyBeamSharing}. At each pickup it is
- * checked if around this Robotaxi there exist other Open requests with the same
+ * checked if around this {@link RoboTaxi} there exist other Open requests with the same
  * direction. Those are then picked up. */
 public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatcher {
 
@@ -80,7 +82,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
             Config config, AVDispatcherConfig avDispatcherConfig, //
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, //
             MatsimAmodeusDatabase db, ParkingStrategy parkingStrategy, //
-            ParkingCapacityAmodeus avSpatialCapacityAmodeus) {
+            ParkingCapacity avSpatialCapacityAmodeus) {
         super(config, avDispatcherConfig, travelTime, router, eventsManager, db);
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 60);
@@ -173,7 +175,8 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
         }
 
         /** PARKING EXTENSION */
-        parkingStrategy.keepFree(getRoboTaxiSubset(RoboTaxiStatus.STAY), getRoboTaxiSubset(RoboTaxiStatus.REBALANCEDRIVE), round_now)
+        parkingStrategy.keepFree(getRoboTaxiSubset(RoboTaxiStatus.STAY), //
+                getRoboTaxiSubset(RoboTaxiStatus.REBALANCEDRIVE), round_now)//
                 .forEach((rt, l) -> setRoboTaxiRebalance(rt, l));
         /** PARKING EXTENSION */
     }
@@ -214,7 +217,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
         private ParkingStrategy parkingStrategy;
 
         @Inject(optional = true)
-        private ParkingCapacityAmodeus avSpatialCapacityAmodeus;
+        private ParkingCapacity avSpatialCapacityAmodeus;
 
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {

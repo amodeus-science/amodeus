@@ -218,7 +218,6 @@ public class StandardMATSimScenarioTest {
             public void install() {
                 // ---
             }
-
             @Provides
             @Singleton
             @Named(DvrpRoutingNetworkProvider.DVRP_ROUTING)
@@ -227,12 +226,9 @@ public class StandardMATSimScenarioTest {
                  * - For backward compatibility AmodeusModule provides a FULL network, see there.
                  * - However, here we want a "clean" test case where only a sub-network is used,
                  * i.e. in this case all links with the "car" mode. */
-
                 TransportModeNetworkFilter filter = new TransportModeNetworkFilter(fullNetwork);
-
                 Network filtered = NetworkUtils.createNetwork();
                 filter.filter(filtered, Collections.singleton(TransportMode.car));
-
                 return filtered;
             }
         });

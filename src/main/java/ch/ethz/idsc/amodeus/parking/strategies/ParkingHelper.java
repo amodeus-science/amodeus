@@ -1,5 +1,5 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.dispatcher.parking.strategies;
+package ch.ethz.idsc.amodeus.parking.strategies;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -11,7 +11,9 @@ import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 
-class ParkingHelper {
+@Deprecated
+// TODO not used, remove if sure not needed.
+/* package */ class ParkingHelper {
 
     private final Collection<RoboTaxi> allRoboTaxis;
     private final Map<Link, Set<RoboTaxi>> occLinks;

@@ -5,8 +5,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Properties;
 
-import ch.ethz.idsc.amodeus.dispatcher.parking.ParkingCapacityGenerators;
-import ch.ethz.idsc.amodeus.dispatcher.parking.strategies.ParkingStrategies;
+import ch.ethz.idsc.amodeus.parking.ParkingCapacityGenerators;
+import ch.ethz.idsc.amodeus.parking.strategies.ParkingStrategies;
 import ch.ethz.idsc.amodeus.prep.PopulationCutters;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreators;
 import ch.ethz.idsc.amodeus.util.io.FileLines;
@@ -33,6 +33,12 @@ public enum ScenarioOptionsBase {
     public static final String PARKINGGENERATORIDENTIFIER = "parkingCapacityGenerator";
     public static final String PARKINGSPOTSTAGIDENTIFIER = "parkingSpotsTagInNetwork";
     public static final String PARKINGSTRATEGYIDENTIFIER = "parkingStrategy";
+    public static final String PARKINGCONSTANTCAPACITY = "constantParkingCapacity";
+    public static final String PARKINGTOTALSPACES = "totalParkingSpaces";
+    public static final String PARKINGLENGTHDENSITY = "parkingCapacityPerLength";
+    public static final String PARKINGMINlINKCAPACITY = "minLinkParkingCapacity";
+    
+    
     // ---
     public static final String COMPLETEGRAPHIDENTIFIER = "completeGraph";
     public static final String POPULATIONCUTTERIDENTIFIER = "populationCutter";
@@ -44,6 +50,7 @@ public enum ScenarioOptionsBase {
     public static final String LPSOLVER = "LPSolver";
     public static final String LPWEIGHTQ = "LPWeightQ";
     public static final String LPWEIGHTR = "LPWeightR";
+    public static final String RANDOMSEED = "RandomSeed";
 
     public static Properties getDefault() {
         Properties properties = new Properties();

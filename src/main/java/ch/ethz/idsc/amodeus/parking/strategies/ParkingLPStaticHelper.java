@@ -1,5 +1,5 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.dispatcher.parking.strategies;
+package ch.ethz.idsc.amodeus.parking.strategies;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -11,16 +11,16 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.dispatcher.parking.ParkingCapacityAmodeus;
+import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
 
 class ParkingLPStaticHelper {
 
     private final static double BOUNDCAPACITY = 0.5;
 
-    private final ParkingCapacityAmodeus avSpatialCapacityAmodeus;
+    private final ParkingCapacity avSpatialCapacityAmodeus;
     private final Network network;
 
-    ParkingLPStaticHelper(ParkingCapacityAmodeus avSpatialCapacityAmodeus, Network network) {
+    ParkingLPStaticHelper(ParkingCapacity avSpatialCapacityAmodeus, Network network) {
         this.avSpatialCapacityAmodeus = avSpatialCapacityAmodeus;
         this.network = network;
     }
