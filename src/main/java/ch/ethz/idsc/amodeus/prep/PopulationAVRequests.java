@@ -16,6 +16,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.sca.Clip;
 import ch.ethz.idsc.tensor.sca.Clips;
 
+// TODO refactor this class
 public enum PopulationAVRequests {
     ;
 
@@ -46,8 +47,14 @@ public enum PopulationAVRequests {
                             double startTime = leg.getDepartureTime();
                             if (startTime == Double.NEGATIVE_INFINITY) {
                                 Activity actBefore = (Activity) planElMins;
-                                startTime = actBefore.getEndTime();
+                                // TODO make this more properly using the values from the config file.
+                                startTime = Math.max(0.0, actBefore.getEndTime());
                             }
+                            if (startTime > 107999.0) {
+                                // TODO make this more properly using the values from the config file.
+                                startTime = 107999.0;
+                            }
+
                             timeClip.requireInside(RealScalar.of(startTime));
 
                             Link startLink = network.getLinks().get(((Activity) planElMins).getLinkId());
