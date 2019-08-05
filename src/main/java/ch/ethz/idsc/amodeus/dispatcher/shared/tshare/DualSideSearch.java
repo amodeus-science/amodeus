@@ -21,9 +21,10 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     private final Map<VirtualNode<Link>, GridCell> gridCells;
     private final VirtualNetwork<Link> virtualNetwork;
 
+    // TODO parameter Network network obsolete
     public DualSideSearch(Map<VirtualNode<Link>, GridCell> gridCells, VirtualNetwork<Link> virtualNetwork, Network network) {
-        this.virtualNetwork = virtualNetwork;
         this.gridCells = gridCells;
+        this.virtualNetwork = virtualNetwork;
     }
 
     public Collection<RoboTaxi> apply(AVRequest request, Map<VirtualNode<Link>, Set<RoboTaxi>> plannedLocations, //

@@ -4,6 +4,7 @@ package ch.ethz.idsc.amodeus.util.math;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/** LRU abbreviates "least-recently-used" */
 public enum LruCache {
     ;
     public static <K, V> Map<K, V> create(final int maxSize) {

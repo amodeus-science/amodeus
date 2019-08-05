@@ -16,7 +16,7 @@ import ch.ethz.idsc.tensor.io.TableBuilder;
 /* package */ enum WaitingTimesTable implements AnalysisExport {
     INSTANCE;
 
-    private final String identifier = "WaitingTimes";
+    private static final String identifier = "WaitingTimes";
 
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
