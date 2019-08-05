@@ -218,6 +218,7 @@ public class StandardMATSimScenarioTest {
             public void install() {
                 // ---
             }
+
             @Provides
             @Singleton
             @Named(DvrpRoutingNetworkProvider.DVRP_ROUTING)

@@ -37,8 +37,7 @@ public enum ScenarioOptionsBase {
     public static final String PARKINGTOTALSPACES = "totalParkingSpaces";
     public static final String PARKINGLENGTHDENSITY = "parkingCapacityPerLength";
     public static final String PARKINGMINlINKCAPACITY = "minLinkParkingCapacity";
-    
-    
+
     // ---
     public static final String COMPLETEGRAPHIDENTIFIER = "completeGraph";
     public static final String POPULATIONCUTTERIDENTIFIER = "populationCutter";
