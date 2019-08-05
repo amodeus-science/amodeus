@@ -28,7 +28,7 @@ package ch.ethz.idsc.amodeus.view.gheat;
 
 import java.awt.image.BufferedImage;
 
-import ch.ethz.idsc.amodeus.view.gheat.gui.ColorScheme;
+import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
 public enum HeatMap {
     ;
@@ -38,12 +38,12 @@ public enum HeatMap {
 
     public static BufferedImage getTile( //
             DataManager dataManager, //
-            ColorScheme colorScheme, //
+            ColorDataIndexed colorDataIndexed, //
             int zoom, int x, int y) throws Exception {
         if (dataManager == null)
             throw new Exception("No DataManager specified");
         return TileHelper.generate( //
-                colorScheme, //
+                colorDataIndexed, //
                 DotImages.get(zoom), //
                 zoom, //
                 x, //
