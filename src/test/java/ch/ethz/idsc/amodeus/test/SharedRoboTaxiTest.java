@@ -133,7 +133,7 @@ public class SharedRoboTaxiTest {
         Scalar distanceRatio = Mean.of(ate.getDistancElement().ratios).Get(1);
 
         ScalarAssert scalarAssert = new ScalarAssert();
-        scalarAssert.add(RationalScalar.of(16597,80000), occupancyRatio);
+        scalarAssert.add(RationalScalar.of(16597, 80000), occupancyRatio);
         scalarAssert.add(RealScalar.of(0.32847508641744216), distanceRatio);
 
         /** fleet distances */

@@ -85,8 +85,8 @@ class ParkingLPSolver {
             // create all optimization variables with objective weight and lower bound constraint
             Integer j = 1;
             for (Link taxiLink : taxiLinks) {
-//                if (j % 10 == 0)
-//                    System.out.println("j (1): " + j);
+                // if (j % 10 == 0)
+                // System.out.println("j (1): " + j);
                 for (Link freeSpaceLink : freeSpacesLinks) {
                     GLPK.glp_set_col_kind(lp, j, GLPKConstants.GLP_IV);
                     GLPK.glp_set_col_bnds(lp, j, GLPKConstants.GLP_LO, 0, 0);
@@ -103,8 +103,8 @@ class ParkingLPSolver {
             // create equality constraint
             j = 1;
             for (Link taxiLink : taxiLinks) {
-//                if (j % 10 == 0)
-//                    System.out.println("j (2): " + j);
+                // if (j % 10 == 0)
+                // System.out.println("j (2): " + j);
                 GLPK.glp_add_rows(lp, 1);
                 GLPK.glp_set_row_bnds(lp, j, GLPKConstants.GLP_FX, taxisToGo.get(taxiLink).size(), taxisToGo.get(taxiLink).size());
                 SWIGTYPE_p_int ind = GLPK.new_intArray((totalSpaces * totalTaxis) + 1);

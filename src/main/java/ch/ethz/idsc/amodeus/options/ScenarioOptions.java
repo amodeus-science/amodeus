@@ -129,7 +129,7 @@ public class ScenarioOptions {
 
     public ParkingCapacityGenerator getParkingCapacityGenerator() {
         System.err.println("Parking capacity generator:");
-        System.err.println(getString(ScenarioOptionsBase.PARKINGGENERATORIDENTIFIER));        
+        System.err.println(getString(ScenarioOptionsBase.PARKINGGENERATORIDENTIFIER));
         return ParkingCapacityGenerators.valueOf(getString(ScenarioOptionsBase.PARKINGGENERATORIDENTIFIER));
     }
 

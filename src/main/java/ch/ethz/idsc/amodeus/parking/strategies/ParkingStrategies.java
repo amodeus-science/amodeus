@@ -28,7 +28,7 @@ public enum ParkingStrategies {
             return new ParkingLP();
         }
     };
-    
+
     private static final long RANDOMSEED = 1234;
 
     public abstract ParkingStrategy generateParkingStrategy();

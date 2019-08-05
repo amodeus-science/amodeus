@@ -20,7 +20,7 @@ public class ParkingCapacityFromNetworkDistribution extends ParkingCapacityAbstr
     public ParkingCapacityFromNetworkDistribution(Network network, String capacityIdentifier, //
             Random random, long desiredTotalSpots) {
 
-        List<Link> linksWithParking = new ArrayList<Link>();
+        List<Link> linksWithParking = new ArrayList<>();
         network.getLinks().values().stream()//
                 .forEach(l -> {
                     try {

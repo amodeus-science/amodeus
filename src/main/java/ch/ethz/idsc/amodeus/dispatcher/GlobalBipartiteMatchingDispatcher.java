@@ -11,7 +11,6 @@ import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
 import ch.ethz.idsc.amodeus.dispatcher.core.RebalancingDispatcher;
-import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.ConfigurableBipartiteMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceCost;
