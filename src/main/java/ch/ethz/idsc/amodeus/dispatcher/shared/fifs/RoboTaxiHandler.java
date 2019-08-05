@@ -54,9 +54,9 @@ import ch.ethz.idsc.tensor.Tensors;
 
     private static double maxSpeed(Network network) {
         return network.getLinks().values().stream() //
-                .map(Link::getFreespeed) //
-                .mapToDouble(Double::doubleValue) //
-                .max().getAsDouble();
+                .mapToDouble(Link::getFreespeed) //
+                .max() //
+                .getAsDouble();
     }
 
     public Collection<RoboTaxi> getRoboTaxisWithinFreeSpeedDisk(Coord coord, double maxTime) {

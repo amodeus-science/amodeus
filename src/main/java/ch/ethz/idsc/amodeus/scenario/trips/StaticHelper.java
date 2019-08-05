@@ -21,7 +21,7 @@ import ch.ethz.idsc.tensor.Scalar;
         return CoordUtils.calcEuclideanDistance(trip.pickupLoc, trip.dropoffLoc);
     }
 
-    public static Scalar getMinNetworkTripDistance(TaxiTrip trip, Network network, Double timeNow) {
+    public static Scalar getMinNetworkTripDistance(TaxiTrip trip, Network network, double timeNow) {
         CachedNetworkTimeDistance lcpc = new CachedNetworkTimeDistance//
         (EasyMinDistPathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0, TimeDistanceProperty.INSTANCE);
         // find links

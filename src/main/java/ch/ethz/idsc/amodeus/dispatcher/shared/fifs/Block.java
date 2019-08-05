@@ -152,7 +152,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
     /** This function gives back the rebalance directives based on all the planed Movements of Robotaxis which were done with the {@link pushRobotaxiTo()}
      * method. */
-    RebalancingDirectives executeRebalance(NetworkTimeDistInterface timeDb, Double now) {
+    RebalancingDirectives executeRebalance(NetworkTimeDistInterface timeDb, double now) {
         Map<RoboTaxi, Link> rebalanceDirectives = new HashMap<>();
         /** calculate the number of pushes from this block */
         int numRebalancings = getNumberPushingVehicles();
