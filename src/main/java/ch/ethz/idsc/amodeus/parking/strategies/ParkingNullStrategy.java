@@ -21,7 +21,7 @@ import ch.ethz.idsc.amodeus.routing.DistanceFunction;
     }
 
     @Override
-    public void setRunntimeParameters(ParkingCapacity avSpatialCapacityAmodeus, Network network, DistanceFunction distanceFunction) {
+    public void setRuntimeParameters(ParkingCapacity avSpatialCapacityAmodeus, Network network, DistanceFunction distanceFunction) {
         // ---
     }
 }

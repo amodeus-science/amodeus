@@ -13,37 +13,28 @@ import org.matsim.api.core.v01.network.Network;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
-class ParkingLP extends ParkingStrategyWithCapacity {
-    private final long freeParkingPeriod = 5;
-
-    private ParkingLPStaticHelper parkingLPStaticHelper;
+/* package */ class ParkingLP extends AbstractParkingStrategy {
+    private ParkingLPHelper parkingLPHelper;
+    private final long freeParkingPeriod = 5; // TODO remove magic const.
 
     @Override
-    public void setRunntimeParameters(ParkingCapacity avSpatialCapacityAmodeus, Network network, DistanceFunction distanceFunction) {
-        super.setRunntimeParameters(avSpatialCapacityAmodeus, network, distanceFunction);
-        this.parkingLPStaticHelper = new ParkingLPStaticHelper(avSpatialCapacityAmodeus, network);
+    public void setRuntimeParameters(ParkingCapacity parkingCapacity, Network network, DistanceFunction distanceFunction) {
+        super.setRuntimeParameters(parkingCapacity, network, distanceFunction);
+        this.parkingLPHelper = new ParkingLPHelper(parkingCapacity, network);
     }
 
     @Override
     public Map<RoboTaxi, Link> keepFree(Collection<RoboTaxi> stayingRobotaxis, Collection<RoboTaxi> rebalancingRobotaxis, long now) {
-        GlobalAssert.that(!Objects.isNull(distanceFunction));
-        GlobalAssert.that(!Objects.isNull(parkingLPStaticHelper));
+        Objects.requireNonNull(distanceFunction);
+        Objects.requireNonNull(parkingLPHelper);
 
         if (now % freeParkingPeriod == 0) {
-
-            Map<Link, Set<RoboTaxi>> linkStayTaxi = parkingLPStaticHelper.getOccupiedLinks(stayingRobotaxis);
-            Map<Link, Set<RoboTaxi>> taxisToGo = parkingLPStaticHelper.getTaxisToGo(linkStayTaxi);
-            Map<Link, Long> freeSpacesToGo = parkingLPStaticHelper.getFreeSpacesToGo(linkStayTaxi, rebalancingRobotaxis);
-
-            if ((!taxisToGo.isEmpty()) & (!freeSpacesToGo.isEmpty())) {
-
-                ParkingLPSolver parkingLPSolver = new ParkingLPSolver(taxisToGo, freeSpacesToGo, distanceFunction);
-
-                return parkingLPSolver.returnSolution();
-            }
-            return new HashMap<>();
+            Map<Link, Set<RoboTaxi>> linkStayTaxi = parkingLPHelper.getOccupiedLinks(stayingRobotaxis);
+            Map<Link, Set<RoboTaxi>> taxisToGo = parkingLPHelper.getTaxisToGo(linkStayTaxi);
+            Map<Link, Long> freeSpacesToGo = parkingLPHelper.getFreeSpacesToGo(linkStayTaxi, rebalancingRobotaxis);
+            if ((!taxisToGo.isEmpty()) & (!freeSpacesToGo.isEmpty()))
+                return (new ParkingLPSolver(taxisToGo, freeSpacesToGo, distanceFunction)).returnSolution();
         }
         return new HashMap<>();
     }

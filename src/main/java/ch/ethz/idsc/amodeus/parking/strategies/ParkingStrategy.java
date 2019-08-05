@@ -31,6 +31,6 @@ public interface ParkingStrategy {
      * @param parkingCapacity
      * @param network
      * @param distanceFunction */
-    public void setRunntimeParameters(ParkingCapacity parkingCapacity, Network network, DistanceFunction distanceFunction);
+    public void setRuntimeParameters(ParkingCapacity parkingCapacity, Network network, DistanceFunction distanceFunction);
 
 }

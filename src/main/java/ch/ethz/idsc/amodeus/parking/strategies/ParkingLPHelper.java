@@ -13,14 +13,13 @@ import org.matsim.api.core.v01.network.Network;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
 
-class ParkingLPStaticHelper {
-
-    private final static double BOUNDCAPACITY = 0.5;
+/* package */ class ParkingLPHelper {
 
     private final ParkingCapacity avSpatialCapacityAmodeus;
     private final Network network;
+    private final static double BOUNDCAPACITY = 0.5; // TODO remove magic const.
 
-    ParkingLPStaticHelper(ParkingCapacity avSpatialCapacityAmodeus, Network network) {
+    public ParkingLPHelper(ParkingCapacity avSpatialCapacityAmodeus, Network network) {
         this.avSpatialCapacityAmodeus = avSpatialCapacityAmodeus;
         this.network = network;
     }
@@ -59,7 +58,6 @@ class ParkingLPStaticHelper {
                 });
             }
         }
-
         return result;
     }
 
@@ -102,5 +100,4 @@ class ParkingLPStaticHelper {
         });
         return result;
     }
-
 }

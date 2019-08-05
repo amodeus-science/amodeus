@@ -20,63 +20,78 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
-class ParkingLPSolver {
+/* package */ class ParkingLPSolver {
 
     private final Map<Link, Set<RoboTaxi>> taxisToGo;
     private final Map<Link, Long> freeSpacesToGo;
-
     private final DistanceFunction distanceFunction;
-
     private final int totalTaxis;
     private final int totalSpaces;
-
     private final List<Link> taxiLinks;
     private final List<Link> freeSpacesLinks;
-
+    private final Map<Integer, Map<Link, Link>> trackingMap = new HashMap<>();
+    private final Map<Integer, Double> solution;
     private final glp_prob lp;
 
-    private final Map<Integer, Map<Link, Link>> trackingMap = new HashMap<>();
-
-    private final Map<Integer, Double> solution;
-
-    public ParkingLPSolver(Map<Link, Set<RoboTaxi>> taxisToGo, Map<Link, Long> freeSpacesToGo, DistanceFunction distanceFunction) {
+    public ParkingLPSolver(Map<Link, Set<RoboTaxi>> taxisToGo, Map<Link, Long> freeSpacesToGo, //
+            DistanceFunction distanceFunction) {
         this.taxisToGo = taxisToGo;
         this.freeSpacesToGo = freeSpacesToGo;
         this.distanceFunction = distanceFunction;
-
-        this.totalTaxis = taxisToGo.keySet().size();
-        this.totalSpaces = freeSpacesToGo.keySet().size();
+        totalTaxis = taxisToGo.size();
+        totalSpaces = freeSpacesToGo.size();
         System.out.println("total taxi links: " + this.totalTaxis);
         System.out.println("total space links: " + this.totalSpaces);
-
-        this.taxiLinks = new ArrayList<>(taxisToGo.keySet());
-        this.freeSpacesLinks = new ArrayList<>(freeSpacesToGo.keySet());
+        taxiLinks = new ArrayList<>(taxisToGo.keySet());
+        freeSpacesLinks = new ArrayList<>(freeSpacesToGo.keySet());
 
         System.out.println("starting to define lp");
         Long time = System.currentTimeMillis();
         this.lp = defineLP();
         Long time2 = System.currentTimeMillis();
         Long elapsed = time2 - time;
-        System.out.println("time to define: " + elapsed.toString());
+        System.out.println("time to define:            " + elapsed.toString());
         solveLP(true);
         Long time3 = System.currentTimeMillis();
         elapsed = time3 - time2;
-        System.out.println("time to solve: " + elapsed.toString());
-        this.solution = writeLPSolution();
+        System.out.println("time to solve:             " + elapsed.toString());
+        this.solution = extractSolution();
         Long time4 = System.currentTimeMillis();
         elapsed = time4 - time3;
-        System.out.println("time to write: " + elapsed.toString());
+        System.out.println("time to extract solution:  " + elapsed.toString());
     }
 
+    public Map<RoboTaxi, Link> returnSolution() {
+        Map<RoboTaxi, Link> result = new HashMap<>();
+        Integer j = 1;
+        for (Link taxiLink : taxiLinks) {
+            Integer nbTaxisToShare = taxisToGo.get(taxiLink).size();
+            List<RoboTaxi> taxiToShare = new ArrayList<>(taxisToGo.get(taxiLink));
+            for (Link freeSpaceLink : freeSpacesLinks) {
+                Integer toThisDirection = (int) Math.rint(solution.get(j));
+                if (toThisDirection > 0) {
+                    while (toThisDirection != 0) {
+                        result.put(taxiToShare.remove(nbTaxisToShare - 1), freeSpaceLink);
+                        nbTaxisToShare--;
+                        toThisDirection--;
+                    }
+                }
+                j++;
+            }
+            GlobalAssert.that(nbTaxisToShare.equals(0));
+        }
+        return result;
+    }
+
+    /** INTEGER LINEAR PROGRAM
+     * min sum_(i in taxiLinks) sum_(j in freeSpacesLinks) cost_ij * x_ij
+     * s.t.
+     * (c1) x_ij >= 0
+     * (c2) sum_(i in taxiLinks) x_ij <= freeSpaces at j
+     * (c3) sum_(j in freeSpacesLinks) x_ij = numberOfTaxis at i */
     private glp_prob defineLP() {
         glp_prob lp = null;
         try {
-            /** INTEGER LINEAR PROGRAM
-             * min sum_(i in taxiLinks) sum_(j in freeSpacesLinks) cost_ij * x_ij
-             * s.t.
-             * (c1) x_ij >= 0
-             * (c2) sum_(i in taxiLinks) x_ij <= freeSpaces at j
-             * (c3) sum_(j in freeSpacesLinks) x_ij = numberOfTaxis at i */
             lp = GLPK.glp_create_prob();
 
             // set up optimization variables
@@ -90,7 +105,8 @@ class ParkingLPSolver {
                 for (Link freeSpaceLink : freeSpacesLinks) {
                     GLPK.glp_set_col_kind(lp, j, GLPKConstants.GLP_IV);
                     GLPK.glp_set_col_bnds(lp, j, GLPKConstants.GLP_LO, 0, 0);
-                    GLPK.glp_set_obj_coef(lp, j, getCost(taxiLink, freeSpaceLink));
+                    GLPK.glp_set_obj_coef(lp, j, //
+                            distanceFunction.getDistance(taxiLink, freeSpaceLink));
                     /** TRACKING FOR LATER ASSIGNMENT */
                     Map<Link, Link> linkMap = new HashMap<>();
                     linkMap.put(taxiLink, freeSpaceLink);
@@ -186,40 +202,12 @@ class ParkingLPSolver {
         GLPK.glp_delete_prob(lp);
     }
 
-    private final Map<Integer, Double> writeLPSolution() {
+    private final Map<Integer, Double> extractSolution() {
         Map<Integer, Double> result = new HashMap<>();
         for (int i = 1; i <= (totalSpaces * totalTaxis); i++) {
             result.put(i, GLPK.glp_mip_col_val(lp, i));
         }
-
         return result;
-    }
-
-    public Map<RoboTaxi, Link> returnSolution() {
-        Map<RoboTaxi, Link> result = new HashMap<>();
-        Integer j = 1;
-        for (Link taxiLink : taxiLinks) {
-            Integer nbTaxisToShare = taxisToGo.get(taxiLink).size();
-            List<RoboTaxi> taxiToShare = new ArrayList<>(taxisToGo.get(taxiLink));
-            for (Link freeSpaceLink : freeSpacesLinks) {
-                Integer toThisDirection = (int) Math.rint(solution.get(j));
-                if (toThisDirection > 0) {
-                    while (toThisDirection != 0) {
-                        result.put(taxiToShare.remove(nbTaxisToShare - 1), freeSpaceLink);
-                        nbTaxisToShare--;
-                        toThisDirection--;
-                    }
-                }
-                j++;
-            }
-            GlobalAssert.that(nbTaxisToShare.equals(0));
-        }
-
-        return result;
-    }
-
-    private double getCost(Link taxiLink, Link freeSpaceLink) {
-        return distanceFunction.getDistance(taxiLink, freeSpaceLink);
     }
 
 }
