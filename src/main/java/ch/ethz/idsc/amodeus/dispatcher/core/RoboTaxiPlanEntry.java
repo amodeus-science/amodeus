@@ -4,7 +4,6 @@ package ch.ethz.idsc.amodeus.dispatcher.core;
 import java.io.Serializable;
 import java.util.Objects;
 
-// TODO class not used outside project: document purpose or hide implementation
 /* package */ class RoboTaxiPlanEntry implements Serializable {
     public final double beginTime;
     public final double endTime;

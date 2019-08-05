@@ -34,8 +34,8 @@ public class BeamExtensionForSharing {
     // TODO code/api style is bad: lastEmptyTaxis
     private Collection<RoboTaxi> lastEmptyTaxis = new HashSet<>();
     // TODO code/api style is bad: addedAvRequests
-    final Map<AVRequest, RoboTaxi> addedAvRequests = new HashMap<>();
-    private Double phiMax;
+    private final Map<AVRequest, RoboTaxi> addedAvRequests = new HashMap<>();
+    private double phiMax;
     private double rMax;
 
     public BeamExtensionForSharing(double rMax, double phiMax) {
