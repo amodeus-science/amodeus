@@ -71,8 +71,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
             if (requestRegisterEntry.getValue().containsKey(avRequest.getId().toString()))
                 return Optional.of(requestRegisterEntry.getKey());
 
-        GlobalAssert.that(false);
-        return Optional.empty();
+        throw new RuntimeException("no can do");
     }
 
     /* package */ Map<AVRequest, RoboTaxi> getPickupRegister(Set<AVRequest> pendingRequests) {

@@ -101,7 +101,7 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
                 } else {
                     System.out.println(" Stay Task:" + avTask.getAVTaskType().equals(AVTaskType.STAY));
                     System.out.println("PICKUP TASK" + avTask.getAVTaskType().equals(AVTaskType.PICKUP));
-                    GlobalAssert.that(false);
+                    throw new RuntimeException("no can do");
                 }
                 // SECOND: if we are on the second last task but it does not end yet then we have to stop the current task if thats possible
             } else if (isSecondLastTask) {
@@ -131,7 +131,7 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
             } else {
                 System.out.println("Thats a case is not allowed. It means that we plan more than two tasks ahead");
                 System.out.println("This is only allowed after the redispatchInternal() until the end of the Time Step");
-                GlobalAssert.that(false);
+                throw new RuntimeException("no can do");
             }
         }
         return Optional.empty();
