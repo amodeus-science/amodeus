@@ -24,31 +24,27 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
     private final Map<Link, Set<RoboTaxi>> taxisToGo;
     private final Map<Link, Long> freeSpacesToGo;
-    private final DistanceFunction distanceFunction;
     private final int totalTaxis;
     private final int totalSpaces;
     private final List<Link> taxiLinks;
     private final List<Link> freeSpacesLinks;
-    private final Map<Integer, Map<Link, Link>> trackingMap = new HashMap<>();
-    private final Map<Integer, Double> solution;
     private final Map<RoboTaxi, Link> result = new HashMap<>();
     private glp_prob lp;
+    private glp_iocp parm;
 
     public ParkingLPSolver(Map<Link, Set<RoboTaxi>> taxisToGo, Map<Link, Long> freeSpacesToGo, //
             DistanceFunction distanceFunction) {
         this.taxisToGo = taxisToGo;
         this.freeSpacesToGo = freeSpacesToGo;
-        this.distanceFunction = distanceFunction;
         totalTaxis = taxisToGo.size();
         totalSpaces = freeSpacesToGo.size();
         System.out.println("total taxi links: " + this.totalTaxis);
         System.out.println("total space links: " + this.totalSpaces);
         taxiLinks = new ArrayList<>(taxisToGo.keySet());
         freeSpacesLinks = new ArrayList<>(freeSpacesToGo.keySet());
-
         System.out.println("starting to define lp");
         Long time = System.currentTimeMillis();
-        this.lp = defineLP();
+        this.lp = defineLP(distanceFunction);
         Long time2 = System.currentTimeMillis();
         Long elapsed = time2 - time;
         System.out.println("time to define:            " + elapsed.toString());
@@ -56,8 +52,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         Long time3 = System.currentTimeMillis();
         elapsed = time3 - time2;
         System.out.println("time to solve:             " + elapsed.toString());
-        this.solution = extractSolution();
-        storeSolution();
+        extractSolution();
         GLPK.glp_delete_prob(lp);
         Long time4 = System.currentTimeMillis();
         elapsed = time4 - time3;
@@ -68,14 +63,13 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         return result;
     }
 
-
     /** INTEGER LINEAR PROGRAM
      * min sum_(i in taxiLinks) sum_(j in freeSpacesLinks) cost_ij * x_ij
      * s.t.
      * (c1) x_ij >= 0
      * (c2) sum_(i in taxiLinks) x_ij <= freeSpaces at j
      * (c3) sum_(j in freeSpacesLinks) x_ij = numberOfTaxis at i */
-    private glp_prob defineLP() {
+    private glp_prob defineLP(DistanceFunction distanceFunction) {
         try {
             lp = GLPK.glp_create_prob();
 
@@ -95,7 +89,6 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
                     /** TRACKING FOR LATER ASSIGNMENT */
                     Map<Link, Link> linkMap = new HashMap<>();
                     linkMap.put(taxiLink, freeSpaceLink);
-                    trackingMap.put(j, linkMap);
                     j++;
                 }
             }
@@ -159,7 +152,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     }
 
     private void solveLP(boolean mute) {
-        glp_iocp parm = new glp_iocp();
+        parm = new glp_iocp();
         GLPK.glp_init_iocp(parm);
         parm.setPresolve(GLPK.GLP_ON);
         int ret = GLPK.glp_intopt(lp, parm);
@@ -180,19 +173,12 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         }
     }
 
-
-    private final Map<Integer, Double> extractSolution() {
-        Map<Integer, Double> result = new HashMap<>();
+    private void extractSolution() {
+        Map<Integer, Double> solution = new HashMap<>();
         for (int i = 1; i <= (totalSpaces * totalTaxis); i++) {
-            result.put(i, GLPK.glp_mip_col_val(lp, i));
+            solution.put(i, GLPK.glp_mip_col_val(lp, i));
         }
-        return result;
-    }
-    
-    private void storeSolution() {
-        
-        
-        
+
         Integer j = 1;
         for (Link taxiLink : taxiLinks) {
             Integer nbTaxisToShare = taxisToGo.get(taxiLink).size();
@@ -211,6 +197,4 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
             GlobalAssert.that(nbTaxisToShare.equals(0));
         }
     }
-
-
 }
