@@ -31,7 +31,8 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     private final List<Link> freeSpacesLinks;
     private final Map<Integer, Map<Link, Link>> trackingMap = new HashMap<>();
     private final Map<Integer, Double> solution;
-    private final glp_prob lp;
+    private final Map<RoboTaxi, Link> result = new HashMap<>();
+    private glp_prob lp;
 
     public ParkingLPSolver(Map<Link, Set<RoboTaxi>> taxisToGo, Map<Link, Long> freeSpacesToGo, //
             DistanceFunction distanceFunction) {
@@ -56,32 +57,17 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         elapsed = time3 - time2;
         System.out.println("time to solve:             " + elapsed.toString());
         this.solution = extractSolution();
+        storeSolution();
+        GLPK.glp_delete_prob(lp);
         Long time4 = System.currentTimeMillis();
         elapsed = time4 - time3;
         System.out.println("time to extract solution:  " + elapsed.toString());
     }
 
     public Map<RoboTaxi, Link> returnSolution() {
-        Map<RoboTaxi, Link> result = new HashMap<>();
-        Integer j = 1;
-        for (Link taxiLink : taxiLinks) {
-            Integer nbTaxisToShare = taxisToGo.get(taxiLink).size();
-            List<RoboTaxi> taxiToShare = new ArrayList<>(taxisToGo.get(taxiLink));
-            for (Link freeSpaceLink : freeSpacesLinks) {
-                Integer toThisDirection = (int) Math.rint(solution.get(j));
-                if (toThisDirection > 0) {
-                    while (toThisDirection != 0) {
-                        result.put(taxiToShare.remove(nbTaxisToShare - 1), freeSpaceLink);
-                        nbTaxisToShare--;
-                        toThisDirection--;
-                    }
-                }
-                j++;
-            }
-            GlobalAssert.that(nbTaxisToShare.equals(0));
-        }
         return result;
     }
+
 
     /** INTEGER LINEAR PROGRAM
      * min sum_(i in taxiLinks) sum_(j in freeSpacesLinks) cost_ij * x_ij
@@ -90,7 +76,6 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
      * (c2) sum_(i in taxiLinks) x_ij <= freeSpaces at j
      * (c3) sum_(j in freeSpacesLinks) x_ij = numberOfTaxis at i */
     private glp_prob defineLP() {
-        glp_prob lp = null;
         try {
             lp = GLPK.glp_create_prob();
 
@@ -182,25 +167,19 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
         if (ret != 0) { // ret==0 indicates of the algorithm ran correctly
             System.out.println("something went wrong");
-            closeLP();
             GlobalAssert.that(false);
         }
         if (stat == GLPK.GLP_NOFEAS) {
             System.out.println("LP has found infeasible solution");
-            closeLP();
             GlobalAssert.that(false);
         }
 
         if (stat != GLPK.GLP_OPT) {
             System.out.println("LP has found suboptimal solution");
-            closeLP();
             GlobalAssert.that(false);
         }
     }
 
-    private final void closeLP() {
-        GLPK.glp_delete_prob(lp);
-    }
 
     private final Map<Integer, Double> extractSolution() {
         Map<Integer, Double> result = new HashMap<>();
@@ -209,5 +188,29 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         }
         return result;
     }
+    
+    private void storeSolution() {
+        
+        
+        
+        Integer j = 1;
+        for (Link taxiLink : taxiLinks) {
+            Integer nbTaxisToShare = taxisToGo.get(taxiLink).size();
+            List<RoboTaxi> taxiToShare = new ArrayList<>(taxisToGo.get(taxiLink));
+            for (Link freeSpaceLink : freeSpacesLinks) {
+                Integer toThisDirection = (int) Math.rint(solution.get(j));
+                if (toThisDirection > 0) {
+                    while (toThisDirection != 0) {
+                        result.put(taxiToShare.remove(nbTaxisToShare - 1), freeSpaceLink);
+                        nbTaxisToShare--;
+                        toThisDirection--;
+                    }
+                }
+                j++;
+            }
+            GlobalAssert.that(nbTaxisToShare.equals(0));
+        }
+    }
+
 
 }
