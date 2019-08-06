@@ -26,14 +26,14 @@ public class TrafficDataModule extends AbstractModule {
     // should only be loaded via AbstractQSimModule. Thus I commented this function here out. Please check if this has further implications on other parts of the
     // code. Lukas, 3.8.19
     
-    // @Provides
-    // @Singleton
-    // public QNetworkFactory provideCustomConfigurableQNetworkFactory(EventsManager events, Scenario scenario, TaxiTrafficData trafficData) {
-    // ConfigurableQNetworkFactory factory = new ConfigurableQNetworkFactory(events, scenario);
-    // LinkSpeedCalculator AVLinkSpeedCalculator = new AmodeusLinkSpeedCalculator(trafficData);
-    // factory.setLinkSpeedCalculator(AVLinkSpeedCalculator);
-    // return factory;
-    // }
+     @Provides
+     @Singleton
+     public QNetworkFactory provideCustomConfigurableQNetworkFactory(EventsManager events, Scenario scenario, TaxiTrafficData trafficData) {
+     ConfigurableQNetworkFactory factory = new ConfigurableQNetworkFactory(events, scenario);
+     LinkSpeedCalculator AVLinkSpeedCalculator = new AmodeusLinkSpeedCalculator(trafficData);
+     factory.setLinkSpeedCalculator(AVLinkSpeedCalculator);
+     return factory;
+     }
 
     @Provides
     @Singleton
