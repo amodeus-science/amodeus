@@ -16,21 +16,22 @@ import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 
 /* package */ class ParkingLP extends AbstractParkingStrategy {
     private ParkingLPHelper parkingLPHelper;
-    private final long freeParkingPeriod = 5; // TODO remove magic const.
+    private final long parkingOptimizePeriod = 5; // TODO remove magic const.
 
     @Override
-    public void setRuntimeParameters(ParkingCapacity parkingCapacity, Network network, DistanceFunction distanceFunction) {
+    public void setRuntimeParameters(ParkingCapacity parkingCapacity, Network network, //
+            DistanceFunction distanceFunction) {
         super.setRuntimeParameters(parkingCapacity, network, distanceFunction);
         this.parkingLPHelper = new ParkingLPHelper(parkingCapacity, network);
     }
 
     @Override
-    public Map<RoboTaxi, Link> keepFree(Collection<RoboTaxi> stayingRobotaxis, Collection<RoboTaxi> rebalancingRobotaxis, long now) {
+    public Map<RoboTaxi, Link> keepFree(Collection<RoboTaxi> stayingRobotaxis, //
+            Collection<RoboTaxi> rebalancingRobotaxis, long now) {
         Objects.requireNonNull(distanceFunction);
         Objects.requireNonNull(parkingLPHelper);
-
-        if (now % freeParkingPeriod == 0) {
-            Map<Link, Set<RoboTaxi>> linkStayTaxi = parkingLPHelper.getOccupiedLinks(stayingRobotaxis);
+        if (now % parkingOptimizePeriod == 0) {
+            Map<Link, Set<RoboTaxi>> linkStayTaxi = StaticHelper.getOccupiedLinks(stayingRobotaxis);
             Map<Link, Set<RoboTaxi>> taxisToGo = parkingLPHelper.getTaxisToGo(linkStayTaxi);
             Map<Link, Long> freeSpacesToGo = parkingLPHelper.getFreeSpacesToGo(linkStayTaxi, rebalancingRobotaxis);
             if ((!taxisToGo.isEmpty()) & (!freeSpacesToGo.isEmpty()))

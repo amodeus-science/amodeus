@@ -15,89 +15,50 @@ import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
 
 /* package */ class ParkingLPHelper {
 
-    private final ParkingCapacity avSpatialCapacityAmodeus;
+    private final ParkingCapacity parkingCapacity;
     private final Network network;
     private final static double BOUNDCAPACITY = 0.5; // TODO remove magic const.
 
-    public ParkingLPHelper(ParkingCapacity avSpatialCapacityAmodeus, Network network) {
-        this.avSpatialCapacityAmodeus = avSpatialCapacityAmodeus;
+    public ParkingLPHelper(ParkingCapacity parkingCapacity, Network network) {
+        this.parkingCapacity = parkingCapacity;
         this.network = network;
     }
 
     public Map<Link, Long> getFreeSpacesToGo(Map<Link, Set<RoboTaxi>> linkStayTaxi, Collection<RoboTaxi> rebalancingRoboTaxis) {
         Map<Link, Long> freeSpacesToGo = new HashMap<>();
-
-        Map<Link, Integer> linkRebalancingTaxi = getRebalancingDestinations(rebalancingRoboTaxis);
-
+        Map<Link, Integer> linkRebalancingTaxi = StaticHelper.getDestinationCount(rebalancingRoboTaxis);
         for (Link link : network.getLinks().values()) {
-            Long freeSpaces = (long) Math.ceil(BOUNDCAPACITY * avSpatialCapacityAmodeus.getSpatialCapacity(link.getId()));
+            Long freeSpaces = (long) Math.ceil(BOUNDCAPACITY * parkingCapacity.getSpatialCapacity(link.getId()));
             if (linkStayTaxi.containsKey(link)) {
-                freeSpaces = (long) Math.ceil(BOUNDCAPACITY * avSpatialCapacityAmodeus.getSpatialCapacity(link.getId())//
+                freeSpaces = (long) Math.ceil(BOUNDCAPACITY * parkingCapacity.getSpatialCapacity(link.getId())//
                         - linkStayTaxi.get(link).size());
             } else if (linkRebalancingTaxi.containsKey(link)) {
-                freeSpaces = (long) Math.ceil(BOUNDCAPACITY * avSpatialCapacityAmodeus.getSpatialCapacity(link.getId())//
+                freeSpaces = (long) Math.ceil(BOUNDCAPACITY * parkingCapacity.getSpatialCapacity(link.getId())//
                         - linkRebalancingTaxi.get(link));
             } else if ((linkRebalancingTaxi.containsKey(link)) & (linkStayTaxi.containsKey(link))) {
-                freeSpaces = (long) Math.ceil(BOUNDCAPACITY * avSpatialCapacityAmodeus.getSpatialCapacity(link.getId())//
+                freeSpaces = (long) Math.ceil(BOUNDCAPACITY * parkingCapacity.getSpatialCapacity(link.getId())//
                         - linkRebalancingTaxi.get(link) - linkStayTaxi.get(link).size());
             }
             if (freeSpaces > 0) {
                 freeSpacesToGo.put(link, freeSpaces);
             }
         }
-
         return freeSpacesToGo;
     }
 
     public Map<Link, Set<RoboTaxi>> getTaxisToGo(Map<Link, Set<RoboTaxi>> linkStayTaxi) {
-        Map<Link, Set<RoboTaxi>> result = new HashMap<>();
+        Map<Link, Set<RoboTaxi>> shouldLeaveTaxis = new HashMap<>();
         for (Link link : linkStayTaxi.keySet()) {
-            if (linkStayTaxi.get(link).size() > BOUNDCAPACITY * avSpatialCapacityAmodeus.getSpatialCapacity(link.getId())) {
-                linkStayTaxi.get(link).stream().limit(Math.round(BOUNDCAPACITY * linkStayTaxi.get(link).size())).forEach(rt -> {
-                    result.put(link, addRoboTaxiToSet(link, rt, result));
-                });
+            if (linkStayTaxi.get(link).size() > BOUNDCAPACITY * parkingCapacity.getSpatialCapacity(link.getId())) {
+                linkStayTaxi.get(link).stream()//
+                        .limit(Math.round(BOUNDCAPACITY * linkStayTaxi.get(link).size()))//
+                        .forEach(rt -> {
+                            if (!shouldLeaveTaxis.containsKey(link))
+                                shouldLeaveTaxis.put(link, new HashSet<RoboTaxi>());
+                            shouldLeaveTaxis.get(link).add(rt);
+                        });
             }
         }
-        return result;
-    }
-
-    public Map<Link, Set<RoboTaxi>> getOccupiedLinks(Collection<RoboTaxi> stayRoboTaxis) {
-        /** returns a map with a link as key and the set of robotaxis which are currently on the link */
-        Map<Link, Set<RoboTaxi>> rtLink = new HashMap<>();
-
-        stayRoboTaxis.forEach(rt -> {
-            Link link = rt.getDivertableLocation();
-            if (rtLink.containsKey(link)) {
-                rtLink.get(link).add(rt);
-            } else {
-                Set<RoboTaxi> set = new HashSet<>();
-                set.add(rt);
-                rtLink.put(link, set);
-            }
-        });
-        return rtLink;
-    }
-
-    private static Set<RoboTaxi> addRoboTaxiToSet(Link link, RoboTaxi rt, Map<Link, Set<RoboTaxi>> result) {
-        if (result.containsKey(link)) {
-            result.get(link).add(rt);
-            return result.get(link);
-        }
-        Set<RoboTaxi> set = new HashSet<>();
-        set.add(rt);
-        return set;
-    }
-
-    private static Map<Link, Integer> getRebalancingDestinations(Collection<RoboTaxi> rebalancingTaxis) {
-        Map<Link, Integer> result = new HashMap<>();
-        rebalancingTaxis.stream().forEach(rt -> {
-            Link link = rt.getCurrentDriveDestination();
-            if (result.containsKey(link)) {
-                result.replace(link, result.get(link) + 1);
-            } else {
-                result.put(link, 1);
-            }
-        });
-        return result;
+        return shouldLeaveTaxis;
     }
 }

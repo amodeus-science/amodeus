@@ -17,7 +17,7 @@ import junit.framework.TestCase;
 public class SharedRoboTaxiDiversionHelperTest extends TestCase {
     @Test
     public void testStayTask() {
-        ArtificialScenarioCreator s = new ArtificialScenarioCreator();
+        ArtificialSharedScenarioCreator s = new ArtificialSharedScenarioCreator();
 
         Link divertableLink = s.linkDepotOut;
         RoboTaxi roboTaxi = StaticRoboTaxiCreator.createStayingRoboTaxi(divertableLink, null);
@@ -124,7 +124,7 @@ public class SharedRoboTaxiDiversionHelperTest extends TestCase {
 
     @Test
     public void testPickupTask() {
-        ArtificialScenarioCreator artificialScenarioCreator = new ArtificialScenarioCreator();
+        ArtificialSharedScenarioCreator artificialScenarioCreator = new ArtificialSharedScenarioCreator();
 
         Link divertableLink = artificialScenarioCreator.linkDepotOut;
         RoboTaxi roboTaxi = StaticRoboTaxiCreator.createPickUpRoboTaxi(divertableLink);
@@ -215,7 +215,7 @@ public class SharedRoboTaxiDiversionHelperTest extends TestCase {
 
     @Test
     public void testDropoffTask() {
-        ArtificialScenarioCreator s = new ArtificialScenarioCreator();
+        ArtificialSharedScenarioCreator s = new ArtificialSharedScenarioCreator();
 
         Link divertableLink = s.linkDepotOut;
         RoboTaxi roboTaxi = StaticRoboTaxiCreator.createDropoffRoboTaxi(divertableLink);
@@ -301,7 +301,7 @@ public class SharedRoboTaxiDiversionHelperTest extends TestCase {
 
     @Test
     public void testDriveTask() {
-        ArtificialScenarioCreator s = new ArtificialScenarioCreator();
+        ArtificialSharedScenarioCreator s = new ArtificialSharedScenarioCreator();
 
         Link[] links = { s.linkDepotOut, s.linkLeft, s.linkUp };
         double[] linkTTs = { 5.0, 5.0, 5.0 };
