@@ -33,8 +33,8 @@ import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
         for (Link link : network.getLinks().values()) {
             double nominalCapacity = BOUNDCAPACITY * parkingCapacity.getSpatialCapacity(link.getId());
             Long nominalSpaces = (long) Math.ceil(nominalCapacity);
-            Long stayTaxis = linkStayTaxi.containsKey(link) ? (long) linkStayTaxi.get(link).size() : 0;
-            Long reblTaxis = linkRebalancingTaxi.containsKey(link) ? linkRebalancingTaxi.get(link) : 0;
+            Long stayTaxis = linkStayTaxi.containsKey(link) ? (long) linkStayTaxi.get(link).size() : (long) 0;
+            Long reblTaxis = linkRebalancingTaxi.containsKey(link) ? linkRebalancingTaxi.get(link) : (long) 0;
             Long freeSpaces = Math.max(0, nominalSpaces - stayTaxis - reblTaxis);
             if (freeSpaces > 0)
                 freeSpacesToGo.put(link, freeSpaces);
