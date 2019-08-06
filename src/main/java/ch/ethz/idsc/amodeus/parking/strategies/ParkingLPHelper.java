@@ -1,7 +1,6 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.parking.strategies;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -24,39 +23,43 @@ import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
         this.network = network;
     }
 
-    public Map<Link, Long> getFreeSpacesToGo(Map<Link, Set<RoboTaxi>> linkStayTaxi, Collection<RoboTaxi> rebalancingRoboTaxis) {
+    /** @return {@link Map} with currently available {@link Link}s that have parking
+     *         spaces and the respective number given the staying {@link RoboTaxi}s @param linkStayTaxi
+     *         and the rebalancing {@link RoboTaxi}s @param linkRebalancingTaxi */
+    public Map<Link, Long> getFreeSpacesToGo(Map<Link, Set<RoboTaxi>> linkStayTaxi, //
+            Map<Link, Long> linkRebalancingTaxi) {
+
         Map<Link, Long> freeSpacesToGo = new HashMap<>();
-        Map<Link, Integer> linkRebalancingTaxi = StaticHelper.getDestinationCount(rebalancingRoboTaxis);
         for (Link link : network.getLinks().values()) {
-            Long freeSpaces = (long) Math.ceil(BOUNDCAPACITY * parkingCapacity.getSpatialCapacity(link.getId()));
-            if (linkStayTaxi.containsKey(link)) {
-                freeSpaces = (long) Math.ceil(BOUNDCAPACITY * parkingCapacity.getSpatialCapacity(link.getId())//
-                        - linkStayTaxi.get(link).size());
-            } else if (linkRebalancingTaxi.containsKey(link)) {
-                freeSpaces = (long) Math.ceil(BOUNDCAPACITY * parkingCapacity.getSpatialCapacity(link.getId())//
-                        - linkRebalancingTaxi.get(link));
-            } else if ((linkRebalancingTaxi.containsKey(link)) & (linkStayTaxi.containsKey(link))) {
-                freeSpaces = (long) Math.ceil(BOUNDCAPACITY * parkingCapacity.getSpatialCapacity(link.getId())//
-                        - linkRebalancingTaxi.get(link) - linkStayTaxi.get(link).size());
-            }
-            if (freeSpaces > 0) {
+            double nominalCapacity = BOUNDCAPACITY * parkingCapacity.getSpatialCapacity(link.getId());
+            Long nominalSpaces = (long) Math.ceil(nominalCapacity);
+            Long stayTaxis = linkStayTaxi.containsKey(link) ? (long) linkStayTaxi.get(link).size() : 0;
+            Long reblTaxis = linkRebalancingTaxi.containsKey(link) ? linkRebalancingTaxi.get(link) : 0;
+            Long freeSpaces = Math.max(0, nominalSpaces - stayTaxis - reblTaxis);
+            if (freeSpaces > 0)
                 freeSpacesToGo.put(link, freeSpaces);
-            }
         }
         return freeSpacesToGo;
     }
 
+    /** @return {@link Map} on {@link Link} keys with the {@link Set}s of {@link RoboTaxi}s that must
+     *         leave in order not to violate parking constraints.
+     *         Input are the currently staying {@link RoboTaxi}s @param linkStayTaxi sorted in a map*/
     public Map<Link, Set<RoboTaxi>> getTaxisToGo(Map<Link, Set<RoboTaxi>> linkStayTaxi) {
         Map<Link, Set<RoboTaxi>> shouldLeaveTaxis = new HashMap<>();
         for (Link link : linkStayTaxi.keySet()) {
-            if (linkStayTaxi.get(link).size() > BOUNDCAPACITY * parkingCapacity.getSpatialCapacity(link.getId())) {
-                linkStayTaxi.get(link).stream()//
-                        .limit(Math.round(BOUNDCAPACITY * linkStayTaxi.get(link).size()))//
-                        .forEach(rt -> {
-                            if (!shouldLeaveTaxis.containsKey(link))
-                                shouldLeaveTaxis.put(link, new HashSet<RoboTaxi>());
-                            shouldLeaveTaxis.get(link).add(rt);
-                        });
+            double nominalCapacity = BOUNDCAPACITY * parkingCapacity.getSpatialCapacity(link.getId());
+            Integer nominalSpaces = (int) Math.ceil(nominalCapacity);
+            if (linkStayTaxi.get(link).size() > nominalCapacity) {
+                Integer shouldLeave = Math.max(0, linkStayTaxi.get(link).size() - nominalSpaces);
+                for (RoboTaxi rt : linkStayTaxi.get(link)) {
+                    if (!shouldLeaveTaxis.containsKey(link))
+                        shouldLeaveTaxis.put(link, new HashSet<RoboTaxi>());
+                    shouldLeaveTaxis.get(link).add(rt);
+                    shouldLeave--;
+                    if (shouldLeave < 1)
+                        break;
+                }
             }
         }
         return shouldLeaveTaxis;
