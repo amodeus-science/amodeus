@@ -7,6 +7,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
 import org.matsim.core.network.NetworkUtils;
+import org.matsim.utils.objectattributes.attributable.AttributesUtils;
 
 public enum NetworkCutterUtils {
     ;
@@ -27,14 +28,13 @@ public enum NetworkCutterUtils {
             if (Objects.nonNull(filteredFromNode) && Objects.nonNull(filteredToNode)) {
                 boolean allowedMode = modes.getModesSet().stream().anyMatch(link.getAllowedModes()::contains);
                 if (allowedMode) {
+                    // TODO put to generic "preserving link copy function"
                     Link newLink = modesFilteredNetwork.getFactory().createLink(link.getId(), filteredFromNode, filteredToNode);
-
                     newLink.setAllowedModes(link.getAllowedModes());
                     newLink.setLength(link.getLength());
                     newLink.setCapacity(link.getCapacity());
                     newLink.setFreespeed(link.getFreespeed());
-                    // newLink.setNumberOfLanes(link.getNumberOfLanes());
-
+                    AttributesUtils.copyTo(link.getAttributes(), newLink.getAttributes());
                     modesFilteredNetwork.addLink(newLink);
                 }
             }

@@ -7,7 +7,7 @@ import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.groups.TravelTimeCalculatorConfigGroup;
-import org.matsim.core.controler.AbstractModule;
+import org.matsim.core.mobsim.qsim.AbstractQSimModule;
 import org.matsim.core.mobsim.qsim.qnetsimengine.ConfigurableQNetworkFactory;
 import org.matsim.core.mobsim.qsim.qnetsimengine.QNetworkFactory;
 import org.matsim.core.mobsim.qsim.qnetsimengine.linkspeedcalculator.LinkSpeedCalculator;
@@ -15,7 +15,7 @@ import org.matsim.core.mobsim.qsim.qnetsimengine.linkspeedcalculator.LinkSpeedCa
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 
-public class TrafficDataModule extends AbstractModule {
+public class TrafficDataModule extends AbstractQSimModule {
     private final LinkSpeedDataContainer lsData;
 
     public TrafficDataModule(LinkSpeedDataContainer lsData) {
@@ -42,8 +42,14 @@ public class TrafficDataModule extends AbstractModule {
         return new DefaultTaxiTrafficData(lsData, config.getTraveltimeBinSize(), network);
     }
 
+    // @Override
+    // public void install() {
+    // bind(TaxiTrafficData.class).to(DefaultTaxiTrafficData.class).asEagerSingleton();
+    // }
+
     @Override
-    public void install() {
+    protected void configureQSim() {
         bind(TaxiTrafficData.class).to(DefaultTaxiTrafficData.class).asEagerSingleton();
+
     }
 }

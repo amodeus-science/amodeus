@@ -1,5 +1,5 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.dispatcher.parking;
+package ch.ethz.idsc.amodeus.parking.capacities;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -8,7 +8,7 @@ import java.util.Map;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 
-public class ParkingCapacityAdapter implements ParkingCapacityAmodeus {
+public abstract class ParkingCapacityAbstract implements ParkingCapacity {
 
     /** Storing all the given Capacities in a Map */
     protected final Map<Id<Link>, Long> capacities = new HashMap<>();
