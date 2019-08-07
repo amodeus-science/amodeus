@@ -8,6 +8,6 @@ import junit.framework.TestCase;
 public class GheatPalettesTest extends TestCase {
     public void testSimple() {
         for (GheatPalettes gheatPalettes : GheatPalettes.values())
-            Objects.requireNonNull(gheatPalettes.colorScheme);
+            Objects.requireNonNull(gheatPalettes.colorDataIndexed);
     }
 }

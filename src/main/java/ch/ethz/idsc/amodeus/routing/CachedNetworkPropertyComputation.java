@@ -30,7 +30,7 @@ public class CachedNetworkPropertyComputation<T> {
      * underlying logic is that in this manner the expensive routing computation has to be done
      * fewer times for identical pairs of {@link Link}s.For the routing, different
      * {@link LeastCostPathCalculator}s can be used, e.g., to minimize travel time or network distance. */
-    public CachedNetworkPropertyComputation(LeastCostPathCalculator calculator, Double maxLag, //
+    public CachedNetworkPropertyComputation(LeastCostPathCalculator calculator, double maxLag, //
             NetworkPropertyInterface<T> pathInterface) {
         this.calculator = calculator;
         this.maxLag = maxLag;
@@ -38,7 +38,7 @@ public class CachedNetworkPropertyComputation<T> {
     }
 
     /** removes computations that happened more time than @param maxLag ago since @param now */
-    private final void update(Double now) {
+    private final void update(double now) {
         this.now = now;
         Set<Double> timestoRemove = new HashSet<>();
         for (Entry<Double, Map<Link, Set<Link>>> entry : calculationTimes.headMap(now - maxLag).entrySet()) {
@@ -51,7 +51,7 @@ public class CachedNetworkPropertyComputation<T> {
         timestoRemove.forEach(time -> calculationTimes.remove(time));
     }
 
-    public final T fromTo(Link from, Link to, Double now) {
+    public final T fromTo(Link from, Link to, double now) {
         update(now);
         if (!cache.containsKey(from))
             cache.put(from, new HashMap<>());
@@ -63,7 +63,7 @@ public class CachedNetworkPropertyComputation<T> {
         return t;
     }
 
-    private final void addToCalculationTime(Double now, Link from, Link to) {
+    private final void addToCalculationTime(double now, Link from, Link to) {
         if (!calculationTimes.containsKey(now))
             calculationTimes.put(now, new HashMap<>());
         if (!calculationTimes.get(now).containsKey(from))

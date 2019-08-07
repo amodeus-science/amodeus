@@ -17,7 +17,7 @@ import ch.ethz.idsc.tensor.io.TableBuilder;
 /* package */ enum DistancesOverDayTable implements AnalysisExport {
     INSTANCE;
 
-    private final String identifier = "DistancesOverDay";
+    private static final String identifier = "DistancesOverDay";
 
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {

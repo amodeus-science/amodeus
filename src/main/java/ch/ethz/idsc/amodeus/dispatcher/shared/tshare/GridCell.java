@@ -34,14 +34,14 @@ import ch.ethz.idsc.tensor.sca.Sign;
 
     public GridCell(VirtualNode<Link> virtualNode, VirtualNetwork<Link> virtualNetwork, Network network, //
             CachedNetworkTimeDistance minDist, NetworkTimeDistInterface minTime, QuadTree<Link> linkTree, //
-            Double now) {
+            double now) {
         this.myVNode = virtualNode;
         // this.virtualNetwork = virtualNetwork;
         computeMaps(virtualNetwork, linkTree, minDist, minTime, now);
     }
 
     private void computeMaps(VirtualNetwork<Link> virtualNetwork, QuadTree<Link> links, //
-            CachedNetworkTimeDistance minDist, NetworkTimeDistInterface minTime, Double now) {
+            CachedNetworkTimeDistance minDist, NetworkTimeDistInterface minTime, double now) {
         /** calculate distances and travel times to other nodes */
         for (VirtualNode<Link> toNode : virtualNetwork.getVirtualNodes()) {
             Link fromLink = links.getClosest(//

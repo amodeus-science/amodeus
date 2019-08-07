@@ -41,13 +41,13 @@ public enum BinnedWaitingTimesImage implements AnalysisExport {
         visualSet.setDomainAxisLabel("Time");
         visualSet.setRangeAxisLabel("Waiting Times [min]");
 
-        JFreeChart chart = TimedChart.of(visualSet);
-        chart.getXYPlot().getRangeAxis().setRange(0., //
+        JFreeChart jFreeChart = TimedChart.of(visualSet);
+        jFreeChart.getXYPlot().getRangeAxis().setRange(0., //
                 tta.getWaitAggrgte().Get(2).divide(scalingFactor).number().doubleValue());
 
         try {
             File fileChart = new File(relativeDirectory, FILENAME + ".png");
-            ChartUtilities.saveChartAsPNG(fileChart, chart, WIDTH, HEIGHT);
+            ChartUtilities.saveChartAsPNG(fileChart, jFreeChart, WIDTH, HEIGHT);
             GlobalAssert.that(fileChart.isFile());
             System.out.println("Exported " + FILENAME + ".png");
         } catch (Exception e) {

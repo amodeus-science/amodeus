@@ -72,7 +72,7 @@ public class VirtualNetworkLayer extends ViewerLayer {
                 Tensor prob = StaticHelper.normalize1Norm224Contrast(count);
                 for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet()) {
                     final int i = 255 - prob.Get(entry.getKey().getIndex()).number().intValue();
-                    graphics.setColor(halfAlpha(colorSchemes.colorScheme.get(i)));
+                    graphics.setColor(halfAlpha(colorSchemes.colorDataIndexed.getColor(i)));
                     graphics.fill(entry.getValue());
                 }
                 break;
@@ -83,7 +83,7 @@ public class VirtualNetworkLayer extends ViewerLayer {
                 for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet()) {
                     // graphics.setColor(new Color(128, 128, 128, prob.Get(entry.getKey().index).number().intValue()));
                     final int i = 255 - prob.Get(entry.getKey().getIndex()).number().intValue();
-                    graphics.setColor(halfAlpha(colorSchemes.colorScheme.get(i)));
+                    graphics.setColor(halfAlpha(colorSchemes.colorDataIndexed.getColor(i)));
                     graphics.fill(entry.getValue());
                 }
                 break;
@@ -94,7 +94,7 @@ public class VirtualNetworkLayer extends ViewerLayer {
                 for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet()) {
                     // graphics.setColor(new Color(128, 128, 128, prob.Get(entry.getKey().index).number().intValue()));
                     final int i = 255 - prob.Get(entry.getKey().getIndex()).number().intValue();
-                    graphics.setColor(halfAlpha(colorSchemes.colorScheme.get(i)));
+                    graphics.setColor(halfAlpha(colorSchemes.colorDataIndexed.getColor(i)));
                     graphics.fill(entry.getValue());
                 }
                 break;
@@ -107,7 +107,7 @@ public class VirtualNetworkLayer extends ViewerLayer {
                 for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet()) {
                     // graphics.setColor(new Color(128, 128, 128, prob.Get(entry.getKey().index).number().intValue()));
                     final int i = 255 - prob.Get(entry.getKey().getIndex()).number().intValue();
-                    graphics.setColor(halfAlpha(colorSchemes.colorScheme.get(i)));
+                    graphics.setColor(halfAlpha(colorSchemes.colorDataIndexed.getColor(i)));
                     graphics.fill(entry.getValue());
                 }
                 break;
@@ -120,7 +120,7 @@ public class VirtualNetworkLayer extends ViewerLayer {
                 for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet()) {
                     // graphics.setColor(new Color(128, 128, 128, prob.Get(entry.getKey().index).number().intValue()));
                     final int i = 255 - prob.Get(entry.getKey().getIndex()).number().intValue();
-                    graphics.setColor(halfAlpha(colorSchemes.colorScheme.get(i)));
+                    graphics.setColor(halfAlpha(colorSchemes.colorDataIndexed.getColor(i)));
                     graphics.fill(entry.getValue());
                 }
                 break;
@@ -133,7 +133,7 @@ public class VirtualNetworkLayer extends ViewerLayer {
                 for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet()) {
                     // graphics.setColor(new Color(128, 128, 128, prob.Get(entry.getKey().index).number().intValue()));
                     final int i = 255 - prob.Get(entry.getKey().getIndex()).number().intValue();
-                    graphics.setColor(halfAlpha(colorSchemes.colorScheme.get(i)));
+                    graphics.setColor(halfAlpha(colorSchemes.colorDataIndexed.getColor(i)));
                     graphics.fill(entry.getValue());
                 }
                 break;

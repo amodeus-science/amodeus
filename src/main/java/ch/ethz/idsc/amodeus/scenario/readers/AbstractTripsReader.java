@@ -54,7 +54,7 @@ public abstract class AbstractTripsReader {
                 TaxiTrip trip = TaxiTrip.of(tripId, Integer.toString(taxiId), getPickupLocation(row), getDropoffLocation(row), //
                         getDistance(row), getWaitingTime(row), pickupTime, dropoffTime);
                 return trip;
-            } catch (Exception e) {
+            } catch (Exception exception) {
                 // TODO
                 // System.err.println("discard trip " + tripId + ": [" + IntStream.range(0, headers().size()).mapToObj(i -> //
                 // headers.get(i) + "=" + line[i]).collect(Collectors.joining(", ")) + "]");
