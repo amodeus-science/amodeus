@@ -100,7 +100,7 @@ public class SharedRoboTaxiDiversionHelperTest extends TestCase {
         assertTrue(RetrieveToLink.forShared(roboTaxi, 0.0).get().equals(s.linkDepotIn)); // case pickup course
 
         StaticRoboTaxiCreator.updateRoboTaxiMenuTo(roboTaxi, Arrays.asList(SharedCourse.redirectCourse(s.linkDepotIn, "depotRed")));
-        // FIXME This should be empoty as it is a redirection to the currewnt location so no diversion is required.
+        // FIXME This should be empty as it is a redirection to the current location so no diversion is required.
         assertTrue(RetrieveToLink.forShared(roboTaxi, 0.0).isPresent()); // case dropoff course
         assertTrue(RetrieveToLink.forShared(roboTaxi, 0.0).get().equals(s.linkDepotIn)); // case pickup course
         StaticRoboTaxiCreator.cleanRTMenu(roboTaxi);

@@ -321,7 +321,7 @@ public class StandardMATSimScenarioTest {
 
             new RuntimeException("").printStackTrace();
         }
-        // FIXME JPH
+        // FIXME (jan does not have a clue what is the problem here)
         // Assert.assertEquals(analyzer.numberOfDepartures, analyzer.numberOfArrivals);
     }
 

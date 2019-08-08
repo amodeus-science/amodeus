@@ -26,7 +26,7 @@ public enum StackedTimeChart {
     private static final int HEIGHT = DiagramSettings.HEIGHT; /* Height of the image */
 
     public static void of(File directory, String fileTitle, String diagramTitle, //
-            boolean filter, int filterSize, Double[] scale, //
+            boolean filter, int filterSize, double[] scale, //
             String[] labels, String yAxisLabel, Tensor time, Tensor values, ColorDataIndexed colorDataIndexed) throws Exception {
 
         GlobalAssert.that(time.length() == values.length());

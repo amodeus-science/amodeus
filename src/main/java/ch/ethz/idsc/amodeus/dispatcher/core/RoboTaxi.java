@@ -46,7 +46,7 @@ public class RoboTaxi {
     private Link driveDestination;
     /** location/time pair from where / when RoboTaxi path can be altered. */
     private LinkTimePair divertableLinkTime;
-    private AbstractDirective directive;
+    private DirectiveInterface directive;
 
     /** shared fields The Shared menu contains a lot of information. These can be
      * extracted with the Utils functions in RoboTaxiUtils and SharedCourseLItsUtils */
@@ -181,7 +181,7 @@ public class RoboTaxi {
      *            used only in the core package, directives will be
      *            issued automatically when setVehiclePickup,
      *            setVehicleRebalance are called. */
-    /* package */ void assignDirective(AbstractDirective abstractDirective) {
+    /* package */ void assignDirective(DirectiveInterface abstractDirective) {
         GlobalAssert.that(isWithoutDirective());
         this.directive = abstractDirective;
     }

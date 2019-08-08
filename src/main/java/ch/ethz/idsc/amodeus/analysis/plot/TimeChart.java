@@ -40,7 +40,7 @@ public enum TimeChart {
     public static void of(File directory, String fileTitle, String diagramTitle, //
             boolean filter, int filterSize, double[] scale, //
             String[] labels, String xAxisLabel, String yAxisLabel, Tensor time, Tensor values, //
-            Double[] maxRange, ColorDataIndexed colorDataIndexed) throws Exception {
+            double[] maxRange, ColorDataIndexed colorDataIndexed) throws Exception {
 
         GlobalAssert.that(time.length() == values.length());
 

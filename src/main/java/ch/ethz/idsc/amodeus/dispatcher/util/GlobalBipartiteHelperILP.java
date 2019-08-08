@@ -67,7 +67,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
             }
         }
 
-        /** TODO add ome explanation of your solution format */
+        // TODO add some explanation of your solution format
         Tensor tensorCost = Tensors.matrixDouble(costMatrix);
 
         // previous version, did work and provided same performance as conventional GBM dispatcher

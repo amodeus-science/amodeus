@@ -4,7 +4,7 @@ package ch.ethz.idsc.amodeus.dispatcher.core;
 /** {@link EmptyDirective} is assigned to a vehicle that already is in the
  * desired state but should not be available to be assigned yet another
  * Directive within the iteration. */
-/* package */ enum EmptyDirective implements AbstractDirective {
+/* package */ enum EmptyDirective implements DirectiveInterface {
     INSTANCE;
 
     @Override

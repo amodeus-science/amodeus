@@ -8,14 +8,16 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.core.router.util.LeastCostPathCalculator;
 import org.matsim.core.router.util.LeastCostPathCalculator.Path;
 
+import ch.ethz.idsc.amodeus.util.math.LruCache;
+
 public class TravelTimeComputation {
 
     private final LeastCostPathCalculator lcpc;
-    private final LimitedSizeMap<Link, Map<Link, Double>> travelTimeDataMap;
+    private final Map<Link, Map<Link, Double>> travelTimeDataMap;
 
     public TravelTimeComputation(LeastCostPathCalculator lcpc, int sizeLimit) {
         this.lcpc = lcpc;
-        travelTimeDataMap = new LimitedSizeMap<>(sizeLimit);
+        travelTimeDataMap = LruCache.create(sizeLimit);
     }
 
     // map data structure

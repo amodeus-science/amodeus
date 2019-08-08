@@ -22,7 +22,7 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 /** The purpose of RoboTaxiMaintainer is to register {@link AVVehicle} and provide the collection of
  * available vehicles to derived class.
  * <p>
- * manages assignments of {@link AbstractDirective} to {@link AVVehicle}s. path computations
+ * manages assignments of {@link DirectiveInterface} to {@link AVVehicle}s. path computations
  * attached to assignments are computed in parallel
  * {@link ParallelLeastCostPathCalculator}. */
 /* package */ abstract class RoboTaxiMaintainer implements AVDispatcher {

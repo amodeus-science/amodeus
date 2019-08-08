@@ -2,19 +2,20 @@
 package ch.ethz.idsc.amodeus.view.gheat.gui;
 
 import ch.ethz.idsc.tensor.img.ColorDataGradients;
+import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
 public enum ColorSchemes {
     Jet(StaticHelper.reverse(ColorDataGradients.JET)), //
     Classic(StaticHelper.reverse(ColorDataGradients.CLASSIC)), //
-    Fire(GheatPalettes.FIRE.colorScheme), //
+    Fire(GheatPalettes.FIRE.colorDataIndexed), //
     Sunset(StaticHelper.reverse(ColorDataGradients.SUNSET)), //
     Solar(StaticHelper.reverse(ColorDataGradients.SOLAR)), //
-    Pbj(GheatPalettes.PBJ.colorScheme), //
+    Pbj(GheatPalettes.PBJ.colorDataIndexed), //
     Parula(StaticHelper.reverse(ColorDataGradients.PARULA)), //
     ParulaDark(StaticHelper.forward(ColorDataGradients.PARULA)), //
     Density(StaticHelper.reverse(ColorDataGradients.DENSITY)), //
-    Pgaitch(GheatPalettes.PGAITCH.colorScheme), //
-    Omg(GheatPalettes.OMG.colorScheme), //
+    Pgaitch(GheatPalettes.PGAITCH.colorDataIndexed), //
+    Omg(GheatPalettes.OMG.colorDataIndexed), //
     Orange(CustomPalettes.createOrange()), //
     OrangeContour(CustomPalettes.createOrangeContour()), //
     Green(CustomPalettes.createGreen()), //
@@ -28,10 +29,10 @@ public enum ColorSchemes {
     StarrynightDark(StaticHelper.forward(ColorDataGradients.STARRYNIGHT)), //
     ;
 
-    public final ColorScheme colorScheme;
+    public final ColorDataIndexed colorDataIndexed;
 
-    private ColorSchemes(ColorScheme colorScheme) {
-        this.colorScheme = colorScheme;
+    private ColorSchemes(ColorDataIndexed colorDataIndexed) {
+        this.colorDataIndexed = colorDataIndexed;
     }
 
 }

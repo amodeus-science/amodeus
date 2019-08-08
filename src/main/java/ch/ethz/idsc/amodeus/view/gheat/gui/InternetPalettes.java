@@ -1,11 +1,14 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.view.gheat.gui;
 
-import java.awt.Color;
+import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.img.ColorDataIndexed;
+import ch.ethz.idsc.tensor.img.StrictColorDataIndexed;
 
 /* package */ class InternetPalettes {
 
-    public static ColorScheme createCool() {
+    public static ColorDataIndexed createCool() {
         int[][] sum = new int[][] { { 39, 254, 253, 255 }, { 39, 254, 253, 255 }, { 39, 254, 253, 255 }, { 40, 251, 253, 255 }, { 40, 250, 253, 255 }, { 40, 250, 253, 255 },
                 { 40, 250, 253, 255 }, { 41, 246, 253, 255 }, { 41, 246, 253, 255 }, { 41, 246, 253, 255 }, { 41, 247, 253, 255 }, { 41, 244, 253, 255 }, { 42, 241, 253, 255 },
                 { 42, 241, 253, 255 }, { 42, 241, 253, 255 }, { 42, 239, 253, 255 }, { 43, 237, 253, 255 }, { 43, 237, 253, 255 }, { 43, 237, 253, 255 }, { 44, 235, 253, 255 },
@@ -44,10 +47,10 @@ import java.awt.Color;
                 { 233, 28, 252, 255 }, { 235, 27, 252, 255 }, { 237, 26, 252, 255 }, { 237, 26, 252, 255 }, { 237, 26, 252, 255 }, { 239, 25, 252, 255 }, { 241, 24, 252, 255 },
                 { 241, 24, 252, 255 }, { 241, 24, 252, 255 }, { 244, 23, 252, 255 }, { 245, 22, 252, 255 }, { 245, 22, 252, 255 }, { 245, 22, 252, 255 }, { 245, 22, 252, 255 },
                 { 249, 20, 253, 255 }, { 249, 20, 253, 255 }, { 249, 20, 253, 255 }, { 250, 20, 253, 255 }, { 253, 17, 253, 255 }, { 253, 17, 253, 255 }, { 253, 17, 253, 255 } };
-        ColorScheme colorScheme = new ColorScheme();
+        Tensor matrix = Tensors.reserve(256);
         for (int c = 0; c < 256; ++c)
-            colorScheme.set(c, new Color(sum[c][0], sum[c][1], sum[c][2], 255 - c));
-        return colorScheme;
+            matrix.append(Tensors.vector(sum[c][0], sum[c][1], sum[c][2], 255 - c));
+        return StrictColorDataIndexed.create(matrix);
     }
 
 }

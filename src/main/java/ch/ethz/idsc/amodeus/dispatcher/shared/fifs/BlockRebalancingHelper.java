@@ -27,7 +27,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
      * @param blocks all the adjacent blocks to which pushes are planned
      * @param freeRoboTaxis all the robotaxis which should be considered
      * @param timeDb Travel time calculator */
-    public BlockRebalancingHelper(Set<Block> blocks, Set<RoboTaxi> freeRoboTaxis, NetworkTimeDistInterface timeDb, Double now) {
+    public BlockRebalancingHelper(Set<Block> blocks, Set<RoboTaxi> freeRoboTaxis, NetworkTimeDistInterface timeDb, double now) {
         GlobalAssert.that(!freeRoboTaxis.isEmpty());
 
         blocks.forEach(b -> blocktravelTimes.put(b, new HashSet<>()));
@@ -102,7 +102,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
     /** Helper class to wrap the three elements Travel Time, Block and roboTaxi */
     public class ShortestTrip {
-        final Double travelTime;
+        final double travelTime;
         final Block block;
         final RoboTaxi roboTaxi;
 

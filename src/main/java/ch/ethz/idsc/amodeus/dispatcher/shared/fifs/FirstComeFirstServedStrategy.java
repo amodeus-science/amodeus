@@ -156,7 +156,7 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
 
     /** @param request
      * @return {@link Double} with {@link AVRequest} submission Time */
-    /* package */ Double getSubmissionTime(AVRequest request) {
+    /* package */ double getSubmissionTime(AVRequest request) {
         return request.getSubmissionTime();
     }
 

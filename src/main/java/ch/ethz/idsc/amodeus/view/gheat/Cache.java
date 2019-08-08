@@ -30,25 +30,25 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
-import ch.ethz.idsc.amodeus.view.gheat.gui.ColorScheme;
+import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
 /* package */ enum Cache {
     ;
     // ---
-    private static final Map<ColorScheme, BufferedImage> EMPTYTILE = new HashMap<>();
+    private static final Map<ColorDataIndexed, BufferedImage> EMPTY_TILE = new HashMap<>();
     private static final Object SYNCROOT = new Object();
 
-    public static boolean hasEmptyTile(ColorScheme key) {
-        return EMPTYTILE.containsKey(key);
+    public static boolean hasEmptyTile(ColorDataIndexed key) {
+        return EMPTY_TILE.containsKey(key);
     }
 
-    public static BufferedImage getEmptyTile(ColorScheme key) {
-        return EMPTYTILE.get(key);
+    public static BufferedImage getEmptyTile(ColorDataIndexed key) {
+        return EMPTY_TILE.get(key);
     }
 
-    public static void putEmptyTile(ColorScheme key, BufferedImage tile) {
+    public static void putEmptyTile(ColorDataIndexed key, BufferedImage tile) {
         synchronized (SYNCROOT) {
-            EMPTYTILE.put(key, tile);
+            EMPTY_TILE.put(key, tile);
         }
     }
 }

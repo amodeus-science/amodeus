@@ -93,9 +93,8 @@ public enum NumberPassengerStatusDistribution implements AnalysisExport {
         /** Store Tensor */
         try {
             SaveUtils.saveFile(Join.of(valuesComplet), FILENAME, relativeDirectory);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
 
         /** plot image */

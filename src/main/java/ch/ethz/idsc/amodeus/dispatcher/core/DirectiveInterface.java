@@ -3,6 +3,6 @@ package ch.ethz.idsc.amodeus.dispatcher.core;
 
 /** base class for all directives that are collected during vehicle dispatching */
 @FunctionalInterface
-/* package */ interface AbstractDirective {
+/* package */ interface DirectiveInterface {
     void execute();
 }

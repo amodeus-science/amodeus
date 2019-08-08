@@ -8,20 +8,16 @@ import ch.ethz.idsc.tensor.Scalar;
 // TODO can we put this together with the {@link DistanceFunction} interface? No need for redundancy...
 public interface NetworkTimeDistInterface {
 
-    /** TODO document, in particular, is now == null permitted? if not, use "double"
-     * 
-     * @param from
+    /** @param from
      * @param to
      * @param now
      * @return */
-    Scalar travelTime(Link from, Link to, Double now);
+    Scalar travelTime(Link from, Link to, double now);
 
-    /** TODO document, in particular, is now == null permitted? if not, use "double"
-     * 
-     * @param from
+    /** @param from
      * @param to
      * @param now
      * @return */
-    Scalar distance(Link from, Link to, Double now);
+    Scalar distance(Link from, Link to, double now);
 
 }
