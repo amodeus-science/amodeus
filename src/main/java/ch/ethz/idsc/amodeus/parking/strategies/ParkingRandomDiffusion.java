@@ -17,7 +17,6 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 
 /* package */ class ParkingRandomDiffusion extends AbstractParkingStrategy {
 
-    private final long freeParkingPeriod = 5;
     private final Random random;
 
     public ParkingRandomDiffusion(Random random) {
@@ -25,40 +24,42 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
     }
 
     @Override
-    public Map<RoboTaxi, Link> keepFree(Collection<RoboTaxi> stayingRobotaxis, Collection<RoboTaxi> rebalancingRobotaxis, long now) {
-        if (now % freeParkingPeriod == 0) {
+    public Map<RoboTaxi, Link> keepFree(Collection<RoboTaxi> stayingRobotaxis, //
+            Collection<RoboTaxi> rebalancingRobotaxis, long now) {
 
-            Map<Link, Set<RoboTaxi>> currCount = new HashMap<>();
+        Map<Link, Set<RoboTaxi>> stayTaxis = new HashMap<>();
 
-            /** count current robotaxis */
-            stayingRobotaxis.forEach(rt -> {
-                Link link = rt.getDivertableLocation();
-                if (currCount.containsKey(link)) {
-                    currCount.get(link).add(rt);
-                } else {
-                    Set<RoboTaxi> set = new HashSet<>();
-                    set.add(rt);
-                    currCount.put(link, set);
-                }
-            });
+        /** Count the number of {@link RoboTaxi}s on all {@link Link}s */
+        stayingRobotaxis.forEach(rt -> {
+            Link link = rt.getDivertableLocation();
+            if (stayTaxis.containsKey(link))
+                stayTaxis.get(link).add(rt);
+            else {
+                Set<RoboTaxi> set = new HashSet<>();
+                set.add(rt);
+                stayTaxis.put(link, set);
+            }
+        });
 
-            /** if above flush threshold, then flush the entire link */
-            Map<RoboTaxi, Link> directives = new HashMap<>();
-            currCount.entrySet().stream().forEach(e -> {
-                if (e.getValue().size() > parkingCapacity.getSpatialCapacity(e.getKey().getId()) * 0.5) {
-                    e.getValue().stream().//
-                    limit(Math.round(e.getValue().size() * 0.5)).//
-                    forEach(rt -> {
-                        directives.put(rt, getRandomLink(e.getKey()));
-                    });
-                }
-            });
-            return directives;
-        }
-        return new HashMap<>();
+        /** If there are too many vehicles on the link, send a sufficient number of them away
+         * to random neighbors */
+        Map<RoboTaxi, Link> directives = new HashMap<>();
+        stayTaxis.entrySet().stream().forEach(e -> {
+            Link link = e.getKey();
+            Set<RoboTaxi> taxis = e.getValue();
+            long capacity = parkingCapacity.getSpatialCapacity(link.getId());
+            if (taxis.size() > capacity) {
+                taxis.stream().limit(taxis.size() - capacity).//
+                forEach(rt -> {
+                    directives.put(rt, getRandomAdjacentLink(link));
+                });
+            }
+        });
+        return directives;
+
     }
 
-    private Link getRandomLink(Link link) {
+    private Link getRandomAdjacentLink(Link link) {
         List<Link> links = new ArrayList<>(link.getToNode().getOutLinks().values());
         Collections.shuffle(links, random);
         return links.get(0);
