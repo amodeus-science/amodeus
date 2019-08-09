@@ -18,7 +18,7 @@ import org.matsim.api.core.v01.network.Link;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
 
-/* package */ class ParkingDirectedDiffusionHelper {
+/* package */ class DirectedDiffusionHelper {
 
     private final static double BOUNDCAPACITY = 0.5;
 
@@ -26,7 +26,7 @@ import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
     private final Random random;
     private Map<Link, Set<RoboTaxi>> occMap;
 
-    public ParkingDirectedDiffusionHelper(ParkingCapacity avSpatialCapacityAmodeus, //
+    public DirectedDiffusionHelper(ParkingCapacity avSpatialCapacityAmodeus, //
             Collection<RoboTaxi> stayingRobotaxis, Collection<RoboTaxi> rebalancingRobotaxis, Random random) {
         this.avSpatialCapacityAmodeus = avSpatialCapacityAmodeus;
         this.random = random;
