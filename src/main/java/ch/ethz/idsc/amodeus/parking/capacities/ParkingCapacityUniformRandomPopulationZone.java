@@ -2,31 +2,39 @@
 package ch.ethz.idsc.amodeus.parking.capacities;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
 import java.util.Random;
 
-import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.api.core.v01.population.Activity;
+import org.matsim.api.core.v01.population.Person;
+import org.matsim.api.core.v01.population.Plan;
+import org.matsim.api.core.v01.population.PlanElement;
+import org.matsim.api.core.v01.population.Population;
 
-public class ParkingCapacityUniformRandomPopulationZone extends ParkingCapacityAbstract {
+public class ParkingCapacityUniformRandomPopulationZone extends ParkingCapacityAbstractUniform {
 
     /** assigns totSpaces randomly chosen links from the network a parking space, there may
      * be multiple parking spaces per link */
-    public ParkingCapacityUniformRandomPopulationZone(Network network, long totSpaces, Random random) {
-        Map<Id<Link>, Long> parkingCount = new HashMap<>();
-        Collection<? extends Link> allLinks =  network.getLinks().values();//  network.getLinks().values();
-        int bound = allLinks.size();
-        for (int i = 0; i < totSpaces; ++i) {
-            int elemRand = random.nextInt(bound);
-            Link link = allLinks.stream().skip(elemRand).findFirst().get();
-            if (!parkingCount.containsKey(link.getId()))
-                parkingCount.put(link.getId(), (long) 0);
-            parkingCount.put(link.getId(), parkingCount.get(link.getId()) + 1);
+    public ParkingCapacityUniformRandomPopulationZone(Network network, Population population, //
+            long totSpaces, Random random) {
+        super(network, population, totSpaces, random);
+    }
+
+    @Override
+    protected Collection<? extends Link> getLinks(Network network, Population population) {
+        HashSet<Link> populatedLinks = new HashSet<>();
+        for (Person person : population.getPersons().values()) {
+            for (Plan plan : person.getPlans()) {
+                for (PlanElement planElement : plan.getPlanElements()) {
+                    if (planElement instanceof Activity) {
+                        Activity activity = (Activity) planElement;
+                        populatedLinks.add(network.getLinks().get(activity.getLinkId()));
+                    }
+                }
+            }
         }
-        parkingCount.entrySet().stream().forEach(e -> {
-            capacities.put(e.getKey(), e.getValue());
-        });
+        return populatedLinks;
     }
 }
