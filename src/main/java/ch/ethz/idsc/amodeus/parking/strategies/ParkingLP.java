@@ -16,7 +16,6 @@ import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 
 /* package */ class ParkingLP extends AbstractParkingStrategy {
     private ParkingLPHelper parkingLPHelper;
-    private final long parkingOptimizePeriod = 5; // TODO remove magic const.
 
     @Override
     public void setRuntimeParameters(ParkingCapacity parkingCapacity, Network network, //
@@ -30,14 +29,14 @@ import ch.ethz.idsc.amodeus.routing.DistanceFunction;
             Collection<RoboTaxi> rebalancingRobotaxis, long now) {
         Objects.requireNonNull(distanceFunction);
         Objects.requireNonNull(parkingLPHelper);
-        if (now % parkingOptimizePeriod == 0) {
-            Map<Link, Set<RoboTaxi>> linkStayTaxi = StaticHelper.getOccupiedLinks(stayingRobotaxis);
-            Map<Link, Set<RoboTaxi>> taxisToGo = parkingLPHelper.getTaxisToGo(linkStayTaxi);
-            Map<Link, Long> freeSpacesToGo = parkingLPHelper.getFreeSpacesToGo(linkStayTaxi,//
-                    StaticHelper.getDestinationCount(rebalancingRobotaxis));
-            if ((!taxisToGo.isEmpty()) & (!freeSpacesToGo.isEmpty()))
-                return (new ParkingLPSolver(taxisToGo, freeSpacesToGo, distanceFunction)).returnSolution();
-        }
+
+        Map<Link, Set<RoboTaxi>> linkStayTaxi = StaticHelper.getOccupiedLinks(stayingRobotaxis);
+        Map<Link, Set<RoboTaxi>> taxisToGo = parkingLPHelper.getTaxisToGo(linkStayTaxi);
+        Map<Link, Long> freeSpacesToGo = parkingLPHelper.getFreeSpacesToGo(linkStayTaxi, //
+                StaticHelper.getDestinationCount(rebalancingRobotaxis));
+        if ((!taxisToGo.isEmpty()) & (!freeSpacesToGo.isEmpty()))
+            return (new ParkingLPSolver(taxisToGo, freeSpacesToGo, distanceFunction)).returnSolution();
+
         return new HashMap<>();
     }
 

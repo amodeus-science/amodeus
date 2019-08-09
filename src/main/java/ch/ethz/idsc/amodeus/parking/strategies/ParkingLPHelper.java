@@ -16,7 +16,6 @@ import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
 
     private final ParkingCapacity parkingCapacity;
     private final Network network;
-    private final static double BOUNDCAPACITY = 0.5; // TODO remove magic const.
 
     public ParkingLPHelper(ParkingCapacity parkingCapacity, Network network) {
         this.parkingCapacity = parkingCapacity;
@@ -31,7 +30,7 @@ import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
 
         Map<Link, Long> freeSpacesToGo = new HashMap<>();
         for (Link link : network.getLinks().values()) {
-            double nominalCapacity = BOUNDCAPACITY * parkingCapacity.getSpatialCapacity(link.getId());
+            double nominalCapacity =  parkingCapacity.getSpatialCapacity(link.getId());
             Long nominalSpaces = (long) Math.ceil(nominalCapacity);
             Long stayTaxis = linkStayTaxi.containsKey(link) ? (long) linkStayTaxi.get(link).size() : (long) 0;
             Long reblTaxis = linkRebalancingTaxi.containsKey(link) ? linkRebalancingTaxi.get(link) : (long) 0;
@@ -44,11 +43,11 @@ import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
 
     /** @return {@link Map} on {@link Link} keys with the {@link Set}s of {@link RoboTaxi}s that must
      *         leave in order not to violate parking constraints.
-     *         Input are the currently staying {@link RoboTaxi}s @param linkStayTaxi sorted in a map*/
+     *         Input are the currently staying {@link RoboTaxi}s @param linkStayTaxi sorted in a map */
     public Map<Link, Set<RoboTaxi>> getTaxisToGo(Map<Link, Set<RoboTaxi>> linkStayTaxi) {
         Map<Link, Set<RoboTaxi>> shouldLeaveTaxis = new HashMap<>();
         for (Link link : linkStayTaxi.keySet()) {
-            double nominalCapacity = BOUNDCAPACITY * parkingCapacity.getSpatialCapacity(link.getId());
+            double nominalCapacity =  parkingCapacity.getSpatialCapacity(link.getId());
             Integer nominalSpaces = (int) Math.ceil(nominalCapacity);
             if (linkStayTaxi.get(link).size() > nominalCapacity) {
                 Integer shouldLeave = Math.max(0, linkStayTaxi.get(link).size() - nominalSpaces);
