@@ -15,6 +15,10 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
     public Map<RoboTaxi, Link> keepFree(Collection<RoboTaxi> stayingRobotaxis, //
             Collection<RoboTaxi> rebalancingRobotaxis, long now) {
 
+        /** allow children classes to update necessary information to execute
+         * the function destinationCompute */
+        update(stayingRobotaxis, rebalancingRobotaxis, now);
+
         Map<Link, Set<RoboTaxi>> stayTaxis = StaticHelper.getOccupiedLinks(stayingRobotaxis);
         /** If there are too many vehicles on the link, send a sufficient number of them away
          * to random neighbors */
@@ -27,14 +31,15 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
             if (taxis.size() > capacity) {
                 taxis.stream().limit(taxis.size() - capacity)//
                         .forEach(rt -> {
-                            directives.put(rt, destinationCompute(link));
+                            directives.put(rt, destinationCompute(rt));
                         });
             }
         });
         return directives;
     }
 
-    protected abstract Link destinationCompute(Link link);
+    protected abstract Link destinationCompute(RoboTaxi roboTaxi);
+
     protected abstract void update(Collection<RoboTaxi> stayingRobotaxis, //
             Collection<RoboTaxi> rebalancingRobotaxis, long now);
 

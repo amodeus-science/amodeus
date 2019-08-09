@@ -20,7 +20,8 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
     }
 
     @Override
-    protected Link destinationCompute(Link link) {
+    protected Link destinationCompute(RoboTaxi roboTaxi) {
+        Link link = roboTaxi.getDivertableLocation();
         List<Link> links = new ArrayList<>(link.getToNode().getOutLinks().values());
         Collections.shuffle(links, random);
         return links.get(0);
