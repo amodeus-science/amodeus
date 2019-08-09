@@ -7,7 +7,6 @@ import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
-import org.matsim.api.core.v01.population.Population;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.core.gbl.MatsimRandom;
 
@@ -25,52 +24,45 @@ import ch.ethz.matsim.av.generator.AVGenerator;
 public class RandomDensityGenerator implements AVGenerator {
     private static final Logger LOGGER = Logger.getLogger(RandomDensityGenerator.class);
     // ---
-    private final long numberOfVehicles;
-    private final String prefix;
     private final Network network;
+    private final int numberOfSeats;
+    private final long numberOfVehicles;
+    private long generatedVehicles = 0;
+    private final String prefix;
 
-    private long generatedNumberOfVehicles = 0;
-
-    RandomDensityGenerator(AVGeneratorConfig config, Network networkIn, Population population) {
-
+    public RandomDensityGenerator(AVGeneratorConfig config, Network network, int numberOfSeats) {
+        this.numberOfSeats = numberOfSeats;
         numberOfVehicles = config.getNumberOfVehicles();
-
         String config_prefix = config.getPrefix();
         prefix = config_prefix == null ? "av_" + config.getParent().getId().toString() + "_" : config_prefix + "_";
-
-        network = Objects.requireNonNull(networkIn);
+        this.network = Objects.requireNonNull(network);
     }
 
     @Override
     public boolean hasNext() {
-        return generatedNumberOfVehicles < numberOfVehicles;
+        return generatedVehicles < numberOfVehicles;
     }
 
     @Override
     public AVVehicle next() {
-        ++generatedNumberOfVehicles;
-
+        ++generatedVehicles;
         int bound = network.getLinks().size();
         int elemRand = MatsimRandom.getRandom().nextInt(bound);
-        Link linkGen = network.getLinks().values().stream().skip(elemRand).findFirst().get();
-
-        LOGGER.info("car placed at link " + linkGen);
-
-        Id<DvrpVehicle> id = Id.create("av_" + prefix + String.valueOf(generatedNumberOfVehicles), DvrpVehicle.class);
-        // In the future increase flexibility by adding capacity parameter as parameter in av.xml
-        AVVehicle vehicle = new AVVehicle(id, linkGen, 4, 0.0, Double.POSITIVE_INFINITY);
+        Link link = network.getLinks().values().stream().skip(elemRand).findFirst().get();
+        LOGGER.info("car placed at link " + link);
+        Id<DvrpVehicle> id = Id.create("av_" + prefix + String.valueOf(generatedVehicles), DvrpVehicle.class);
+        AVVehicle vehicle = new AVVehicle(id, link, numberOfSeats, 0.0, Double.POSITIVE_INFINITY);
         return vehicle;
     }
 
-    static public class Factory implements AVGenerator.AVGeneratorFactory {
-        @Inject
-        private Population population;
+    public static class Factory implements AVGenerator.AVGeneratorFactory {
         @Inject
         private Network network;
 
         @Override
         public AVGenerator createGenerator(AVGeneratorConfig generatorConfig) {
-            return new RandomDensityGenerator(generatorConfig, network, population);
+            int numberOfSeats = Integer.parseInt(generatorConfig.getParams().getOrDefault("numberOfSeats", "4"));
+            return new RandomDensityGenerator(generatorConfig, network, numberOfSeats);
         }
     }
 }
