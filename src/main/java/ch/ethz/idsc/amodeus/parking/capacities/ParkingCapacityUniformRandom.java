@@ -1,9 +1,8 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.parking.capacities;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import org.matsim.api.core.v01.Id;
@@ -12,27 +11,20 @@ import org.matsim.api.core.v01.network.Network;
 
 public class ParkingCapacityUniformRandom extends ParkingCapacityAbstract {
 
-    // TODO rebuild to allow not only 2 but n spaces per link
+    /** assigns totSpaces randomly chosen links from the network a parking space, there may
+     * be multiple parking spaces per link */
     public ParkingCapacityUniformRandom(Network network, long totSpaces, Random random) {
-
-        /** get links */
-        List<Id<Link>> allLinks = new ArrayList<>();
-        for (Link link : network.getLinks().values()) {
-            allLinks.add(link.getId());
+        int bound = network.getLinks().size();
+        Map<Id<Link>, Long> parkingCount = new HashMap<>();
+        for (int i = 0; i < totSpaces; ++i) {
+            int elemRand = random.nextInt(bound);
+            Link link = network.getLinks().values().stream().skip(elemRand).findFirst().get();
+            if (!parkingCount.containsKey(link.getId()))
+                parkingCount.put(link.getId(), (long) 0);
+            parkingCount.put(link.getId(), parkingCount.get(link.getId()) + 1);
         }
-
-        /** shuffle list */
-        Collections.shuffle(allLinks, random);
-
-        /** assign 2 spaces to every link */
-        long remainingSpaces = totSpaces;
-        int i = 1;
-        while (remainingSpaces != 0) {
-            capacities.put(allLinks.get(i), (long) 2);
-            remainingSpaces -= 2;
-            i++;
-        }
-
+        parkingCount.entrySet().stream().forEach(e -> {
+            capacities.put(e.getKey(), e.getValue());
+        });
     }
-
 }
