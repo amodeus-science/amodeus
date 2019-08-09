@@ -24,8 +24,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 
     @Override
     protected void update(Collection<RoboTaxi> stayTaxis, Collection<RoboTaxi> rebTaxis, long now) {
-        DirectedDiffusionHelper helper = //
-                new DirectedDiffusionHelper(parkingCapacity, stayTaxis, rebTaxis, random);
+        helper = new DirectedDiffusionHelper(parkingCapacity, stayTaxis, rebTaxis, random);
     }
 
 }

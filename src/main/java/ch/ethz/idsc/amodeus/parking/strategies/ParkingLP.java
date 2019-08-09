@@ -29,14 +29,14 @@ import ch.ethz.idsc.amodeus.routing.DistanceFunction;
             Collection<RoboTaxi> rebalancingRobotaxis, long now) {
         Objects.requireNonNull(distanceFunction);
         Objects.requireNonNull(parkingLPHelper);
-
         Map<Link, Set<RoboTaxi>> linkStayTaxi = StaticHelper.getOccupiedLinks(stayingRobotaxis);
         Map<Link, Set<RoboTaxi>> taxisToGo = parkingLPHelper.getTaxisToGo(linkStayTaxi);
-        Map<Link, Long> freeSpacesToGo = parkingLPHelper.getFreeSpacesToGo(linkStayTaxi, //
-                StaticHelper.getDestinationCount(rebalancingRobotaxis));
-        if ((!taxisToGo.isEmpty()) & (!freeSpacesToGo.isEmpty()))
-            return (new ParkingLPSolver(taxisToGo, freeSpacesToGo, distanceFunction)).returnSolution();
-
+        if (!taxisToGo.isEmpty()) { /** if there are ongoing parking violations, resolve, otherwise skip */
+            Map<Link, Long> freeSpacesToGo = parkingLPHelper.getFreeSpacesToGo(linkStayTaxi, //
+                    StaticHelper.getDestinationCount(rebalancingRobotaxis));
+            if (!freeSpacesToGo.isEmpty()) /** skip any action if no free spaces */
+                return (new ParkingLPSolver(taxisToGo, freeSpacesToGo, distanceFunction)).returnSolution();
+        }
         return new HashMap<>();
     }
 

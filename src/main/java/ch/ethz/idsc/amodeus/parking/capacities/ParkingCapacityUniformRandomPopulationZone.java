@@ -10,13 +10,13 @@ import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
-public class ParkingCapacityUniformRandom extends ParkingCapacityAbstract {
+public class ParkingCapacityUniformRandomPopulationZone extends ParkingCapacityAbstract {
 
     /** assigns totSpaces randomly chosen links from the network a parking space, there may
      * be multiple parking spaces per link */
-    public ParkingCapacityUniformRandom(Network network, long totSpaces, Random random) {
+    public ParkingCapacityUniformRandomPopulationZone(Network network, long totSpaces, Random random) {
         Map<Id<Link>, Long> parkingCount = new HashMap<>();
-        Collection<? extends Link> allLinks = network.getLinks().values();// network.getLinks().values();
+        Collection<? extends Link> allLinks =  network.getLinks().values();//  network.getLinks().values();
         int bound = allLinks.size();
         for (int i = 0; i < totSpaces; ++i) {
             int elemRand = random.nextInt(bound);

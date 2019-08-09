@@ -15,6 +15,7 @@ import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacityFromNetworkIdentif
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacityInfinity;
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacityLinkLength;
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacityUniformRandom;
+import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacityUniformRandomPopulationZone;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 public enum ParkingCapacityGenerators implements ParkingCapacityGenerator {
@@ -37,6 +38,14 @@ public enum ParkingCapacityGenerators implements ParkingCapacityGenerator {
             long capacity = scenarioOptions.getInt(ScenarioOptionsBase.PARKINGTOTALSPACES);
             long seed = scenarioOptions.getRandomSeed();
             return new ParkingCapacityUniformRandom(network, capacity, new Random(seed));
+        }
+    },
+    UNIFORMRANDOMPOPULATIONZONE {
+        @Override
+        public ParkingCapacity generate(Network network, ScenarioOptions scenarioOptions) {
+            long capacity = scenarioOptions.getInt(ScenarioOptionsBase.PARKINGTOTALSPACES);
+            long seed = scenarioOptions.getRandomSeed();
+            return new ParkingCapacityUniformRandomPopulationZone(network, capacity, new Random(seed));
         }
     },
     LINKDENSITY {
