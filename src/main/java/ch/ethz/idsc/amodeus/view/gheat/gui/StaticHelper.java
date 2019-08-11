@@ -30,6 +30,6 @@ import ch.ethz.idsc.tensor.opt.ScalarTensorFunction;
             vector.set(RealScalar.of(255 - index), 3);
             matrix.append(vector);
         }
-        return StrictColorDataIndexed.create(matrix);
+        return StrictColorDataIndexed.of(matrix);
     }
 }

@@ -14,7 +14,7 @@ public enum ColorDataAmodeusSpecific {
     MILD, //
     ;
     private final Tensor tensor = ResourceData.of(StaticHelperColor.colorlist(name()));
-    private final ColorDataIndexed colorDataIndexed = CyclicColorDataIndexed.create(tensor);
+    private final ColorDataIndexed colorDataIndexed = CyclicColorDataIndexed.of(tensor);
 
     /** @return */
     public ColorDataIndexed cyclic() {

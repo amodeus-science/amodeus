@@ -50,7 +50,7 @@ import ch.ethz.idsc.tensor.img.StrictColorDataIndexed;
         Tensor matrix = Tensors.reserve(256);
         for (int c = 0; c < 256; ++c)
             matrix.append(Tensors.vector(sum[c][0], sum[c][1], sum[c][2], 255 - c));
-        return StrictColorDataIndexed.create(matrix);
+        return StrictColorDataIndexed.of(matrix);
     }
 
 }
