@@ -1,23 +1,18 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.dispatcher.core;
+package ch.ethz.idsc.amodeus;
 
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
-import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.optimizer.Request;
-import org.matsim.contrib.dvrp.schedule.Schedule;
-import org.matsim.contrib.dvrp.util.LinkTimePair;
 import org.matsim.core.config.Config;
 import org.matsim.core.network.NetworkUtils;
 
-import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.passenger.AVRequest;
-import ch.ethz.matsim.av.schedule.AVStayTask;
 
-/*package*/ class ArtificialScenarioCreator {
+public class ArtificialScenarioCreator {
     public final Node node1;
     public final Node node2;
     public final Node node3;
@@ -42,22 +37,17 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     public final AVRequest avRequestDepotOut;
     public final AVRequest avRequestDepotIn;
 
-    public final AVVehicle vehicle1;
-    public final AVVehicle vehicle2;
-    public final RoboTaxi roboTaxi1;
-    public final RoboTaxi roboTaxi2;
-
     static final double length = 100.0;
     static final double freespeed = 20.0;
     static final double capacity = 500.0;
     static final double lanes = 1.0;
     static final int seats = 3;
 
-    /* package */ ArtificialScenarioCreator() {
+    public ArtificialScenarioCreator() {
         this(null);
     }
 
-    /* package */ ArtificialScenarioCreator(Config config) {
+    public ArtificialScenarioCreator(Config config) {
         network = (config == null) ? NetworkUtils.createNetwork() : NetworkUtils.createNetwork(config);
 
         Id<Node> nodeid1 = Id.createNodeId("node1");
@@ -116,43 +106,5 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         avRequestDepotOut = new AVRequest(Id.create("depotRequestOut", Request.class), null, linkDepotOut, linkDepotOut, 0.0, 0.0, null, null, null);
         avRequestDepotIn = new AVRequest(Id.create("depotRequestIn", Request.class), null, linkDepotIn, linkDepotIn, 0.0, 0.0, null, null, null);
 
-        LinkTimePair divertableLinkTime = new LinkTimePair(linkDepotOut, 0.0);
-
-        Id<DvrpVehicle> idAv1 = Id.create("av1", DvrpVehicle.class);
-        vehicle1 = new AVVehicle(idAv1, linkDepotOut, seats, 0.0, Double.POSITIVE_INFINITY);
-        roboTaxi1 = new RoboTaxi(vehicle1, divertableLinkTime, linkDepotOut, RoboTaxiUsageType.SHARED);
-        setFirstStayTask(vehicle1);
-
-        Id<DvrpVehicle> idAv2 = Id.create("av2", DvrpVehicle.class);
-        vehicle2 = new AVVehicle(idAv2, linkDepotOut, seats, 0.0, Double.POSITIVE_INFINITY);
-        roboTaxi2 = new RoboTaxi(vehicle2, divertableLinkTime, linkDepotOut, RoboTaxiUsageType.SHARED);
-        setFirstStayTask(vehicle2);
-        System.out.println("ArtificialScenario Created");
     }
-
-    // private static void changeRoboTaxiLinks(RoboTaxi roboTaxi, Link divertableLocation, Link courseLink) {
-    // // TODO is function empty on purpose?
-    // }
-
-    private static void setFirstStayTask(AVVehicle vehicle) {
-        Schedule schedule = vehicle.getSchedule();
-        schedule.addTask(new AVStayTask(vehicle.getServiceBeginTime(), vehicle.getServiceEndTime(), vehicle.getStartLink()));
-        schedule.nextTask();
-    }
-
-    // private static void setFirstDriveTask(AVVehicle vehicle) {
-    // Schedule schedule = vehicle.getSchedule();
-    // VrpPathWithTravelData vrpPathWithTravelData = null;
-    // schedule.addTask(new AVDriveTask(vrpPathWithTravelData));
-    // schedule.nextTask();
-    //
-    // }
-    //
-    // private static void setFirstPickupTask(AVVehicle vehicle) {
-    // Schedule schedule = vehicle.getSchedule();
-    // schedule.addTask(new AVPickupTask(vehicle.getServiceBeginTime(), vehicle.getServiceEndTime(), vehicle.getStartLink()));
-    // schedule.nextTask();
-    //
-    // }
-
 }

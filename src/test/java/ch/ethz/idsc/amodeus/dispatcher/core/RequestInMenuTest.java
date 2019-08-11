@@ -10,7 +10,7 @@ import junit.framework.TestCase;
 
 public class RequestInMenuTest extends TestCase {
     public void testSimple() {
-        ArtificialScenarioCreator artificialScenarioCreator = new ArtificialScenarioCreator();
+        ArtificialSharedScenarioCreator artificialScenarioCreator = new ArtificialSharedScenarioCreator();
 
         SharedCourse pickupCourse1 = SharedCourse.pickupCourse(artificialScenarioCreator.avRequest1);
         SharedCourse dropoffCourse1 = SharedCourse.dropoffCourse(artificialScenarioCreator.avRequest1);

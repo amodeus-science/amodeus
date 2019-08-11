@@ -11,7 +11,8 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 
-/** A Parking Startegy is the routine which defines how Parking spaces are tried to keep free. */
+/** {@link ParkingStrategy} is the routine which defines how parking space capacity violations
+ * are tried to be avoided. */
 public interface ParkingStrategy {
 
     /** Function which should take action to keep Parking spaces free and stop
@@ -31,6 +32,6 @@ public interface ParkingStrategy {
      * @param parkingCapacity
      * @param network
      * @param distanceFunction */
-    public void setRunntimeParameters(ParkingCapacity parkingCapacity, Network network, DistanceFunction distanceFunction);
+    public void setRuntimeParameters(ParkingCapacity parkingCapacity, Network network, DistanceFunction distanceFunction);
 
 }

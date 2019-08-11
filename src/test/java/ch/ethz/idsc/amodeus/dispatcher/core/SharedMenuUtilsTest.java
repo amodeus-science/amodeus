@@ -15,7 +15,7 @@ import junit.framework.TestCase;
 
 public class SharedMenuUtilsTest extends TestCase {
     public void testSimple() {
-        ArtificialScenarioCreator artificialScenarioCreator = new ArtificialScenarioCreator();
+        ArtificialSharedScenarioCreator artificialScenarioCreator = new ArtificialSharedScenarioCreator();
         SharedCourse pickupCourse1 = SharedCourse.pickupCourse(artificialScenarioCreator.avRequest1);
         assertEquals(pickupCourse1.getLink(), artificialScenarioCreator.avRequest1.getFromLink());
         assertEquals(pickupCourse1.getMealType(), SharedMealType.PICKUP);

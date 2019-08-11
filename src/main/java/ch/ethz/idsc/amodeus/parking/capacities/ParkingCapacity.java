@@ -7,16 +7,16 @@ import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 
 /** A {@link ParkingCapacity} is a storage for the spatial capacity
- * (i.e. parking spaces) on a Collection of links (e.g. the network). */
+ * (i.e. parking spaces) on a {@link Collection} of {@link Link}s */
 public interface ParkingCapacity {
 
-    /** An AVSpatialCapacity gives back the Number of Spaces on the Link with
-     * the given Id back. It is designed for the usage of parking spaces such
-     * that for each link the corresponding parking capacity can be found
-     * 
-     * @param id link id
-     * @return the total capacity on this link */
+    /** @return the total capacity on this link with {@link Id<Link>} @param id.
+     *         An {@link ParkingCapacity} returns the number of spaces on the Link with
+     *         the given Id back. It is designed for the usage of parking spaces such
+     *         that for each link the corresponding parking capacity can be found */
     public long getSpatialCapacity(Id<Link> id);
 
+    /** @return {@link Collection} of all {@link Id<Link>} that have nonzero
+     *         parking capacity. */
     public Collection<Id<Link>> getAvailableLinks();
 }

@@ -12,16 +12,18 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 
-/** Default parking strategy that not doing any action. */
+/** default {@link ParkingStrategy} that not doing any action. */
 /* package */ class ParkingNullStrategy implements ParkingStrategy {
 
     @Override
-    public Map<RoboTaxi, Link> keepFree(Collection<RoboTaxi> stayingRobotaxis, Collection<RoboTaxi> rebalancingRobotaxis, long now) {
+    public Map<RoboTaxi, Link> keepFree(Collection<RoboTaxi> stayingRobotaxis, //
+            Collection<RoboTaxi> rebalancingRobotaxis, long now) {
         return new HashMap<>();
     }
 
     @Override
-    public void setRunntimeParameters(ParkingCapacity avSpatialCapacityAmodeus, Network network, DistanceFunction distanceFunction) {
+    public void setRuntimeParameters(ParkingCapacity avSpatialCapacityAmodeus, Network network, //
+            DistanceFunction distanceFunction) {
         // ---
     }
 }

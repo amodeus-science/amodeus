@@ -78,7 +78,8 @@ public class VehicleToVSGeneratorTester {
 
     @Test
     public void testHasNext() {
-        VehicleToVSGenerator vehicleToVSGenerator = new VehicleToVSGenerator(avGeneratorConfig, network, virtualNetwork, travelData000);
+        VehicleToVSGenerator vehicleToVSGenerator = //
+                new VehicleToVSGenerator(avGeneratorConfig, virtualNetwork, travelData000, 4);
 
         /** test hasNext */
         for (int i = 0; i < avGeneratorConfig.getNumberOfVehicles(); i++) {
@@ -87,7 +88,8 @@ public class VehicleToVSGeneratorTester {
         }
         assertFalse(vehicleToVSGenerator.hasNext());
 
-        vehicleToVSGenerator = new VehicleToVSGenerator(avGeneratorConfig, network, virtualNetwork, travelData123);
+        vehicleToVSGenerator = //
+                new VehicleToVSGenerator(avGeneratorConfig, virtualNetwork, travelData123, 4);
 
         /** test hasNext */
         for (int i = 0; i < avGeneratorConfig.getNumberOfVehicles(); i++) {
@@ -96,7 +98,8 @@ public class VehicleToVSGeneratorTester {
         }
         assertFalse(vehicleToVSGenerator.hasNext());
 
-        vehicleToVSGenerator = new VehicleToVSGenerator(avGeneratorConfig, network, virtualNetwork, travelData334);
+        vehicleToVSGenerator = //
+                new VehicleToVSGenerator(avGeneratorConfig, virtualNetwork, travelData334, 4);
 
         /** test hasNext */
         for (int i = 0; i < avGeneratorConfig.getNumberOfVehicles(); i++) {
@@ -144,10 +147,11 @@ public class VehicleToVSGeneratorTester {
 
     @Test
     public void testTotallyGivenDistribution() {
-        VehicleToVSGenerator vehicleToVSGenerator = new VehicleToVSGenerator(avGeneratorConfig, network, virtualNetwork, travelData334);
-
+        VehicleToVSGenerator vehicleToVSGenerator = //
+                new VehicleToVSGenerator(avGeneratorConfig, virtualNetwork, travelData334, 4);
         for (int i = 0; i < TRIALS; i++) {
-            vehicleToVSGenerator = new VehicleToVSGenerator(avGeneratorConfig, network, virtualNetwork, travelData334);
+            vehicleToVSGenerator = //
+                    new VehicleToVSGenerator(avGeneratorConfig, virtualNetwork, travelData334, 4);
             for (int j = 0; j < avGeneratorConfig.getNumberOfVehicles(); j++)
                 vehicleToVSGenerator.next();
             assertEquals(vehicleToVSGenerator.getPlacedVehicles(), Tensors.vector(3, 3, 4));
