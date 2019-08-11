@@ -16,6 +16,6 @@ import ch.ethz.idsc.tensor.img.StrictColorDataIndexed;
     }
 
     public ColorDataIndexed getColorDataIndexed() {
-        return StrictColorDataIndexed.create(tensor);
+        return StrictColorDataIndexed.of(tensor);
     }
 }
