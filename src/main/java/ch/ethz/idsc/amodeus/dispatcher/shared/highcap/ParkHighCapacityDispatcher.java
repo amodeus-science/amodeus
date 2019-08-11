@@ -130,7 +130,7 @@ import ch.ethz.matsim.av.router.AVRouter;
         /** PARKING EXTENSION */
         this.parkingStrategy = parkingStrategy;
         DistanceHeuristics distanceHeuristics = DispatcherConfig.wrap(avDispatcherConfig).getDistanceHeuristics(DistanceHeuristics.ASTARLANDMARKS);
-        this.parkingStrategy.setRunntimeParameters(avSpatialCapacityAmodeus, network, distanceHeuristics.getDistanceFunction(network));
+        this.parkingStrategy.setRuntimeParameters(avSpatialCapacityAmodeus, network, distanceHeuristics.getDistanceFunction(network));
         /** PARKING EXTENSION */
 
     }

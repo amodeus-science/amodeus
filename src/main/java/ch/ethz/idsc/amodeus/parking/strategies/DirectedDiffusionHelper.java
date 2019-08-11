@@ -18,55 +18,51 @@ import org.matsim.api.core.v01.network.Link;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
 
-/* package */ class ParkingDirectedDiffusionHelper {
+// TODO have the number of degrees to search in as a variable 
+/* package */ class DirectedDiffusionHelper {
 
-    private final static double BOUNDCAPACITY = 0.5;
-
-    private final ParkingCapacity avSpatialCapacityAmodeus;
+    private final ParkingCapacity parkingCapacity;
     private final Random random;
     private Map<Link, Set<RoboTaxi>> occMap;
 
-    public ParkingDirectedDiffusionHelper(ParkingCapacity avSpatialCapacityAmodeus, //
+    public DirectedDiffusionHelper(ParkingCapacity parkingCapacity, //
             Collection<RoboTaxi> stayingRobotaxis, Collection<RoboTaxi> rebalancingRobotaxis, Random random) {
-        this.avSpatialCapacityAmodeus = avSpatialCapacityAmodeus;
+        this.parkingCapacity = parkingCapacity;
         this.random = random;
         this.occMap = getOccMap(stayingRobotaxis, rebalancingRobotaxis);
     }
 
+    /** @return a {@link Link} for the {@link RoboTaxi} @param rt which is on a link with insufficient
+     *         parking capacity */
     public Link getDestinationLink(RoboTaxi rt) {
-
-        List<Link> firstNeighbors = new ArrayList<>(rt.getDivertableLocation().getToNode().getOutLinks().values());
-        List<Link> secondNeighbors = getNeighborLinks(firstNeighbors, rt);
-
+        List<Link> deg1Neighbors = new ArrayList<>(rt.getDivertableLocation().getToNode().getOutLinks().values());
+        List<Link> deg2Neighbors = getNeighborLinks(deg1Neighbors, rt);
         NavigableMap<Long, Link> destMap = new TreeMap<>();
+        /** search possible destinations in degree 1 neighboring roads */
+        deg1Neighbors.stream()//
+                .forEach(link -> {
+                    Long freeSpaces = parkingCapacity.getSpatialCapacity(link.getId());
+                    if (occMap.containsKey(link))
+                        freeSpaces = Math.max(0, freeSpaces - occMap.get(link).size());
+                    if (freeSpaces > 0) {
+                        destMap.put(freeSpaces, link);
+                    }
+                });
 
-        firstNeighbors.stream().forEach(neighLink -> {
-            Long freeSpaces = (long) Math.ceil(BOUNDCAPACITY * avSpatialCapacityAmodeus.getSpatialCapacity(neighLink.getId()));
-            if (occMap.containsKey(neighLink)) {
-                freeSpaces = (long) Math.ceil(BOUNDCAPACITY * avSpatialCapacityAmodeus.getSpatialCapacity(neighLink.getId())//
-                        - occMap.get(neighLink).size());
-            }
-
+        /** search possible destinations in degree 2 neighboring roads */
+        deg2Neighbors.stream().forEach(link -> {
+            Long freeSpaces = parkingCapacity.getSpatialCapacity(link.getId());
+            if (occMap.containsKey(link))
+                freeSpaces = Math.max(0, freeSpaces - occMap.get(link).size());
             if (freeSpaces > 0) {
-                destMap.put(freeSpaces, neighLink);
+                destMap.put(freeSpaces, link);
             }
         });
 
-        secondNeighbors.stream().forEach(neighLink -> {
-            Long freeSpaces = (long) Math.ceil(BOUNDCAPACITY * avSpatialCapacityAmodeus.getSpatialCapacity(neighLink.getId()));
-            if (occMap.containsKey(neighLink)) {
-                freeSpaces = (long) Math.ceil(BOUNDCAPACITY * avSpatialCapacityAmodeus.getSpatialCapacity(neighLink.getId())//
-                        - occMap.get(neighLink).size());
-            }
-
-            if (freeSpaces > 0) {
-                destMap.put(freeSpaces, neighLink);
-            }
-        });
-
+        /** if there are no valid destinations, select a degree 2 neighbor at random */
         if (destMap.isEmpty()) {
-            Collections.shuffle(secondNeighbors, random);
-            Link destination = secondNeighbors.get(0);
+            Collections.shuffle(deg2Neighbors, random);
+            Link destination = deg2Neighbors.get(0);
             refreshOccMap(rt, destination);
             return destination;
         }
@@ -75,26 +71,21 @@ import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
     }
 
     private void refreshOccMap(RoboTaxi rt, Link destination) {
-
         // remove
         Link location = rt.getDivertableLocation();
         occMap.get(location).remove(rt);
         if (occMap.get(location).isEmpty()) {
             occMap.remove(location);
         }
-
         // add
         if (!occMap.containsKey(destination)) {
             occMap.put(destination, new HashSet<>());
         }
-
         occMap.get(destination).add(rt);
-
     }
 
     private static List<Link> getNeighborLinks(List<Link> firstNeighbors, RoboTaxi rt) {
         List<Link> secondNeighbors = new ArrayList<>();
-
         for (Link link : firstNeighbors) {
             List<Link> newNeighbors = new ArrayList<>(link.getToNode().getOutLinks().values());
             for (Link link2 : newNeighbors) {
@@ -103,7 +94,6 @@ import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
                 }
             }
         }
-
         return secondNeighbors;
     }
 
@@ -134,8 +124,6 @@ import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
                 occMap.put(rebRT.getCurrentDriveDestination(), newSet);
             }
         }
-
         return occMap;
     }
-
 }

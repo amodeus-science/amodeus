@@ -2,62 +2,29 @@
 package ch.ethz.idsc.amodeus.parking.strategies;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 
-/* package */ class ParkingDirectedDiffusion extends ParkingStrategyWithCapacity {
+/* package */ class ParkingDirectedDiffusion extends AbstractParkingDiffusionStrategy {
 
-    private final long freeParkingPeriod = 5;
     private final Random random;
+    private DirectedDiffusionHelper helper = null;
 
-    ParkingDirectedDiffusion(Random random) {
+    public ParkingDirectedDiffusion(Random random) {
         this.random = random;
     }
 
     @Override
-    public Map<RoboTaxi, Link> keepFree(Collection<RoboTaxi> stayingRobotaxis, //
-            Collection<RoboTaxi> rebalancingRobotaxis, long now) {
-        if (now % freeParkingPeriod == 0) {
-            Map<Link, Set<RoboTaxi>> currCount = getOccupiedLinks(stayingRobotaxis);
-            ParkingDirectedDiffusionHelper parkingAdvancedDiffusionHelper = //
-                    new ParkingDirectedDiffusionHelper(parkingCapacity, stayingRobotaxis, rebalancingRobotaxis, random);
-            Map<RoboTaxi, Link> directives = new HashMap<>();
-            currCount.entrySet().stream()//
-                    .forEach(linkTaxiPair -> {
-                        if (linkTaxiPair.getValue().size() > parkingCapacity.getSpatialCapacity(linkTaxiPair.getKey().getId()) * 0.5) {
-                            linkTaxiPair.getValue().stream()//
-                                    .limit(Math.round(linkTaxiPair.getValue().size() * 0.5))//
-                                    .forEach(rt -> {
-                                        directives.put(rt, parkingAdvancedDiffusionHelper.getDestinationLink(rt));
-                                    });
-                        }
-                    });
-            return directives;
-        }
-        return new HashMap<>();
+    protected Link destinationCompute(RoboTaxi roboTaxi) {
+        return helper.getDestinationLink(roboTaxi);
     }
 
-    private static Map<Link, Set<RoboTaxi>> getOccupiedLinks(Collection<RoboTaxi> stayingRobotaxis) {
-        /** returns a map with a link as key and the set of robotaxis which are currently on the link */
-        Map<Link, Set<RoboTaxi>> rtLink = new HashMap<>();
-
-        stayingRobotaxis.forEach(rt -> {
-            Link link = rt.getDivertableLocation();
-            if (rtLink.containsKey(link)) {
-                rtLink.get(link).add(rt);
-            } else {
-                Set<RoboTaxi> set = new HashSet<>();
-                set.add(rt);
-                rtLink.put(link, set);
-            }
-        });
-        return rtLink;
+    @Override
+    protected void update(Collection<RoboTaxi> stayTaxis, Collection<RoboTaxi> rebTaxis, long now) {
+        helper = new DirectedDiffusionHelper(parkingCapacity, stayTaxis, rebTaxis, random);
     }
+
 }

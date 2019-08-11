@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.Random;
 
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.api.core.v01.population.Population;
 
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
@@ -15,33 +16,42 @@ import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacityFromNetworkIdentif
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacityInfinity;
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacityLinkLength;
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacityUniformRandom;
+import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacityUniformRandomPopulationZone;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 public enum ParkingCapacityGenerators implements ParkingCapacityGenerator {
     NONE {
         @Override
-        public ParkingCapacity generate(Network network, ScenarioOptions scenarioOptions) {
+        public ParkingCapacity generate(Network network, Population population, ScenarioOptions scenarioOptions) {
             return new ParkingCapacityInfinity(network);
         }
     },
     CONSTANT {
         @Override
-        public ParkingCapacity generate(Network network, ScenarioOptions scenarioOptions) {
+        public ParkingCapacity generate(Network network, Population population, ScenarioOptions scenarioOptions) {
             long capacity = scenarioOptions.getInt(ScenarioOptionsBase.PARKINGCONSTANTCAPACITY);
             return new ParkingCapacityConstant(network, capacity);
         }
     },
     UNIFORMRANDOM {
         @Override
-        public ParkingCapacity generate(Network network, ScenarioOptions scenarioOptions) {
+        public ParkingCapacity generate(Network network, Population population, ScenarioOptions scenarioOptions) {
             long capacity = scenarioOptions.getInt(ScenarioOptionsBase.PARKINGTOTALSPACES);
             long seed = scenarioOptions.getRandomSeed();
-            return new ParkingCapacityUniformRandom(network, capacity, new Random(seed));
+            return new ParkingCapacityUniformRandom(network, population, capacity, new Random(seed));
+        }
+    },
+    UNIFORMRANDOMPOPULATIONZONE {
+        @Override
+        public ParkingCapacity generate(Network network, Population population, ScenarioOptions scenarioOptions) {
+            long capacity = scenarioOptions.getInt(ScenarioOptionsBase.PARKINGTOTALSPACES);
+            long seed = scenarioOptions.getRandomSeed();
+            return new ParkingCapacityUniformRandomPopulationZone(network, population, capacity, new Random(seed));
         }
     },
     LINKDENSITY {
         @Override
-        public ParkingCapacity generate(Network network, ScenarioOptions scenarioOptions) {
+        public ParkingCapacity generate(Network network, Population population, ScenarioOptions scenarioOptions) {
             double capacityPerLengthUnit = scenarioOptions.getDouble(ScenarioOptionsBase.PARKINGLENGTHDENSITY);
             long minCapacityGlobal = scenarioOptions.getInt(ScenarioOptionsBase.PARKINGMINlINKCAPACITY);
             return new ParkingCapacityLinkLength(network, capacityPerLengthUnit, minCapacityGlobal);
@@ -49,7 +59,7 @@ public enum ParkingCapacityGenerators implements ParkingCapacityGenerator {
     },
     NETWORKBASED {
         @Override
-        public ParkingCapacity generate(Network network, ScenarioOptions scenarioOptions) {
+        public ParkingCapacity generate(Network network, Population population, ScenarioOptions scenarioOptions) {
             Objects.requireNonNull(scenarioOptions);
             long seed = scenarioOptions.getRandomSeed();
             return new ParkingCapacityFromNetworkIdentifier(network, //
@@ -58,7 +68,7 @@ public enum ParkingCapacityGenerators implements ParkingCapacityGenerator {
     },
     NETWORKBASEDRANDOM {
         @Override
-        public ParkingCapacity generate(Network network, ScenarioOptions scenarioOptions) {
+        public ParkingCapacity generate(Network network, Population population, ScenarioOptions scenarioOptions) {
             GlobalAssert.that(scenarioOptions != null);
             long capacity = scenarioOptions.getInt(ScenarioOptionsBase.PARKINGTOTALSPACES);
             long seed = scenarioOptions.getRandomSeed();

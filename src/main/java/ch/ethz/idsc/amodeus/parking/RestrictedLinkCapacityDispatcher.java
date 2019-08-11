@@ -99,7 +99,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
         DispatcherConfig dispatcherConfig = DispatcherConfig.wrap(avDispatcherConfig);
         DistanceHeuristics distanceHeuristics = //
                 dispatcherConfig.getDistanceHeuristics(DistanceHeuristics.ASTARLANDMARKS);
-        this.parkingStrategy.setRunntimeParameters(avSpatialCapacityAmodeus, network, distanceHeuristics.getDistanceFunction(network));
+        this.parkingStrategy.setRuntimeParameters(avSpatialCapacityAmodeus, network, distanceHeuristics.getDistanceFunction(network));
         /** PARKING EXTENSION */
     }
 

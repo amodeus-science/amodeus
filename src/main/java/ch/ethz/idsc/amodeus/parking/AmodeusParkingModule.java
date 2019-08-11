@@ -1,7 +1,9 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.parking;
 
+import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.controler.AbstractModule;
 
 import com.google.inject.Provides;
@@ -35,10 +37,10 @@ public class AmodeusParkingModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public ParkingCapacity provideAVSpatialCapacity(Network network) {
+    public ParkingCapacity provideAVSpatialCapacity(Network network, Population population) {
         try {
             ParkingCapacityGenerator generator = scenarioOptions.getParkingCapacityGenerator();
-            return generator.generate(network, scenarioOptions);
+            return generator.generate(network, population, scenarioOptions);
         } catch (Exception exception) {
             System.err.println("Unable to load parking capacity for all links, returning null.");
             exception.printStackTrace();

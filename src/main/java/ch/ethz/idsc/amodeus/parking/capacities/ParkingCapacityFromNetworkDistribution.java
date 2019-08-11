@@ -2,15 +2,14 @@
 package ch.ethz.idsc.amodeus.parking.capacities;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
-
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 public class ParkingCapacityFromNetworkDistribution extends ParkingCapacityAbstract {
 
@@ -20,6 +19,8 @@ public class ParkingCapacityFromNetworkDistribution extends ParkingCapacityAbstr
     public ParkingCapacityFromNetworkDistribution(Network network, String capacityIdentifier, //
             Random random, long desiredTotalSpots) {
 
+        /** get a list of all parkings, if a Link has multiple spots, it will
+         * show up in the list multiple times */
         List<Link> linksWithParking = new ArrayList<>();
         network.getLinks().values().stream()//
                 .forEach(l -> {
@@ -28,8 +29,10 @@ public class ParkingCapacityFromNetworkDistribution extends ParkingCapacityAbstr
                         if (attrMap.containsKey(capacityIdentifier)) {
                             Object attribute = attrMap.get(capacityIdentifier);
                             Long capacity = Long.parseLong(attribute.toString());
-                            if (capacity > 0)
-                                linksWithParking.add(l);
+                            if (capacity > 0) {
+                                for (int i = 0; i < capacity; ++i)
+                                    linksWithParking.add(l);
+                            }
                         }
                     } catch (Exception ex) {
                         ex.printStackTrace();
@@ -37,26 +40,18 @@ public class ParkingCapacityFromNetworkDistribution extends ParkingCapacityAbstr
                     }
                 });
 
-        System.out.println("Number of links with Parking: " + linksWithParking.size());
-        if (linksWithParking.size() < 1) {
-            System.err.println("The network does not contain any parkings for identifier:");
-            System.err.println(capacityIdentifier);
-            System.err.println("Aborting.");
-            GlobalAssert.that(false);
+        /** assign according to distribution */
+        Map<Id<Link>, Long> parkingCount = new HashMap<>();
+        int bound = linksWithParking.size();
+        for (int i = 0; i < desiredTotalSpots; ++i) {
+            int elemRand = random.nextInt(bound);
+            Link link = linksWithParking.stream().skip(elemRand).findFirst().get();
+            if (!parkingCount.containsKey(link.getId()))
+                parkingCount.put(link.getId(), (long) 0);
+            parkingCount.put(link.getId(), parkingCount.get(link.getId()) + 1);
         }
-
-        /** shuffle to have random selection of streets */
-        Collections.shuffle(linksWithParking, random);
-        long assignedSpots = 0;
-        for (Link link : linksWithParking) {
-            if (desiredTotalSpots == assignedSpots)
-                break;
-            Long streetCapacity = Long.parseLong(link.getAttributes().getAttribute(capacityIdentifier).toString());
-            long putSpots = Math.min(streetCapacity, desiredTotalSpots - assignedSpots);
-            assignedSpots += putSpots;
-            capacities.put(link.getId(), putSpots);
-        }
-        System.out.println("Number of desired parking spots: " + desiredTotalSpots);
-        System.out.println("Number of assigned parking spots: " + assignedSpots);
+        parkingCount.entrySet().stream().forEach(e -> {
+            capacities.put(e.getKey(), e.getValue());
+        });
     }
 }

@@ -18,7 +18,7 @@ import junit.framework.TestCase;
 
 public class RoboTaxiUtilsTest extends TestCase {
     public void testSimple() {
-        ArtificialScenarioCreator s = new ArtificialScenarioCreator();
+        ArtificialSharedScenarioCreator s = new ArtificialSharedScenarioCreator();
 
         assertTrue(SharedRoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1).equals(RoboTaxiStatus.STAY));
         s.roboTaxi1.addRedirectCourseToMenu(SharedCourse.redirectCourse(s.linkUp, "redirect0"));
