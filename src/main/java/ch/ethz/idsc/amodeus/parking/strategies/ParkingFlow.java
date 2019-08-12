@@ -12,7 +12,7 @@ import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.lp.RedistributionProblemHelper;
-import ch.ethz.idsc.amodeus.lp.RedistributionProblemSolver;
+import ch.ethz.idsc.amodeus.lp.RedistributionProblemSolverMILP;
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 
@@ -44,11 +44,11 @@ import ch.ethz.idsc.amodeus.routing.DistanceFunction;
                 Map<Link, Integer> unitsToMove = RedistributionProblemHelper.getFlow(taxisToGo);
 
                 /** set up the flow problem and solve */
-                RedistributionProblemSolver<Link> parkingLP = //
-                        new RedistributionProblemSolver<Link>(unitsToMove, freeSpacesToGo, //
+                RedistributionProblemSolverMILP<Link> parkingLP = //
+                        new RedistributionProblemSolverMILP<Link>(unitsToMove, freeSpacesToGo, //
                                 (l1, l2) -> distanceFunction.getDistance(l1, l2), l -> l.getId().toString(), //
                                 false, "");
-                Map<Link, Map<Link, Double>> flowSolution = parkingLP.returnSolution();
+                Map<Link, Map<Link, Integer>> flowSolution = parkingLP.returnSolution();
 
                 /** compute command map */
                 return RedistributionProblemHelper.getSolutionCommands(taxisToGo, flowSolution);
