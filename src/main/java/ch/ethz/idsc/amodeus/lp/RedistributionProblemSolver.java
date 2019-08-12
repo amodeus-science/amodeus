@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import org.gnu.glpk.GLPK;
 import org.gnu.glpk.GLPKConstants;
@@ -34,8 +35,9 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
  * @param <T> slots, e.g., roads or parking lots */
 public class RedistributionProblemSolver<T> {
 
-    private final Map<T, Long> unitsToMove; // units to be transported
-    private final Map<T, Long> availDest; // available destinations
+    private final Function<T,String> getName;
+    private final Map<T, Integer> unitsToMove; // units to be transported
+    private final Map<T, Integer> availDest; // available destinations
     private final int totalOrigins;
     private final int totalDestins;
     private final List<T> originsList;
@@ -45,9 +47,10 @@ public class RedistributionProblemSolver<T> {
     private glp_prob lp;
     private glp_iocp parm;
 
-    public RedistributionProblemSolver(Map<T, Long> unitsToMove, Map<T, Long> availableDestinations, //
-            BiFunction<T, T, Double> costFunction, boolean print, String exportLocation) {
+    public RedistributionProblemSolver(Map<T, Integer> unitsToMove, Map<T, Integer> availableDestinations, //
+            BiFunction<T, T, Double> costFunction, Function<T,String> getName ,boolean print, String exportLocation) {
         /** copying input arguments */
+        this.getName = getName;
         this.unitsToMove = unitsToMove;
         this.availDest = availableDestinations;
         totalOrigins = unitsToMove.keySet().size();
@@ -122,14 +125,14 @@ public class RedistributionProblemSolver<T> {
                     GLPK.glp_set_col_kind(lp, varIndex, GLPKConstants.GLP_IV);
                     GLPK.glp_set_col_bnds(lp, varIndex, GLPKConstants.GLP_LO, 0, 0);
                     GLPK.glp_set_obj_coef(lp, varIndex, costFunction.apply(origin, destination));
-                    GLPK.glp_set_col_name(lp, varIndex, "f_" + origin.toString() + "_" + destination.toString());
+                    GLPK.glp_set_col_name(lp, varIndex, "f_" + getName.apply(origin) + "_" + destination.toString());
                 }
             }
 
             /** create equality constraints */
             int constrIndex = 1;
             for (T origin : originsList) {
-                Long toMove = unitsToMove.get(origin);
+                Integer toMove = unitsToMove.get(origin);
                 GLPK.glp_add_rows(lp, 1);
                 GLPK.glp_set_row_bnds(lp, constrIndex, GLPKConstants.GLP_FX, toMove, -1);
                 SWIGTYPE_p_int ind = GLPK.new_intArray(numVar + 1);

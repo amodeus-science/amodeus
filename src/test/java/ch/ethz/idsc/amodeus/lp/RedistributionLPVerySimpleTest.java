@@ -1,7 +1,10 @@
 package ch.ethz.idsc.amodeus.lp;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,6 +18,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.lp.RedistributionProblemSolver;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 import ch.ethz.idsc.amodeus.routing.EuclideanDistanceFunction;
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 public class RedistributionLPVerySimpleTest {
 
@@ -42,13 +46,14 @@ public class RedistributionLPVerySimpleTest {
         taxisToGo.put(link1, taxis);
 
         /** free spots available on link 2 */
-        Map<Link, Long> freeSpaces = new HashMap<Link, Long>();
-        freeSpaces.put(link2, (long) 10);
+        Map<Link, Integer> freeSpaces = new HashMap<>();
+        freeSpaces.put(link2, 10);
 
         /** solve it */
-        RedistributionProblemSolver<Link> parkingLP = new RedistributionProblemSolver<Link>(taxisToGo, freeSpaces, //
-                (l1, l2) -> distanceFunction.getDistance(l1, l2), true, "/home/mu/Downloads");
-        Map<Link, Map<Link,Integer>> solution = parkingLP.returnSolution();
+        Map<RoboTaxi, Link> solution = abstractlayer(taxisToGo, freeSpaces, distanceFunction);
+        // RedistributionProblemSolver<Link> parkingLP = new RedistributionProblemSolver<Link>(taxisToGo, freeSpaces, //
+        // (l1, l2) -> distanceFunction.getDistance(l1, l2), true, "/home/mu/Downloads");
+        // Map<RoboTaxi, Link> solution = parkingLP.returnSolution();
 
         System.out.println("size: " + solution.size());
         System.out.println(solution.get(roboTaxi).getId());
@@ -56,6 +61,22 @@ public class RedistributionLPVerySimpleTest {
         /** solution should send roboTaxi to linkup */
         Assert.assertTrue(solution.size() == 1);
         Assert.assertTrue(solution.get(roboTaxi).getId().toString().equals("linkUp"));
+    }
+
+    private Map<RoboTaxi, Link> abstractlayer(Map<Link, Set<RoboTaxi>> taxisToGo, Map<Link, Integer> freeSpaces, //
+            DistanceFunction distanceFunction) {
+
+        /** creating unitsToMove map */
+        Map<Link, Integer> unitsToMove = RedistributionProblemHelper.getFlow(taxisToGo);
+
+        /** solve flow problem */
+        RedistributionProblemSolver<Link> parkingLP = new RedistributionProblemSolver<>(unitsToMove, freeSpaces, //
+                (l1, l2) -> distanceFunction.getDistance(l1, l2), l -> l.getId().toString(), //
+                true, "/home/mu/Downloads");
+        Map<Link, Map<Link, Integer>> flowSolution = parkingLP.returnSolution();
+
+        /** create roboTaxi movement map */
+        return RedistributionProblemHelper.getSolutionCommands(taxisToGo, flowSolution);
     }
 
 }
