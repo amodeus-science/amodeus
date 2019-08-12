@@ -14,9 +14,21 @@ public class RedistributionLPEqualTest {
 
     private static final Random random = new Random(10);
 
+//    @Test
+//    public void test1() throws InterruptedException {
+//        int n1 = 1;
+//        int n2 = 2;
+//        Map<String, Integer> solution = localSolver(n1, n2);
+//        for (Entry<String, Integer> entry : solution.entrySet()) {
+//            System.out.println(entry.getKey() + ",  " + entry.getValue());
+//        }
+//        Assert.assertTrue(solution.get("agent_0").equals(2));
+//
+//    }
+    
     @Test
     public void test1() throws InterruptedException {
-        int n1 = 1;
+        int n1 = 2;
         int n2 = 2;
         Map<String, Integer> solution = localSolver(n1, n2);
         for (Entry<String, Integer> entry : solution.entrySet()) {

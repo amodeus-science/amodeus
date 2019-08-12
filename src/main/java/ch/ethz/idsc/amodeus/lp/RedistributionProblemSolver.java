@@ -105,6 +105,8 @@ public class RedistributionProblemSolver<T, U> {
 
             /** problem definition */
             GLPK.glp_add_cols(lp, totalOrigins * totalDestins);
+            // x_ij with i in {1,...,totalOrigins}, j in {1,...,totalDestinations}
+            int numVar = totalDestins * totalOrigins;
 
             /** creating a map of variables */
             int index = 1;
@@ -118,31 +120,29 @@ public class RedistributionProblemSolver<T, U> {
             }
 
             /** optimization variables and cost */
-            // Integer j = 1;
             int k1 = 0;
             for (T origin : originsList) {
                 ++k1;
                 int k2 = 0;
                 for (T destination : destinationList) {
-                    ++k2;
                     int varIndex = indexMap.get(origin).get(destination);
                     GLPK.glp_set_col_kind(lp, varIndex, GLPKConstants.GLP_IV);
                     GLPK.glp_set_col_bnds(lp, varIndex, GLPKConstants.GLP_LO, 0, 0);
                     GLPK.glp_set_obj_coef(lp, varIndex, costFunction.apply(origin, destination));
-                    GLPK.glp_set_col_name(lp, varIndex, "x_" + k1 + "_" + k2);
-                    // j++;
+                    GLPK.glp_set_col_name(lp, varIndex, "x_" + k1 + "_" + ++k2);
                 }
             }
 
             /** create equality constraints */
             int j = 1;
             for (T origin : originsList) {
+                int toMove = unitsToMove.get(origin).size();
                 GLPK.glp_add_rows(lp, 1);
-                GLPK.glp_set_row_bnds(lp, j, GLPKConstants.GLP_FX, unitsToMove.get(origin).size(), //
-                        unitsToMove.get(origin).size());
-                SWIGTYPE_p_int ind = GLPK.new_intArray((totalDestins * totalOrigins) + 1);
-                SWIGTYPE_p_double val = GLPK.new_doubleArray((totalDestins * totalOrigins) + 1);
-                for (int k = 1; k <= (totalDestins * totalOrigins); k++) {
+                GLPK.glp_set_row_bnds(lp, j, GLPKConstants.GLP_FX, toMove, -1);
+                SWIGTYPE_p_int ind = GLPK.new_intArray(numVar + 1);
+                SWIGTYPE_p_double val = GLPK.new_doubleArray(numVar + 1);
+
+                for (int k = 1; k <= numVar; k++) {
                     GLPK.intArray_setitem(ind, k, k);
                     if ((k <= (j * totalDestins)) & (k > ((j - 1) * totalDestins))) {
                         GLPK.doubleArray_setitem(val, k, 1);
@@ -150,7 +150,7 @@ public class RedistributionProblemSolver<T, U> {
                         GLPK.doubleArray_setitem(val, k, 0);
                     }
                 }
-                GLPK.glp_set_mat_row(lp, j, totalDestins * totalOrigins, ind, val);
+                GLPK.glp_set_mat_row(lp, j, numVar, ind, val);
                 GLPK.delete_intArray(ind);
                 GLPK.delete_doubleArray(val);
                 j++;
@@ -164,9 +164,9 @@ public class RedistributionProblemSolver<T, U> {
                 GLPK.glp_add_rows(lp, 1);
                 GLPK.glp_set_row_bnds(lp, j, //
                         GLPKConstants.GLP_UP, availDest.get(destination), availDest.get(destination));
-                SWIGTYPE_p_int ind = GLPK.new_intArray((totalDestins * totalOrigins) + 1);
-                SWIGTYPE_p_double val = GLPK.new_doubleArray((totalDestins * totalOrigins) + 1);
-                for (int k = 1; k <= (totalDestins * totalOrigins); k++) {
+                SWIGTYPE_p_int ind = GLPK.new_intArray(numVar + 1);
+                SWIGTYPE_p_double val = GLPK.new_doubleArray(numVar + 1);
+                for (int k = 1; k <= numVar; k++) {
                     GLPK.intArray_setitem(ind, k, k);
                     if (Math.floorMod(k - 1, totalDestins) == 0) {
                         GLPK.doubleArray_setitem(val, k, 1);
@@ -174,7 +174,7 @@ public class RedistributionProblemSolver<T, U> {
                         GLPK.doubleArray_setitem(val, k, 0);
                     }
                 }
-                GLPK.glp_set_mat_row(lp, j, totalDestins * totalOrigins, ind, val);
+                GLPK.glp_set_mat_row(lp, j, numVar, ind, val);
                 GLPK.delete_intArray(ind);
                 GLPK.delete_doubleArray(val);
                 j++;
