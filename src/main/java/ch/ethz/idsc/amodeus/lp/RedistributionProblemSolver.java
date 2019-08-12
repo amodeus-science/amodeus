@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.lp;
 
+import java.beans.DesignMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -142,14 +143,19 @@ public class RedistributionProblemSolver<T, U> {
                 SWIGTYPE_p_int ind = GLPK.new_intArray(numVar + 1);
                 SWIGTYPE_p_double val = GLPK.new_doubleArray(numVar + 1);
 
+                /** initialize A matrix with 0 for all elements */
                 for (int k = 1; k <= numVar; k++) {
                     GLPK.intArray_setitem(ind, k, k);
-                    if ((k <= (j * totalDestins)) & (k > ((j - 1) * totalDestins))) {
-                        GLPK.doubleArray_setitem(val, k, 1);
-                    } else {
-                        GLPK.doubleArray_setitem(val, k, 0);
-                    }
+                    GLPK.doubleArray_setitem(val, k, 0);
                 }
+
+                /** set 1 for all possible destination nodes, i.e,
+                 * create constraint sum_j x_ij == 1 */
+                for (T destin : destinationList) {
+                    int k = indexMap.get(origin).get(destin);
+                    GLPK.doubleArray_setitem(val, k, 1);
+                }
+
                 GLPK.glp_set_mat_row(lp, j, numVar, ind, val);
                 GLPK.delete_intArray(ind);
                 GLPK.delete_doubleArray(val);
