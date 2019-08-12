@@ -42,6 +42,7 @@ public class RedistributionProblemSolver<T, U> {
     private final int totalDestins;
     private final List<T> originsList;
     private final List<T> destinationList;
+    private final Map<T, Map<T, Integer>> indexMap = new HashMap<>();
     private final Map<U, T> result = new HashMap<>();
     private glp_prob lp;
     private glp_iocp parm;
@@ -58,6 +59,12 @@ public class RedistributionProblemSolver<T, U> {
         // .mapToInt(l -> (int) ((long) l)).sum();// .size();
         System.out.println("total origins     : " + totalOrigins);
         System.out.println("total destinations: " + totalDestins);
+        
+        System.out.println("printing origins:");
+        for(T origin : unitsToMove.keySet()) {
+            System.out.println(origin.toString());
+        }
+        
 
         originsList = new ArrayList<>(unitsToMove.keySet());
         destinationList = new ArrayList<>(availableDestinations.keySet());
@@ -111,7 +118,6 @@ public class RedistributionProblemSolver<T, U> {
 
             /** creating a map of variables */
             int index = 1;
-            Map<T, Map<T, Integer>> indexMap = new HashMap<>();
             for (T origin : originsList) {
                 indexMap.put(origin, new HashMap<>());
                 for (T destination : destinationList) {
@@ -119,18 +125,35 @@ public class RedistributionProblemSolver<T, U> {
                     ++index;
                 }
             }
+            
+            
+            for (T origin : originsList) {
+                for (T dest : destinationList) {
+                    int varIndex = indexMap.get(origin).get(dest);
+//                    double result = GLPK.glp_mip_col_val(lp, varIndex);
+                    System.out.println("varindex " + varIndex);
+                    System.out.println("origin: " + origin.toString());
+                    System.out.println("dest:   " + dest.toString());
+//                    System.err.println("result: " + result);
+                    System.out.println("++");
+
+                }
+            }
+
+            
 
             /** optimization variables and cost */
-            int k1 = 0;
+//            int k1 = 0;
             for (T origin : originsList) {
-                ++k1;
-                int k2 = 0;
+//                ++k1;
+//                int k2 = 0;
                 for (T destination : destinationList) {
                     int varIndex = indexMap.get(origin).get(destination);
                     GLPK.glp_set_col_kind(lp, varIndex, GLPKConstants.GLP_IV);
                     GLPK.glp_set_col_bnds(lp, varIndex, GLPKConstants.GLP_LO, 0, 0);
                     GLPK.glp_set_obj_coef(lp, varIndex, costFunction.apply(origin, destination));
-                    GLPK.glp_set_col_name(lp, varIndex, "x_" + k1 + "_" + ++k2);
+//                    GLPK.glp_set_col_name(lp, varIndex, "x_" + k1 + "_" + ++k2);
+                    GLPK.glp_set_col_name(lp, varIndex, "f_" + origin.toString() + "_" + destination.toString());
                 }
             }
 
@@ -223,18 +246,37 @@ public class RedistributionProblemSolver<T, U> {
 
     private void printSolution() {
         for (int i = 1; i <= (totalDestins * totalOrigins); i++) {
+            System.err.println("varindex: " + i);
             String name = GLPK.glp_get_col_name(lp, i);
             System.err.println(name + "\t=\t" + GLPK.glp_mip_col_val(lp, i));
+            System.err.println("+++");
         }
     }
 
     private void extractSolution() {
-        
-        
-        
-        
-        
-        
+
+        System.out.println("=====");
+
+        for (T origin : originsList) {
+            for (T dest : destinationList) {
+                int varIndex = indexMap.get(origin).get(dest);
+                int result = (int) GLPK.glp_mip_col_val(lp, varIndex);
+                
+                
+                for(int i =0; i< result;++i) {
+                    
+                    
+                }
+                
+                System.err.println("varindex " + varIndex);
+                System.err.println("origin: " + origin.toString());
+                System.err.println("dest:   " + dest.toString());
+                System.err.println("result: " + result);
+                System.err.println("++");
+
+            }
+        }
+
         Map<Integer, Double> solution = new HashMap<>();
         for (int i = 1; i <= (totalDestins * totalOrigins); i++) {
             solution.put(i, GLPK.glp_mip_col_val(lp, i));

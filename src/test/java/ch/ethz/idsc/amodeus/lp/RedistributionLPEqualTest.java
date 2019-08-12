@@ -48,14 +48,18 @@ public class RedistributionLPEqualTest {
         for (int i = 1; i <= n1; ++i) {
             HashSet<String> agents = new HashSet<>();
             agents.add("agent_" + i);
-            agentsToGo.put("originLot_" + i, agents);
+            agentsToGo.put("o" + i, agents);
+        }
+
+        for (String string : agentsToGo.keySet()) {
+            System.out.println("string: " + string);
         }
 
         /** free spots available on link 2 */
         Map<String, Long> freeSpaces = new HashMap<>();
         // for (int i = n1; i < n1 + n2; ++i) {
         for (int i = 1; i <= n2; ++i) {
-            freeSpaces.put("destinLot_" + i, (long) i+1);
+            freeSpaces.put("d" + i, (long) i + 1);
         }
         /** solve it */
         RedistributionProblemSolver<String, String> redistributionLP = //
