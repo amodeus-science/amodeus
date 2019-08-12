@@ -1,4 +1,4 @@
-package ch.ethz.idsc.amodeus.parking.strategies;
+package ch.ethz.idsc.amodeus.lp;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,10 +12,11 @@ import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.ArtificialScenarioCreator;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.lp.RedistributionProblemSolver;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 import ch.ethz.idsc.amodeus.routing.EuclideanDistanceFunction;
 
-public class ParkingLPVerySimpleTest {
+public class RedistributionLPVerySimpleTest {
 
     private static Link link1;
     private static Link link2;
@@ -45,8 +46,8 @@ public class ParkingLPVerySimpleTest {
         freeSpaces.put(link2, (long) 10);
 
         /** solve it */
-        ParkingLPSolver<Link> parkingLP = new ParkingLPSolver<Link>(taxisToGo, freeSpaces,//
-                (l1,l2)->distanceFunction.getDistance(l1, l2));
+        RedistributionProblemSolver<Link, RoboTaxi> parkingLP = new RedistributionProblemSolver<Link, RoboTaxi>(taxisToGo, freeSpaces, //
+                (l1, l2) -> distanceFunction.getDistance(l1, l2), true, "/home/mu/Downloads");
         Map<RoboTaxi, Link> solution = parkingLP.returnSolution();
 
         System.out.println("size: " + solution.size());

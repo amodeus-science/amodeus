@@ -11,6 +11,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.lp.RedistributionProblemSolver;
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 
@@ -35,8 +36,8 @@ import ch.ethz.idsc.amodeus.routing.DistanceFunction;
             Map<Link, Long> freeSpacesToGo = parkingLPHelper.getFreeSpacesToGo(linkStayTaxi, //
                     StaticHelper.getDestinationCount(rebalancingRobotaxis));
             if (!freeSpacesToGo.isEmpty()) /** skip any action if no free spaces */
-                return (new ParkingLPSolver<Link>(taxisToGo, freeSpacesToGo, //
-                        (l1, l2) -> distanceFunction.getDistance(l1, l2))).returnSolution();
+                return (new RedistributionProblemSolver<Link, RoboTaxi>(taxisToGo, freeSpacesToGo, //
+                        (l1, l2) -> distanceFunction.getDistance(l1, l2), false, "")).returnSolution();
         }
         return new HashMap<>();
     }
