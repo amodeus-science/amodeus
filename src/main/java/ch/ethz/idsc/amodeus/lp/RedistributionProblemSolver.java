@@ -106,20 +106,36 @@ public class RedistributionProblemSolver<T, U> {
             /** problem definition */
             GLPK.glp_add_cols(lp, totalOrigins * totalDestins);
 
-            /** optimization variables and cost */
-            Integer j = 1;
+            /** creating a map of variables */
+            int index = 1;
+            Map<T, Map<T, Integer>> indexMap = new HashMap<>();
             for (T origin : originsList) {
+                indexMap.put(origin, new HashMap<>());
                 for (T destination : destinationList) {
-                    GLPK.glp_set_col_kind(lp, j, GLPKConstants.GLP_IV);
-                    GLPK.glp_set_col_bnds(lp, j, GLPKConstants.GLP_LO, 0, 0);
-                    GLPK.glp_set_obj_coef(lp, j, costFunction.apply(origin, destination));
-                    GLPK.glp_set_col_name(lp, j, "abc_" + j);
-                    j++;
+                    indexMap.get(origin).put(destination, index);
+                    ++index;
+                }
+            }
+
+            /** optimization variables and cost */
+            // Integer j = 1;
+            int k1 = 0;
+            for (T origin : originsList) {
+                ++k1;
+                int k2 = 0;
+                for (T destination : destinationList) {
+                    ++k2;
+                    int varIndex = indexMap.get(origin).get(destination);
+                    GLPK.glp_set_col_kind(lp, varIndex, GLPKConstants.GLP_IV);
+                    GLPK.glp_set_col_bnds(lp, varIndex, GLPKConstants.GLP_LO, 0, 0);
+                    GLPK.glp_set_obj_coef(lp, varIndex, costFunction.apply(origin, destination));
+                    GLPK.glp_set_col_name(lp, varIndex, "x_" + k1 + "_" + k2);
+                    // j++;
                 }
             }
 
             /** create equality constraints */
-            j = 1;
+            int j = 1;
             for (T origin : originsList) {
                 GLPK.glp_add_rows(lp, 1);
                 GLPK.glp_set_row_bnds(lp, j, GLPKConstants.GLP_FX, unitsToMove.get(origin).size(), //

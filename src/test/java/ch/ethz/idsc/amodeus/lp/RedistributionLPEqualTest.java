@@ -12,12 +12,10 @@ import org.junit.Test;
 
 public class RedistributionLPEqualTest {
 
-    // private static final int n1 = 1;
-    // private static final int n2 = 2;
     private static final Random random = new Random(10);
 
     @Test
-    public void test1() {
+    public void test1() throws InterruptedException {
         int n1 = 1;
         int n2 = 2;
         Map<String, Integer> solution = localSolver(n1, n2);
@@ -25,8 +23,10 @@ public class RedistributionLPEqualTest {
             System.out.println(entry.getKey() + ",  " + entry.getValue());
         }
         Assert.assertTrue(solution.get("agent_0").equals(2));
-        // Assert.assertTrue(solution.get("agent_1").equals(5));
+
     }
+
+    /** helper functions */
 
     private static double distance(Integer i1, Integer i2) {
         return random.nextDouble();
