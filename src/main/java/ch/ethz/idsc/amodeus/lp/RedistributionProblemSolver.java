@@ -1,7 +1,6 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.lp;
 
-import java.beans.DesignMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -103,6 +102,7 @@ public class RedistributionProblemSolver<T, U> {
     private glp_prob defineLP(BiFunction<T, T, Double> costFunction) {
         try {
             lp = GLPK.glp_create_prob();
+            GLPK.glp_set_obj_name(lp, this.getClass().getSimpleName());
 
             /** problem definition */
             GLPK.glp_add_cols(lp, totalOrigins * totalDestins);
@@ -135,11 +135,11 @@ public class RedistributionProblemSolver<T, U> {
             }
 
             /** create equality constraints */
-            int j = 1;
+            int constrIndex = 1;
             for (T origin : originsList) {
                 int toMove = unitsToMove.get(origin).size();
                 GLPK.glp_add_rows(lp, 1);
-                GLPK.glp_set_row_bnds(lp, j, GLPKConstants.GLP_FX, toMove, -1);
+                GLPK.glp_set_row_bnds(lp, constrIndex, GLPKConstants.GLP_FX, toMove, -1);
                 SWIGTYPE_p_int ind = GLPK.new_intArray(numVar + 1);
                 SWIGTYPE_p_double val = GLPK.new_doubleArray(numVar + 1);
 
@@ -156,34 +156,38 @@ public class RedistributionProblemSolver<T, U> {
                     GLPK.doubleArray_setitem(val, k, 1);
                 }
 
-                GLPK.glp_set_mat_row(lp, j, numVar, ind, val);
+                GLPK.glp_set_mat_row(lp, constrIndex, numVar, ind, val);
                 GLPK.delete_intArray(ind);
                 GLPK.delete_doubleArray(val);
-                j++;
+                constrIndex++;
             }
-            GlobalAssert.that(j != totalOrigins);
+            GlobalAssert.that(constrIndex != totalOrigins);
 
             /** create inequality constraint */
             for (T destination : destinationList) {
-                System.err.println("dest: " + destination.toString());
-                System.err.println(availDest.get(destination));
                 GLPK.glp_add_rows(lp, 1);
-                GLPK.glp_set_row_bnds(lp, j, //
-                        GLPKConstants.GLP_UP, availDest.get(destination), availDest.get(destination));
+                long availableSpots = availDest.get(destination);
+                GLPK.glp_set_row_bnds(lp, constrIndex, GLPKConstants.GLP_UP, -1, availableSpots);
                 SWIGTYPE_p_int ind = GLPK.new_intArray(numVar + 1);
                 SWIGTYPE_p_double val = GLPK.new_doubleArray(numVar + 1);
+
+                /** initialize A matrix with 0 for all elements */
                 for (int k = 1; k <= numVar; k++) {
                     GLPK.intArray_setitem(ind, k, k);
-                    if (Math.floorMod(k - 1, totalDestins) == 0) {
-                        GLPK.doubleArray_setitem(val, k, 1);
-                    } else {
-                        GLPK.doubleArray_setitem(val, k, 0);
-                    }
+                    GLPK.doubleArray_setitem(val, k, 0);
                 }
-                GLPK.glp_set_mat_row(lp, j, numVar, ind, val);
+
+                /** set 1 for all possible destination nodes, i.e,
+                 * create constraint sum_i x_ij <= availableSpots */
+                for (T origin : originsList) {
+                    int k = indexMap.get(origin).get(destination);
+                    GLPK.doubleArray_setitem(val, k, 1);
+                }
+
+                GLPK.glp_set_mat_row(lp, constrIndex, numVar, ind, val);
                 GLPK.delete_intArray(ind);
                 GLPK.delete_doubleArray(val);
-                j++;
+                constrIndex++;
             }
 
         } catch (GlpkException e) {
@@ -199,6 +203,8 @@ public class RedistributionProblemSolver<T, U> {
         int ret = GLPK.glp_intopt(lp, parm);
         int stat = GLPK.glp_mip_status(lp);
 
+        printSolution();
+
         if (ret != 0) { // ret==0 indicates of the algorithm terminated correctly
             System.out.println("something went wrong");
             // GlobalAssert.that(false);
@@ -212,9 +218,23 @@ public class RedistributionProblemSolver<T, U> {
             System.out.println("LP has found suboptimal solution");
             // GlobalAssert.that(false);
         }
+
+    }
+
+    private void printSolution() {
+        for (int i = 1; i <= (totalDestins * totalOrigins); i++) {
+            String name = GLPK.glp_get_col_name(lp, i);
+            System.err.println(name + "\t=\t" + GLPK.glp_mip_col_val(lp, i));
+        }
     }
 
     private void extractSolution() {
+        
+        
+        
+        
+        
+        
         Map<Integer, Double> solution = new HashMap<>();
         for (int i = 1; i <= (totalDestins * totalOrigins); i++) {
             solution.put(i, GLPK.glp_mip_col_val(lp, i));
