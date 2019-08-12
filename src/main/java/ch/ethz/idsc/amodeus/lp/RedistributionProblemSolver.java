@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.BiFunction;
 
 import org.gnu.glpk.GLPK;
@@ -19,7 +18,7 @@ import org.gnu.glpk.glp_prob;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 /** Class is used to solve a transportation problem in which some
- * units @param<U> distributed in some locations @param<T> need
+ * units distributed in some locations @param<T> need
  * to be redistributed to other locations @param<T> with minimal
  * cost. The solution is obtained by solving a problem of the following
  * form:
@@ -32,39 +31,30 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
  * (c3) sum_(j in dest. locations) x_ij = units at i
  * 
  *
- * @param <T> slots, e.g., roads or parking lots
- * @param <U> units, e.g., cars */
-public class RedistributionProblemSolver<T, U> {
+ * @param <T> slots, e.g., roads or parking lots */
+public class RedistributionProblemSolver<T> {
 
-    private final Map<T, Set<U>> unitsToMove; // units to be transported
+    private final Map<T, Long> unitsToMove; // units to be transported
     private final Map<T, Long> availDest; // available destinations
     private final int totalOrigins;
     private final int totalDestins;
     private final List<T> originsList;
     private final List<T> destinationList;
     private final Map<T, Map<T, Integer>> indexMap = new HashMap<>();
-    private final Map<U, T> result = new HashMap<>();
+    private final Map<T, Map<T, Integer>> solution = new HashMap<>();
     private glp_prob lp;
     private glp_iocp parm;
 
-    public RedistributionProblemSolver(Map<T, Set<U>> unitsToMove, Map<T, Long> availableDestinations, //
+    public RedistributionProblemSolver(Map<T, Long> unitsToMove, Map<T, Long> availableDestinations, //
             BiFunction<T, T, Double> costFunction, boolean print, String exportLocation) {
         /** copying input arguments */
         this.unitsToMove = unitsToMove;
         this.availDest = availableDestinations;
         totalOrigins = unitsToMove.keySet().size();
         totalDestins = availableDestinations.keySet().size();
-        // totalUnits = (int) unitsToMove.values().stream().mapToInt(s -> s.size()).sum();// .count();
-        // totalSpaces = availableDestinations.values().stream()//
-        // .mapToInt(l -> (int) ((long) l)).sum();// .size();
         System.out.println("total origins     : " + totalOrigins);
         System.out.println("total destinations: " + totalDestins);
-        
         System.out.println("printing origins:");
-        for(T origin : unitsToMove.keySet()) {
-            System.out.println(origin.toString());
-        }
-        
 
         originsList = new ArrayList<>(unitsToMove.keySet());
         destinationList = new ArrayList<>(availableDestinations.keySet());
@@ -84,11 +74,10 @@ public class RedistributionProblemSolver<T, U> {
         if (print) {
             String fileName = exportLocation + "/redistributionProblem.lp";
             GLPK.glp_write_lp(lp, null, fileName);
-            // GLPK.glp_write_ipt(lp, fileName);
         }
 
         /** solving LP */
-        solveLP(true);
+        solveLP(print);
         Long time3 = System.currentTimeMillis();
         elapsed = time3 - time2;
         System.out.println("time to solve:             " + elapsed.toString());
@@ -102,8 +91,8 @@ public class RedistributionProblemSolver<T, U> {
 
     }
 
-    public Map<U, T> returnSolution() {
-        return result;
+    public Map<T, Map<T, Integer>> returnSolution() {
+        return solution;
     }
 
     private glp_prob defineLP(BiFunction<T, T, Double> costFunction) {
@@ -125,34 +114,14 @@ public class RedistributionProblemSolver<T, U> {
                     ++index;
                 }
             }
-            
-            
-            for (T origin : originsList) {
-                for (T dest : destinationList) {
-                    int varIndex = indexMap.get(origin).get(dest);
-//                    double result = GLPK.glp_mip_col_val(lp, varIndex);
-                    System.out.println("varindex " + varIndex);
-                    System.out.println("origin: " + origin.toString());
-                    System.out.println("dest:   " + dest.toString());
-//                    System.err.println("result: " + result);
-                    System.out.println("++");
-
-                }
-            }
-
-            
 
             /** optimization variables and cost */
-//            int k1 = 0;
             for (T origin : originsList) {
-//                ++k1;
-//                int k2 = 0;
                 for (T destination : destinationList) {
                     int varIndex = indexMap.get(origin).get(destination);
                     GLPK.glp_set_col_kind(lp, varIndex, GLPKConstants.GLP_IV);
                     GLPK.glp_set_col_bnds(lp, varIndex, GLPKConstants.GLP_LO, 0, 0);
                     GLPK.glp_set_obj_coef(lp, varIndex, costFunction.apply(origin, destination));
-//                    GLPK.glp_set_col_name(lp, varIndex, "x_" + k1 + "_" + ++k2);
                     GLPK.glp_set_col_name(lp, varIndex, "f_" + origin.toString() + "_" + destination.toString());
                 }
             }
@@ -160,7 +129,7 @@ public class RedistributionProblemSolver<T, U> {
             /** create equality constraints */
             int constrIndex = 1;
             for (T origin : originsList) {
-                int toMove = unitsToMove.get(origin).size();
+                Long toMove = unitsToMove.get(origin);
                 GLPK.glp_add_rows(lp, 1);
                 GLPK.glp_set_row_bnds(lp, constrIndex, GLPKConstants.GLP_FX, toMove, -1);
                 SWIGTYPE_p_int ind = GLPK.new_intArray(numVar + 1);
@@ -219,14 +188,15 @@ public class RedistributionProblemSolver<T, U> {
         return lp;
     }
 
-    private void solveLP(boolean mute) {
+    private void solveLP(boolean print) {
         parm = new glp_iocp();
         GLPK.glp_init_iocp(parm);
         parm.setPresolve(GLPK.GLP_ON);
         int ret = GLPK.glp_intopt(lp, parm);
         int stat = GLPK.glp_mip_status(lp);
 
-        printSolution();
+        if (print)
+            printSolution();
 
         if (ret != 0) { // ret==0 indicates of the algorithm terminated correctly
             System.out.println("something went wrong");
@@ -255,47 +225,12 @@ public class RedistributionProblemSolver<T, U> {
 
     private void extractSolution() {
 
-        System.out.println("=====");
-
         for (T origin : originsList) {
+            solution.put(origin, new HashMap<>());
             for (T dest : destinationList) {
                 int varIndex = indexMap.get(origin).get(dest);
                 int result = (int) GLPK.glp_mip_col_val(lp, varIndex);
-                
-                
-                for(int i =0; i< result;++i) {
-                    
-                    
-                }
-                
-                System.err.println("varindex " + varIndex);
-                System.err.println("origin: " + origin.toString());
-                System.err.println("dest:   " + dest.toString());
-                System.err.println("result: " + result);
-                System.err.println("++");
-
-            }
-        }
-
-        Map<Integer, Double> solution = new HashMap<>();
-        for (int i = 1; i <= (totalDestins * totalOrigins); i++) {
-            solution.put(i, GLPK.glp_mip_col_val(lp, i));
-        }
-
-        Integer j = 1;
-        for (T origin : originsList) {
-            Integer numberOfUnits = unitsToMove.get(origin).size();
-            List<U> units = new ArrayList<>(unitsToMove.get(origin));
-            for (T destination : destinationList) {
-                Integer toThisDirection = (int) Math.rint(solution.get(j));
-                if (toThisDirection > 0) {
-                    while (toThisDirection != 0) {
-                        result.put(units.remove(numberOfUnits - 1), destination);
-                        numberOfUnits--;
-                        toThisDirection--;
-                    }
-                }
-                j++;
+                solution.get(origin).put(dest, result);
             }
         }
     }

@@ -46,9 +46,9 @@ public class RedistributionLPVerySimpleTest {
         freeSpaces.put(link2, (long) 10);
 
         /** solve it */
-        RedistributionProblemSolver<Link, RoboTaxi> parkingLP = new RedistributionProblemSolver<Link, RoboTaxi>(taxisToGo, freeSpaces, //
+        RedistributionProblemSolver<Link> parkingLP = new RedistributionProblemSolver<Link>(taxisToGo, freeSpaces, //
                 (l1, l2) -> distanceFunction.getDistance(l1, l2), true, "/home/mu/Downloads");
-        Map<RoboTaxi, Link> solution = parkingLP.returnSolution();
+        Map<Link, Map<Link,Integer>> solution = parkingLP.returnSolution();
 
         System.out.println("size: " + solution.size());
         System.out.println(solution.get(roboTaxi).getId());
