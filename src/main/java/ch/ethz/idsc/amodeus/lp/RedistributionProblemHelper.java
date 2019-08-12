@@ -36,7 +36,7 @@ public enum RedistributionProblemHelper {
      *         return RedistributionProblemHelper.getSolutionCommands(taxisToGo, flowSolution);
      * 
      * 
-     *         where flowLP is an instance of the {@link RedistributionProblemSolver} */
+     *         where flowLP is an instance of the {@link RedistributionProblemSolverMILP} */
     public static <T, U> Map<U, T> getSolutionCommands(Map<T, Set<U>> unitsToMove, //
             Map<T, Map<T, Integer>> flowSolution) {
         Map<U, T> sendCommandMap = new HashMap<>();
@@ -56,7 +56,6 @@ public enum RedistributionProblemHelper {
             }
         }
         return sendCommandMap;
-
     }
 
 }

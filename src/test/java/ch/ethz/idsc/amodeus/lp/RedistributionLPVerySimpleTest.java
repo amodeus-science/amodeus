@@ -64,7 +64,7 @@ public class RedistributionLPVerySimpleTest {
         Map<Link, Integer> unitsToMove = RedistributionProblemHelper.getFlow(taxisToGo);
 
         /** solve flow problem */
-        RedistributionProblemSolver<Link> parkingLP = new RedistributionProblemSolver<>(unitsToMove, freeSpaces, //
+        RedistributionProblemSolverMILP<Link> parkingLP = new RedistributionProblemSolverMILP<>(unitsToMove, freeSpaces, //
                 (l1, l2) -> distanceFunction.getDistance(l1, l2), l -> l.getId().toString(), //
                 false, "");
         Map<Link, Map<Link, Integer>> flowSolution = parkingLP.returnSolution();

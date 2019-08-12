@@ -87,9 +87,9 @@ public class RedistributionIntegralityTests {
         }
 
         /** solve it */
-        RedistributionProblemSolverLP<String> redistributionLP = //
-                new RedistributionProblemSolverLP<String>(agentsToGo, freeSpaces, //
-                        (i1, i2) -> distance(i1, i2), s -> s, false, "/home/clruch/Downloads/");
+        RedistributionProblemSolver<String> redistributionLP = //
+                new RedistributionProblemSolver<String>(agentsToGo, freeSpaces, //
+                        (i1, i2) -> distance(i1, i2), s -> s, false, "");
         Map<String, Map<String, Double>> solution = redistributionLP.returnSolution();
         return solution;
     }
@@ -108,9 +108,9 @@ public class RedistributionIntegralityTests {
         }
 
         /** solve it */
-        RedistributionProblemSolver<String> redistributionLP = //
-                new RedistributionProblemSolver<String>(agentsToGo, freeSpaces, //
-                        (i1, i2) -> distance(i1, i2), s -> s, false, "/home/clruch/Downloads/");
+        RedistributionProblemSolverMILP<String> redistributionLP = //
+                new RedistributionProblemSolverMILP<String>(agentsToGo, freeSpaces, //
+                        (i1, i2) -> distance(i1, i2), s -> s, false, "");
         Map<String, Map<String, Integer>> solution = redistributionLP.returnSolution();
         return solution;
     }

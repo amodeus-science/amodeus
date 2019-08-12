@@ -48,7 +48,7 @@ import ch.ethz.idsc.amodeus.routing.DistanceFunction;
                         new RedistributionProblemSolver<Link>(unitsToMove, freeSpacesToGo, //
                                 (l1, l2) -> distanceFunction.getDistance(l1, l2), l -> l.getId().toString(), //
                                 false, "");
-                Map<Link, Map<Link, Integer>> flowSolution = parkingLP.returnSolution();
+                Map<Link, Map<Link, Double>> flowSolution = parkingLP.returnSolution();
 
                 /** compute command map */
                 return RedistributionProblemHelper.getSolutionCommands(taxisToGo, flowSolution);

@@ -72,8 +72,8 @@ public class RedistributionLP2Tests {
         }
 
         /** solve it */
-        RedistributionProblemSolver<String> redistributionLP = //
-                new RedistributionProblemSolver<String>(agentsToGo, freeSpaces, //
+        RedistributionProblemSolverMILP<String> redistributionLP = //
+                new RedistributionProblemSolverMILP<String>(agentsToGo, freeSpaces, //
                         (i1, i2) -> distance(i1, i2), s -> s, false, "");
         Map<String, Map<String, Integer>> solution = redistributionLP.returnSolution();
         return solution;

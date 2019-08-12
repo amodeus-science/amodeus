@@ -13,8 +13,8 @@ import org.gnu.glpk.GLPKConstants;
 import org.gnu.glpk.GlpkException;
 import org.gnu.glpk.SWIGTYPE_p_double;
 import org.gnu.glpk.SWIGTYPE_p_int;
-import org.gnu.glpk.glp_iocp;
 import org.gnu.glpk.glp_prob;
+import org.gnu.glpk.glp_smcp;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
@@ -43,9 +43,9 @@ public class RedistributionProblemSolver<T> {
     private final List<T> originsList;
     private final List<T> destinationList;
     private final Map<T, Map<T, Integer>> indexMap = new HashMap<>();
-    private final Map<T, Map<T, Integer>> solution = new HashMap<>();
+    private final Map<T, Map<T, Double>> solution = new HashMap<>();
     private glp_prob lp;
-    private glp_iocp parm;
+    private glp_smcp parm;
 
     public RedistributionProblemSolver(Map<T, Integer> unitsToMove, Map<T, Integer> availableDestinations, //
             BiFunction<T, T, Double> costFunction, Function<T, String> getName, boolean print, String exportLocation) {
@@ -80,7 +80,7 @@ public class RedistributionProblemSolver<T> {
 
         /** export */
         if (print) {
-            String fileName = exportLocation + "/redistributionProblem.lp";
+            String fileName = exportLocation + "/redistributionProblemLP.lp";
             GLPK.glp_write_lp(lp, null, fileName);
         }
 
@@ -99,7 +99,7 @@ public class RedistributionProblemSolver<T> {
 
     }
 
-    public Map<T, Map<T, Integer>> returnSolution() {
+    public Map<T, Map<T, Double>> returnSolution() {
         return solution;
     }
 
@@ -197,11 +197,11 @@ public class RedistributionProblemSolver<T> {
     }
 
     private void solveLP(boolean print) {
-        parm = new glp_iocp();
-        GLPK.glp_init_iocp(parm);
+        parm = new glp_smcp();
+        GLPK.glp_init_smcp(parm);
         parm.setPresolve(GLPK.GLP_ON);
-        int ret = GLPK.glp_intopt(lp, parm);
-        int stat = GLPK.glp_mip_status(lp);
+        int ret = GLPK.glp_simplex(lp, parm);
+        int stat = GLPK.glp_get_status(lp);
 
         if (print)
             printSolution();
@@ -226,7 +226,7 @@ public class RedistributionProblemSolver<T> {
         for (int i = 1; i <= (totalDestins * totalOrigins); i++) {
             System.err.println("varindex: " + i);
             String name = GLPK.glp_get_col_name(lp, i);
-            System.err.println(name + "\t=\t" + GLPK.glp_mip_col_val(lp, i));
+            System.err.println(name + "\t=\t" + GLPK.glp_get_col_prim(lp, i));
             System.err.println("+++");
         }
     }
@@ -237,7 +237,7 @@ public class RedistributionProblemSolver<T> {
             solution.put(origin, new HashMap<>());
             for (T dest : destinationList) {
                 int varIndex = indexMap.get(origin).get(dest);
-                int result = (int) GLPK.glp_mip_col_val(lp, varIndex);
+                double result = GLPK.glp_get_col_prim(lp, varIndex);
                 solution.get(origin).put(dest, result);
             }
         }
