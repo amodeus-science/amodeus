@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiFunction;
 
 import org.gnu.glpk.GLPK;
 import org.gnu.glpk.GLPKConstants;
@@ -20,38 +21,50 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
-/* package */ class ParkingLPSolver {
+/* package */ class ParkingLPSolver<T> {
 
-    private final Map<Link, Set<RoboTaxi>> taxisToGo;
-    private final Map<Link, Long> freeSpacesToGo;
+    private final Map<T, Set<RoboTaxi>> taxisToGo;
+    private final Map<T, Long> freeSpacesToGo;
     private final int totalTaxis;
     private final int totalSpaces;
-    private final List<Link> taxiLinks;
-    private final List<Link> freeSpacesLinks;
-    private final Map<RoboTaxi, Link> result = new HashMap<>();
+    private final List<T> taxiLinks;
+    private final List<T> freeSpacesLinks;
+    private final Map<RoboTaxi, T> result = new HashMap<>();
     private glp_prob lp;
     private glp_iocp parm;
 
-    public ParkingLPSolver(Map<Link, Set<RoboTaxi>> taxisToGo, Map<Link, Long> freeSpacesToGo, //
-            DistanceFunction distanceFunction) {
+    public ParkingLPSolver(Map<T, Set<RoboTaxi>> taxisToGo, Map<T, Long> freeSpacesToGo, //
+            BiFunction<T, T, Double> distanceFunction) {
+
+        // DistanceFunction distanceFunction) {
+        /** copying input arguments */
         this.taxisToGo = taxisToGo;
         this.freeSpacesToGo = freeSpacesToGo;
         totalTaxis = taxisToGo.size();
         totalSpaces = freeSpacesToGo.size();
-        System.out.println("total taxi links: " + this.totalTaxis);
-        System.out.println("total space links: " + this.totalSpaces);
+        System.out.println("total taxi links: " + totalTaxis);
+        System.out.println("total space links: " + totalSpaces);
         taxiLinks = new ArrayList<>(taxisToGo.keySet());
         freeSpacesLinks = new ArrayList<>(freeSpacesToGo.keySet());
         System.out.println("starting to define lp");
         Long time = System.currentTimeMillis();
+        // if there are not enough parking spaces, the problem is infeasible
+        // an optimal solution is not defined.
+        GlobalAssert.that(totalTaxis >= totalSpaces);
+
+        /** definition of LP */
         this.lp = defineLP(distanceFunction);
         Long time2 = System.currentTimeMillis();
         Long elapsed = time2 - time;
         System.out.println("time to define:            " + elapsed.toString());
+
+        /** solving LP */
         solveLP(true);
         Long time3 = System.currentTimeMillis();
         elapsed = time3 - time2;
         System.out.println("time to solve:             " + elapsed.toString());
+
+        /** extracting solution and removing */
         extractSolution();
         GLPK.glp_delete_prob(lp);
         Long time4 = System.currentTimeMillis();
@@ -59,7 +72,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         System.out.println("time to extract solution:  " + elapsed.toString());
     }
 
-    public Map<RoboTaxi, Link> returnSolution() {
+    public Map<RoboTaxi, T> returnSolution() {
         return result;
     }
 
@@ -69,7 +82,8 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
      * (c1) x_ij >= 0
      * (c2) sum_(i in taxiLinks) x_ij <= freeSpaces at j
      * (c3) sum_(j in freeSpacesLinks) x_ij = numberOfTaxis at i */
-    private glp_prob defineLP(DistanceFunction distanceFunction) {
+    // private glp_prob defineLP(DistanceFunction distanceFunction) {
+    private glp_prob defineLP(BiFunction<T, T, Double> distanceFunction) {
         try {
             lp = GLPK.glp_create_prob();
 
@@ -78,16 +92,16 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
             // create all optimization variables with objective weight and lower bound constraint
             Integer j = 1;
-            for (Link taxiLink : taxiLinks) {
+            for (T taxiLink : taxiLinks) {
                 // if (j % 10 == 0)
                 // System.out.println("j (1): " + j);
-                for (Link freeSpaceLink : freeSpacesLinks) {
+                for (T freeSpaceLink : freeSpacesLinks) {
                     GLPK.glp_set_col_kind(lp, j, GLPKConstants.GLP_IV);
                     GLPK.glp_set_col_bnds(lp, j, GLPKConstants.GLP_LO, 0, 0);
                     GLPK.glp_set_obj_coef(lp, j, //
-                            distanceFunction.getDistance(taxiLink, freeSpaceLink));
+                            distanceFunction.apply(taxiLink, freeSpaceLink));
                     /** TRACKING FOR LATER ASSIGNMENT */
-                    Map<Link, Link> linkMap = new HashMap<>();
+                    Map<T, T> linkMap = new HashMap<>();
                     linkMap.put(taxiLink, freeSpaceLink);
                     j++;
                 }
@@ -96,7 +110,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
             // create equality constraint
             j = 1;
-            for (Link taxiLink : taxiLinks) {
+            for (T taxiLink : taxiLinks) {
                 // if (j % 10 == 0)
                 // System.out.println("j (2): " + j);
                 GLPK.glp_add_rows(lp, 1);
@@ -120,7 +134,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
             // create inequality constraint
             Integer l = 1;
-            for (Link freeSpaceLink : freeSpacesLinks) {
+            for (T freeSpaceLink : freeSpacesLinks) {
                 if (l % 100 == 0)
                     System.out.println("l (3): " + l);
                 GLPK.glp_add_rows(lp, 1);
@@ -158,7 +172,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         int ret = GLPK.glp_intopt(lp, parm);
         int stat = GLPK.glp_mip_status(lp);
 
-        if (ret != 0) { // ret==0 indicates of the algorithm ran correctly
+        if (ret != 0) { // ret==0 indicates of the algorithm terminated correctly
             System.out.println("something went wrong");
             // GlobalAssert.that(false);
         }
@@ -180,10 +194,10 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         }
 
         Integer j = 1;
-        for (Link taxiLink : taxiLinks) {
+        for (T taxiLink : taxiLinks) {
             Integer nbTaxisToShare = taxisToGo.get(taxiLink).size();
             List<RoboTaxi> taxiToShare = new ArrayList<>(taxisToGo.get(taxiLink));
-            for (Link freeSpaceLink : freeSpacesLinks) {
+            for (T freeSpaceLink : freeSpacesLinks) {
                 Integer toThisDirection = (int) Math.rint(solution.get(j));
                 if (toThisDirection > 0) {
                     while (toThisDirection != 0) {
@@ -194,7 +208,6 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
                 }
                 j++;
             }
-            // GlobalAssert.that(nbTaxisToShare.equals(0));
         }
     }
 }

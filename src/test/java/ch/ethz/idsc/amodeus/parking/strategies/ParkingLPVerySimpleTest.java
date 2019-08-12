@@ -45,7 +45,8 @@ public class ParkingLPVerySimpleTest {
         freeSpaces.put(link2, (long) 10);
 
         /** solve it */
-        ParkingLPSolver parkingLP = new ParkingLPSolver(taxisToGo, freeSpaces, distanceFunction);
+        ParkingLPSolver<Link> parkingLP = new ParkingLPSolver<Link>(taxisToGo, freeSpaces,//
+                (l1,l2)->distanceFunction.getDistance(l1, l2));
         Map<RoboTaxi, Link> solution = parkingLP.returnSolution();
 
         System.out.println("size: " + solution.size());

@@ -35,7 +35,8 @@ import ch.ethz.idsc.amodeus.routing.DistanceFunction;
             Map<Link, Long> freeSpacesToGo = parkingLPHelper.getFreeSpacesToGo(linkStayTaxi, //
                     StaticHelper.getDestinationCount(rebalancingRobotaxis));
             if (!freeSpacesToGo.isEmpty()) /** skip any action if no free spaces */
-                return (new ParkingLPSolver(taxisToGo, freeSpacesToGo, distanceFunction)).returnSolution();
+                return (new ParkingLPSolver<Link>(taxisToGo, freeSpacesToGo, //
+                        (l1, l2) -> distanceFunction.getDistance(l1, l2))).returnSolution();
         }
         return new HashMap<>();
     }
