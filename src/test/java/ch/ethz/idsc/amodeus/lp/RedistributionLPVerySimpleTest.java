@@ -1,10 +1,8 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.lp;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,10 +13,8 @@ import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.ArtificialScenarioCreator;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.lp.RedistributionProblemSolver;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 import ch.ethz.idsc.amodeus.routing.EuclideanDistanceFunction;
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 public class RedistributionLPVerySimpleTest {
 
@@ -50,10 +46,8 @@ public class RedistributionLPVerySimpleTest {
         freeSpaces.put(link2, 10);
 
         /** solve it */
-        Map<RoboTaxi, Link> solution = abstractlayer(taxisToGo, freeSpaces, distanceFunction);
-        // RedistributionProblemSolver<Link> parkingLP = new RedistributionProblemSolver<Link>(taxisToGo, freeSpaces, //
-        // (l1, l2) -> distanceFunction.getDistance(l1, l2), true, "/home/mu/Downloads");
-        // Map<RoboTaxi, Link> solution = parkingLP.returnSolution();
+        Map<RoboTaxi, Link> solution = //
+                flowLayerSolution(taxisToGo, freeSpaces, distanceFunction);
 
         System.out.println("size: " + solution.size());
         System.out.println(solution.get(roboTaxi).getId());
@@ -63,7 +57,7 @@ public class RedistributionLPVerySimpleTest {
         Assert.assertTrue(solution.get(roboTaxi).getId().toString().equals("linkUp"));
     }
 
-    private Map<RoboTaxi, Link> abstractlayer(Map<Link, Set<RoboTaxi>> taxisToGo, Map<Link, Integer> freeSpaces, //
+    private Map<RoboTaxi, Link> flowLayerSolution(Map<Link, Set<RoboTaxi>> taxisToGo, Map<Link, Integer> freeSpaces, //
             DistanceFunction distanceFunction) {
 
         /** creating unitsToMove map */
@@ -72,7 +66,7 @@ public class RedistributionLPVerySimpleTest {
         /** solve flow problem */
         RedistributionProblemSolver<Link> parkingLP = new RedistributionProblemSolver<>(unitsToMove, freeSpaces, //
                 (l1, l2) -> distanceFunction.getDistance(l1, l2), l -> l.getId().toString(), //
-                true, "/home/mu/Downloads");
+                false, "");
         Map<Link, Map<Link, Integer>> flowSolution = parkingLP.returnSolution();
 
         /** create roboTaxi movement map */

@@ -25,7 +25,7 @@ public enum ParkingStrategies {
     LP {
         @Override
         public ParkingStrategy generateParkingStrategy() {
-            return new ParkingLP();
+            return new ParkingFlow();
         }
     };
 

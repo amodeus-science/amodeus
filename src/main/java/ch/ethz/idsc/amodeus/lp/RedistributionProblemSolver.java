@@ -35,7 +35,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
  * @param <T> slots, e.g., roads or parking lots */
 public class RedistributionProblemSolver<T> {
 
-    private final Function<T,String> getName;
+    private final Function<T, String> getName;
     private final Map<T, Integer> unitsToMove; // units to be transported
     private final Map<T, Integer> availDest; // available destinations
     private final int totalOrigins;
@@ -48,7 +48,7 @@ public class RedistributionProblemSolver<T> {
     private glp_iocp parm;
 
     public RedistributionProblemSolver(Map<T, Integer> unitsToMove, Map<T, Integer> availableDestinations, //
-            BiFunction<T, T, Double> costFunction, Function<T,String> getName ,boolean print, String exportLocation) {
+            BiFunction<T, T, Double> costFunction, Function<T, String> getName, boolean print, String exportLocation) {
         /** copying input arguments */
         this.getName = getName;
         this.unitsToMove = unitsToMove;
@@ -63,9 +63,14 @@ public class RedistributionProblemSolver<T> {
         destinationList = new ArrayList<>(availableDestinations.keySet());
         System.out.println("starting to define lp");
         Long time = System.currentTimeMillis();
+
+        int totalUnits = unitsToMove.values().stream().mapToInt(i -> i).sum();
+        int totalSpots = availDest.values().stream().mapToInt(i -> i).sum();
+        System.out.println("total units to move:   " + totalUnits);
+        System.out.println("total spots available: " + totalSpots);
         // if there are not enough parking spaces, the problem is infeasible
         // an optimal solution is not defined.
-        GlobalAssert.that(totalOrigins <= totalDestins);
+        GlobalAssert.that(totalUnits <= totalSpots);
 
         /** definition of LP */
         lp = defineLP(costFunction);

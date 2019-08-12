@@ -12,12 +12,12 @@ import org.matsim.api.core.v01.network.Network;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
 
-/* package */ class ParkingLPHelper {
+/* package */ class ParkingFlowHelper {
 
     private final ParkingCapacity parkingCapacity;
     private final Network network;
 
-    public ParkingLPHelper(ParkingCapacity parkingCapacity, Network network) {
+    public ParkingFlowHelper(ParkingCapacity parkingCapacity, Network network) {
         this.parkingCapacity = parkingCapacity;
         this.network = network;
     }
@@ -49,15 +49,15 @@ import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
     /** @return {@link Map} with currently available {@link Link}s that have parking
      *         spaces and the respective number given the staying {@link RoboTaxi}s @param linkStayTaxi
      *         and the rebalancing {@link RoboTaxi}s @param linkRebalancingTaxi */
-    public Map<Link, Long> getFreeSpacesToGo(Map<Link, Set<RoboTaxi>> linkStayTaxi, //
-            Map<Link, Long> linkRebalancingTaxi) {
-        Map<Link, Long> freeSpacesToGo = new HashMap<>();
+    public Map<Link, Integer> getFreeSpacesToGo(Map<Link, Set<RoboTaxi>> linkStayTaxi, //
+            Map<Link, Integer> linkRebalancingTaxi) {
+        Map<Link, Integer> freeSpacesToGo = new HashMap<>();
         for (Link link : network.getLinks().values()) {
             double nominalCapacity = parkingCapacity.getSpatialCapacity(link.getId());
-            Long nominalSpaces = (long) Math.ceil(nominalCapacity);
-            Long stayTaxis = linkStayTaxi.containsKey(link) ? (long) linkStayTaxi.get(link).size() : (long) 0;
-            Long reblTaxis = linkRebalancingTaxi.containsKey(link) ? linkRebalancingTaxi.get(link) : (long) 0;
-            Long freeSpaces = Math.max(0, nominalSpaces - stayTaxis - reblTaxis);
+            Integer nominalSpaces = (int) Math.ceil(nominalCapacity);
+            Integer stayTaxis = linkStayTaxi.containsKey(link) ? linkStayTaxi.get(link).size() : 0;
+            Integer reblTaxis = linkRebalancingTaxi.containsKey(link) ? linkRebalancingTaxi.get(link) : 0;
+            Integer freeSpaces = Math.max(0, nominalSpaces - stayTaxis - reblTaxis);
             if (freeSpaces > 0)
                 freeSpacesToGo.put(link, freeSpaces);
         }

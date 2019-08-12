@@ -16,14 +16,14 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
     /** @return {@link Map} with {@link Link}s that {@link RoboTaxi}s are driving towards
      *         and for each {@link Link} the number of {@link RoboTaxi}s driving there based on a
      *         {@link Collection} of {@link RoboTaxi}s @param roboTaxis */
-    public static Map<Link, Long> getDestinationCount(Collection<RoboTaxi> roboTaxis) {
-        Map<Link, Long> destCount = new HashMap<>();
+    public static Map<Link, Integer> getDestinationCount(Collection<RoboTaxi> roboTaxis) {
+        Map<Link, Integer> destCount = new HashMap<>();
         roboTaxis.stream().map(rt -> rt.getCurrentDriveDestination())//
                 .forEach(l -> {
                     if (destCount.containsKey(l))
                         destCount.put(l, destCount.get(l) + 1);
                     else
-                        destCount.put(l, (long) 1);
+                        destCount.put(l, 1);
                 });
         return destCount;
     }

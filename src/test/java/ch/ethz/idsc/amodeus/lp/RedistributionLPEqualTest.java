@@ -57,9 +57,9 @@ public class RedistributionLPEqualTest {
 
     private static Map<String, Map<String, Integer>> localSolver(int n1, int n2) {
         /** roboTaxi must leave link 1 */
-        Map<String, Long> agentsToGo = new HashMap<>();
+        Map<String, Integer> agentsToGo = new HashMap<>();
         for (int i = 1; i <= n1; ++i) {
-            agentsToGo.put("o" + i, (long) 1);
+            agentsToGo.put("o" + i, 1);
         }
 
         for (String string : agentsToGo.keySet()) {
@@ -67,14 +67,15 @@ public class RedistributionLPEqualTest {
         }
 
         /** free spots available on link 2 */
-        Map<String, Long> freeSpaces = new HashMap<>();
+        Map<String, Integer> freeSpaces = new HashMap<>();
         for (int i = 1; i <= n2; ++i) {
-            freeSpaces.put("d" + i, (long) i + 1);
+            freeSpaces.put("d" + i, i + 1);
         }
+
         /** solve it */
         RedistributionProblemSolver<String> redistributionLP = //
-                new RedistributionProblemSolver<>(agentsToGo, freeSpaces, //
-                        (i1, i2) -> distance(i1, i2), true, "/home/mu/Downloads");
+                new RedistributionProblemSolver<String>(agentsToGo, freeSpaces, //
+                        (i1, i2) -> distance(i1, i2), s -> s, false, "");
         Map<String, Map<String, Integer>> solution = redistributionLP.returnSolution();
         return solution;
     }

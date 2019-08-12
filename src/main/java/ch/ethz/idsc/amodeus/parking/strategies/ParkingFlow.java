@@ -11,18 +11,19 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.lp.RedistributionProblemHelper;
 import ch.ethz.idsc.amodeus.lp.RedistributionProblemSolver;
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 
-/* package */ class ParkingLP extends AbstractParkingStrategy {
-    private ParkingLPHelper parkingLPHelper;
+/* package */ class ParkingFlow extends AbstractParkingStrategy {
+    private ParkingFlowHelper parkingLPHelper;
 
     @Override
     public void setRuntimeParameters(ParkingCapacity parkingCapacity, Network network, //
             DistanceFunction distanceFunction) {
         super.setRuntimeParameters(parkingCapacity, network, distanceFunction);
-        this.parkingLPHelper = new ParkingLPHelper(parkingCapacity, network);
+        this.parkingLPHelper = new ParkingFlowHelper(parkingCapacity, network);
     }
 
     @Override
@@ -32,12 +33,26 @@ import ch.ethz.idsc.amodeus.routing.DistanceFunction;
         Objects.requireNonNull(parkingLPHelper);
         Map<Link, Set<RoboTaxi>> linkStayTaxi = StaticHelper.getOccupiedLinks(stayingRobotaxis);
         Map<Link, Set<RoboTaxi>> taxisToGo = parkingLPHelper.getTaxisToGo(linkStayTaxi);
-        if (!taxisToGo.isEmpty()) { /** if there are ongoing parking violations, resolve, otherwise skip */
-            Map<Link, Long> freeSpacesToGo = parkingLPHelper.getFreeSpacesToGo(linkStayTaxi, //
+        /** if there are ongoing parking violations, resolve, otherwise skip */
+        if (!taxisToGo.isEmpty()) {
+            Map<Link, Integer> freeSpacesToGo = parkingLPHelper.getFreeSpacesToGo(linkStayTaxi, //
                     StaticHelper.getDestinationCount(rebalancingRobotaxis));
-            if (!freeSpacesToGo.isEmpty()) /** skip any action if no free spaces */
-                return (new RedistributionProblemSolver<Link, RoboTaxi>(taxisToGo, freeSpacesToGo, //
-                        (l1, l2) -> distanceFunction.getDistance(l1, l2), false, "")).returnSolution();
+            /** skip any action if no free spaces */
+            if (!freeSpacesToGo.isEmpty()) {
+                /** at this point the parking repositioning problem is solved */
+                /** creating unitsToMove map */
+                Map<Link, Integer> unitsToMove = RedistributionProblemHelper.getFlow(taxisToGo);
+
+                /** set up the flow problem and solve */
+                RedistributionProblemSolver<Link> parkingLP = //
+                        new RedistributionProblemSolver<Link>(unitsToMove, freeSpacesToGo, //
+                                (l1, l2) -> distanceFunction.getDistance(l1, l2), l -> l.getId().toString(), //
+                                false, "");
+                Map<Link, Map<Link, Integer>> flowSolution = parkingLP.returnSolution();
+
+                /** compute command map */
+                return RedistributionProblemHelper.getSolutionCommands(taxisToGo, flowSolution);
+            }
         }
         return new HashMap<>();
     }
