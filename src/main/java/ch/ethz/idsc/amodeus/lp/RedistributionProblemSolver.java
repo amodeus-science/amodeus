@@ -30,9 +30,12 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
  * (c1) x_ij >= 0
  * (c2) sum_(i in origin locations) x_ij <= dest. locations at j
  * (c3) sum_(j in dest. locations) x_ij = units at i
+ * (c4) x_ij in {0,1,2,...}
  * 
  *
- * @param <T> slots, e.g., roads or parking lots */
+ * @param <T> slots, e.g., roads or parking lots. The problem has a
+ *            totally unimodular costraint matrix and can thus be solved without
+ *            integrality constraints (c4) */
 public class RedistributionProblemSolver<T> {
 
     private final Function<T, String> getName;
@@ -43,7 +46,8 @@ public class RedistributionProblemSolver<T> {
     private final List<T> originsList;
     private final List<T> destinationList;
     private final Map<T, Map<T, Integer>> indexMap = new HashMap<>();
-    private final Map<T, Map<T, Double>> solution = new HashMap<>();
+    private final Map<T, Map<T, Integer>> solution = new HashMap<>();
+    private final Map<T, Map<T, Double>> dblSolut = new HashMap<>();
     private glp_prob lp;
     private glp_smcp parm;
 
@@ -99,8 +103,12 @@ public class RedistributionProblemSolver<T> {
 
     }
 
-    public Map<T, Map<T, Double>> returnSolution() {
+    public Map<T, Map<T, Integer>> returnSolution() {
         return solution;
+    }
+    
+    public Map<T, Map<T, Double>> returnDoubleSolution() {
+        return dblSolut;
     }
 
     private glp_prob defineLP(BiFunction<T, T, Double> costFunction) {
@@ -232,13 +240,14 @@ public class RedistributionProblemSolver<T> {
     }
 
     private void extractSolution() {
-
         for (T origin : originsList) {
             solution.put(origin, new HashMap<>());
+            dblSolut.put(origin, new HashMap<>());
             for (T dest : destinationList) {
                 int varIndex = indexMap.get(origin).get(dest);
                 double result = GLPK.glp_get_col_prim(lp, varIndex);
-                solution.get(origin).put(dest, result);
+                solution.get(origin).put(dest, (int) result);
+                dblSolut.get(origin).put(dest, result);
             }
         }
     }

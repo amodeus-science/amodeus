@@ -16,7 +16,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 import ch.ethz.idsc.amodeus.routing.EuclideanDistanceFunction;
 
-public class RedistributionLPVerySimpleTest {
+public class RedistributionTestsVerySimple {
 
     private static Link link1;
     private static Link link2;
@@ -64,7 +64,7 @@ public class RedistributionLPVerySimpleTest {
         Map<Link, Integer> unitsToMove = RedistributionProblemHelper.getFlow(taxisToGo);
 
         /** solve flow problem */
-        RedistributionProblemSolverMILP<Link> parkingLP = new RedistributionProblemSolverMILP<>(unitsToMove, freeSpaces, //
+        RedistributionProblemSolver<Link> parkingLP = new RedistributionProblemSolver<>(unitsToMove, freeSpaces, //
                 (l1, l2) -> distanceFunction.getDistance(l1, l2), l -> l.getId().toString(), //
                 false, "");
         Map<Link, Map<Link, Integer>> flowSolution = parkingLP.returnSolution();

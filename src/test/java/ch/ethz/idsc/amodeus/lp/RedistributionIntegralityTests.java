@@ -90,7 +90,7 @@ public class RedistributionIntegralityTests {
         RedistributionProblemSolver<String> redistributionLP = //
                 new RedistributionProblemSolver<String>(agentsToGo, freeSpaces, //
                         (i1, i2) -> distance(i1, i2), s -> s, false, "");
-        Map<String, Map<String, Double>> solution = redistributionLP.returnSolution();
+        Map<String, Map<String, Double>> solution = redistributionLP.returnDoubleSolution();
         return solution;
     }
 

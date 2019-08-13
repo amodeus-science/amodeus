@@ -8,7 +8,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class RedistributionLPEqualTest {
+public class RedistributionTests2 {
 
     private static Random random;
 
@@ -73,8 +73,8 @@ public class RedistributionLPEqualTest {
         }
 
         /** solve it */
-        RedistributionProblemSolverMILP<String> redistributionLP = //
-                new RedistributionProblemSolverMILP<String>(agentsToGo, freeSpaces, //
+        RedistributionProblemSolver<String> redistributionLP = //
+                new RedistributionProblemSolver<String>(agentsToGo, freeSpaces, //
                         (i1, i2) -> distance(i1, i2), s -> s, false, "");
         Map<String, Map<String, Integer>> solution = redistributionLP.returnSolution();
         return solution;
