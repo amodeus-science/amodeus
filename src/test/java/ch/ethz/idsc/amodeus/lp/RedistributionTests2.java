@@ -18,7 +18,7 @@ public class RedistributionTests2 {
     }
 
     @Test
-    public void test1() throws InterruptedException {
+    public void test1() {
         int n1 = 1;
         int n2 = 2;
         Map<String, Map<String, Integer>> solution = localSolver(n1, n2);
@@ -33,7 +33,7 @@ public class RedistributionTests2 {
     }
 
     @Test
-    public void test2() throws InterruptedException {
+    public void test2() {
         int n1 = 2;
         int n2 = 2;
         Map<String, Map<String, Integer>> solution = localSolver(n1, n2);
@@ -74,7 +74,7 @@ public class RedistributionTests2 {
 
         /** solve it */
         RedistributionProblemSolver<String> redistributionLP = //
-                new RedistributionProblemSolver<String>(agentsToGo, freeSpaces, //
+                new RedistributionProblemSolver<>(agentsToGo, freeSpaces, //
                         (i1, i2) -> distance(i1, i2), s -> s, false, "");
         Map<String, Map<String, Integer>> solution = redistributionLP.returnSolution();
         return solution;

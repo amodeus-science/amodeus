@@ -36,7 +36,7 @@ public class RedistributionTestsVerySimple {
     public void test() {
         DistanceFunction distanceFunction = EuclideanDistanceFunction.INSTANCE;
         /** roboTaxi must leave link 1 */
-        Map<Link, Set<RoboTaxi>> taxisToGo = new HashMap<Link, Set<RoboTaxi>>();
+        Map<Link, Set<RoboTaxi>> taxisToGo = new HashMap<>();
         HashSet<RoboTaxi> taxis = new HashSet<>();
         taxis.add(roboTaxi);
         taxisToGo.put(link1, taxis);
@@ -57,7 +57,7 @@ public class RedistributionTestsVerySimple {
         Assert.assertTrue(solution.get(roboTaxi).getId().toString().equals("linkUp"));
     }
 
-    private Map<RoboTaxi, Link> flowLayerSolution(Map<Link, Set<RoboTaxi>> taxisToGo, Map<Link, Integer> freeSpaces, //
+    private static Map<RoboTaxi, Link> flowLayerSolution(Map<Link, Set<RoboTaxi>> taxisToGo, Map<Link, Integer> freeSpaces, //
             DistanceFunction distanceFunction) {
 
         /** creating unitsToMove map */

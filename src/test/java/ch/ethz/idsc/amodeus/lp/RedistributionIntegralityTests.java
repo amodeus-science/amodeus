@@ -25,7 +25,7 @@ public class RedistributionIntegralityTests {
     private static final int l2 = 1;
 
     @Test
-    public void test1() throws InterruptedException {
+    public void test1() {
 
         for (int n1 = 1; n1 < 20; ++n1) {
             for (int n2 = n1 + 1; n2 < 20; ++n2) {
@@ -88,7 +88,7 @@ public class RedistributionIntegralityTests {
 
         /** solve it */
         RedistributionProblemSolver<String> redistributionLP = //
-                new RedistributionProblemSolver<String>(agentsToGo, freeSpaces, //
+                new RedistributionProblemSolver<>(agentsToGo, freeSpaces, //
                         (i1, i2) -> distance(i1, i2), s -> s, false, "");
         Map<String, Map<String, Double>> solution = redistributionLP.returnDoubleSolution();
         return solution;
@@ -109,7 +109,7 @@ public class RedistributionIntegralityTests {
 
         /** solve it */
         RedistributionProblemSolverMILP<String> redistributionLP = //
-                new RedistributionProblemSolverMILP<String>(agentsToGo, freeSpaces, //
+                new RedistributionProblemSolverMILP<>(agentsToGo, freeSpaces, //
                         (i1, i2) -> distance(i1, i2), s -> s, false, "");
         Map<String, Map<String, Integer>> solution = redistributionLP.returnSolution();
         return solution;
