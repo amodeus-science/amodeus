@@ -1,4 +1,5 @@
-package ch.ethz.idsc.amodeus.parking.strategies;
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
+package ch.ethz.idsc.amodeus.lp;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,7 +16,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 import ch.ethz.idsc.amodeus.routing.EuclideanDistanceFunction;
 
-public class ParkingLPVerySimpleTest {
+public class RedistributionTestsVerySimple {
 
     private static Link link1;
     private static Link link2;
@@ -41,12 +42,12 @@ public class ParkingLPVerySimpleTest {
         taxisToGo.put(link1, taxis);
 
         /** free spots available on link 2 */
-        Map<Link, Long> freeSpaces = new HashMap<Link, Long>();
-        freeSpaces.put(link2, (long) 10);
+        Map<Link, Integer> freeSpaces = new HashMap<>();
+        freeSpaces.put(link2, 10);
 
         /** solve it */
-        ParkingLPSolver parkingLP = new ParkingLPSolver(taxisToGo, freeSpaces, distanceFunction);
-        Map<RoboTaxi, Link> solution = parkingLP.returnSolution();
+        Map<RoboTaxi, Link> solution = //
+                flowLayerSolution(taxisToGo, freeSpaces, distanceFunction);
 
         System.out.println("size: " + solution.size());
         System.out.println(solution.get(roboTaxi).getId());
@@ -54,6 +55,22 @@ public class ParkingLPVerySimpleTest {
         /** solution should send roboTaxi to linkup */
         Assert.assertTrue(solution.size() == 1);
         Assert.assertTrue(solution.get(roboTaxi).getId().toString().equals("linkUp"));
+    }
+
+    private Map<RoboTaxi, Link> flowLayerSolution(Map<Link, Set<RoboTaxi>> taxisToGo, Map<Link, Integer> freeSpaces, //
+            DistanceFunction distanceFunction) {
+
+        /** creating unitsToMove map */
+        Map<Link, Integer> unitsToMove = RedistributionProblemHelper.getFlow(taxisToGo);
+
+        /** solve flow problem */
+        RedistributionProblemSolver<Link> parkingLP = new RedistributionProblemSolver<>(unitsToMove, freeSpaces, //
+                (l1, l2) -> distanceFunction.getDistance(l1, l2), l -> l.getId().toString(), //
+                false, "");
+        Map<Link, Map<Link, Integer>> flowSolution = parkingLP.returnSolution();
+
+        /** create roboTaxi movement map */
+        return RedistributionProblemHelper.getSolutionCommands(taxisToGo, flowSolution);
     }
 
 }
