@@ -41,15 +41,15 @@ public class RedistributionProblemSolver<T> {
     private final Function<T, String> getName;
     private final Map<T, Integer> unitsToMove; // units to be transported
     private final Map<T, Integer> availDest; // available destinations
-    private final int totalOrigins;
-    private final int totalDestins;
-    private final List<T> originsList;
-    private final List<T> destinationList;
-    private final Map<T, Map<T, Integer>> indexMap = new HashMap<>();
-    private final Map<T, Map<T, Integer>> solution = new HashMap<>();
+    protected final int totalOrigins;
+    protected final int totalDestins;
+    protected final List<T> originsList;
+    protected final List<T> destinationList;
+    protected final Map<T, Map<T, Integer>> indexMap = new HashMap<>();
+    protected final Map<T, Map<T, Integer>> solution = new HashMap<>();
     private final Map<T, Map<T, Double>> dblSolut = new HashMap<>();
-    private glp_prob lp;
-    private glp_smcp parm;
+    protected glp_prob lp;
+
 
     public RedistributionProblemSolver(Map<T, Integer> unitsToMove, Map<T, Integer> availableDestinations, //
             BiFunction<T, T, Double> costFunction, Function<T, String> getName, boolean print, String exportLocation) {
@@ -204,8 +204,8 @@ public class RedistributionProblemSolver<T> {
         return lp;
     }
 
-    private void solveLP(boolean print) {
-        parm = new glp_smcp();
+    protected void solveLP(boolean print) {
+        glp_smcp parm = new glp_smcp();
         GLPK.glp_init_smcp(parm);
         parm.setPresolve(GLPK.GLP_ON);
         int ret = GLPK.glp_simplex(lp, parm);
@@ -230,7 +230,7 @@ public class RedistributionProblemSolver<T> {
 
     }
 
-    private void printSolution() {
+    protected void printSolution() {
         for (int i = 1; i <= (totalDestins * totalOrigins); i++) {
             System.err.println("varindex: " + i);
             String name = GLPK.glp_get_col_name(lp, i);
@@ -239,7 +239,7 @@ public class RedistributionProblemSolver<T> {
         }
     }
 
-    private void extractSolution() {
+    protected void extractSolution() {
         for (T origin : originsList) {
             solution.put(origin, new HashMap<>());
             dblSolut.put(origin, new HashMap<>());
