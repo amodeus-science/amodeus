@@ -11,8 +11,8 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.lp.RedistributionProblemSolver;
 import ch.ethz.idsc.amodeus.lp.RedistributionProblemHelper;
+import ch.ethz.idsc.amodeus.lp.RedistributionProblemSolver;
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 

@@ -26,7 +26,7 @@ import org.gnu.glpk.glp_iocp;
  * @param <T> slots, e.g., roads or parking lots */
 @Deprecated // TODO delete later, use LP based solver. This sone is exactly identical
 // but it uses MI programming to solve the problem which is not necessary due to the
-// totally unimodular constraint matrix. 
+// totally unimodular constraint matrix.
 public class RedistributionProblemSolverMILP<T> extends RedistributionProblemSolver<T> {
 
     public RedistributionProblemSolverMILP(Map<T, Integer> unitsToMove, Map<T, Integer> availableDestinations, //

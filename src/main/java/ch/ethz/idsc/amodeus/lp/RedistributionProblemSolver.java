@@ -50,7 +50,6 @@ public class RedistributionProblemSolver<T> {
     private final Map<T, Map<T, Double>> dblSolut = new HashMap<>();
     protected glp_prob lp;
 
-
     public RedistributionProblemSolver(Map<T, Integer> unitsToMove, Map<T, Integer> availableDestinations, //
             BiFunction<T, T, Double> costFunction, Function<T, String> getName, boolean print, String exportLocation) {
         /** copying input arguments */
@@ -106,7 +105,7 @@ public class RedistributionProblemSolver<T> {
     public Map<T, Map<T, Integer>> returnSolution() {
         return solution;
     }
-    
+
     public Map<T, Map<T, Double>> returnDoubleSolution() {
         return dblSolut;
     }
