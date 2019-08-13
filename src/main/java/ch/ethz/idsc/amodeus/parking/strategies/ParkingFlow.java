@@ -11,8 +11,8 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.lp.RedistributionProblemSolver;
 import ch.ethz.idsc.amodeus.lp.RedistributionProblemHelper;
+import ch.ethz.idsc.amodeus.lp.RedistributionProblemSolver;
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 
@@ -45,7 +45,7 @@ import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 
                 /** set up the flow problem and solve */
                 RedistributionProblemSolver<Link> parkingLP = //
-                        new RedistributionProblemSolver<Link>(unitsToMove, freeSpacesToGo, //
+                        new RedistributionProblemSolver<>(unitsToMove, freeSpacesToGo, //
                                 (l1, l2) -> distanceFunction.getDistance(l1, l2), l -> l.getId().toString(), //
                                 false, "");
                 Map<Link, Map<Link, Integer>> flowSolution = parkingLP.returnSolution();
