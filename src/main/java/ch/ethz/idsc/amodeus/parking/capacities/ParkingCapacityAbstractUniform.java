@@ -23,12 +23,13 @@ public abstract class ParkingCapacityAbstractUniform extends ParkingCapacityAbst
 
     protected abstract Collection<? extends Link> getLinks(Network network, Population population);
 
-    protected void fillUsingLinks(Collection<? extends Link> allLinks, long totSpaces, Random random) {
+    protected void fillUsingLinks(Collection<? extends Link> possibleLinks, //
+            long totSpaces, Random random) {
         Map<Id<Link>, Long> parkingCount = new HashMap<>();
-        int bound = allLinks.size();
+        int bound = possibleLinks.size();
         for (int i = 0; i < totSpaces; ++i) {
             int elemRand = random.nextInt(bound);
-            Link link = allLinks.stream().skip(elemRand).findFirst().get();
+            Link link = possibleLinks.stream().skip(elemRand).findFirst().get();
             if (!parkingCount.containsKey(link.getId()))
                 parkingCount.put(link.getId(), (long) 0);
             parkingCount.put(link.getId(), parkingCount.get(link.getId()) + 1);
