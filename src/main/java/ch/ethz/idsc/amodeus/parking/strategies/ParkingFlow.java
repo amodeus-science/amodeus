@@ -4,6 +4,7 @@ package ch.ethz.idsc.amodeus.parking.strategies;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
@@ -42,6 +43,19 @@ import ch.ethz.idsc.amodeus.routing.DistanceFunction;
                 /** at this point the parking repositioning problem is solved */
                 /** creating unitsToMove map */
                 Map<Link, Integer> unitsToMove = RedistributionProblemHelper.getFlow(taxisToGo);
+
+                /** if not enough free spaces area available, shorten the units to send
+                 * by an equal number in all overflowing parking reservoirs */
+                int totalUnits = unitsToMove.values().stream().mapToInt(i -> i).sum();
+                int totalSpots = freeSpacesToGo.values().stream().mapToInt(i -> i).sum();
+                if (totalUnits > totalSpots) {
+                    int diff = totalUnits - totalSpots;
+                    int locations = unitsToMove.size();
+                    int remove = (int) Math.ceil(((double) diff) / locations);
+                    for (Entry<Link, Integer> entry : unitsToMove.entrySet()) {
+                        unitsToMove.put(entry.getKey(), Math.max(entry.getValue() - remove, 0));
+                    }
+                }
 
                 /** set up the flow problem and solve */
                 RedistributionProblemSolver<Link> parkingLP = //
