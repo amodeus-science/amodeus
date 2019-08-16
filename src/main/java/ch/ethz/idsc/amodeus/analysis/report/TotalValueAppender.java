@@ -12,5 +12,5 @@ public interface TotalValueAppender {
     /** defines pairs of a total values with a total value identifier.
      * 
      * @return Map with entries of an identifier and a corresponding value as string. */
-    Map<TotalValueIdentifier, String> getTotalValues();
+    public Map<TotalValueIdentifier, String> getTotalValues();
 }
