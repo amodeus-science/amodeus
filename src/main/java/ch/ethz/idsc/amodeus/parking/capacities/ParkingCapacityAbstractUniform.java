@@ -37,5 +37,10 @@ public abstract class ParkingCapacityAbstractUniform extends ParkingCapacityAbst
         parkingCount.entrySet().stream().forEach(e -> {
             capacities.put(e.getKey(), e.getValue());
         });
+        
+        long total = capacities.values().stream().mapToLong(l->l).sum();
+        System.out.println("the total is: " +  total);
+        System.exit(1);
+        System.out.println();
     }
 }
