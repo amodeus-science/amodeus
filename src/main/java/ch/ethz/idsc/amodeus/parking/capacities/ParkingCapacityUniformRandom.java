@@ -12,7 +12,8 @@ public class ParkingCapacityUniformRandom extends ParkingCapacityAbstractUniform
 
     /** assigns totSpaces randomly chosen links from the network a parking space, there may
      * be multiple parking spaces per link */
-    public ParkingCapacityUniformRandom(Network network, Population population, long totSpaces, Random random) {
+    public ParkingCapacityUniformRandom(Network network, Population population, //
+            long totSpaces, Random random) {
         super(network, population, totSpaces, random);
     }
 

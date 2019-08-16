@@ -19,6 +19,7 @@ import ch.ethz.idsc.amodeus.parking.strategies.ParkingStrategy;
  * as well the strategy to avoid overfilling. */
 public class AmodeusParkingModule extends AbstractModule {
     private final ScenarioOptions scenarioOptions;
+    private ParkingCapacity parkingCapacity;
 
     public AmodeusParkingModule(ScenarioOptions scenarioOptions) {
         this.scenarioOptions = scenarioOptions;
@@ -40,11 +41,16 @@ public class AmodeusParkingModule extends AbstractModule {
     public ParkingCapacity provideAVSpatialCapacity(Network network, Population population) {
         try {
             ParkingCapacityGenerator generator = scenarioOptions.getParkingCapacityGenerator();
-            return generator.generate(network, population, scenarioOptions);
+            parkingCapacity = generator.generate(network, population, scenarioOptions);
+            return parkingCapacity;
         } catch (Exception exception) {
             System.err.println("Unable to load parking capacity for all links, returning null.");
             exception.printStackTrace();
         }
         return null;
+    }
+
+    public ParkingCapacity getParkingCapacity() {
+        return parkingCapacity;
     }
 }
