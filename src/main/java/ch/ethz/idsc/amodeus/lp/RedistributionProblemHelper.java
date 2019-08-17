@@ -41,17 +41,21 @@ public enum RedistributionProblemHelper {
             Map<T, Map<T, Integer>> flowSolution) {
         Map<U, T> sendCommandMap = new HashMap<>();
         for (T origin : flowSolution.keySet()) {
-            List<U> toSend = new ArrayList<>();// Arrays.asList(taxisToGo.get(origin);
+            List<U> toSend = new ArrayList<>();
             unitsToMove.get(origin).stream().forEach(t -> toSend.add(t));
             Map<T, Integer> destinationMap = flowSolution.get(origin);
+            /** produce a list of all destinations with multiple entries, e.g.,
+             * 1 vehicle to dest 1, 2 vehicles to dest 2--> {1,2,2} */
             List<T> destinations = new ArrayList<>();
             for (T dest : destinationMap.keySet()) {
                 for (int i = 0; i < destinationMap.get(dest); ++i) {
                     destinations.add(dest);
                 }
             }
-            GlobalAssert.that(toSend.size() == destinations.size());
-            for (int i = 0; i < toSend.size(); ++i) {
+            /** it can be that toSend has larger dimension than destinations, not
+             * the other way around */
+            GlobalAssert.that(destinations.size() <= toSend.size());
+            for (int i = 0; i < destinations.size(); ++i) {
                 sendCommandMap.put(toSend.get(i), destinations.get(i));
             }
         }

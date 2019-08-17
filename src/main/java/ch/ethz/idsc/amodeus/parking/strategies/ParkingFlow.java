@@ -57,15 +57,20 @@ import ch.ethz.idsc.amodeus.routing.DistanceFunction;
                     }
                 }
 
-                /** set up the flow problem and solve */
-                RedistributionProblemSolver<Link> parkingLP = //
-                        new RedistributionProblemSolver<>(unitsToMove, freeSpacesToGo, //
-                                (l1, l2) -> distanceFunction.getDistance(l1, l2), l -> l.getId().toString(), //
-                                false, "");
-                Map<Link, Map<Link, Integer>> flowSolution = parkingLP.returnSolution();
+                /** if there are less parking spots than vehicles, the total units to displace
+                 * may be zero and the LP does not need to be solved. */
+                int totalUnitsFinal = unitsToMove.values().stream().mapToInt(i -> i).sum();
+                if (totalUnitsFinal > 0) {
+                    /** set up the flow problem and solve */
+                    RedistributionProblemSolver<Link> parkingLP = //
+                            new RedistributionProblemSolver<>(unitsToMove, freeSpacesToGo, //
+                                    (l1, l2) -> distanceFunction.getDistance(l1, l2), l -> l.getId().toString(), //
+                                    false, "");
+                    Map<Link, Map<Link, Integer>> flowSolution = parkingLP.returnSolution();
 
-                /** compute command map */
-                return RedistributionProblemHelper.getSolutionCommands(taxisToGo, flowSolution);
+                    /** compute command map */
+                    return RedistributionProblemHelper.getSolutionCommands(taxisToGo, flowSolution);
+                }
             }
         }
         return new HashMap<>();
