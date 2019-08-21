@@ -59,26 +59,26 @@ Fleet for Austin, Texas, Market* by Fagnant, D. J., Kockelman, K. M., and Bansal
 ## Integration
 
 Specify `repository` and `dependency` of the amodeus library in the `pom.xml` file of your maven project:
+```xml
+<repositories>
+  <repository>
+    <id>amodeus-mvn-repo</id>
+    <url>https://raw.github.com/idsc-frazzoli/amodeus/mvn-repo/</url>
+    <snapshots>
+      <enabled>true</enabled>
+      <updatePolicy>always</updatePolicy>
+    </snapshots>
+  </repository>
+</repositories>
 
-    <repositories>
-      <repository>
-        <id>amodeus-mvn-repo</id>
-        <url>https://raw.github.com/idsc-frazzoli/amodeus/mvn-repo/</url>
-        <snapshots>
-          <enabled>true</enabled>
-          <updatePolicy>always</updatePolicy>
-        </snapshots>
-      </repository>
-    </repositories>
-    
-    <dependencies>
-      <dependency>
-        <groupId>ch.ethz.idsc</groupId>
-        <artifactId>amodeus</artifactId>
-        <version>1.8.1</version>
-      </dependency>
-    </dependencies>
-
+<dependencies>
+  <dependency>
+    <groupId>ch.ethz.idsc</groupId>
+    <artifactId>amodeus</artifactId>
+    <version>1.8.1</version>
+  </dependency>
+</dependencies>
+```
 The source code is attached to every release.
 
 
