@@ -11,12 +11,12 @@ import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
-public class ParkingCapacityFromNetworkDistribution extends ParkingCapacityAbstract {
+public class ParkingCapacityNetworkDistribution extends ParkingCapacityAbstract {
 
     /** Randomly choses @param numberSpots from the @param network out of all links
      * that have parking spaces marked with @param capacityIdentifier, random selection
      * done using the {@link Random} @param random */
-    public ParkingCapacityFromNetworkDistribution(Network network, String capacityIdentifier, //
+    public ParkingCapacityNetworkDistribution(Network network, String capacityIdentifier, //
             Random random, long desiredTotalSpots) {
 
         /** get a list of all parkings, if a Link has multiple spots, it will

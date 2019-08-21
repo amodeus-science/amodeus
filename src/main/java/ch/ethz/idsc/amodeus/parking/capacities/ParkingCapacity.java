@@ -17,6 +17,6 @@ public interface ParkingCapacity {
     public long getSpatialCapacity(Id<Link> id);
 
     /** @return {@link Collection} of all {@link Id<Link>} that have nonzero
-     *         parking capacity. */
+     *         parking capacity, i.e., in {1,2,3,...} parking spots */
     public Collection<Id<Link>> getAvailableLinks();
 }

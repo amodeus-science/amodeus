@@ -4,6 +4,7 @@ package ch.ethz.idsc.amodeus.parking.strategies;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
@@ -43,15 +44,33 @@ import ch.ethz.idsc.amodeus.routing.DistanceFunction;
                 /** creating unitsToMove map */
                 Map<Link, Integer> unitsToMove = RedistributionProblemHelper.getFlow(taxisToGo);
 
-                /** set up the flow problem and solve */
-                RedistributionProblemSolver<Link> parkingLP = //
-                        new RedistributionProblemSolver<>(unitsToMove, freeSpacesToGo, //
-                                (l1, l2) -> distanceFunction.getDistance(l1, l2), l -> l.getId().toString(), //
-                                false, "");
-                Map<Link, Map<Link, Integer>> flowSolution = parkingLP.returnSolution();
+                /** if not enough free spaces area available, shorten the units to send
+                 * by an equal number in all overflowing parking reservoirs */
+                int totalUnits = unitsToMove.values().stream().mapToInt(i -> i).sum();
+                int totalSpots = freeSpacesToGo.values().stream().mapToInt(i -> i).sum();
+                if (totalUnits > totalSpots) {
+                    int diff = totalUnits - totalSpots;
+                    int locations = unitsToMove.size();
+                    int remove = (int) Math.ceil(((double) diff) / locations);
+                    for (Entry<Link, Integer> entry : unitsToMove.entrySet()) {
+                        unitsToMove.put(entry.getKey(), Math.max(entry.getValue() - remove, 0));
+                    }
+                }
 
-                /** compute command map */
-                return RedistributionProblemHelper.getSolutionCommands(taxisToGo, flowSolution);
+                /** if there are less parking spots than vehicles, the total units to displace
+                 * may be zero and the LP does not need to be solved. */
+                int totalUnitsFinal = unitsToMove.values().stream().mapToInt(i -> i).sum();
+                if (totalUnitsFinal > 0) {
+                    /** set up the flow problem and solve */
+                    RedistributionProblemSolver<Link> parkingLP = //
+                            new RedistributionProblemSolver<>(unitsToMove, freeSpacesToGo, //
+                                    (l1, l2) -> distanceFunction.getDistance(l1, l2), l -> l.getId().toString(), //
+                                    false, "");
+                    Map<Link, Map<Link, Integer>> flowSolution = parkingLP.returnSolution();
+
+                    /** compute command map */
+                    return RedistributionProblemHelper.getSolutionCommands(taxisToGo, flowSolution);
+                }
             }
         }
         return new HashMap<>();

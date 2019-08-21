@@ -11,10 +11,10 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacityConstant;
-import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacityFromNetworkDistribution;
-import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacityFromNetworkIdentifier;
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacityInfinity;
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacityLinkLength;
+import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacityNetworkDistribution;
+import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacityNetworkIdentifier;
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacityUniformRandom;
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacityUniformRandomPopulationZone;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
@@ -62,7 +62,7 @@ public enum ParkingCapacityGenerators implements ParkingCapacityGenerator {
         public ParkingCapacity generate(Network network, Population population, ScenarioOptions scenarioOptions) {
             Objects.requireNonNull(scenarioOptions);
             long seed = scenarioOptions.getRandomSeed();
-            return new ParkingCapacityFromNetworkIdentifier(network, //
+            return new ParkingCapacityNetworkIdentifier(network, //
                     scenarioOptions.getParkingSpaceTagInNetwork(), new Random(seed));
         }
     },
@@ -72,7 +72,7 @@ public enum ParkingCapacityGenerators implements ParkingCapacityGenerator {
             GlobalAssert.that(scenarioOptions != null);
             long capacity = scenarioOptions.getInt(ScenarioOptionsBase.PARKINGTOTALSPACES);
             long seed = scenarioOptions.getRandomSeed();
-            return new ParkingCapacityFromNetworkDistribution(network, scenarioOptions.getParkingSpaceTagInNetwork(), //
+            return new ParkingCapacityNetworkDistribution(network, scenarioOptions.getParkingSpaceTagInNetwork(), //
                     new Random(seed), capacity);
         }
     };

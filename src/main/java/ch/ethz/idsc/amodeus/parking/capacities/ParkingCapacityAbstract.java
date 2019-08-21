@@ -8,7 +8,10 @@ import java.util.Map;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 
-public abstract class ParkingCapacityAbstract implements ParkingCapacity {
+public abstract class ParkingCapacityAbstract //
+        implements ParkingCapacity {
+
+    private boolean cleanupFlag = false;
 
     /** Storing all the given Capacities in a Map */
     protected final Map<Id<Link>, Long> capacities = new HashMap<>();
@@ -23,8 +26,22 @@ public abstract class ParkingCapacityAbstract implements ParkingCapacity {
                 : 0;
     }
 
+    /** @return {@link Collection} of all {@link Id<Link>}s which
+     *         have capacity > 0 */
     @Override
     public Collection<Id<Link>> getAvailableLinks() {
+        // TODO find more elegant solution
+        /** at first query, ensure that all links with capacity zero are
+         * removed from the set. */
+        if (!cleanupFlag) {
+            Map<Id<Link>, Long> zeroCapacities = new HashMap<>();
+            capacities.entrySet().forEach(e -> {
+                if (e.getValue() < 1)
+                    zeroCapacities.put(e.getKey(), e.getValue());
+            });
+            zeroCapacities.keySet().forEach(k -> capacities.remove(k));
+            cleanupFlag = true;
+        }
         return capacities.keySet();
     }
 }

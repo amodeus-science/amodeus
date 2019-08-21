@@ -22,7 +22,7 @@ import ch.ethz.idsc.tensor.io.TableBuilder;
             tableBuilder.appendRow(distanceElement.time.Get(index), distanceElement.ratios.get(index));
 
         try {
-            SaveUtils.saveFile(tableBuilder.toTable(), identifier, relativeDirectory);
+            SaveUtils.saveFile(tableBuilder.getTable(), identifier, relativeDirectory);
         } catch (Exception exception) {
             exception.printStackTrace();
         }

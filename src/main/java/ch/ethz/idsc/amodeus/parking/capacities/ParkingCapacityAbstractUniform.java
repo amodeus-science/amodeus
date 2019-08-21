@@ -11,6 +11,8 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
 
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+
 public abstract class ParkingCapacityAbstractUniform extends ParkingCapacityAbstract {
 
     /** assigns totSpaces randomly chosen links from the network a parking space, there may
@@ -23,12 +25,13 @@ public abstract class ParkingCapacityAbstractUniform extends ParkingCapacityAbst
 
     protected abstract Collection<? extends Link> getLinks(Network network, Population population);
 
-    protected void fillUsingLinks(Collection<? extends Link> allLinks, long totSpaces, Random random) {
+    protected void fillUsingLinks(Collection<? extends Link> possibleLinks, //
+            long totSpaces, Random random) {
         Map<Id<Link>, Long> parkingCount = new HashMap<>();
-        int bound = allLinks.size();
+        int bound = possibleLinks.size();
         for (int i = 0; i < totSpaces; ++i) {
             int elemRand = random.nextInt(bound);
-            Link link = allLinks.stream().skip(elemRand).findFirst().get();
+            Link link = possibleLinks.stream().skip(elemRand).findFirst().get();
             if (!parkingCount.containsKey(link.getId()))
                 parkingCount.put(link.getId(), (long) 0);
             parkingCount.put(link.getId(), parkingCount.get(link.getId()) + 1);
@@ -36,5 +39,7 @@ public abstract class ParkingCapacityAbstractUniform extends ParkingCapacityAbst
         parkingCount.entrySet().stream().forEach(e -> {
             capacities.put(e.getKey(), e.getValue());
         });
+        GlobalAssert.that(//
+                totSpaces == capacities.values().stream().mapToLong(l -> l).sum());
     }
 }

@@ -109,17 +109,17 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
 
     /** @return {@link Tensor} containing all recorded wait times of the simulation */
     public Tensor getWaitTimes() {
-        return travelTimes.toTable().get(Tensor.ALL, 1);
+        return travelTimes.getTable().get(Tensor.ALL, 1);
     }
 
     /** @return {@link Tensor} containing all recorded drive times of the simulation */
     public Tensor getDriveTimes() {
-        return travelTimes.toTable().get(Tensor.ALL, 2);
+        return travelTimes.getTable().get(Tensor.ALL, 2);
     }
 
     /** @return {@link Tensor} containing all recorded total journey times of the simulation */
     public Tensor getTotalJourneyTimes() {
-        return travelTimes.toTable().get(Tensor.ALL, 3);
+        return travelTimes.getTable().get(Tensor.ALL, 3);
     }
 
     /** @return {@link Tensor} containing

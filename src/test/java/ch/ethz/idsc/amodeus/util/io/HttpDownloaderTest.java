@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 
 import ch.ethz.idsc.tensor.io.HomeDirectory;
+import ch.ethz.idsc.tensor.io.URLFetch;
 import junit.framework.TestCase;
 
 public class HttpDownloaderTest extends TestCase {
@@ -12,7 +13,10 @@ public class HttpDownloaderTest extends TestCase {
         File file = HomeDirectory.file("favicon.ico");
         assertFalse(file.exists());
 
-        HttpDownloader.download("http://www.djtascha.de/favicon.ico", ContentType.IMAGE_XICON).to(file);
+        try (URLFetch urlFetch = new URLFetch("http://www.djtascha.de/favicon.ico")) {
+            ContentType.IMAGE_XICON.require(urlFetch.contentType());
+            urlFetch.download(file);
+        }
         assertTrue(file.isFile());
 
         file.delete();
@@ -22,7 +26,10 @@ public class HttpDownloaderTest extends TestCase {
         File file = HomeDirectory.file("scenario.zip");
         assertFalse(file.exists());
 
-        HttpDownloader.download("https://polybox.ethz.ch/index.php/s/AP9zPPk8wT4KWit/download", ContentType.APPLICATION_ZIP).to(file);
+        try (URLFetch urlFetch = new URLFetch("https://polybox.ethz.ch/index.php/s/AP9zPPk8wT4KWit/download")) {
+            ContentType.APPLICATION_ZIP.require(urlFetch.contentType());
+            urlFetch.download(file);
+        }
 
         assertTrue(file.isFile());
         // System.out.println(file.length());
@@ -35,9 +42,10 @@ public class HttpDownloaderTest extends TestCase {
         File file = HomeDirectory.file("scenario-does-not-exist.zip");
         assertFalse(file.exists());
         try {
-            HttpDownloader.download( //
-                    "https://polybox.ethz.ch/index.php/s/C3QUuk3cuWWS1Gmy/download123", //
-                    ContentType.APPLICATION_ZIP).to(file);
+            try (URLFetch urlFetch = new URLFetch("https://polybox.ethz.ch/index.php/s/C3QUuk3cuWWS1Gmy/download123")) {
+                ContentType.APPLICATION_ZIP.require(urlFetch.contentType());
+                urlFetch.download(file);
+            }
             fail();
         } catch (Exception exception) {
             // ---
