@@ -26,7 +26,7 @@ import ch.ethz.idsc.tensor.io.TableBuilder;
         for (int index = 0; index < de.time.length(); ++index)
             tableBuilder.appendRow(de.time.Get(index), de.distancesOverDay.get(index));
         try {
-            UnitSaveUtils.saveFile(tableBuilder.toTable(), identifier, relativeDirectory);
+            UnitSaveUtils.saveFile(tableBuilder.getTable(), identifier, relativeDirectory);
             File dataFolder = new File(relativeDirectory, identifier);
             SaveFormats.CSV.save(Tensors.fromString("time step, total distance, distance with customer, "//
                     + "pickup distance, rebalancing distance, distance ratio"), //

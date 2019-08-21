@@ -84,7 +84,7 @@ import io.humble.video.awt.MediaPictureConverterFactory;
     int count = 0;
 
     @Override
-    public void append(BufferedImage bufferedImage) throws Exception {
+    public void write(BufferedImage bufferedImage) throws Exception {
         /** This is LIKELY not in YUV420P format, so we're going to convert it using some handy utilities. */
         if (converter == null)
             converter = MediaPictureConverterFactory.createConverter(bufferedImage, picture);
@@ -94,7 +94,7 @@ import io.humble.video.awt.MediaPictureConverterFactory;
     }
 
     @Override
-    public void append(Tensor tensor) throws Exception {
+    public void write(Tensor tensor) throws Exception {
         throw new UnsupportedOperationException();
     }
 

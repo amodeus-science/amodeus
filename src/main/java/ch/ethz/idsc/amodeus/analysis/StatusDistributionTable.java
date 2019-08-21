@@ -20,7 +20,7 @@ import ch.ethz.idsc.tensor.io.TableBuilder;
             tableBuilder.appendRow(sd.time.Get(index), sd.statusTensor.get(index));
 
         try {
-            SaveUtils.saveFile(tableBuilder.toTable(), "StatusDistribution", relativeDirectory);
+            SaveUtils.saveFile(tableBuilder.getTable(), "StatusDistribution", relativeDirectory);
         } catch (Exception e) {
             e.printStackTrace();
         }
