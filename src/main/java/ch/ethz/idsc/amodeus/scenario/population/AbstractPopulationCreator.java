@@ -35,15 +35,17 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     private final Config config;
     private final Network network;
     protected final MatsimAmodeusDatabase db;
+    protected final String tripId;
 
     /* package */ AbstractPopulationCreator(File processingDir, Config config, Network network, //
-            MatsimAmodeusDatabase db, DateTimeFormatter dateFormat) {
+            MatsimAmodeusDatabase db, DateTimeFormatter dateFormat, String tripID) {
         populationFile = new File(processingDir, fileName);
         populationFileGz = new File(processingDir, fileName + ".gz");
         this.config = config;
         this.network = network;
         this.db = db;
         this.dateFormat = dateFormat;
+        this.tripId = tripID;
 
     }
 
@@ -56,9 +58,12 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         PopulationFactory populationFactory = population.getFactory();
 
         // Population creation (iterate trough all id's)
-        new CsvReader(inFile, ",").rows().forEachOrdered(row -> {
+        System.out.println("Reading inFile:");
+        System.out.println(inFile.getAbsolutePath());
+        new CsvReader(inFile, ",").rows(row -> {
             try {
-                processLine(row, population, populationFactory);
+                System.err.println("row: " + row);
+                processLine(row, population, populationFactory, tripId);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -103,6 +108,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         return date.toLocalTime().getHour() * 3600 + date.toLocalTime().getMinute() * 60 + date.toLocalTime().getSecond();
     }
 
-    abstract protected void processLine(CsvReader.Row line, Population population, PopulationFactory populationFactory) throws Exception;
+    abstract protected void processLine(CsvReader.Row line, Population population, //
+            PopulationFactory populationFactory, String tripId) throws Exception;
 
 }

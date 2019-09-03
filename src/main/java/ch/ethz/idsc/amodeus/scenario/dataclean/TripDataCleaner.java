@@ -14,6 +14,7 @@ import org.apache.commons.io.FilenameUtils;
 
 import ch.ethz.idsc.amodeus.scenario.readers.AbstractTripsReader;
 import ch.ethz.idsc.amodeus.scenario.trips.TaxiTrip;
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 public class TripDataCleaner extends AbstractDataCleaner<TaxiTrip> {
     private final AbstractTripsReader abstractTripsReader;
@@ -24,6 +25,8 @@ public class TripDataCleaner extends AbstractDataCleaner<TaxiTrip> {
 
     @Override // from AbstractDataCleaner
     public Stream<TaxiTrip> readFile(File file) throws IOException {
+        System.out.println("Reading: " +  file.getAbsolutePath());
+        System.out.println("Using:   " + abstractTripsReader.getClass().getSimpleName());
         return abstractTripsReader.getTripStream(file);
     }
 
@@ -35,7 +38,8 @@ public class TripDataCleaner extends AbstractDataCleaner<TaxiTrip> {
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outFile))) {
             String headers = Arrays.stream(TaxiTrip.class.getFields()).map(Field::getName) //
                     .collect(Collectors.joining(","));
-            bufferedWriter.write(headers);
+            bufferedWriter.write(headers);            
+            System.out.println("now entering second part");                        
             stream.sorted().forEachOrdered(trip -> {
                 try {
                     bufferedWriter.newLine();

@@ -27,17 +27,19 @@ public class TripFleetConverter implements FleetConverter {
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
     @Override
-    public void run(File processingDir, File tripFile, DataOperator<?> dataOperator) throws Exception {
+    public void run(File processingDir, File tripFile, DataOperator<?> dataOperator, //
+            ScenarioOptions simOptions, //
+            Network network, String tripId)//
+            throws Exception {
         GlobalAssert.that(tripFile.isFile());
 
         // Prepare Environment and load all configuration files
         // ===================================
-        ScenarioOptions simOptions = new ScenarioOptions(processingDir, ScenarioOptionsBase.getDefault());
+        // ScenarioOptions simOptions = new ScenarioOptions(processingDir, ScenarioOptionsBase.getDefault());
 
         File configFile = new File(simOptions.getPreparerConfigName());
         GlobalAssert.that(configFile.exists());
         Config configFull = ConfigUtils.loadConfig(configFile.toString());
-        Network network = NetworkLoader.fromNetworkFile(new File(processingDir, configFull.network().getInputFile())); // loadNetwork(configFile);
         GlobalAssert.that(!network.getNodes().isEmpty());
 
         System.out.println("INFO working folder: " + processingDir.getAbsolutePath());
@@ -75,14 +77,14 @@ public class TripFleetConverter implements FleetConverter {
 
         // Data cleansing
         // ===================================
-        File cleanTripFile = dataOperator.cleaner.clean(correctedTripFile, simOptions, network);
+        File cleanTripFile = dataOperator.cleaner.clean(correctedTripFile);
         GlobalAssert.that(cleanTripFile.isFile());
 
         // Create Population
         // ===================================
         QuadTree<Link> qt = CreateQuadTree.of(network, db);
         TripPopulationCreator populationCreator = new TripPopulationCreator(processingDir, configFull, network, db, //
-                DATE_TIME_FORMATTER, qt);
+                DATE_TIME_FORMATTER, qt, tripId);
         populationCreator.process(cleanTripFile);
     }
 }

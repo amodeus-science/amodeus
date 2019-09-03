@@ -6,8 +6,9 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
@@ -32,7 +33,9 @@ public abstract class AbstractTripsReader {
 
     public Stream<TaxiTrip> getTripStream(File file) throws IOException {
         final AtomicInteger tripIds = new AtomicInteger(0);
-        return new CsvReader(file, delim).rows().map(row -> {
+        List<TaxiTrip> list = new LinkedList<>();
+        new CsvReader(file, delim).rows(row -> {
+
             int tripId = tripIds.getAndIncrement();
             if (tripId % 1000 == 0)
                 System.out.println("trips: " + tripId);
@@ -46,21 +49,25 @@ public abstract class AbstractTripsReader {
                 Scalar durationCompute = Duration.between(pickupTime, dropoffTime);
                 Scalar durationDataset = getDuration(row);
 
-                if (Scalars.lessEquals(Quantity.of(0.1, SI.SECOND), Norm._2.of(durationDataset.subtract(durationCompute))))
+                if (Scalars.lessEquals(Quantity.of(0.1, SI.SECOND), //
+                        durationDataset.subtract(durationCompute).abs()))
                     System.err.println("Mismatch between duration recorded in data and computed duration," + //
                     "computed duration using start and end time: " + //
                     pickupTime + " --> " + dropoffTime + " != " + durationDataset);
 
                 TaxiTrip trip = TaxiTrip.of(tripId, Integer.toString(taxiId), getPickupLocation(row), getDropoffLocation(row), //
                         getDistance(row), getWaitingTime(row), pickupTime, dropoffTime);
-                return trip;
+                list.add(trip);
+
             } catch (Exception exception) {
+                exception.printStackTrace();
                 // TODO
                 // System.err.println("discard trip " + tripId + ": [" + IntStream.range(0, headers().size()).mapToObj(i -> //
                 // headers.get(i) + "=" + line[i]).collect(Collectors.joining(", ")) + "]");
-                return null;
+                // return null;
             }
-        }).filter(Objects::nonNull);
+        });
+        return list.stream();
     }
 
     public int getNumberOfTaxis() {

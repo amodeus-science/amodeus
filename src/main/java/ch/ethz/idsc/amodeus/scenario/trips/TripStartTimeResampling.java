@@ -7,18 +7,16 @@ import java.util.stream.Stream;
 import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
-import ch.ethz.idsc.amodeus.scenario.dataclean.DataFilter;
 import ch.ethz.idsc.tensor.pdf.RandomVariate;
 import ch.ethz.idsc.tensor.pdf.UniformDistribution;
 
-public class TripStartTimeResampling implements DataFilter<TaxiTrip> {
+public class TripStartTimeResampling {
     private final double minuteResolution;
 
     public TripStartTimeResampling(double minuteResolution) {
         this.minuteResolution = minuteResolution;
     }
 
-    @Override
     public Stream<TaxiTrip> filter(Stream<TaxiTrip> stream, ScenarioOptions simOptions, Network network) {
         return stream.peek(trip -> {
             int offsetSec = RandomVariate.of(UniformDistribution.of(-30 * minuteResolution, 30 * minuteResolution)).number().intValue();

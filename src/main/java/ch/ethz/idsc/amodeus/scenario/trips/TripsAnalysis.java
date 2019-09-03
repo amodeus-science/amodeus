@@ -33,7 +33,7 @@ public class TripsAnalysis {
     }
 
     private void analyze() throws IOException {
-        new CsvReader(tripsFile, ",").rows().forEachOrdered(row -> {
+        new CsvReader(tripsFile, ",").rows(row -> {
             requests.add(Integer.valueOf(row.get("Id")));
             taxis.add(Integer.valueOf(row.get("TaxiId")));
             distances.append(RealScalar.of(Double.valueOf(row.get("Distance")) / 1000)); // m -> km

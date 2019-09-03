@@ -24,25 +24,28 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 public class TripPopulationCreator extends AbstractPopulationCreator {
 
     private final ClosestLinkSelect linkSelect;
+    private int globalCount = 0;
 
     public TripPopulationCreator(File processingDir, Config config, Network network, //
-            MatsimAmodeusDatabase db, DateTimeFormatter dateFormat, QuadTree<Link> qt) {
-        super(processingDir, config, network, db, dateFormat);
+            MatsimAmodeusDatabase db, DateTimeFormatter dateFormat, QuadTree<Link> qt, //
+            String tripId) {
+        super(processingDir, config, network, db, dateFormat, tripId);
         this.linkSelect = new ClosestLinkSelect(db, qt);
     }
 
     @Override
-    protected void processLine(CsvReader.Row line, Population population, PopulationFactory populationFactory) throws Exception {
+    protected void processLine(CsvReader.Row line, Population population, //
+            PopulationFactory populationFactory, String tripId) throws Exception {
         // Create Person
-        Id<Person> personID = Id.create(line.get("Id"), Person.class);
+        Id<Person> personID = Id.create(++globalCount, Person.class);
 
         Person person = populationFactory.createPerson(personID);
         Plan plan = populationFactory.createPlan();
 
         // TODO Choose alternative
         // Coord to link
-        int linkIndexStart = linkSelect.indexFromWGS84(str2coord(line.get("PickupLoc")));
-        int linkIndexEnd = linkSelect.indexFromWGS84(str2coord(line.get("DropoffLoc")));
+        int linkIndexStart = linkSelect.indexFromWGS84(str2coord(line.get("pickupLoc")));
+        int linkIndexEnd = linkSelect.indexFromWGS84(str2coord(line.get("dropoffLoc")));
         Id<Link> idStart = db.getOsmLink(linkIndexStart).link.getId();
         Id<Link> idEnd = db.getOsmLink(linkIndexEnd).link.getId();
         // Alternative 2

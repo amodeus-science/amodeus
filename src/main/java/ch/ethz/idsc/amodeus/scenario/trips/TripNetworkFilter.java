@@ -1,7 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.scenario.trips;
 
-import java.util.stream.Stream;
+import java.util.function.Predicate;
 
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Network;
@@ -9,23 +9,15 @@ import org.matsim.core.network.NetworkUtils;
 
 import ch.ethz.idsc.amodeus.data.ReferenceFrame;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
-import ch.ethz.idsc.amodeus.scenario.dataclean.DataFilter;
 
-public class TripNetworkFilter implements DataFilter<TaxiTrip> {
+public class TripNetworkFilter implements Predicate<TaxiTrip> {
 
-    @Override
-    public Stream<TaxiTrip> filter(Stream<TaxiTrip> stream, ScenarioOptions simOptions, Network network) {
-        ReferenceFrame rf = simOptions.getLocationSpec().referenceFrame();
-        double[] networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
-        Coord minCoord = rf.coords_toWGS84().transform(new Coord(networkBounds[0], networkBounds[1]));
-        Coord maxCoord = rf.coords_toWGS84().transform(new Coord(networkBounds[2], networkBounds[3]));
-        if (minCoord.equals(new Coord(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY)) && //
-                maxCoord.equals(new Coord(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY))) {
-            System.err.println("WARN network seems to be empty.");
-            return stream;
-        }
-        return stream.filter(trip -> //
-        inBounds(minCoord, maxCoord, trip.pickupLoc) && inBounds(minCoord, maxCoord, trip.dropoffLoc));
+    private final ScenarioOptions scenarioOptions;
+    private final Network network;
+
+    public TripNetworkFilter(ScenarioOptions scenarioOptions, Network network) {
+        this.scenarioOptions = scenarioOptions;
+        this.network = network;
     }
 
     private static boolean inBounds(Coord minCoord, Coord maxCoord, Coord loc) {
@@ -33,4 +25,17 @@ public class TripNetworkFilter implements DataFilter<TaxiTrip> {
                 loc.getY() >= minCoord.getY() && loc.getY() <= maxCoord.getY()); // in y Coord
     }
 
+    @Override
+    public boolean test(TaxiTrip t) {
+        ReferenceFrame rf = scenarioOptions.getLocationSpec().referenceFrame();
+        double[] networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
+        Coord minCoord = rf.coords_toWGS84().transform(new Coord(networkBounds[0], networkBounds[1]));
+        Coord maxCoord = rf.coords_toWGS84().transform(new Coord(networkBounds[2], networkBounds[3]));
+        if (minCoord.equals(new Coord(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY)) && //
+                maxCoord.equals(new Coord(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY))) {
+            System.err.println("WARN network seems to be empty.");
+            return true;
+        }
+        return inBounds(minCoord, maxCoord, t.pickupLoc) && inBounds(minCoord, maxCoord, t.dropoffLoc);
+    }
 }

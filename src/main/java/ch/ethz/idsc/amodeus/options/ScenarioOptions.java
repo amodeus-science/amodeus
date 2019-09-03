@@ -4,6 +4,7 @@ package ch.ethz.idsc.amodeus.options;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.Random;
 
 import org.matsim.core.config.Config;
 
@@ -137,8 +138,9 @@ public class ScenarioOptions {
         return getString(ScenarioOptionsBase.PARKINGSPOTSTAGIDENTIFIER);
     }
 
-    public ParkingStrategy getParkingStrategy() {
-        return ParkingStrategies.valueOf(getString(ScenarioOptionsBase.PARKINGSTRATEGYIDENTIFIER)).generateParkingStrategy();
+    public ParkingStrategy getParkingStrategy(Random random) {
+        return ParkingStrategies.valueOf(getString(ScenarioOptionsBase.PARKINGSTRATEGYIDENTIFIER))//
+                .generateParkingStrategy(random);
     }
 
     public File getShapeFile() {

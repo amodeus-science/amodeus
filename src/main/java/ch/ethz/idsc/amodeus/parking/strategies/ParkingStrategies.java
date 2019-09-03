@@ -4,33 +4,31 @@ package ch.ethz.idsc.amodeus.parking.strategies;
 import java.util.Random;
 
 public enum ParkingStrategies {
-    NONE() {
+    NONE {
         @Override
-        public ParkingStrategy generateParkingStrategy() {
+        public ParkingStrategy generateParkingStrategy(Random random) {
             return new ParkingNullStrategy();
         }
     }, //
     RANDOMDIFUSION {
         @Override
-        public ParkingStrategy generateParkingStrategy() {
-            return new ParkingRandomDiffusion(new Random(RANDOMSEED));
+        public ParkingStrategy generateParkingStrategy(Random random) {
+            return new ParkingRandomDiffusion(random);
         }
     }, //
     DIRECTEDDIFUSION {
         @Override
-        public ParkingStrategy generateParkingStrategy() {
-            return new ParkingDirectedDiffusion(new Random(RANDOMSEED));
+        public ParkingStrategy generateParkingStrategy(Random random) {
+            return new ParkingDirectedDiffusion(random);
         }
     }, //
     LP {
         @Override
-        public ParkingStrategy generateParkingStrategy() {
+        public ParkingStrategy generateParkingStrategy(Random random) {
             return new ParkingFlow();
         }
     };
 
-    private static final long RANDOMSEED = 1234;
-
-    public abstract ParkingStrategy generateParkingStrategy();
+    public abstract ParkingStrategy generateParkingStrategy(Random random);
 
 }
