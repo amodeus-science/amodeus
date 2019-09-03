@@ -3,11 +3,8 @@ package ch.ethz.idsc.amodeus.util;
 
 import java.time.LocalDateTime;
 
-import org.matsim.api.core.v01.Coord;
-
-import ch.ethz.idsc.amodeus.util.Duration;
-import ch.ethz.idsc.amodeus.util.LocalDateTimes;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Sign;
 
 /** The class {@link TaxiTrip} is used to transform taxi trips from databases into scenarios
@@ -16,8 +13,8 @@ import ch.ethz.idsc.tensor.sca.Sign;
 public class TaxiTrip implements Comparable<TaxiTrip> {
     public final Integer localId;
     public final String taxiId;
-    public final Coord pickupLoc;
-    public final Coord dropoffLoc;
+    public final Tensor pickupLoc;
+    public final Tensor dropoffLoc;
     public final Scalar distance;
     public final Scalar waitTime;
     // ---
@@ -33,7 +30,7 @@ public class TaxiTrip implements Comparable<TaxiTrip> {
      * @param dropoffLoc
      * @param distance
      * @param waitTime */
-    public static TaxiTrip of(Integer id, String taxiId, Coord pickupLoc, Coord dropoffLoc, //
+    public static TaxiTrip of(Integer id, String taxiId, Tensor pickupLoc, Tensor dropoffLoc, //
             Scalar distance, Scalar waitTime, //
             LocalDateTime pickupDate, LocalDateTime dropoffDate) {
         try {
@@ -56,7 +53,7 @@ public class TaxiTrip implements Comparable<TaxiTrip> {
      * @param dropoffLoc
      * @param distance
      * @param waitTime */
-    public static TaxiTrip of(Integer id, String taxiId, Coord pickupLoc, Coord dropoffLoc, //
+    public static TaxiTrip of(Integer id, String taxiId, Tensor pickupLoc, Tensor dropoffLoc, //
             Scalar distance, Scalar waitTime, //
             LocalDateTime pickupDate, Scalar duration) {
         try {
@@ -74,7 +71,7 @@ public class TaxiTrip implements Comparable<TaxiTrip> {
 
     /** This constructor is private as it allows ambiguous entries, of the triple
      * {pickupDate, dropoffDate, duration} only two are necessary. */
-    private TaxiTrip(Integer id, String taxiId, Coord pickupLoc, Coord dropoffLoc, //
+    private TaxiTrip(Integer id, String taxiId, Tensor pickupLoc, Tensor dropoffLoc, //
             Scalar distance, Scalar waitTime, // ,
             LocalDateTime pickupDate, LocalDateTime dropoffDate, Scalar duration) {
         this.localId = id;
