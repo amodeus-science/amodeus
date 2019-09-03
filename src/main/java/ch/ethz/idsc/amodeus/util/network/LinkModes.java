@@ -1,5 +1,5 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.scenario;
+package ch.ethz.idsc.amodeus.util.network;
 
 import java.util.Arrays;
 import java.util.HashSet;

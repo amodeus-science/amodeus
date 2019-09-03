@@ -1,12 +1,12 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.scenario.trips;
+package ch.ethz.idsc.amodeus.util;
 
 import java.time.LocalDateTime;
 
 import org.matsim.api.core.v01.Coord;
 
-import ch.ethz.idsc.amodeus.scenario.time.Duration;
-import ch.ethz.idsc.amodeus.scenario.time.LocalDateTimes;
+import ch.ethz.idsc.amodeus.util.Duration;
+import ch.ethz.idsc.amodeus.util.LocalDateTimes;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.sca.Sign;
 

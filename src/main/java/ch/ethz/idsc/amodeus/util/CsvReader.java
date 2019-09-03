@@ -1,5 +1,5 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.scenario.readers;
+package ch.ethz.idsc.amodeus.util;
 
 import java.io.BufferedReader;
 import java.io.File;
