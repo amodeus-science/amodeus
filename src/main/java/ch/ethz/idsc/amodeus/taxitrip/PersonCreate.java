@@ -1,4 +1,4 @@
-package ch.ethz.idsc.amodeus.util;
+package ch.ethz.idsc.amodeus.taxitrip;
 
 import java.time.LocalDate;
 
@@ -10,7 +10,7 @@ import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.PopulationFactory;
 
-import ch.ethz.idsc.amodeus.taxitrip.TaxiTrip;
+import ch.ethz.idsc.amodeus.util.AmodeusTimeConvert;
 import ch.ethz.idsc.amodeus.util.geo.ClosestLinkSelect;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
