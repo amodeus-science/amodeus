@@ -26,7 +26,7 @@ public enum ExportTaxiTrips {
             String headers = Arrays.stream(TaxiTrip.class.getFields()).map(Field::getName) //
                     .collect(Collectors.joining(";"));
             bufferedWriter.write(headers);
-            stream.sorted().forEachOrdered(trip -> {
+            stream. forEachOrdered(trip -> {
                 String line = "";
                 try {
                     bufferedWriter.newLine();
