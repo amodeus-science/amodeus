@@ -1,8 +1,10 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.util;
+package ch.ethz.idsc.amodeus.taxitrip;
 
 import java.time.LocalDateTime;
 
+import ch.ethz.idsc.amodeus.util.Duration;
+import ch.ethz.idsc.amodeus.util.LocalDateTimes;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Sign;
