@@ -38,7 +38,7 @@ public class KMeansVirtualNetworkCreatorTest {
     public static void setup() throws IOException {
 
         /* input data */
-        File scenarioDirectory = new File(LocateUtils.getSuperFolder("amodeus"), "resources/testScenario");
+        File scenarioDirectory = new File(LocateUtils.getSuperFolder(KMeansVirtualNetworkCreatorTest.class,"amodeus"), "resources/testScenario");
         ScenarioOptions scenarioOptions = new ScenarioOptions(scenarioDirectory, ScenarioOptionsBase.getDefault());
         File configFile = new File(scenarioOptions.getPreparerConfigName());
         AVConfigGroup avCg = new AVConfigGroup();

@@ -8,18 +8,19 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 public enum LocateUtils {
     ;
 
-    // TODO this function is always called with a first argument "amodeus", take this into
-    // this function.
-    public static File getSuperFolder(String name) {
-        File file = new File(LocateUtils.class.getResource("LocateUtils.class").getFile());
-        GlobalAssert.that(file.getAbsolutePath().contains(name));
+    /** @return top folder of repository with name @param repoName in which
+     *         some {@link Class} @param someClass is located. Usage sample:
+     * 
+     *         File directory = new File(LocateUtils.getSuperFolder(CurrentClass.class,"amodeus"), "resources/testScenario"); */
+    public static File getSuperFolder(Class someClass, String repoName) {
+        File file = new File(someClass.getResource(someClass.getSimpleName() + ".class").getFile());
+        GlobalAssert.that(file.getAbsolutePath().contains(repoName));
         boolean test = true;
-        while (!file.getName().endsWith(name) || test) {
-            if (file.getName().endsWith("amodeus"))
+        while (!file.getName().endsWith(repoName) || test) {
+            if (file.getName().endsWith(repoName))
                 test = false;
             file = file.getParentFile();
         }
         return file;
     }
-
 }

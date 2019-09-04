@@ -47,13 +47,13 @@ public class LPTimeVariantTest {
     public static void setUp() throws IOException {
         System.out.println(LPTimeVariant.class.getName());
         // copy scenario data into main directory
-        File scenarioDirectory = new File(LocateUtils.getSuperFolder("amodeus"), "resources/testScenario");
+        File scenarioDirectory = new File(LocateUtils.getSuperFolder(LPTimeVariantTest.class,"amodeus"), "resources/testScenario");
         File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         GlobalAssert.that(workingDirectory.isDirectory());
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
 
         /* input data */
-        scenarioDirectory = new File(LocateUtils.getSuperFolder("amodeus"), "resources/testScenario");
+        scenarioDirectory = new File(LocateUtils.getSuperFolder(LPTimeVariantTest.class,"amodeus"), "resources/testScenario");
         ScenarioOptions scenarioOptions = new ScenarioOptions(scenarioDirectory, ScenarioOptionsBase.getDefault());
         File configFile = new File(scenarioOptions.getPreparerConfigName());
         AVConfigGroup avCg = new AVConfigGroup();

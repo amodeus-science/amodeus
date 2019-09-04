@@ -34,7 +34,7 @@ public class VirtualNetworkIOTest {
     @BeforeClass
     public static void before() throws Exception {
         File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
-        File scenarioDirectory = new File(LocateUtils.getSuperFolder("amodeus"), "resources/testScenario");
+        File scenarioDirectory = new File(LocateUtils.getSuperFolder(VirtualNetworkIOTest.class,"amodeus"), "resources/testScenario");
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
         scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
         testPreparer = TestPreparer.run(workingDirectory);

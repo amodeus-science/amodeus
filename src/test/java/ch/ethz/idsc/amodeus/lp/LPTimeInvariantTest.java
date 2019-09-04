@@ -45,7 +45,7 @@ public class LPTimeInvariantTest {
     public static void setUp() throws IOException {
         System.out.println(LPTimeInvariant.class.getName());
         // copy scenario data into main directory
-        File scenarioDirectory = new File(LocateUtils.getSuperFolder("amodeus"), "resources/testScenario");
+        File scenarioDirectory = new File(LocateUtils.getSuperFolder(LPTimeInvariantTest.class,"amodeus"), "resources/testScenario");
         System.out.println("scenarioDirectory: " + scenarioDirectory);
         File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         GlobalAssert.that(workingDirectory.isDirectory());

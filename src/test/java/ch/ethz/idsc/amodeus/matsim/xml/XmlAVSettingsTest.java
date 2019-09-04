@@ -23,7 +23,7 @@ public class XmlAVSettingsTest {
 
         /** copy av.xml file from test directory */
         File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
-        File scenarioDirectory = new File(LocateUtils.getSuperFolder("amodeus"), "resources/testScenario");
+        File scenarioDirectory = new File(LocateUtils.getSuperFolder(XmlAVSettingsTest.class,"amodeus"), "resources/testScenario");
         GlobalAssert.that(workingDirectory.isDirectory());
         CopyFiles.now(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath(), //
                 Arrays.asList(new String[] { "av.xml" }), true);
