@@ -31,6 +31,12 @@ public enum VirtualNetworkCreators implements VirtualNetworkCreator {
                     population, network, scenarioOptions.getNumVirtualNodes(), scenarioOptions.isCompleteGraph());
         }
     },
+    RINGCENTROID {
+        @Override
+        public VirtualNetwork<Link> create(Network network, Population population, ScenarioOptions scenarioOptions, int numRoboTaxis, int endTime) {
+            return MatsimRingCentroidVirtualNetworkCreator.createVirtualNetwork(population, network, 20, scenarioOptions.isCompleteGraph());
+        }
+    },
     RECTANGULAR {
         @Override
         public VirtualNetwork<Link> create(Network network, Population population, ScenarioOptions scenarioOptions, int numRoboTaxis, int endTime) {

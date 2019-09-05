@@ -19,6 +19,7 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNodes;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.Tensors;
 
 public class CentroidVirtualNetworkCreator<T, U> extends AbstractVirtualNetworkCreator<T, U> {
 
@@ -44,26 +45,17 @@ public class CentroidVirtualNetworkCreator<T, U> extends AbstractVirtualNetworkC
 
         /** create a virtual node for every centroid */
         Map<VirtualNode<T>, Set<T>> vNodeTMap = new LinkedHashMap<>();
-        Map<T, VirtualNode<T>> centroidVNodeMap = new HashMap<>();
-        int id = 0;
+        int id = -1;
         for (T centroid : centroids) {
             String indexStr = VirtualNodes.getIdString(id);
-            final VirtualNode<T> virtualNode = //
-                    new VirtualNode<>(id, indexStr, new HashMap<>(), locationOf.apply(centroid));
-            vNodeTMap.put(virtualNode, new LinkedHashSet<>());
-            centroidVNodeMap.put(centroid, virtualNode);
+            vNodeTMap.put(new VirtualNode<>(++id, indexStr, new HashMap<>(), locationOf.apply(centroid)), new LinkedHashSet<T>());
         }
 
         /** assign every element T to the closest centroid */
-        for (T t : elements) {
-            Tensor loc = locationOf.apply(t);
-            T closestCentroid = quadTree.getClosest(loc.Get(0).number().doubleValue(), loc.Get(1).number().doubleValue());
-            VirtualNode<T> vNode = centroidVNodeMap.get(closestCentroid);
-            vNodeTMap.get(vNode).add(t);
-        }
+        VNodeAdd.byProximity(vNodeTMap, Tensors.of(xVals.first(), yVals.first()), Tensors.of(xVals.last(), yVals.last()), elements, locationOf);
+        System.out.println("vNodeTmap size: " + vNodeTMap.size());
 
         /** create */
         virtualNetwork = createVirtualNetwork(vNodeTMap, elements, uElements, nameOf, completeGraph);
     }
-
 }
