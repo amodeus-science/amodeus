@@ -21,12 +21,12 @@ import ch.ethz.idsc.tensor.red.Mean;
  * associated to one central {@link VirtualNode}
  *
  * @param <T> */
-public class TrivialVirtualNetworkCreator<T, U> extends AbstractVirtualNetworkCreator<T, U> {
+public class SingleNodeVirtualNetworkCreator<T, U> extends AbstractVirtualNetworkCreator<T, U> {
 
     /** @param elements to form the {@link VirtualNetwork}
      * @param locationOf
      * @param nameOf */
-    public TrivialVirtualNetworkCreator(//
+    public SingleNodeVirtualNetworkCreator(//
             Collection<T> elements, Function<T, Tensor> locationOf, Function<T, String> nameOf, //
             Map<U, HashSet<T>> uElements, boolean completeGraph) {
 

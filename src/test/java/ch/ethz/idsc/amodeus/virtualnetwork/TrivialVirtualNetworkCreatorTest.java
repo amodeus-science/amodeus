@@ -18,7 +18,7 @@ public class TrivialVirtualNetworkCreatorTest extends TestCase {
         collection.add(new Coord(0, 1));
         collection.add(new Coord(0, 0));
 
-        Tensor meanOf = TrivialVirtualNetworkCreator.meanOf(collection, TrivialVirtualNetworkCreatorTest::ofCoord);
+        Tensor meanOf = SingleNodeVirtualNetworkCreator.meanOf(collection, TrivialVirtualNetworkCreatorTest::ofCoord);
         assertEquals(meanOf, Tensors.vector(0.5, 0.5));
     }
 

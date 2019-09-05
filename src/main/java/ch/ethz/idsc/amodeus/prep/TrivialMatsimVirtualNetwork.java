@@ -11,7 +11,7 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
 
 import ch.ethz.idsc.amodeus.dispatcher.util.TensorLocation;
-import ch.ethz.idsc.amodeus.virtualnetwork.TrivialVirtualNetworkCreator;
+import ch.ethz.idsc.amodeus.virtualnetwork.SingleNodeVirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 
@@ -30,7 +30,7 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
         network.getLinks().values().forEach(l -> uElements.get(l.getFromNode()).add(l));
         network.getLinks().values().forEach(l -> uElements.get(l.getToNode()).add(l));
 
-        TrivialVirtualNetworkCreator<Link, Node> tvnc = new TrivialVirtualNetworkCreator<>(//
+        SingleNodeVirtualNetworkCreator<Link, Node> tvnc = new SingleNodeVirtualNetworkCreator<>(//
                 elements, TensorLocation::of, NetworkCreatorUtils::linkToID, uElements, false);
         return tvnc.getVirtualNetwork();
     }
