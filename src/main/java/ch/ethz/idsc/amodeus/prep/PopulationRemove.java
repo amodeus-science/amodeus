@@ -12,31 +12,22 @@ import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
 
-public enum PopulationReduce {
+public enum PopulationRemove {
     ;
 
     public static void outsideNetwork(Population population, Network network) {
-        System.out.println("All people in population  which have activities outside network are removed.");
-
+        System.out.println("All people in population with activities outside the network are removed.");
+        int sizeBefore = population.getPersons().size();
         Iterator<? extends Person> itPerson = population.getPersons().values().iterator();
-
-        int counter = 0;
-        int nextMsg = 1;
-
         while (itPerson.hasNext()) {
-            counter++;
-            if (counter % nextMsg == 0) {
-                nextMsg *= 2;
-                System.out.println("we are at person # " + counter + ". ");
-            }
             Person person = itPerson.next();
             boolean removePerson = false;
             for (Plan plan : person.getPlans()) {
                 for (PlanElement planElement : plan.getPlanElements()) {
                     if (planElement instanceof Activity) {
                         Activity act = (Activity) planElement;
-                        Id<Link> actLink = act.getLinkId();
-                        if (!network.getLinks().containsKey(actLink)) {
+                        Id<Link> linkId = act.getLinkId();
+                        if (!network.getLinks().containsKey(linkId)) {
                             removePerson = true;
                             break;
                         }
@@ -46,5 +37,7 @@ public enum PopulationReduce {
             if (removePerson)
                 itPerson.remove();
         }
+        System.out.println("Population size before:  " + sizeBefore);
+        System.out.println("Population size after:   " + population.getPersons().size());
     }
 }
