@@ -3,6 +3,7 @@ package ch.ethz.idsc.amodeus.linkspeed;
 
 import org.matsim.api.core.v01.network.Link;
 
+// TODO DEPLOY does this class have to be public? if yes, document purpose of class
 public class LinkSpeedData {
     private final Link link;
     private final double[] travelTime;

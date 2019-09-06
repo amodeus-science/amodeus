@@ -11,6 +11,7 @@ import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** @author Samuel J. Stauber */
+// TODO DEPLOY does this class have to be public? if yes, document purpose of class
 public class Warmstarter {
     private static final int UNASSIGNED = -1;
     private static final double EPS = 1e-8;

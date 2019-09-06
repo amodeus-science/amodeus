@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.taxitrip;
 
 import java.io.BufferedWriter;
@@ -5,7 +6,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
