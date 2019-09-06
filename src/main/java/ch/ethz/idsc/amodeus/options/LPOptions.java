@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.Properties;
 
 import ch.ethz.idsc.amodeus.lp.LPCreator;
-import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 
 public class LPOptions {
     private final File workingDirectory;

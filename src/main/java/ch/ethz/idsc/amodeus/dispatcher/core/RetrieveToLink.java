@@ -51,11 +51,11 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
                         if (!planedToLink.equals(roboTaxi.getDivertableLocation())) {
                             divert = true;
                         } else {
-                            // TODO remove soon if no errors
+                            // TODO 20190901 remove soon if no errors
                             GlobalAssert.that(roboTaxi.getStatus().equals(SharedRoboTaxiUtils.calculateStatusFromMenu(roboTaxi)));
                         }
                     } else {
-                        // TODO remove soon if no errors
+                        // TODO 20190901 remove soon if no errors
                         GlobalAssert.that(roboTaxi.getStatus().equals(SharedRoboTaxiUtils.calculateStatusFromMenu(roboTaxi)));
                     }
                     if (planedToLink.equals(roboTaxi.getDivertableLocation())) {
@@ -92,11 +92,11 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
                         roboTaxi.addRedirectCourseToMenuAtBegining(redirectCourse);
                         return Optional.of(roboTaxi.getDivertableLocation());
                     }
-                    // TODO remove soon if no errors
+                    // TODO 20190901 remove soon if no errors
                     GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.STAY));
                 } else //
                 if (avTask.getAVTaskType().equals(AVTaskType.DROPOFF)) {
-                    // TODO remove soon if no errors
+                    // TODO 20190901 remove soon if no errors
                     GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.STAY));
                 } else {
                     System.out.println(" Stay Task:" + avTask.getAVTaskType().equals(AVTaskType.STAY));
@@ -117,7 +117,7 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
                         roboTaxi.addRedirectCourseToMenuAtBegining(redirectCourse);
                         return Optional.of(roboTaxi.getDivertableLocation());
                     }
-                    // TODO remove soon if no errors
+                    // TODO 20190901 remove soon if no errors
                     GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.STAY));
                 } else {
                     // We only do it for Drive Tasks. As:

@@ -14,7 +14,8 @@ import java.util.stream.Stream;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensors;
 
-public class ImportTaxiTrips {
+public enum ImportTaxiTrips {
+    ;
 
     public static Stream<TaxiTrip> fromFile(File tripsCSVFile) throws IOException {
         List<TaxiTrip> trips = new ArrayList<>();

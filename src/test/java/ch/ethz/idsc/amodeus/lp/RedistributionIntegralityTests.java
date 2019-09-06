@@ -12,14 +12,13 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.io.Timing;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Chop;
 
 public class RedistributionIntegralityTests {
 
     private static Random random;
-    private static final int n1 = 30;
-    private static final int n2 = 70;
 
     private static final int l1 = 1;
     private static final int l2 = 1;
@@ -36,19 +35,19 @@ public class RedistributionIntegralityTests {
                         random = new Random(seed);
                         Map<String, Map<String, Integer>> solutionILP = localSolver(n1, n2);
 
-                        long time = System.currentTimeMillis();
+                        Timing timing1 = Timing.started();
                         Tensor milpsol = Tensors.empty();
                         solutionILP.values().forEach(m -> m.values().stream().forEach(i -> {
                             milpsol.append(RealScalar.of(i));
                         }));
-                        long timeMILP = System.currentTimeMillis() - time;
+                        timing1.stop();
 
-                        time = System.currentTimeMillis();
+                        Timing timing2 = Timing.started();
                         Tensor lpsol = Tensors.empty();
                         solution_LP.values().forEach(m -> m.values().stream().forEach(d -> {
                             lpsol.append(RealScalar.of(d));
                         }));
-                        long timeILP = System.currentTimeMillis() - time;
+                        timing2.stop();
 
                         // System.out.println(milpsol);
                         // System.out.println(lpsol);
@@ -111,8 +110,7 @@ public class RedistributionIntegralityTests {
         RedistributionProblemSolverMILP<String> redistributionLP = //
                 new RedistributionProblemSolverMILP<>(agentsToGo, freeSpaces, //
                         (i1, i2) -> distance(i1, i2), s -> s, false, "");
-        Map<String, Map<String, Integer>> solution = redistributionLP.returnSolution();
-        return solution;
+        return redistributionLP.returnSolution();
     }
 
 }
