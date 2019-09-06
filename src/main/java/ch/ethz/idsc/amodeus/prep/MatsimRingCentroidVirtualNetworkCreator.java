@@ -52,7 +52,7 @@ public class MatsimRingCentroidVirtualNetworkCreator {
         centroids.add(qt.getClosest(centerX, centerY));
 
         for (int count = 1; count < numVNodes; ++count) {
-            double arg = count / (numVNodes - 1.0) * Math.PI;
+            double arg = count / (numVNodes - 1.0) * 2 * Math.PI;
             double posX = centerX + radius * Math.cos(arg);
             double posY = centerY + radius * Math.sin(arg);
             Link closest = qt.getClosest(posX, posY);
