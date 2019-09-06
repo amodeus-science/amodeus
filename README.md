@@ -84,4 +84,4 @@ The source code is attached to every release.
 
 ## Misc
 
-So beherrscht mein aeusserer Sinn die physische, mein innerer Sinn die moralische Welt. Alles unterwirft sich meiner Willkuer, jede Erscheinung, jede Handlung kann ich nennen, wie es mir gefaellt; die lebendige und leblose Welt haengt an den Ketten, die mein Geist regiert, mein ganzes Leben ist nur ein Traum, dessen mancherlei Gestalten sich nach meinem Willen formen. Ich selbst bin das einzige Gesetz in der ganzen Natur, diesem Gesetz gehorcht alles.
+So beherrscht mein äusserer Sinn die physische, mein innerer Sinn die moralische Welt. Alles unterwirft sich meiner Willkür, jede Erscheinung, jede Handlung kann ich nennen, wie es mir gefällt; die lebendige und leblose Welt hängt an den Ketten, die mein Geist regiert, mein ganzes Leben ist nur ein Traum, dessen mancherlei Gestalten sich nach meinem Willen formen. Ich selbst bin das einzige Gesetz in der ganzen Natur, diesem Gesetz gehorcht alles.

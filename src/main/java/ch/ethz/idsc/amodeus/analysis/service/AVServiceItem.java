@@ -7,6 +7,7 @@ import org.matsim.api.core.v01.population.Person;
 
 import ch.ethz.matsim.av.data.AVOperator;
 
+// TODO DEPLOY does this class have to be public? if yes, document purpose of class
 public class AVServiceItem {
     public Id<Person> personId;
     public int tripIndex;

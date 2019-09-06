@@ -27,6 +27,7 @@ public class MatsimRingCentroidVirtualNetworkCreator {
 
     public static VirtualNetwork<Link> createVirtualNetwork(Population population, Network network, int numVNodes, //
             boolean completeGraph) {
+        @SuppressWarnings("unchecked")
         Collection<Link> elements = (Collection<Link>) network.getLinks().values();
         Map<Node, HashSet<Link>> uElements = NodeAdjacencyMap.of(network);
 
