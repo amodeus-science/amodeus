@@ -41,7 +41,7 @@ public class LPMinFlowTest {
     public static void setup() throws IOException {
         System.out.println(LPTimeInvariant.class.getName());
         /** input data */
-        File scenarioDirectory = new File(LocateUtils.getSuperFolder(LPMinFlowTest.class,"amodeus"), "resources/testScenario");
+        File scenarioDirectory = new File(LocateUtils.getSuperFolder(LPMinFlowTest.class, "amodeus"), "resources/testScenario");
         System.out.println("scenarioDirectory: " + scenarioDirectory.getAbsolutePath());
         scenarioOptions = new ScenarioOptions(scenarioDirectory, ScenarioOptionsBase.getDefault());
         File configFile = new File(scenarioOptions.getPreparerConfigName());

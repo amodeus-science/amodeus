@@ -33,7 +33,7 @@ public enum ComparisonFilesCreator {
     public static void main(String[] args) throws Exception {
 
         File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
-        File scenarioDirectory = new File(LocateUtils.getSuperFolder(ComparisonFilesCreator.class,"amodeus"), "resources/testScenario");
+        File scenarioDirectory = new File(LocateUtils.getSuperFolder(ComparisonFilesCreator.class, "amodeus"), "resources/testScenario");
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
         ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
         TestPreparer testPreparer = TestPreparer.run(workingDirectory);

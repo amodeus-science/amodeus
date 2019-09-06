@@ -26,5 +26,4 @@ public enum StaticTravelDataCreator {
         return new StaticTravelData(virtualNetwork.getvNetworkID(), lambdaAbsolute, alphaAbsolute, fAbsolute, v0_i, lpName, endTime);
     }
 
-
 }

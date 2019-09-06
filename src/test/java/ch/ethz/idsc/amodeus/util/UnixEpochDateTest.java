@@ -6,7 +6,6 @@ import java.time.ZoneId;
 import org.junit.Assert;
 import org.junit.Test;
 
-
 public class UnixEpochDateTest {
 
     @Test

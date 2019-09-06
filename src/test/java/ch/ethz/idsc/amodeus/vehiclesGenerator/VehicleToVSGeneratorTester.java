@@ -50,7 +50,7 @@ public class VehicleToVSGeneratorTester {
     public static void setup() throws IOException {
 
         /** input data */
-        File scenarioDirectory = new File(LocateUtils.getSuperFolder(VehicleToVSGenerator.class,"amodeus"), "resources/testScenario");
+        File scenarioDirectory = new File(LocateUtils.getSuperFolder(VehicleToVSGenerator.class, "amodeus"), "resources/testScenario");
         scenarioOptions = new ScenarioOptions(scenarioDirectory, ScenarioOptionsBase.getDefault());
         File configFile = new File(scenarioOptions.getPreparerConfigName());
         AVConfigGroup avCg = new AVConfigGroup();
