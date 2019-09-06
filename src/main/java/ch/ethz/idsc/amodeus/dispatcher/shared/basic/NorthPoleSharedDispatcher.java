@@ -153,9 +153,9 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
         while (equatorLinks.size() < 1) {
             for (Link l : network.getLinks().values()) {
                 boolean crossEq1 = l.getFromNode().getCoord().getY() - margin <= //
-                equator && l.getToNode().getCoord().getY() + margin >= equator;
+                        equator && l.getToNode().getCoord().getY() + margin >= equator;
                 boolean crossEq2 = l.getFromNode().getCoord().getY() + margin >= //
-                equator && l.getToNode().getCoord().getY() - margin <= equator;
+                        equator && l.getToNode().getCoord().getY() - margin <= equator;
                 if (crossEq1 || crossEq2)
                     equatorLinks.add(l);
             }

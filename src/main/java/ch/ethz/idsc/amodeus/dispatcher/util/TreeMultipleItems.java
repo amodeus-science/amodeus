@@ -57,7 +57,7 @@ public class TreeMultipleItems<T> {
     /** Adds the {@link T} @param t to the Tree Maintainer. */
     public void add(T t) {
         if (!set.contains(t)) {
-            Double submission = function.apply(t);
+            double submission = function.apply(t);
             boolean setok = set.add(t);
             if (tree.containsKey(submission)) {
                 tree.get(submission).add(t);
@@ -66,7 +66,6 @@ public class TreeMultipleItems<T> {
                 newSet.add(t);
                 tree.put(submission, newSet);
             }
-            // TODO add check for tree, clruch @ datahaki, is the tODO clear for you?
             GlobalAssert.that(setok);
         }
     }
@@ -74,7 +73,7 @@ public class TreeMultipleItems<T> {
     /** Removes the {@link T} @param t from the Tree Maintainer. */
     public void remove(T t) {
         if (contains(t)) {
-            Double value = function.apply(t);
+            double value = function.apply(t);
             boolean setok = set.remove(t);
             boolean treeok = tree.get(value).remove(t);
             GlobalAssert.that(setok && treeok);
@@ -85,7 +84,7 @@ public class TreeMultipleItems<T> {
 
     }
 
-    public void removeAllElementsWithValueSmaller(Double minValue) {
+    public void removeAllElementsWithValueSmaller(double minValue) {
         if (!tree.isEmpty()) {
             // TODO make use of allready sorted Navigable Map
             Set<T> toRemoveSet = getTsInOrderOfValue().stream().filter(t -> function.apply(t) <= minValue).collect(Collectors.toSet());

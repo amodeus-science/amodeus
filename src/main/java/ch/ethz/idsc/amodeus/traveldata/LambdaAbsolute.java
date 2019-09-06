@@ -15,7 +15,7 @@ import ch.ethz.idsc.tensor.Tensor;
 
 public enum LambdaAbsolute {
     ;
-    
+
     /** returns the lambdaAbsolute {@link Tensor} that represents all requests in the population.
      * E.g. lambdaAbsolute(k,i,j)=n means that n requests appear at timeInterval k
      * with departure in virtual node i and destination in virtual node j */

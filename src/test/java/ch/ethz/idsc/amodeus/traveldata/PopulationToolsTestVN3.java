@@ -51,13 +51,13 @@ public class PopulationToolsTestVN3 {
     @BeforeClass
     public static void setUp() throws IOException {
         // copy scenario data into main directory
-        File scenarioDirectory = new File(LocateUtils.getSuperFolder(PopulationToolsTestVN3.class,"amodeus"), "resources/testScenario");
+        File scenarioDirectory = new File(LocateUtils.getSuperFolder(PopulationToolsTestVN3.class, "amodeus"), "resources/testScenario");
         File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         GlobalAssert.that(workingDirectory.exists());
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
 
         /* input data */
-        scenarioDirectory = new File(LocateUtils.getSuperFolder(PopulationToolsTestVN3.class,"amodeus"), "resources/testScenario");
+        scenarioDirectory = new File(LocateUtils.getSuperFolder(PopulationToolsTestVN3.class, "amodeus"), "resources/testScenario");
         scenarioOptions = new ScenarioOptions(scenarioDirectory, ScenarioOptionsBase.getDefault());
         File configFile = new File(scenarioOptions.getPreparerConfigName());
         AVConfigGroup avCg = new AVConfigGroup();
