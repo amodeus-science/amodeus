@@ -70,6 +70,10 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     }
 
     /* package */ VirtualNode<T> addVirtualNode(VirtualNode<T> virtualNode) {
+        if(virtualNodes.size() != virtualNode.getIndex()){
+            System.out.println(virtualNodes.size());
+            System.out.println(virtualNode.getIndex());
+        }        
         GlobalAssert.that(virtualNodes.size() == virtualNode.getIndex()); // <- NEVER remove this check
         virtualNodes.put(virtualNode.getIndex(), virtualNode);
         for (T t : virtualNode.getLinks())

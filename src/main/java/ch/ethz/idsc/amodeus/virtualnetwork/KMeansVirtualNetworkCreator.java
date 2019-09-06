@@ -34,9 +34,6 @@ import de.lmu.ifi.dbs.elki.math.random.RandomFactory;
 public class KMeansVirtualNetworkCreator<T, U> extends AbstractVirtualNetworkCreator<T, U> {
     private static final SquaredEuclideanDistanceFunction DISTANCE_FUNCTION = SquaredEuclideanDistanceFunction.STATIC;
 
-    // ---
-    // private RandomlyGeneratedInitialMeans init = new RandomlyGeneratedInitialMeans(RandomFactory.DEFAULT);
-
     private Clustering<KMeansModel> clustering;
 
     /** @param datapoints of any kind with coordinates that should be used for k-Means generation of the network
@@ -113,7 +110,6 @@ public class KMeansVirtualNetworkCreator<T, U> extends AbstractVirtualNetworkCre
         {
             List<Cluster<KMeansModel>> allClusters = clustering.getAllClusters();
             Collections.sort(allClusters, ClusterKMeansModelComparator.INSTANCE);
-
             int index = 0;
             for (Cluster<KMeansModel> cluster : allClusters) {
                 Tensor coord = Tensors.vectorDouble( //
@@ -128,11 +124,9 @@ public class KMeansVirtualNetworkCreator<T, U> extends AbstractVirtualNetworkCre
         // 2) ASSIGN network links to closest nodes with a quadtree structure
         VNodeAdd.byProximity(vNMap, lbounds, ubounds, elements, locationOf);
         return vNMap;
-
     }
 
     public Clustering<KMeansModel> getClustering() {
         return clustering;
     }
-
 }

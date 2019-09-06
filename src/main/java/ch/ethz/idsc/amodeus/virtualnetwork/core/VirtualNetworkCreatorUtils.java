@@ -10,7 +10,8 @@ import java.util.function.Function;
 /* package */ enum VirtualNetworkCreatorUtils {
     ;
 
-    public static <T> void addToVNodes(Map<VirtualNode<T>, Set<T>> vNMap, Function<T, String> nameOf, VirtualNetwork<T> _virtualNetwork) {
+    public static <T> void addToVNodes(Map<VirtualNode<T>, Set<T>> vNMap, Function<T, String> nameOf, //
+            VirtualNetwork<T> _virtualNetwork) {
         VirtualNetworkImpl<T> virtualNetwork = (VirtualNetworkImpl<T>) _virtualNetwork;
         for (VirtualNode<T> virtualNode : vNMap.keySet()) {
             Map<String, T> map = new HashMap<>();
@@ -20,7 +21,8 @@ import java.util.function.Function;
         }
     }
 
-    public static <T> void fillSerializationInfo(Collection<T> elements, VirtualNetwork<T> _virtualNetwork, Function<T, String> nameOf) {
+    public static <T> void fillSerializationInfo(Collection<T> elements, VirtualNetwork<T> _virtualNetwork, //
+            Function<T, String> nameOf) {
         VirtualNetworkImpl<T> virtualNetwork = (VirtualNetworkImpl<T>) _virtualNetwork;
         Map<T, String> map = new HashMap<>();
         elements.forEach(l -> map.put(l, nameOf.apply(l)));

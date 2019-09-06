@@ -13,6 +13,22 @@ public abstract class AbstractVirtualNetworkCreator<T, U> {
 
     protected VirtualNetwork<T> virtualNetwork;
 
+    public VirtualNetwork<T> getVirtualNetwork() {
+        return virtualNetwork;
+    }
+
+    /** @return a {@link VirtualNetwork}, children classes must call this function to create a
+     *         {@link VirtualNetwork}, the following inputs are needed:
+     * 
+     *         - a {@link Map} @param vNodeTMap that assings all the elements in the network T to a certain
+     *         {@link VirtualNode}
+     *         - the {@link Collection} @param elements of all link elements T in the network
+     *         - the {@link Map} @param uElements of all node elements U that assigns all link elements T adjacent to the
+     *         node U to it.
+     *         - A {@link Function} @param nameOf assigning a {@link String} name to each element T
+     *         - A {@link Boolean} @param completeGraph that encodes if all possible links between
+     *         {@link VirtualNode}s should be introduced or only the {@link VirtualLink}s between neighboring
+     *         {@link VirtualNode}s */
     protected VirtualNetwork<T> createVirtualNetwork(Map<VirtualNode<T>, Set<T>> vNodeTMap, //
             Collection<T> elements, Map<U, HashSet<T>> uElements, Function<T, String> nameOf, //
             boolean completeGraph) {
@@ -20,6 +36,7 @@ public abstract class AbstractVirtualNetworkCreator<T, U> {
         /** initialize new {@link VirtualNetwork} */
         VirtualNetwork<T> virtualNetwork = new VirtualNetworkImpl<>();
 
+        /** assign link elements to virtual nodes */
         VirtualNetworkCreatorUtils.addToVNodes(vNodeTMap, nameOf, virtualNetwork);
 
         /** create virtualLinks for complete or neighboring graph */
@@ -33,7 +50,4 @@ public abstract class AbstractVirtualNetworkCreator<T, U> {
 
     }
 
-    public VirtualNetwork<T> getVirtualNetwork() {
-        return virtualNetwork;
-    }
 }

@@ -15,6 +15,7 @@ import ch.ethz.idsc.amodeus.lp.LPSolver;
 import ch.ethz.idsc.amodeus.options.LPOptions;
 import ch.ethz.idsc.amodeus.options.LPOptionsBase;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
+import ch.ethz.idsc.amodeus.traveldata.LambdaAbsolute;
 import ch.ethz.idsc.amodeus.traveldata.StaticTravelData;
 import ch.ethz.idsc.amodeus.traveldata.StaticTravelDataCreator;
 import ch.ethz.idsc.amodeus.traveldata.TravelDataIO;
@@ -44,7 +45,7 @@ import ch.ethz.matsim.av.framework.AVConfigGroup;
                 System.out.println("Start The LP again");
                 /** reading the whole travel data */
 
-                Tensor lambdaAbsolute = StaticTravelDataCreator.getLambdaAbsolute( //
+                Tensor lambdaAbsolute = LambdaAbsolute.get( //
                         scenario.getNetwork(), virtualNetwork, //
                         scenario.getPopulation(), scenarioOptions.getdtTravelData(), endTime);
                 LPOptions lpOptions = new LPOptions(scenarioOptions.getWorkingDirectory(), LPOptionsBase.getDefault());

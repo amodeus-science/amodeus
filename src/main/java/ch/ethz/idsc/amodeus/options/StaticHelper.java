@@ -16,8 +16,11 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     /** @return Properties object with default options and any options found in
      *         folder @param directory with simulation data and an AmodeusOptions.properties File
      * @throws IOException */
-    public static Properties loadOrCreateScenarioOptions(File directory, Properties simOptions) throws IOException {
-        GlobalAssert.that(directory.isDirectory());
+    public static Properties loadOrCreateScenarioOptions(File directory, Properties simOptions)//
+            throws IOException {
+        if (!directory.isDirectory()) {
+            throw new IllegalArgumentException("Not a directory: " + directory.getAbsolutePath());
+        }
         return locateOrLoad(directory, simOptions, ScenarioOptionsBase.OPTIONSFILENAME, //
                 ScenarioOptionsBase::savePropertiesToFile);
     }

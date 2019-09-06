@@ -32,11 +32,8 @@ public enum NetworkLoader {
                 toDelete.add(entry);
             }
         }
-
         toDelete.stream().forEach(e -> config.removeModule(e.getKey()));
-
         Scenario scenario = ScenarioUtils.loadScenario(config);
         return scenario.getNetwork();
     }
-
 }
