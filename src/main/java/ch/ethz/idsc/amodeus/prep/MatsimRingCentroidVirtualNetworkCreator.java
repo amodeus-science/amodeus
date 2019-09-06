@@ -3,12 +3,9 @@ package ch.ethz.idsc.amodeus.prep;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.NavigableMap;
-import java.util.TreeMap;
 
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
@@ -20,6 +17,7 @@ import org.matsim.core.utils.collections.QuadTree;
 import ch.ethz.idsc.amodeus.dispatcher.util.TensorLocation;
 import ch.ethz.idsc.amodeus.util.math.CreateQuadTree;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.amodeus.util.network.NodeAdjacencyMap;
 import ch.ethz.idsc.amodeus.virtualnetwork.CentroidVirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 
@@ -30,16 +28,18 @@ public class MatsimRingCentroidVirtualNetworkCreator {
     public static VirtualNetwork<Link> createVirtualNetwork(Population population, Network network, int numVNodes, //
             boolean completeGraph) {
         Collection<Link> elements = (Collection<Link>) network.getLinks().values();
-
-        Map<Node, HashSet<Link>> uElements = new HashMap<>();
-        network.getNodes().values().forEach(n -> uElements.put(n, new HashSet<>()));
-        network.getLinks().values().forEach(l -> uElements.get(l.getFromNode()).add(l));
-        network.getLinks().values().forEach(l -> uElements.get(l.getToNode()).add(l));
-
-        NavigableMap<Double, Link> links = new TreeMap<>();
-        network.getLinks().values().forEach(l -> links.put(l.getLength(), l));
+        Map<Node, HashSet<Link>> uElements = NodeAdjacencyMap.of(network);
 
         /** generating centroids on a ring */
+        List<Link> centroids = getRingCentroids(network, numVNodes);
+
+        /** create the virtual network using the centroidvirtualNetworkCreator */
+        CentroidVirtualNetworkCreator<Link, Node> vnc = new CentroidVirtualNetworkCreator<>(//
+                elements, centroids, TensorLocation::of, NetworkCreatorUtils::linkToID, uElements, completeGraph);
+        return vnc.getVirtualNetwork();
+    }
+
+    private static List<Link> getRingCentroids(Network network, int numVNodes) {
         List<Link> centroids = new ArrayList<>();
         double[] bounds = NetworkUtils.getBoundingBox(network.getNodes().values()); // minX, minY, maxX, maxY
         QuadTree<Link> qt = CreateQuadTree.of(network);
@@ -59,11 +59,6 @@ public class MatsimRingCentroidVirtualNetworkCreator {
             centroids.add(closest);
         }
         GlobalAssert.that(centroids.size() == numVNodes);
-
-        CentroidVirtualNetworkCreator<Link, Node> vnc = new CentroidVirtualNetworkCreator<>(//
-                elements, centroids, TensorLocation::of, NetworkCreatorUtils::linkToID, uElements, completeGraph);
-        return vnc.getVirtualNetwork();
-
+        return centroids;
     }
-
 }

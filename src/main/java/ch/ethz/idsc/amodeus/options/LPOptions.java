@@ -12,18 +12,6 @@ public class LPOptions {
     private final File workingDirectory;
     protected final Properties properties;
 
-    @Deprecated
-    /** Should not be used in amodeus repository anymore. */
-    protected LPOptions(Properties properties) {
-        this.properties = properties;
-
-        try {
-            this.workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public LPOptions(File workingDirectory, Properties fallbackDefault) throws IOException {
         this.workingDirectory = workingDirectory;
         this.properties = StaticHelper.loadOrCreateLPOptions(workingDirectory, fallbackDefault);

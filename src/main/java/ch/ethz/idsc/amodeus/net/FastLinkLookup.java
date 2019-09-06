@@ -7,6 +7,8 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.utils.collections.QuadTree;
 
+import ch.ethz.idsc.tensor.Tensor;
+
 public class FastLinkLookup {
     private final MatsimAmodeusDatabase db;
     private final QuadTree<Link> quadTree;
@@ -27,5 +29,10 @@ public class FastLinkLookup {
     public Link getLinkFromWGS84(Coord gps) {
         Coord xy = db.referenceFrame.coords_fromWGS84().transform(gps);
         return quadTree.getClosest(xy.getX(), xy.getY());
+    }
+
+    public Tensor getWGS84fromLink(Link link) {
+        Coord xy = link.getCoord();
+        return TensorCoords.toTensor(db.referenceFrame.coords_toWGS84().transform(xy));
     }
 }
