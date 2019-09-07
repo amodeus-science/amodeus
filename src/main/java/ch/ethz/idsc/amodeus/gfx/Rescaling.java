@@ -11,17 +11,32 @@ import ch.ethz.idsc.tensor.opt.TensorUnaryOperator;
 import ch.ethz.idsc.tensor.red.Min;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
+import ch.ethz.idsc.tensor.sca.Sign;
 
-class Cap implements TensorUnaryOperator {
+class CapAbs implements TensorUnaryOperator {
+    private final Scalar scalar;
+    private final ScalarUnaryOperator scalarUnaryOperator;
+
+    public CapAbs(Scalar scalar) {
+        this.scalar = Sign.requirePositive(scalar);
+        scalarUnaryOperator = Min.function(scalar);
+    }
+
+    @Override
+    public Tensor apply(Tensor vector) {
+        return vector.map(scalarUnaryOperator).divide(scalar);
+    }
+}
+
+class CapRel implements TensorUnaryOperator {
     private static final TensorUnaryOperator NORMALIZE = NormalizeUnlessZero.with(Norm._1);
     // ---
     private final Scalar scalar;
     private final ScalarUnaryOperator scalarUnaryOperator;
 
-    public Cap(Scalar scalar) {
-        this.scalar = scalar;
+    public CapRel(Scalar scalar) {
+        this.scalar = Sign.requirePositive(scalar);
         scalarUnaryOperator = Min.function(scalar);
-
     }
 
     @Override
@@ -37,19 +52,26 @@ enum Rank implements TensorUnaryOperator {
     public Tensor apply(Tensor vector) {
         return Ranking.of(vector).divide(RealScalar.of(vector.length()));
     }
-
 }
 
 /* package */ enum Rescaling implements TensorUnaryOperator {
-    CAP_01(new Cap(RealScalar.of(.01))), //
-    CAP_02(new Cap(RealScalar.of(.02))), //
-    CAP_05(new Cap(RealScalar.of(.05))), //
-    CAP_10(new Cap(RealScalar.of(.10))), //
-    CAP_20(new Cap(RealScalar.of(.20))), //
-    CAP_50(new Cap(RealScalar.of(.50))), //
+    /** absolute caps */
+    ABS_E1(new CapAbs(RealScalar.of(1E1))), //
+    ABS_E2(new CapAbs(RealScalar.of(1E2))), //
+    ABS_E3(new CapAbs(RealScalar.of(1E3))), //
+    ABS_E4(new CapAbs(RealScalar.of(1E4))), //
+    /** relative caps */
+    REL_01(new CapRel(RealScalar.of(.01))), //
+    REL_02(new CapRel(RealScalar.of(.02))), //
+    REL_05(new CapRel(RealScalar.of(.05))), //
+    REL_10(new CapRel(RealScalar.of(.10))), //
+    REL_20(new CapRel(RealScalar.of(.20))), //
+    REL_50(new CapRel(RealScalar.of(.50))), //
+    /** 1-norm */
     ONE(NormalizeUnlessZero.with(Norm._1)), //
     /** earlier, the 1-norm was used, but the infinity-norm is preferred for large fleets */
     MAX(NormalizeUnlessZero.with(Norm.INFINITY)), //
+    /** ranking */
     RANK(Rank.INSTANCE);
     // ---
     private final TensorUnaryOperator tensorUnaryOperator;

@@ -58,20 +58,21 @@ public class VirtualNetworkLayer extends ViewerLayer {
             return;
 
         if (drawVNodes) {
-            if (virtualNodeShader.renderBoundary()) {
-                graphics.setColor(new Color(128, 128, 128, 128 + 16));
+            // if (virtualNodeShader.renderBoundary())
+            {
+                graphics.setColor(new Color(128, 128, 128, 128));
                 for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet())
                     graphics.draw(entry.getValue());
             }
 
             switch (virtualNodeShader) {
             case None:
-                graphics.setColor(new Color(128, 128, 128, 32));
+                graphics.setColor(new Color(128, 128, 128, 16));
                 for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet())
                     graphics.fill(entry.getValue());
-                graphics.setColor(new Color(128, 128, 128, 64));
-                for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet())
-                    graphics.draw(entry.getValue());
+                // graphics.setColor(new Color(128, 128, 128, 64));
+                // for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet())
+                // graphics.draw(entry.getValue());
                 break;
             case VehicleCount: {
                 Tensor count = new VehicleCountVirtualNodeFunction(amodeusComponent.db, virtualNetwork).evaluate(ref);
