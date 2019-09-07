@@ -31,6 +31,7 @@ public class ViewerSettings implements Serializable {
     public boolean drawVNodes = true;
     public boolean drawVLinks = false;
     public VirtualNodeShader virtualNodeShader = VirtualNodeShader.None;
+    public Rescaling rescaling = Rescaling.CAP_02;
     public ColorSchemes colorSchemes = ColorSchemes.Jet;
 
     // VehiclesLayer
