@@ -10,7 +10,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import junit.framework.TestCase;
 
-public class TrivialVirtualNetworkCreatorTest extends TestCase {
+public class SingleNodeVirtualNetworkCreatorTest extends TestCase {
     public void testSimple() {
         Collection<Coord> collection = new ArrayList<>();
         collection.add(new Coord(1, 0));
@@ -18,7 +18,7 @@ public class TrivialVirtualNetworkCreatorTest extends TestCase {
         collection.add(new Coord(0, 1));
         collection.add(new Coord(0, 0));
 
-        Tensor meanOf = SingleNodeVirtualNetworkCreator.meanOf(collection, TrivialVirtualNetworkCreatorTest::ofCoord);
+        Tensor meanOf = SingleNodeVirtualNetworkCreator.meanOf(collection, SingleNodeVirtualNetworkCreatorTest::ofCoord);
         assertEquals(meanOf, Tensors.vector(0.5, 0.5));
     }
 

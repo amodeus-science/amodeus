@@ -39,13 +39,4 @@ public enum LocalDateTimes {
     public static LocalDateTime subtractFrom(LocalDateTime ldt, Scalar seconds) {
         return addTo(ldt, seconds);
     }
-
-    // TODO move to tests
-    public static void main(String[] args) {
-        LocalDateTime ldt = LocalDateTime.of(2008, 12, 24, 20, 05, 17);
-        LocalDateTime ldt2 = addTo(ldt, Quantity.of(63, SI.SECOND));
-        System.out.println(ldt);
-        System.out.println(ldt2);
-    }
-
 }

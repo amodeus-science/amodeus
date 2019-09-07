@@ -8,7 +8,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseUtil;
 import junit.framework.TestCase;
 
-public class RequestInMenuTest extends TestCase {
+public class ArtificialSharedScenarioCreatorTest extends TestCase {
     public void testSimple() {
         ArtificialSharedScenarioCreator artificialScenarioCreator = new ArtificialSharedScenarioCreator();
 
