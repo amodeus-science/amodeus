@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.util;
 
 import java.time.LocalDateTime;
@@ -6,7 +7,7 @@ import java.time.ZoneId;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class UnixEpochDateTest {
+public class AmodeusTimeConvertTest {
 
     @Test
     public void test() {
