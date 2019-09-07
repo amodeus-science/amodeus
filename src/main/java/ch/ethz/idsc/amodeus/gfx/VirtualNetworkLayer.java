@@ -25,10 +25,12 @@ import ch.ethz.idsc.amodeus.view.gheat.gui.ColorSchemes;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualLink;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
+import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 public class VirtualNetworkLayer extends ViewerLayer {
-
+    private static final Scalar _224 = RealScalar.of(224);
     public static final Color COLOR = new Color(128, 153 / 2, 0, 128);
     // ---
     private VirtualNetwork<Link> virtualNetwork = null;
@@ -37,6 +39,7 @@ public class VirtualNetworkLayer extends ViewerLayer {
     public boolean drawVNodes;
     public boolean drawVLinks;
     public VirtualNodeShader virtualNodeShader;
+    public Rescaling rescaling;
     public ColorSchemes colorSchemes;
 
     public VirtualNetworkLayer(AmodeusComponent amodeusComponent) {
@@ -63,13 +66,16 @@ public class VirtualNetworkLayer extends ViewerLayer {
 
             switch (virtualNodeShader) {
             case None:
-                graphics.setColor(new Color(128, 128, 128, 64));
+                graphics.setColor(new Color(128, 128, 128, 32));
                 for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet())
                     graphics.fill(entry.getValue());
+                graphics.setColor(new Color(128, 128, 128, 64));
+                for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet())
+                    graphics.draw(entry.getValue());
                 break;
             case VehicleCount: {
                 Tensor count = new VehicleCountVirtualNodeFunction(amodeusComponent.db, virtualNetwork).evaluate(ref);
-                Tensor prob = StaticHelper.normalize1Norm224Contrast(count);
+                Tensor prob = rescaling.apply(count).multiply(_224);
                 for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet()) {
                     final int i = 255 - prob.Get(entry.getKey().getIndex()).number().intValue();
                     graphics.setColor(halfAlpha(colorSchemes.colorDataIndexed.getColor(i)));
@@ -79,7 +85,7 @@ public class VirtualNetworkLayer extends ViewerLayer {
             }
             case RequestCount: {
                 Tensor count = new RequestCountVirtualNodeFunction(amodeusComponent.db, virtualNetwork).evaluate(ref);
-                Tensor prob = StaticHelper.normalize1Norm224Contrast(count);
+                Tensor prob = rescaling.apply(count).multiply(_224);
                 for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet()) {
                     // graphics.setColor(new Color(128, 128, 128, prob.Get(entry.getKey().index).number().intValue()));
                     final int i = 255 - prob.Get(entry.getKey().getIndex()).number().intValue();
@@ -90,7 +96,7 @@ public class VirtualNetworkLayer extends ViewerLayer {
             }
             case MeanRequestDistance: {
                 Tensor count = new MeanRequestDistanceVirtualNodeFunction(amodeusComponent.db, virtualNetwork).evaluate(ref);
-                Tensor prob = StaticHelper.normalize1Norm224Contrast(count);
+                Tensor prob = rescaling.apply(count).multiply(_224);
                 for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet()) {
                     // graphics.setColor(new Color(128, 128, 128, prob.Get(entry.getKey().index).number().intValue()));
                     final int i = 255 - prob.Get(entry.getKey().getIndex()).number().intValue();
@@ -103,7 +109,7 @@ public class VirtualNetworkLayer extends ViewerLayer {
                 Tensor count = new RequestWaitingVirtualNodeFunction( //
                         amodeusComponent.db, virtualNetwork, //
                         StaticHelper::meanOrZero).evaluate(ref);
-                Tensor prob = StaticHelper.normalize1Norm224Contrast(count);
+                Tensor prob = rescaling.apply(count).multiply(_224);
                 for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet()) {
                     // graphics.setColor(new Color(128, 128, 128, prob.Get(entry.getKey().index).number().intValue()));
                     final int i = 255 - prob.Get(entry.getKey().getIndex()).number().intValue();
@@ -116,7 +122,7 @@ public class VirtualNetworkLayer extends ViewerLayer {
                 Tensor count = new RequestWaitingVirtualNodeFunction( //
                         amodeusComponent.db, virtualNetwork, //
                         StaticHelper::medianOrZero).evaluate(ref);
-                Tensor prob = StaticHelper.normalize1Norm224Contrast(count);
+                Tensor prob = rescaling.apply(count).multiply(_224);
                 for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet()) {
                     // graphics.setColor(new Color(128, 128, 128, prob.Get(entry.getKey().index).number().intValue()));
                     final int i = 255 - prob.Get(entry.getKey().getIndex()).number().intValue();
@@ -129,7 +135,7 @@ public class VirtualNetworkLayer extends ViewerLayer {
                 Tensor count = new RequestWaitingVirtualNodeFunction( //
                         amodeusComponent.db, virtualNetwork, //
                         StaticHelper::maxOrZero).evaluate(ref);
-                Tensor prob = StaticHelper.normalize1Norm224Contrast(count);
+                Tensor prob = rescaling.apply(count).multiply(_224);
                 for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet()) {
                     // graphics.setColor(new Color(128, 128, 128, prob.Get(entry.getKey().index).number().intValue()));
                     final int i = 255 - prob.Get(entry.getKey().getIndex()).number().intValue();
@@ -187,8 +193,21 @@ public class VirtualNetworkLayer extends ViewerLayer {
             spinnerLabel.setArray(VirtualNodeShader.values());
             spinnerLabel.setMenuHover(true);
             spinnerLabel.setValue(virtualNodeShader);
-            spinnerLabel.addSpinnerListener(cs -> {
-                virtualNodeShader = cs;
+            spinnerLabel.addSpinnerListener(value -> {
+                virtualNodeShader = value;
+                amodeusComponent.repaint();
+            });
+            spinnerLabel.getLabelComponent().setPreferredSize(new Dimension(100, DEFAULT_HEIGHT));
+            rowPanel.add(spinnerLabel.getLabelComponent());
+        }
+        {
+            SpinnerLabel<Rescaling> spinnerLabel = new SpinnerLabel<>();
+            spinnerLabel.setToolTipText("virtual node rescale");
+            spinnerLabel.setArray(Rescaling.values());
+            spinnerLabel.setMenuHover(true);
+            spinnerLabel.setValue(rescaling);
+            spinnerLabel.addSpinnerListener(value -> {
+                rescaling = value;
                 amodeusComponent.repaint();
             });
             spinnerLabel.getLabelComponent().setPreferredSize(new Dimension(100, DEFAULT_HEIGHT));
@@ -199,8 +218,8 @@ public class VirtualNetworkLayer extends ViewerLayer {
             spinnerLabel.setToolTipText("color scheme");
             spinnerLabel.setArray(ColorSchemes.values());
             spinnerLabel.setValue(colorSchemes);
-            spinnerLabel.addSpinnerListener(cs -> {
-                colorSchemes = cs;
+            spinnerLabel.addSpinnerListener(value -> {
+                colorSchemes = value;
                 amodeusComponent.repaint();
             });
             spinnerLabel.getLabelComponent().setPreferredSize(new Dimension(100, DEFAULT_HEIGHT));
@@ -228,6 +247,7 @@ public class VirtualNetworkLayer extends ViewerLayer {
         settings.drawVNodes = drawVNodes;
         settings.drawVLinks = drawVLinks;
         settings.virtualNodeShader = virtualNodeShader;
+        settings.rescaling = rescaling;
         settings.colorSchemes = colorSchemes;
     }
 
@@ -236,6 +256,7 @@ public class VirtualNetworkLayer extends ViewerLayer {
         drawVNodes = settings.drawVNodes;
         drawVLinks = settings.drawVLinks;
         virtualNodeShader = settings.virtualNodeShader;
+        rescaling = settings.rescaling;
         colorSchemes = settings.colorSchemes;
     }
 }

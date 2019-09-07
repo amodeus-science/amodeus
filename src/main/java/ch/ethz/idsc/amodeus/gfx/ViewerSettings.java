@@ -23,7 +23,7 @@ public class ViewerSettings implements Serializable {
     public int endTime = 24;
 
     // TilesLayer
-    public String tileSourceName = "Mapnik";
+    public String tileSourceName = MapSource.Wikimedia.name();
     public int mapAlphaCover = 192;
     public int mapGrayCover = 0;
 
@@ -31,6 +31,7 @@ public class ViewerSettings implements Serializable {
     public boolean drawVNodes = true;
     public boolean drawVLinks = false;
     public VirtualNodeShader virtualNodeShader = VirtualNodeShader.None;
+    public Rescaling rescaling = Rescaling.CAP_02;
     public ColorSchemes colorSchemes = ColorSchemes.Jet;
 
     // VehiclesLayer
