@@ -9,7 +9,7 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.test.TestFileHandling;
 import ch.ethz.idsc.amodeus.testutils.TestPreparer;
-import ch.ethz.idsc.amodeus.util.io.LocateUtils;
+import ch.ethz.idsc.amodeus.util.io.Locate;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkGet;
@@ -33,7 +33,7 @@ public enum ComparisonFilesCreator {
     public static void main(String[] args) throws Exception {
 
         File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
-        File scenarioDirectory = new File(LocateUtils.getSuperFolder(ComparisonFilesCreator.class, "amodeus"), "resources/testScenario");
+        File scenarioDirectory = new File(Locate.repoFolder(ComparisonFilesCreator.class, "amodeus"), "resources/testScenario");
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
         ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
         TestPreparer testPreparer = TestPreparer.run(workingDirectory);

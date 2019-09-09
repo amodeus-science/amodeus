@@ -11,7 +11,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ch.ethz.idsc.amodeus.util.io.CopyFiles;
-import ch.ethz.idsc.amodeus.util.io.LocateUtils;
+import ch.ethz.idsc.amodeus.util.io.Locate;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.io.DeleteDirectory;
@@ -23,7 +23,7 @@ public class XmlAVSettingsTest {
 
         /** copy av.xml file from test directory */
         File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
-        File scenarioDirectory = new File(LocateUtils.getSuperFolder(XmlAVSettingsTest.class, "amodeus"), "resources/testScenario");
+        File scenarioDirectory = new File(Locate.repoFolder(XmlAVSettingsTest.class, "amodeus"), "resources/testScenario");
         GlobalAssert.that(workingDirectory.isDirectory());
         CopyFiles.now(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath(), //
                 Arrays.asList(new String[] { "av.xml" }), true);
