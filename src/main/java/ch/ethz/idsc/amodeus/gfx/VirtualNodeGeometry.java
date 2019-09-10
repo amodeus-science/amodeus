@@ -16,18 +16,26 @@ import org.matsim.api.core.v01.network.Link;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.OsmLink;
 import ch.ethz.idsc.amodeus.net.TensorCoords;
+import ch.ethz.idsc.amodeus.util.math.PolygonArea;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
+import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.opt.ConvexHull;
+import ch.ethz.idsc.tensor.sca.Sign;
 
 /* package */ class VirtualNodeGeometry {
+    private final Tensor inverseArea;
     private final Map<VirtualNode<Link>, Tensor> convexHulls = new LinkedHashMap<>(); // ordering matters
 
     VirtualNodeGeometry(MatsimAmodeusDatabase db, VirtualNetwork<Link> virtualNetwork) {
-        if (Objects.isNull(virtualNetwork))
+        if (Objects.isNull(virtualNetwork)) {
+            inverseArea = null;
             return;
+        }
+        inverseArea = Array.zeros(virtualNetwork.getVirtualNodes().size());
         for (VirtualNode<Link> virtualNode : virtualNetwork.getVirtualNodes()) {
             Tensor coords = Tensors.empty();
             for (Link link : virtualNode.getLinks()) {
@@ -36,7 +44,14 @@ import ch.ethz.idsc.tensor.opt.ConvexHull;
                 Coord coord = osmLink.getAt(.5);
                 coords.append(Tensors.vector(coord.getX(), coord.getY()));
             }
-            convexHulls.put(virtualNode, ConvexHull.of(coords));
+            Tensor hull = ConvexHull.of(coords);
+            convexHulls.put(virtualNode, hull);
+
+            Scalar area = PolygonArea.FUNCTION.apply(hull);
+            if (Sign.isPositive(area))
+                inverseArea.set(area.reciprocal(), virtualNode.getIndex());
+            else
+                System.out.println("area[" + virtualNode.getIndex() + "] = " + area);
         }
     }
 
@@ -45,6 +60,10 @@ import ch.ethz.idsc.tensor.opt.ConvexHull;
         for (Entry<VirtualNode<Link>, Tensor> entry : convexHulls.entrySet())
             map.put(entry.getKey(), createShape(amodeusComponent, entry.getValue()));
         return map;
+    }
+
+    Tensor inverseArea() {
+        return inverseArea.unmodifiable();
     }
 
     private static Shape createShape(AmodeusComponent amodeusComponent, Tensor hull) {
