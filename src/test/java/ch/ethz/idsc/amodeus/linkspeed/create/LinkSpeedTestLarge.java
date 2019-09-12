@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ch.ethz.idsc.amodeus.linkspeed.create.GLPKLinOptDelayCalculator;
-import ch.ethz.idsc.amodeus.linkspeed.create.LSQTrafficEstimation;
+import ch.ethz.idsc.amodeus.linkspeed.create.FlowTrafficEstimation;
 import ch.ethz.idsc.amodeus.linkspeed.create.TrafficDelayEstimate;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -18,7 +18,7 @@ import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.sca.Round;
 
-/* package */ class LinkSpeedTestLarge {
+public class LinkSpeedTestLarge {
 
     private List<TrafficDelayEstimate> calculators;
 
@@ -64,9 +64,9 @@ import ch.ethz.idsc.tensor.sca.Round;
             System.err.println(calculator.getClass().getSimpleName());
             /** TensorDelayCalculator is skipped as too slow */
             long time = System.currentTimeMillis();
-            LSQTrafficEstimation estimator = //
-                    LSQTrafficEstimation.of(flowMatrix, freeflowMatrix, trafficTimeMatrix, calculator);
-            Tensor travelTimeEstimate = estimator.trafficTravelTimeEstimates;
+            FlowTrafficEstimation estimator = //
+                    FlowTrafficEstimation.of(flowMatrix, freeflowMatrix, trafficTimeMatrix, calculator);
+            Tensor travelTimeEstimate = estimator.trafficTravelTimeEstimates();
             System.out.println("travelTimeEstimate:" + travelTimeEstimate);
             System.out.println("duration: [s] " + (System.currentTimeMillis() - time) / 1000);
             /** if we get here without an error, then it is fine */
