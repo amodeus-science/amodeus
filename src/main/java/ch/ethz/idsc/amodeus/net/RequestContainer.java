@@ -72,4 +72,5 @@ public class RequestContainer implements Serializable {
     public void addAssociatedVehicle(Long time, Integer vehicleIndex) {
         this.vehicleMap.put(time, vehicleIndex);
     }
+    
 }
