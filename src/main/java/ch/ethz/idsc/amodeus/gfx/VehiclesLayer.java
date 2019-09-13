@@ -54,14 +54,14 @@ public class VehiclesLayer extends ViewerLayer {
                     Point p1 = amodeusComponent.getMapPosition(osmLink.getAt(ofs));
                     if (p1 != null) {
                         if (showLocation) {
-                            Color color = statusColors.of(vc.roboTaxiStatus);
+                            Color color = statusColors.of(vc.getLastStatus());
                             graphics.setColor(color);
                             graphics.fillRect(p1.x - car_half, p1.y - car_half, carwidth, carwidth);
                         }
-                        if (bits.get(vc.roboTaxiStatus.ordinal())) {
+                        if (bits.get(vc.getLastStatus().ordinal())) {
                             OsmLink toOsmLink = amodeusComponent.db.getOsmLink(vc.destinationLinkIndex);
                             Point p2 = amodeusComponent.getMapPositionAlways(toOsmLink.getAt(0.5));
-                            Color col = statusColors.ofDest(vc.roboTaxiStatus);
+                            Color col = statusColors.ofDest(vc.getLastStatus());
                             graphics.setColor(col);
                             graphics.drawLine(p1.x, p1.y, p2.x, p2.y);
                         }
@@ -76,7 +76,7 @@ public class VehiclesLayer extends ViewerLayer {
     protected void hud(Graphics2D graphics, SimulationObject ref) {
         int[] count = new int[RoboTaxiStatus.values().length];
         if (ref != null) {
-            ref.vehicles.forEach(v -> ++count[v.roboTaxiStatus.ordinal()]);
+            ref.vehicles.forEach(v -> ++count[v.getLastStatus().ordinal()]);
 
             for (RoboTaxiStatus avStatus : RoboTaxiStatus.values()) {
                 InfoString infoString = new InfoString(String.format("%5d %s", count[avStatus.ordinal()], avStatus.description()));

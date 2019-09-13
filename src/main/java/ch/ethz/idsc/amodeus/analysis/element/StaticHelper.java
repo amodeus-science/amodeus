@@ -26,7 +26,7 @@ import ch.ethz.idsc.tensor.red.Quantile;
     public static Tensor getNumStatus(SimulationObject simOjb) {
         Tensor numPerStatus = Array.zeros(RoboTaxiStatus.values().length);
         Map<RoboTaxiStatus, List<VehicleContainer>> helpMap = simOjb.vehicles.stream() //
-                .collect(Collectors.groupingBy(vehicleContainer -> vehicleContainer.roboTaxiStatus));
+                .collect(Collectors.groupingBy(vehicleContainer -> vehicleContainer.getLastStatus()));
         for (Entry<RoboTaxiStatus, List<VehicleContainer>> entry : helpMap.entrySet())
             numPerStatus.set(RealScalar.of(entry.getValue().size()), entry.getKey().ordinal());
         return numPerStatus;

@@ -41,7 +41,7 @@ import ch.ethz.idsc.tensor.alg.Array;
             final int index = entry.getKey();
             final List<VehicleContainer> list = entry.getValue();
 
-            final long total = list.stream().filter(vc -> vc.roboTaxiStatus.isDriving()).count();
+            final long total = list.stream().filter(vc -> vc.getLastStatus().isDriving()).count();
             if (0 < total) {
                 final Tensor array;
                 if (linkTensor.containsKey(index))
@@ -51,7 +51,7 @@ import ch.ethz.idsc.tensor.alg.Array;
                     linkTensor.put(index, array);
                 }
                 Map<RoboTaxiStatus, List<VehicleContainer>> classify = //
-                        list.stream().collect(Collectors.groupingBy(vc -> vc.roboTaxiStatus));
+                        list.stream().collect(Collectors.groupingBy(vc -> vc.getLastStatus()));
                 int[] counts = new int[3];
                 for (RoboTaxiStatus avStatus : INTERP)
                     counts[avStatus.ordinal()] = classify.containsKey(avStatus) ? classify.get(avStatus).size() : 0;

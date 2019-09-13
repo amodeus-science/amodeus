@@ -59,7 +59,7 @@ public class VehicleStatistic {
              * in the list. */
             double distance = distanceLink.getLength();
 
-            int part = Math.toIntExact(list.stream().filter(vc -> vc.roboTaxiStatus.isDriving()).count());
+            int part = Math.toIntExact(list.stream().filter(vc -> vc.getLastStatus().isDriving()).count());
 
             // Distance covered by one Vehiclecontainer
             Scalar stepDistcontrib = RealScalar.of(distance / part);
@@ -68,7 +68,7 @@ public class VehicleStatistic {
                 final int index = simObjIndLastLinkChange + count;
                 lastUpdatedDist = index;
                 if (index < distanceTotal.length()) {
-                    switch (vehicleContainer.roboTaxiStatus) {
+                    switch (vehicleContainer.getLastStatus()) {
                     case DRIVEWITHCUSTOMER:
                         distanceWithCustomer.set(stepDistcontrib, index);
                         distanceTotal.set(stepDistcontrib, index); // applies to all three
