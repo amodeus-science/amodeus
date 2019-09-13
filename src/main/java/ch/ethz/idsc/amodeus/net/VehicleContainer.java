@@ -27,6 +27,7 @@ public class VehicleContainer implements Serializable {
     public int vehicleIndex = -1; // for tracking of individual vehicles
 
     private NavigableMap<Long, Integer> linkTrace = new TreeMap<>();
+    private NavigableMap<Long, RoboTaxiStatus> statusTrace = new TreeMap<>();
 
     /** value -1 in case no particular destination */
     public int destinationLinkIndex = LINK_UNSPECIFIED;
@@ -44,7 +45,7 @@ public class VehicleContainer implements Serializable {
         this.linkTrace.put(time, linkIndex);
     }
 
-    private NavigableMap<Long, RoboTaxiStatus> statusTrace = new TreeMap<>();
+
 
     public RoboTaxiStatus getLastStatus() {
         if (statusTrace.isEmpty())

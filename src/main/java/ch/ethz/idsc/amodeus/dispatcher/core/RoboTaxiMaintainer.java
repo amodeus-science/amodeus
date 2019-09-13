@@ -111,7 +111,7 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
         updateDivertableLocations();
         if (private_now > 0) { // at time 0, tasks are not started.
             Long time = (long) ((double) private_now);
-            updateCurrentLocations(time);
+            updateCurrentInformation(time);
         }
     }
 
@@ -129,13 +129,14 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
         roboTaxis.stream().filter(rt -> !rt.isWithoutDirective()).forEach(RoboTaxi::executeDirective);
     }
 
-    private void updateCurrentLocations(Long time) {
+    private void updateCurrentInformation(Long time) {
         @SuppressWarnings("unused")
         int failed = 0;
         if (!roboTaxis.isEmpty()) {
             for (RoboTaxi robotaxi : roboTaxis) {
                 final Link link = RoboTaxiLocation.of(robotaxi);
                 if (link != null) {
+                    robotaxi.lastKnownTime = time;
                     robotaxi.addKnownLocation(time, link);
                 } else {
                     ++failed;

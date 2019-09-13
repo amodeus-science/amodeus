@@ -38,12 +38,18 @@ public class RoboTaxi {
     /** unit capacity fields */
     static private final Logger logger = Logger.getLogger(RoboTaxi.class);
     private final AVVehicle avVehicle;
-    private RoboTaxiStatus status;
+
     private final RoboTaxiUsageType usageType; // final might be removed if dispatchers can modify usage
 
     /** This map contains the past few locations of the {@link RoboTaxi}, it is emptied
      * regularly for memory efficiency */
     private NavigableMap<Long, Link> locationTrace = new TreeMap<>();
+
+    private NavigableMap<Long, RoboTaxiStatus> statusTrace = new TreeMap<>();
+    // private RoboTaxiStatus status;
+
+    // this is updated at the beginning of every dispatching step
+    /* package */ long lastKnownTime;
 
     /** drive destination of the RoboTaxi, null for stay task */
     private Link driveDestination;
@@ -67,7 +73,11 @@ public class RoboTaxi {
         this.divertableLinkTime = divertableLinkTime;
         this.driveDestination = Objects.requireNonNull(driveDestination);
         this.directive = null;
-        this.status = RoboTaxiStatus.STAY;
+
+        // this.status = RoboTaxiStatus.STAY;
+        lastKnownTime = (long) divertableLinkTime.time;
+        statusTrace.put(lastKnownTime, RoboTaxiStatus.STAY);
+
         this.usageType = usageType;
     }
 
@@ -110,9 +120,18 @@ public class RoboTaxi {
         return copy;
     }
 
+    public NavigableMap<Long, RoboTaxiStatus> flushStatusTrace() {
+        NavigableMap<Long, RoboTaxiStatus> copy = new TreeMap<>();
+        statusTrace.entrySet().forEach(e -> copy.put(e.getKey(), e.getValue()));
+        statusTrace.clear();
+        // the last element must always remain present!
+        statusTrace.put(copy.lastEntry().getKey(), copy.lastEntry().getValue());
+        return copy;
+    }
+
     /** @return true if vehicle is staying */
     public boolean isInStayTask() {
-        return status.equals(RoboTaxiStatus.STAY);
+        return getStatus().equals(RoboTaxiStatus.STAY);
     }
 
     /** @return {@Id<Link>} of the RoboTaxi, robotaxi ID is the same as AVVehicle ID */
@@ -122,7 +141,7 @@ public class RoboTaxi {
 
     /** @return RoboTaxiStatus of the vehicle */
     public RoboTaxiStatus getStatus() {
-        return status;
+        return statusTrace.lastEntry().getValue();
     }
 
     /** Gets the capacity of the avVehicle. Now its an Integer and not a double as in
@@ -157,6 +176,13 @@ public class RoboTaxi {
         this.locationTrace.put(time, currentLocation);
     }
 
+    // /** function only used from VehicleMaintainer in update steps
+    // *
+    // * @param currentLocation last known link of RoboTaxi location */
+    // /* package */ void addKnownStatus(Long time, RoboTaxiStatus status) {
+    // this.locationTrace.put(time, currentLocation);
+    // }
+
     /** @param currentDriveDestination {@link} roboTaxi is driving to, to be used
      *            only by core package, use setVehiclePickup and
      *            setVehicleRebalance in dispatchers */
@@ -169,14 +195,15 @@ public class RoboTaxi {
      *            automatically. */
     /* package */ void setStatus(RoboTaxiStatus status) {
         GlobalAssert.that(!usageType.equals(RoboTaxiUsageType.SHARED)); // TODO which code handles shared taxi status?????
-        this.status = Objects.requireNonNull(status);
+        statusTrace.put(lastKnownTime, Objects.requireNonNull(status));
+        // this.status = Objects.requireNonNull(status);
     }
 
     /** @return true if robotaxi is without a customer */
     /* package */ boolean isWithoutCustomer() {
         // For now this works with universal dispatcher i.e. single used robotaxis as
         // number of customers is never changed
-        return !status.equals(RoboTaxiStatus.DRIVEWITHCUSTOMER) && //
+        return !getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER) && //
                 menu.menuOnBoardCustomers == 0;
     }
 
@@ -206,7 +233,7 @@ public class RoboTaxi {
      *         used for filtering purposes as currently the roboTaxis cannot be
      *         rerouted when driving on the last link of their route */
     /* package */ boolean notDrivingOnLastLink() {
-        if (status.equals(RoboTaxiStatus.STAY))
+        if (getStatus().equals(RoboTaxiStatus.STAY))
             return true;
 
         Task avT = getSchedule().getCurrentTask();
@@ -219,7 +246,7 @@ public class RoboTaxi {
                                                                // added but the it has not been executed
                                                                // yet
                 logger.warn("RoboTaxiStatus != STAY, but Schedule.getCurrentTask() == AVStayTask; probably needs fixing");
-                System.out.println("status: " + status);
+                System.out.println("status: " + getStatus());
             }
             return true;
         }
@@ -337,7 +364,8 @@ public class RoboTaxi {
             GlobalAssert.that(this.menu.getCourseList().get(0).equals(menu.getCourseList().get(0)));
         }
         this.menu = menu;
-        this.status = SharedRoboTaxiUtils.calculateStatusFromMenu(this);
+        statusTrace.put(lastKnownTime, SharedRoboTaxiUtils.calculateStatusFromMenu(this));
+        // this.status = SharedRoboTaxiUtils.calculateStatusFromMenu(this);
     }
 
     /* package */ void addAVRequestToMenu(AVRequest avRequest) {
@@ -345,7 +373,7 @@ public class RoboTaxi {
         // dispatcher take care of this? We could bring it into the rebalancing dispatcher,
         // there we can add a function which is called:
         // addAVrequestandRemoveFirstRebalancing(AVrequest)
-        if (status.equals(RoboTaxiStatus.REBALANCEDRIVE)) {
+        if (getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE)) {
             GlobalAssert.that(SharedCourseAccess.getStarter(this).get().getMealType().equals(SharedMealType.REDIRECT));
             if (getUnmodifiableViewOfCourses().size() == 1) {
                 finishRedirection();
@@ -361,7 +389,7 @@ public class RoboTaxi {
     /* package */ void addRedirectCourseToMenu(SharedCourse redirectCourse) {
         GlobalAssert.that(redirectCourse.getMealType().equals(SharedMealType.REDIRECT));
         // this if statment is added by Luc and that fix the problem
-        if (status.equals(RoboTaxiStatus.REBALANCEDRIVE)) {
+        if (getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE)) {
             finishRedirection();
         }
         setMenu(SharedCourseAdd.asDessert(menu, redirectCourse));
