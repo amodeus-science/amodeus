@@ -8,8 +8,8 @@ import ch.ethz.idsc.amodeus.net.RequestContainer;
     ;
 
     public static boolean isrelevantRequstContainer(RequestContainer rc) {
-        return (rc.requestStatus.contains(RequestStatus.PICKUP) || rc.requestStatus.contains(RequestStatus.DRIVING)) //
-                && !rc.requestStatus.contains(RequestStatus.DROPOFF);
+        return (rc.allStatii().contains(RequestStatus.PICKUP) || rc.allStatii().contains(RequestStatus.DRIVING)) //
+                && !rc.allStatii().contains(RequestStatus.DROPOFF);
     }
 
 }

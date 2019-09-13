@@ -33,7 +33,7 @@ import ch.ethz.idsc.tensor.red.Median;
     }
 
     public static boolean isWaiting(RequestContainer requestContainer) {
-        return RStatusHelper.unserviced(requestContainer.requestStatus);
+        return RStatusHelper.unserviced(requestContainer.allStatii());
     }
 
 }

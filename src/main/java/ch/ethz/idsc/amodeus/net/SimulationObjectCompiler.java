@@ -20,6 +20,7 @@ public class SimulationObjectCompiler {
     private final Map<String, VehicleContainer> vehicleMap = new HashMap<>();
     private final Map<String, RequestContainer> requestMap = new HashMap<>();
     private final MatsimAmodeusDatabase db;
+    private final long now;
 
     public static SimulationObjectCompiler create( //
             long now, String infoLine, int total_matchedRequests, //
@@ -37,6 +38,7 @@ public class SimulationObjectCompiler {
         GlobalAssert.that(Objects.nonNull(simulationObject));
         this.db = db;
         this.simulationObject = simulationObject;
+        this.now = now;
     }
 
     public void insertRequests(Collection<AVRequest> requests, RequestStatus status) {
@@ -55,9 +57,9 @@ public class SimulationObjectCompiler {
 
     private void insertRequest(AVRequest avRequest, RequestStatus requestStatus) {
         if (requestMap.containsKey(avRequest.getId().toString())) {
-            requestMap.get(avRequest.getId().toString()).requestStatus.add(requestStatus);
+            requestMap.get(avRequest.getId().toString()).addStatus(now, requestStatus);
         } else {
-            RequestContainer requestContainer = RequestContainerCompiler.compile(avRequest, db, requestStatus);
+            RequestContainer requestContainer = RequestContainerCompiler.compile(avRequest, db, requestStatus, now);
             requestMap.put(avRequest.getId().toString(), requestContainer);
         }
     }

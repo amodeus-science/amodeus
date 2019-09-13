@@ -2,7 +2,10 @@
 package ch.ethz.idsc.amodeus.net;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.NavigableMap;
 import java.util.Set;
+import java.util.TreeMap;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RequestStatus;
 
@@ -18,10 +21,43 @@ public class RequestContainer implements Serializable {
      * 
      * DO NOT MODIFY THIS CLASS UNLESS THERE IS A VERY GOOD REASON */
 
+    /** these values are invariant for the entire life of the request */
     public int requestIndex = -1; // <- valid values are positive
-    public int fromLinkIndex = -1; // where the person is now
     public double submissionTime = -1;
+    public int fromLinkIndex = -1; // where the person is now
     public int toLinkIndex = -1; // where the person wants to go
-    public Set<RequestStatus> requestStatus; // union of all statii held by the request in time interval of recording
+
+    /** these values might change with time, the local history
+     * is tracked for later processing */
+    private NavigableMap<Long, RequestStatus> statusTrace = new TreeMap<>();
+
+    /** @return last recorded {@link RequestStatus} */
+    public RequestStatus getStatus() {
+        if (statusTrace.isEmpty())
+            return null;
+        return statusTrace.lastEntry().getValue();
+    }
+
+    // TODO have to keep or can be removed?
+    public NavigableMap<Long, RequestStatus> getTrace() {
+        NavigableMap<Long, RequestStatus> copy = new TreeMap<>();
+        statusTrace.entrySet().forEach(e -> {
+            copy.put(e.getKey(), e.getValue());
+        });
+        return copy;
+    }
+
+    // TODO have to keep or can be removed?
+    public Set<RequestStatus> allStatii() {
+        Set<RequestStatus> all = new HashSet<>();
+        statusTrace.values().forEach(s -> all.add(s));
+        return all;
+    }
+
+    /** record {@link RequestStatus}: (@param time,@param status) */
+    public void addStatus(Long time, RequestStatus status) {
+        this.statusTrace.put(time, status);
+    }
+
     public int associatedVehicle; // vehicle currently associated to request, e.g., assigned for pickup
 }
