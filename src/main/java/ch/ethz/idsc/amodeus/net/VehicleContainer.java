@@ -20,7 +20,7 @@ public class VehicleContainer implements Serializable {
      * 
      * IMPORTANT:
      * 
-     * the used linkIndex are UNRELATED to MATSIM's LinkId,
+     * The used linkIndex are UNRELATED to MATSIM's LinkId,
      * but is our own consecutive and memory efficient id, translation
      * is done via the {@link MatsimAmodeusDatabase} */
 

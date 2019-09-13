@@ -2,7 +2,9 @@
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.List;
+import java.util.NavigableMap;
 import java.util.Objects;
+import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
@@ -30,9 +32,8 @@ import ch.ethz.matsim.av.schedule.AVDropoffTask;
 import ch.ethz.matsim.av.schedule.AVPickupTask;
 import ch.ethz.matsim.av.schedule.AVStayTask;
 
-/** RoboTaxi is central class to be used in all dispatchers. Dispatchers control
- * a fleet of RoboTaxis, each is uniquely associated to an AVVehicle object in
- * MATSim. */
+/** {@link RoboTaxi} is central class to be used in all dispatchers. Dispatchers control
+ * a fleet of RoboTaxis, each is uniquely associated to an AVVehicle object in MATSim. */
 public class RoboTaxi {
     /** unit capacity fields */
     static private final Logger logger = Logger.getLogger(RoboTaxi.class);
@@ -40,8 +41,10 @@ public class RoboTaxi {
     private RoboTaxiStatus status;
     private final RoboTaxiUsageType usageType; // final might be removed if dispatchers can modify usage
 
-    /** last known location of the RoboTaxi */
-    private Link lastKnownLocation;
+    /** This map contains the past few locations of the {@link RoboTaxi}, it is emptied
+     * regularly for memory efficiency */
+    private NavigableMap<Long, Link> locationTrace = new TreeMap<>();
+
     /** drive destination of the RoboTaxi, null for stay task */
     private Link driveDestination;
     /** location/time pair from where / when RoboTaxi path can be altered. */
@@ -97,7 +100,14 @@ public class RoboTaxi {
      *         from where RoboTaxi could change its path, therefore use
      *         getDivertableLocation() for computations. */
     public Link getLastKnownLocation() {
-        return lastKnownLocation;
+        return locationTrace.lastEntry().getValue();
+    }
+
+    public NavigableMap<Long, Link> flushLocationTrace() {
+        NavigableMap<Long, Link> copy = new TreeMap<>();
+        locationTrace.entrySet().forEach(e -> copy.put(e.getKey(), e.getValue()));
+        locationTrace.clear();
+        return copy;
     }
 
     /** @return true if vehicle is staying */
@@ -143,8 +153,8 @@ public class RoboTaxi {
     /** function only used from VehicleMaintainer in update steps
      * 
      * @param currentLocation last known link of RoboTaxi location */
-    /* package */ void setLastKnownLocation(Link currentLocation) {
-        this.lastKnownLocation = Objects.requireNonNull(currentLocation);
+    /* package */ void addKnownLocation(Long time, Link currentLocation) {
+        this.locationTrace.put(time, currentLocation);
     }
 
     /** @param currentDriveDestination {@link} roboTaxi is driving to, to be used

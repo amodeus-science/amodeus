@@ -195,7 +195,7 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
      * @param status {@link} the {@link RoboTaxiStatus} the {@link RoboTaxi}
      *            has after the diversion, depends if used from
      *            {@link setRoboTaxiPickup} or {@link setRoboTaxiRebalance} */
-    final void setRoboTaxiDiversion(RoboTaxi robotaxi, Link destination, RoboTaxiStatus status) {
+    protected final void setRoboTaxiDiversion(RoboTaxi robotaxi, Link destination, RoboTaxiStatus status) {
         /** update {@link RoboTaxiStatus} of {@link RoboTaxi} */
         GlobalAssert.that(robotaxi.isWithoutCustomer());
         GlobalAssert.that(robotaxi.isWithoutDirective());
@@ -325,7 +325,7 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
     /** complete all matchings if a {@link RoboTaxi} has arrived at the fromLink of
      * an {@link AVRequest} */
     @Override
-    void executePickups() {
+    protected void executePickups() {
         Map<AVRequest, RoboTaxi> pickupRegisterCopy = new HashMap<>(pickupRegister);
         for (Entry<AVRequest, RoboTaxi> entry : pickupRegisterCopy.entrySet()) {
             AVRequest avRequest = entry.getKey();
@@ -342,7 +342,7 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
     /** complete all matchings if a {@link RoboTaxi} has arrived at the toLink of an
      * {@link AVRequest} */
     @Override
-    void executeDropoffs() {
+    protected void executeDropoffs() {
         Map<AVRequest, RoboTaxi> requestRegisterCopy = new HashMap<>(rqstDrvRegister);
         for (Entry<AVRequest, RoboTaxi> entry : requestRegisterCopy.entrySet()) {
             if (Objects.nonNull(entry.getValue())) {
@@ -450,12 +450,12 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
     }
 
     @Override
-    final void redispatchInternal(double now) {
+    protected final void redispatchInternal(double now) {
         // deliberately empty
     }
 
     @Override
-    final void executeRedirects() {
+    protected final void executeRedirects() {
         // deliberately empty
     }
 
