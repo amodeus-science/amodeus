@@ -59,7 +59,7 @@ public class VehiclesLayer extends ViewerLayer {
                             graphics.fillRect(p1.x - car_half, p1.y - car_half, carwidth, carwidth);
                         }
                         if (bits.get(vc.getLastStatus().ordinal())) {
-                            OsmLink toOsmLink = amodeusComponent.db.getOsmLink(vc.destinationLinkIndex);
+                            OsmLink toOsmLink = amodeusComponent.db.getOsmLink(vc.getLastDest());
                             Point p2 = amodeusComponent.getMapPositionAlways(toOsmLink.getAt(0.5));
                             Color col = statusColors.ofDest(vc.getLastStatus());
                             graphics.setColor(col);

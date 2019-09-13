@@ -2,7 +2,6 @@
 package ch.ethz.idsc.amodeus.net;
 
 import java.util.Map;
-import java.util.Objects;
 
 import org.matsim.api.core.v01.network.Link;
 
@@ -25,17 +24,19 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
         localLocationTrace.entrySet().forEach(e -> {
             vc.addLinkLocation(e.getKey(), db.getLinkIndex(e.getValue()));
         });
-        
+
         /** saving status trace and emptying in {@link RoboTaxi} */
-        Map<Long,RoboTaxiStatus> localStatusTrace = robotaxi.flushStatusTrace();
-        localStatusTrace.entrySet().forEach(e-> {
+        Map<Long, RoboTaxiStatus> localStatusTrace = robotaxi.flushStatusTrace();
+        localStatusTrace.entrySet().forEach(e -> {
             vc.addStatus(e.getKey(), e.getValue());
         });
 
-//        vc.roboTaxiStatus = robotaxi.getStatus();
-        Link toLink = robotaxi.getCurrentDriveDestination();
-        vc.destinationLinkIndex = db.getLinkIndex(Objects.requireNonNull(toLink));
+        /** saving destination trace and emptying in {@link RoboTaxi} */
+        Map<Long, Link> localDestinationTrace = robotaxi.flushDestinationTrace();
+        localDestinationTrace.entrySet().forEach(e -> {
+            vc.addDestination(e.getKey(), db.getLinkIndex(e.getValue()));
+        });
+
         return vc;
     }
-
 }

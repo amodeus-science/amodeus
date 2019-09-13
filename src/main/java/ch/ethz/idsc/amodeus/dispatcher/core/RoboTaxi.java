@@ -41,18 +41,19 @@ public class RoboTaxi {
 
     private final RoboTaxiUsageType usageType; // final might be removed if dispatchers can modify usage
 
-    /** This map contains the past few locations of the {@link RoboTaxi}, it is emptied
-     * regularly for memory efficiency */
+    /** These maps contains the past few {locations,statii,destinations} of the {@link RoboTaxi},
+     * they are emptied regularly for memory efficiency */
     private NavigableMap<Long, Link> locationTrace = new TreeMap<>();
-
     private NavigableMap<Long, RoboTaxiStatus> statusTrace = new TreeMap<>();
-    // private RoboTaxiStatus status;
+    private NavigableMap<Long, Link> destinationTrace = new TreeMap<>();
 
-    // this is updated at the beginning of every dispatching step
+    // private Link driveDestination;
+
+    /** this is updated at the beginning of every dispatching step */
     /* package */ long lastKnownTime;
 
     /** drive destination of the RoboTaxi, null for stay task */
-    private Link driveDestination;
+
     /** location/time pair from where / when RoboTaxi path can be altered. */
     private LinkTimePair divertableLinkTime;
     private DirectiveInterface directive;
@@ -71,13 +72,10 @@ public class RoboTaxi {
     public RoboTaxi(AVVehicle avVehicle, LinkTimePair divertableLinkTime, Link driveDestination, RoboTaxiUsageType usageType) {
         this.avVehicle = avVehicle;
         this.divertableLinkTime = divertableLinkTime;
-        this.driveDestination = Objects.requireNonNull(driveDestination);
         this.directive = null;
-
-        // this.status = RoboTaxiStatus.STAY;
         lastKnownTime = (long) divertableLinkTime.time;
         statusTrace.put(lastKnownTime, RoboTaxiStatus.STAY);
-
+        destinationTrace.put(lastKnownTime, Objects.requireNonNull(driveDestination));
         this.usageType = usageType;
     }
 
@@ -102,7 +100,7 @@ public class RoboTaxi {
     /** @return null if vehicle is currently not driving, else the final {@link Link}
      *         of the path that the vehicles is currently driving on */
     public Link getCurrentDriveDestination() {
-        return driveDestination;
+        return destinationTrace.lastEntry().getValue();
     }
 
     /** @return last konwn {@link} location of the RoboTaxi, meant for data
@@ -117,6 +115,7 @@ public class RoboTaxi {
         NavigableMap<Long, Link> copy = new TreeMap<>();
         locationTrace.entrySet().forEach(e -> copy.put(e.getKey(), e.getValue()));
         locationTrace.clear();
+        locationTrace.put(copy.lastEntry().getKey(), copy.lastEntry().getValue());
         return copy;
     }
 
@@ -126,6 +125,14 @@ public class RoboTaxi {
         statusTrace.clear();
         // the last element must always remain present!
         statusTrace.put(copy.lastEntry().getKey(), copy.lastEntry().getValue());
+        return copy;
+    }
+
+    public NavigableMap<Long, Link> flushDestinationTrace() {
+        NavigableMap<Long, Link> copy = new TreeMap<>();
+        destinationTrace.entrySet().forEach(e -> copy.put(e.getKey(), e.getValue()));
+        destinationTrace.clear();
+        destinationTrace.put(copy.lastEntry().getKey(), copy.lastEntry().getValue());
         return copy;
     }
 
@@ -187,7 +194,8 @@ public class RoboTaxi {
      *            only by core package, use setVehiclePickup and
      *            setVehicleRebalance in dispatchers */
     /* package */ void setCurrentDriveDestination(Link currentDriveDestination) {
-        this.driveDestination = Objects.requireNonNull(currentDriveDestination);
+        destinationTrace.put(lastKnownTime, currentDriveDestination);
+        // this.driveDestination = Objects.requireNonNull(currentDriveDestination);
     }
 
     /** @param {@AVStatus} for robotaxi to be updated to, to be used only by core

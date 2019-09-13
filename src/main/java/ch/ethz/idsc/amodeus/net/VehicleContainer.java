@@ -28,9 +28,7 @@ public class VehicleContainer implements Serializable {
 
     private NavigableMap<Long, Integer> linkTrace = new TreeMap<>();
     private NavigableMap<Long, RoboTaxiStatus> statusTrace = new TreeMap<>();
-
-    /** value -1 in case no particular destination */
-    public int destinationLinkIndex = LINK_UNSPECIFIED;
+    private NavigableMap<Long, Integer> destTrace = new TreeMap<>();
 
     /** @return linkIndex (not MATSim's {@link Id<Link>} of last recorded
      *         location, -1 if no data present. */
@@ -45,18 +43,32 @@ public class VehicleContainer implements Serializable {
         this.linkTrace.put(time, linkIndex);
     }
 
-
-
+    /** @return last recorded {@link RoboTaxiStatus} */
     public RoboTaxiStatus getLastStatus() {
         if (statusTrace.isEmpty())
             return null;
         return statusTrace.lastEntry().getValue();
     }
 
+    /** record {@link RoboTaxiStatus}: (@param time,@param status) */
     public void addStatus(Long time, RoboTaxiStatus status) {
         this.statusTrace.put(time, status);
     }
 
-//    public RoboTaxiStatus roboTaxiStatus = null;
+    /** @return linkIndex (not MATSim's {@link Id<Link>} of last recorded
+     *         destination, -1 if no data present. */
+    public int getLastDest() {
+        if (destTrace.isEmpty())
+            return LINK_UNSPECIFIED;
+        return destTrace.lastEntry().getValue();
+    }
+
+    /** record known destination: (@param time,@param linkIndex) */
+    public void addDestination(Long time, Integer linkIndex) {
+        this.destTrace.put(time, linkIndex);
+    }
+
+    /** value -1 in case no particular destination */
+    // public int destinationLinkIndex = LINK_UNSPECIFIED;
 
 }
