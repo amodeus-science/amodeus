@@ -70,6 +70,7 @@ public class FlowTimeInvLinkSpeed implements TaxiLinkSpeedEstimator {
             });
         });
 
+        System.out.println("Creating link index map: ");
         HashMap<Integer, Link> localIndexLink = new HashMap<>();
         HashMap<Link, Integer> localIndexLink2 = new HashMap<>();
         int j = 0;
@@ -81,13 +82,12 @@ public class FlowTimeInvLinkSpeed implements TaxiLinkSpeedEstimator {
         GlobalAssert.that(travelledLinks.size() == localIndexLink.size());
 
         /** setup matrices A, b, solve pseudo-inverse */
+        System.out.println("Setting up matrices for optimization problem: ");
         int numEq = records.size();
         int numVar = travelledLinks.size();
-
         Tensor flowMatrix = Array.zeros(numEq, numVar);
         Tensor freeflowTripDuration = Array.zeros(numEq, 1);
         Tensor trafficTripDuration = Array.zeros(numEq, 1);
-
         int k = 0;
         for (PathHandlerTimeInv ph : pathes) {
             for (Link link : ph.travelledLinks) {
@@ -100,6 +100,7 @@ public class FlowTimeInvLinkSpeed implements TaxiLinkSpeedEstimator {
         }
 
         /** flow based traffic estimation */
+        System.out.println("Solving flow traffic estimation: ");
         FlowTrafficEstimation estimation = //
                 FlowTrafficEstimation.of(flowMatrix, freeflowTripDuration, trafficTripDuration, delayCalculator);
 

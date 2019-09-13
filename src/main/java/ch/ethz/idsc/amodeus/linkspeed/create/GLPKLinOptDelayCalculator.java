@@ -164,20 +164,20 @@ public enum GLPKLinOptDelayCalculator implements TrafficDelayEstimate {
             System.out.println("The problem could not be solved");
         }
 
-        File file = new File("/home/clruch/Desktop/debugLP.lp");
-        GLPK.glp_write_lp(lp, null, file.getAbsolutePath());
+        // File file = new File("/home/clruch/Desktop/debugLP.lp");
+        // GLPK.glp_write_lp(lp, null, file.getAbsolutePath());
 
         Tensor trafficDelay = Tensors.matrix((i, j) -> (RealScalar.of(GLPK.glp_get_col_prim(lp, i + 1))), numRoads, 1);
-        Tensor slack = Tensors.matrix((i, j) -> (RealScalar.of(GLPK.glp_get_col_prim(lp, i + 1 + numRoads))), numTrips, 1);
+        // Tensor slack = Tensors.matrix((i, j) -> (RealScalar.of(GLPK.glp_get_col_prim(lp, i + 1 + numRoads))), numTrips, 1);
         lp.delete();
 
-        try {
-            Export.of(new File("/home/clruch/Desktop/trafficDelayGLPK.csv"), trafficDelay);
-            Export.of(new File("/home/clruch/Desktop/trafficDelayGLPKslack.csv"), slack);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        // try {
+        // Export.of(new File("/home/clruch/Desktop/trafficDelayGLPK.csv"), trafficDelay);
+        // Export.of(new File("/home/clruch/Desktop/trafficDelayGLPKslack.csv"), slack);
+        // } catch (IOException e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
 
         System.out.println("Duration: " + (System.currentTimeMillis() - tStart) + " [ms]");
 
