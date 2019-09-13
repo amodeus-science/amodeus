@@ -1,7 +1,6 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.gfx;
 
-import ch.ethz.idsc.amodeus.dispatcher.core.RStatusHelper;
 import ch.ethz.idsc.amodeus.net.RequestContainer;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -33,7 +32,7 @@ import ch.ethz.idsc.tensor.red.Median;
     }
 
     public static boolean isWaiting(RequestContainer requestContainer) {
-        return RStatusHelper.unserviced(requestContainer.allStatii());
+        return requestContainer.getStatus().isUnserved();
     }
 
 }

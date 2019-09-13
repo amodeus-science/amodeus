@@ -29,6 +29,9 @@ public class SimulationObject implements Serializable {
 
     /** time */
     public long now;
+    
+    /** end of previous period*/
+    public long tPrev;
 
     /** total of matched request until now */
     public int total_matchedRequests;

@@ -35,11 +35,11 @@ public class TravelHistory {
     }
 
     public void register(RequestContainer requestContainer, Scalar now) {
-        if (requestContainer.allStatii().contains(RequestStatus.ASSIGNED))
+        if (requestContainer.getStatus().equals(RequestStatus.ASSIGNED))
             asgnmtTime = now;
-        if (requestContainer.allStatii().contains(RequestStatus.PICKUP))
+        if (requestContainer.getStatus().equals(RequestStatus.PICKUP))
             waitEndTme = now;
-        if (requestContainer.allStatii().contains(RequestStatus.DROPOFF))
+        if (requestContainer.getStatus().equals(RequestStatus.DROPOFF))
             drpOffTime = now;
     }
 

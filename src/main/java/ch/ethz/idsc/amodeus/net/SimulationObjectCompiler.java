@@ -22,15 +22,15 @@ public class SimulationObjectCompiler {
     private final MatsimAmodeusDatabase db;
     private final long now;
 
-    public static SimulationObjectCompiler create( //
-            long now, String infoLine, int total_matchedRequests, //
-            MatsimAmodeusDatabase db) {
+    public static SimulationObjectCompiler create(long timeNow, long timePrev, String infoLine, //
+            int total_matchedRequests, MatsimAmodeusDatabase db) {
         SimulationObject simulationObject = new SimulationObject();
         simulationObject.iteration = db.getIteration();
-        simulationObject.now = now;
+        simulationObject.now = timeNow;
+        simulationObject.tPrev = timePrev;
         simulationObject.infoLine = infoLine;
         simulationObject.total_matchedRequests = total_matchedRequests;
-        return new SimulationObjectCompiler(simulationObject, db, now);
+        return new SimulationObjectCompiler(simulationObject, db, timeNow);
     }
 
     private SimulationObjectCompiler(SimulationObject simulationObject, //

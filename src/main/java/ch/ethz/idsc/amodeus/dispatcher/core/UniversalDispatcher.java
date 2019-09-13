@@ -64,6 +64,7 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
     private final double dropoffDurationPerStop;
     protected int publishPeriod; // not final, so that dispatchers can disable, or manipulate
     private int total_matchedRequests = 0;
+    private long tPrevExport =0;
 
     protected UniversalDispatcher( //
             Config config, //
@@ -403,7 +404,8 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
     protected final void notifySimulationSubscribers(long round_now, StorageUtils storageUtils) {
         if (publishPeriod > 0 && round_now % publishPeriod == 0 && round_now > 1) {
             SimulationObjectCompiler simulationObjectCompiler = SimulationObjectCompiler.create( //
-                    round_now, getInfoLine(), total_matchedRequests, db);
+                    round_now, tPrevExport, getInfoLine(), total_matchedRequests, db);
+            tPrevExport = round_now;
 
             /** pickup register must be after pending requests, request is pending from
              * moment it appears until it is picked up, this period may contain several not

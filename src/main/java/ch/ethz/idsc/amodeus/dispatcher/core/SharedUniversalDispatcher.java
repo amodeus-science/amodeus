@@ -92,6 +92,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
     // not final, so that dispatchers can disable, or manipulate
     /* package */ static final double SIMTIMESTEP = 1.0;// This is used in the Shared Universal Dispatcher to see if a task will end in the next timestep.
     private Double lastTime = null;
+    private long tPrevExport = 0;
 
     protected SharedUniversalDispatcher( //
             Config config, //
@@ -472,7 +473,9 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
     protected final void notifySimulationSubscribers(long round_now, StorageUtils storageUtils) {
         if (publishPeriod > 0 && round_now % publishPeriod == 0) {
             SimulationObjectCompiler simulationObjectCompiler = SimulationObjectCompiler.create( //
-                    round_now, getInfoLine(), total_matchedRequests, db);
+                    round_now, tPrevExport, getInfoLine(), total_matchedRequests, db);
+
+            tPrevExport = round_now;
 
             simulationObjectCompiler.insertRequests(reqStatuses);
             simulationObjectCompiler.insertRequests(periodAssignedRequests, RequestStatus.ASSIGNED);

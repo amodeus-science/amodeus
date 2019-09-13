@@ -2,7 +2,9 @@
 package ch.ethz.idsc.amodeus.net;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.NavigableMap;
 import java.util.Set;
 import java.util.TreeMap;
@@ -40,16 +42,12 @@ public class RequestContainer implements Serializable {
         return statusTrace.lastEntry().getValue();
     }
 
-    // TODO have to keep or can be removed?
-    public NavigableMap<Long, RequestStatus> getTrace() {
-        NavigableMap<Long, RequestStatus> copy = new TreeMap<>();
-        statusTrace.entrySet().forEach(e -> {
-            copy.put(e.getKey(), e.getValue());
-        });
-        return copy;
+    @Deprecated // TODO remove eventually
+    public Map<Long, RequestStatus> getTrace() {
+        return Collections.unmodifiableMap(statusTrace);
     }
 
-    // TODO have to keep or can be removed?
+    @Deprecated // TODO this will be removed.
     public Set<RequestStatus> allStatii() {
         Set<RequestStatus> all = new HashSet<>();
         statusTrace.values().forEach(s -> all.add(s));
@@ -72,5 +70,5 @@ public class RequestContainer implements Serializable {
     public void addAssociatedVehicle(Long time, Integer vehicleIndex) {
         this.vehicleMap.put(time, vehicleIndex);
     }
-    
+
 }

@@ -147,7 +147,7 @@ public class RequestsLayer extends ViewerLayer {
         if (ref != null) {
             // InfoString infoString = new InfoString(String.format("%5d %s", ref.requests.size(), "open requests"));
             InfoString infoString = new InfoString(String.format("%5d %s", //
-                    ref.requests.stream().filter(rc -> isUnserved(rc.allStatii())).count(), "open requests"));
+                    ref.requests.stream().filter(rc -> rc.getStatus().isUnserved()).count(), "open requests"));
             infoString.color = Color.BLACK; // new Color(204, 122, 0);
             amodeusComponent.append(infoString);
         }

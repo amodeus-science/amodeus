@@ -62,12 +62,12 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
          * and the number of waiting customers */
         time.append(RealScalar.of(simulationObject.now));
         Tensor submission = Tensor.of(simulationObject.requests.stream()//
-                .filter(rc -> RStatusHelper.unserviced(rc.allStatii()))//
+                .filter(rc -> rc.getStatus().isUnserved())//
                 .map(rc -> RealScalar.of(simulationObject.now - rc.submissionTime)));
         waitTimePlotValues.append(Join.of(StaticHelper.quantiles(submission, Quantiles.SET), //
                 Tensors.vector(StaticHelper.means(submission).number().doubleValue())));
         waitingCustomers.append(RationalScalar.of(simulationObject.requests.stream()//
-                .filter(rc -> RStatusHelper.unserviced(rc.allStatii())).count(), 1));//
+                .filter(rc -> rc.getStatus().isUnserved()).count(), 1));//
 
         /** maximum time */
         tLast = Quantity.of(simulationObject.now, SI.SECOND);
