@@ -39,11 +39,11 @@ public class VehicleStatistic {
     }
 
     public void register(int simObjIndex, VehicleContainer vehicleContainer) {
-        if (vehicleContainer.linkIndex != lastLinkIndex) {
+        if (vehicleContainer.getLastLinkIndex() != lastLinkIndex) {
             consolidate();
             list.clear();
             simObjIndLastLinkChange = simObjIndex;
-            lastLinkIndex = vehicleContainer.linkIndex;
+            lastLinkIndex = vehicleContainer.getLastLinkIndex();
         }
         list.add(vehicleContainer);
     }
@@ -53,7 +53,7 @@ public class VehicleStatistic {
      * timesteps. The logic is that the distance is added evenly to the time steps. */
     public void consolidate() {
         if (!list.isEmpty()) {
-            final int linkId = list.get(0).linkIndex;
+            final int linkId = list.get(0).getLastLinkIndex();
             Link distanceLink = db.getOsmLink(linkId).link;
             /** this total distance on the link was travelled on during all simulationObjects stored
              * in the list. */

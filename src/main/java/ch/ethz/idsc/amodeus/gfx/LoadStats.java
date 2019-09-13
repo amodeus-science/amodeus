@@ -35,7 +35,7 @@ import ch.ethz.idsc.tensor.alg.Array;
 
     public void feed(SimulationObject ref, int ofs) {
         Map<Integer, List<VehicleContainer>> map = ref.vehicles.stream() //
-                .collect(Collectors.groupingBy(VehicleContainer::getLinkId));
+                .collect(Collectors.groupingBy(VehicleContainer::getLastLinkIndex));
 
         for (Entry<Integer, List<VehicleContainer>> entry : map.entrySet()) {
             final int index = entry.getKey();
