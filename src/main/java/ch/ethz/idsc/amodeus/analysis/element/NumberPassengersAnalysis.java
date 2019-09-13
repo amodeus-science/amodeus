@@ -40,7 +40,7 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
         time.append(RealScalar.of(simulationObject.now));
         Map<Integer, List<RequestContainer>> map = simulationObject.requests.stream()//
                 .filter(NumPassengerHelper::isrelevantRequstContainer)//
-                .collect(Collectors.groupingBy(reqcontainer -> reqcontainer.associatedVehicle));
+                .collect(Collectors.groupingBy(reqcontainer -> reqcontainer.associatedVehicle()));
 
         /** number Passenger Distribution over day */
         Tensor numberPassengers = Array.zeros(simulationObject.vehicles.size());

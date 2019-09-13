@@ -30,6 +30,8 @@ public class RequestContainer implements Serializable {
     /** these values might change with time, the local history
      * is tracked for later processing */
     private NavigableMap<Long, RequestStatus> statusTrace = new TreeMap<>();
+    // contains associated vehicles
+    private NavigableMap<Long, Integer> vehicleMap = new TreeMap<>();
 
     /** @return last recorded {@link RequestStatus} */
     public RequestStatus getStatus() {
@@ -59,5 +61,15 @@ public class RequestContainer implements Serializable {
         this.statusTrace.put(time, status);
     }
 
-    public int associatedVehicle; // vehicle currently associated to request, e.g., assigned for pickup
+    /** @return last recorded associated vehicle */
+    public Integer associatedVehicle() {
+        if (vehicleMap.isEmpty())
+            return null;
+        return vehicleMap.lastEntry().getValue();
+    }
+
+    /** record {@link RequestStatus}: (@param time,@param status) */
+    public void addAssociatedVehicle(Long time, Integer vehicleIndex) {
+        this.vehicleMap.put(time, vehicleIndex);
+    }
 }

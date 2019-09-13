@@ -73,8 +73,8 @@ public class SimulationObjectCompiler {
     public void addRequestRoboTaxiAssoc(Map<AVRequest, RoboTaxi> map) {
         map.entrySet().stream().forEach(e -> {
             if (requestMap.containsKey(e.getKey().getId().toString())) {
-                requestMap.get(e.getKey().getId().toString()).associatedVehicle = //
-                        db.getVehicleIndex(e.getValue());
+                requestMap.get(e.getKey().getId().toString()).//
+                addAssociatedVehicle(now, db.getVehicleIndex(e.getValue()));
             }
         });
     }
