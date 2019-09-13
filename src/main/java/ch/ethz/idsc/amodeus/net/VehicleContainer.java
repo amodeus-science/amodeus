@@ -68,7 +68,4 @@ public class VehicleContainer implements Serializable {
         this.destTrace.put(time, linkIndex);
     }
 
-    /** value -1 in case no particular destination */
-    // public int destinationLinkIndex = LINK_UNSPECIFIED;
-
 }

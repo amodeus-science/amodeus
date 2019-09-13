@@ -10,6 +10,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.util.LinkTimePair;
 
 import ch.ethz.idsc.amodeus.ArtificialScenarioCreator;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
@@ -29,7 +30,8 @@ public class RedistributionTestsVerySimple {
         link1 = scenario.linkDown;
         link2 = scenario.linkUp;
         link3 = scenario.linkLeft;
-        roboTaxi = new RoboTaxi(null, null, link3, null);
+        LinkTimePair ltp = new LinkTimePair(link3, 0.0);
+        roboTaxi = new RoboTaxi(null, ltp, link3, null);
     }
 
     @Test
