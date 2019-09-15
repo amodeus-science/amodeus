@@ -41,7 +41,7 @@ public class RequestsLayer extends ViewerLayer {
 
     public RequestsLayer(AmodeusComponent amodeusComponent) {
         super(amodeusComponent);
-        adjustHeatMaps(amodeusComponent.defaultConfig.settings);
+        adjustHeatMaps(amodeusComponent.viewerConfig.settings);
     }
 
     @Override

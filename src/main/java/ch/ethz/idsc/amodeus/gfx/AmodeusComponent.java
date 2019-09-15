@@ -69,7 +69,7 @@ public class AmodeusComponent extends JMapViewer {
     public final JLabel jLabel = new JLabel(" ");
     final AmodeusComponentMouse amodeusComponentMouse = new AmodeusComponentMouse(this);
 
-    final ViewerConfig defaultConfig;
+    final ViewerConfig viewerConfig;
 
     /** constructs an component without any {@link ViewerLayer}s
      * 
@@ -78,8 +78,8 @@ public class AmodeusComponent extends JMapViewer {
      * @param db */
     public AmodeusComponent(MatsimAmodeusDatabase db) {
         this.db = db;
-        defaultConfig = ViewerConfig.fromDefaults(db);
-        infoFontSize = defaultConfig.settings.infoFontSize;
+        viewerConfig = ViewerConfig.fromDefaults(db);
+        infoFontSize = viewerConfig.settings.infoFontSize;
         // ---
         addMouseListener(amodeusComponentMouse);
         addMouseMotionListener(amodeusComponentMouse);

@@ -55,6 +55,13 @@ import ch.ethz.idsc.tensor.sca.Sign;
         }
     }
 
+    Tensor inverseArea() {
+        return inverseArea.unmodifiable();
+    }
+
+    /***************************************************/
+    /** @param amodeusComponent
+     * @return */
     Map<VirtualNode<Link>, Shape> getShapes(AmodeusComponent amodeusComponent) {
         Map<VirtualNode<Link>, Shape> map = new LinkedHashMap<>(); // ordering matters
         for (Entry<VirtualNode<Link>, Tensor> entry : convexHulls.entrySet())
@@ -62,14 +69,12 @@ import ch.ethz.idsc.tensor.sca.Sign;
         return map;
     }
 
-    Tensor inverseArea() {
-        return inverseArea.unmodifiable();
-    }
-
-    private static Shape createShape(AmodeusComponent amodeusComponent, Tensor hull) {
+    /** @param amodeusComponent
+     * @param hull
+     * @return */
+    static Shape createShape(AmodeusComponent amodeusComponent, Tensor hull) {
         if (Tensors.isEmpty(hull))
             return new Ellipse2D.Double(0, 0, 0, 0);
-
         Path2D path2d = new Path2D.Double();
         boolean init = false;
         for (Tensor vector : hull) {
@@ -83,5 +88,47 @@ import ch.ethz.idsc.tensor.sca.Sign;
         }
         path2d.closePath();
         return path2d;
+    }
+
+    static Shape createShapePixel(AmodeusComponent amodeusComponent, Tensor hull) {
+        if (Tensors.isEmpty(hull))
+            return new Ellipse2D.Double(0, 0, 0, 0);
+        Path2D path2d = new Path2D.Double();
+        boolean init = false;
+        for (Tensor vector : hull)
+            if (!init) {
+                init = true;
+                path2d.moveTo( //
+                        vector.Get(0).number().doubleValue(), //
+                        vector.Get(1).number().doubleValue());
+            } else
+                path2d.lineTo( //
+                        vector.Get(0).number().doubleValue(), //
+                        vector.Get(1).number().doubleValue());
+        path2d.closePath();
+        return path2d;
+    }
+
+    /***************************************************/
+    /** @param amodeusComponent
+     * @return */
+    Map<VirtualNode<Link>, Tensor> getShapesTensor(AmodeusComponent amodeusComponent) {
+        Map<VirtualNode<Link>, Tensor> map = new LinkedHashMap<>(); // ordering matters
+        for (Entry<VirtualNode<Link>, Tensor> entry : convexHulls.entrySet())
+            map.put(entry.getKey(), createShapeTensor(amodeusComponent, entry.getValue()));
+        return map;
+    }
+
+    /** @param amodeusComponent
+     * @param hull
+     * @return */
+    private static Tensor createShapeTensor(AmodeusComponent amodeusComponent, Tensor hull) {
+        Tensor tensor = Tensors.reserve(hull.length());
+        for (Tensor vector : hull) {
+            Coord coord = TensorCoords.toCoord(vector);
+            Point point = amodeusComponent.getMapPositionAlways(coord);
+            tensor.append(Tensors.vectorDouble(point.getX(), point.getY()));
+        }
+        return tensor;
     }
 }
