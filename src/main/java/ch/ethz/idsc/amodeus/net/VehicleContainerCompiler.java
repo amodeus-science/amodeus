@@ -16,15 +16,15 @@ enum VehicleContainerCompiler {
      * @return {@link VehicleContainer} filled with information for later viewing and storage
      *         in {@link SimulationObject} */
     public static VehicleContainer compile(RoboTaxi robotaxi, MatsimAmodeusDatabase db) {
-        VehicleContainer vehicleContainer = new VehicleContainer();
-        vehicleContainer.vehicleIndex = db.getVehicleIndex(robotaxi);
-        final Link fromLink = robotaxi.getLastKnownLocation();
+        VehicleContainer vc = new VehicleContainer();
+        vc.vehicleIndex = db.getVehicleIndex(robotaxi);
+        final Link fromLink = robotaxi.flushLastKnownLocation();
         GlobalAssert.that(Objects.nonNull(fromLink));
-        vehicleContainer.linkIndex = db.getLinkIndex(fromLink);
-        vehicleContainer.roboTaxiStatus = robotaxi.getStatus();
+        vc.linkIndex = db.getLinkIndex(fromLink);
+        vc.roboTaxiStatus = robotaxi.getStatus();
         Link toLink = robotaxi.getCurrentDriveDestination();
-        vehicleContainer.destinationLinkIndex = db.getLinkIndex(Objects.requireNonNull(toLink));
-        return vehicleContainer;
+        vc.destinationLinkIndex = db.getLinkIndex(Objects.requireNonNull(toLink));
+        return vc;
     }
 
 }
