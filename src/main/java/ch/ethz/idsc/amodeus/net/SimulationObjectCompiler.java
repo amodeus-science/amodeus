@@ -74,7 +74,7 @@ public class SimulationObjectCompiler {
     }
 
     private void insertVehicle(RoboTaxi robotaxi, List<Link> tempTrace) {
-        VehicleContainer vehicleContainer = VehicleContainerCompiler.compile(robotaxi, tempTrace.get(tempTrace.size() - 1), db);
+        VehicleContainer vehicleContainer = VehicleContainerCompiler.compile(robotaxi, tempTrace, db);
         final String key = robotaxi.getId().toString();
         vehicleMap.put(key, vehicleContainer);
     }
