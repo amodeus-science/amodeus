@@ -2,13 +2,9 @@
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -17,7 +13,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.matsim.api.core.v01.events.Event;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.contrib.dvrp.tracker.TaskTracker;
@@ -32,7 +27,6 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseUtil;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
-import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDriveTaskTracker;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationDistribution;
@@ -44,7 +38,6 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
-import ch.ethz.matsim.av.dispatcher.AVVehicleAssignmentEvent;
 import ch.ethz.matsim.av.generator.AVGenerator;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
@@ -56,9 +49,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 /** purpose of {@link SharedUniversalDispatcher} is to collect and manage
  * {@link AVRequest}s alternative implementation of {@link AVDispatcher};
  * supersedes {@link AbstractDispatcher}. */
-public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
-    // Registers for Simulation
-    private final Set<AVRequest> pendingRequests = new LinkedHashSet<>();
+public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher {
     /** contains all Requests which are not picked Up Yet */
     private final Map<Double, Map<RoboTaxi, AVRequest>> dropOffTimes = new HashMap<>();
     // TODO Shared might be done with robotaxis only?
@@ -77,46 +68,23 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
     private final Map<AVRequest, RequestStatus> reqStatuses = new HashMap<>(); // Storing the Request Statuses for the
                                                                                // SimObjects
     // Variables for consistency sub check
-    private int total_matchedRequests = 0; // TODO Shared what is the use of this?
     private int total_dropedOffRequests = 0;//
 
     private final OnboardPassengerCheck onboardPassengerCheck = //
             new OnboardPassengerCheck(total_matchedRequests, total_dropedOffRequests);
 
-    // Simulation Properties
-    private final MatsimAmodeusDatabase db;
-    private final FuturePathFactory futurePathFactory;
-    private final double pickupDurationPerStop;
-    private final double dropoffDurationPerStop;
-    protected int publishPeriod;
-    // not final, so that dispatchers can disable, or manipulate
     /* package */ static final double SIMTIMESTEP = 1.0;// This is used in the Shared Universal Dispatcher to see if a task will end in the next timestep.
     private Double lastTime = null;
 
-    protected SharedUniversalDispatcher( //
-            Config config, //
-            AVDispatcherConfig avDispatcherConfig, //
-            TravelTime travelTime, //
-            ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, //
-            EventsManager eventsManager, //
-            MatsimAmodeusDatabase db) {
-        super(eventsManager, config, avDispatcherConfig);
-        this.db = db;
-        futurePathFactory = new FuturePathFactory(parallelLeastCostPathCalculator, travelTime);
-        pickupDurationPerStop = avDispatcherConfig.getParent().getTimingParameters().getPickupDurationPerStop();
-        dropoffDurationPerStop = avDispatcherConfig.getParent().getTimingParameters().getDropoffDurationPerStop();
-        SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
-        publishPeriod = safeConfig.getInteger("publishPeriod", 10);
+    protected SharedUniversalDispatcher(Config config, AVDispatcherConfig avDispatcherConfig, //
+            TravelTime travelTime, ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, //
+            EventsManager eventsManager, MatsimAmodeusDatabase db) {
+        super(eventsManager, config, avDispatcherConfig, travelTime, //
+                parallelLeastCostPathCalculator, db);
     }
 
     // ===================================================================================
     // Methods to use EXTERNALLY in derived dispatchers
-
-    /** @return {@Collection} of all {@AVRequests} which are currently open. Requests
-     *         are removed from list in setAcceptRequest function. */
-    protected synchronized final Collection<AVRequest> getAVRequests() {
-        return Collections.unmodifiableCollection(pendingRequests);
-    }
 
     /** @return AVRequests which are currently not assigned to a vehicle */
     protected synchronized final List<AVRequest> getUnassignedAVRequests() {
@@ -136,19 +104,6 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
         return requestRegister.getPickupRegister(pendingRequests).get(request);
     }
 
-    /** Example call: getRoboTaxiSubset(AVStatus.STAY, AVStatus.DRIVEWITHCUSTOMER)
-     * 
-     * @param status
-     *            {@AVStatus} of desiredsRoboTaxis, e.g., STAY,DRIVETOCUSTOMER,...
-     * @return list ofsRoboTaxis which are in {@AVStatus} status */
-    protected final List<RoboTaxi> getRoboTaxiSubset(RoboTaxiStatus... status) {
-        return getRoboTaxiSubset(EnumSet.copyOf(Arrays.asList(status)));
-    }
-
-    private List<RoboTaxi> getRoboTaxiSubset(Set<RoboTaxiStatus> status) {
-        return getRoboTaxis().stream().filter(rt -> status.contains(rt.getStatus())).collect(Collectors.toList());
-    }
-
     /** @return divertablesRoboTaxis which currently not on a pickup drive */
     protected final Collection<RoboTaxi> getDivertableUnassignedRoboTaxis() {
         Collection<RoboTaxi> divertableUnassignedRoboTaxis = getDivertableRoboTaxis().stream() //
@@ -156,16 +111,6 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
                 .collect(Collectors.toList());
         GlobalAssert.that(divertableUnassignedRoboTaxis.stream().allMatch(RoboTaxi::isWithoutCustomer));
         return divertableUnassignedRoboTaxis;
-    }
-
-    /** For a SharedRoboTaxi any vehicle can be diverded unless it got a directive in
-     * this timestep or it is on the last link
-     * 
-     * @return {@Collection} of {@RoboTaxi} which can be redirected during iteration */
-    protected final Collection<RoboTaxi> getDivertableRoboTaxis() {
-        return getRoboTaxis().stream() //
-                .filter(RoboTaxi::isDivertable) //
-                .collect(Collectors.toList());
     }
 
     // **********************************************************************************************
@@ -335,8 +280,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
 
     @Override
     /* package */ void stopAbortedPickupRoboTaxis() {
-        // --- Deliberately empty
-        // This is done in the redispatch internal function
+        // --- Deliberately empty, done in redispatch internal function
     }
 
     /** called when a new request enters the system, adds request to
@@ -344,8 +288,7 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
      * derived MATSim functions which are located in another package */
     @Override
     public final void onRequestSubmitted(AVRequest request) {
-        boolean added = pendingRequests.add(request); // <- store request
-        GlobalAssert.that(added);
+        super.onRequestSubmitted(request);
         reqStatuses.put(request, RequestStatus.REQUESTED);
         periodSubmittdRequests.add(request);
     }
@@ -505,21 +448,10 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
         }
     }
 
-    /** adds information to InfoLine */
-    @Override
-    protected String getInfoLine() {
-        return String.format("%s R=(%5d) MR=%6d", //
-                super.getInfoLine(), //
-                getAVRequests().size(), //
-                total_matchedRequests);
-    }
-
     /** adding a vehicle during setup of simulation, handeled by {@link AVGenerator} */
     @Override
     public final void addVehicle(AVVehicle vehicle) {
-        RoboTaxi roboTaxi = new RoboTaxi(vehicle, new LinkTimePair(vehicle.getStartLink(), 0.0), vehicle.getStartLink(), RoboTaxiUsageType.SHARED);
-        Event event = new AVVehicleAssignmentEvent(vehicle, 0);
-        addRoboTaxi(roboTaxi, event);
+        super.addVehicle(vehicle, RoboTaxiUsageType.SHARED);
     }
 
     @Override
@@ -569,5 +501,4 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
             };
         }
     }
-
 }
