@@ -12,14 +12,19 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 /* package */ enum VehicleContainerCompiler {
     ;
 
-    /** @return {@link VehicleContainer} filled with information for later viewing and storage
-     *         in {@link SimulationObject}, information is taken from {@link RoboTaxi} @param roboTaxi
-     *         and the {@link MatsimAmodeusDatabase} @param db */
-    public static VehicleContainer compile(RoboTaxi roboTaxi, List<Link> lastLoc, MatsimAmodeusDatabase db) {
+    /** @return a {@link VehicleContainer} that is used to save the result to the disk for current
+     *         or later processing, e.g., in the {@link ScenarioViewer}. The information is taken from the
+     *         {@link RoboTaxi} @param roboTaxi, the {@link List} {@linkLink} @param linkTrace contains all
+     *         {@link Link}s passed since the last {@link SimulationObject} was saved, passed to the
+     *         {@link VehicleObject} as int indexes according to the @param db */
+    public static VehicleContainer compile(RoboTaxi roboTaxi, List<Link> linkTrace, MatsimAmodeusDatabase db) {
         VehicleContainer vc = new VehicleContainer();
         vc.vehicleIndex = db.getVehicleIndex(roboTaxi);
-        GlobalAssert.that(!lastLoc.isEmpty());
-        vc.linkIndex = db.getLinkIndex(lastLoc.get(lastLoc.size()-1));
+        GlobalAssert.that(!linkTrace.isEmpty());
+        int[] linkIndexTrace = new int[linkTrace.size()];
+        for (int i = 0; i < linkTrace.size(); ++i)
+            linkIndexTrace[i] = db.getLinkIndex(linkTrace.get(i));
+        vc.linkIndex = linkIndexTrace;
         vc.roboTaxiStatus = roboTaxi.getStatus();
         Link toLink = roboTaxi.getCurrentDriveDestination();
         vc.destinationLinkIndex = db.getLinkIndex(Objects.requireNonNull(toLink));

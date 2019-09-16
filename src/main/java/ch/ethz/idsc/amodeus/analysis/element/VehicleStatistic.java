@@ -38,14 +38,14 @@ public class VehicleStatistic {
         distanceRebalance = Array.zeros(tics_max);
     }
 
-    public void register(int simObjIndex, VehicleContainer vehicleContainer) {
-        if (vehicleContainer.linkIndex != lastLinkIndex) {
+    public void register(int simObjIndex, VehicleContainer vc) {
+        if (vc.linkIndex[vc.linkIndex.length-1] != lastLinkIndex) {
             consolidate();
             list.clear();
             simObjIndLastLinkChange = simObjIndex;
-            lastLinkIndex = vehicleContainer.linkIndex;
+            lastLinkIndex = vc.linkIndex[vc.linkIndex.length-1];
         }
-        list.add(vehicleContainer);
+        list.add(vc);
     }
 
     /** this function is called when the {@link RoboTaxi} has changed the link, then we can
@@ -53,7 +53,7 @@ public class VehicleStatistic {
      * timesteps. The logic is that the distance is added evenly to the time steps. */
     public void consolidate() {
         if (!list.isEmpty()) {
-            final int linkId = list.get(0).linkIndex;
+            final int linkId = list.get(0).linkIndex[list.get(0).linkIndex.length-1];
             Link distanceLink = db.getOsmLink(linkId).link;
             /** this total distance on the link was travelled on during all simulationObjects stored
              * in the list. */
