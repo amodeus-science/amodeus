@@ -42,8 +42,7 @@ public class RoboTaxi {
     private final RoboTaxiUsageType usageType; // final might be removed if dispatchers can modify usage
 
     /** last known location of the RoboTaxi */
-    // private Link lastKnownLocation;
-    private List<Link> locationTrace = new ArrayList<>();
+    private Link lastKnownLocation;
 
     /** drive destination of the RoboTaxi, null for stay task */
     private Link driveDestination;
@@ -100,16 +99,7 @@ public class RoboTaxi {
      *         from where RoboTaxi could change its path, therefore use
      *         getDivertableLocation() for computations. */
     public Link getLastKnownLocation() {
-        return locationTrace.get(locationTrace.size() - 1);
-        // return lastKnownLocation;
-    }
-
-    public Link flushLastKnownLocation() {
-        int size = locationTrace.size();
-        Link last = locationTrace.get(size - 1);
-        locationTrace.clear();
-        locationTrace.add(last);
-        return last;
+        return lastKnownLocation;
     }
 
     /** @return true if vehicle is staying */
@@ -156,10 +146,7 @@ public class RoboTaxi {
      * 
      * @param currentLocation last known link of RoboTaxi location */
     /* package */ void setLastKnownLocation(Link currentLocation) {
-        if (locationTrace.isEmpty() || !currentLocation.equals(locationTrace.get(locationTrace.size() - 1)))
-            this.locationTrace.add(Objects.requireNonNull(currentLocation));
-
-        // this.lastKnownLocation = Objects.requireNonNull(currentLocation);
+        this.lastKnownLocation = Objects.requireNonNull(currentLocation);
     }
 
     /** @param currentDriveDestination {@link} roboTaxi is driving to, to be used

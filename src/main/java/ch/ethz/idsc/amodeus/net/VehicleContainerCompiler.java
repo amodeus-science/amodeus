@@ -8,21 +8,20 @@ import org.matsim.api.core.v01.network.Link;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
-enum VehicleContainerCompiler {
+/* package */ enum VehicleContainerCompiler {
     ;
 
-    /** @param robotaxi
-     * @param db
-     * @return {@link VehicleContainer} filled with information for later viewing and storage
-     *         in {@link SimulationObject} */
-    public static VehicleContainer compile(RoboTaxi robotaxi, MatsimAmodeusDatabase db) {
+    /** @return {@link VehicleContainer} filled with information for later viewing and storage
+     *         in {@link SimulationObject}, information is taken from {@link RoboTaxi} @param roboTaxi
+     *         and the {@link MatsimAmodeusDatabase} @param db */
+    public static VehicleContainer compile(RoboTaxi roboTaxi, Link lastLoc, MatsimAmodeusDatabase db) {
         VehicleContainer vc = new VehicleContainer();
-        vc.vehicleIndex = db.getVehicleIndex(robotaxi);
-        final Link fromLink = robotaxi.flushLastKnownLocation();
+        vc.vehicleIndex = db.getVehicleIndex(roboTaxi);
+        final Link fromLink = lastLoc;
         GlobalAssert.that(Objects.nonNull(fromLink));
         vc.linkIndex = db.getLinkIndex(fromLink);
-        vc.roboTaxiStatus = robotaxi.getStatus();
-        Link toLink = robotaxi.getCurrentDriveDestination();
+        vc.roboTaxiStatus = roboTaxi.getStatus();
+        Link toLink = roboTaxi.getCurrentDriveDestination();
         vc.destinationLinkIndex = db.getLinkIndex(Objects.requireNonNull(toLink));
         return vc;
     }

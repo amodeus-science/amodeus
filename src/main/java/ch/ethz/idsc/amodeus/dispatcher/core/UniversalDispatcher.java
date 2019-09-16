@@ -337,47 +337,29 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
 
     }
 
-    /** save simulation data into {@link SimulationObject} for later analysis and
-     * visualization. */
-    @Override
-    protected final void notifySimulationSubscribers(long round_now, StorageUtils storageUtils) {
-        if (publishPeriod > 0 && round_now % publishPeriod == 0 && round_now > 1) {
-            SimulationObjectCompiler simulationObjectCompiler = SimulationObjectCompiler.create( //
-                    round_now, getInfoLine(), total_matchedRequests, db);
+    /* package */ void insertRequestInfo(SimulationObjectCompiler simulationObjectCompiler) {
+        /** pickup register must be after pending requests, request is pending from
+         * moment it appears until it is picked up, this period may contain several not
+         * connected pickup periods (cancelled pickup attempts) */
+        simulationObjectCompiler.insertRequests(pendingRequests, RequestStatus.REQUESTED);
+        simulationObjectCompiler.insertRequests(pickupRegister.keySet(), RequestStatus.PICKUPDRIVE);
+        simulationObjectCompiler.insertRequests(rqstDrvRegister.keySet(), RequestStatus.DRIVING);
 
-            /** pickup register must be after pending requests, request is pending from
-             * moment it appears until it is picked up, this period may contain several not
-             * connected pickup periods (cancelled pickup attempts) */
-            simulationObjectCompiler.insertRequests(pendingRequests, RequestStatus.REQUESTED);
-            simulationObjectCompiler.insertRequests(pickupRegister.keySet(), RequestStatus.PICKUPDRIVE);
-            simulationObjectCompiler.insertRequests(rqstDrvRegister.keySet(), RequestStatus.DRIVING);
+        /** the request is only contained in these three maps durnig 1 time step, which
+         * is why they must be inserted after the first three which (potentially) are
+         * for multiple time steps. */
+        simulationObjectCompiler.insertRequests(periodAssignedRequests, RequestStatus.ASSIGNED);
+        simulationObjectCompiler.insertRequests(periodPickedUpRequests, RequestStatus.PICKUP);
+        simulationObjectCompiler.insertRequests(periodFulfilledRequests.keySet(), RequestStatus.DROPOFF);
 
-            /** the request is only contained in these three maps durnig 1 time step, which
-             * is why they must be inserted after the first three which (potentially) are
-             * for multiple time steps. */
-            simulationObjectCompiler.insertRequests(periodAssignedRequests, RequestStatus.ASSIGNED);
-            simulationObjectCompiler.insertRequests(periodPickedUpRequests, RequestStatus.PICKUP);
-            simulationObjectCompiler.insertRequests(periodFulfilledRequests.keySet(), RequestStatus.DROPOFF);
+        /** insert information of association of {@link RoboTaxi}s and {@link AVRequest}s */
+        simulationObjectCompiler.addRequestRoboTaxiAssoc(pickupRegister);
+        simulationObjectCompiler.addRequestRoboTaxiAssoc(rqstDrvRegister);
+        simulationObjectCompiler.addRequestRoboTaxiAssoc(periodFulfilledRequests);
 
-            /** insert {@link RoboTaxi}s */
-            simulationObjectCompiler.insertVehicles(getRoboTaxis());
-
-            /** insert information of association of {@link RoboTaxi}s and {@link AVRequest}s */
-            simulationObjectCompiler.addRequestRoboTaxiAssoc(pickupRegister);
-            simulationObjectCompiler.addRequestRoboTaxiAssoc(rqstDrvRegister);
-            simulationObjectCompiler.addRequestRoboTaxiAssoc(periodFulfilledRequests);
-
-            periodFulfilledRequests.clear();
-            periodAssignedRequests.clear();
-            periodPickedUpRequests.clear();
-
-            /** first pass vehicles typically empty, then no storage / communication of
-             * {@link SimulationObject}s */
-            SimulationObject simulationObject = simulationObjectCompiler.compile();
-            if (SimulationObjects.hasVehicles(simulationObject)) {
-                SimulationDistribution.of(simulationObject, storageUtils);
-            }
-        }
+        periodFulfilledRequests.clear();
+        periodAssignedRequests.clear();
+        periodPickedUpRequests.clear();
     }
 
     @Override

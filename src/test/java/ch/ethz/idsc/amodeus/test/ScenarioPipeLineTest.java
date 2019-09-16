@@ -34,6 +34,8 @@ import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.red.Mean;
 import ch.ethz.idsc.tensor.red.Total;
+import ch.ethz.idsc.tensor.sca.Chop;
+import ch.ethz.idsc.tensor.sca.Round;
 
 public class ScenarioPipeLineTest {
 
@@ -165,11 +167,12 @@ public class ScenarioPipeLineTest {
         assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).equals( //
                 ate.getDistancElement().totalDistance));
 
-        scalarAssert.add(RealScalar.of(34023.54116536432), ate.getDistancElement().totalDistance);
-        scalarAssert.add(RealScalar.of(28712.764946237683), ate.getDistancElement().totalDistanceWtCst);
+        // before should: 34023.541165364324
+        scalarAssert.add((Scalar) RealScalar.of(34023.541165364324).map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
+        scalarAssert.add((Scalar) RealScalar.of(28712.76494623768).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
         scalarAssert.add(RealScalar.of(5310.77621912671), ate.getDistancElement().totalDistancePicku);
         scalarAssert.add(RealScalar.of(0.0), ate.getDistancElement().totalDistanceRebal);
-        scalarAssert.add(RealScalar.of(0.8439087750062607), ate.getDistancElement().totalDistanceRatio);
+        scalarAssert.add((Scalar) RealScalar.of(0.8439087750062604).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRatio.map(Round._5));
 
         scalarAssert.add((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle), //
                 ate.getDistancElement().totalDistance);

@@ -29,11 +29,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDriveTaskTracker;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
-import ch.ethz.idsc.amodeus.net.SimulationDistribution;
-import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.net.SimulationObjectCompiler;
-import ch.ethz.idsc.amodeus.net.SimulationObjects;
-import ch.ethz.idsc.amodeus.net.StorageUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
@@ -409,43 +405,26 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
 
     }
 
-    /** save simulation data into {@link SimulationObject} for later analysis and
-     * visualization and communicate to clients */
-    @Override
-    protected final void notifySimulationSubscribers(long round_now, StorageUtils storageUtils) {
-        if (publishPeriod > 0 && round_now % publishPeriod == 0) {
-            SimulationObjectCompiler simulationObjectCompiler = SimulationObjectCompiler.create( //
-                    round_now, getInfoLine(), total_matchedRequests, db);
+    /* package */ void insertRequestInfo(SimulationObjectCompiler simulationObjectCompiler) {
+        simulationObjectCompiler.insertRequests(reqStatuses);
+        simulationObjectCompiler.insertRequests(periodAssignedRequests, RequestStatus.ASSIGNED);
+        simulationObjectCompiler.insertRequests(periodPickedUpRequests, RequestStatus.PICKUP);
+        simulationObjectCompiler.insertRequests(periodFulfilledRequests.keySet(), RequestStatus.DROPOFF);
+        simulationObjectCompiler.insertRequests(periodSubmittdRequests, RequestStatus.REQUESTED);
 
-            simulationObjectCompiler.insertRequests(reqStatuses);
-            simulationObjectCompiler.insertRequests(periodAssignedRequests, RequestStatus.ASSIGNED);
-            simulationObjectCompiler.insertRequests(periodPickedUpRequests, RequestStatus.PICKUP);
-            simulationObjectCompiler.insertRequests(periodFulfilledRequests.keySet(), RequestStatus.DROPOFF);
-            simulationObjectCompiler.insertRequests(periodSubmittdRequests, RequestStatus.REQUESTED);
+        /** insert information of association of {@link RoboTaxi}s and {@link AVRequest}s */
+        Map<AVRequest, RoboTaxi> flatMap = new HashMap<>();
+        requestRegister.getRegister().forEach((rt, map) -> map.values().forEach(avr -> flatMap.put(avr, rt)));
+        // adds the robotaxi for dropped off requests (not in requestregister anymore)
+        periodFulfilledRequests.forEach((avr, rt) -> flatMap.put(avr, rt));
 
-            /** insert {@link RoboTaxi}s */
-            simulationObjectCompiler.insertVehicles(getRoboTaxis());
+        simulationObjectCompiler.addRequestRoboTaxiAssoc(flatMap);
 
-            /** insert information of association of {@link RoboTaxi}s and {@link AVRequest}s */
-            Map<AVRequest, RoboTaxi> flatMap = new HashMap<>();
-            requestRegister.getRegister().forEach((rt, map) -> map.values().forEach(avr -> flatMap.put(avr, rt)));
-            periodFulfilledRequests.forEach((avr, rt) -> flatMap.put(avr, rt)); // adds the robotax for droped off requests (not in requestregister anymore)
-
-            simulationObjectCompiler.addRequestRoboTaxiAssoc(flatMap);
-
-            /** clear all the request Registers */
-            periodAssignedRequests.clear();
-            periodPickedUpRequests.clear();
-            periodFulfilledRequests.clear();
-            periodSubmittdRequests.clear();
-
-            /** in the first pass, the vehicles are typically empty, then
-             * {@link SimulationObject} is not stored or communicated */
-            SimulationObject simulationObject = simulationObjectCompiler.compile();
-            if (SimulationObjects.hasVehicles(simulationObject)) {
-                SimulationDistribution.of(simulationObject, storageUtils);
-            }
-        }
+        /** clear all the request Registers */
+        periodAssignedRequests.clear();
+        periodPickedUpRequests.clear();
+        periodFulfilledRequests.clear();
+        periodSubmittdRequests.clear();
     }
 
     /** adding a vehicle during setup of simulation, handeled by {@link AVGenerator} */

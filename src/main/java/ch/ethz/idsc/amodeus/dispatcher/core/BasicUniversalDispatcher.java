@@ -1,16 +1,20 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.matsim.api.core.v01.events.Event;
+import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
@@ -18,6 +22,11 @@ import org.matsim.core.router.util.TravelTime;
 
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
+import ch.ethz.idsc.amodeus.net.SimulationDistribution;
+import ch.ethz.idsc.amodeus.net.SimulationObject;
+import ch.ethz.idsc.amodeus.net.SimulationObjectCompiler;
+import ch.ethz.idsc.amodeus.net.SimulationObjects;
+import ch.ethz.idsc.amodeus.net.StorageUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
@@ -30,15 +39,16 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
  * dispatchers and shared {@link RoboTaxi} dispatchers. */
 /* package */ abstract class BasicUniversalDispatcher extends RoboTaxiMaintainer {
 
-    /* package */ final Set<AVRequest> pendingRequests = new LinkedHashSet<>();
     protected int publishPeriod; // not final, so that dispatchers can disable, or manipulate
 
+    /* package */ final Set<AVRequest> pendingRequests = new LinkedHashSet<>();
     /* package */ final MatsimAmodeusDatabase db;
     /* package */ final FuturePathFactory futurePathFactory;
     /* package */ final double pickupDurationPerStop;
     /* package */ final double dropoffDurationPerStop;
-
     /* package */ int total_matchedRequests = 0;
+
+    private Map<RoboTaxi, List<Link>> tempLocationTrace = new HashMap<>();
 
     public BasicUniversalDispatcher(EventsManager eventsManager, Config config, //
             AVDispatcherConfig avDispatcherConfig, //
@@ -87,6 +97,7 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
         RoboTaxi roboTaxi = new RoboTaxi(vehicle, new LinkTimePair(vehicle.getStartLink(), 0.0), vehicle.getStartLink(), singleOrShared);
         Event event = new AVVehicleAssignmentEvent(vehicle, 0);
         addRoboTaxi(roboTaxi, event);
+        tempLocationTrace.put(roboTaxi, new ArrayList<>());
     }
 
     /** called when a new request enters the system, adds request to
@@ -105,5 +116,48 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
                 super.getInfoLine(), //
                 getAVRequests().size(), //
                 total_matchedRequests);
+    }
+
+    /** save simulation data into {@link SimulationObject} for later analysis and
+     * visualization. */
+    @Override
+    protected final void notifySimulationSubscribers(long round_now, StorageUtils storageUtils) {
+        if (publishPeriod > 0 && round_now % publishPeriod == 0 && round_now > 1) {
+            SimulationObjectCompiler simulationObjectCompiler = SimulationObjectCompiler.create( //
+                    round_now, getInfoLine(), total_matchedRequests, db);
+
+            /** insert {@link RoboTaxi}s */
+            simulationObjectCompiler.insertVehicles(tempLocationTrace);
+
+            insertRequestInfo(simulationObjectCompiler);
+
+            /** first pass vehicles typically empty, then no storage / communication of
+             * {@link SimulationObject}s */
+            SimulationObject simulationObject = simulationObjectCompiler.compile();
+            if (SimulationObjects.hasVehicles(simulationObject)) {
+                SimulationDistribution.of(simulationObject, storageUtils);
+            }
+        }
+    }
+
+    /* package */ abstract void insertRequestInfo(SimulationObjectCompiler simulationObjectCompiler);
+
+    @Override
+    /* package */ void updateLocationTrace(RoboTaxi roboTaxi, Link lastLoc) {
+        if (tempLocationTrace.get(roboTaxi).isEmpty() || // trace is empty
+                !lastLoc.equals(tempLocationTrace.get(roboTaxi).get(tempLocationTrace.get(roboTaxi).size() - 1)))// location has changed
+            tempLocationTrace.get(roboTaxi).add(lastLoc);
+    }
+
+    @Override
+    /* package */ void flushLocationTraces() {
+        tempLocationTrace.entrySet().forEach(e -> {
+            int size = e.getValue().size();
+            if (size > 1) {
+                Link last = e.getValue().get(size - 1);
+                e.getValue().clear();
+                e.getValue().add(last);
+            }
+        });
     }
 }
