@@ -24,7 +24,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         int[] linkIndexTrace = new int[linkTrace.size()];
         for (int i = 0; i < linkTrace.size(); ++i)
             linkIndexTrace[i] = db.getLinkIndex(linkTrace.get(i));
-        vc.linkIndex = linkIndexTrace;
+        vc.linkTrace = linkIndexTrace;
         vc.roboTaxiStatus = roboTaxi.getStatus();
         Link toLink = roboTaxi.getCurrentDriveDestination();
         vc.destinationLinkIndex = db.getLinkIndex(Objects.requireNonNull(toLink));

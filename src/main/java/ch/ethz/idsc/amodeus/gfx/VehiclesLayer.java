@@ -167,6 +167,6 @@ public class VehiclesLayer extends ViewerLayer {
     }
     
     private int indexFrom(VehicleContainer vc) {
-        return vc.linkIndex[vc.linkIndex.length-1];
+        return vc.linkTrace[vc.linkTrace.length-1];
     }
 }
