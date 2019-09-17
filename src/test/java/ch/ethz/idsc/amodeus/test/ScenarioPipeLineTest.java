@@ -151,7 +151,7 @@ public class ScenarioPipeLineTest {
 
         //
         scalarAssert.add(RationalScalar.of(2369, 28800), occupancyRatio);
-        scalarAssert.add(RealScalar.of(0.6859942202326029), distanceRatio);
+        scalarAssert.add(RealScalar.of(0.6740724342712175), distanceRatio);
 
         /** fleet distances */
         assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistance));
@@ -166,12 +166,12 @@ public class ScenarioPipeLineTest {
         assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).equals( //
                 ate.getDistancElement().totalDistance));
 
-        // before should: 34023.541165364324
-        scalarAssert.add((Scalar) RealScalar.of(34023.541165364324).map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
-        scalarAssert.add((Scalar) RealScalar.of(28712.76494623768).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
-        scalarAssert.add(RealScalar.of(5310.77621912671), ate.getDistancElement().totalDistancePicku);
+
+        scalarAssert.add((Scalar) RealScalar.of(45566.56792).map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
+        scalarAssert.add((Scalar) RealScalar.of(37714.81659).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
+        scalarAssert.add(RealScalar.of(7851.751329216706), ate.getDistancElement().totalDistancePicku);
         scalarAssert.add(RealScalar.of(0.0), ate.getDistancElement().totalDistanceRebal);
-        scalarAssert.add((Scalar) RealScalar.of(0.8439087750062604).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRatio.map(Round._5));
+        scalarAssert.add((Scalar) RealScalar.of(0.82769).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRatio.map(Round._5));
 
         scalarAssert.add((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle), //
                 ate.getDistancElement().totalDistance);
