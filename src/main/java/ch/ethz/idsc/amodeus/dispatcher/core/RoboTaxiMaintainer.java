@@ -119,8 +119,8 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
      * stopped, also taxis which have lost their pickup assignment */
     private void afterStepTasks() {
         stopAbortedPickupRoboTaxis();
-//        flushLocationTraces();
-        
+        // flushLocationTraces();
+
     }
 
     private void consistencyCheck() {
@@ -148,8 +148,6 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
     }
 
     /* package */ abstract void updateLocationTrace(RoboTaxi roboTaxi, Link lastKnownLoc);
-    
-//    /* package */ abstract void flushLocationTraces();
 
     /* package */ abstract void executePickups();
 

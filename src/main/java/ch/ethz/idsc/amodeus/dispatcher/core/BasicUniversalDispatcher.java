@@ -148,9 +148,10 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
     @Override
     /* package */ void updateLocationTrace(RoboTaxi roboTaxi, Link lastLoc) {
-        if (tempLocationTrace.get(roboTaxi).isEmpty() || // trace is empty
-                !lastLoc.equals(tempLocationTrace.get(roboTaxi).get(tempLocationTrace.get(roboTaxi).size() - 1)))// location has changed
-            tempLocationTrace.get(roboTaxi).add(lastLoc);
+        List<Link> trace = tempLocationTrace.get(roboTaxi);
+        /** trace is empty or the position has changed */
+        if (trace.isEmpty() || !lastLoc.equals(trace.get(trace.size() - 1)))
+            trace.add(lastLoc);
     }
 
     private void flushLocationTraces() {
