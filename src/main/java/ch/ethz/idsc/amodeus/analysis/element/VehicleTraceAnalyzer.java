@@ -37,7 +37,7 @@ import ch.ethz.idsc.tensor.alg.Array;
     }
 
     public void register(int simObjIndex, VehicleContainer vc) {
-        if (vc.linkTrace[vc.linkTrace.length - 1] != lastLinkIndex) {
+        if (vc.linkTrace[0] != lastLinkIndex) {
             consolidate();
             list.clear();
             simObjIndLastLinkChange = simObjIndex;
@@ -52,11 +52,21 @@ import ch.ethz.idsc.tensor.alg.Array;
      * queuing based simulation model does not allow for more detailed information. */
     /* package */ void consolidate() {
         if (!list.isEmpty()) {
-            final int linkId = list.get(0).linkTrace[list.get(0).linkTrace.length - 1];
-            Link distanceLink = db.getOsmLink(linkId).link;
+
             /** this total distance on the link was traveled on during all
              * simulationObjects stored in the list. */
-            double distance = distanceLink.getLength();
+
+            // NEW ====
+            double distance = 0;
+            for (int linkId : list.get(0).linkTrace) {
+                Link distanceLink = db.getOsmLink(linkId).link;
+                distance += distanceLink.getLength();
+            }
+
+            // BEFORE ====
+            // final int linkId = list.get(0).linkTrace[list.get(0).linkTrace.length - 1];
+            // Link distanceLink = db.getOsmLink(linkId).link;
+            // double distance = distanceLink.getLength();
 
             int part = Math.toIntExact(list.stream().filter(vc -> vc.roboTaxiStatus.isDriving()).count());
 
