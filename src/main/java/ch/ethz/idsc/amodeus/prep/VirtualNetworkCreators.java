@@ -24,11 +24,11 @@ public enum VirtualNetworkCreators implements VirtualNetworkCreator {
     FROMFILE {
         @Override
         public VirtualNetwork<Link> create(Network network, Population population, ScenarioOptions scenarioOptions, int numRt, int endTime) {
-            String absFileName = scenarioOptions.getString("vnFile");
+            File absFileName = new File(scenarioOptions.getWorkingDirectory(), "/" + scenarioOptions.getString("vnFile"));
             Map<String, Link> map = new HashMap<>();
             network.getLinks().entrySet().forEach(e -> map.put(e.getKey().toString(), e.getValue()));
             try {
-                return VirtualNetworkIO.fromByte(map, new File(absFileName));
+                return VirtualNetworkIO.fromByte(map, absFileName);
             } catch (Exception exception) {
                 exception.printStackTrace();
                 return TrivialMatsimVirtualNetwork.createVirtualNetwork(network);

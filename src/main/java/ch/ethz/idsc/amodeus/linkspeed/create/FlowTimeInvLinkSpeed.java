@@ -41,11 +41,7 @@ public class FlowTimeInvLinkSpeed implements TaxiLinkSpeedEstimator {
 
     public FlowTimeInvLinkSpeed(Collection<TaxiTrip> records, Network network, //
             AmodeusTimeConvert timeConvert, MatsimAmodeusDatabase db, QuadTree<Link> qt, //
-            LocalDate simulationDate, TrafficDelayEstimate delayCalculator, //
-            double wLSQ) throws Exception {
-
-        GlobalAssert.that(wLSQ <= 1);
-        GlobalAssert.that(wLSQ >= 0);
+            LocalDate simulationDate, TrafficDelayEstimate delayCalculator) throws Exception {
 
         /** ensure {@link TaxiTrip}s contain all required information */
         GlobalAssert.that(records.stream().filter(TaxiTripCheck::isOfMinimalScope).count() == records.size());
