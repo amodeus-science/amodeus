@@ -18,7 +18,7 @@ public class VehicleContainer implements Serializable {
 
     public int vehicleIndex = -1; // for tracking of individual vehicles
 
-    /** links the RoboTaxi travelled on ordered w.r.t time, the integer
+    /** Links the RoboTaxi traveled on ordered w.r.t time, the integer
      * linkIndex is unrelated to MATSIM's LinkId, but is our own consecutive
      * and memory efficient id, the value -1 is set in case the information is
      * not available */
