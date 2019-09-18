@@ -3,6 +3,7 @@ package ch.ethz.idsc.amodeus.linkspeed.create;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.gnu.glpk.GLPK;
 import org.gnu.glpk.GLPKConstants;
@@ -26,14 +27,15 @@ public enum GLPKLinOptDelayCalculator implements TrafficDelayEstimate {
     public Tensor compute(Tensor flowMatrix, Tensor deviation) {
 
         /** problem characteristics */
-        int numRoads = Dimensions.of(flowMatrix).get(1);
-        int numTrips = Dimensions.of(flowMatrix).get(0);
+        List<Integer> dims = Dimensions.of(flowMatrix);
+        int numRoads = dims.get(1);
+        int numTrips = dims.get(0);
         double pRoad = 1.0;
         double pSlack = 10000.0;
         System.out.println("Dimensions: ");
-        System.out.println("roads: " + numRoads);
-        System.out.println("trips: " + numTrips);
-        GlobalAssert.that(Dimensions.of(flowMatrix).get(0) == deviation.length());
+        System.out.println("Roads: " + numRoads);
+        System.out.println("Trips: " + numTrips);
+        GlobalAssert.that(dims.get(0) == deviation.length());
         long tStart = System.currentTimeMillis();
 
         /** setting up the LP */

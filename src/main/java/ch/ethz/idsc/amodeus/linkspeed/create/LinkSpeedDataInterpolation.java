@@ -35,34 +35,52 @@ public class LinkSpeedDataInterpolation {
     }
 
     private void completeSpeeds() {
+        int notSuccessful = 0;
+
         /** identify all times for which the {@link LinkSpeedDataContainer} contains recordings */
         Set<Integer> recordedTimes = lsData.getRecordedTimes();
 
         /** for every link in the network, complete recordings based on local average
          * if not present. */
+        int completed = 0;
         for (Link link : network.getLinks().values()) {
+
+            // int linkID = Integer.parseInt(link.getId().toString());
+            // /** some recordings exist for link */
+            // if (!lsData.getLinkSet().containsKey(db.getLinkIndex(link))) {
+            // for (Integer time : recordedTimes) {
+            // lsData.addData(linkID, time, 0.0001);
+            // }
+            // }
+
+            ++completed;
+            if (completed % 10000 == 0)
+                System.out.println(completed + " / " + network.getLinks().size());
             Objects.requireNonNull(link);
+            int linkID = Integer.parseInt(link.getId().toString());
             /** some recordings exist for link */
             if (lsData.getLinkSet().containsKey(db.getLinkIndex(link))) {
                 LinkSpeedTimeSeries timeSeries = lsData.getLinkSet().get(db.getLinkIndex(link));
                 for (Integer time : recordedTimes) {
-                    if (timeSeries.getRecordedTimes().contains(time)) {
-                        // -- don-t do anything, time was recorded on that link
-                    } else {
-                        Scalar speed = MeanLinkSpeed.neighborAverage(kernel.getNeighbors(link), time, link, //
-                                db, lsData);
-                        int linkID = Integer.parseInt(link.getId().toString());
-                        lsData.addData(linkID, time, speed.number().doubleValue());
+                    if (!timeSeries.getRecordedTimes().contains(time)) {
+                        Scalar speed = MeanLinkSpeed.ofNeighbors(kernel.getNeighbors(link), time, link, db, lsData);
+                        if (Objects.nonNull(speed))
+                            lsData.addData(linkID, time, speed.number().doubleValue());
+                        else
+                            ++notSuccessful;
                     }
                 }
             } else { /** no recordings exist for link */
                 for (Integer time : recordedTimes) {
-                    Scalar speed = MeanLinkSpeed.neighborAverage(kernel.getNeighbors(link), time, link, //
-                            db, lsData);
-                    int linkID = Integer.parseInt(link.getId().toString());
-                    lsData.addData(linkID, time, speed.number().doubleValue());
+                    Scalar speed = MeanLinkSpeed.ofNeighbors(kernel.getNeighbors(link), time, link, db, lsData);
+                    if (Objects.nonNull(speed))
+                        lsData.addData(linkID, time, speed.number().doubleValue());
+                    else
+                        ++notSuccessful;
                 }
             }
         }
+        System.err.println("Total number of unsuccessful link speed estimations: " //
+                + notSuccessful + "(" + notSuccessful / ((double) network.getLinks().size()) + ")");
     }
 }
