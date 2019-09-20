@@ -43,6 +43,12 @@ public class ShortestDurationCalculator {
         // fast link lookup
         fll = new FastLinkLookup(network, db);
     }
+    
+    public ShortestDurationCalculator(LeastCostPathCalculator lcpc, Network network, MatsimAmodeusDatabase db) {
+        this.lcpc = lcpc;
+        // fast link lookup
+        fll = new FastLinkLookup(network, db);
+    }
 
     public Scalar computeFreeFlowTime(TaxiTrip taxiTrip) {
         return Quantity.of(computePath(taxiTrip).travelTime, "s");

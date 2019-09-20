@@ -12,6 +12,7 @@ import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.red.Mean;
@@ -26,22 +27,22 @@ import ch.ethz.idsc.tensor.red.Mean;
             MatsimAmodeusDatabase db, LinkSpeedDataContainer lsData) {
         Tensor changes = Tensors.empty();
         for (Link neighbor : neighbors) {
+
             /** retrieve the link speed estimate of the neighbor */
             SortedMap<Integer, LinkSpeedTimeSeries> neighborMap = lsData.getLinkSet();
-            LinkSpeedTimeSeries series = neighborMap.get(Integer.parseInt(link.getId().toString()));
+            LinkSpeedTimeSeries series = neighborMap.get(Integer.parseInt(neighbor.getId().toString()));
             GlobalAssert.that(time >= 0);
             try {
                 Tensor speeds = series.getSpeedsAt(time);
                 Scalar mean = (Scalar) Mean.of(speeds);
                 Scalar freeFlow = RealScalar.of(neighbor.getFreespeed());
                 Scalar change = mean.divide(freeFlow);
-                
-                
-                System.out.println("speeds:   " +  speeds);
-                System.out.println("mean:     " +  mean);
-                System.out.println("freeFlow: " +  freeFlow);
-                System.out.println("change:   " +  change);
-                Thread.sleep(10);
+
+                // System.out.println("speeds: " + speeds);
+                // System.out.println("mean: " + mean);
+                // System.out.println("freeFlow: " + freeFlow);
+                // System.out.println("change: " + change);
+                // Thread.sleep(10);
 
                 changes.append(change);
             } catch (Exception exception) {
@@ -55,10 +56,11 @@ import ch.ethz.idsc.tensor.red.Mean;
         if (changes.length() == 0)
             return null;
 
-        System.out.println("changes: " + changes);
+        // System.out.println("changes: " + changes);
         Scalar meanReduction = (Scalar) Mean.of(changes);
-        System.out.println("meanReduction: " + meanReduction);
-        System.out.println("===");
+        // if (Scalars.lessThan(RealScalar.ONE, meanReduction))
+        // System.out.println("meanReduction: " + meanReduction);
+        // System.out.println("===");
         return RealScalar.of(link.getFreespeed()).multiply(meanReduction);
     }
 }
