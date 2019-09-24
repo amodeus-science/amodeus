@@ -9,7 +9,6 @@ import java.util.Set;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
-import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
 
 /* package */ class ParkingFlowHelper {
@@ -22,20 +21,20 @@ import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
         this.network = network;
     }
 
-    /** @return {@link Map} on {@link Link} keys with the {@link Set}s of {@link RoboTaxi}s that must
+    /** @return {@link Map} on {@link Link} keys with the {@link Set}s of {@link T}s that must
      *         leave in order not to violate parking constraints.
-     *         Input are the currently staying {@link RoboTaxi}s @param linkStayTaxi sorted in a map */
-    public Map<Link, Set<RoboTaxi>> getTaxisToGo(Map<Link, Set<RoboTaxi>> linkStayTaxi) {
-        Map<Link, Set<RoboTaxi>> shouldLeaveTaxis = new HashMap<>();
+     *         Input are the currently staying {@link T}s @param linkStayTaxi sorted in a map */
+    public <T> Map<Link, Set<T>> getTaxisToGo(Map<Link, Set<T>> linkStayTaxi) {
+        Map<Link, Set<T>> shouldLeaveTaxis = new HashMap<>();
         for (Link link : linkStayTaxi.keySet()) {
             double nominalCapacity = parkingCapacity.getSpatialCapacity(link.getId());
             Integer nominalSpaces = (int) Math.ceil(nominalCapacity);
             Integer numTaxis = linkStayTaxi.get(link).size();
-            if (numTaxis > nominalCapacity) {
+            if (numTaxis > nominalSpaces) {
                 Integer shouldLeave = Math.max(0, numTaxis - nominalSpaces);
-                for (RoboTaxi rt : linkStayTaxi.get(link)) {
+                for (T rt : linkStayTaxi.get(link)) {
                     if (!shouldLeaveTaxis.containsKey(link))
-                        shouldLeaveTaxis.put(link, new HashSet<RoboTaxi>());
+                        shouldLeaveTaxis.put(link, new HashSet<T>());
                     shouldLeaveTaxis.get(link).add(rt);
                     shouldLeave--;
                     if (shouldLeave < 1)
@@ -47,9 +46,9 @@ import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
     }
 
     /** @return {@link Map} with currently available {@link Link}s that have parking
-     *         spaces and the respective number given the staying {@link RoboTaxi}s @param linkStayTaxi
-     *         and the rebalancing {@link RoboTaxi}s @param linkRebalancingTaxi */
-    public Map<Link, Integer> getFreeSpacesToGo(Map<Link, Set<RoboTaxi>> linkStayTaxi, //
+     *         spaces and the respective number given the staying {@link T}s @param linkStayTaxi
+     *         and the rebalancing {@link T}s @param linkRebalancingTaxi */
+    public <T> Map<Link, Integer> getFreeSpacesToGo(Map<Link, Set<T>> linkStayTaxi, //
             Map<Link, Integer> linkRebalancingTaxi) {
         Map<Link, Integer> freeSpacesToGo = new HashMap<>();
         for (Link link : network.getLinks().values()) {
