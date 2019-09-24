@@ -29,16 +29,6 @@ import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.ICoordinate;
 
 public class AmodeusComponent extends JMapViewer {
 
-    @Deprecated
-    /** Should not be used in amodeus repository anymore */
-    public static AmodeusComponent createDefault(MatsimAmodeusDatabase db) {
-        try {
-            return createDefault(db, MultiFileTools.getDefaultWorkingDirectory());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     /** @param db
      * @return instance of MatsimMapComponent with default sequence of {@link ViewerLayer}s */
     public static AmodeusComponent createDefault(MatsimAmodeusDatabase db, File workingDirectory) {
