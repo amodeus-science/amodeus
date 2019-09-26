@@ -8,10 +8,6 @@ import org.matsim.api.core.v01.population.Person;
 import org.matsim.core.router.util.TravelTime;
 import org.matsim.vehicles.Vehicle;
 
-import ch.ethz.idsc.amodeus.linkspeed.LinkIndex;
-import ch.ethz.idsc.amodeus.linkspeed.LinkSpeedDataContainer;
-import ch.ethz.idsc.amodeus.linkspeed.LinkSpeedTimeSeries;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.red.Mean;
 
@@ -26,13 +22,13 @@ public class LSDataTravelTime implements TravelTime {
     @Override
     public double getLinkTravelTime(Link link, double time, Person person, Vehicle vehicle) {
         Integer linkID = LinkIndex.fromLink(link);
-        Scalar speed = RealScalar.of(link.getFreespeed());
+        double speed = link.getFreespeed();
         LinkSpeedTimeSeries timeSeries = lsData.getLinkSet().get(linkID);
         if (Objects.nonNull(timeSeries)) {
             LinkSpeedTimeSeries series = lsData.getLinkSet().get(linkID);
-            speed = (Scalar) Mean.of(series.getSpeedsFloor((int) time));
+            speed = ((Scalar) Mean.of(series.getSpeedsFloor((int) time))).number().doubleValue();
         }
-        return link.getLength() / speed.number().doubleValue();
+        return link.getLength() / speed;
     }
 
 }

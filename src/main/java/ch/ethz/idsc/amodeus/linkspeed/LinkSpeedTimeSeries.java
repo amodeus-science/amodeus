@@ -33,6 +33,10 @@ public class LinkSpeedTimeSeries implements Serializable {
     public Tensor getSpeedsFloor(Integer time) {
         return data.floorEntry(time).getValue();
     }
+    
+    public Integer getTimeFloor(Integer time) {
+        return data.floorEntry(time).getKey();
+    }
 
     public Set<Integer> getRecordedTimes() {
         return data.keySet();
