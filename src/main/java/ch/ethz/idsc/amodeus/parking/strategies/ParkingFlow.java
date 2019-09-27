@@ -68,7 +68,7 @@ import ch.ethz.idsc.amodeus.routing.DistanceFunction;
                     boolean foundSolution = false;
                     /** attempt to solve without a linear program for small numbers
                      * of units to move */
-                    if (totalUnitsFinal < 15) { // TODO find meaningful value, remove magic const.
+                    if (totalUnitsFinal < 20) { // TODO find meaningful value, remove magic const.
                         System.out.println("Fast solver is started...");
                         fastSolver = new SmallRedistributionProblemSolver<>(unitsToMove, freeSpacesToGo, //
                                 (l1, l2) -> distanceFunction.getDistance(l1, l2), l -> l.getId().toString(), //
