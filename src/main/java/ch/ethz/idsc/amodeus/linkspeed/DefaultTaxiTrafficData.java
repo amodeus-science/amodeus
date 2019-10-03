@@ -43,8 +43,8 @@ import ch.ethz.idsc.tensor.Tensor;
         // Instantiate new TTDF to create new TTDA objects
         TaxiTrafficDataContainer trafficData = new TaxiTrafficDataContainer(numSlots);
 
-        for (Entry<Integer, LinkSpeedTimeSeries> entry : lsData.getLinkSet().entrySet()) {
-            Id<Link> linkID = Id.createLinkId(entry.getKey());
+        for (Entry<String, LinkSpeedTimeSeries> entry : lsData.getLinkSet().entrySet()) {
+            Id<Link> linkID = LinkIndex.fromString(entry.getKey());
             Link link = network.getLinks().get(linkID);
             if (Objects.isNull(link)) {
                 throw new RuntimeException("\n link with id " + linkID.toString() + " not found.\n" + //

@@ -21,7 +21,7 @@ public class LSDataTravelTime implements TravelTime {
 
     @Override
     public double getLinkTravelTime(Link link, double time, Person person, Vehicle vehicle) {
-        Integer linkID = LinkIndex.fromLink(link);
+        String linkID = LinkIndex.fromLink(link);
         double speed = link.getFreespeed();
         LinkSpeedTimeSeries timeSeries = lsData.getLinkSet().get(linkID);
         if (Objects.nonNull(timeSeries)) {

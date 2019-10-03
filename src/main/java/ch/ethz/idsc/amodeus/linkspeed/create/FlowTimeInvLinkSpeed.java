@@ -12,6 +12,7 @@ import java.util.Set;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
+import ch.ethz.idsc.amodeus.linkspeed.LinkIndex;
 import ch.ethz.idsc.amodeus.linkspeed.LinkSpeedDataContainer;
 import ch.ethz.idsc.amodeus.net.FastLinkLookup;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
@@ -120,8 +121,7 @@ public class FlowTimeInvLinkSpeed implements TaxiLinkSpeedEstimator {
             Link link = localIndexLink.get(i);
             Objects.requireNonNull(link);
             GlobalAssert.that(network.getLinks().values().contains(link));
-            int linkID = Integer.parseInt(link.getId().toString());
-            
+            String linkID = LinkIndex.fromLink(link);
 
             /** calculate the link speed */
             double length = link.getLength();
@@ -160,7 +160,7 @@ public class FlowTimeInvLinkSpeed implements TaxiLinkSpeedEstimator {
                 int time = RealScalar.of(bin).multiply(dayDt).number().intValue();
                 GlobalAssert.that(time >= 0);
                 if (trafficTravelTime >= 0) {
-                    GlobalAssert.that(speed - link.getFreespeed()  <= 0.01 ); 
+                    GlobalAssert.that(speed - link.getFreespeed() <= 0.01);
                     lsData.addData(linkID, time, speed);
                 } else {
                     ++numNegSpeed;

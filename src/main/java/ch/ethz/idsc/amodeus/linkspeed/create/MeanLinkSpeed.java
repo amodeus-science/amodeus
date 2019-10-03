@@ -29,13 +29,13 @@ import ch.ethz.idsc.tensor.red.Mean;
         for (Link neighbor : neighbors) {
 
             /** retrieve the link speed estimate of the neighbor */
-            SortedMap<Integer, LinkSpeedTimeSeries> neighborMap = lsData.getLinkSet();
+            SortedMap<String, LinkSpeedTimeSeries> neighborMap = lsData.getLinkSet();
             LinkSpeedTimeSeries series = neighborMap.get(Integer.parseInt(neighbor.getId().toString()));
             GlobalAssert.that(time >= 0);
             try {
-//                Tensor speeds = series.getSpeedsAt(time);
-                Scalar mean = RealScalar.of(series.getSpeedsAt(time));//(Scalar) Mean.of(speeds);
-                
+                // Tensor speeds = series.getSpeedsAt(time);
+                Scalar mean = RealScalar.of(series.getSpeedsAt(time));// (Scalar) Mean.of(speeds);
+
                 Scalar freeFlow = RealScalar.of(neighbor.getFreespeed());
                 Scalar change = mean.divide(freeFlow);
 
