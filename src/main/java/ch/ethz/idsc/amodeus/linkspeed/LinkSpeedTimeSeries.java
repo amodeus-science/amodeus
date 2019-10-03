@@ -7,9 +7,6 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.tensor.RealScalar;
-import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.Tensors;
 
 /** DO NOT MODIFY CLASS
  * 
@@ -18,22 +15,23 @@ import ch.ethz.idsc.tensor.Tensors;
 public class LinkSpeedTimeSeries implements Serializable {
 
     /** keyMap contains times and Tensor a list of recorded speeds at the time */
-    private /* non-final */ NavigableMap<Integer, Tensor> data;
+    private /* non-final */ NavigableMap<Integer, Double> data;
 
     public LinkSpeedTimeSeries(int time, double speed) {
         GlobalAssert.that(time >= 0);
         data = new TreeMap<>();
-        data.put(time, Tensors.vector(speed));
+        data.put(time, speed);
     }
 
-    public Tensor getSpeedsAt(Integer time) {
+    // TODO why needed?
+    public Double getSpeedsAt(Integer time) {
         return data.get(time);
     }
-    
-    public Tensor getSpeedsFloor(Integer time) {
+
+    public Double getSpeedsFloor(Integer time) {
         return data.floorEntry(time).getValue();
     }
-    
+
     public Integer getTimeFloor(Integer time) {
         return data.floorEntry(time).getKey();
     }
@@ -46,19 +44,9 @@ public class LinkSpeedTimeSeries implements Serializable {
         return data.containsKey(time);
     }
 
-    /* package */ void addSpeed(Integer time, double speed) {
+    public void setSpeed(Integer time, double speed) {
         GlobalAssert.that(speed >= 0);
-
-        if (data.containsKey(time)) {
-            data.get(time).append(RealScalar.of(speed));
-        } else {
-            data.put(time, Tensors.vector(speed));
-        }
-    }
-
-    public void resetSpeed(Integer time, double speed) {
-        GlobalAssert.that(speed >= 0);
-        data.put(time, Tensors.vector(speed));
+        data.put(time, speed);
     }
 
 }

@@ -57,8 +57,7 @@ import ch.ethz.idsc.tensor.Tensor;
 
             LinkSpeedTimeSeries lsData = entry.getValue();
             for (Integer time : lsData.getRecordedTimes()) {
-                Tensor speedRecordings = lsData.getSpeedsAt(time);
-                double speedRecorded = speedRecordings.Get(0).number().doubleValue();
+                double speedRecorded = lsData.getSpeedsAt(time);
                 if (speedRecorded <= 0.0) {
                     System.err.println("recorded speed:" + speedRecorded);
                     System.err.println("will be overridden by freeflow speed.");

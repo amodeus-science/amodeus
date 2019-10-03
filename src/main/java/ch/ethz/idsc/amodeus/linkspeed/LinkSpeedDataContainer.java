@@ -21,7 +21,7 @@ public class LinkSpeedDataContainer implements Serializable {
     public void addData(int link, int time, double speed) {
         if (linkSet.containsKey(link)) {
             LinkSpeedTimeSeries linkSpeeds = linkSet.get(link);
-            linkSpeeds.addSpeed(time, speed);
+            linkSpeeds.setSpeed(time, speed);
         } else {
             linkSet.put(link, new LinkSpeedTimeSeries(time, speed));
         }

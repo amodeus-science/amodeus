@@ -26,7 +26,7 @@ public class LSDataTravelTime implements TravelTime {
         LinkSpeedTimeSeries timeSeries = lsData.getLinkSet().get(linkID);
         if (Objects.nonNull(timeSeries)) {
             LinkSpeedTimeSeries series = lsData.getLinkSet().get(linkID);
-            speed = ((Scalar) Mean.of(series.getSpeedsFloor((int) time))).number().doubleValue();
+            speed = series.getSpeedsFloor((int) time);
         }
         return link.getLength() / speed;
     }
