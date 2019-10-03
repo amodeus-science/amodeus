@@ -35,7 +35,7 @@ import ch.ethz.idsc.tensor.alg.Array;
 
     public void feed(SimulationObject ref, int ofs) {
         Map<Integer, List<VehicleContainer>> map = ref.vehicles.stream() //
-                .collect(Collectors.groupingBy(VehicleContainer::getLinkId));
+                .collect(Collectors.groupingBy(this::indexFrom));
 
         for (Entry<Integer, List<VehicleContainer>> entry : map.entrySet()) {
             final int index = entry.getKey();
@@ -61,5 +61,9 @@ import ch.ethz.idsc.tensor.alg.Array;
                 array.set(RealScalar.of(carsEmpty), ofs, 1);
             }
         }
+    }
+
+    private int indexFrom(VehicleContainer vc) {
+        return vc.linkTrace[vc.linkTrace.length-1];
     }
 }

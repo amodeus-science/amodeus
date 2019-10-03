@@ -2,8 +2,8 @@
 package ch.ethz.idsc.amodeus.linkspeed;
 
 import java.io.Serializable;
+import java.util.NavigableMap;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.TreeMap;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
@@ -18,7 +18,7 @@ import ch.ethz.idsc.tensor.Tensors;
 public class LinkSpeedTimeSeries implements Serializable {
 
     /** keyMap contains times and Tensor a list of recorded speeds at the time */
-    private /* non-final */ SortedMap<Integer, Tensor> data;
+    private /* non-final */ NavigableMap<Integer, Tensor> data;
 
     public LinkSpeedTimeSeries(int time, double speed) {
         GlobalAssert.that(time >= 0);
@@ -28,6 +28,14 @@ public class LinkSpeedTimeSeries implements Serializable {
 
     public Tensor getSpeedsAt(Integer time) {
         return data.get(time);
+    }
+    
+    public Tensor getSpeedsFloor(Integer time) {
+        return data.floorEntry(time).getValue();
+    }
+    
+    public Integer getTimeFloor(Integer time) {
+        return data.floorEntry(time).getKey();
     }
 
     public Set<Integer> getRecordedTimes() {

@@ -24,7 +24,7 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.traveldata.StaticTravelData;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
-import ch.ethz.idsc.amodeus.util.io.LocateUtils;
+import ch.ethz.idsc.amodeus.util.io.Locate;
 import ch.ethz.idsc.amodeus.util.io.ProvideAVConfig;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.tensor.Tensors;
@@ -50,7 +50,7 @@ public class VehicleToVSGeneratorTester {
     public static void setup() throws IOException {
 
         /** input data */
-        File scenarioDirectory = new File(LocateUtils.getSuperFolder(VehicleToVSGenerator.class, "amodeus"), "resources/testScenario");
+        File scenarioDirectory = new File(Locate.repoFolder(VehicleToVSGenerator.class, "amodeus"), "resources/testScenario");
         scenarioOptions = new ScenarioOptions(scenarioDirectory, ScenarioOptionsBase.getDefault());
         File configFile = new File(scenarioOptions.getPreparerConfigName());
         AVConfigGroup avCg = new AVConfigGroup();

@@ -48,6 +48,7 @@ import ch.ethz.idsc.amodeus.routing.DistanceFunction;
                  * by an equal number in all overflowing parking reservoirs */
                 int totalUnits = unitsToMove.values().stream().mapToInt(i -> i).sum();
                 int totalSpots = freeSpacesToGo.values().stream().mapToInt(i -> i).sum();
+                /** if more units to be moved than spots available, reduce size */
                 if (totalUnits > totalSpots) {
                     int diff = totalUnits - totalSpots;
                     int locations = unitsToMove.size();
@@ -61,13 +62,29 @@ import ch.ethz.idsc.amodeus.routing.DistanceFunction;
                  * may be zero and the LP does not need to be solved. */
                 int totalUnitsFinal = unitsToMove.values().stream().mapToInt(i -> i).sum();
                 if (totalUnitsFinal > 0) {
-                    /** set up the flow problem and solve */
-                    RedistributionProblemSolver<Link> parkingLP = //
-                            new RedistributionProblemSolver<>(unitsToMove, freeSpacesToGo, //
-                                    (l1, l2) -> distanceFunction.getDistance(l1, l2), l -> l.getId().toString(), //
-                                    false, "");
-                    Map<Link, Map<Link, Integer>> flowSolution = parkingLP.returnSolution();
-
+                    SmallRedistributionProblemSolver<Link> fastSolver = null;
+                    RedistributionProblemSolver<Link> parkingLP = null;
+                    Map<Link, Map<Link, Integer>> flowSolution = null;
+                    boolean foundSolution = false;
+                    /** attempt to solve without a linear program for small numbers
+                     * of units to move */
+                    if (totalUnitsFinal < 20) { // TODO find meaningful value, remove magic const.
+                        System.out.println("Fast solver is started...");
+                        fastSolver = new SmallRedistributionProblemSolver<>(unitsToMove, freeSpacesToGo, //
+                                (l1, l2) -> distanceFunction.getDistance(l1, l2), l -> l.getId().toString(), //
+                                false, "");
+                        foundSolution = fastSolver.success();
+                        System.out.println("Fast solver status: " + foundSolution);
+                        flowSolution = fastSolver.returnSolution();
+                    }
+                    /** otherwise, setup and solve LP to find solution */
+                    if (!foundSolution) {
+                        /** set up the flow problem and solve */
+                        parkingLP = new RedistributionProblemSolver<>(unitsToMove, freeSpacesToGo, //
+                                (l1, l2) -> distanceFunction.getDistance(l1, l2), l -> l.getId().toString(), //
+                                false, "");
+                        flowSolution = parkingLP.returnSolution();
+                    }
                     /** compute command map */
                     return RedistributionProblemHelper.getSolutionCommands(taxisToGo, flowSolution);
                 }

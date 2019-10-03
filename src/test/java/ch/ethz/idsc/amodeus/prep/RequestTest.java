@@ -22,7 +22,7 @@ import org.matsim.core.scenario.ScenarioUtils;
 
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
-import ch.ethz.idsc.amodeus.util.io.LocateUtils;
+import ch.ethz.idsc.amodeus.util.io.Locate;
 
 public class RequestTest {
     private static Network network;
@@ -34,7 +34,7 @@ public class RequestTest {
     public static void setup() throws IOException {
 
         /* input data */
-        File scenarioDirectory = new File(LocateUtils.getSuperFolder(RequestTest.class, "amodeus"), "resources/testScenario");
+        File scenarioDirectory = new File(Locate.repoFolder(RequestTest.class, "amodeus"), "resources/testScenario");
         ScenarioOptions scenarioOptions = new ScenarioOptions(scenarioDirectory, ScenarioOptionsBase.getDefault());
         File configFile = new File(scenarioOptions.getPreparerConfigName());
         Config config = ConfigUtils.loadConfig(configFile.getAbsolutePath());

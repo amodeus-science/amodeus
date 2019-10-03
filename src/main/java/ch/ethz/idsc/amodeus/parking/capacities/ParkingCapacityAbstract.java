@@ -8,8 +8,7 @@ import java.util.Map;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 
-public abstract class ParkingCapacityAbstract //
-        implements ParkingCapacity {
+public abstract class ParkingCapacityAbstract implements ParkingCapacity {
 
     private boolean cleanupFlag = false;
 
@@ -22,8 +21,7 @@ public abstract class ParkingCapacityAbstract //
     @Override
     public long getSpatialCapacity(Id<Link> linkId) {
         return capacities.containsKey(linkId) //
-                ? capacities.get(linkId)
-                : 0;
+                ? capacities.get(linkId) : 0;
     }
 
     /** @return {@link Collection} of all {@link Id<Link>}s which

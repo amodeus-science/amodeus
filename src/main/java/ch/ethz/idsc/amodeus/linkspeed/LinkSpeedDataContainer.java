@@ -8,6 +8,10 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.matsim.api.core.v01.network.Link;
+
+
+
 public class LinkSpeedDataContainer implements Serializable {
 
     // TODO why is this an integer? Should it not be a String?
@@ -15,7 +19,6 @@ public class LinkSpeedDataContainer implements Serializable {
 
     /** add a speed recording for @param link at @param time with a speed value [m/s] @param speed */
     public void addData(int link, int time, double speed) {
-
         if (linkSet.containsKey(link)) {
             LinkSpeedTimeSeries linkSpeeds = linkSet.get(link);
             linkSpeeds.addSpeed(time, speed);

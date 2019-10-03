@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -42,6 +43,7 @@ public class RoboTaxi {
 
     /** last known location of the RoboTaxi */
     private Link lastKnownLocation;
+
     /** drive destination of the RoboTaxi, null for stay task */
     private Link driveDestination;
     /** location/time pair from where / when RoboTaxi path can be altered. */
