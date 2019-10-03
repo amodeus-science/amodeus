@@ -17,17 +17,21 @@ public class LinkSpeedTimeSeries implements Serializable {
     /** keyMap contains times and Tensor a list of recorded speeds at the time */
     private /* non-final */ NavigableMap<Integer, Double> data;
 
-    public LinkSpeedTimeSeries(int time, double speed) {
+    /* package */ LinkSpeedTimeSeries(int time, double speed) {
         GlobalAssert.that(time >= 0);
         data = new TreeMap<>();
         data.put(time, speed);
     }
 
-    // TODO why needed?
+    /** @return link speed at time @param time or null if no recording,
+     *         use this function if exactly this time value is required. */
     public Double getSpeedsAt(Integer time) {
         return data.get(time);
     }
 
+    /** @return link speed at the maximum recorded time smaller or equal than @param time
+     *         null if lowestKey < time, use this function if an approximate speed should be
+     *         returned in any case */
     public Double getSpeedsFloor(Integer time) {
         return data.floorEntry(time).getValue();
     }

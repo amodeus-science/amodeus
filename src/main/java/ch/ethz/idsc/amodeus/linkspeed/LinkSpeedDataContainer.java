@@ -10,8 +10,6 @@ import java.util.TreeMap;
 
 import org.matsim.api.core.v01.network.Link;
 
-
-
 public class LinkSpeedDataContainer implements Serializable {
 
     // TODO why is this an integer? Should it not be a String?

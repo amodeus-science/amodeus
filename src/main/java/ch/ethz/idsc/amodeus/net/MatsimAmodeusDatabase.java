@@ -25,14 +25,9 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
 public class MatsimAmodeusDatabase {
 
-    public static MatsimAmodeusDatabase initialize( //
-            Network network, //
-            ReferenceFrame referenceFrame) {
-
+    public static MatsimAmodeusDatabase initialize(Network network, ReferenceFrame referenceFrame) {
         NavigableMap<String, OsmLink> linkMap = new TreeMap<>();
-
         CoordinateTransformation coords_toWGS84 = referenceFrame.coords_toWGS84();
-
         for (Link link : network.getLinks().values()) {
             OsmLink osmLink = new OsmLink(link, //
                     coords_toWGS84.transform(link.getFromNode().getCoord()), //
