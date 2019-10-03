@@ -29,7 +29,7 @@ import ch.ethz.idsc.tensor.red.Mean;
         for (Link neighbor : neighbors) {
 
             /** retrieve the link speed estimate of the neighbor */
-            SortedMap<String, LinkSpeedTimeSeries> neighborMap = lsData.getLinkSet();
+            SortedMap<Integer, LinkSpeedTimeSeries> neighborMap = lsData.getLinkSet();
             LinkSpeedTimeSeries series = neighborMap.get(Integer.parseInt(neighbor.getId().toString()));
             GlobalAssert.that(time >= 0);
             try {

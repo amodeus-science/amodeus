@@ -51,7 +51,7 @@ public class LinkSpeedDataInterpolation {
             if (completed % 10000 == 0)
                 System.out.println(completed + " / " + network.getLinks().size());
             Objects.requireNonNull(link);
-            String linkID = LinkIndex.fromLink(link);
+            Integer linkID = LinkIndex.fromLink(db, link);
 
             // /** same blocking for all links */
             // if (!lsData.getLinkSet().containsKey(db.getLinkIndex(link))) {

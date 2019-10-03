@@ -10,6 +10,7 @@ import org.matsim.api.core.v01.network.Network;
 
 import com.google.inject.Singleton;
 
+import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.tensor.Tensor;
 
 @Singleton
@@ -20,13 +21,16 @@ import ch.ethz.idsc.tensor.Tensor;
     private final int numSlots;
     private final Network network;
     private final TaxiTrafficDataContainer trafficData;
+    private final MatsimAmodeusDatabase db;
 
     /** @param lsData non-null
      * @param timeBinSize
      * @param network non-null
      * @throws Exception if any of the input parameters is null */
-    public DefaultTaxiTrafficData(LinkSpeedDataContainer lsData, int timeBinSize, Network network) {
+    public DefaultTaxiTrafficData(LinkSpeedDataContainer lsData, int timeBinSize, Network network, //
+            MatsimAmodeusDatabase db) {
         System.out.println("Loading LinkSpeedData into Simulation");
+        this.db = db;
         this.lsData = Objects.requireNonNull(lsData);
         this.timeBinSize = timeBinSize;
         this.numSlots = StaticHelper.DAYLENGTH / timeBinSize;
@@ -43,8 +47,8 @@ import ch.ethz.idsc.tensor.Tensor;
         // Instantiate new TTDF to create new TTDA objects
         TaxiTrafficDataContainer trafficData = new TaxiTrafficDataContainer(numSlots);
 
-        for (Entry<String, LinkSpeedTimeSeries> entry : lsData.getLinkSet().entrySet()) {
-            Id<Link> linkID = LinkIndex.fromString(entry.getKey());
+        for (Entry<Integer, LinkSpeedTimeSeries> entry : lsData.getLinkSet().entrySet()) {
+            Id<Link> linkID = LinkIndex.fromString(db, entry.getKey());
             Link link = network.getLinks().get(linkID);
             if (Objects.isNull(link)) {
                 throw new RuntimeException("\n link with id " + linkID.toString() + " not found.\n" + //

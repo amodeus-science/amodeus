@@ -121,7 +121,7 @@ public class FlowTimeInvLinkSpeed implements TaxiLinkSpeedEstimator {
             Link link = localIndexLink.get(i);
             Objects.requireNonNull(link);
             GlobalAssert.that(network.getLinks().values().contains(link));
-            String linkID = LinkIndex.fromLink(link);
+            Integer linkID = LinkIndex.fromLink(db,link);
 
             /** calculate the link speed */
             double length = link.getLength();
