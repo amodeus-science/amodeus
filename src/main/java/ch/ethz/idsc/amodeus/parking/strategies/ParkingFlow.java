@@ -54,6 +54,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
                 while (totalUnits > totalSpots) {
                     EqualReduction.apply(unitsToMove, totalSpots);
                     totalUnits = unitsToMove.values().stream().mapToInt(i -> i).sum();
+                    System.out.println("Reduced units to move to: " +  totalUnits);
                 }
                 GlobalAssert.that(totalUnits<=totalSpots);
 
