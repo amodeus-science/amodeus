@@ -70,7 +70,7 @@ public enum StackedTimeChart {
         legend.setPosition(RectangleEdge.TOP);
         timechart.addLegend(legend);
 
-        StaticHelper.savePlot(directory, fileTitle, timechart, WIDTH, HEIGHT);
+        PlotSave.now(directory, fileTitle, timechart, WIDTH, HEIGHT);
     }
 
 }
