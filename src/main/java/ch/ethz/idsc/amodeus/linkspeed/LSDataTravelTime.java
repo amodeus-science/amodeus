@@ -9,17 +9,17 @@ import org.matsim.core.router.util.TravelTime;
 import org.matsim.vehicles.Vehicle;
 
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
-import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.red.Mean;
 
 public class LSDataTravelTime implements TravelTime {
 
     private final LinkSpeedDataContainer lsData;
     private final MatsimAmodeusDatabase db;
 
+    // TODO see if can be converted into 1 class together with
+    // ch.ethz.idsc.amodeus.linkspeed.AmodeusLinkSpeedCalculator
     public LSDataTravelTime(LinkSpeedDataContainer lsData, MatsimAmodeusDatabase db) {
-        this.lsData = lsData;
-        this.db = db;
+        this.lsData = Objects.requireNonNull(lsData);
+        this.db = Objects.requireNonNull(db);
     }
 
     @Override
