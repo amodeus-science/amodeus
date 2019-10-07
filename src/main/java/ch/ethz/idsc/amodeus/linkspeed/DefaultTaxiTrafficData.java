@@ -11,7 +11,6 @@ import org.matsim.api.core.v01.network.Network;
 import com.google.inject.Singleton;
 
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
-import ch.ethz.idsc.tensor.Tensor;
 
 @Singleton
 /* package */ class DefaultTaxiTrafficData implements TaxiTrafficData {
