@@ -16,8 +16,8 @@ public class LSDataTravelTime implements TravelTime {
 	private final MatsimAmodeusDatabase db;
 
 	public LSDataTravelTime(LinkSpeedDataContainer lsData, MatsimAmodeusDatabase db) {
-		this.lsData = lsData;
-		this.db = db;
+		this.lsData = Objects.requireNonNull(lsData);
+		this.db = Objects.requireNonNull(db);
 	}
 
 	@Override

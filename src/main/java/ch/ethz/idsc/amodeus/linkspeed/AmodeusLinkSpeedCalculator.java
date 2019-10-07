@@ -21,6 +21,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         double denom = trafficData.getTravelTimeData(link, time);
         GlobalAssert.that(denom > 0.0);
         double trafficSpeed = link.getLength() / denom;
+        // FIXME NO NO NO, REMOVE THIS!!!!
         return Math.min(trafficSpeed, link.getFreespeed(time));
     }
 }
