@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
-import java.util.Objects;
 import java.util.TreeMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -35,7 +34,8 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
  * sampling rate. */
 public class SmallRedistributionProblemSolver<T> {
 
-    private Boolean success = null;
+    private boolean globOptimSolPossible = true;
+    private boolean foundGlobOptimSol = false;
     protected final Map<T, Map<T, Integer>> solution = new HashMap<>();
 
     public SmallRedistributionProblemSolver(Map<T, Integer> unitsToMove, //
@@ -43,57 +43,84 @@ public class SmallRedistributionProblemSolver<T> {
             BiFunction<T, T, Double> costFunction, //
             Function<T, String> getName, boolean print, String exportLocation) {
 
+        /** checking if at most unit to move per origin */
         unitsToMove.values().forEach(i -> {
             if (i > 1) {
-                success = false;
+                globOptimSolPossible = false;
             }
         });
 
+        int unitsTotal = unitsToMove.values().stream().mapToInt(i -> i).sum();
+
         /** this is only entered if every origin is unique */
-        if (Objects.isNull(success)) {
-            List<T> unitsMultiplicity = new ArrayList<>();
-            unitsToMove.keySet().forEach(t -> unitsMultiplicity.add(t));
+        if (!globOptimSolPossible) {
+            foundGlobOptimSol = false;
+            return;
+        }
 
-            GlobalAssert.that(unitsMultiplicity.size() == unitsToMove.size());
-
-            Map<T, Integer> bestDestins = new HashMap<>();
-            Map<T, T> bestPairs = new HashMap<>();
-            for (T origin : unitsMultiplicity) {
-                NavigableMap<Double, T> lowestCost = new TreeMap<>();
-                for (T destin : availableDestinations.keySet()) {
-                    Double cost = costFunction.apply(origin, destin);
-                    lowestCost.put(cost, destin);
-                }
-                T bestDestin = lowestCost.firstEntry().getValue();
-                if (!bestDestins.containsKey(bestDestin))
-                    bestDestins.put(bestDestin, 0);
-                bestDestins.put(bestDestin, bestDestins.get(bestDestin) + 1);
-                bestPairs.put(origin, bestDestin);
-
-                // assess validity
-                for (Entry<T, Integer> entry : bestDestins.entrySet()) {
-                    if (entry.getValue() > availableDestinations.get(entry.getKey())) {
-                        success = false;
-                        break;
-                    }
-                }
-
+        // the full LP based solver must be used if more than 1 unit
+        // at some origin...
+        List<T> unitsMultiplicity = new ArrayList<>();
+        unitsToMove.entrySet().forEach(e -> {
+            int units = e.getValue();
+            GlobalAssert.that(units == 0 || units == 1);
+            if (units == 1) {
+                unitsMultiplicity.add(e.getKey());
             }
+        });
 
-            // at this point, a valid solution has been found
-            if (Objects.isNull(success)) {
-                for (T origin : unitsMultiplicity) {
-                    solution.put(origin, new HashMap<>());
-                    solution.get(origin).put(bestPairs.get(origin), 1);
-                }
-                success = true;
+        // find best destination for every unit
+        Map<T, Integer> bestDestinationCount = new HashMap<>();
+        Map<T, T> bestPairs = new HashMap<>();
+        for (T origin : unitsMultiplicity) {
+            NavigableMap<Double, T> lowestCost = new TreeMap<>();
+            for (T destin : availableDestinations.keySet()) {
+                Double cost = costFunction.apply(origin, destin);
+                lowestCost.put(cost, destin);
+            }
+            T bestDestin = lowestCost.firstEntry().getValue();
+            if (!bestDestinationCount.containsKey(bestDestin))
+                bestDestinationCount.put(bestDestin, 0);
+            bestDestinationCount.put(bestDestin, bestDestinationCount.get(bestDestin) + 1);
+            bestPairs.put(origin, bestDestin);
+
+        }
+
+        // assess validity: every no conflicting best destinations
+        for (Entry<T, Integer> bestDestEntry : bestDestinationCount.entrySet()) {
+            if (bestDestEntry.getValue() > availableDestinations.get(bestDestEntry.getKey())) {
+                globOptimSolPossible = false;
+                break;
             }
         }
 
+        // at this point, a valid solution has been found
+        if (globOptimSolPossible) {
+            for (T origin : unitsMultiplicity) {
+                solution.put(origin, new HashMap<>());
+                solution.get(origin).put(bestPairs.get(origin), 1);
+            }
+            foundGlobOptimSol = true;
+        }
+
+        // DEBUGGING, TODO remove
+        // if (unitsTotal == 1) {
+        // if (!foundGlobOptimSol) {
+        // System.out.println("unitsToMove: ");
+        // unitsToMove.entrySet().forEach(e -> {
+        // System.out.println(getName.apply(e.getKey()) + ", " + e.getValue());
+        // });
+        //
+        // System.out.println("availableDestinations");
+        // availableDestinations.entrySet().forEach(e -> {
+        // System.out.println(getName.apply(e.getKey()) + ", " + e.getValue());
+        // });
+        // }
+        // }
     }
 
     public boolean success() {
-        return success;
+        return foundGlobOptimSol;
     }
 
     public Map<T, Map<T, Integer>> returnSolution() {

@@ -54,13 +54,23 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
                 while (totalUnits > totalSpots) {
                     EqualReduction.apply(unitsToMove, totalSpots);
                     totalUnits = unitsToMove.values().stream().mapToInt(i -> i).sum();
-                    System.out.println("Reduced units to move to: " +  totalUnits);
                 }
-                GlobalAssert.that(totalUnits<=totalSpots);
+
+                // remove elements with value 0 to speed up computation of LP
+                unitsToMove = StaticHelper.removeZeroValues(unitsToMove);
+
+                freeSpacesToGo.entrySet().forEach(e -> {
+                    if (e.getValue() == 0) {
+                        System.err.println("Has available dest with 0...");
+                    }
+                });
+
+                GlobalAssert.that(totalUnits <= totalSpots);
 
                 /** if there are less parking spots than vehicles, the total units to displace
                  * may be zero and the LP does not need to be solved. */
                 if (totalUnits > 0) {
+                    System.out.println("1, totalUnits: " + totalUnits);
                     SmallRedistributionProblemSolver<Link> fastSolver = null;
                     RedistributionProblemSolver<Link> parkingLP = null;
                     Map<Link, Map<Link, Integer>> flowSolution = null;
@@ -74,6 +84,11 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
                                 false, "");
                         foundSolution = fastSolver.success();
                         System.out.println("Fast solver status: " + foundSolution);
+
+                        if (totalUnits == 1 && !fastSolver.success()) {
+                            GlobalAssert.that(false);
+                        }
+
                         flowSolution = fastSolver.returnSolution();
                     }
                     /** otherwise, setup and solve LP to find solution */
