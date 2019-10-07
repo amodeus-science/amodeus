@@ -12,7 +12,6 @@ import org.matsim.api.core.v01.network.Link;
 
 public class LinkSpeedDataContainer implements Serializable {
 
-    // TODO why is this an integer? Should it not be a String?
     private final SortedMap<Integer, LinkSpeedTimeSeries> linkSet = new TreeMap<>();
 
     /** add a speed recording for @param link at @param time with a speed value [m/s] @param speed */

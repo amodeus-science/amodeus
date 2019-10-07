@@ -8,7 +8,6 @@ import org.matsim.api.core.v01.network.Link;
 import com.google.inject.Singleton;
 
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 @Singleton
 /* package */ class DefaultTaxiTrafficData implements TaxiTrafficData {
@@ -22,13 +21,15 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     }
 
     @Override
-    public double getTravelTimeData(Link link, double now) {
+    public double getTrafficSpeed(Link link, double now) {
         Integer index = db.getLinkIndex(link);
         LinkSpeedTimeSeries series = lsData.getLinkSet().get(index);
-        if (Objects.isNull(series))
-            return link.getLength() / link.getFreespeed();
-        Double speed = series.getSpeedsFloor((int) now);
-        GlobalAssert.that(speed >= 0);
-        return link.getLength() / speed;
+        Double speed = link.getFreespeed();
+        if (Objects.nonNull(series)) {
+            Double trafficSpeed = series.getSpeedsFloor((int) now);
+            if (Objects.nonNull(trafficSpeed))
+                speed = trafficSpeed;
+        }
+        return speed;
     }
 }

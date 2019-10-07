@@ -27,8 +27,8 @@ public class TrafficDataModule extends AbstractQSimModule {
     public QNetworkFactory provideCustomConfigurableQNetworkFactory(EventsManager events, Scenario scenario, //
             TaxiTrafficData trafficData) {
         ConfigurableQNetworkFactory factory = new ConfigurableQNetworkFactory(events, scenario);
-        LinkSpeedCalculator AVLinkSpeedCalculator = new AmodeusLinkSpeedCalculator(trafficData);
-        factory.setLinkSpeedCalculator(AVLinkSpeedCalculator);
+        LinkSpeedCalculator linkSpeedCalculator = new AmodeusLinkSpeedCalculator(trafficData);
+        factory.setLinkSpeedCalculator(linkSpeedCalculator);
         return factory;
     }
 
