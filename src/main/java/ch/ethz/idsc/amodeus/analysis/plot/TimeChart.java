@@ -89,6 +89,6 @@ public enum TimeChart {
         timechart.addLegend(legend);
 
         /** save plot as png */
-        StaticHelper.savePlot(directory, fileTitle, timechart, WIDTH, HEIGHT);
+        PlotSave.now(directory, fileTitle, timechart, WIDTH, HEIGHT);
     }
 }

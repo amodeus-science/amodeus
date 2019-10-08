@@ -57,7 +57,8 @@ public class RequestKeyInfo {
         allowanceGiven = true;
     }
 
-    public void removeTrafficAllowance(double trafficAllowance) { // this function is needed when we finish dealing with one roboTaxi, we need to change back the deadlines
+    public void removeTrafficAllowance(double trafficAllowance) { // this function is needed when we finish dealing with one roboTaxi, we need to change back
+                                                                  // the deadlines
         if (allowanceGiven == true) {
             deadlinePickUp -= trafficAllowance;
             deadlineDropOff -= trafficAllowance;

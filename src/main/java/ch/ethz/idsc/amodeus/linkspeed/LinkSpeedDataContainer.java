@@ -10,20 +10,17 @@ import java.util.TreeMap;
 
 import org.matsim.api.core.v01.network.Link;
 
-
-
 public class LinkSpeedDataContainer implements Serializable {
 
-    // TODO why is this an integer? Should it not be a String?
     private final SortedMap<Integer, LinkSpeedTimeSeries> linkSet = new TreeMap<>();
 
     /** add a speed recording for @param link at @param time with a speed value [m/s] @param speed */
-    public void addData(int link, int time, double speed) {
-        if (linkSet.containsKey(link)) {
-            LinkSpeedTimeSeries linkSpeeds = linkSet.get(link);
-            linkSpeeds.addSpeed(time, speed);
+    public void addData(Integer linkIndex, int time, double speed) {
+        if (linkSet.containsKey(linkIndex)) {
+            LinkSpeedTimeSeries linkSpeeds = linkSet.get(linkIndex);
+            linkSpeeds.setSpeed(time, speed);
         } else {
-            linkSet.put(link, new LinkSpeedTimeSeries(time, speed));
+            linkSet.put(linkIndex, new LinkSpeedTimeSeries(time, speed));
         }
     }
 

@@ -19,9 +19,7 @@ public enum LinkSpeedsExport {
         LinkSpeedDataContainer lsData = lsCalc.getLsData();
         LinkSpeedUtils.writeLinkSpeedData(file, lsData);
     }
-    
-    
-    
+
     public static void using(File file, LinkSpeedDataContainer lsData) throws IOException {
         System.out.println("LinkSpeedsFile: " + file.getAbsolutePath());
         LinkSpeedUtils.writeLinkSpeedData(file, lsData);

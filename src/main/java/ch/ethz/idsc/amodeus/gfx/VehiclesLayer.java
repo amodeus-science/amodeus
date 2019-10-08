@@ -165,8 +165,8 @@ public class VehiclesLayer extends ViewerLayer {
             settings.bits.stream().forEach(bits::set);
         }
     }
-    
+
     private int indexFrom(VehicleContainer vc) {
-        return vc.linkTrace[vc.linkTrace.length-1];
+        return vc.linkTrace[vc.linkTrace.length - 1];
     }
 }

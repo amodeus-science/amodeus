@@ -56,7 +56,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param sharedAvRoute
      * @param oldRoute
      * @param now
-     * @return true if the remaining time of one passenger in the new route was more than maxRemainingTimeIncrease larger than its current remaining time. Thus if
+     * @return true if the remaining time of one passenger in the new route was more than maxRemainingTimeIncrease larger than its current remaining time. Thus
+     *         if
      *         true this new route is not a valid possibility. returns false if the second constraint is satisfied for all requests. */
     public boolean remainingTimeCurrentPassengerExceeded(SharedAvRoute sharedAvRoute, SharedAvRoute oldRoute, double now) {
         Map<AVRequest, Double> newrouteRemainingTimes = getRemainingTimes(sharedAvRoute, now);

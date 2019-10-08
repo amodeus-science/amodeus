@@ -9,8 +9,7 @@ import java.awt.image.DataBuffer;
 import java.awt.image.DirectColorModel;
 import java.awt.image.RasterFormatException;
 
-/**
- * <p>
+/** <p>
  * A blend composite defines the rule according to which a drawing primitive
  * (known as the source) is mixed with existing graphics (know as the
  * destination.)
@@ -73,8 +72,7 @@ import java.awt.image.RasterFormatException;
  * @see java.awt.Composite
  * @see java.awt.AlphaComposite */
 public final class BlendComposite implements Composite {
-    /**
-     * <p>
+    /** <p>
      * A blending mode defines the compositing rule of a
      * {@link BlendComposite}.
      * </p>
@@ -130,8 +128,7 @@ public final class BlendComposite implements Composite {
         this.alpha = alpha;
     }
 
-    /**
-     * <p>
+    /** <p>
      * Creates a new composite based on the blending mode passed
      * as a parameter. A default opacity of 1.0 is applied.
      * </p>
@@ -144,8 +141,7 @@ public final class BlendComposite implements Composite {
         return new BlendComposite(mode);
     }
 
-    /**
-     * <p>
+    /** <p>
      * Creates a new composite based on the blending mode and opacity passed
      * as parameters. The opacity must be a value between 0.0 and 1.0.
      * </p>
@@ -164,8 +160,7 @@ public final class BlendComposite implements Composite {
         return new BlendComposite(mode, alpha);
     }
 
-    /**
-     * <p>
+    /** <p>
      * Returns a <code>BlendComposite</code> object that uses the specified
      * blending mode and this object's alpha value. If the newly specified
      * blending mode is the same as this object's, this object is returned.
@@ -179,8 +174,7 @@ public final class BlendComposite implements Composite {
         return this.mode == mode ? this : new BlendComposite(mode, getAlpha());
     }
 
-    /**
-     * <p>
+    /** <p>
      * Returns a <code>BlendComposite</code> object that uses the specified
      * opacity, or alpha, and this object's blending mode. If the newly specified
      * opacity is the same as this object's, this object is returned.
@@ -198,8 +192,7 @@ public final class BlendComposite implements Composite {
         return this.alpha == alpha ? this : new BlendComposite(getMode(), alpha);
     }
 
-    /**
-     * <p>
+    /** <p>
      * Returns the opacity of this composite. If no opacity has been defined,
      * 1.0 is returned.
      * </p>
@@ -209,8 +202,7 @@ public final class BlendComposite implements Composite {
         return alpha;
     }
 
-    /**
-     * <p>
+    /** <p>
      * Returns the blending mode of this composite.
      * </p>
      *

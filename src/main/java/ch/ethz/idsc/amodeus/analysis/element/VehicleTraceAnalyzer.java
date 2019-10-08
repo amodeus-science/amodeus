@@ -71,7 +71,7 @@ import ch.ethz.idsc.tensor.alg.Array;
 
             /** this total distance on the link was traveled on during all
              * simulationObjects stored in the list. */
-            VehicleContainer firstInList =list.get(0);
+            VehicleContainer firstInList = list.get(0);
             double distance = 0;
             for (int i = 0; i < firstInList.linkTrace.length; ++i) {
                 int linkId = firstInList.linkTrace[i];

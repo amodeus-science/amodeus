@@ -8,6 +8,7 @@ import java.util.Set;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
+import ch.ethz.idsc.amodeus.linkspeed.LinkIndex;
 import ch.ethz.idsc.amodeus.linkspeed.LinkSpeedDataContainer;
 import ch.ethz.idsc.amodeus.linkspeed.LinkSpeedTimeSeries;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
@@ -50,7 +51,7 @@ public class LinkSpeedDataInterpolation {
             if (completed % 10000 == 0)
                 System.out.println(completed + " / " + network.getLinks().size());
             Objects.requireNonNull(link);
-            int linkID = Integer.parseInt(link.getId().toString());
+            Integer linkID = LinkIndex.fromLink(db, link);
 
             // /** same blocking for all links */
             // if (!lsData.getLinkSet().containsKey(db.getLinkIndex(link))) {

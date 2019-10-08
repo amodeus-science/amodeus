@@ -60,7 +60,6 @@ public class RedistributionProblemSolver<T> {
         totalDestins = availableDestinations.keySet().size();
         System.out.println("total origins     : " + totalOrigins);
         System.out.println("total destinations: " + totalDestins);
-        System.out.println("printing origins:");
 
         originsList = new ArrayList<>(unitsToMove.keySet());
         destinationList = new ArrayList<>(availableDestinations.keySet());
