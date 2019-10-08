@@ -33,7 +33,6 @@ public class SmallRedistributionTests {
             }
         }
 
- 
         Assert.assertTrue(solution.get("o1").get("d1").equals(1));
 
     }

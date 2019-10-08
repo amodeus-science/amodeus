@@ -28,11 +28,9 @@ public class SmallRedistributionProblemSolverTest {
         Assert.assertTrue(fastSolver.success());
     }
 
-    
-    
-    /** A test encountered in simulations...*/
+    /** A test encountered in simulations... */
     @Test
-    public void test2() {        
+    public void test2() {
         Map<String, Integer> unitsToMove = new HashMap<>();
         unitsToMove.put("264806", 0);
         unitsToMove.put("415189", 0);
@@ -49,7 +47,7 @@ public class SmallRedistributionProblemSolverTest {
                         false, "");
         Assert.assertTrue(fastSolver.success());
     }
-    
+
     private static final double distance(String s1, String s2) {
         String s3 = s1 + s2;
         return new Random(Long.parseLong(s3)).nextDouble();

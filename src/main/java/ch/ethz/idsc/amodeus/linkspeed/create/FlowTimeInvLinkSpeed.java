@@ -14,7 +14,6 @@ import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.linkspeed.LinkIndex;
 import ch.ethz.idsc.amodeus.linkspeed.LinkSpeedDataContainer;
-import ch.ethz.idsc.amodeus.net.FastLinkLookup;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.taxitrip.ShortestDurationCalculator;
 import ch.ethz.idsc.amodeus.taxitrip.TaxiTrip;
@@ -121,7 +120,7 @@ public class FlowTimeInvLinkSpeed implements TaxiLinkSpeedEstimator {
             Link link = localIndexLink.get(i);
             Objects.requireNonNull(link);
             GlobalAssert.that(network.getLinks().values().contains(link));
-            Integer linkID = LinkIndex.fromLink(db,link);
+            Integer linkID = LinkIndex.fromLink(db, link);
 
             /** calculate the link speed */
             double length = link.getLength();

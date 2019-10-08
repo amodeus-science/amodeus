@@ -64,6 +64,6 @@ import ch.ethz.idsc.tensor.alg.Array;
     }
 
     private int indexFrom(VehicleContainer vc) {
-        return vc.linkTrace[vc.linkTrace.length-1];
+        return vc.linkTrace[vc.linkTrace.length - 1];
     }
 }

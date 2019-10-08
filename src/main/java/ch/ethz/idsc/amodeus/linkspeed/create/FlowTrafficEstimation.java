@@ -4,7 +4,6 @@ package ch.ethz.idsc.amodeus.linkspeed.create;
 import java.io.File;
 import java.util.Objects;
 
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;

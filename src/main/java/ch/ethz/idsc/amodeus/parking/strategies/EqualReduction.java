@@ -9,8 +9,8 @@ import org.matsim.api.core.v01.network.Link;
 public enum EqualReduction {
     ;
 
-    public static void apply(Map<Link, Integer> unitsToMove, int totalSpots){
-        int totalUnits = unitsToMove.values().stream().mapToInt(i -> i).sum();        
+    public static void apply(Map<Link, Integer> unitsToMove, int totalSpots) {
+        int totalUnits = unitsToMove.values().stream().mapToInt(i -> i).sum();
         int diff = totalUnits - totalSpots;
         int locations = unitsToMove.size();
         int remove = (int) Math.ceil(((double) diff) / locations);

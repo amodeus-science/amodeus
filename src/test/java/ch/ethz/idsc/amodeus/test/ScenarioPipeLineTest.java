@@ -166,7 +166,6 @@ public class ScenarioPipeLineTest {
         assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).equals( //
                 ate.getDistancElement().totalDistance));
 
-
         scalarAssert.add((Scalar) RealScalar.of(45566.56792).map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
         scalarAssert.add((Scalar) RealScalar.of(37714.81659).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
         scalarAssert.add(RealScalar.of(7851.751329216706), ate.getDistancElement().totalDistancePicku);

@@ -3,8 +3,6 @@ package ch.ethz.idsc.amodeus.taxitrip;
 
 import java.util.Objects;
 
-import ch.ethz.idsc.amodeus.taxitrip.TaxiTrip;
-
 public enum TaxiTripCheck {
     ;
 

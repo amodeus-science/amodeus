@@ -12,7 +12,6 @@ import org.gnu.glpk.SWIGTYPE_p_int;
 import org.gnu.glpk.glp_prob;
 import org.gnu.glpk.glp_smcp;
 
-import ch.ethz.idsc.amodeus.linkspeed.create.TrafficDelayEstimate;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;

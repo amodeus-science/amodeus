@@ -4,7 +4,6 @@ package ch.ethz.idsc.amodeus.parking.strategies;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
