@@ -222,7 +222,6 @@ public class ScenarioPipeLineTest {
         assertTrue(new File("output/001/data/DistanceRatios/DistanceRatios.mathematica").isFile());
 
         assertTrue(new File("output/001/report/report.html").isFile());
-        assertTrue(new File("output/001/report/av.xml").isFile());
         assertTrue(new File("output/001/report/config.xml").isFile());
     }
 

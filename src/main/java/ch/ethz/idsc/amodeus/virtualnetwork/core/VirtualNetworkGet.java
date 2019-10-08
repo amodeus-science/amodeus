@@ -27,6 +27,7 @@ public enum VirtualNetworkGet {
 
             return VirtualNetworkIO.fromByte(map, virtualnetworkFile);
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("cannot load default " + virtualnetworkFile);
 
         }

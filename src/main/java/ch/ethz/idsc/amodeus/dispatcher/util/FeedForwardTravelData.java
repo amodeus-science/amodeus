@@ -18,12 +18,10 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.traveldata.LambdaAbsolute;
 import ch.ethz.idsc.amodeus.traveldata.StaticTravelData;
 import ch.ethz.idsc.amodeus.traveldata.TravelDataIO;
-import ch.ethz.idsc.amodeus.util.io.ProvideAVConfig;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.matsim.av.config.AVConfig;
-import ch.ethz.matsim.av.config.AVGeneratorConfig;
-import ch.ethz.matsim.av.framework.AVConfigGroup;
+import ch.ethz.matsim.av.config.AVConfigGroup;
+import ch.ethz.matsim.av.config.operator.GeneratorConfig;
 
 /* package */ enum FeedForwardTravelData {
     ;
@@ -34,8 +32,7 @@ import ch.ethz.matsim.av.framework.AVConfigGroup;
                 /** MATSim config */
                 AVConfigGroup avConfigGroup = new AVConfigGroup();
                 Config config = ConfigUtils.loadConfig(scenarioOptions.getSimulationConfigName(), avConfigGroup);
-                AVConfig avConfig = ProvideAVConfig.with(config, avConfigGroup);
-                AVGeneratorConfig avGeneratorConfig = avConfig.getOperatorConfigs().iterator().next().getGeneratorConfig();
+                GeneratorConfig avGeneratorConfig = avConfigGroup.getOperatorConfigs().values().iterator().next().getGeneratorConfig();
                 int numRt = (int) avGeneratorConfig.getNumberOfVehicles();
                 int endTime = (int) config.qsim().getEndTime();
                 Scenario scenario = ScenarioUtils.loadScenario(config);

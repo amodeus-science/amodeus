@@ -41,7 +41,9 @@ import ch.ethz.idsc.amodeus.net.SimulationObjectCompiler;
 import ch.ethz.idsc.amodeus.net.SimulationObjects;
 import ch.ethz.idsc.amodeus.net.StorageUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.matsim.av.config.AVDispatcherConfig;
+import ch.ethz.matsim.av.config.operator.DispatcherConfig;
+import ch.ethz.matsim.av.config.operator.OperatorConfig;
+import ch.ethz.matsim.av.config.operator.TimingConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.dispatcher.AVVehicleAssignmentEvent;
@@ -95,17 +97,17 @@ public abstract class SharedUniversalDispatcher extends RoboTaxiMaintainer {
 
     protected SharedUniversalDispatcher( //
             Config config, //
-            AVDispatcherConfig avDispatcherConfig, //
+            OperatorConfig operatorConfig, //
             TravelTime travelTime, //
             ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, //
             EventsManager eventsManager, //
             MatsimAmodeusDatabase db) {
-        super(eventsManager, config, avDispatcherConfig);
+        super(eventsManager, config, operatorConfig);
         this.db = db;
         futurePathFactory = new FuturePathFactory(parallelLeastCostPathCalculator, travelTime);
-        pickupDurationPerStop = avDispatcherConfig.getParent().getTimingParameters().getPickupDurationPerStop();
-        dropoffDurationPerStop = avDispatcherConfig.getParent().getTimingParameters().getDropoffDurationPerStop();
-        SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
+        pickupDurationPerStop = operatorConfig.getTimingConfig().getPickupDurationPerStop();
+        dropoffDurationPerStop = operatorConfig.getTimingConfig().getDropoffDurationPerStop();
+        SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
         publishPeriod = safeConfig.getInteger("publishPeriod", 10);
     }
 

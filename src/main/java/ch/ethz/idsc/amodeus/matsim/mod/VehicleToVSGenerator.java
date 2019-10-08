@@ -2,12 +2,16 @@
 package ch.ethz.idsc.amodeus.matsim.mod;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
+import org.matsim.vehicles.VehicleType;
 
 import com.google.inject.Inject;
 
@@ -22,9 +26,11 @@ import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.Floor;
 import ch.ethz.idsc.tensor.sca.Sign;
-import ch.ethz.matsim.av.config.AVGeneratorConfig;
+import ch.ethz.matsim.av.config.operator.OperatorConfig;
+import ch.ethz.matsim.av.data.AVOperator;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.generator.AVGenerator;
+import ch.ethz.matsim.av.generator.AVUtils;
 
 /** class generates {@link AVVehicle}s. It takes the required minimal initial vehicle numbers from
  * {@link TravelData}. In each virtual station it places the required number of vehicles.
@@ -40,28 +46,24 @@ public class VehicleToVSGenerator implements AVGenerator {
     private final VirtualNetwork<Link> virtualNetwork;
     private final Tensor vehicleDistribution;
     private final Random random;
-    private final String prefix;
-    private final long numberOfVehicles;
-    private final int numberOfSeats;
+    private final VehicleType vehicleType;
+    private final OperatorConfig operatorConfig;
     // ---
-    protected final Tensor placedVehicles;
-    protected long generatedNumberOfVehicles = 0;
+    protected Tensor placedVehicles;
 
-    public VehicleToVSGenerator(AVGeneratorConfig config, //
+    public VehicleToVSGenerator(OperatorConfig operatorConfig, //
             VirtualNetwork<Link> virtualNetwork, //
-            TravelData travelData, int numberOfSeats) {
-        this.numberOfSeats = numberOfSeats;
-        numberOfVehicles = config.getNumberOfVehicles();
+            TravelData travelData, VehicleType vehicleType) {
+        this.operatorConfig = operatorConfig;
         this.virtualNetwork = virtualNetwork;
-        String config_prefix = config.getPrefix();
-        prefix = config_prefix == null ? "av_" + config.getParent().getId().toString() + "_" : config_prefix + "_";
+        this.vehicleType = vehicleType;
 
         /** get distribution from travelData */
         Tensor v0 = travelData.getV0();
-        GlobalAssert.that(Total.of(v0).Get().number().intValue() <= numberOfVehicles);
+        GlobalAssert.that(Total.of(v0).Get().number().intValue() <= operatorConfig.getGeneratorConfig().getNumberOfVehicles());
 
         boolean noDistribution = Total.of(v0).Get().equals(RealScalar.ZERO);
-        long average = numberOfVehicles / virtualNetwork.getvNodesCount();
+        long average = operatorConfig.getGeneratorConfig().getNumberOfVehicles() / virtualNetwork.getvNodesCount();
         int vNodes = virtualNetwork.getvNodesCount();
 
         vehicleDistribution = noDistribution ? Tensors.vector(v -> RealScalar.of(average), vNodes) : Floor.of(v0);
@@ -72,19 +74,22 @@ public class VehicleToVSGenerator implements AVGenerator {
     }
 
     @Override
-    public boolean hasNext() {
-        return generatedNumberOfVehicles < numberOfVehicles;
-    }
+    public List<AVVehicle> generateVehicles() {
+        int generatedNumberOfVehicles = 0;
+        List<AVVehicle> vehicles = new LinkedList<>();
+        placedVehicles = Array.zeros(virtualNetwork.getvNodesCount());
 
-    @Override
-    public AVVehicle next() {
-        ++generatedNumberOfVehicles;
-        int vNodeIndex = getNextVirtualNode();
-        Link linkGen = getNextLink(virtualNetwork.getVirtualNode(vNodeIndex));
-        /** update placedVehicles */
-        placedVehicles.set(v -> v.add(RealScalar.ONE), vNodeIndex);
-        Id<DvrpVehicle> id = Id.create("av_" + prefix + String.valueOf(generatedNumberOfVehicles), DvrpVehicle.class);
-        return new AVVehicle(id, linkGen, numberOfSeats, 0.0, Double.POSITIVE_INFINITY);
+        while (generatedNumberOfVehicles < operatorConfig.getGeneratorConfig().getNumberOfVehicles()) {
+            ++generatedNumberOfVehicles;
+            int vNodeIndex = getNextVirtualNode();
+            Link linkGen = getNextLink(virtualNetwork.getVirtualNode(vNodeIndex));
+            /** update placedVehicles */
+            placedVehicles.set(v -> v.add(RealScalar.ONE), vNodeIndex);
+            Id<DvrpVehicle> id = AVUtils.createId(operatorConfig.getId(), generatedNumberOfVehicles);
+            vehicles.add(new AVVehicle(id, linkGen, 0.0, Double.POSITIVE_INFINITY, vehicleType));
+        }
+
+        return vehicles;
     }
 
     /** Returns the index of the first virtual station that is still in need of more vehicles. If all virtual stations have enough, return random index */
@@ -111,14 +116,14 @@ public class VehicleToVSGenerator implements AVGenerator {
 
     public static class Factory implements AVGenerator.AVGeneratorFactory {
         @Inject
-        private TravelData travelData;
+        private Map<Id<AVOperator>, TravelData> travelDatas;
+
         @Inject
-        private VirtualNetwork<Link> virtualNetwork;
+        private Map<Id<AVOperator>, VirtualNetwork<Link>> virtualNetworks;
 
         @Override
-        public AVGenerator createGenerator(AVGeneratorConfig generatorConfig) {
-            int numberOfSeats = Integer.parseInt(generatorConfig.getParams().getOrDefault("numberOfSeats", "4"));
-            return new VehicleToVSGenerator(generatorConfig, virtualNetwork, travelData, numberOfSeats);
+        public AVGenerator createGenerator(OperatorConfig operatorConfig, Network network, VehicleType vehicleType) {
+            return new VehicleToVSGenerator(operatorConfig, virtualNetworks.get(operatorConfig.getId()), travelDatas.get(operatorConfig.getId()), vehicleType);
         }
     }
 }

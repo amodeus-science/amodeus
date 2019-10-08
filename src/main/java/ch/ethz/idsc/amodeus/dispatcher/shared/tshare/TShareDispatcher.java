@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -22,17 +23,12 @@ import org.matsim.core.utils.collections.QuadTree;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
+import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedPartitionedDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.OnMenuRequests;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
-import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
-import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
-import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceCost;
-import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
-import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.SharedBipartiteMatchingUtils;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
@@ -49,8 +45,8 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.qty.Quantity;
-import ch.ethz.matsim.av.config.AVDispatcherConfig;
-import ch.ethz.matsim.av.config.AVGeneratorConfig;
+import ch.ethz.matsim.av.config.operator.OperatorConfig;
+import ch.ethz.matsim.av.data.AVOperator;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.passenger.AVRequest;
@@ -85,16 +81,16 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
     private final CachedNetworkTimeDistance travelTimeCalculator;
 
     protected TShareDispatcher(Network network, //
-            Config config, AVDispatcherConfig avDispatcherConfig, //
+            Config config, OperatorConfig operatorConfig, //
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, //
             MatsimAmodeusDatabase db, //
             VirtualNetwork<Link> virtualNetwork) {
-        super(config, avDispatcherConfig, travelTime, router, eventsManager, virtualNetwork, db);
-        SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
+        super(config, operatorConfig, travelTime, router, eventsManager, virtualNetwork, db);
+        SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
         rebalancePeriod = safeConfig.getInteger("rebalancingPeriod", 1800);
         this.network = network;
-        DispatcherConfig dispatcherConfig = DispatcherConfig.wrap(avDispatcherConfig);
+        DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
         DistanceHeuristics distanceHeuristics = //
                 dispatcherConfig.getDistanceHeuristics(DistanceHeuristics.EUCLIDEAN);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
@@ -204,27 +200,17 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
         private EventsManager eventsManager;
 
         @Inject
-        @Named(AVModule.AV_MODE)
-        private Network network;
-
-        @Inject
         private Config config;
 
         @Inject
         private MatsimAmodeusDatabase db;
 
         @Inject
-        private VirtualNetwork<Link> virtualNetwork;
+        private Map<Id<AVOperator>, VirtualNetwork<Link>> virtualNetworks;
 
         @Override
-        public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
-            @SuppressWarnings("unused")
-            AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
-            @SuppressWarnings("unused")
-            AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
-            @SuppressWarnings("unused")
-            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceCost.INSTANCE);
-            return new TShareDispatcher(network, config, avconfig, travelTime, router, eventsManager, db, virtualNetwork);
+        public AVDispatcher createDispatcher(OperatorConfig operatorConfig, AVRouter router, Network network) {
+            return new TShareDispatcher(network, config, operatorConfig, travelTime, router, eventsManager, db, virtualNetworks.get(operatorConfig.getId()));
         }
     }
 }

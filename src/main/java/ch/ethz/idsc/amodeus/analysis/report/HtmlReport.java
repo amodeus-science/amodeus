@@ -108,12 +108,6 @@ public class HtmlReport implements AnalysisReport {
         File configCopy = new File(reportFolder, configFile.getName());
         configCopy.delete();
         Files.copy(configFile.toPath(), configCopy.toPath());
-        /** copy av.xml file */
-        // TODO remove av.xml hardcode
-        File avFile = new File(configFile.getParentFile(), "av.xml");
-        File avCopy = new File(reportFolder, avFile.getName());
-        avCopy.delete();
-        Files.copy(avFile.toPath(), avCopy.toPath());
     }
 
 }

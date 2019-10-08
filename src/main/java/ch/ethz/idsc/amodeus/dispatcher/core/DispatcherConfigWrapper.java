@@ -6,18 +6,18 @@ import org.matsim.core.config.ReflectiveConfigGroup;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 
-public class DispatcherConfig extends SafeConfig {
+public class DispatcherConfigWrapper extends SafeConfig {
 
     private static final String DISPATCH_PERIOD = "dispatchPeriod";
     private static final String REBALANCING_PERIOD = "rebalancingPeriod";
     private static final String DISTANCE_HEURISTICS = "distanceHeuristics";
 
-    public static DispatcherConfig wrap(ReflectiveConfigGroup reflectiveConfigGroup) {
-        return new DispatcherConfig(reflectiveConfigGroup);
+    public static DispatcherConfigWrapper wrap(ReflectiveConfigGroup reflectiveConfigGroup) {
+        return new DispatcherConfigWrapper(reflectiveConfigGroup);
     }
 
     // ---
-    protected DispatcherConfig(ReflectiveConfigGroup reflectiveConfigGroup) {
+    protected DispatcherConfigWrapper(ReflectiveConfigGroup reflectiveConfigGroup) {
         super(reflectiveConfigGroup);
     }
 

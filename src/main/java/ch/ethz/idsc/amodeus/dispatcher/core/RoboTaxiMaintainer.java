@@ -14,7 +14,8 @@ import org.matsim.core.config.Config;
 
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.StorageUtils;
-import ch.ethz.matsim.av.config.AVDispatcherConfig;
+import ch.ethz.matsim.av.config.operator.DispatcherConfig;
+import ch.ethz.matsim.av.config.operator.OperatorConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
@@ -32,8 +33,8 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
     public InfoLine infoLine = null;
     private final StorageUtils storageUtils;
 
-    RoboTaxiMaintainer(EventsManager eventsManager, Config config, AVDispatcherConfig avDispatcherConfig) {
-        SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
+    RoboTaxiMaintainer(EventsManager eventsManager, Config config, OperatorConfig operatorConfig) {
+        SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
         this.eventsManager = eventsManager;
         this.infoLine = new InfoLine(safeConfig.getInteger("infoLinePeriod", 10));
         String outputdirectory = config.controler().getOutputDirectory();

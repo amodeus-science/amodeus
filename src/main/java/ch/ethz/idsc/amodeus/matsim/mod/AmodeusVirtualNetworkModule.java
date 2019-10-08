@@ -2,7 +2,10 @@
 package ch.ethz.idsc.amodeus.matsim.mod;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.controler.AbstractModule;
@@ -16,6 +19,7 @@ import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.traveldata.TravelDataGet;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkGet;
+import ch.ethz.matsim.av.data.AVOperator;
 
 /** provides the {@link VirtualNetwork} and {@link TravelData} and therefore {@link VirtualNetworkPreparer} has to be run in the Preparer */
 public class AmodeusVirtualNetworkModule extends AbstractModule {
@@ -32,9 +36,15 @@ public class AmodeusVirtualNetworkModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public VirtualNetwork<Link> provideVirtualNetwork(Network network) {
+    public Map<Id<AVOperator>, VirtualNetwork<Link>> provideVirtualNetworks(Map<Id<AVOperator>, Network> networks) {
         try {
-            return VirtualNetworkGet.readDefault(network, scenarioOptions);
+            Map<Id<AVOperator>, VirtualNetwork<Link>> virtualNetworks = new HashMap<>();
+
+            for (Map.Entry<Id<AVOperator>, Network> entry : networks.entrySet()) {
+                virtualNetworks.put(entry.getKey(), VirtualNetworkGet.readDefault(entry.getValue(), scenarioOptions));
+            }
+
+            return virtualNetworks;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -42,7 +52,13 @@ public class AmodeusVirtualNetworkModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public TravelData provideTravelData(VirtualNetwork<Link> virtualNetwork) {
-        return TravelDataGet.readStatic(virtualNetwork, scenarioOptions);
+    public Map<Id<AVOperator>, TravelData> provideTravelDatas(Map<Id<AVOperator>, VirtualNetwork<Link>> virtualNetworks) {
+        Map<Id<AVOperator>, TravelData> travelDatas = new HashMap<>();
+
+        for (Map.Entry<Id<AVOperator>, VirtualNetwork<Link>> entry : virtualNetworks.entrySet()) {
+            travelDatas.put(entry.getKey(), TravelDataGet.readStatic(entry.getValue(), scenarioOptions));
+        }
+
+        return travelDatas;
     }
 }

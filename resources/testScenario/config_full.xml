@@ -3,7 +3,37 @@
 
 <config>
     <module name="av">
-        <param name="config" value="av.xml" />
+      <param name="allowedLinkMode" value="car" />
+
+    	<parameterset type="operator">
+    		<param name="id" value="op1" />
+
+    		<parameterset type="generator">
+    			<param name="type" value="PopulationDensity" />
+    			<param name="numberOfVehicles" value="200" />
+    		</parameterset>
+
+    		<parameterset type="dispatcher">
+    			<param name="type" value="DemandSupplyBalancingDispatcher" />
+    			<param name="dispatchPeriod" value="10" />
+    			<param name="infoLinePeriod" value="3600" />
+    		</parameterset>
+
+
+
+    		<parameterset type="timing">
+    			<param name="pickupDurationPerStop" value="15.0" />
+    			<param name="pickupDurationPerPassenger" value="15.0" />
+    			<param name="dropoffDurationPerStop" value="10.0" />
+    			<param name="dropoffDurationPerPassenger" value="15.0" />
+    		</parameterset>
+
+  			<parameterset type="pricing">
+  				<param name="pricePerKm" value="0.001" />
+  				<param name="pricePerMin" value="0.0" />
+  				<param name="pricePerTrip" value="3.0" />
+  			</parameterset>
+    	</parameterset>
     </module>
 
 	<module name="network">

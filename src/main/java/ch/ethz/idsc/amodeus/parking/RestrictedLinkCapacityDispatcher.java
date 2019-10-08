@@ -18,18 +18,13 @@ import org.matsim.core.router.util.TravelTime;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
+import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedRebalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.basic.ExtDemandSupplyBeamSharing;
 import ch.ethz.idsc.amodeus.dispatcher.shared.beam.BeamExtensionForSharing;
-import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
-import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
-import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceCost;
-import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
-import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.TreeMaintainer;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
@@ -39,8 +34,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.opt.Pi;
-import ch.ethz.matsim.av.config.AVDispatcherConfig;
-import ch.ethz.matsim.av.config.AVGeneratorConfig;
+import ch.ethz.matsim.av.config.operator.OperatorConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.passenger.AVRequest;
@@ -79,12 +73,12 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
     private final double[] networkBounds;
 
     protected RestrictedLinkCapacityDispatcher(Network network, //
-            Config config, AVDispatcherConfig avDispatcherConfig, //
+            Config config, OperatorConfig operatorConfig, //
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, //
             MatsimAmodeusDatabase db, ParkingStrategy parkingStrategy, //
             ParkingCapacity avSpatialCapacityAmodeus) {
-        super(config, avDispatcherConfig, travelTime, router, eventsManager, db);
-        SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
+        super(config, operatorConfig, travelTime, router, eventsManager, db);
+        SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 60);
         sharingPeriod = safeConfig.getInteger("sharingPeriod", 10); // makes sense to choose this value similar to the
                                                                     // pickup duration
@@ -96,7 +90,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
 
         /** PARKING EXTENSION */
         this.parkingStrategy = parkingStrategy;
-        DispatcherConfig dispatcherConfig = DispatcherConfig.wrap(avDispatcherConfig);
+        DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
         DistanceHeuristics distanceHeuristics = //
                 dispatcherConfig.getDistanceHeuristics(DistanceHeuristics.ASTARLANDMARKS);
         this.parkingStrategy.setRuntimeParameters(avSpatialCapacityAmodeus, network, distanceHeuristics.getDistanceFunction(network));
@@ -204,10 +198,6 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
         private EventsManager eventsManager;
 
         @Inject
-        @Named(AVModule.AV_MODE)
-        private Network network;
-
-        @Inject
         private Config config;
 
         @Inject
@@ -220,16 +210,8 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
         private ParkingCapacity avSpatialCapacityAmodeus;
 
         @Override
-        public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
-            @SuppressWarnings("unused")
-            AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
-
-            @SuppressWarnings("unused")
-            AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
-            @SuppressWarnings("unused")
-            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceCost.INSTANCE);
-
-            return new RestrictedLinkCapacityDispatcher(network, config, avconfig, travelTime, router, eventsManager, db, Objects.requireNonNull(parkingStrategy),
+        public AVDispatcher createDispatcher(OperatorConfig operatorConfig, AVRouter router, Network network) {
+            return new RestrictedLinkCapacityDispatcher(network, config, operatorConfig, travelTime, router, eventsManager, db, Objects.requireNonNull(parkingStrategy),
                     Objects.requireNonNull(avSpatialCapacityAmodeus));
         }
     }

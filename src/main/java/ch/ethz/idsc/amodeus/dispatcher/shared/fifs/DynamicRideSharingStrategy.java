@@ -22,20 +22,13 @@ import ch.ethz.idsc.amodeus.analysis.ScenarioParameters;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedRebalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
-import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
-import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
-import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceCost;
-import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
-import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.routing.CachedNetworkTimeDistance;
 import ch.ethz.idsc.amodeus.routing.EasyMinTimePathCalculator;
 import ch.ethz.idsc.amodeus.routing.TimeDistanceProperty;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.matsim.av.config.AVConfig;
-import ch.ethz.matsim.av.config.AVDispatcherConfig;
-import ch.ethz.matsim.av.config.AVGeneratorConfig;
+import ch.ethz.matsim.av.config.operator.OperatorConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.passenger.AVRequest;
@@ -91,14 +84,14 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
     private static final double MAXLAGTRAVELTIMECALCULATION = 180000.0;
 
     protected DynamicRideSharingStrategy(Network network, //
-            Config config, AVConfig avConfig, AVDispatcherConfig avDispatcherConfig, //
+            Config config, OperatorConfig operatorConfig, //
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, //
             MatsimAmodeusDatabase db) {
-        super(config, avDispatcherConfig, travelTime, router, eventsManager, db);
-        SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
+        super(config, operatorConfig, travelTime, router, eventsManager, db);
+        SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = safeConfig.getInteger(ScenarioParameters.DISPATCHPERIODSTRING, 300);
-        dropoffDuration = avConfig.getTimingParameters().getDropoffDurationPerStop();
-        pickupDuration = avConfig.getTimingParameters().getDropoffDurationPerStop();
+        dropoffDuration = operatorConfig.getTimingConfig().getDropoffDurationPerStop();
+        pickupDuration = operatorConfig.getTimingConfig().getDropoffDurationPerStop();
 
         double maxWaitTime = safeConfig.getInteger(MAXWAITTIMEIDENTIFIER, 300);// Normal is 300
         double maxDriveTimeIncrease = safeConfig.getDouble(MAXDRIVETIMEINCREASEIDENTIFIER, 1.2);// Normal is 1.2
@@ -199,28 +192,15 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
         private EventsManager eventsManager;
 
         @Inject
-        @Named(AVModule.AV_MODE)
-        private Network network;
-
-        @Inject
         private Config config;
-
-        @Inject
-        private AVConfig avConfig;
 
         @Inject
         private MatsimAmodeusDatabase db;
 
         @Override
 
-        public AVDispatcher createDispatcher(AVDispatcherConfig avDispatcherConfig, AVRouter router) {
-            @SuppressWarnings("unused")
-            AVGeneratorConfig generatorConfig = avDispatcherConfig.getParent().getGeneratorConfig();
-            @SuppressWarnings("unused")
-            AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
-            @SuppressWarnings("unused")
-            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceCost.INSTANCE);
-            return new DynamicRideSharingStrategy(network, config, avConfig, avDispatcherConfig, travelTime, router, eventsManager, db);
+        public AVDispatcher createDispatcher(OperatorConfig operatorConfig, AVRouter router, Network network) {
+            return new DynamicRideSharingStrategy(network, config, operatorConfig, travelTime, router, eventsManager, db);
         }
     }
 }

@@ -11,6 +11,7 @@ import java.util.NavigableMap;
 import java.util.TreeMap;
 
 import org.matsim.api.core.v01.Coord;
+import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
@@ -44,7 +45,8 @@ public class MatsimAmodeusDatabase {
     }
 
     /** rapid lookup from MATSIM side */
-    private final Map<Link, Integer> linkInteger = new HashMap<>();
+    private final Map<Link, Integer> linkIntegerMap = new HashMap<>();
+    private final Map<Id<Link>, Integer> linkIdIntegerMap = new HashMap<>();
     public final ReferenceFrame referenceFrame;
 
     /** rapid lookup from Viewer */
@@ -62,19 +64,23 @@ public class MatsimAmodeusDatabase {
         list = new ArrayList<>(linkMap.values());
         int index = 0;
         for (OsmLink osmLink : list) {
-            linkInteger.put(osmLink.link, index);
+            linkIntegerMap.put(osmLink.link, index);
+            linkIdIntegerMap.put(osmLink.link.getId(), index);
             ++index;
         }
     }
 
     public int getLinkIndex(Link link) {
-        return linkInteger.get(link);
+        // Previously this worked by link instance. Now av package uses a subnetwork internally for each dispatcher.
+        // This leads to the Link objects being different, but their ID is the same in the general network and in
+        // the subnetworks.
+        return linkIdIntegerMap.get(link.getId());
     }
 
     /** @return unmodifiable map that assigns a link to
      *         the corresponding index of the OsmLink in list */
-    public Map<Link, Integer> getLinkInteger() {
-        return Collections.unmodifiableMap(linkInteger);
+    public Map<Link, Integer> getLinkIntegerMap() {
+        return Collections.unmodifiableMap(linkIntegerMap);
     }
 
     public OsmLink getOsmLink(int index) {

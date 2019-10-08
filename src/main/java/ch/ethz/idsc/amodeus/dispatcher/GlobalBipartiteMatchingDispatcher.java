@@ -9,7 +9,7 @@ import org.matsim.core.router.util.TravelTime;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
+import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import ch.ethz.idsc.amodeus.dispatcher.core.RebalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.ConfigurableBipartiteMatcher;
@@ -20,7 +20,7 @@ import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.matsim.av.config.AVDispatcherConfig;
+import ch.ethz.matsim.av.config.operator.OperatorConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.router.AVRouter;
@@ -41,11 +41,11 @@ public class GlobalBipartiteMatchingDispatcher extends RebalancingDispatcher {
     private final BipartiteMatcher bipartiteMatcher;
 
     protected GlobalBipartiteMatchingDispatcher(Network network, Config config, //
-            AVDispatcherConfig avDispatcherConfig, TravelTime travelTime, //
+            OperatorConfig operatorConfig, TravelTime travelTime, //
             AVRouter router, EventsManager eventsManager, //
             MatsimAmodeusDatabase db) {
-        super(config, avDispatcherConfig, travelTime, router, eventsManager, db);
-        DispatcherConfig dispatcherConfig = DispatcherConfig.wrap(avDispatcherConfig);
+        super(config, operatorConfig, travelTime, router, eventsManager, db);
+        DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(30);
         DistanceHeuristics distanceHeuristics = //
                 dispatcherConfig.getDistanceHeuristics(DistanceHeuristics.EUCLIDEAN);
@@ -53,7 +53,7 @@ public class GlobalBipartiteMatchingDispatcher extends RebalancingDispatcher {
         distanceFunction = distanceHeuristics.getDistanceFunction(network);
         this.network = network;
         /** matching algorithm - standard is a solution to the assignment problem with the Hungarian method */
-        SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
+        SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
         bipartiteMatcher = new ConfigurableBipartiteMatcher(network, new DistanceCost(distanceFunction), //
                 safeConfig);
     }
@@ -84,19 +84,15 @@ public class GlobalBipartiteMatchingDispatcher extends RebalancingDispatcher {
         private EventsManager eventsManager;
 
         @Inject
-        @Named(AVModule.AV_MODE)
-        private Network network;
-
-        @Inject
         private Config config;
 
         @Inject
         private MatsimAmodeusDatabase db;
 
         @Override
-        public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
+        public AVDispatcher createDispatcher(OperatorConfig operatorConfig, AVRouter router, Network network) {
             return new GlobalBipartiteMatchingDispatcher( //
-                    network, config, avconfig, travelTime, router, eventsManager, db);
+                    network, config, operatorConfig, travelTime, router, eventsManager, db);
         }
     }
 }

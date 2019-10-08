@@ -15,7 +15,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.matsim.av.config.AVDispatcherConfig;
+import ch.ethz.matsim.av.config.operator.OperatorConfig;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
 /** abstract base class for dispatchers that perform relocation of empty
@@ -23,10 +23,10 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
  * to links which are not a dropoff or pickup location */
 public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatcher {
 
-    protected SharedRebalancingDispatcher(Config config, AVDispatcherConfig avDispatcherConfig, TravelTime travelTime,
+    protected SharedRebalancingDispatcher(Config config, OperatorConfig operatorConfig, TravelTime travelTime,
             ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, EventsManager eventsManager, //
             MatsimAmodeusDatabase db) {
-        super(config, avDispatcherConfig, travelTime, parallelLeastCostPathCalculator, eventsManager, db);
+        super(config, operatorConfig, travelTime, parallelLeastCostPathCalculator, eventsManager, db);
     }
 
     /** @param roboTaxi is rebalanced to

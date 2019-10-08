@@ -22,16 +22,10 @@ import ch.ethz.idsc.amodeus.dispatcher.core.SharedRebalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.Compatibility;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseUtil;
-import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
-import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
-import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceCost;
-import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
-import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.matsim.av.config.AVDispatcherConfig;
-import ch.ethz.matsim.av.config.AVGeneratorConfig;
+import ch.ethz.matsim.av.config.operator.OperatorConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.passenger.AVRequest;
@@ -53,13 +47,13 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
     private final List<Link> equatorLinks;
 
     protected NorthPoleSharedDispatcher(Network network, //
-            Config config, AVDispatcherConfig avDispatcherConfig, //
+            Config config, OperatorConfig operatorConfig, //
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, //
             MatsimAmodeusDatabase db) {
-        super(config, avDispatcherConfig, travelTime, router, eventsManager, db);
+        super(config, operatorConfig, travelTime, router, eventsManager, db);
         this.cityNorthPole = getNorthPole(network);
         this.equatorLinks = getEquator(network);
-        SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
+        SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
         rebalancePeriod = safeConfig.getInteger("rebalancingPeriod", 1800);
         links = new ArrayList<>(network.getLinks().values());
@@ -174,26 +168,14 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
         private EventsManager eventsManager;
 
         @Inject
-        @Named(AVModule.AV_MODE)
-        private Network network;
-
-        @Inject
         private Config config;
 
         @Inject
         private MatsimAmodeusDatabase db;
 
         @Override
-        public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
-            @SuppressWarnings("unused")
-            AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
-
-            @SuppressWarnings("unused")
-            AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
-            @SuppressWarnings("unused")
-            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceCost.INSTANCE);
-
-            return new NorthPoleSharedDispatcher(network, config, avconfig, travelTime, router, eventsManager, db);
+        public AVDispatcher createDispatcher(OperatorConfig operatorConfig, AVRouter router, Network network) {
+            return new NorthPoleSharedDispatcher(network, config, operatorConfig, travelTime, router, eventsManager, db);
         }
     }
 }

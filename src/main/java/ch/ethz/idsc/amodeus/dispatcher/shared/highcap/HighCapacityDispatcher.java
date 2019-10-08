@@ -26,16 +26,10 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedRebalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseUtil;
-import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
-import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
-import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceCost;
-import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
-import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.routing.EasyMinTimePathCalculator;
-import ch.ethz.matsim.av.config.AVDispatcherConfig;
-import ch.ethz.matsim.av.config.AVGeneratorConfig;
+import ch.ethz.matsim.av.config.operator.OperatorConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.passenger.AVRequest;
@@ -89,15 +83,15 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
     private Map<AVRequest, RequestKeyInfo> requestKeyInfoMap = new HashMap<>();
 
     public HighCapacityDispatcher(Network network, //
-            Config config, AVDispatcherConfig avDispatcherConfig, //
+            Config config, OperatorConfig operatorConfig, //
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, //
             MatsimAmodeusDatabase db) {
 
-        super(config, avDispatcherConfig, travelTime, router, eventsManager, db);
-        SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
+        super(config, operatorConfig, travelTime, router, eventsManager, db);
+        SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30); // if want to change value, change in av file, here only for backup
         rebalancePeriod = safeConfig.getInteger("rebalancingPeriod", 60);// same as above
-        capacityOfTaxi = (int) Long.parseLong(avDispatcherConfig.getParent().getGeneratorConfig().getParams().getOrDefault("numberOfSeats", String.valueOf(DEFAULTNUMBERSEATS)));
+        capacityOfTaxi = (int) Long.parseLong(operatorConfig.getGeneratorConfig().getParams().getOrDefault("numberOfSeats", String.valueOf(DEFAULTNUMBERSEATS)));
         pickupDurationPerStop = safeConfig.getInteger("pickupDurationPerStop", 15);
         dropoffDurationPerStop = safeConfig.getInteger("dropoffDurationPerStop", 10);
 
@@ -275,26 +269,14 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
         private EventsManager eventsManager;
 
         @Inject
-        @Named(AVModule.AV_MODE)
-        private Network network;
-
-        @Inject
         private Config config;
 
         @Inject
         private MatsimAmodeusDatabase db;
 
         @Override
-        public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
-            @SuppressWarnings("unused")
-            AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
-
-            @SuppressWarnings("unused")
-            AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
-            @SuppressWarnings("unused")
-            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceCost.INSTANCE);
-
-            return new HighCapacityDispatcher(network, config, avconfig, travelTime, router, eventsManager, db);
+        public AVDispatcher createDispatcher(OperatorConfig operatorConfig, AVRouter router, Network network) {
+            return new HighCapacityDispatcher(network, config, operatorConfig, travelTime, router, eventsManager, db);
         }
     }
 }

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -67,11 +68,12 @@ import ch.ethz.idsc.amodeus.util.io.LocateUtils;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
-import ch.ethz.matsim.av.config.AVConfig;
-import ch.ethz.matsim.av.config.AVDispatcherConfig;
-import ch.ethz.matsim.av.config.AVGeneratorConfig;
-import ch.ethz.matsim.av.config.AVOperatorConfig;
-import ch.ethz.matsim.av.framework.AVConfigGroup;
+import ch.ethz.matsim.av.config.AVConfigGroup;
+import ch.ethz.matsim.av.config.AVScoringParameterSet;
+import ch.ethz.matsim.av.config.operator.DispatcherConfig;
+import ch.ethz.matsim.av.config.operator.GeneratorConfig;
+import ch.ethz.matsim.av.config.operator.OperatorConfig;
+import ch.ethz.matsim.av.data.AVOperator;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.framework.AVQSimModule;
 import ch.ethz.matsim.av.scenario.TestScenarioAnalyzer;
@@ -240,24 +242,25 @@ public class StandardMATSimScenarioTest {
 
         // Config
 
-        AVConfig avConfig = new AVConfig();
-        AVOperatorConfig operatorConfig = avConfig.createOperatorConfig("test");
-        AVGeneratorConfig generatorConfig = operatorConfig.createGeneratorConfig("VehicleToVSGenerator");
+        AVConfigGroup avConfig = AVConfigGroup.getOrCreate(config);
+        avConfig.setAllowedLinkMode("car");
+        
+        OperatorConfig operatorConfig = new OperatorConfig();
+        operatorConfig.setId(AVOperator.createId("test"));
+        avConfig.addOperator(operatorConfig);
+
+        GeneratorConfig generatorConfig = operatorConfig.getGeneratorConfig();
+        generatorConfig.setType("VehicleToVSGenerator");
         generatorConfig.setNumberOfVehicles(100);
+
         int endTime = (int) config.qsim().getEndTime();
 
         // Choose a dispatcher
-        AVDispatcherConfig dispatcherConfig = operatorConfig.createDispatcherConfig(dispatcher);
+        DispatcherConfig dispatcherConfig = operatorConfig.getDispatcherConfig();
+        dispatcherConfig.setType(dispatcher);
 
         // Make sure that we do not need the SimulationObjectCompiler
         dispatcherConfig.addParam("publishPeriod", "-1");
-
-        controler.addOverridingModule(new AbstractModule() {
-            @Override
-            public void install() {
-                bind(AVConfig.class).toInstance(avConfig);
-            }
-        });
 
         // Set up a virtual network for the LPFBDispatcher
 
@@ -269,25 +272,28 @@ public class StandardMATSimScenarioTest {
 
             @Provides
             @Singleton
-            public VirtualNetwork<Link> provideVirtualNetwork(@Named(AVModule.AV_MODE) Network network) {
+            public Map<Id<AVOperator>, VirtualNetwork<Link>> provideVirtualNetworks(Map<Id<AVOperator>, Network> networks) {
                 // Since we have no virtual netowrk saved in the working directory for our test
                 // sceanario, we need to provide a custom one for the LPFB dispatcher
 
-                return MatsimKMeansVirtualNetworkCreator.createVirtualNetwork(scenario.getPopulation(), network, 2, true);
+                return Collections.singletonMap(AVOperator.createId("test"),
+                        MatsimKMeansVirtualNetworkCreator.createVirtualNetwork(scenario.getPopulation(), networks.get(AVOperator.createId("test")), 2, true));
             }
 
             @Provides
             @Singleton
-            public TravelData provideTravelData(VirtualNetwork<Link> virtualNetwork, @Named(AVModule.AV_MODE) Network network, Population population) throws Exception {
+            public Map<Id<AVOperator>, TravelData> provideTravelDatas(Map<Id<AVOperator>, VirtualNetwork<Link>> virtualNetworks, Map<Id<AVOperator>, Network> networks,
+                    Population population) throws Exception {
                 // Same as for the virtual network: For the LPFF dispatcher we need travel
                 // data, which we generate on the fly here.
 
                 LPOptions lpOptions = new LPOptions(simOptions.getWorkingDirectory(), LPOptionsBase.getDefault());
                 lpOptions.setProperty(LPOptionsBase.LPSOLVER, "timeInvariant");
                 lpOptions.saveAndOverwriteLPOptions();
-                TravelData travelData = StaticTravelDataCreator.create(simOptions.getWorkingDirectory(), virtualNetwork, network, population, simOptions.getdtTravelData(),
-                        (int) generatorConfig.getNumberOfVehicles(), endTime);
-                return travelData;
+                TravelData travelData = StaticTravelDataCreator.create(simOptions.getWorkingDirectory(), virtualNetworks.get(AVOperator.createId("test")),
+                        networks.get(AVOperator.createId("test")), population, simOptions.getdtTravelData(), (int) generatorConfig.getNumberOfVehicles(), endTime);
+
+                return Collections.singletonMap(AVOperator.createId("test"), travelData);
             }
         });
 

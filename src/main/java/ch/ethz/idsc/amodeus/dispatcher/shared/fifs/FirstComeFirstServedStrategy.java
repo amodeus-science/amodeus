@@ -20,11 +20,6 @@ import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RebalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
-import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
-import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceCost;
-import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
-import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.TreeMaintainer;
 import ch.ethz.idsc.amodeus.dispatcher.util.TreeMultipleItems;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
@@ -33,8 +28,7 @@ import ch.ethz.idsc.amodeus.routing.EasyMinTimePathCalculator;
 import ch.ethz.idsc.amodeus.routing.TimeDistanceProperty;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.matsim.av.config.AVDispatcherConfig;
-import ch.ethz.matsim.av.config.AVGeneratorConfig;
+import ch.ethz.matsim.av.config.operator.OperatorConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.passenger.AVRequest;
@@ -71,9 +65,9 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
     private final BlockRebalancing kockelmanRebalancing;
 
     protected FirstComeFirstServedStrategy(Network network, //
-            Config config, AVDispatcherConfig avDispatcherConfig, //
+            Config config, OperatorConfig operatorConfig, //
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, MatsimAmodeusDatabase db) {
-        super(config, avDispatcherConfig, travelTime, router, eventsManager, db);
+        super(config, operatorConfig, travelTime, router, eventsManager, db);
 
         double[] networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
         this.unassignedRoboTaxis = new TreeMaintainer<>(networkBounds, this::getRoboTaxiLoc);
@@ -183,26 +177,14 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
         private EventsManager eventsManager;
 
         @Inject
-        @Named(AVModule.AV_MODE)
-        private Network network;
-
-        @Inject
         private Config config;
 
         @Inject
         private MatsimAmodeusDatabase db;
 
         @Override
-        public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
-            @SuppressWarnings("unused")
-            AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
-
-            @SuppressWarnings("unused")
-            AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
-            @SuppressWarnings("unused")
-            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceCost.INSTANCE);
-
-            return new FirstComeFirstServedStrategy(network, config, avconfig, travelTime, router, eventsManager, db);
+        public AVDispatcher createDispatcher(OperatorConfig operatorConfig, AVRouter router, Network network) {
+            return new FirstComeFirstServedStrategy(network, config, operatorConfig, travelTime, router, eventsManager, db);
         }
     }
 }

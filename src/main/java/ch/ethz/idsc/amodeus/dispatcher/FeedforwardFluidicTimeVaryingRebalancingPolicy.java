@@ -4,6 +4,7 @@ package ch.ethz.idsc.amodeus.dispatcher;
 import java.util.List;
 import java.util.Map;
 
+import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -13,7 +14,7 @@ import org.matsim.core.router.util.TravelTime;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
+import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import ch.ethz.idsc.amodeus.dispatcher.core.PartitionedDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
@@ -43,8 +44,8 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.sca.Floor;
-import ch.ethz.matsim.av.config.AVDispatcherConfig;
-import ch.ethz.matsim.av.config.AVGeneratorConfig;
+import ch.ethz.matsim.av.config.operator.OperatorConfig;
+import ch.ethz.matsim.av.data.AVOperator;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.router.AVRouter;
@@ -74,13 +75,13 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
     private Tensor rebalanceCountInteger;
 
     public FeedforwardFluidicTimeVaryingRebalancingPolicy( //
-            Config config, AVDispatcherConfig avDispatcherConfig, //
-            AVGeneratorConfig generatorConfig, TravelTime travelTime, AVRouter router, //
+            Config config, OperatorConfig operatorConfig, //
+            TravelTime travelTime, AVRouter router, //
             EventsManager eventsManager, Network network, VirtualNetwork<Link> virtualNetwork, //
             AbstractVirtualNodeDest abstractVirtualNodeDest, //
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher, TravelData travelData, //
             MatsimAmodeusDatabase db) {
-        super(config, avDispatcherConfig, travelTime, router, eventsManager, virtualNetwork, db);
+        super(config, operatorConfig, travelTime, router, eventsManager, virtualNetwork, db);
         virtualNodeDest = abstractVirtualNodeDest;
         vehicleDestMatcher = abstractVehicleDestMatcher;
         this.network = network;
@@ -89,14 +90,14 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
         nVLinks = virtualNetwork.getvLinksCount();
         rebalanceCount = Array.zeros(nVNodes, nVNodes);
         rebalanceCountInteger = Array.zeros(nVNodes, nVNodes);
-        DispatcherConfig dispatcherConfig = DispatcherConfig.wrap(avDispatcherConfig);
+        DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(30);
         rebalancingPeriod = dispatcherConfig.getRebalancingPeriod(30);
         distanceHeuristics = dispatcherConfig.getDistanceHeuristics(DistanceHeuristics.EUCLIDEAN);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
         this.bipartiteMatcher = new ConfigurableBipartiteMatcher(network, new DistanceCost(distanceFunction), //
-                SafeConfig.wrap(avDispatcherConfig));
+                SafeConfig.wrap(operatorConfig.getDispatcherConfig()));
         if (!travelData.getLPName().equals(LPTimeVariant.class.getSimpleName())) {
             System.err.println("Running the " + this.getClass().getSimpleName() + " requires precomputed data that must be\n"
                     + "computed in the ScenarioPreparer. Currently the file LPOptions.properties is set to compute the feedforward\n" + "rebalcing data with: ");
@@ -104,7 +105,7 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
             System.err.println("The correct setting in LPOptions.properties to run this dispatcher is:  " + LPCreator.TIMEVARIANT.name());
             GlobalAssert.that(false);
         }
-        GlobalAssert.that(generatorConfig.getStrategyName().equals(VehicleToVSGenerator.class.getSimpleName()));
+        GlobalAssert.that(operatorConfig.getGeneratorConfig().getType().equals(VehicleToVSGenerator.class.getSimpleName()));
     }
 
     @Override
@@ -184,12 +185,8 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
         @Inject
         private EventsManager eventsManager;
 
-        @Inject
-        @Named(AVModule.AV_MODE)
-        private Network network;
-
         @Inject(optional = true)
-        private VirtualNetwork<Link> virtualNetwork;
+        private Map<Id<AVOperator>, VirtualNetwork<Link>> virtualNetworks;
 
         @Inject(optional = true)
         private TravelData travelData;
@@ -201,11 +198,10 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
         private MatsimAmodeusDatabase db;
 
         @Override
-        public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
-            AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
+        public AVDispatcher createDispatcher(OperatorConfig operatorConfig, AVRouter router, Network network) {
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceCost.INSTANCE);
-            return new FeedforwardFluidicTimeVaryingRebalancingPolicy(config, avconfig, generatorConfig, travelTime, router, eventsManager, network, virtualNetwork,
+            return new FeedforwardFluidicTimeVaryingRebalancingPolicy(config, operatorConfig, travelTime, router, eventsManager, network, virtualNetworks.get(operatorConfig.getId()),
                     abstractVirtualNodeDest, abstractVehicleDestMatcher, travelData, db);
         }
     }
