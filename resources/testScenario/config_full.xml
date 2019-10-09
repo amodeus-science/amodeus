@@ -3,8 +3,6 @@
 
 <config>
     <module name="av">
-      <param name="allowedLinkMode" value="car" />
-
     	<parameterset type="operator">
     		<param name="id" value="op1" />
 
