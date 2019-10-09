@@ -6,17 +6,20 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
-import org.matsim.api.core.v01.network.Network;
-import org.matsim.contrib.dvrp.router.DvrpRoutingNetworkProvider;
+import org.matsim.api.core.v01.population.Activity;
+import org.matsim.api.core.v01.population.Person;
+import org.matsim.api.core.v01.population.Plan;
+import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.contrib.dvrp.trafficmonitoring.DvrpTravelTimeModule;
 import org.matsim.core.controler.AbstractModule;
+import org.matsim.core.controler.events.StartupEvent;
+import org.matsim.core.controler.listener.StartupListener;
 import org.matsim.core.trafficmonitoring.FreeSpeedTravelTime;
 import org.matsim.vehicles.VehicleType;
 import org.matsim.vehicles.Vehicles;
 
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
-import com.google.inject.name.Named;
 
 import ch.ethz.matsim.av.config.AVConfigGroup;
 import ch.ethz.matsim.av.config.operator.GeneratorConfig;
@@ -36,19 +39,8 @@ public class AmodeusModule extends AbstractModule {
         addTravelTimeBinding(DvrpTravelTimeModule.DVRP_INITIAL).toInstance(new FreeSpeedTravelTime());
 
         installQSimModule(new AmodeusQSimModule());
-    }
 
-    @Provides
-    @Singleton
-    @Named(DvrpRoutingNetworkProvider.DVRP_ROUTING)
-    public Network provideAVNetwork(Network fullNetwork) {
-        /* TODO MISC Here we provide the FULL network with public transit links etc.,
-         * because this is how Amodeus has been set up initially. This was not a problem,
-         * since the av package also provides this network by default. However,
-         * this will change so in order to keep backward compatibility, we explicitly provide the
-         * full network here. Eventually Amodeus should be able to cope with what is defined by default. */
-
-        return fullNetwork;
+        addControlerListenerBinding().toInstance(new WarningListener());
     }
 
     @Provides
@@ -89,5 +81,44 @@ public class AmodeusModule extends AbstractModule {
         }
 
         return vehicleTypes;
+    }
+
+    private class WarningListener implements StartupListener {
+        @Override
+        public void notifyStartup(StartupEvent event) {
+            boolean anyWarnings = false;
+
+            for (Person person : event.getServices().getScenario().getPopulation().getPersons().values()) {
+                boolean skip = false;
+
+                for (Plan plan : person.getPlans()) {
+                    if (skip)
+                        break;
+
+                    for (PlanElement element : plan.getPlanElements()) {
+                        if (skip)
+                            break;
+
+                        if (element instanceof Activity) {
+                            Activity activity = (Activity) element;
+
+                            if (activity.getCoord() == null) {
+                                logger.error(String.format("Agent '%s' has activity without coordiantes", person.getId()));
+                                anyWarnings = true;
+                                skip = true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (anyWarnings) {
+                throw new RuntimeException(//
+                        "Since the last update of Amodeus it is necessary that each activity in a MATSim popuatlion"
+                                + " has a coordinate and not only a link ID to determine its location. You can either modify the way"
+                                + " you generate your population or use the AddCoordinatesToActivities tool to automatically "
+                                + "assign to each activity the coordinate of the currently associated link.");
+            }
+        }
     }
 }

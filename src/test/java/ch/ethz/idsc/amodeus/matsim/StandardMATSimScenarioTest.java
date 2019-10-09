@@ -18,7 +18,6 @@ import org.junit.runners.Parameterized.Parameters;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
-import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.events.LinkEnterEvent;
 import org.matsim.api.core.v01.events.handler.LinkEnterEventHandler;
 import org.matsim.api.core.v01.network.Link;
@@ -30,7 +29,6 @@ import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
-import org.matsim.contrib.dvrp.router.DvrpRoutingNetworkProvider;
 import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
 import org.matsim.contrib.dvrp.run.DvrpModule;
 import org.matsim.contrib.dvrp.trafficmonitoring.DvrpTravelTimeModule;
@@ -46,7 +44,6 @@ import org.matsim.core.population.PopulationUtils;
 
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
-import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.data.LocationSpec;
 import ch.ethz.idsc.amodeus.data.ReferenceFrame;
@@ -69,7 +66,6 @@ import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.matsim.av.config.AVConfigGroup;
-import ch.ethz.matsim.av.config.AVScoringParameterSet;
 import ch.ethz.matsim.av.config.operator.DispatcherConfig;
 import ch.ethz.matsim.av.config.operator.GeneratorConfig;
 import ch.ethz.matsim.av.config.operator.OperatorConfig;
@@ -94,14 +90,17 @@ public class StandardMATSimScenarioTest {
                 { "FeedforwardFluidicRebalancingPolicy" }, //
                 { "AdaptiveRealTimeRebalancingPolicy" }, //
                 { "ExtDemandSupplyBeamSharing" }, //
-                { "TShareDispatcher" } //
+                { "TShareDispatcher" }, //
+                { "FirstComeFirstServedStrategy" }, //
+                { "DynamicRideSharingStrategy" }, //
+
+                // This one doesn't finish all requests. Bug or not enough of time? Also it's not good in an automated unit test because it
+                // produces large amounts of log output.
+                // { "HighCapacityDispatcher" },
+
+                // Also has not enough of time to finish all requests
+                // { "NorthPoleSharedDispatcher" },
         });
-
-        // TODO add these and all other missing strategies again:
-        // { "FirstComeFirstServedStrategy" }
-        // { "DynamicRideSharingStrategy" }
-        // { "HighCapacityDispatcher" }
-
     }
 
     final private String dispatcher;
@@ -215,27 +214,6 @@ public class StandardMATSimScenarioTest {
         controler.addOverridingModule(new AmodeusVehicleToVSGeneratorModule());
         controler.addOverridingModule(new AmodeusDatabaseModule(db));
 
-        controler.addOverridingModule(new AbstractModule() {
-            @Override
-            public void install() {
-                // ---
-            }
-
-            @Provides
-            @Singleton
-            @Named(DvrpRoutingNetworkProvider.DVRP_ROUTING)
-            public Network provideAVNetwork(Network fullNetwork) {
-                /* TODO TEST Eventually, this should go directly into the AmodeusModule.
-                 * - For backward compatibility AmodeusModule provides a FULL network, see there.
-                 * - However, here we want a "clean" test case where only a sub-network is used,
-                 * i.e. in this case all links with the "car" mode. */
-                TransportModeNetworkFilter filter = new TransportModeNetworkFilter(fullNetwork);
-                Network filtered = NetworkUtils.createNetwork();
-                filter.filter(filtered, Collections.singleton(TransportMode.car));
-                return filtered;
-            }
-        });
-
         // Make the scenario multimodal
         fixInvalidActivityLocations(scenario.getNetwork(), scenario.getPopulation());
         makeMultimodal(scenario);
@@ -244,7 +222,7 @@ public class StandardMATSimScenarioTest {
 
         AVConfigGroup avConfig = AVConfigGroup.getOrCreate(config);
         avConfig.setAllowedLinkMode("car");
-        
+
         OperatorConfig operatorConfig = new OperatorConfig();
         operatorConfig.setId(AVOperator.createId("test"));
         avConfig.addOperator(operatorConfig);
@@ -324,11 +302,9 @@ public class StandardMATSimScenarioTest {
         if (analyzer.numberOfDepartures != analyzer.numberOfArrivals) {
             System.out.println("numberOfDepartures=" + analyzer.numberOfDepartures);
             System.out.println("numberOfArrivals  =" + analyzer.numberOfArrivals);
-
-            new RuntimeException("").printStackTrace();
         }
-        // FIXME (jan does not have a clue what is the problem here)
-        // Assert.assertEquals(analyzer.numberOfDepartures, analyzer.numberOfArrivals);
+
+        Assert.assertEquals(analyzer.numberOfDepartures, analyzer.numberOfArrivals);
     }
 
     @AfterClass

@@ -2,9 +2,11 @@
 package ch.ethz.idsc.amodeus.virtualnetwork.core;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.DataFormatException;
 
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
@@ -14,6 +16,20 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 public enum VirtualNetworkGet {
     ;
 
+    /** @param network
+     * @throws IOException, FileNotFoundException 
+     * @throws DataFormatException 
+     * @throws ClassNotFoundException */
+    public static VirtualNetwork<Link> readFile(Network network, File path) throws IOException, ClassNotFoundException, DataFormatException {
+        if (!path.exists()) {
+            throw new FileNotFoundException(path.toString());
+        } else {
+            Map<String, Link> map = new HashMap<>();
+            network.getLinks().entrySet().forEach(e -> map.put(e.getKey().toString(), e.getValue()));
+            return VirtualNetworkIO.fromByte(map, path);
+        }
+    }
+    
     /** @param network
      * @return null if file does not exist
      * @throws IOException */

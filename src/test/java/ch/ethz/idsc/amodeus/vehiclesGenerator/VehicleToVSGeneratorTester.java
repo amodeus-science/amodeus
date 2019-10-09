@@ -158,6 +158,10 @@ public class VehicleToVSGeneratorTester {
                     new VehicleToVSGenerator(operatorConfig, virtualNetwork, travelData334, vehicleType);
             vehicleToVSGenerator.generateVehicles();
             assertEquals(vehicleToVSGenerator.getPlacedVehicles(), Tensors.vector(3, 3, 4));
+            
+            if (i % 10 == 0) {
+                System.out.print(".");
+            }
         }
     }
 }
