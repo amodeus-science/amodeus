@@ -42,6 +42,7 @@ public class RoboTaxi {
 
     /** last known location of the RoboTaxi */
     private Link lastKnownLocation;
+
     /** drive destination of the RoboTaxi, null for stay task */
     private Link driveDestination;
     /** location/time pair from where / when RoboTaxi path can be altered. */

@@ -63,10 +63,6 @@ public class RedistributionTests2 {
             agentsToGo.put("o" + i, 1);
         }
 
-        for (String string : agentsToGo.keySet()) {
-            System.out.println("string: " + string);
-        }
-
         /** free spots available on link 2 */
         Map<String, Integer> freeSpaces = new HashMap<>();
         for (int i = 1; i <= n2; ++i) {

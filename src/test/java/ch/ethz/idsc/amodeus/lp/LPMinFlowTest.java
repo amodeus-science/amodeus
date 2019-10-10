@@ -20,7 +20,7 @@ import org.matsim.core.scenario.ScenarioUtils;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;
-import ch.ethz.idsc.amodeus.util.io.LocateUtils;
+import ch.ethz.idsc.amodeus.util.io.Locate;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
@@ -39,7 +39,7 @@ public class LPMinFlowTest {
     public static void setup() throws IOException {
         System.out.println(LPTimeInvariant.class.getName());
         /** input data */
-        File scenarioDirectory = new File(LocateUtils.getSuperFolder(LPMinFlowTest.class, "amodeus"), "resources/testScenario");
+        File scenarioDirectory = new File(Locate.repoFolder(LPMinFlowTest.class, "amodeus"), "resources/testScenario");
         System.out.println("scenarioDirectory: " + scenarioDirectory.getAbsolutePath());
         scenarioOptions = new ScenarioOptions(scenarioDirectory, ScenarioOptionsBase.getDefault());
         File configFile = new File(scenarioOptions.getPreparerConfigName());

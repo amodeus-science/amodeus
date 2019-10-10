@@ -9,6 +9,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import ch.ethz.idsc.amodeus.parking.strategies.SmallRedistributionProblemSolver;
+
 public class RedistributionTests1 {
 
     private static Random random;
@@ -75,6 +77,12 @@ public class RedistributionTests1 {
         RedistributionProblemSolver<String> redistributionLP = //
                 new RedistributionProblemSolver<>(agentsToGo, freeSpaces, //
                         (i1, i2) -> distance(i1, i2), s -> s, false, "");
+
+        SmallRedistributionProblemSolver<String> smallRedistSolver = //
+                new SmallRedistributionProblemSolver<>(agentsToGo, freeSpaces, //
+                        (i1, i2) -> distance(i1, i2), s -> s, false, "");
+        Assert.assertFalse(smallRedistSolver.success());
+
         Map<String, Map<String, Integer>> solution = redistributionLP.returnSolution();
         return solution;
     }

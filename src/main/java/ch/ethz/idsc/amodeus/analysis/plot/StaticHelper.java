@@ -1,15 +1,11 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.analysis.plot;
 
-import java.io.File;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
 import org.jfree.data.time.Second;
 
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.img.MeanFilter;
@@ -32,14 +28,6 @@ import ch.ethz.idsc.tensor.img.MeanFilter;
 
     public static String fileTitle(String diagramTitle) {
         return diagramTitle.replaceAll("\\s+", "");
-    }
-
-    public static File savePlot(File directory, String fileTitle, JFreeChart chart, int width, int height) throws Exception {
-        File fileChart = new File(directory, fileTitle + ".png");
-        ChartUtilities.saveChartAsPNG(fileChart, chart, width, height);
-        GlobalAssert.that(fileChart.isFile());
-        System.out.println("Exported " + fileTitle + ".png");
-        return fileChart;
     }
 
     public static Tensor filtered(Tensor values, int filterSize) {

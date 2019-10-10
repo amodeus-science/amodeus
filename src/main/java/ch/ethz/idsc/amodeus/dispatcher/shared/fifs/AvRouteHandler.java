@@ -48,7 +48,8 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 
     /** get the routes with the earliest End Time.
      * 
-     * @return a Deep Copy of the Key Value Mapping of RoboTaxis to a Set of SharedAvRoutes all with the earliest end time currently present in the internal Tree
+     * @return a Deep Copy of the Key Value Mapping of RoboTaxis to a Set of SharedAvRoutes all with the earliest end time currently present in the internal
+     *         Tree
      *         structure */
     Map<RoboTaxi, Set<SharedAvRoute>> getCopyOfNext() {
         return new HashMap<>(routes.firstEntry().getValue());

@@ -21,7 +21,7 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.testutils.TestPreparer;
 import ch.ethz.idsc.amodeus.testutils.TestServer;
-import ch.ethz.idsc.amodeus.util.io.LocateUtils;
+import ch.ethz.idsc.amodeus.util.io.Locate;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.util.math.SI;
@@ -34,6 +34,7 @@ import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.red.Mean;
 import ch.ethz.idsc.tensor.red.Total;
+import ch.ethz.idsc.tensor.sca.Round;
 
 public class ScenarioPipeLineTest {
 
@@ -59,7 +60,7 @@ public class ScenarioPipeLineTest {
         System.out.println(GLPK.glp_version());
 
         // copy scenario data into main directory
-        File scenarioDirectory = new File(LocateUtils.getSuperFolder(ScenarioPipeLineTest.class, "amodeus"), "resources/testScenario");
+        File scenarioDirectory = new File(Locate.repoFolder(ScenarioPipeLineTest.class, "amodeus"), "resources/testScenario");
         File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         GlobalAssert.that(workingDirectory.isDirectory());
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
@@ -150,7 +151,7 @@ public class ScenarioPipeLineTest {
 
         //
         scalarAssert.add(RationalScalar.of(88841, 1080000), occupancyRatio);
-        scalarAssert.add(RealScalar.of(0.6821350810781722), distanceRatio);
+        scalarAssert.add(RealScalar.of(0.669469728473632), distanceRatio);
 
         /** fleet distances */
         assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistance));
@@ -165,11 +166,11 @@ public class ScenarioPipeLineTest {
         assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).equals( //
                 ate.getDistancElement().totalDistance));
 
-        scalarAssert.add(RealScalar.of(34340.8378609224), ate.getDistancElement().totalDistance);
-        scalarAssert.add(RealScalar.of(28852.335921176378), ate.getDistancElement().totalDistanceWtCst);
-        scalarAssert.add(RealScalar.of(5488.501939745962), ate.getDistancElement().totalDistancePicku);
+        scalarAssert.add((Scalar) RealScalar.of(45698.95657).map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
+        scalarAssert.add((Scalar) RealScalar.of(37593.30920).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
+        scalarAssert.add(RealScalar.of(8105.647362303572), ate.getDistancElement().totalDistancePicku);
         scalarAssert.add(RealScalar.of(0.0), ate.getDistancElement().totalDistanceRebal);
-        scalarAssert.add(RealScalar.of(0.8401756543630645), ate.getDistancElement().totalDistanceRatio);
+        scalarAssert.add((Scalar) RealScalar.of(0.82263).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRatio.map(Round._5));
 
         scalarAssert.add((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle), //
                 ate.getDistancElement().totalDistance);
