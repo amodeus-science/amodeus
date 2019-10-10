@@ -56,14 +56,19 @@ public class AmodeusVirtualNetworkModule extends AbstractModule {
 
         for (OperatorConfig operatorConfig : config.getOperatorConfigs().values()) {
             Network network = networks.get(operatorConfig.getId());
-            VirtualNetwork<Link> virtualNetwork;
+            VirtualNetwork<Link> virtualNetwork = null;
 
             String virtualNetworkPath = operatorConfig.getParams().get("virtualNetworkPath");
 
             if (virtualNetworkPath == null) {
                 // If nothing is set in the configuration file, we fall back to sceanrioOptions. This *may* return null.
-                logger.info(String.format("Loading VirtualNetwork for operator '%s' from ScenarioOptions", operatorConfig.getId()));
-                virtualNetwork = VirtualNetworkGet.readDefault(network, scenarioOptions);
+                
+                if (scenarioOptions.getVirtualNetworkName().trim().length() > 0) {
+                    logger.info(String.format("Loading VirtualNetwork for operator '%s' from ScenarioOptions", operatorConfig.getId()));
+                    virtualNetwork = VirtualNetworkGet.readDefault(network, scenarioOptions);
+                } else {
+                    logger.info(String.format("Not loading any VirtualNetwork for operator '%s'", operatorConfig.getId()));
+                }
             } else {
                 URL virtualNetworkUrl = ConfigGroup.getInputFileURL(mainConfig.getContext(), virtualNetworkPath);
                 File virtualNetworkFile = new File(virtualNetworkUrl.getPath());
@@ -103,41 +108,50 @@ public class AmodeusVirtualNetworkModule extends AbstractModule {
             VirtualNetwork<Link> virtualNetwork = virtualNetworks.get(operatorConfig.getId());
             Network network = networks.get(operatorConfig.getId());
             StaticTravelData travelData = null;
-
+            
             String travelDataPath = operatorConfig.getParams().get("travelDataPath");
-
-            if (travelDataPath == null) {
-                // If nothing is set in the configuration file, we fall back to sceanrioOptions. This *may* return null.
-                logger.info(String.format("Loading TravelData for operator '%s' from ScenarioOptions", operatorConfig.getId()));
-                travelData = TravelDataGet.readStatic(virtualNetwork, scenarioOptions);
-            } else {
-                URL travelDataUrl = ConfigGroup.getInputFileURL(mainConfig.getContext(), travelDataPath);
-                File travelDataFile = new File(travelDataUrl.getPath());
-
-                String regenerateTravelDataParameter = operatorConfig.getParams().getOrDefault("regenerateTravelData", "true");
-                boolean regenerateTravelData = Boolean.parseBoolean(regenerateTravelDataParameter);
-
-                if (!travelDataFile.exists() || regenerateTravelData) {
-                    logger.info(String.format("Regenerating TravelData for operator '%s' at '%s'", operatorConfig.getId(), travelDataFile));
-                    logger.info(String.format("Currently we use information from ScenarioOptions for that. Later on this should be moved to a specific config module."));
-                    logger.info(String.format("Using StaticTravelDataCreator"));
-
-                    File workingDirectory = new File(mainConfig.getContext().getPath());
-                    int numberOfVehicles = operatorConfig.getGeneratorConfig().getNumberOfVehicles();
-                    int interval = scenarioOptions.getdtTravelData();
-
-                    travelData = StaticTravelDataCreator.create(workingDirectory, virtualNetwork, network, population, interval, numberOfVehicles,
-                            (int) mainConfig.qsim().getEndTime());
-                    TravelDataIO.writeStatic(travelDataFile, travelData);
+            
+            if (virtualNetwork != null) {
+                if (travelDataPath == null) {
+                    // If nothing is set in the configuration file, we fall back to sceanrioOptions. This *may* return null.
+                    
+                    if (scenarioOptions.getVirtualNetworkName().trim().length() > 0) {
+                        logger.info(String.format("Loading TravelData for operator '%s' from ScenarioOptions", operatorConfig.getId()));
+                        travelData = TravelDataGet.readStatic(virtualNetwork, scenarioOptions);
+                    } else {
+                        logger.info(String.format("Not loading any TravelData for operator '%s'", operatorConfig.getId()));
+                    }
                 } else {
-                    logger.info(String.format("Loading TravelData for operator '%s' from '%s'", operatorConfig.getId(), travelDataFile));
-                    travelData = TravelDataGet.readFile(virtualNetwork, travelDataFile);
+                    URL travelDataUrl = ConfigGroup.getInputFileURL(mainConfig.getContext(), travelDataPath);
+                    File travelDataFile = new File(travelDataUrl.getPath());
+    
+                    String regenerateTravelDataParameter = operatorConfig.getParams().getOrDefault("regenerateTravelData", "true");
+                    boolean regenerateTravelData = Boolean.parseBoolean(regenerateTravelDataParameter);
+    
+                    if (!travelDataFile.exists() || regenerateTravelData) {
+                        logger.info(String.format("Regenerating TravelData for operator '%s' at '%s'", operatorConfig.getId(), travelDataFile));
+                        logger.info(String.format("Currently we use information from ScenarioOptions for that. Later on this should be moved to a specific config module."));
+                        logger.info(String.format("Using StaticTravelDataCreator"));
+    
+                        File workingDirectory = new File(mainConfig.getContext().getPath());
+                        int numberOfVehicles = operatorConfig.getGeneratorConfig().getNumberOfVehicles();
+                        int interval = scenarioOptions.getdtTravelData();
+    
+                        travelData = StaticTravelDataCreator.create(workingDirectory, virtualNetwork, network, population, interval, numberOfVehicles,
+                                (int) mainConfig.qsim().getEndTime());
+                        TravelDataIO.writeStatic(travelDataFile, travelData);
+                    } else {
+                        logger.info(String.format("Loading TravelData for operator '%s' from '%s'", operatorConfig.getId(), travelDataFile));
+                        travelData = TravelDataGet.readFile(virtualNetwork, travelDataFile);
+                    }
                 }
+    
+                travelDatas.put(operatorConfig.getId(), travelData);
+            } else {
+                logger.info(String.format("Not loading any TravelData for operator '%s' because not VirtualNetwork is available", operatorConfig.getId()));
             }
-
-            travelDatas.put(operatorConfig.getId(), travelData);
         }
-
+        
         return travelDatas;
     }
 }
