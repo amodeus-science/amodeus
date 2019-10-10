@@ -168,7 +168,7 @@ public class ScenarioPipeLineTest {
 
         scalarAssert.add((Scalar) RealScalar.of(45698.95657).map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
         scalarAssert.add((Scalar) RealScalar.of(37593.30920).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
-        scalarAssert.add(RealScalar.of(8105.647362303572), ate.getDistancElement().totalDistancePicku);
+        scalarAssert.add((Scalar) RealScalar.of(8105.647362303572).map(Round._5), (Scalar) ate.getDistancElement().totalDistancePicku.map(Round._5));
         scalarAssert.add(RealScalar.of(0.0), ate.getDistancElement().totalDistanceRebal);
         scalarAssert.add((Scalar) RealScalar.of(0.82263).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRatio.map(Round._5));
 
