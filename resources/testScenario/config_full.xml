@@ -17,13 +17,11 @@
     			<param name="infoLinePeriod" value="3600" />
     		</parameterset>
 
-
-
     		<parameterset type="timing">
     			<param name="pickupDurationPerStop" value="15.0" />
-    			<param name="pickupDurationPerPassenger" value="15.0" />
+    			<param name="pickupDurationPerPassenger" value="0.0" />
     			<param name="dropoffDurationPerStop" value="10.0" />
-    			<param name="dropoffDurationPerPassenger" value="15.0" />
+    			<param name="dropoffDurationPerPassenger" value="0.0" />
     		</parameterset>
 
   			<parameterset type="pricing">
