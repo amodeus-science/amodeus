@@ -49,7 +49,7 @@ public class DefaultAStarLMRouter implements AVRouter {
         @Named(AVModule.AV_MODE)
         TravelTime travelTime;
 
-        @Inject
+
 
         @Override
         public AVRouter createRouter(RouterConfig routerConfig, Network network) {

@@ -19,8 +19,11 @@ public enum LocationSpecDatabase {
      * @throws Exception if string is not associated to a value */
     public LocationSpec fromString(String string) {
         LocationSpec locationSpec = map.get(string);
-        if (Objects.isNull(locationSpec))
+        if (Objects.isNull(locationSpec)) {
             System.err.println("LocationSpecDatabase miss: " + string);
+            System.err.println("Please define LocationSpec in AmodeusOptions.properties, e.g.,");
+            System.err.println("LocationSpec=SANFRANCISCO");
+        }
         return Objects.requireNonNull(locationSpec);
 
     }
