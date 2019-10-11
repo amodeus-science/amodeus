@@ -30,7 +30,7 @@ public class VehiclesLayer extends ViewerLayer {
 
     public VehiclesLayer(AmodeusComponent amodeusComponent) {
         super(amodeusComponent);
-        loadBitSet(amodeusComponent.defaultConfig.settings);
+        loadBitSet(amodeusComponent.viewerConfig.settings);
     }
 
     @Override
