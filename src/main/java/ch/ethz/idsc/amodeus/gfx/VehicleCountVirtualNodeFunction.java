@@ -21,8 +21,8 @@ import ch.ethz.idsc.tensor.sca.Increment;
     @Override
     public Tensor evaluate(SimulationObject ref) {
         Tensor count = Array.zeros(virtualNetwork.getvNodesCount());
-        for (VehicleContainer vehicleContainer : ref.vehicles) {
-            int linkIndex = vehicleContainer.linkIndex;
+        for (VehicleContainer vc : ref.vehicles) {
+            int linkIndex = vc.linkTrace[vc.linkTrace.length - 1];
             Link link = db.getOsmLink(linkIndex).link;
             VirtualNode<Link> virtualNode = virtualNetwork.getVirtualNode(link);
             count.set(Increment.ONE, virtualNode.getIndex());

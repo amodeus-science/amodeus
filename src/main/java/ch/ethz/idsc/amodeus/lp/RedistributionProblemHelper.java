@@ -18,8 +18,8 @@ public enum RedistributionProblemHelper {
      * 
      *         Map<Link, Set<RoboTaxi>> taxisToGo;
      *         Map<Link, Integer> unitsToMove = RedistributionProblemHelper.getFlow(taxisToGo); */
-    public static <T, U> Map<T, Integer> getFlow(Map<T, Set<U>> unitsToMove) {
-        Map<T, Integer> quantitiesToMove = new HashMap<>();
+    public static <T, U> HashMap<T, Integer> getFlow(Map<T, Set<U>> unitsToMove) {
+        HashMap<T, Integer> quantitiesToMove = new HashMap<>();
         unitsToMove.entrySet().forEach(e -> {
             quantitiesToMove.put(e.getKey(), e.getValue().size());
         });

@@ -39,7 +39,6 @@ public abstract class ParkingCapacityAbstractUniform extends ParkingCapacityAbst
         parkingCount.entrySet().stream().forEach(e -> {
             capacities.put(e.getKey(), e.getValue());
         });
-        GlobalAssert.that(//
-                totSpaces == capacities.values().stream().mapToLong(l -> l).sum());
+        GlobalAssert.that(totSpaces == capacities.values().stream().mapToLong(l -> l).sum());
     }
 }

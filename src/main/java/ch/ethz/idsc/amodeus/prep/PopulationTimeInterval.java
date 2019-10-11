@@ -14,7 +14,6 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.sca.Clip;
 import ch.ethz.idsc.tensor.sca.Clips;
 
-// TODO refactor
 public enum PopulationTimeInterval {
     ;
 
@@ -22,28 +21,23 @@ public enum PopulationTimeInterval {
      * time of its predecessor activity outside the time interval [0,endTime) */
     public static void removeOutside(Population population, int endTime) {
         Clip timeClip = Clips.positive(endTime - 1);
-        System.out.println("All people in population  which have activities outside the time interval [0, " + endTime + ") are removed.");
-
-        Iterator<? extends Person> itPerson = population.getPersons().values().iterator();
-
+        System.out.println("All people in population  which have activities outside" //
+                + " the time interval [0, " + endTime + ") are removed.");
+        Iterator<? extends Person> personIter = population.getPersons().values().iterator();
         int counter = 0;
         int nextMsg = 1;
-
-        while (itPerson.hasNext()) {
+        while (personIter.hasNext()) {
             counter++;
             if (counter % nextMsg == 0) {
                 nextMsg *= 2;
                 System.out.println("we are at person # " + counter + ". ");
             }
-            Person person = itPerson.next();
+            Person person = personIter.next();
             boolean removePerson = false;
-
             for (Plan plan : person.getPlans()) {
-
                 for (int i = 1; i < plan.getPlanElements().size() - 1; ++i) {
                     PlanElement planBefore = plan.getPlanElements().get(i - 1);
                     PlanElement planCurrent = plan.getPlanElements().get(i);
-
                     if (planCurrent instanceof Leg) {
                         Leg leg = (Leg) planCurrent;
                         Activity actBefore = (Activity) planBefore;
@@ -55,7 +49,7 @@ public enum PopulationTimeInterval {
                 }
             }
             if (removePerson) {
-                itPerson.remove();
+                personIter.remove();
             }
         }
     }

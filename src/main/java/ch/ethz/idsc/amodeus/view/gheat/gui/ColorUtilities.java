@@ -1,8 +1,7 @@
 // ---
 package ch.ethz.idsc.amodeus.view.gheat.gui;
 
-/**
- * <p>
+/** <p>
  * <code>ColorUtilities</code> contains a set of tools to perform
  * common color operations easily.
  * </p>
@@ -11,8 +10,7 @@ package ch.ethz.idsc.amodeus.view.gheat.gui;
 /* package */ enum ColorUtilities {
     ;
 
-    /**
-     * <p>
+    /** <p>
      * Returns the HSL (Hue/Saturation/Luminance) equivalent of a given
      * RGB color. All three HSL components are floats between 0.0 and 1.0.
      * </p>
@@ -101,8 +99,7 @@ package ch.ethz.idsc.amodeus.view.gheat.gui;
         return hsl;
     }
 
-    /**
-     * <p>
+    /** <p>
      * Returns the RGB equivalent of a given HSL (Hue/Saturation/Luminance)
      * color. All three RGB components are integers between 0 and 255.
      * </p>

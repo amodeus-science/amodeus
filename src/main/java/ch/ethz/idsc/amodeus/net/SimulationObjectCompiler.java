@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.net;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +9,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RequestStatus;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
@@ -50,7 +53,15 @@ public class SimulationObjectCompiler {
     }
 
     public void insertVehicles(List<RoboTaxi> robotaxis) {
-        robotaxis.forEach(this::insertVehicle);
+        robotaxis.forEach(rt -> {
+            insertVehicle(rt, Arrays.asList(rt.getLastKnownLocation()));
+        });
+    }
+
+    public void insertVehicles(Map<RoboTaxi, List<Link>> tempLocationTrace) {
+        tempLocationTrace.entrySet().forEach(e -> {
+            insertVehicle(e.getKey(), e.getValue());
+        });
     }
 
     private void insertRequest(AVRequest avRequest, RequestStatus requestStatus) {
@@ -62,8 +73,8 @@ public class SimulationObjectCompiler {
         }
     }
 
-    private void insertVehicle(RoboTaxi robotaxi) {
-        VehicleContainer vehicleContainer = VehicleContainerCompiler.compile(robotaxi, db);
+    private void insertVehicle(RoboTaxi robotaxi, List<Link> tempTrace) {
+        VehicleContainer vehicleContainer = VehicleContainerCompiler.compile(robotaxi, tempTrace, db);
         final String key = robotaxi.getId().toString();
         vehicleMap.put(key, vehicleContainer);
     }

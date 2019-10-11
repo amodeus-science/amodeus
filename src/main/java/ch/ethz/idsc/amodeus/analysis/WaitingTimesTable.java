@@ -27,8 +27,9 @@ import ch.ethz.idsc.tensor.io.TableBuilder;
         try {
             UnitSaveUtils.saveFile(tableBuilder.getTable(), identifier, relativeDirectory);
             File dataFolder = new File(relativeDirectory, identifier);
-            SaveFormats.CSV.save(Tensors.fromString("time step, " + Quantiles.LBL[0] + ", " //
-                    + Quantiles.LBL[1] + ", " + Quantiles.LBL[2] + ", mean wait time"), //
+            SaveFormats.CSV.save(
+                    Tensors.fromString("time step, " + Quantiles.LBL[0] + ", " //
+                            + Quantiles.LBL[1] + ", " + Quantiles.LBL[2] + ", mean wait time"), //
                     dataFolder, "description");
         } catch (Exception e) {
             e.printStackTrace();
