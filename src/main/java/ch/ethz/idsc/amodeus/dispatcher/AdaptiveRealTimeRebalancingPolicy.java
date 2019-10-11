@@ -19,15 +19,17 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
-import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatchingUtils;
+import ch.ethz.idsc.amodeus.dispatcher.util.ConfigurableBipartiteMatcher;
+import ch.ethz.idsc.amodeus.dispatcher.util.DistanceCost;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
+import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceCost;
 import ch.ethz.idsc.amodeus.dispatcher.util.FeasibleRebalanceCreator;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.lp.LPMinFlow;
+import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
-import ch.ethz.idsc.amodeus.routing.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualLink;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
@@ -59,7 +61,7 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
     private final DistanceFunction distanceFunction;
     private final DistanceHeuristics distanceHeuristics;
     private final Network network;
-    private final BipartiteMatchingUtils bipartiteMatchingEngine;
+    private final ConfigurableBipartiteMatcher bipartiteMatcher;
     private final int rebalancingPeriod;
     private final int dispatchPeriod;
     private final int numRobotaxi;
@@ -87,9 +89,10 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
         rebalancingPeriod = dispatcherConfig.getRebalancingPeriod(300);
         this.network = network;
         distanceHeuristics = dispatcherConfig.getDistanceHeuristics(DistanceHeuristics.EUCLIDEAN);
-        this.bipartiteMatchingEngine = new BipartiteMatchingUtils(network);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
+        this.bipartiteMatcher = new ConfigurableBipartiteMatcher(network, new DistanceCost(distanceFunction), //
+                SafeConfig.wrap(avDispatcherConfig));
     }
 
     @Override
@@ -187,7 +190,7 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
 
         /** Part II: outside rebalancing periods, permanently assign destinations to vehicles using bipartite matching */
         if (round_now % dispatchPeriod == 0) {
-            printVals = bipartiteMatchingEngine.executePickup(this, getDivertableRoboTaxis(), //
+            printVals = bipartiteMatcher.executePickup(this, getDivertableRoboTaxis(), //
                     getAVRequests(), distanceFunction, network);
         }
     }
@@ -225,10 +228,8 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
         @Override
         public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
             AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
-
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
-            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceFunction.INSTANCE);
-
+            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceCost.INSTANCE);
             return new AdaptiveRealTimeRebalancingPolicy( //
                     config, avconfig, generatorConfig, travelTime, //
                     router, eventsManager, network, virtualNetwork, //

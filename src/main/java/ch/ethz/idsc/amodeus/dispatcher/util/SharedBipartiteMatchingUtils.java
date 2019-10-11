@@ -49,7 +49,7 @@ public class SharedBipartiteMatchingUtils {
 
         /** reduction of problem size with kd-tree, helps to downsize problems where n << m or m>> n
          * for n number of available taxis and m number of available requests */
-        Map<RoboTaxi, AVRequest> gbpMatch = ((new GlobalBipartiteMatching(distanceFunction)).match(roboTaxis, requests));
+        Map<RoboTaxi, AVRequest> gbpMatch = ((new GlobalBipartiteMatching(new DistanceCost(distanceFunction))).match(roboTaxis, requests));
 
         /** prevent cycling an assignment is only updated if the new distance is smaller than the
          * old distance */

@@ -10,14 +10,18 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 public enum MultiFileTools {
     ;
 
-    public static File getDefaultWorkingDirectory() throws IOException {
-        return new File(".").getCanonicalFile();
-    }
-
-    @Deprecated
-    /** Should not be used in amodeus repository anymore! */
-    public static File getWorkingDirectory() throws IOException {
-        return new File(".").getCanonicalFile();
+    /** @return default working directory as set in the Runtime configurations, please use this
+     *         function only in main functions
+     * 
+     * @throws IOException */
+    public static File getDefaultWorkingDirectory() {
+        try {
+            return new File(".").getCanonicalFile();
+        } catch (Exception e) {
+            System.err.println("Cannot load working directory, returning null: ");
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /** @return all directories in filesDirectory sorted by name */

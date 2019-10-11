@@ -15,8 +15,8 @@ import ch.ethz.idsc.amodeus.lp.LPSolver;
 import ch.ethz.idsc.amodeus.options.LPOptions;
 import ch.ethz.idsc.amodeus.options.LPOptionsBase;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
+import ch.ethz.idsc.amodeus.traveldata.LambdaAbsolute;
 import ch.ethz.idsc.amodeus.traveldata.StaticTravelData;
-import ch.ethz.idsc.amodeus.traveldata.StaticTravelDataCreator;
 import ch.ethz.idsc.amodeus.traveldata.TravelDataIO;
 import ch.ethz.idsc.amodeus.util.io.ProvideAVConfig;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
@@ -25,7 +25,7 @@ import ch.ethz.matsim.av.config.AVConfig;
 import ch.ethz.matsim.av.config.AVGeneratorConfig;
 import ch.ethz.matsim.av.framework.AVConfigGroup;
 
-public enum FeedForwardTravelData {
+/* package */ enum FeedForwardTravelData {
     ;
 
     public static void overwriteIfRequired(LPCreator lpCreator, StaticTravelData travelData, VirtualNetwork<Link> virtualNetwork, ScenarioOptions scenarioOptions) {
@@ -44,7 +44,7 @@ public enum FeedForwardTravelData {
                 System.out.println("Start The LP again");
                 /** reading the whole travel data */
 
-                Tensor lambdaAbsolute = StaticTravelDataCreator.getLambdaAbsolute( //
+                Tensor lambdaAbsolute = LambdaAbsolute.get( //
                         scenario.getNetwork(), virtualNetwork, //
                         scenario.getPopulation(), scenarioOptions.getdtTravelData(), endTime);
                 LPOptions lpOptions = new LPOptions(scenarioOptions.getWorkingDirectory(), LPOptionsBase.getDefault());
@@ -69,7 +69,7 @@ public enum FeedForwardTravelData {
                 travelData = new StaticTravelData(virtualNetwork.getvNetworkID(), lambdaAbsolute, alphaAbsolute, fAbsolute, v0_i, lpName, endTime);
 
                 System.out.println("Write New Travel Data");
-                File travelDataFile = new File(scenarioOptions.getVirtualNetworkName(), scenarioOptions.getTravelDataName());
+                File travelDataFile = new File(scenarioOptions.getVirtualNetworkDirectoryName(), scenarioOptions.getTravelDataName());
                 TravelDataIO.writeStatic(travelDataFile, travelData);
             } catch (FileNotFoundException fileNotFoundException) {
                 System.err.println("could not find the file");

@@ -10,12 +10,12 @@ import org.matsim.core.router.util.LeastCostPathCalculator;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-public abstract class NetworkDistanceFunction implements DistanceFunction {
+/* package */ abstract class NetworkDistanceFunction implements DistanceFunction {
 
-    private final LeastCostPathCalculator pathCalc;
+    private final LeastCostPathCalculator leastCostPathCalculator;
 
     public NetworkDistanceFunction(LeastCostPathCalculator pathCalc) {
-        this.pathCalc = pathCalc;
+        this.leastCostPathCalculator = pathCalc;
     }
 
     @Override
@@ -39,26 +39,25 @@ public abstract class NetworkDistanceFunction implements DistanceFunction {
         return distNetwork(from, to);
     }
 
-    public double getTravelTime(Link from, Link to) {
+    public final double getTravelTime(Link from, Link to) {
         return getTravelTime(from.getFromNode(), to.getFromNode());
     }
 
     private double getTravelTime(Node from, Node to) {
-        Objects.requireNonNull(from);
-        Objects.requireNonNull(to);
-        LeastCostPathCalculator.Path path = EasyMinTimePathCalculator.execPathCalculator(pathCalc, from, to);
+        LeastCostPathCalculator.Path path = execPathCalculator(from, to);
         return path.travelTime;
     }
 
     private final double distNetwork(Node from, Node to) {
-        Objects.requireNonNull(from);
-        Objects.requireNonNull(to);
-        double dist = 0.0;
-        LeastCostPathCalculator.Path path = EasyMinTimePathCalculator.execPathCalculator(pathCalc, from, to);
-        for (Link link : path.links) {
-            dist += link.getLength();
-        }
-        return dist;
+        LeastCostPathCalculator.Path path = execPathCalculator(from, to);
+        return path.links.stream().mapToDouble(Link::getLength).sum();
     }
 
+    LeastCostPathCalculator.Path execPathCalculator(Node from, Node to) {
+        // depending on implementation of traveldisutility and traveltime, starttime,
+        // person and vehicle are needed
+        Objects.requireNonNull(from);
+        Objects.requireNonNull(to);
+        return leastCostPathCalculator.calcLeastCostPath(from, to, 0.0, null, null);
+    }
 }

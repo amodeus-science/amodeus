@@ -24,29 +24,31 @@ public enum DistanceElementHtml implements HtmlReportElement {
         String aRKey = BodyElementKeys.AGGREGATERESULTS;
         HtmlBodyElement aRElement = new HtmlBodyElement();
         aRElement.getHTMLGenerator();
-        aRElement.getHTMLGenerator().insertTextLeft("\nDistance Ratio:" + //
-                "\nOccupancy Ratio:" + //
-                "\n" + //
-                "\n" + HtmlGenerator.bold("Distances") + //
-                "\n\tTotal:" + //
-                "\n\tRebalancing:" + //
-                "\n\tPickup:" + //
-                "\n\tWith Customer:" + //
-                "\n" + //
-                "\nAverage Trip Distance:" //
+        aRElement.getHTMLGenerator()
+                .insertTextLeft("\nDistance Ratio:" + //
+                        "\nOccupancy Ratio:" + //
+                        "\n" + //
+                        "\n" + HtmlGenerator.bold("Distances") + //
+                        "\n\tTotal:" + //
+                        "\n\tRebalancing:" + //
+                        "\n\tPickup:" + //
+                        "\n\tWith Customer:" + //
+                        "\n" + //
+                        "\nAverage Trip Distance:" //
         );
-        aRElement.getHTMLGenerator().insertTextLeft("\n" + DECIMAL.format(de.totalDistanceRatio * 100) + "%" + //
-                "\n" + DECIMAL.format(de.avgOccupancy * 100) + " %" + //
-                "\n\n" + //
-                "\n" + DECIMAL.format(de.totalDistance) + " km" + //
-                "\n" + DECIMAL.format(de.totalDistanceRebal) + " km (" + //
-                DECIMAL.format(100 * de.totalDistanceRebal / de.totalDistance) + "%)" + //
-                "\n" + DECIMAL.format(de.totalDistancePicku) + " km (" + //
-                DECIMAL.format(100 * de.totalDistancePicku / de.totalDistance) + "%)" + //
-                "\n" + DECIMAL.format(de.totalDistanceWtCst) + " km (" + //
-                DECIMAL.format(100 * de.totalDistanceWtCst / de.totalDistance) + "%)" + //
-                "\n" + //
-                "\n" + DECIMAL.format(de.totalDistanceWtCst / de.requestIndices.size()) + " km");
+        aRElement.getHTMLGenerator()
+                .insertTextLeft("\n" + DECIMAL.format(de.totalDistanceRatio.number().doubleValue() * 100) + "%" + //
+                        "\n" + DECIMAL.format(de.avgOccupancy.number().doubleValue() * 100) + " %" + //
+                        "\n\n" + //
+                        "\n" + DECIMAL.format(de.totalDistance.number().doubleValue()) + " km" + //
+                        "\n" + DECIMAL.format(de.totalDistanceRebal.number().doubleValue()) + " km (" + //
+                        DECIMAL.format(100 * de.totalDistanceRebal.number().doubleValue() / de.totalDistance.number().doubleValue()) + "%)" + //
+                        "\n" + DECIMAL.format(de.totalDistancePicku.number().doubleValue()) + " km (" + //
+                        DECIMAL.format(100 * de.totalDistancePicku.number().doubleValue() / de.totalDistance.number().doubleValue()) + "%)" + //
+                        "\n" + DECIMAL.format(de.totalDistanceWtCst.number().doubleValue()) + " km (" + //
+                        DECIMAL.format(100 * de.totalDistanceWtCst.number().doubleValue() / de.totalDistance.number().doubleValue()) + "%)" + //
+                        "\n" + //
+                        "\n" + DECIMAL.format(de.totalDistanceWtCst.number().doubleValue() / de.requestIndices.size()) + " km");
         File img = new File(IMAGE_FOLDER, StackedDistanceChartImage.FILENAME + ".png");
         aRElement.getHTMLGenerator() //
                 .insertImg(img.getPath(), StackedDistanceChartImage.WIDTH, StackedDistanceChartImage.HEIGHT);

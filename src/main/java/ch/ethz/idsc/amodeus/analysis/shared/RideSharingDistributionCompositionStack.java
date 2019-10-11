@@ -38,9 +38,9 @@ public enum RideSharingDistributionCompositionStack implements AnalysisExport {
         CustomColorDataCreator colorDataCreator = new CustomColorDataCreator();
         /** create Colors */
         {
-            // TODO TENSOR V069 use simpler color table build
-            NumberPassengerColorScheme numberPassengerColorScheme = //
-                    new NumberPassengerColorScheme(NumberPassengerStatusDistribution.COLOR_DATA_GRADIENT_DEFAULT, colorDataIndexed);
+            NumberPassengerColorScheme numberPassengerColorScheme = new NumberPassengerColorScheme( //
+                    NumberPassengerStatusDistribution.COLOR_DATA_GRADIENT_DEFAULT, //
+                    colorDataIndexed);
             IntStream.range(1, sharedDistribution.length() + 1) //
                     .forEach(i -> colorDataCreator.append(numberPassengerColorScheme.of(RealScalar.of(i))));
         }

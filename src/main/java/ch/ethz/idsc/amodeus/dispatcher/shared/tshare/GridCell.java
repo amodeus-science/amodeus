@@ -13,14 +13,15 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.utils.collections.QuadTree;
 
-import ch.ethz.idsc.amodeus.routing.CashedNetworkTimeDistance;
+import ch.ethz.idsc.amodeus.routing.CachedNetworkTimeDistance;
 import ch.ethz.idsc.amodeus.routing.NetworkTimeDistInterface;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.qty.Quantity;
+import ch.ethz.idsc.tensor.sca.Sign;
 
 /* package */ class GridCell {
 
@@ -32,14 +33,15 @@ import ch.ethz.idsc.tensor.qty.Quantity;
     private final Map<VirtualNode<Link>, Scalar> temporalLookupMap = new HashMap<>();
 
     public GridCell(VirtualNode<Link> virtualNode, VirtualNetwork<Link> virtualNetwork, Network network, //
-            CashedNetworkTimeDistance minDist, NetworkTimeDistInterface minTime, QuadTree<Link> linkTree) {
+            CachedNetworkTimeDistance minDist, NetworkTimeDistInterface minTime, QuadTree<Link> linkTree, //
+            double now) {
         this.myVNode = virtualNode;
         // this.virtualNetwork = virtualNetwork;
-        computeMaps(virtualNetwork, linkTree, minDist, minTime);
+        computeMaps(virtualNetwork, linkTree, minDist, minTime, now);
     }
 
     private void computeMaps(VirtualNetwork<Link> virtualNetwork, QuadTree<Link> links, //
-            CashedNetworkTimeDistance minDist, NetworkTimeDistInterface minTime) {
+            CachedNetworkTimeDistance minDist, NetworkTimeDistInterface minTime, double now) {
         /** calculate distances and travel times to other nodes */
         for (VirtualNode<Link> toNode : virtualNetwork.getVirtualNodes()) {
             Link fromLink = links.getClosest(//
@@ -48,15 +50,15 @@ import ch.ethz.idsc.tensor.qty.Quantity;
             Link toLink = links.getClosest(//
                     toNode.getCoord().Get(0).number().doubleValue(), //
                     toNode.getCoord().Get(1).number().doubleValue());
-            Scalar time = minTime.travelTime(fromLink, toLink);
-            Scalar distance = minDist.distance(fromLink, toLink);
+            Scalar time = minTime.travelTime(fromLink, toLink, now);
+            Scalar distance = minDist.distance(fromLink, toLink, now);
             temporalSortedMap.put(time, toNode);
             temporalLookupMap.put(toNode, time);
             distanceSortedMap.put(distance, toNode);
         }
 
         /** fill map with n nodes less than time */
-        nodesWithinLessThan.put(Quantity.of(-0.0000001, "s"), new ArrayList<>());
+        nodesWithinLessThan.put(Quantity.of(-0.0000001, SI.SECOND), new ArrayList<>());
         for (Entry<Scalar, VirtualNode<Link>> entry : temporalSortedMap.entrySet()) {
             List<VirtualNode<Link>> updatedList = new ArrayList<>();
             nodesWithinLessThan.lastEntry().getValue().forEach(vn -> updatedList.add(vn));
@@ -88,8 +90,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
     }
 
     public List<VirtualNode<Link>> nodesReachableWithin(Scalar time) {
-        GlobalAssert.that(Scalars.lessEquals(Quantity.of(0, "s"), time));
-        return this.nodesWithinLessThan.lowerEntry(time).getValue();
+        return nodesWithinLessThan.lowerEntry(Sign.requirePositiveOrZero(time)).getValue();
 
         //// NavigableMap<Scalar,List<VirtualNode<Link>>> nodesWithinLessthan = new TreeMap<>();
         //// return nodesWithinLessthan(time);

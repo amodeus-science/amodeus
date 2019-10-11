@@ -16,7 +16,7 @@ import org.jfree.ui.RectangleEdge;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.alg.Transpose;
+import ch.ethz.idsc.tensor.Unprotect;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
 @Deprecated
@@ -41,21 +41,23 @@ public enum TimeChart {
     public static void of(File directory, String fileTitle, String diagramTitle, //
             boolean filter, int filterSize, double[] scale, //
             String[] labels, String xAxisLabel, String yAxisLabel, Tensor time, Tensor values, //
-            Double[] maxRange, ColorDataIndexed colorDataIndexed) throws Exception {
+            double[] maxRange, ColorDataIndexed colorDataIndexed) throws Exception {
 
         GlobalAssert.that(time.length() == values.length());
-        GlobalAssert.that(Transpose.of(values).length() == labels.length);
-        GlobalAssert.that(Transpose.of(values).length() == scale.length);
+
+        GlobalAssert.that(Unprotect.dimension1(values) == labels.length);
+        GlobalAssert.that(labels.length == scale.length);
 
         final TimeSeriesCollection dataset = new TimeSeriesCollection();
         Tensor valuesPlot = filter ? StaticHelper.filtered(values, filterSize) : values;
 
         double dataPoint;
-        for (int i = 0; i < Transpose.of(valuesPlot).length(); i++) {
+        int dimension1 = Unprotect.dimension1(valuesPlot);
+        for (int i = 0; i < dimension1; ++i) {
             final TimeSeries series = new TimeSeries(labels[i]);
             for (int j = 0; j < time.length(); ++j) {
                 Second daytime = StaticHelper.toTime(time.Get(j).number().doubleValue());
-                dataPoint = valuesPlot.get(j).Get(i).number().doubleValue() * scale[i];
+                dataPoint = valuesPlot.Get(j, i).number().doubleValue() * scale[i];
                 series.add(daytime, dataPoint);
             }
             dataset.addSeries(series);
@@ -88,6 +90,6 @@ public enum TimeChart {
         timechart.addLegend(legend);
 
         /** save plot as png */
-        StaticHelper.savePlot(directory, fileTitle, timechart, WIDTH, HEIGHT);
+        PlotSave.now(directory, fileTitle, timechart, WIDTH, HEIGHT);
     }
 }

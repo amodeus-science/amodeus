@@ -14,7 +14,6 @@ import ch.ethz.idsc.subare.plot.VisualSet;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.img.MeanFilter;
 
@@ -32,7 +31,7 @@ public enum BinnedWaitingTimesImage implements AnalysisExport {
 
         VisualSet visualSet = new VisualSet(colorDataIndexed);
         for (int i = 0; i < Quantiles.LBL.length; ++i) {
-            Tensor values = Transpose.of(tta.waitTimePlotValues).get(i).divide(scalingFactor);
+            Tensor values = tta.waitTimePlotValues.get(Tensor.ALL, i).divide(scalingFactor);
             values = StaticHelper.FILTER_ON ? MeanFilter.of(values, StaticHelper.FILTERSIZE) : values;
             VisualRow visualRow = visualSet.add(tta.time, values);
             visualRow.setLabel(Quantiles.LBL[i]);
@@ -42,13 +41,13 @@ public enum BinnedWaitingTimesImage implements AnalysisExport {
         visualSet.setAxesLabelX("Time");
         visualSet.setAxesLabelY("Waiting Times [min]");
 
-        JFreeChart chart = TimedChart.of(visualSet);
-        chart.getXYPlot().getRangeAxis().setRange(0., //
+        JFreeChart jFreeChart = TimedChart.of(visualSet);
+        jFreeChart.getXYPlot().getRangeAxis().setRange(0., //
                 tta.getWaitAggrgte().Get(2).divide(scalingFactor).number().doubleValue());
 
         try {
             File fileChart = new File(relativeDirectory, FILENAME + ".png");
-            ChartUtilities.saveChartAsPNG(fileChart, chart, WIDTH, HEIGHT);
+            ChartUtilities.saveChartAsPNG(fileChart, jFreeChart, WIDTH, HEIGHT);
             GlobalAssert.that(fileChart.isFile());
             System.out.println("Exported " + FILENAME + ".png");
         } catch (Exception e) {

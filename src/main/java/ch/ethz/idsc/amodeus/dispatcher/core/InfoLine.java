@@ -9,7 +9,7 @@ package ch.ethz.idsc.amodeus.dispatcher.core;
     private int infoLinePeriod = 0;
     private String previousInfoMarker = "";
 
-    InfoLine(int infoLinePeriod) {
+    public InfoLine(int infoLinePeriod) {
         this.infoLinePeriod = infoLinePeriod;
 
     }

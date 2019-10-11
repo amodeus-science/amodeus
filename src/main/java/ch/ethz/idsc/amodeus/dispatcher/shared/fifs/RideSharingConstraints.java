@@ -17,7 +17,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     private final double maxRemainingTimeIncrease;
     private final double newTravelerMinIncreaseAllowed;
 
-    RideSharingConstraints(double maxPickupTime, double maxDriveTimeIncrease, double maxRemainingTimeIncreas, double dropoffDuration, double newTravelerMinIncreaseAllowed) {
+    public RideSharingConstraints(double maxPickupTime, double maxDriveTimeIncrease, double maxRemainingTimeIncreas, double dropoffDuration, double newTravelerMinIncreaseAllowed) {
         this.maxPickupTime = maxPickupTime;
         this.maxDriveTimeIncrease = maxDriveTimeIncrease;
         this.maxRemainingTimeIncrease = maxRemainingTimeIncreas;
@@ -36,7 +36,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param newAvRequest
      * @param requestMaintainer
      * @return */
-    boolean driveTimeCurrentPassengersExceeded(Map<AVRequest, Double> driveTimes, AVRequest newAvRequest, RequestHandler requestMaintainer) {
+    public boolean driveTimeCurrentPassengersExceeded(Map<AVRequest, Double> driveTimes, AVRequest newAvRequest, RequestHandler requestMaintainer) {
         for (AVRequest avRequest : driveTimes.keySet()) {
             if (!avRequest.equals(newAvRequest)) {
                 if (driveTimes.get(avRequest) > maxDriveTimeIncrease * requestMaintainer.getDriveTimeDirectUnitCap(avRequest)) {
@@ -56,9 +56,10 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param sharedAvRoute
      * @param oldRoute
      * @param now
-     * @return true if the remaining time of one passenger in the new route was more than maxRemainingTimeIncrease larger than its current remaining time. Thus if
+     * @return true if the remaining time of one passenger in the new route was more than maxRemainingTimeIncrease larger than its current remaining time. Thus
+     *         if
      *         true this new route is not a valid possibility. returns false if the second constraint is satisfied for all requests. */
-    boolean remainingTimeCurrentPassengerExceeded(SharedAvRoute sharedAvRoute, SharedAvRoute oldRoute, double now) {
+    public boolean remainingTimeCurrentPassengerExceeded(SharedAvRoute sharedAvRoute, SharedAvRoute oldRoute, double now) {
         Map<AVRequest, Double> newrouteRemainingTimes = getRemainingTimes(sharedAvRoute, now);
         Map<AVRequest, Double> oldrouteRemainingTimes = getRemainingTimes(oldRoute, now);
         for (Entry<AVRequest, Double> entry : oldrouteRemainingTimes.entrySet()) {
@@ -75,7 +76,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param newDriveTime
      * @param unitCapacityDriveTime
      * @return */
-    boolean driveTimeNewPassengerExceeded(double newDriveTime, double unitCapacityDriveTime) {
+    public boolean driveTimeNewPassengerExceeded(double newDriveTime, double unitCapacityDriveTime) {
         double maxDriveTimeNewRequest = Math.max(maxDriveTimeIncrease * unitCapacityDriveTime, unitCapacityDriveTime + newTravelerMinIncreaseAllowed);
         return newDriveTime > maxDriveTimeNewRequest;
     }
@@ -86,7 +87,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param sharedAvRoute
      * @param now
      * @return */
-    boolean waitTimesExceeded(SharedAvRoute sharedAvRoute, double now) {
+    public boolean waitTimesExceeded(SharedAvRoute sharedAvRoute, double now) {
         for (SharedRoutePoint sharedRoutePoint : sharedAvRoute.getRoute()) {
             if (sharedRoutePoint.getMealType().equals(SharedMealType.PICKUP)) {
                 // TODO Check this constraint could be that from submission to this time
@@ -107,7 +108,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param oldRoute
      * @param unitCapacityDriveTime
      * @return */
-    boolean combinedConstraintAcceptable(SharedAvRoute sharedAvRoute, SharedAvRoute oldRoute, Double unitCapacityDriveTime) {
+    public boolean combinedConstraintAcceptable(SharedAvRoute sharedAvRoute, SharedAvRoute oldRoute, Double unitCapacityDriveTime) {
         return sharedAvRoute.getEndTime() <= oldRoute.getEndTime() + unitCapacityDriveTime + dropoffDuration;
     }
 

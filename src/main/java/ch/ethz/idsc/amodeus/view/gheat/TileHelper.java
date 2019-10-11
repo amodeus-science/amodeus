@@ -32,13 +32,13 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import ch.ethz.idsc.amodeus.view.gheat.gui.BlendComposite;
-import ch.ethz.idsc.amodeus.view.gheat.gui.ColorScheme;
+import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
 /** class was originally named "Tile" */
 /* package */ enum TileHelper {
     ;
 
-    public static BufferedImage generate(ColorScheme colorScheme, DotImage dot, //
+    public static BufferedImage generate(ColorDataIndexed colorDataIndexed, DotImage dot, //
             int zoom, int tileX, int tileY, DataPoint[] points) throws Exception {
         int expandedWidth;
         int expandedHeight;
@@ -61,18 +61,18 @@ import ch.ethz.idsc.amodeus.view.gheat.gui.ColorScheme;
         expandedHeight = y2 - y1;
         BufferedImage tile;
         if (points.length == 0) {
-            tile = getEmptyTile(colorScheme);
+            tile = getEmptyTile(colorDataIndexed);
         } else {
             tile = getBlankImage(expandedHeight, expandedWidth);
             tile = addPoints(tile, dot, points);
             tile = trim(tile, dot.bufferedImage);
-            tile = colorize(tile, colorScheme);
+            tile = colorize(tile, colorDataIndexed);
         }
         return tile;
     }
 
     /// Takes the gray scale and applies the color scheme to it.
-    private static BufferedImage colorize(BufferedImage tile, ColorScheme colorScheme) {
+    private static BufferedImage colorize(BufferedImage tile, ColorDataIndexed colorDataIndexed) {
         Color tilePixelColor;
         // Color colorSchemePixel;
         for (int x = 0; x < tile.getWidth(); x++) {
@@ -84,7 +84,7 @@ import ch.ethz.idsc.amodeus.view.gheat.gui.ColorScheme;
                 int index = tilePixelColor.getRed();
                 // colorSchemePixel = new Color();
                 // zoomOpacity = (int) ((((double) zoomOpacity / 255.0f) * ((double) colorSchemePixel.getAlpha() / 255.0f)) * 255f);
-                Color color = colorScheme.get(index);
+                Color color = colorDataIndexed.getColor(index);
                 tile.setRGB(x, y, color.getRGB());
             }
         }
@@ -134,16 +134,16 @@ import ch.ethz.idsc.amodeus.view.gheat.gui.ColorScheme;
     }
 
     /* Empty tile with no points on it. */
-    private static BufferedImage getEmptyTile(ColorScheme colorScheme) {
+    private static BufferedImage getEmptyTile(ColorDataIndexed colorDataIndexed) {
         // If we have already created the empty tile then return it
-        if (Cache.hasEmptyTile(colorScheme))
-            return Cache.getEmptyTile(colorScheme);
+        if (Cache.hasEmptyTile(colorDataIndexed))
+            return Cache.getEmptyTile(colorDataIndexed);
         // System.out.println("create empty tile: " + colorScheme);
         // Create a blank tile that is 32 bit and has an alpha
         BufferedImage tile = new BufferedImage(HeatMap.SIZE, HeatMap.SIZE, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphic = tile.createGraphics();
         // Get the first pixel of the color scheme, on the dark side
-        graphic.setColor(colorScheme.get(255));
+        graphic.setColor(colorDataIndexed.getColor(255));
         graphic.fillRect(0, 0, HeatMap.SIZE, HeatMap.SIZE);
         // graphic.setColor(Color.BLACK);
         // graphic.drawString("[empty]", 10, 10);
@@ -151,8 +151,8 @@ import ch.ethz.idsc.amodeus.view.gheat.gui.ColorScheme;
         // Save the newly created empty tile
         // There is a empty tile for each scheme and zoom level
         // Double check it does not already exists
-        if (!Cache.hasEmptyTile(colorScheme))
-            Cache.putEmptyTile(colorScheme, tile);
+        if (!Cache.hasEmptyTile(colorDataIndexed))
+            Cache.putEmptyTile(colorDataIndexed, tile);
         return tile;
     }
 }

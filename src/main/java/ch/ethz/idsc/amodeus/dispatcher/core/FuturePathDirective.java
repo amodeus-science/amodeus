@@ -5,7 +5,7 @@ import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 
 /** class maintains a {@link FuturePathContainer} while the path is being
  * computer. the resulting path is available upon the function call execute(...) */
-/* package */ abstract class FuturePathDirective implements AbstractDirective {
+/* package */ abstract class FuturePathDirective implements DirectiveInterface {
     protected final FuturePathContainer futurePathContainer;
 
     FuturePathDirective(FuturePathContainer futurePathContainer) {

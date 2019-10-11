@@ -1,6 +1,10 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.prep;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
@@ -8,12 +12,27 @@ import org.matsim.api.core.v01.population.Population;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
+import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkIO;
 
 public enum VirtualNetworkCreators implements VirtualNetworkCreator {
     NONE {
         @Override
         public VirtualNetwork<Link> create(Network network, Population population, ScenarioOptions scenarioOptions, int numRt, int endTime) {
             return TrivialMatsimVirtualNetwork.createVirtualNetwork(network);
+        }
+    },
+    FROMFILE {
+        @Override
+        public VirtualNetwork<Link> create(Network network, Population population, ScenarioOptions scenarioOptions, int numRt, int endTime) {
+            File absFileName = new File(scenarioOptions.getWorkingDirectory(), "/" + scenarioOptions.getString("vnFile"));
+            Map<String, Link> map = new HashMap<>();
+            network.getLinks().entrySet().forEach(e -> map.put(e.getKey().toString(), e.getValue()));
+            try {
+                return VirtualNetworkIO.fromByte(map, absFileName);
+            } catch (Exception exception) {
+                exception.printStackTrace();
+                return TrivialMatsimVirtualNetwork.createVirtualNetwork(network);
+            }
         }
     },
     SHAPEFILENETWORK {
@@ -29,6 +48,12 @@ public enum VirtualNetworkCreators implements VirtualNetworkCreator {
             GlobalAssert.that(scenarioOptions != null);
             return MatsimKMeansVirtualNetworkCreator.createVirtualNetwork( //
                     population, network, scenarioOptions.getNumVirtualNodes(), scenarioOptions.isCompleteGraph());
+        }
+    },
+    RINGCENTROID {
+        @Override
+        public VirtualNetwork<Link> create(Network network, Population population, ScenarioOptions scenarioOptions, int numRoboTaxis, int endTime) {
+            return MatsimRingCentroidVirtualNetworkCreator.createVirtualNetwork(population, network, 20, scenarioOptions.isCompleteGraph());
         }
     },
     RECTANGULAR {

@@ -10,9 +10,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.MultiPolygon;
 
 import ch.ethz.idsc.amodeus.virtualnetwork.core.AbstractVirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;

@@ -15,7 +15,7 @@ import java.util.function.Function;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
-public class VirtualNetworkImpl<T> implements VirtualNetwork<T>, Serializable {
+/* package */ class VirtualNetworkImpl<T> implements VirtualNetwork<T>, Serializable {
 
     private final long virtualNetworkID; // to ensure that other objects dependent on virtualNetwork are derived of that particular network
     private final Map<Integer, VirtualNode<T>> virtualNodes = new LinkedHashMap<>();
@@ -70,6 +70,10 @@ public class VirtualNetworkImpl<T> implements VirtualNetwork<T>, Serializable {
     }
 
     /* package */ VirtualNode<T> addVirtualNode(VirtualNode<T> virtualNode) {
+        if (virtualNodes.size() != virtualNode.getIndex()) {
+            System.out.println(virtualNodes.size());
+            System.out.println(virtualNode.getIndex());
+        }
         GlobalAssert.that(virtualNodes.size() == virtualNode.getIndex()); // <- NEVER remove this check
         virtualNodes.put(virtualNode.getIndex(), virtualNode);
         for (T t : virtualNode.getLinks())

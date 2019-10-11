@@ -17,16 +17,17 @@ import org.junit.Test;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
-import ch.ethz.idsc.amodeus.analysis.ScenarioParametersExport;
+import ch.ethz.idsc.amodeus.analysis.AnalysisConstants;
 import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.testutils.SharedTestServer;
 import ch.ethz.idsc.amodeus.testutils.TestPreparer;
-import ch.ethz.idsc.amodeus.util.io.LocateUtils;
+import ch.ethz.idsc.amodeus.util.io.Locate;
+import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.util.math.SI;
-import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkGet;
+import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
@@ -35,6 +36,7 @@ import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.red.Mean;
 import ch.ethz.idsc.tensor.red.Total;
+import ch.ethz.idsc.tensor.sca.Round;
 
 public class SharedRoboTaxiTest {
 
@@ -47,8 +49,8 @@ public class SharedRoboTaxiTest {
         System.out.println(GLPK.glp_version());
 
         // copy scenario data into main directory
-        File scenarioDirectory = new File(LocateUtils.getSuperFolder("amodeus"), "resources/testScenario");
-        File workingDirectory = LocateUtils.getWorkingDirectory();
+        File scenarioDirectory = new File(Locate.repoFolder(SharedRoboTaxiTest.class, "amodeus"), "resources/testScenario");
+        File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         GlobalAssert.that(workingDirectory.isDirectory());
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
 
@@ -61,7 +63,7 @@ public class SharedRoboTaxiTest {
         // prepare travel data test
         // TODO the call VirtualNetworkGet.readDefault below should not be necessary
         // ... or why is it necessary?
-        VirtualNetworkGet.readDefault(testPreparer.getPreparedNetwork(), new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault()));
+        // VirtualNetworkGet.readDefault(testPreparer.getPreparedNetwork(), new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault()));
         Map<String, Link> map = new HashMap<>();
         testPreparer.getPreparedNetwork().getLinks().entrySet().forEach(e -> map.put(e.getKey().toString(), e.getValue()));
     }
@@ -92,15 +94,14 @@ public class SharedRoboTaxiTest {
     public void testServer() throws Exception {
         System.out.print("GLPK version is: ");
         System.out.println(GLPK.glp_version());
-
         System.out.print("Server Test:\t");
 
         /** scenario options */
-        File workingDirectory = LocateUtils.getWorkingDirectory();
+        File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
-        assertEquals("config.xml", scenarioOptions.getSimulationConfigName());
-        assertEquals("preparedNetwork", scenarioOptions.getPreparedNetworkName());
-        assertEquals("preparedPopulation", scenarioOptions.getPreparedPopulationName());
+        assertEquals(workingDirectory.getAbsolutePath() + "/config.xml", scenarioOptions.getSimulationConfigName());
+        assertEquals(workingDirectory.getAbsolutePath() + "/preparedNetwork", scenarioOptions.getPreparedNetworkName());
+        assertEquals(workingDirectory.getAbsolutePath() + "/preparedPopulation", scenarioOptions.getPreparedPopulationName());
 
         /** simulation objects should exist after simulation (simulation data) */
         File simobj = new File("output/001/simobj/it.00");
@@ -133,42 +134,28 @@ public class SharedRoboTaxiTest {
         Scalar distanceRatio = Mean.of(ate.getDistancElement().ratios).Get(1);
 
         ScalarAssert scalarAssert = new ScalarAssert();
-        scalarAssert.add(RealScalar.of(0.2048), RealScalar.of(occupancyRatio.number()));
-        scalarAssert.add(RealScalar.of(0.3223596160244375), distanceRatio);
-
-        // TODO Shared Clean Up
-        // assertEquals(0.2048194444444444, occupancyRatio.number().doubleValue(), 0.0);
-        // assertEquals(0.3188073794232303, distanceRatio.number().doubleValue(), 0.0);
+        scalarAssert.add(RationalScalar.of(16597, 80000), occupancyRatio);
+        scalarAssert.add((Scalar) RealScalar.of(0.323966658).map(Round._9), (Scalar) distanceRatio.map(Round._9));
 
         /** fleet distances */
-        assertTrue(ate.getDistancElement().totalDistance >= 0.0);
-        // assertEquals(262121.29277006662, ate.getDistancElement().totalDistance, 0.0);
-        scalarAssert.add(RealScalar.of(259599.98379885187), RealScalar.of(ate.getDistancElement().totalDistance));
-
-        assertTrue(ate.getDistancElement().totalDistanceWtCst >= 0.0);
-        // assertEquals(83251.71235895174, ate.getDistancElement().totalDistanceWtCst, 0.0);
-        scalarAssert.add(RealScalar.of(83246.42252739928), RealScalar.of(ate.getDistancElement().totalDistanceWtCst));
-
-        assertTrue(ate.getDistancElement().totalDistancePicku > 0.0);
-        // assertEquals(10440.749239659945, ate.getDistancElement().totalDistancePicku, 0.0);
-        scalarAssert.add(RealScalar.of(10328.03604749948), RealScalar.of(ate.getDistancElement().totalDistancePicku));
-
-        assertTrue(ate.getDistancElement().totalDistanceRebal >= 0.0);
-        // assertEquals(168428.8311714545, ate.getDistancElement().totalDistanceRebal, 0.0);
-        scalarAssert.add(RealScalar.of(166025.52522395225), RealScalar.of(ate.getDistancElement().totalDistanceRebal));
-
-        assertTrue(ate.getDistancElement().totalDistanceRatio >= 0.0);
-        // assertEquals(0.31760759104747865, ate.getDistancElement().totalDistanceRatio, 0.0);
-        scalarAssert.add(RealScalar.of(0.32067190956337593), RealScalar.of(ate.getDistancElement().totalDistanceRatio));
-
+        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistance));
+        scalarAssert.add((Scalar) RealScalar.of(339062.65383).map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
+        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistanceWtCst));
+        scalarAssert.add((Scalar) RealScalar.of(109712.05545).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
+        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistancePicku));
+        scalarAssert.add((Scalar) RealScalar.of(13408.35267).map(Round._5), (Scalar) ate.getDistancElement().totalDistancePicku.map(Round._5));
+        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistanceRebal));
+        scalarAssert.add((Scalar) RealScalar.of(215942.24571).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRebal.map(Round._5));
+        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistanceRatio));
+        scalarAssert.add((Scalar) RealScalar.of(0.32357).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRatio.map(Round._5));
         scalarAssert.consolidate();
 
         ate.getDistancElement().totalDistancesPerVehicle.flatten(-1).forEach(s -> //
         assertTrue(Scalars.lessEquals(RealScalar.ZERO, (Scalar) s)));
-        assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).number().doubleValue() //
-        == ate.getDistancElement().totalDistance);
-        assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).number().doubleValue() //
-        == ate.getDistancElement().totalDistance);
+        assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).equals( //
+                ate.getDistancElement().totalDistance));
+        assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).equals( //
+                ate.getDistancElement().totalDistance));
 
         /** waiting Times */
         assertTrue(Scalars.lessEquals(Quantity.of(0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(2)));
@@ -190,7 +177,7 @@ public class SharedRoboTaxiTest {
         assertTrue(new File(data, "occAndDistRatios.png").exists());
         assertTrue(new File(data, "stackedDistance.png").exists());
         assertTrue(new File(data, "statusDistribution.png").exists());
-        assertTrue(new File(data, ScenarioParametersExport.FILENAME).exists());
+        assertTrue(new File(data, AnalysisConstants.ParametersExportFilename).exists());
         assertTrue(new File(data, "WaitingTimes").isDirectory());
         assertTrue(new File(data, "WaitingTimes/WaitingTimes.mathematica").exists());
         assertTrue(new File(data, "StatusDistribution").isDirectory());

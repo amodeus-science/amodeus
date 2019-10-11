@@ -13,14 +13,14 @@ import org.matsim.core.config.ConfigGroup;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.NetworkConfigGroup;
 import org.matsim.core.network.NetworkUtils;
-import org.matsim.core.network.io.NetworkReaderMatsimV2;
+import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.core.scenario.ScenarioUtils;
 
 public enum NetworkLoader {
     ;
     public static Network fromNetworkFile(File networkFile) {
         Network network = NetworkUtils.createNetwork();
-        new NetworkReaderMatsimV2(network).readFile(networkFile.getAbsolutePath());
+        new MatsimNetworkReader(network).readFile(networkFile.getAbsolutePath());
         return network;
     }
 
@@ -32,11 +32,8 @@ public enum NetworkLoader {
                 toDelete.add(entry);
             }
         }
-
         toDelete.stream().forEach(e -> config.removeModule(e.getKey()));
-
         Scenario scenario = ScenarioUtils.loadScenario(config);
         return scenario.getNetwork();
     }
-
 }

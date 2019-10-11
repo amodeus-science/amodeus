@@ -15,8 +15,7 @@ import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
-
-import com.vividsolutions.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.MultiPolygon;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
@@ -66,7 +65,6 @@ public class MultiPolygons {
         String title = file.getName();
         int index = title.lastIndexOf('.');
         return index > 0 //
-                ? title.substring(index + 1)
-                : "";
+                ? title.substring(index + 1) : "";
     }
 }

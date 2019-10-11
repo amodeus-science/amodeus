@@ -8,8 +8,8 @@ import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.report.HtmlBodyElement;
 import ch.ethz.idsc.amodeus.analysis.report.HtmlReportElement;
 
-// TODO This class is not needed at the moment
-public enum SharedAnalysisHtml implements HtmlReportElement {
+// TODO CLRUCH This class is not needed at the moment
+/* package */ enum SharedAnalysisHtml implements HtmlReportElement {
     INSTANCE;
 
     private static final String IMAGE_FOLDER = "../data"; // relative to report folder

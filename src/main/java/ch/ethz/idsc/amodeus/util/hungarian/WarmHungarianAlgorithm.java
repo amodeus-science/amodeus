@@ -4,7 +4,7 @@ package ch.ethz.idsc.amodeus.util.hungarian;
 import java.util.List;
 
 import org.matsim.api.core.v01.Id;
-import org.matsim.contrib.dvrp.data.Vehicle;
+import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 
 import ch.ethz.matsim.av.passenger.AVRequest;
 
@@ -29,7 +29,7 @@ public class WarmHungarianAlgorithm {
         warmstart = false;
     }
 
-    public WarmHungarianAlgorithm(double[][] costMatrix, double eps, List<Id<Vehicle>> taxis, List<AVRequest> requests) {
+    public WarmHungarianAlgorithm(double[][] costMatrix, double eps, List<Id<DvrpVehicle>> taxis, List<AVRequest> requests) {
         w = new Warmstarter(costMatrix, taxis, requests);
         warmstart = true;
         if (w.hasResult) {

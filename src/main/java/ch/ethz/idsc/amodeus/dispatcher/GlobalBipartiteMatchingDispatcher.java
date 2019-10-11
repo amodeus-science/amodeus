@@ -10,9 +10,12 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
-import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
-import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatchingUtils;
+import ch.ethz.idsc.amodeus.dispatcher.core.RebalancingDispatcher;
+import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatcher;
+import ch.ethz.idsc.amodeus.dispatcher.util.ConfigurableBipartiteMatcher;
+import ch.ethz.idsc.amodeus.dispatcher.util.DistanceCost;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
+import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 import ch.ethz.idsc.tensor.Tensor;
@@ -24,16 +27,20 @@ import ch.ethz.matsim.av.router.AVRouter;
 
 /** Dispatcher repeatedly solves a bipartite matching problem to match available vehicles and open requests.
  * The problem can either be solved using networkdistance or Euclidean distance. Currently network
- * distance is enabled. */
-public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
+ * distance is enabled.
+ * 
+ * This dispatcher is not a dispatcher with rebalancing functionality, it could also be derived from
+ * the UniversalDispatcher, but in order to allow extended versions to use the setRoboTaxiRebalance
+ * functionality, it was extended from the abstract RebalancingDispatcher. */
+public class GlobalBipartiteMatchingDispatcher extends RebalancingDispatcher {
 
     private final int dispatchPeriod;
     private Tensor printVals = Tensors.empty();
     private final DistanceFunction distanceFunction;
     private final Network network;
-    private final BipartiteMatchingUtils bipartiteMatchingUtils;
+    private final BipartiteMatcher bipartiteMatcher;
 
-    private GlobalBipartiteMatchingDispatcher(Network network, Config config, //
+    protected GlobalBipartiteMatchingDispatcher(Network network, Config config, //
             AVDispatcherConfig avDispatcherConfig, TravelTime travelTime, //
             AVRouter router, EventsManager eventsManager, //
             MatsimAmodeusDatabase db) {
@@ -42,17 +49,20 @@ public class GlobalBipartiteMatchingDispatcher extends UniversalDispatcher {
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(30);
         DistanceHeuristics distanceHeuristics = //
                 dispatcherConfig.getDistanceHeuristics(DistanceHeuristics.EUCLIDEAN);
-        bipartiteMatchingUtils = new BipartiteMatchingUtils(network);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         distanceFunction = distanceHeuristics.getDistanceFunction(network);
         this.network = network;
+        /** matching algorithm - standard is a solution to the assignment problem with the Hungarian method */
+        SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
+        bipartiteMatcher = new ConfigurableBipartiteMatcher(network, new DistanceCost(distanceFunction), //
+                safeConfig);
     }
 
     @Override
     public void redispatch(double now) {
         final long round_now = Math.round(now);
         if (round_now % dispatchPeriod == 0) {
-            printVals = bipartiteMatchingUtils.executePickup(this, getDivertableRoboTaxis(), //
+            printVals = bipartiteMatcher.executePickup(this, getDivertableRoboTaxis(), //
                     getAVRequests(), distanceFunction, network);
         }
     }

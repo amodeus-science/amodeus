@@ -31,6 +31,7 @@ import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.contrib.dvrp.router.DvrpRoutingNetworkProvider;
 import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
+import org.matsim.contrib.dvrp.run.DvrpModule;
 import org.matsim.contrib.dvrp.trafficmonitoring.DvrpTravelTimeModule;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
@@ -62,7 +63,8 @@ import ch.ethz.idsc.amodeus.prep.MatsimKMeansVirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.test.TestFileHandling;
 import ch.ethz.idsc.amodeus.traveldata.StaticTravelDataCreator;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
-import ch.ethz.idsc.amodeus.util.io.LocateUtils;
+import ch.ethz.idsc.amodeus.util.io.Locate;
+import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.matsim.av.config.AVConfig;
@@ -71,6 +73,7 @@ import ch.ethz.matsim.av.config.AVGeneratorConfig;
 import ch.ethz.matsim.av.config.AVOperatorConfig;
 import ch.ethz.matsim.av.framework.AVConfigGroup;
 import ch.ethz.matsim.av.framework.AVModule;
+import ch.ethz.matsim.av.framework.AVQSimModule;
 import ch.ethz.matsim.av.scenario.TestScenarioAnalyzer;
 import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
 
@@ -82,9 +85,21 @@ public class StandardMATSimScenarioTest {
         // working properly
 
         // ATTENTION: DriveByDispatcher is not tested, because of long runtime.
-        return Arrays.asList(new Object[][] { { "SingleHeuristic" }, { "DemandSupplyBalancingDispatcher" }, { "GlobalBipartiteMatchingDispatcher" },
-                // { "AdaptiveRealTimeRebalancingPolicy" }, // TODO TEST @Sebastian, is the input data correct? LP fails sometimes, (depening on order)
-                { "FeedforwardFluidicRebalancingPolicy" }, { "DynamicRideSharingStrategy" }, { "FirstComeFirstServedStrategy" }, { "ExtDemandSupplyBeamSharing" } });
+        return Arrays.asList(new Object[][] { //
+                { "SingleHeuristic" }, //
+                { "DemandSupplyBalancingDispatcher" }, //
+                { "GlobalBipartiteMatchingDispatcher" }, //
+                { "FeedforwardFluidicRebalancingPolicy" }, //
+                { "AdaptiveRealTimeRebalancingPolicy" }, //
+                { "ExtDemandSupplyBeamSharing" }, //
+                { "TShareDispatcher" } //
+        });
+
+        // TODO add these and all other missing strategies again:
+        // { "FirstComeFirstServedStrategy" }
+        // { "DynamicRideSharingStrategy" }
+        // { "HighCapacityDispatcher" }
+
     }
 
     final private String dispatcher;
@@ -160,8 +175,8 @@ public class StandardMATSimScenarioTest {
     @BeforeClass
     public static void setUp() throws IOException {
         // copy scenario data into main directory
-        File scenarioDirectory = new File(LocateUtils.getSuperFolder("amodeus"), "resources/testScenario");
-        File workingDirectory = LocateUtils.getWorkingDirectory();
+        File scenarioDirectory = new File(Locate.repoFolder(StandardMATSimScenarioTest.class, "amodeus"), "resources/testScenario");
+        File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         GlobalAssert.that(workingDirectory.isDirectory());
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
     }
@@ -177,7 +192,7 @@ public class StandardMATSimScenarioTest {
         Config config = ConfigUtils.createConfig(new AVConfigGroup(), new DvrpConfigGroup());
         Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
 
-        File workingDirectory = LocateUtils.getWorkingDirectory();
+        File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         ScenarioOptions simOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
         LocationSpec locationSpec = simOptions.getLocationSpec();
         ReferenceFrame referenceFrame = locationSpec.referenceFrame();
@@ -189,8 +204,9 @@ public class StandardMATSimScenarioTest {
         modeParams.setConstant(0.0);
 
         Controler controler = new Controler(scenario);
+        controler.addOverridingModule(new DvrpModule());
         controler.addOverridingModule(new DvrpTravelTimeModule());
-        controler.addOverridingModule(new AVModule());
+        controler.addOverridingModule(new AVModule(false));
         controler.addOverridingModule(new AmodeusModule());
         controler.addOverridingModule(new AmodeusDispatcherModule());
         controler.addOverridingModule(new AmodeusVehicleGeneratorModule());
@@ -211,12 +227,9 @@ public class StandardMATSimScenarioTest {
                  * - For backward compatibility AmodeusModule provides a FULL network, see there.
                  * - However, here we want a "clean" test case where only a sub-network is used,
                  * i.e. in this case all links with the "car" mode. */
-
                 TransportModeNetworkFilter filter = new TransportModeNetworkFilter(fullNetwork);
-
                 Network filtered = NetworkUtils.createNetwork();
                 filter.filter(filtered, Collections.singleton(TransportMode.car));
-
                 return filtered;
             }
         });
@@ -299,14 +312,16 @@ public class StandardMATSimScenarioTest {
             }
         });
 
+        controler.configureQSimComponents(AVQSimModule::configureComponents);
         controler.run();
+
         if (analyzer.numberOfDepartures != analyzer.numberOfArrivals) {
             System.out.println("numberOfDepartures=" + analyzer.numberOfDepartures);
             System.out.println("numberOfArrivals  =" + analyzer.numberOfArrivals);
 
             new RuntimeException("").printStackTrace();
         }
-        // FIXME JPH
+        // FIXME (jan does not have a clue what is the problem here)
         // Assert.assertEquals(analyzer.numberOfDepartures, analyzer.numberOfArrivals);
     }
 

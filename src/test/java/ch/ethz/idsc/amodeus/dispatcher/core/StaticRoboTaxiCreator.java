@@ -9,12 +9,13 @@ import java.util.Set;
 
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
-import org.matsim.contrib.dvrp.data.Vehicle;
+import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.passenger.AVRequest;
@@ -89,7 +90,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
     private static RoboTaxi createRoboTaxi(Link divertableLink, Link vehicleLink) {
         LinkTimePair divertableLinkTime = new LinkTimePair(divertableLink, 0.0);
-        Id<Vehicle> idAv2 = Id.create(STAYINGVEHICLEID, Vehicle.class);
+        Id<DvrpVehicle> idAv2 = Id.create(STAYINGVEHICLEID, DvrpVehicle.class);
         AVVehicle vehicle = new AVVehicle(idAv2, vehicleLink, seats, 0.0, Double.POSITIVE_INFINITY);
         return new RoboTaxi(vehicle, divertableLinkTime, divertableLinkTime.link, RoboTaxiUsageType.SHARED);
     }
@@ -133,8 +134,8 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
     /* package */ static void cleanRTMenu(RoboTaxi roboTaxi) {
         Link originalDivertableLocLink = roboTaxi.getDivertableLocation();
-        while (RoboTaxiUtils.hasNextCourse(roboTaxi)) {
-            SharedCourse sharedCourse = RoboTaxiUtils.getStarterCourse(roboTaxi).get();
+        while (SharedCourseAccess.hasStarter(roboTaxi)) {
+            SharedCourse sharedCourse = SharedCourseAccess.getStarter(roboTaxi).get();
             switch (sharedCourse.getMealType()) {
             case PICKUP:
                 roboTaxi.setDivertableLinkTime(new LinkTimePair(sharedCourse.getLink(), 0.0));

@@ -17,8 +17,8 @@ import ch.ethz.idsc.amodeus.dispatcher.util.TreeMultipleItems;
 import ch.ethz.idsc.amodeus.routing.NetworkTimeDistInterface;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-/** A {@link RequestHandler} takes care of all the requests in the scenario. It allows to quickly access the desired subgoups such as unassigned Requests or
- * allows to find the earliest requests computationally efficient. */
+/** A {@link RequestHandler} takes care of all the requests in the scenario. It allows to quickly access the
+ * desired subgroups such as unassigned Requests or allows to find the earliest requests computationally efficient. */
 /* package */ class RequestHandler {
     /** Structure for the Track of Wait times and so on */
     private final Map<AVRequest, RequestWrap> requests = new HashMap<>();
@@ -38,73 +38,73 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     private final double maxWaitTime;
     private final double waitListTime;
 
-    RequestHandler(double maxWaitTime, double waitListTime) {
+    public RequestHandler(double maxWaitTime, double waitListTime) {
         this.maxWaitTime = maxWaitTime;
         this.waitListTime = waitListTime;
         this.extremWaitListTime = Optional.empty();
     }
 
-    RequestHandler(double maxWaitTime, double waitListTime, Double extremWaitListTime) {
+    public RequestHandler(double maxWaitTime, double waitListTime, Double extremWaitListTime) {
         this.extremWaitListTime = Optional.of(extremWaitListTime);
         this.maxWaitTime = maxWaitTime;
         this.waitListTime = waitListTime;
     }
 
-    void addUnassignedRequests(Collection<AVRequest> unassignedAVRequests, NetworkTimeDistInterface timeDb) {
+    public void addUnassignedRequests(Collection<AVRequest> unassignedAVRequests, NetworkTimeDistInterface timeDb, Double now) {
         unassignedAVRequests.stream().forEach(r -> {
             unassignedRequests.add(r);
             requestsLastHour.add(r);
-            driveTimesSingle.put(r, timeDb.travelTime(r.getFromLink(), r.getToLink()).number().doubleValue());
+            driveTimesSingle.put(r, timeDb.travelTime(r.getFromLink(), r.getToLink(), now).number().doubleValue());
         });
 
         unassignedAVRequests.stream().filter(avr -> !requests.containsKey(avr)).forEach(avr -> requests.put(avr, new RequestWrap(avr)));
-        unassignedAVRequests.forEach(avr -> requests.get(avr).setUnitCapDriveTime(timeDb.travelTime(avr.getFromLink(), avr.getToLink()).number().doubleValue()));
+        unassignedAVRequests.forEach(avr -> requests.get(avr).setUnitCapDriveTime(timeDb.travelTime(avr.getFromLink(), avr.getToLink(), now).number().doubleValue()));
     }
 
-    void updatePickupTimes(Collection<AVRequest> avRequests, double now) {
+    public void updatePickupTimes(Collection<AVRequest> avRequests, double now) {
         lastStepPending.stream().filter(r -> !avRequests.contains(r)).forEach(r -> requests.get(r).setPickupTime(now));
         lastStepPending.stream().filter(r -> !avRequests.contains(r)).forEach(r -> pickupTimes.put(r, now));
         lastStepPending.clear();
         lastStepPending.addAll(avRequests);
     }
 
-    void updateLastHourRequests(double now, double binsizetraveldemand) {
+    public void updateLastHourRequests(double now, double binsizetraveldemand) {
         requestsLastHour.removeAllElementsWithValueSmaller(now - binsizetraveldemand);
     }
 
-    Set<Link> getRequestLinksLastHour() {
+    public Set<Link> getRequestLinksLastHour() {
         return requestsLastHour.getValues().stream().map(avr -> avr.getFromLink()).collect(Collectors.toSet());
     }
 
-    void removeFromUnasignedRequests(AVRequest avRequest) {
+    public void removeFromUnasignedRequests(AVRequest avRequest) {
         unassignedRequests.remove(avRequest);
     }
 
-    List<AVRequest> getInOrderOffSubmissionTime() {
+    public List<AVRequest> getInOrderOffSubmissionTime() {
         return unassignedRequests.getTsInOrderOfValue();
     }
 
-    boolean isOnWaitList(AVRequest avRequest) {
+    public boolean isOnWaitList(AVRequest avRequest) {
         return requests.get(avRequest).isOnWaitList();
     }
 
-    void addToWaitList(AVRequest avRequest) {
+    public void addToWaitList(AVRequest avRequest) {
         requests.get(avRequest).putToWaitList();
     }
 
-    boolean isOnExtreemWaitList(AVRequest avRequest) {
+    public boolean isOnExtreemWaitList(AVRequest avRequest) {
         return requests.get(avRequest).isOnExtreemWaitList();
     }
 
-    void addToExtreemWaitList(AVRequest avRequest) {
+    public void addToExtreemWaitList(AVRequest avRequest) {
         requests.get(avRequest).putToExtreemWaitList();
     }
 
-    double getDriveTimeDirectUnitCap(AVRequest avRequest) {
+    public double getDriveTimeDirectUnitCap(AVRequest avRequest) {
         return driveTimesSingle.get(avRequest);
     }
 
-    Map<AVRequest, Double> getDriveTimes(SharedAvRoute route) {
+    public Map<AVRequest, Double> getDriveTimes(SharedAvRoute route) {
         // Preparation
         Map<AVRequest, Double> thisPickupTimes = new HashMap<>();
         route.getRoute().stream() //
@@ -124,15 +124,15 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         return driveTimes;
     }
 
-    double getPickupTime(AVRequest avRequest) {
+    public double getPickupTime(AVRequest avRequest) {
         return requests.get(avRequest).getPickupTime();
     }
 
-    RequestWrap getRequestWrap(AVRequest avRequest) {
+    public RequestWrap getRequestWrap(AVRequest avRequest) {
         return requests.get(avRequest);
     }
 
-    double calculateWaitTime(AVRequest avRequest) {
+    public double calculateWaitTime(AVRequest avRequest) {
         if (!extremWaitListTime.isPresent())
             return calculateInternal(avRequest);
         return (isOnExtreemWaitList(avRequest)) ? extremWaitListTime.get() : calculateInternal(avRequest);
@@ -142,7 +142,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         return (isOnWaitList(avRequest)) ? maxWaitTime : waitListTime;
     }
 
-    Set<AVRequest> getCopyOfUnassignedAVRequests() {
+    public Set<AVRequest> getCopyOfUnassignedAVRequests() {
         return unassignedRequests.getValues();
     }
 

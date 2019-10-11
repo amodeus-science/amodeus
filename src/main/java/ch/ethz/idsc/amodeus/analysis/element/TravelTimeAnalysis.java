@@ -19,7 +19,6 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Join;
-import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.io.TableBuilder;
 import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.red.Max;
@@ -110,17 +109,17 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
 
     /** @return {@link Tensor} containing all recorded wait times of the simulation */
     public Tensor getWaitTimes() {
-        return Transpose.of(travelTimes.toTable()).get(1);
+        return travelTimes.getTable().get(Tensor.ALL, 1);
     }
 
     /** @return {@link Tensor} containing all recorded drive times of the simulation */
     public Tensor getDriveTimes() {
-        return Transpose.of(travelTimes.toTable()).get(2);
+        return travelTimes.getTable().get(Tensor.ALL, 2);
     }
 
     /** @return {@link Tensor} containing all recorded total journey times of the simulation */
     public Tensor getTotalJourneyTimes() {
-        return Transpose.of(travelTimes.toTable()).get(3);
+        return travelTimes.getTable().get(Tensor.ALL, 3);
     }
 
     /** @return {@link Tensor} containing

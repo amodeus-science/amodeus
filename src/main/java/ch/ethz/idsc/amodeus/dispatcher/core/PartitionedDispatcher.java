@@ -72,7 +72,7 @@ public abstract class PartitionedDispatcher extends RebalancingDispatcher {
         return virtualNetwork.binToVirtualNode(getRoboTaxiSubset(RoboTaxiStatus.DRIVEWITHCUSTOMER), RoboTaxi::getCurrentDriveDestination);
     }
 
-    /** @return {@link java.util.Map} where all stay roboTaxis with customer {@link RoboTaxi} are listed at the {@link VirtualNode} where their {@link Link}
+    /** @return {@link java.util.Map} where all staying roboTaxis {@link RoboTaxi} are listed at the {@link VirtualNode} where their {@link Link}
      *         current
      *         divertableLocation is. */
     protected Map<VirtualNode<Link>, List<RoboTaxi>> getVirtualNodeStayVehicles() {
@@ -83,6 +83,14 @@ public abstract class PartitionedDispatcher extends RebalancingDispatcher {
      *         divertableLocation is. */
     protected Map<VirtualNode<Link>, List<RoboTaxi>> getVirtualNodeDivertableRoboTaxis() {
         return virtualNetwork.binToVirtualNode(getDivertableRoboTaxis(), RoboTaxi::getDivertableLocation);
+    }
+
+    // new added by luc for congestion study
+    /** @return {@link java.util.Map} where all roboTaxis with customer {@link RoboTaxi} are listed at the {@link VirtualNode} where their {@link Link}
+     *         current
+     *         divertableLocation is. */
+    protected Map<VirtualNode<Link>, List<RoboTaxi>> getVirtualNodeDriveWithCustomerRoboTaxis() {
+        return virtualNetwork.binToVirtualNode(getRoboTaxiSubset(RoboTaxiStatus.DRIVEWITHCUSTOMER), RoboTaxi::getDivertableLocation);
     }
 
 }

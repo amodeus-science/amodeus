@@ -1,9 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ch.ethz.idsc</groupId>
 	<artifactId>amodeus</artifactId>
-	<version>1.6.6</version>
+	<version>1.8.3</version>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -11,34 +12,36 @@
 		<skipTests>false</skipTests>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<github.global.server>github</github.global.server>
+		<matsim.version>11.0</matsim.version>
+		<av.version>0.3.8</av.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>ch.ethz.matsim</groupId>
 			<artifactId>av</artifactId>
-			<version>0.2.7</version>
+			<version>${av.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.ethz.matsim</groupId>
 			<artifactId>av</artifactId>
-			<version>0.2.7</version>
+			<version>${av.version}</version>
 			<type>test-jar</type>
 		</dependency>
 		<dependency>
 			<groupId>org.matsim</groupId>
 			<artifactId>matsim</artifactId>
-			<version>0.10.1</version>
+			<version>${matsim.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.matsim.contrib</groupId>
 			<artifactId>dvrp</artifactId>
-			<version>0.10.1</version>
+			<version>${matsim.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.ethz.idsc</groupId>
 			<artifactId>tensor</artifactId>
-			<version>0.6.9</version>
+			<version>0.7.9</version>
 		</dependency>
 		<dependency>
 			<groupId>de.lmu.ifi.dbs.elki</groupId>
@@ -53,7 +56,7 @@
 		<dependency><!-- necessary to test scenarioPreparer -->
 			<groupId>org.gnu.glpk</groupId>
 			<artifactId>glpk-java</artifactId>
-			<version>1.5.0</version>
+			<version>1.12.0</version>
 		</dependency>
 		<dependency>
 			<groupId>io.humble</groupId>
@@ -63,15 +66,18 @@
 		<dependency>
 			<groupId>org.matsim</groupId>
 			<artifactId>pt2matsim</artifactId>
-			<version>19.1</version>
+			<version>19.2</version>
 		</dependency>
-
 		<dependency><!-- workaround since jaxb api is not part of java 9 -->
 			<groupId>javax.xml.bind</groupId>
 			<artifactId>jaxb-api</artifactId>
 			<version>2.2.8</version>
 		</dependency>
-
+		<dependency>
+			<groupId>javax.activation</groupId>
+			<artifactId>activation</artifactId>
+			<version>1.1.1</version>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -98,6 +104,11 @@
 			<name>Xypron Release</name>
 			<url>http://rsync.xypron.de/repository</url>
 			<layout>default</layout>
+		</repository>
+		<repository>
+			<id>osgeo</id>
+			<name>Geotools repository</name>
+			<url>http://download.osgeo.org/webdav/geotools</url>
 		</repository>
 		<repository>
 			<id>pt2matsim</id>

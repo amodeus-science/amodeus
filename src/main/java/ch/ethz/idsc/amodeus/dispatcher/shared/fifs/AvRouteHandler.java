@@ -21,7 +21,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
      * @param roboTaxi
      * @param sharedAvRoute */
     void add(RoboTaxi roboTaxi, SharedAvRoute sharedAvRoute) {
-        Double endTime = sharedAvRoute.getEndTime();
+        double endTime = sharedAvRoute.getEndTime();
         if (!routes.containsKey(endTime)) {
             routes.put(endTime, new HashMap<>());
         }
@@ -34,7 +34,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
     /** Removes all {@link SharedAvRoutes} where {@link getEndTime()} equals the given {@link endTime};
      * 
      * @param endTime */
-    void remove(Double endTime) {
+    void remove(double endTime) {
         routes.remove(endTime);
     }
 
@@ -42,13 +42,14 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
      * 
      * @param endTime
      * @return true if it exists, false else. */
-    boolean contains(Double endTime) {
+    boolean contains(double endTime) {
         return routes.containsKey(endTime);
     }
 
     /** get the routes with the earliest End Time.
      * 
-     * @return a Deep Copy of the Key Value Mapping of RoboTaxis to a Set of SharedAvRoutes all with the earliest end time currently present in the internal Tree
+     * @return a Deep Copy of the Key Value Mapping of RoboTaxis to a Set of SharedAvRoutes all with the earliest end time currently present in the internal
+     *         Tree
      *         structure */
     Map<RoboTaxi, Set<SharedAvRoute>> getCopyOfNext() {
         return new HashMap<>(routes.firstEntry().getValue());

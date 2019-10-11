@@ -8,7 +8,7 @@ import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionElement;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.io.TableBuilder;
 
-public enum StatusDistributionTable implements AnalysisExport {
+/* package */ enum StatusDistributionTable implements AnalysisExport {
     INSTANCE;
 
     @Override
@@ -20,7 +20,7 @@ public enum StatusDistributionTable implements AnalysisExport {
             tableBuilder.appendRow(sd.time.Get(index), sd.statusTensor.get(index));
 
         try {
-            SaveUtils.saveFile(tableBuilder.toTable(), "StatusDistribution", relativeDirectory);
+            SaveUtils.saveFile(tableBuilder.getTable(), "StatusDistribution", relativeDirectory);
         } catch (Exception e) {
             e.printStackTrace();
         }

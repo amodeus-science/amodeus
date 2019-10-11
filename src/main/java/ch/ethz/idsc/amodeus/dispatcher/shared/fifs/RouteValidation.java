@@ -12,11 +12,11 @@ import java.util.Optional;
 import java.util.Set;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiUtils;
 import ch.ethz.idsc.amodeus.dispatcher.shared.Compatibility;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseListUtils;
-import ch.ethz.idsc.amodeus.routing.CashedNetworkTimeDistance;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseUtil;
+import ch.ethz.idsc.amodeus.routing.CachedNetworkTimeDistance;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
@@ -28,7 +28,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
     private final RideSharingConstraints rideSharingConstraints;
 
-    RouteValidation(double maxPickupTime, double maxDriveTimeIncrease, double maxRemainingTimeIncreas, double dropoffTime, double pickupDuration,
+    public RouteValidation(double maxPickupTime, double maxDriveTimeIncrease, double maxRemainingTimeIncreas, double dropoffTime, double pickupDuration,
             double newTravelerMinIncreaseAllowed) {
         this.maxPickupTime = maxPickupTime;
         this.dropoffDuration = dropoffTime;
@@ -45,7 +45,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param now
      * @param requestHandler
      * @return true if this is a valid route, false if the rout can not be considered for sharing. */
-    boolean isValidRoute(SharedAvRoute sharedAvRoute, SharedAvRoute oldRoute, RequestWrap newRequestWrap, double now, RequestHandler requestHandler) {
+    public boolean isValidRoute(SharedAvRoute sharedAvRoute, SharedAvRoute oldRoute, RequestWrap newRequestWrap, double now, RequestHandler requestHandler) {
         Map<AVRequest, Double> driveTimes = requestHandler.getDriveTimes(sharedAvRoute);
         AVRequest newAvRequest = newRequestWrap.getAvRequest();
         double unitCapacityDriveTime = requestHandler.getDriveTimeDirectUnitCap(newAvRequest);
@@ -80,12 +80,13 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param timeSharing
      * @return The Closest RoboTaxi with a Shared Menu associated with it. */
     /* package */ Optional<Entry<RoboTaxi, List<SharedCourse>>> getClosestValidSharingRoboTaxi(Set<RoboTaxi> robotaxisWithMenu, AVRequest avRequest, double now,
-            CashedNetworkTimeDistance timeDb, RequestHandler requestMaintainer, RoboTaxiHandler roboTaxiMaintainer, double maxTime) {
 
-        GlobalAssert.that(robotaxisWithMenu.stream().allMatch(r -> RoboTaxiUtils.hasNextCourse(r)));
+            CachedNetworkTimeDistance timeDb, RequestHandler requestMaintainer, RoboTaxiHandler roboTaxiMaintainer, double maxTime) {
 
-        NavigableMap<Double, RoboTaxi> robotaxisWithinMaxPickup = RoboTaxiUtilsFagnant.getRoboTaxisWithinMaxTime(avRequest.getFromLink(), robotaxisWithMenu, timeDb, maxPickupTime,
-                roboTaxiMaintainer);
+        GlobalAssert.that(robotaxisWithMenu.stream().allMatch(r -> SharedCourseAccess.hasStarter(r)));
+
+        NavigableMap<Double, RoboTaxi> robotaxisWithinMaxPickup = RoboTaxiUtilsFagnant.getRoboTaxisWithinMaxTime(avRequest.getFromLink(), //
+                robotaxisWithMenu, timeDb, maxPickupTime, roboTaxiMaintainer, now);
 
         AvRouteHandler avRouteHandler = new AvRouteHandler();
         SharedCourse pickupCourse = SharedCourse.pickupCourse(avRequest);
@@ -134,12 +135,12 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         return Optional.empty();
     }
 
-    boolean menuFulfillsConstraints( //
+    public boolean menuFulfillsConstraints( //
             RoboTaxi roboTaxi, List<SharedCourse> newRoute, //
             AVRequest avRequest, double now, //
-            CashedNetworkTimeDistance timeDb, RequestHandler requestMaintainer) {
-        Set<AVRequest> currentRequests = RoboTaxiUtils.getRequestsInMenu(roboTaxi);
-        GlobalAssert.that(SharedCourseListUtils.getUniqueAVRequests(newRoute).containsAll(currentRequests));
+            CachedNetworkTimeDistance timeDb, RequestHandler requestMaintainer) {
+        Set<AVRequest> currentRequests = SharedCourseUtil.getUniqueAVRequests(roboTaxi.getUnmodifiableViewOfCourses());
+        GlobalAssert.that(SharedCourseUtil.getUniqueAVRequests(newRoute).containsAll(currentRequests));
         SharedAvRoute sharedAvRoute = SharedAvRoute.of(newRoute, roboTaxi.getDivertableLocation(), now, pickupDuration, dropoffDuration, timeDb);
         SharedAvRoute oldRoute = SharedAvRoute.of(roboTaxi.getUnmodifiableViewOfCourses(), roboTaxi.getDivertableLocation(), now, pickupDuration, dropoffDuration, timeDb);
         return isValidRoute(sharedAvRoute, oldRoute, requestMaintainer.getRequestWrap(avRequest), now, requestMaintainer);

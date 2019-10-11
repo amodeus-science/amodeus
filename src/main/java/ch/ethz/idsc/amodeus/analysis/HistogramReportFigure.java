@@ -14,11 +14,11 @@ import ch.ethz.idsc.subare.plot.Histogram;
 import ch.ethz.idsc.subare.plot.VisualSet;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Range;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.pdf.BinCounts;
-import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.sca.Round;
 
 public enum HistogramReportFigure {
@@ -41,7 +41,7 @@ public enum HistogramReportFigure {
         Scalar binNmbrScaling = RealScalar.of(1.0 / binNmbr);
         Scalar binSize = Round.of(maxVal.multiply(binNmbrScaling));
         /** for very low values, resolve in decimal steps */
-        if (((Quantity) binSize).value().equals(RealScalar.ZERO))
+        if (Scalars.isZero(binSize))
             binSize = maxVal.multiply(binNmbrScaling);
         Tensor binCounter = BinCounts.of(vals, binSize);
         binCounter = binCounter.divide(RealScalar.of(vals.length())).multiply(RealScalar.of(100));

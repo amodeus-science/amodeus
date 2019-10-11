@@ -42,7 +42,9 @@ public class TreeMaintainer<T> {
     /** @return closest {@link T} in tree from {@link Tensor} @param coord */
     public T getClosest(Tensor coord) {
         VectorQ.requireLength(coord, 2); // ensure that vector of length 2;
-        return tree.getClosest(coord.Get(0).number().doubleValue(), coord.Get(1).number().doubleValue());
+        return tree.getClosest( //
+                coord.Get(0).number().doubleValue(), //
+                coord.Get(1).number().doubleValue());
     }
 
     /** Adds the {@link T} @param t to the Tree Maintainer if it is not yet contained in the tree. */
@@ -50,7 +52,9 @@ public class TreeMaintainer<T> {
         if (!set.contains(t)) {
             Tensor coord = location.apply(t);
             boolean setok = set.add(t);
-            boolean treeok = tree.put(coord.Get(0).number().doubleValue(), coord.Get(1).number().doubleValue(), t);
+            boolean treeok = tree.put( //
+                    coord.Get(0).number().doubleValue(), //
+                    coord.Get(1).number().doubleValue(), t);
             GlobalAssert.that(setok && treeok);
         }
     }
@@ -59,7 +63,9 @@ public class TreeMaintainer<T> {
     public void remove(T t) {
         Tensor coord = location.apply(t);
         boolean setok = set.remove(t);
-        boolean treeok = tree.remove(coord.Get(0).number().doubleValue(), coord.Get(1).number().doubleValue(), t);
+        boolean treeok = tree.remove( //
+                coord.Get(0).number().doubleValue(), //
+                coord.Get(1).number().doubleValue(), t);
         GlobalAssert.that(setok && treeok);
     }
 
@@ -88,7 +94,9 @@ public class TreeMaintainer<T> {
 
     public boolean contains(Tensor coord) {
         VectorQ.requireLength(coord, 2); // ensure that vector of length 2;
-        return outerRect.contains(coord.Get(0).number().doubleValue(), coord.Get(1).number().doubleValue());
+        return outerRect.contains( //
+                coord.Get(0).number().doubleValue(), //
+                coord.Get(1).number().doubleValue());
     }
 
     public Set<T> getValues() {
@@ -97,7 +105,9 @@ public class TreeMaintainer<T> {
 
     /** Clears the whole tree. After this method is called no elements will remain */
     public void clear() {
-        set.forEach(t -> GlobalAssert.that(tree.remove(location.apply(t).Get(0).number().doubleValue(), location.apply(t).Get(1).number().doubleValue(), t)));
+        set.forEach(t -> GlobalAssert.that(tree.remove( //
+                location.apply(t).Get(0).number().doubleValue(), //
+                location.apply(t).Get(1).number().doubleValue(), t)));
         set.clear();
     }
 }

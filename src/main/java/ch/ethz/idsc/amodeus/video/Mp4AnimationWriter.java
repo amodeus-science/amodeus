@@ -20,7 +20,7 @@ import io.humble.video.Rational;
 import io.humble.video.awt.MediaPictureConverter;
 import io.humble.video.awt.MediaPictureConverterFactory;
 
-public class Mp4AnimationWriter implements AnimationWriter {
+/* package */ class Mp4AnimationWriter implements AnimationWriter {
     private final Muxer muxer;
     private final Encoder encoder;
     private MediaPictureConverter converter = null;
@@ -84,7 +84,7 @@ public class Mp4AnimationWriter implements AnimationWriter {
     int count = 0;
 
     @Override
-    public void append(BufferedImage bufferedImage) throws Exception {
+    public void write(BufferedImage bufferedImage) throws Exception {
         /** This is LIKELY not in YUV420P format, so we're going to convert it using some handy utilities. */
         if (converter == null)
             converter = MediaPictureConverterFactory.createConverter(bufferedImage, picture);
@@ -94,7 +94,7 @@ public class Mp4AnimationWriter implements AnimationWriter {
     }
 
     @Override
-    public void append(Tensor tensor) throws Exception {
+    public void write(Tensor tensor) throws Exception {
         throw new UnsupportedOperationException();
     }
 

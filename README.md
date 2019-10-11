@@ -1,6 +1,6 @@
 # cd.ethz.idsc.amodeus <a href="https://travis-ci.org/idsc-frazzoli/amodeus"><img src="https://travis-ci.org/idsc-frazzoli/amodeus.svg?branch=master" alt="Build Status"></a>
 
-Autonomous mobility-on-demand simulation library, version `1.6.6`
+Autonomous mobility-on-demand simulation library, version `1.8.3`
 
 ## Purpose
 
@@ -59,24 +59,29 @@ Fleet for Austin, Texas, Market* by Fagnant, D. J., Kockelman, K. M., and Bansal
 ## Integration
 
 Specify `repository` and `dependency` of the amodeus library in the `pom.xml` file of your maven project:
+```xml
+<repositories>
+  <repository>
+    <id>amodeus-mvn-repo</id>
+    <url>https://raw.github.com/idsc-frazzoli/amodeus/mvn-repo/</url>
+    <snapshots>
+      <enabled>true</enabled>
+      <updatePolicy>always</updatePolicy>
+    </snapshots>
+  </repository>
+</repositories>
 
-    <repositories>
-      <repository>
-        <id>amodeus-mvn-repo</id>
-        <url>https://raw.github.com/idsc-frazzoli/amodeus/mvn-repo/</url>
-        <snapshots>
-          <enabled>true</enabled>
-          <updatePolicy>always</updatePolicy>
-        </snapshots>
-      </repository>
-    </repositories>
-    
-    <dependencies>
-      <dependency>
-        <groupId>ch.ethz.idsc</groupId>
-        <artifactId>amodeus</artifactId>
-        <version>1.6.6</version>
-      </dependency>
-    </dependencies>
-
+<dependencies>
+  <dependency>
+    <groupId>ch.ethz.idsc</groupId>
+    <artifactId>amodeus</artifactId>
+    <version>1.8.3</version>
+  </dependency>
+</dependencies>
+```
 The source code is attached to every release.
+
+
+## Misc
+
+So beherrscht mein äusserer Sinn die physische, mein innerer Sinn die moralische Welt. Alles unterwirft sich meiner Willkür, jede Erscheinung, jede Handlung kann ich nennen, wie es mir gefällt; die lebendige und leblose Welt hängt an den Ketten, die mein Geist regiert, mein ganzes Leben ist nur ein Traum, dessen mancherlei Gestalten sich nach meinem Willen formen. Ich selbst bin das einzige Gesetz in der ganzen Natur, diesem Gesetz gehorcht alles.

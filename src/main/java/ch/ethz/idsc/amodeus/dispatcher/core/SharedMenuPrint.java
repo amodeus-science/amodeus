@@ -6,11 +6,11 @@ import java.util.List;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
 
-public enum SharedMenuPrint {
+/* package */ enum SharedMenuPrint {
     ;
 
     public static void of(SharedMenu sharedMenu) {
-        of(sharedMenu.getRoboTaxiMenu());
+        of(sharedMenu.getCourseList());
     }
 
     public static void of(List<SharedCourse> sharedMenu) {

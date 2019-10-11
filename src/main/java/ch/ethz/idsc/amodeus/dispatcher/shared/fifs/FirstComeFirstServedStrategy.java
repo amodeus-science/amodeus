@@ -22,14 +22,14 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RebalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
+import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceCost;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.dispatcher.util.TreeMaintainer;
 import ch.ethz.idsc.amodeus.dispatcher.util.TreeMultipleItems;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
-import ch.ethz.idsc.amodeus.routing.CashedNetworkTimeDistance;
+import ch.ethz.idsc.amodeus.routing.CachedNetworkTimeDistance;
 import ch.ethz.idsc.amodeus.routing.EasyMinTimePathCalculator;
-import ch.ethz.idsc.amodeus.routing.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.routing.TimeDistanceProperty;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -41,7 +41,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.router.AVRouter;
 
 /** Implementation of the Algorithm presented in:
- * Fagnant, D. J., Kockelman, K. M., & Bansal, P. (2015). Operations of shared autonomous vehicle fleet for austin, texas, market. Transportation Research
+ * Fagnant, D. J., Kockelman, K. M., & Bansal, P. (2015). Operations of shared autonomous vehicle fleet for
+ * Austin, Texas, market. Transportation Research
  * Record: Journal of the Transportation Research Board, (2536), 98-106. */
 public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
 
@@ -65,7 +66,7 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
     private final Set<AVRequest> extremWaitList = new HashSet<>();
 
     private static final double MAXLAGTRAVELTIMECALCULATION = 1800.0;
-    private final CashedNetworkTimeDistance timeDb;
+    private final CachedNetworkTimeDistance timeDb;
 
     private final BlockRebalancing kockelmanRebalancing;
 
@@ -81,7 +82,7 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
 
         FastAStarLandmarksFactory factory = new FastAStarLandmarksFactory();
         LeastCostPathCalculator calculator = EasyMinTimePathCalculator.prepPathCalculator(network, factory);
-        timeDb = new CashedNetworkTimeDistance(calculator, MAXLAGTRAVELTIMECALCULATION,TimeDistanceProperty.INSTANCE);
+        timeDb = new CachedNetworkTimeDistance(calculator, MAXLAGTRAVELTIMECALCULATION, TimeDistanceProperty.INSTANCE);
 
         this.kockelmanRebalancing = new BlockRebalancing(network, timeDb, MINNUMBERROBOTAXISINBLOCKTOREBALANCE, BINSIZETRAVELDEMAND, dispatchPeriod, REBALANCINGGRIDDISTANCE);
     }
@@ -91,11 +92,10 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
         final long round_now = Math.round(now);
 
         if (round_now % dispatchPeriod == 0) {
-            timeDb.update(now);
 
             /** get open requests and available vehicles and put them into the desired
              * structures. Furthermore add all the requests to the one hour bin which is
-             * used for Rebalancing */
+             * used for rebalancing */
 
             /** prepare the registers for the dispatching */
             getDivertableUnassignedRoboTaxis().stream().forEach(rt -> unassignedRoboTaxis.add(rt));
@@ -111,14 +111,14 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
                     lastHourRequests, //
                     unassignedRequests.getValues(), unassignedRoboTaxis.getValues());
 
-            /** for all AV Requests in the order of their submision, try to find the closest
+            /** for all {@link AVRequest}s in the order of their submission, try to find the closest
              * vehicle and assign */
             Set<AVRequest> requestsToRemove = new HashSet<>();
             for (AVRequest avRequest : unassignedRequests.getTsInOrderOfValue()) {
                 boolean assigned = false;
                 if (unassignedRoboTaxis.size() > 0) {
                     RoboTaxi closestRoboTaxi = unassignedRoboTaxis.getClosest(getLocation(avRequest));
-                    double travelTime = timeDb.travelTime(closestRoboTaxi.getDivertableLocation(), avRequest.getFromLink()).number().doubleValue();
+                    double travelTime = timeDb.travelTime(closestRoboTaxi.getDivertableLocation(), avRequest.getFromLink(), now).number().doubleValue();
                     if (travelTime < WAITTIME.calculate(avRequest, waitList, extremWaitList)) {
                         setRoboTaxiPickup(closestRoboTaxi, avRequest);
                         unassignedRoboTaxis.remove(closestRoboTaxi);
@@ -126,13 +126,13 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
                         assigned = true;
                     }
                 }
-                /** If we can not assign a robotaxi put the request on the wait list */
+                /** If no {@link RoboTaxi} can be assigned, put the request on the wait list */
                 if (assigned) {
                     requestsToRemove.add(avRequest);
                 } else {
                     if (!waitList.contains(avRequest)) {
                         waitList.add(avRequest);
-                    } else { // and if it was already on the wait list put it to the extrem wait list
+                    } else { // and if it was already on the wait list put it to the extreme wait list
                         extremWaitList.add(avRequest);
                     }
                 }
@@ -156,7 +156,7 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
 
     /** @param request
      * @return {@link Double} with {@link AVRequest} submission Time */
-    /* package */ Double getSubmissionTime(AVRequest request) {
+    /* package */ double getSubmissionTime(AVRequest request) {
         return request.getSubmissionTime();
     }
 
@@ -200,7 +200,7 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
             @SuppressWarnings("unused")
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
             @SuppressWarnings("unused")
-            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceFunction.INSTANCE);
+            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceCost.INSTANCE);
 
             return new FirstComeFirstServedStrategy(network, config, avconfig, travelTime, router, eventsManager, db);
         }

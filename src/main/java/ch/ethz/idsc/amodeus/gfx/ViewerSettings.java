@@ -9,6 +9,8 @@ import org.matsim.api.core.v01.Coord;
 
 import ch.ethz.idsc.amodeus.view.gheat.gui.ColorSchemes;
 
+/** Class contains all settings for the AMoDeus viewer, used for exporting / importing
+ * a user-defined choice of settings. */
 public class ViewerSettings implements Serializable {
 
     public int zoom = 12;
@@ -21,7 +23,7 @@ public class ViewerSettings implements Serializable {
     public int endTime = 24;
 
     // TilesLayer
-    public String tileSourceName = "Mapnik";
+    public String tileSourceName = MapSource.Wikimedia.name();
     public int mapAlphaCover = 192;
     public int mapGrayCover = 0;
 
@@ -29,6 +31,7 @@ public class ViewerSettings implements Serializable {
     public boolean drawVNodes = true;
     public boolean drawVLinks = false;
     public VirtualNodeShader virtualNodeShader = VirtualNodeShader.None;
+    public Rescaling rescaling = Rescaling.REL_02;
     public ColorSchemes colorSchemes = ColorSchemes.Jet;
 
     // VehiclesLayer

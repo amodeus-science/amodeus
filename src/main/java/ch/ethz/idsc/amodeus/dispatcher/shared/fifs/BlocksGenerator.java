@@ -19,7 +19,7 @@ import org.matsim.core.utils.collections.QuadTree.Rect;
      * @param predictedTime
      * @param gridDistance
      * @return */
-    static Map<Integer, Block> of(Network network, double historicalDataTime, double predictedTime, double gridDistance) {
+    public static Map<Integer, Block> of(Network network, double historicalDataTime, double predictedTime, double gridDistance) {
 
         double[] xy = getXYLength(network, gridDistance);
         double blockLengthX = xy[0];

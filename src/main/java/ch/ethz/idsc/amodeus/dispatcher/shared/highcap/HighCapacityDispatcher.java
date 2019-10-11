@@ -23,17 +23,17 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiUtils;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedRebalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseUtil;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.AbstractVirtualNodeDest;
+import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceCost;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.routing.EasyMinTimePathCalculator;
-import ch.ethz.idsc.amodeus.routing.EuclideanDistanceFunction;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.config.AVGeneratorConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
@@ -88,9 +88,6 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
 
     private Map<AVRequest, RequestKeyInfo> requestKeyInfoMap = new HashMap<>();
 
-    // profiling
-    long time = System.currentTimeMillis(); // for recording time spent at each step
-
     public HighCapacityDispatcher(Network network, //
             Config config, AVDispatcherConfig avDispatcherConfig, //
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, //
@@ -118,8 +115,6 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
 
     @Override
     protected void redispatch(double now) {
-
-        time = System.currentTimeMillis(); // for recording time spent at each step
 
         final long round_now = Math.round(now);
 
@@ -157,23 +152,14 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
                 }
             }
 
-            System.out.println("1 Preliminary works: " + (System.currentTimeMillis() - time));
-            time = System.currentTimeMillis();
-
             // RV diagram construction
             Set<Set<AVRequest>> rvEdges = rvGenerator.generateRVGraph(newAddedValidRequests, removedRequests, remainedRequests, //
                     now, ttc, requestKeyInfoMap);
-
-            System.out.println("2 RV Diagram Construction: " + (System.currentTimeMillis() - time));
-            time = System.currentTimeMillis();
 
             // RTV diagram construction (generate a list of edges between trip and vehicle)
             List<TripWithVehicle> grossListOfRTVEdges = rtvGG.generateRTV(getRoboTaxis(), newAddedValidRequests, //
                     removedRequests, now, requestKeyInfoMap, //
                     rvEdges, ttc, lastAssignment, trafficTimeAllowance);
-
-            System.out.println("3 RTV Graph Generation: " + (System.currentTimeMillis() - time) / 1);
-            time = System.currentTimeMillis();
 
             // ILP
             // start
@@ -196,9 +182,6 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
             }
             // end
 
-            System.out.println("4 ILP: " + (System.currentTimeMillis() - time) / 1);
-            time = System.currentTimeMillis();
-
             // Taxi Assignment
             for (TripWithVehicle tripWithVehicle : sharedTaxiAssignmentPlan) {
                 // get roboTaxi
@@ -218,7 +201,7 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
                 Set<AVRequest> setOfAVRequestInRoute = routeToAssign.stream() //
                         .map(StopInRoute::getavRequest) //
                         .collect(Collectors.toSet());
-                for (AVRequest avRequest : RoboTaxiUtils.getRequestsInMenu(roboTaxiToAssign)) {
+                for (AVRequest avRequest : SharedCourseUtil.getUniqueAVRequests(roboTaxiToAssign.getUnmodifiableViewOfCourses())) {
                     if (!setOfAVRequestInRoute.contains(avRequest)) {
                         abortAvRequest(avRequest);
                     }
@@ -237,9 +220,6 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
             for (TripWithVehicle assignedTrip : sharedTaxiAssignmentPlan) {
                 requestMatchedLastStep.addAll(assignedTrip.getTrip());
             }
-
-            System.out.println("5 Assignment: " + (System.currentTimeMillis() - time) / 1);
-            time = System.currentTimeMillis();
 
         }
 
@@ -282,10 +262,7 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
                     setRoboTaxiRebalance(rebalanceRoboTaxi, destinationOfRebalance);
                 }
             }
-
-            System.out.println("6 Re-balance: " + (System.currentTimeMillis() - time) / 1);
         }
-
     }
 
     public static class Factory implements AVDispatcherFactory {
@@ -315,7 +292,7 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
             @SuppressWarnings("unused")
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
             @SuppressWarnings("unused")
-            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceFunction.INSTANCE);
+            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceCost.INSTANCE);
 
             return new HighCapacityDispatcher(network, config, avconfig, travelTime, router, eventsManager, db);
         }

@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.routing;
 
 import org.matsim.api.core.v01.network.Link;
@@ -9,7 +10,6 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.qty.Quantity;
-
 
 public enum TimeDistanceProperty implements NetworkPropertyInterface<Tensor> {
     INSTANCE;

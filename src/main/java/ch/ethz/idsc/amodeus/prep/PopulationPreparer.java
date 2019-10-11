@@ -30,8 +30,7 @@ public enum PopulationPreparer {
         populationCutter.cut(population, network, config);
         System.out.println("Population size after cutting: " + population.getPersons().values().size());
 
-        TheApocalypse.reducesThe(population).toNoMoreThan(scenOptions.getMaxPopulationSize()).people();
-        TheApocalypse.reducesThe(population).toNoMoreThan(scenOptions.getMaxPopulationSize(), seed);
+        TheApocalypse.reducesThe(population).toNoMoreThan(scenOptions.getMaxPopulationSize(), seed).people();
         System.out.println("Population after decimation:" + population.getPersons().values().size());
         GlobalAssert.that(0 < population.getPersons().size());
 

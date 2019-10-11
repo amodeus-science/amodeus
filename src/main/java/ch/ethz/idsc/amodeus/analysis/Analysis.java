@@ -51,28 +51,6 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
 public class Analysis {
-    /** Use this method to create an standalone Analysis with all the default values
-     * stored in the current Working Directory
-     * 
-     * @return
-     * @throws Exception */
-    public static Analysis setup() throws Exception {
-        return setup(null, null, null, null);
-    }
-
-    /** Use this method in the Simulation Server as the network was already loaded
-     * 
-     * @param network
-     * @return
-     * @throws Exception */
-    public static Analysis setup(Network network, MatsimAmodeusDatabase db) throws Exception {
-        return setup(null, null, null, network, db);
-    }
-
-    public static Analysis setup(File workingDirectory, File configFile, //
-            File outputDirectory, MatsimAmodeusDatabase db) throws Exception {
-        return new Analysis(workingDirectory, configFile, outputDirectory, null, db);
-    }
 
     /** returns an Instance of the Analysis Class can be called with any combination
      * of null and the respective parameter(s).
@@ -80,9 +58,6 @@ public class Analysis {
      * @param workingDirectory
      *            default: current working directory. Is the file where the config
      *            file, AmodeusOptions file and the outputfolder are located
-     * @param configFile
-     *            default: SimulationConfig file as defined in AmodeusOptions.
-     *            Stores the data of the corresponding outputdirectory and Network.
      * @param outputDirectory:
      *            default: value stored in the Simulation Config file. Can be
      *            changed if for example an other outputfolder from the Sequential
@@ -92,9 +67,9 @@ public class Analysis {
      *            runtime if the Network was already loaded in a previous step (e.g.
      *            Scenario Server)
      * @throws Exception */
-    public static Analysis setup(File workingDirectory, File configFile, File outputDirectory, //
+    public static Analysis setup(ScenarioOptions scenarioOptions, File outputDirectory, //
             Network network, MatsimAmodeusDatabase db) throws Exception {
-        return new Analysis(workingDirectory, configFile, outputDirectory, network, db);
+        return new Analysis(scenarioOptions, outputDirectory, network, db);
     }
 
     // List of Analysis Elements which will be loaded
@@ -119,9 +94,6 @@ public class Analysis {
      * @param workingDirectory
      *            default: current working directory. Is the file where the config
      *            file, AmodeusOptions file and the outputfolder are located
-     * @param configFile
-     *            default: SimulationConfig file as defined in AmodeusOptions.
-     *            Stores the data of the corresponding outputdirectory and Network.
      * @param outputDirectory:
      *            default: value stored in the Simulation Config file. Can be
      *            changed if for example an other outputfolder from the Sequential
@@ -132,19 +104,25 @@ public class Analysis {
      *            Scenario Server)
      * @throws Exception */
 
-    protected Analysis(File workingDirectory, File configFile, File outputDirectory, //
+    private Analysis(ScenarioOptions scenarioOptions, File outputDirectory, //
             Network network, MatsimAmodeusDatabase db) throws Exception {
-        if (Objects.isNull(workingDirectory) || !workingDirectory.isDirectory())
-            workingDirectory = new File("").getCanonicalFile();
+        if (Objects.isNull(scenarioOptions))
+            throw new RuntimeException("Analysis requires a ScenarioOptions object as input.");
+        Objects.requireNonNull(scenarioOptions.getWorkingDirectory());
+        File workingDirectory = scenarioOptions.getWorkingDirectory();
+        File configFile = new File(scenarioOptions.getSimulationConfigName());
+        Objects.requireNonNull(configFile);
+
+        // if (Objects.isNull(workingDirectory) || !workingDirectory.isDirectory())
+        // workingDirectory = new File("").getCanonicalFile();
         System.out.println("workingDirectory in Analysis: " + workingDirectory.getAbsolutePath());
         ScenarioOptions scenOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
-        if (configFile == null || !configFile.isFile())
-            configFile = new File(workingDirectory, scenOptions.getSimulationConfigName());
         if (outputDirectory == null || !outputDirectory.isDirectory()) {
             Config config = ConfigUtils.loadConfig(configFile.toString());
             String outputDirectoryName = config.controler().getOutputDirectory();
             outputDirectory = new File(workingDirectory, outputDirectoryName);
         }
+        System.out.println("Outputdirectory chosen in Analysis: " + outputDirectory.getAbsolutePath());
 
         if (Objects.isNull(network)) {
             network = NetworkLoader.fromConfigFile(configFile);
@@ -175,7 +153,7 @@ public class Analysis {
         System.out.println("Found files: " + size);
         int numVehicles = storageSupplier.getSimulationObject(1).vehicles.size();
 
-        analysisSummary = new AnalysisSummary(numVehicles, size, db);
+        analysisSummary = new AnalysisSummary(numVehicles, size, db, scenarioOptions);
 
         // default List of Analysis Elements which will be loaded
         analysisElements.add(analysisSummary.getSimulationInformationElement());
@@ -205,7 +183,7 @@ public class Analysis {
         analysisExports.add(WaitingCustomerExport.INSTANCE);
 
         // default list of analysis reports
-        htmlReport = new HtmlReport(configFile, outputDirectory, scenOptions);
+        htmlReport = new HtmlReport(outputDirectory, scenOptions);
         htmlReport.addHtmlReportElement(ScenarioParametersHtml.INSTANCE);
         htmlReport.addHtmlReportElement(SimulationInformationHtml.INSTANCE);
         htmlReport.addHtmlReportElement(DistanceElementHtml.INSTANCE);
@@ -275,4 +253,5 @@ public class Analysis {
         /** generate reports */
         analysisReports.forEach(analysisReport -> analysisReport.generate(analysisSummary));
     }
+
 }

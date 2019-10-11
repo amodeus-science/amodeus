@@ -80,7 +80,14 @@ public class TilesLayer extends ViewerLayer {
     public void loadSettings(ViewerSettings settings) {
         amodeusComponent.mapAlphaCover = settings.mapAlphaCover;
         amodeusComponent.mapGrayCover = settings.mapGrayCover;
-        amodeusComponent.setTileSource(MapSource.valueOf(settings.tileSourceName).getTileSource());
+        // ---
+        MapSource mapSource = MapSource.Wikimedia;
+        try {
+            mapSource = MapSource.valueOf(settings.tileSourceName);
+        } catch (Exception exception) {
+            System.err.println("settings.tileSourceName=" + settings.tileSourceName);
+        }
+        amodeusComponent.setTileSource(mapSource.getTileSource());
     }
 
 }

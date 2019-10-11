@@ -6,17 +6,18 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.matsim.api.core.v01.Id;
-import org.matsim.contrib.dvrp.data.Vehicle;
+import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** @author Samuel J. Stauber */
+// TODO DEPLOY does this class have to be public? if yes, document purpose of class
 public class Warmstarter {
     private static final int UNASSIGNED = -1;
     private static final double EPS = 1e-8;
-    public static List<Id<Vehicle>> lastTaxis = null;
+    public static List<Id<DvrpVehicle>> lastTaxis = null;
     public static List<AVRequest> lastRequests = null;
-    public static List<Id<Vehicle>> thisTaxis = null;
+    public static List<Id<DvrpVehicle>> thisTaxis = null;
     public static List<AVRequest> thisRequests = null;
     private static int[] lastMatching = null;
 
@@ -53,7 +54,7 @@ public class Warmstarter {
         return;
     }
 
-    public Warmstarter(double[][] costMatrix, List<Id<Vehicle>> taxis, List<AVRequest> requests) {
+    public Warmstarter(double[][] costMatrix, List<Id<DvrpVehicle>> taxis, List<AVRequest> requests) {
         this.costMatrix = costMatrix;
         rowDim = costMatrix.length;
         colDim = costMatrix[0].length;
@@ -144,8 +145,8 @@ public class Warmstarter {
         return costMatrix[x][y];
     }
 
-    private void setNewMatching(List<Id<Vehicle>> actTaxi, List<AVRequest> actRequest) {
-        Id<Vehicle> tmpTaxi = null;
+    private void setNewMatching(List<Id<DvrpVehicle>> actTaxi, List<AVRequest> actRequest) {
+        Id<DvrpVehicle> tmpTaxi = null;
         AVRequest tmpReq = null;
         int tmpTaxiId = UNASSIGNED;
         int last = UNASSIGNED;
@@ -229,7 +230,7 @@ public class Warmstarter {
         return valid;
     }
 
-    public static void setLastData(List<Id<Vehicle>> lastTaxi, List<AVRequest> lastRequest) {
+    public static void setLastData(List<Id<DvrpVehicle>> lastTaxi, List<AVRequest> lastRequest) {
         lastTaxis = lastTaxi;
         lastRequests = lastRequest;
     }

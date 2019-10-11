@@ -10,6 +10,7 @@ import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
+import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
@@ -34,7 +35,7 @@ public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatc
         GlobalAssert.that(roboTaxi.isWithoutCustomer());
         /** clear menu and put requests back to pending requests */
         cleanAndAbondon(roboTaxi);
-        GlobalAssert.that(!RoboTaxiUtils.hasNextCourse(roboTaxi));
+        GlobalAssert.that(!SharedCourseAccess.hasStarter(roboTaxi));
         SharedCourse redirectCourse = SharedCourse.redirectCourse(destination, Double.toString(getTimeNow()) + roboTaxi.getId().toString());
         addSharedRoboTaxiRedirect(roboTaxi, redirectCourse);
     }

@@ -32,7 +32,7 @@ import ch.ethz.idsc.amodeus.view.jmapviewer.Tile;
             try {
                 BufferedImage img = HeatMap.getTile( //
                         dataManager, //
-                        colorSchemes.colorScheme, //
+                        colorSchemes.colorDataIndexed, //
                         zoom, //
                         tile.getXtile(), //
                         tile.getYtile());
