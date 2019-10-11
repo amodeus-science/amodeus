@@ -18,7 +18,7 @@ public enum TimedChart {
                 ? JFreeCharts.stackedAreaPlot(visualSet, StaticHelper.timeTableXYDataset(visualSet)) //
                 : JFreeCharts.lineChart(visualSet, StaticHelper.timeSeriesCollection(visualSet));
         DateAxis domainAxis = new DateAxis();
-        domainAxis.setLabel(visualSet.getDomainAxisLabel());
+        domainAxis.setLabel(visualSet.getAxesLabelX());
         domainAxis.setTickUnit(new DateTickUnit(DateTickUnitType.SECOND, 1));
         domainAxis.setAutoTickUnitSelection(true);
         jFreeChart.getXYPlot().setDomainAxis(domainAxis);
