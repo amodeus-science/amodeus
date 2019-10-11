@@ -4,6 +4,7 @@ package ch.ethz.idsc.amodeus.dispatcher;
 import java.util.List;
 import java.util.Map;
 
+import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -13,7 +14,7 @@ import org.matsim.core.router.util.TravelTime;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfig;
+import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import ch.ethz.idsc.amodeus.dispatcher.core.PartitionedDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
@@ -43,8 +44,8 @@ import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.Round;
 import ch.ethz.idsc.tensor.sca.Sign;
-import ch.ethz.matsim.av.config.AVDispatcherConfig;
-import ch.ethz.matsim.av.config.AVGeneratorConfig;
+import ch.ethz.matsim.av.config.operator.OperatorConfig;
+import ch.ethz.matsim.av.data.AVOperator;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.passenger.AVRequest;
@@ -71,20 +72,20 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
     private boolean started = false;
 
     public AdaptiveRealTimeRebalancingPolicy( //
-            Config config, AVDispatcherConfig avDispatcherConfig, //
-            AVGeneratorConfig generatorConfig, TravelTime travelTime, //
+            Config config, OperatorConfig operatorConfig, //
+            TravelTime travelTime, //
             AVRouter router, EventsManager eventsManager, //
             Network network, VirtualNetwork<Link> virtualNetwork, //
             AbstractVirtualNodeDest abstractVirtualNodeDest, //
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher, //
             MatsimAmodeusDatabase db) {
-        super(config, avDispatcherConfig, travelTime, router, eventsManager, virtualNetwork, db);
+        super(config, operatorConfig, travelTime, router, eventsManager, virtualNetwork, db);
         virtualNodeDest = abstractVirtualNodeDest;
         vehicleDestMatcher = abstractVehicleDestMatcher;
-        numRobotaxi = (int) generatorConfig.getNumberOfVehicles();
+        numRobotaxi = (int) operatorConfig.getGeneratorConfig().getNumberOfVehicles();
         lpMinFlow = new LPMinFlow(virtualNetwork);
         lpMinFlow.initiateLP();
-        DispatcherConfig dispatcherConfig = DispatcherConfig.wrap(avDispatcherConfig);
+        DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(30);
         rebalancingPeriod = dispatcherConfig.getRebalancingPeriod(300);
         this.network = network;
@@ -92,7 +93,7 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         this.distanceFunction = distanceHeuristics.getDistanceFunction(network);
         this.bipartiteMatcher = new ConfigurableBipartiteMatcher(network, new DistanceCost(distanceFunction), //
-                SafeConfig.wrap(avDispatcherConfig));
+                SafeConfig.wrap(operatorConfig.getDispatcherConfig()));
     }
 
     @Override
@@ -211,13 +212,9 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
 
         @Inject
         private EventsManager eventsManager;
-
-        @Inject
-        @Named(AVModule.AV_MODE)
-        private Network network;
-
+        
         @Inject(optional = true)
-        private VirtualNetwork<Link> virtualNetwork;
+        private Map<Id<AVOperator>, VirtualNetwork<Link>> virtualNetworks;
 
         @Inject
         private Config config;
@@ -226,13 +223,12 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
         private MatsimAmodeusDatabase db;
 
         @Override
-        public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
-            AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
+        public AVDispatcher createDispatcher(OperatorConfig operatorConfig, AVRouter router, Network network) {
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceCost.INSTANCE);
             return new AdaptiveRealTimeRebalancingPolicy( //
-                    config, avconfig, generatorConfig, travelTime, //
-                    router, eventsManager, network, virtualNetwork, //
+                    config, operatorConfig, travelTime, //
+                    router, eventsManager, network, virtualNetworks.get(operatorConfig.getId()), //
                     abstractVirtualNodeDest, abstractVehicleDestMatcher, db);
         }
     }

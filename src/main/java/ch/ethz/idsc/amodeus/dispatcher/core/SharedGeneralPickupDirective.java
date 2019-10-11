@@ -1,8 +1,6 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
-import java.util.Arrays;
-
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
@@ -39,11 +37,13 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
             avStayTask.setEndTime(getTimeNow); // finish the last task now
 
-            schedule.addTask(new AVPickupTask( //
+            AVPickupTask pickupTask = new AVPickupTask( //
                     getTimeNow, // start of pickup
                     futurePathContainer.getStartTime(), // end of pickup
                     currentRequest.getFromLink(), // location of driving start
-                    Arrays.asList(currentRequest))); // serving only one request at a time
+                    0.0);
+            pickupTask.addRequest(currentRequest); // serving only one request at a time
+            schedule.addTask(pickupTask);
 
             // schedule.addTask(new AVDriveTask( //
             // vrpPathWithTravelData, Arrays.asList(currentRequest)));

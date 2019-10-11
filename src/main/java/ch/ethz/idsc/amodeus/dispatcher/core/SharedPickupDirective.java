@@ -1,8 +1,6 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
-import java.util.Arrays;
-
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
 
@@ -30,11 +28,13 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         if (endTaskTime < scheduleEndTime) {
             avStayTask.setEndTime(getTimeNow); // finish the last task now
 
-            schedule.addTask(new AVPickupTask( //
+            AVPickupTask pickupTask = new AVPickupTask( //
                     getTimeNow, // start of pickup
                     endTaskTime, // end of pickup
                     avRequest.getFromLink(), // location of driving start
-                    Arrays.asList(avRequest))); // serving only one request at a time
+                    0.0);
+            pickupTask.addRequest(avRequest); // serving only one request at a time
+            schedule.addTask(pickupTask);
 
             ScheduleUtils.makeWhole(robotaxi, endTaskTime, scheduleEndTime, avRequest.getFromLink());
 

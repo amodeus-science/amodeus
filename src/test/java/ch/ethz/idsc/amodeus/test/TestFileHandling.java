@@ -17,8 +17,8 @@ public enum TestFileHandling {
     public static void copyScnearioToMainDirectory(String scenarioDir, String mainDir) throws IOException {
 
         CopyFiles.now(scenarioDir, mainDir, //
-                Arrays.asList(new String[] { "AmodeusOptions.properties", "av.xml", //
-                        "av_v1.dtd", "config_full.xml", "linkSpeedData.bin", //
+                Arrays.asList(new String[] { "AmodeusOptions.properties", //
+                        "config_full.xml", "linkSpeedData.bin", //
                         "network.xml", "population.xml" }),
                 true);
     }

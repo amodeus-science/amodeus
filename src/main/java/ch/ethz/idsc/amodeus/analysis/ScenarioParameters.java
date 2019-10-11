@@ -27,11 +27,10 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkGet;
 import ch.ethz.idsc.tensor.io.UserName;
-import ch.ethz.matsim.av.config.AVConfig;
-import ch.ethz.matsim.av.config.AVConfigReader;
-import ch.ethz.matsim.av.config.AVDispatcherConfig;
-import ch.ethz.matsim.av.config.AVGeneratorConfig;
-import ch.ethz.matsim.av.config.AVOperatorConfig;
+import ch.ethz.matsim.av.config.AVConfigGroup;
+import ch.ethz.matsim.av.config.operator.DispatcherConfig;
+import ch.ethz.matsim.av.config.operator.GeneratorConfig;
+import ch.ethz.matsim.av.config.operator.OperatorConfig;
 
 public class ScenarioParameters implements TotalValueAppender, Serializable {
     public static final int UNDEFINED_INT = -1;
@@ -60,23 +59,22 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
         // ScenarioOptions scenOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
         // File configFile = new File(workingDirectory, scenOptions.getSimulationConfigName());
         System.out.println("scenOptions.getSimulationConfigName: " + scenOptions.getSimulationConfigName());
-        Config config = ConfigUtils.loadConfig(scenOptions.getSimulationConfigName());
+        
+        AVConfigGroup avConfig = new AVConfigGroup();
+        Config config = ConfigUtils.loadConfig(scenOptions.getSimulationConfigName(), avConfig);
         // scenOptions.getcon
         // Config config = ConfigUtils.loadConfig(configFile.toString());
 
         File configPath = new File(scenOptions.getWorkingDirectory(), "av.xml");
-        AVConfig avConfig = new AVConfig();
-        AVConfigReader reader = new AVConfigReader(avConfig);
-        reader.readFile(configPath.getAbsolutePath());
-        AVOperatorConfig oc = avConfig.getOperatorConfigs().iterator().next();
-        AVDispatcherConfig avdispatcherconfig = oc.getDispatcherConfig();
+        OperatorConfig oc = avConfig.getOperatorConfigs().values().iterator().next();
+        DispatcherConfig avdispatcherconfig = oc.getDispatcherConfig();
         SafeConfig safeConfig = SafeConfig.wrap(avdispatcherconfig);
-        AVGeneratorConfig avgeneratorconfig = oc.getGeneratorConfig();
+        GeneratorConfig avgeneratorconfig = oc.getGeneratorConfig();
 
         redispatchPeriod = safeConfig.getInteger(DISPATCHPERIODSTRING, UNDEFINED_INT);
         rebalancingPeriod = safeConfig.getInteger(REBALANCINGPERIODSTRING, UNDEFINED_INT);
-        dispatcher = avdispatcherconfig.getStrategyName();
-        vehicleGenerator = avgeneratorconfig.getStrategyName();
+        dispatcher = avdispatcherconfig.getType();
+        vehicleGenerator = avgeneratorconfig.getType();
         Scenario scenario = ScenarioUtils.loadScenario(config);
 
         distanceHeuristic = safeConfig.getString(DISTANCEHEURISTICSTRING, UNDEFINED_STRING);

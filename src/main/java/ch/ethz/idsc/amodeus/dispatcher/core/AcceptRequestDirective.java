@@ -45,11 +45,13 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
             avStayTask.setEndTime(getTimeNow); // finish the last task now
 
-            schedule.addTask(new AVPickupTask( //
+            AVPickupTask pickupTask = new AVPickupTask( //
                     getTimeNow, // start of pickup
                     futurePathContainer.getStartTime(), // end of pickup
                     avRequest.getFromLink(), // location of driving start
-                    Arrays.asList(avRequest))); // serving only one request at a time
+                    0.0);
+            pickupTask.addRequest(avRequest); // serving only one request at a time
+            schedule.addTask(pickupTask);
 
             schedule.addTask(new AVDriveTask( //
                     vrpPathWithTravelData, Arrays.asList(avRequest)));

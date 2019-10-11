@@ -7,13 +7,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.matsim.api.core.v01.Id;
-import org.matsim.api.core.v01.events.GenericEvent;
 import org.matsim.api.core.v01.events.LinkEnterEvent;
 import org.matsim.api.core.v01.events.PersonArrivalEvent;
 import org.matsim.api.core.v01.events.PersonDepartureEvent;
 import org.matsim.api.core.v01.events.PersonEntersVehicleEvent;
 import org.matsim.api.core.v01.events.PersonLeavesVehicleEvent;
-import org.matsim.api.core.v01.events.handler.GenericEventHandler;
 import org.matsim.api.core.v01.events.handler.LinkEnterEventHandler;
 import org.matsim.api.core.v01.events.handler.PersonArrivalEventHandler;
 import org.matsim.api.core.v01.events.handler.PersonDepartureEventHandler;
@@ -24,8 +22,9 @@ import org.matsim.api.core.v01.population.Person;
 import org.matsim.vehicles.Vehicle;
 
 import ch.ethz.matsim.av.schedule.AVTransitEvent;
+import ch.ethz.matsim.av.schedule.AVTransitEventHandler;
 
-/* package */ class AVServiceListener implements PersonDepartureEventHandler, PersonArrivalEventHandler, GenericEventHandler, PersonEntersVehicleEventHandler,
+/* package */ class AVServiceListener implements PersonDepartureEventHandler, PersonArrivalEventHandler, AVTransitEventHandler, PersonEntersVehicleEventHandler,
         PersonLeavesVehicleEventHandler, LinkEnterEventHandler {
     final private Network network;
     final private AVServiceWriter writer;
@@ -84,6 +83,7 @@ import ch.ethz.matsim.av.schedule.AVTransitEvent;
         }
     }
 
+    @Override
     public void handleEvent(AVTransitEvent transitEvent) {
         AVServiceItem item = active.get(transitEvent.getPersonId());
 
@@ -111,13 +111,6 @@ import ch.ethz.matsim.av.schedule.AVTransitEvent;
             item.destinationLink = network.getLinks().get(arrivalEvent.getLinkId());
             item.inVehicleTime = arrivalEvent.getTime() - item.departureTime - item.waitingTime;
             writer.write(item);
-        }
-    }
-
-    @Override
-    public void handleEvent(GenericEvent genericEvent) {
-        if (genericEvent instanceof AVTransitEvent) {
-            handleEvent((AVTransitEvent) genericEvent);
         }
     }
 }

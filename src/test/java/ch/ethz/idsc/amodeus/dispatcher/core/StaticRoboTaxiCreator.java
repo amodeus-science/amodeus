@@ -13,6 +13,10 @@ import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
+import org.matsim.vehicles.VehicleCapacity;
+import org.matsim.vehicles.VehicleCapacityImpl;
+import org.matsim.vehicles.VehicleType;
+import org.matsim.vehicles.VehicleTypeImpl;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
@@ -28,6 +32,16 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     ;
 
     private static final int seats = 100; // just a large number as we are not testing capacity with that
+    
+    private static final VehicleType vehicleType;
+    
+    static {
+        vehicleType = new VehicleTypeImpl(Id.create("amodeusType", VehicleType.class));
+        
+        VehicleCapacity capacity = new VehicleCapacityImpl();
+        capacity.setSeats(seats);
+        vehicleType.setCapacity(capacity);
+    }
 
     /* package */ static final double TASK_END = 10.0;
     private static final String STAYINGVEHICLEID = "stayingRoboTaxi";
@@ -56,7 +70,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
     private static void setFirstPickupTask(RoboTaxi roboTaxi) {
         Schedule schedule = roboTaxi.getSchedule();
-        schedule.addTask(new AVPickupTask(0.0, TASK_END, roboTaxi.getDivertableLocation()));
+        schedule.addTask(new AVPickupTask(0.0, TASK_END, roboTaxi.getDivertableLocation(), 0.0));
         schedule.addTask(new AVStayTask(TASK_END, Double.POSITIVE_INFINITY, roboTaxi.getDivertableLocation()));
         schedule.nextTask();
     }
@@ -91,7 +105,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     private static RoboTaxi createRoboTaxi(Link divertableLink, Link vehicleLink) {
         LinkTimePair divertableLinkTime = new LinkTimePair(divertableLink, 0.0);
         Id<DvrpVehicle> idAv2 = Id.create(STAYINGVEHICLEID, DvrpVehicle.class);
-        AVVehicle vehicle = new AVVehicle(idAv2, vehicleLink, seats, 0.0, Double.POSITIVE_INFINITY);
+        AVVehicle vehicle = new AVVehicle(idAv2, vehicleLink, 0.0, Double.POSITIVE_INFINITY, vehicleType);
         return new RoboTaxi(vehicle, divertableLinkTime, divertableLinkTime.link, RoboTaxiUsageType.SHARED);
     }
 

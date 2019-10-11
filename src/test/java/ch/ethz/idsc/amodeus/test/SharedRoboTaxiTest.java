@@ -118,8 +118,8 @@ public class SharedRoboTaxiTest {
 
         AnalysisTestExport ate = testServer.getAnalysisTestExport();
 
-        /** number of processed requests */
-        assertEquals(2000, ate.getSimulationInformationElement().reqsize());
+        /** number of processed requests, 25 of the population are same-link trips that are not passed on to Amodeus */
+        assertEquals(1975, ate.getSimulationInformationElement().reqsize());
 
         /** fleet size */
         assertEquals(200, ate.getSimulationInformationElement().vehicleSize());
@@ -134,20 +134,21 @@ public class SharedRoboTaxiTest {
         Scalar distanceRatio = Mean.of(ate.getDistancElement().ratios).Get(1);
 
         ScalarAssert scalarAssert = new ScalarAssert();
-        scalarAssert.add(RationalScalar.of(16597, 80000), occupancyRatio);
-        scalarAssert.add((Scalar) RealScalar.of(0.323966658).map(Round._9), (Scalar) distanceRatio.map(Round._9));
+
+        scalarAssert.add(RationalScalar.of(55283, 270000), occupancyRatio);
+        scalarAssert.add((Scalar) RealScalar.of(0.318973780).map(Round._9), (Scalar) distanceRatio.map(Round._9));
 
         /** fleet distances */
         assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistance));
-        scalarAssert.add((Scalar) RealScalar.of(339062.65383).map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
+        scalarAssert.add((Scalar) RealScalar.of(339606.55728).map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
         assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistanceWtCst));
-        scalarAssert.add((Scalar) RealScalar.of(109712.05545).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
+        scalarAssert.add((Scalar) RealScalar.of(108021.44853).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
         assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistancePicku));
-        scalarAssert.add((Scalar) RealScalar.of(13408.35267).map(Round._5), (Scalar) ate.getDistancElement().totalDistancePicku.map(Round._5));
+        scalarAssert.add((Scalar) RealScalar.of(12779.35341).map(Round._5), (Scalar) ate.getDistancElement().totalDistancePicku.map(Round._5));
         assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistanceRebal));
-        scalarAssert.add((Scalar) RealScalar.of(215942.24571).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRebal.map(Round._5));
+        scalarAssert.add((Scalar) RealScalar.of(218805.75534).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRebal.map(Round._5));
         assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistanceRatio));
-        scalarAssert.add((Scalar) RealScalar.of(0.32357).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRatio.map(Round._5));
+        scalarAssert.add((Scalar) RealScalar.of(0.31808).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRatio.map(Round._5));
         scalarAssert.consolidate();
 
         ate.getDistancElement().totalDistancesPerVehicle.flatten(-1).forEach(s -> //
@@ -187,7 +188,6 @@ public class SharedRoboTaxiTest {
         assertTrue(new File(data, "DistanceRatios").isDirectory());
         assertTrue(new File(data, "DistanceRatios/DistanceRatios.mathematica").exists());
         assertTrue(new File("output/001/report/report.html").exists());
-        assertTrue(new File("output/001/report/av.xml").exists());
         assertTrue(new File("output/001/report/config.xml").exists());
     }
 

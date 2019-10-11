@@ -13,7 +13,7 @@ import org.matsim.core.router.util.TravelTime;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
-import ch.ethz.matsim.av.config.AVDispatcherConfig;
+import ch.ethz.matsim.av.config.operator.OperatorConfig;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
@@ -24,13 +24,13 @@ public abstract class SharedPartitionedDispatcher extends SharedRebalancingDispa
 
     protected SharedPartitionedDispatcher( //
             Config config, //
-            AVDispatcherConfig avconfig, //
+            OperatorConfig operatorConfig, //
             TravelTime travelTime, //
             ParallelLeastCostPathCalculator router, //
             EventsManager eventsManager, //
             VirtualNetwork<Link> virtualNetwork, //
             MatsimAmodeusDatabase db) {
-        super(config, avconfig, travelTime, router, eventsManager, db);
+        super(config, operatorConfig, travelTime, router, eventsManager, db);
 
         if (virtualNetwork == null) {
             throw new IllegalStateException(

@@ -11,6 +11,7 @@ import org.matsim.contrib.dvrp.run.DvrpModule;
 import org.matsim.contrib.dvrp.trafficmonitoring.DvrpTravelTimeModule;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
+import org.matsim.core.config.ConfigWriter;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup.ActivityParams;
 import org.matsim.core.controler.AbstractModule;
@@ -36,7 +37,7 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.test.AnalysisTestExport;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.matsim.av.framework.AVConfigGroup;
+import ch.ethz.matsim.av.config.AVConfigGroup;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.framework.AVQSimModule;
 import ch.ethz.matsim.av.framework.AVUtils;
@@ -65,7 +66,11 @@ public class SharedTestServer {
         System.out.println(workingDirectory);
         GlobalAssert.that(workingDirectory.isDirectory());
         scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
-        StaticHelper.changeDispatcherTo("NorthPoleSharedDispatcher", workingDirectory);
+        
+        Config config = ConfigUtils.loadConfig(scenarioOptions.getSimulationConfigName(), new DvrpConfigGroup(), new AVConfigGroup());
+        AVConfigGroup.getOrCreate(config).getOperatorConfigs().values().iterator().next().getDispatcherConfig().setType("NorthPoleSharedDispatcher");
+        new ConfigWriter(config).write(scenarioOptions.getSimulationConfigName());
+        
         simulate();
     }
 

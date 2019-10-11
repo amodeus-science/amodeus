@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.matsim.api.core.v01.Coord;
+import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -26,8 +27,8 @@ import ch.ethz.idsc.amodeus.net.TensorCoords;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
-import ch.ethz.matsim.av.config.AVDispatcherConfig;
-import ch.ethz.matsim.av.config.AVGeneratorConfig;
+import ch.ethz.matsim.av.config.operator.OperatorConfig;
+import ch.ethz.matsim.av.data.AVOperator;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.passenger.AVRequest;
@@ -53,13 +54,13 @@ public class SQMDispatcher extends PartitionedDispatcher {
     private final List<Link> virtualCenters;
     private final FastLinkLookup fastLinkLookup;
 
-    protected SQMDispatcher(Config config, AVDispatcherConfig avDispatcherConfig, //
-            TravelTime travelTime, AVGeneratorConfig generatorConfig, AVRouter router, //
+    protected SQMDispatcher(Config config, OperatorConfig operatorConfig, //
+            TravelTime travelTime, AVRouter router, //
             EventsManager eventsManager, Network network, //
             VirtualNetwork<Link> virtualNetwork, MatsimAmodeusDatabase db) {
-        super(config, avDispatcherConfig, travelTime, router, eventsManager, virtualNetwork, db);
+        super(config, operatorConfig, travelTime, router, eventsManager, virtualNetwork, db);
         // <- virtualNetwork is non-null here
-        GlobalAssert.that((int) generatorConfig.getNumberOfVehicles() == virtualNetwork.getvNodesCount());
+        GlobalAssert.that((int) operatorConfig.getGeneratorConfig().getNumberOfVehicles() == virtualNetwork.getvNodesCount());
         this.db = db;
         this.fastLinkLookup = new FastLinkLookup(network, db);
         this.virtualCenters = assignNodesToNearestLinks(virtualNetwork.getVirtualNodes());
@@ -157,10 +158,7 @@ public class SQMDispatcher extends PartitionedDispatcher {
         private EventsManager eventsManager;
 
         @Inject
-        private Network network;
-
-        @Inject
-        private VirtualNetwork<Link> virtualNetwork;
+        private Map<Id<AVOperator>, VirtualNetwork<Link>> virtualNetworks;
 
         @Inject
         private Config config;
@@ -169,11 +167,9 @@ public class SQMDispatcher extends PartitionedDispatcher {
         private MatsimAmodeusDatabase db;
 
         @Override
-        public AVDispatcher createDispatcher(AVDispatcherConfig avconfig, AVRouter router) {
-            AVGeneratorConfig generatorConfig = avconfig.getParent().getGeneratorConfig();
-
-            return new SQMDispatcher(config, avconfig, travelTime, generatorConfig, router, eventsManager, network, //
-                    virtualNetwork, db);
+        public AVDispatcher createDispatcher(OperatorConfig operatorConfig, AVRouter router, Network network) {
+            return new SQMDispatcher(config, operatorConfig, travelTime, router, eventsManager, network, //
+                    virtualNetworks.get(operatorConfig.getId()), db);
         }
     }
 

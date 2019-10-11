@@ -26,7 +26,7 @@ public class XmlAVSettingsTest {
         File scenarioDirectory = new File(Locate.repoFolder(XmlAVSettingsTest.class, "amodeus"), "resources/testScenario");
         GlobalAssert.that(workingDirectory.isDirectory());
         CopyFiles.now(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath(), //
-                Arrays.asList(new String[] { "av.xml" }), true);
+                Arrays.asList(new String[] { "config_full.xml" }), true);
 
         /** perform some action on it */
         XmlNumberOfVehiclesChanger.of(workingDirectory, 111);
@@ -47,7 +47,7 @@ public class XmlAVSettingsTest {
 
     @AfterClass
     public static void swipeFloor() throws IOException {
-        DeleteDirectory.of(new File("av.xml"), 1, 1);
+        DeleteDirectory.of(new File("config_full.xml"), 1, 1);
     }
 
 }

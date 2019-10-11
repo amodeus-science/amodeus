@@ -2,7 +2,10 @@
 package ch.ethz.idsc.amodeus.traveldata;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Objects;
+import java.util.zip.DataFormatException;
 
 import org.matsim.api.core.v01.network.Link;
 
@@ -12,6 +15,18 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 
 public enum TravelDataGet {
     ;
+
+    public static StaticTravelData readFile(VirtualNetwork<Link> virtualNetwork, File path) throws ClassNotFoundException, DataFormatException, IOException {
+        if (virtualNetwork == null) {
+            throw new IllegalStateException("Cannot read travel data if virtual network is null");
+        }
+
+        if (!path.exists()) {
+            throw new FileNotFoundException(path.toString());
+        }
+
+        return TravelDataIO.readStatic(path, virtualNetwork);
+    }
 
     public static StaticTravelData readStatic(VirtualNetwork<Link> virtualNetwork, ScenarioOptions scenarioOptions) {
         GlobalAssert.that(Objects.nonNull(virtualNetwork));

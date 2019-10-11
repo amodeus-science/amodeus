@@ -132,8 +132,8 @@ public class ScenarioPipeLineTest {
 
         AnalysisTestExport ate = testServer.getAnalysisTestExport();
 
-        /** number of processed requests */
-        assertEquals(2000, ate.getSimulationInformationElement().reqsize());
+        /** number of processed requests, 25 are same link requests and therefore are not covered by Amodeus */
+        assertEquals(1975, ate.getSimulationInformationElement().reqsize());
 
         /** fleet size */
         assertEquals(200, ate.getSimulationInformationElement().vehicleSize());
@@ -150,8 +150,8 @@ public class ScenarioPipeLineTest {
         Scalar distanceRatio = Mean.of(ate.getDistancElement().ratios).Get(1);
 
         //
-        scalarAssert.add(RationalScalar.of(2369, 28800), occupancyRatio);
-        scalarAssert.add(RealScalar.of(0.6740724342712175), distanceRatio);
+        scalarAssert.add(RationalScalar.of(88841, 1080000), occupancyRatio);
+        scalarAssert.add(RealScalar.of(0.669469728473632), distanceRatio);
 
         /** fleet distances */
         assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistance));
@@ -166,11 +166,11 @@ public class ScenarioPipeLineTest {
         assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).equals( //
                 ate.getDistancElement().totalDistance));
 
-        scalarAssert.add((Scalar) RealScalar.of(45566.56792).map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
-        scalarAssert.add((Scalar) RealScalar.of(37714.81659).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
-        scalarAssert.add(RealScalar.of(7851.751329216706), ate.getDistancElement().totalDistancePicku);
+        scalarAssert.add((Scalar) RealScalar.of(45698.95657).map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
+        scalarAssert.add((Scalar) RealScalar.of(37593.30920).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
+        scalarAssert.add((Scalar) RealScalar.of(8105.647362303572).map(Round._5), (Scalar) ate.getDistancElement().totalDistancePicku.map(Round._5));
         scalarAssert.add(RealScalar.of(0.0), ate.getDistancElement().totalDistanceRebal);
-        scalarAssert.add((Scalar) RealScalar.of(0.82769).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRatio.map(Round._5));
+        scalarAssert.add((Scalar) RealScalar.of(0.82263).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRatio.map(Round._5));
 
         scalarAssert.add((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle), //
                 ate.getDistancElement().totalDistance);
@@ -189,10 +189,10 @@ public class ScenarioPipeLineTest {
                 ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(2)));
         assertTrue(Scalars.lessEquals(Quantity.of(0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1)));
 
-        scalarAssert.add(Quantity.of(274.053, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1));
-        scalarAssert.add(Quantity.of(3267.0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(2));
-        scalarAssert.add(Quantity.of(RationalScalar.of(7107, 8), SI.SECOND), ate.getTravelTimeAnalysis().getDrveAggrgte().Get(1));
-        scalarAssert.add(Quantity.of(4070, SI.SECOND), ate.getTravelTimeAnalysis().getDrveAggrgte().Get(2));
+        scalarAssert.add(Quantity.of(282.95291139240504, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1));
+        scalarAssert.add(Quantity.of(3297.0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(2));
+        scalarAssert.add(Quantity.of(RationalScalar.of(355364, 395), SI.SECOND), ate.getTravelTimeAnalysis().getDrveAggrgte().Get(1));
+        scalarAssert.add(Quantity.of(4080, SI.SECOND), ate.getTravelTimeAnalysis().getDrveAggrgte().Get(2));
 
         /* TODO Have a look at {AmodeusModule::install}. At some point the travel time calculation in DVRP has been improved.
          * Unfortunately, this improvement breaks these tests.
@@ -223,7 +223,6 @@ public class ScenarioPipeLineTest {
         assertTrue(new File("output/001/data/DistanceRatios/DistanceRatios.mathematica").isFile());
 
         assertTrue(new File("output/001/report/report.html").isFile());
-        assertTrue(new File("output/001/report/av.xml").isFile());
         assertTrue(new File("output/001/report/config.xml").isFile());
     }
 
