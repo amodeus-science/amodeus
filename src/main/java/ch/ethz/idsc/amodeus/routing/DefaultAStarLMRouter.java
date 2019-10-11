@@ -48,6 +48,7 @@ public class DefaultAStarLMRouter implements AVRouter {
         @Inject
         @Named(AVModule.AV_MODE)
         TravelTime travelTime;
+
         @Inject
 
         @Override

@@ -21,15 +21,15 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     public final AVVehicle vehicle2;
     public final RoboTaxi roboTaxi1;
     public final RoboTaxi roboTaxi2;
-    
+
     static final VehicleType vehicleType;
-    
+
     static {
         vehicleType = new VehicleTypeImpl(Id.create("amodeusType", VehicleType.class));
-        
+
         VehicleCapacity capacity = new VehicleCapacityImpl();
         capacity.setSeats(3);
-        
+
         vehicleType.setCapacity(capacity);
     }
 

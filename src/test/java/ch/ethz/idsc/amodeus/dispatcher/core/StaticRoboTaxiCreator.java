@@ -32,12 +32,12 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     ;
 
     private static final int seats = 100; // just a large number as we are not testing capacity with that
-    
+
     private static final VehicleType vehicleType;
-    
+
     static {
         vehicleType = new VehicleTypeImpl(Id.create("amodeusType", VehicleType.class));
-        
+
         VehicleCapacity capacity = new VehicleCapacityImpl();
         capacity.setSeats(seats);
         vehicleType.setCapacity(capacity);

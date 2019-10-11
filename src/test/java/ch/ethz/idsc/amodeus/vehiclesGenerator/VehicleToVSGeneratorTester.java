@@ -47,12 +47,12 @@ public class VehicleToVSGeneratorTester {
     private static TravelData travelData123;
     private static TravelData travelData334;
     private static OperatorConfig operatorConfig;
-    
+
     private static final VehicleType vehicleType;
-    
+
     static {
         vehicleType = new VehicleTypeImpl(Id.create("amodeusType", VehicleType.class));
-        
+
         VehicleCapacity capacity = new VehicleCapacityImpl();
         capacity.setSeats(4);
         vehicleType.setCapacity(capacity);
@@ -80,7 +80,7 @@ public class VehicleToVSGeneratorTester {
         /** creating dummy config with 10 vehicles */
         operatorConfig = new OperatorConfig();
         operatorConfig.setId(Id.create("id", AVOperator.class));
-        
+
         GeneratorConfig avGeneratorConfig = operatorConfig.getGeneratorConfig();
         avGeneratorConfig.setType("strategy");
         avGeneratorConfig.setNumberOfVehicles(10);
@@ -158,7 +158,7 @@ public class VehicleToVSGeneratorTester {
                     new VehicleToVSGenerator(operatorConfig, virtualNetwork, travelData334, vehicleType);
             vehicleToVSGenerator.generateVehicles();
             assertEquals(vehicleToVSGenerator.getPlacedVehicles(), Tensors.vector(3, 3, 4));
-            
+
             if (i % 10 == 0) {
                 System.out.print(".");
             }

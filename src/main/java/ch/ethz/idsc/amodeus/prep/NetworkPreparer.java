@@ -27,12 +27,12 @@ public enum NetworkPreparer {
         Network modifiedNetwork = network;
 
         /** put any network modifications, e.g., cutting, here */
-        
+
         modifiedNetwork.setName(network.getName() + "_prepared");
         modifiedNetwork.setCapacityPeriod(network.getCapacityPeriod());
         modifiedNetwork.setEffectiveCellSize(network.getEffectiveCellSize());
         modifiedNetwork.setEffectiveLaneWidth(network.getEffectiveLaneWidth());
-        
+
         final File fileExportGz = new File(scenOptions.getPreparedNetworkName() + ".xml.gz");
         final File fileExport = new File(scenOptions.getPreparedNetworkName() + ".xml");
         {

@@ -201,8 +201,8 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
         public AVDispatcher createDispatcher(OperatorConfig operatorConfig, AVRouter router, Network network) {
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceCost.INSTANCE);
-            return new FeedforwardFluidicTimeVaryingRebalancingPolicy(config, operatorConfig, travelTime, router, eventsManager, network, virtualNetworks.get(operatorConfig.getId()),
-                    abstractVirtualNodeDest, abstractVehicleDestMatcher, travelData, db);
+            return new FeedforwardFluidicTimeVaryingRebalancingPolicy(config, operatorConfig, travelTime, router, eventsManager, network,
+                    virtualNetworks.get(operatorConfig.getId()), abstractVirtualNodeDest, abstractVehicleDestMatcher, travelData, db);
         }
     }
 }

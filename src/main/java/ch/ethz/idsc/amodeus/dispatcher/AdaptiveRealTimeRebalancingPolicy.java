@@ -212,7 +212,7 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
 
         @Inject
         private EventsManager eventsManager;
-        
+
         @Inject(optional = true)
         private Map<Id<AVOperator>, VirtualNetwork<Link>> virtualNetworks;
 

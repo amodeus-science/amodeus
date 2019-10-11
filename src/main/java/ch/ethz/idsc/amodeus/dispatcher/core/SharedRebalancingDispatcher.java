@@ -23,8 +23,8 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
  * to links which are not a dropoff or pickup location */
 public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatcher {
 
-    protected SharedRebalancingDispatcher(Config config, OperatorConfig operatorConfig, TravelTime travelTime,
-            ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, EventsManager eventsManager, //
+    protected SharedRebalancingDispatcher(Config config, OperatorConfig operatorConfig, TravelTime travelTime, ParallelLeastCostPathCalculator parallelLeastCostPathCalculator,
+            EventsManager eventsManager, //
             MatsimAmodeusDatabase db) {
         super(config, operatorConfig, travelTime, parallelLeastCostPathCalculator, eventsManager, db);
     }

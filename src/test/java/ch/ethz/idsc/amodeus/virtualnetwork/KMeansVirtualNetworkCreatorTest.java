@@ -39,7 +39,7 @@ public class KMeansVirtualNetworkCreatorTest {
         File scenarioDirectory = new File(Locate.repoFolder(KMeansVirtualNetworkCreatorTest.class, "amodeus"), "resources/testScenario");
         ScenarioOptions scenarioOptions = new ScenarioOptions(scenarioDirectory, ScenarioOptionsBase.getDefault());
         File configFile = new File(scenarioOptions.getPreparerConfigName());
-        
+
         AVConfigGroup avCg = new AVConfigGroup();
         Config config = ConfigUtils.loadConfig(configFile.getAbsolutePath(), avCg);
         GeneratorConfig genConfig = avCg.getOperatorConfigs().values().iterator().next().getGeneratorConfig();

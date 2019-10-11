@@ -66,11 +66,11 @@ public class SharedTestServer {
         System.out.println(workingDirectory);
         GlobalAssert.that(workingDirectory.isDirectory());
         scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
-        
+
         Config config = ConfigUtils.loadConfig(scenarioOptions.getSimulationConfigName(), new DvrpConfigGroup(), new AVConfigGroup());
         AVConfigGroup.getOrCreate(config).getOperatorConfigs().values().iterator().next().getDispatcherConfig().setType("NorthPoleSharedDispatcher");
         new ConfigWriter(config).write(scenarioOptions.getSimulationConfigName());
-        
+
         simulate();
     }
 

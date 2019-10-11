@@ -17,8 +17,8 @@ public enum VirtualNetworkGet {
     ;
 
     /** @param network
-     * @throws IOException, FileNotFoundException 
-     * @throws DataFormatException 
+     * @throws IOException, FileNotFoundException
+     * @throws DataFormatException
      * @throws ClassNotFoundException */
     public static VirtualNetwork<Link> readFile(Network network, File path) throws IOException, ClassNotFoundException, DataFormatException {
         if (!path.exists()) {
@@ -29,7 +29,7 @@ public enum VirtualNetworkGet {
             return VirtualNetworkIO.fromByte(map, path);
         }
     }
-    
+
     /** @param network
      * @return null if file does not exist
      * @throws IOException */

@@ -42,12 +42,12 @@ public class RandomDensityGenerator implements AVGenerator {
         List<AVVehicle> vehicles = new LinkedList<>();
         while (generatedVehicles < operatorConfig.getGeneratorConfig().getNumberOfVehicles()) {
             ++generatedVehicles;
-            
+
             int bound = network.getLinks().size();
             int elemRand = MatsimRandom.getRandom().nextInt(bound);
             Link link = network.getLinks().values().stream().skip(elemRand).findFirst().get();
             LOGGER.info("car placed at link " + link);
-            
+
             Id<DvrpVehicle> id = AVUtils.createId(operatorConfig.getId(), generatedVehicles);
             AVVehicle vehicle = new AVVehicle(id, link, 0.0, Double.POSITIVE_INFINITY, vehicleType);
             vehicles.add(vehicle);
