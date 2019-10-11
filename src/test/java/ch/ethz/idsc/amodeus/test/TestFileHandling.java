@@ -40,6 +40,8 @@ public enum TestFileHandling {
         singleFiles.add(new File("population.xml"));
         singleFiles.add(new File("AmodeusOptions.properties"));
         singleFiles.add(new File("LPOptions.properties"));
+        singleFiles.add(new File("generatedTravelData"));
+        singleFiles.add(new File("generatedVirtualNetwork"));
 
         for (File file : singleFiles) {
             if (file.exists())

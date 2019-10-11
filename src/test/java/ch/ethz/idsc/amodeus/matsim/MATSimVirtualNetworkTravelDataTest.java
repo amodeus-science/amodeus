@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.zip.DataFormatException;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
 import org.matsim.api.core.v01.Scenario;
@@ -157,4 +158,11 @@ public class MATSimVirtualNetworkTravelDataTest {
 
         return controler;
     }
+    
+    
+    @AfterClass
+    public static void tearDownOnce() throws IOException {
+        TestFileHandling.removeGeneratedFiles();
+    }
+    
 }
