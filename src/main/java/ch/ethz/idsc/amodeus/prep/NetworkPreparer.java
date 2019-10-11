@@ -3,14 +3,9 @@ package ch.ethz.idsc.amodeus.prep;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
-import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Network;
-import org.matsim.api.core.v01.network.Node;
-import org.matsim.core.network.algorithms.NetworkCleaner;
 import org.matsim.core.network.io.NetworkWriter;
 
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;

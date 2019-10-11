@@ -9,8 +9,6 @@ import java.util.List;
 
 import org.matsim.api.core.v01.network.Link;
 
-import ch.ethz.matsim.av.config.operator.GeneratorConfig;
-
 // TODO Joel redundant to StaticHelper in ch.ethz.idsc.amodeus.dispatcher.util
 /* package */ enum StaticHelper {
     ;
