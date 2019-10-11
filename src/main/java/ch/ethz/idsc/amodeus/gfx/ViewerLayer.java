@@ -29,7 +29,7 @@ import ch.ethz.idsc.amodeus.view.jmapviewer.AmodeusHeatMap;
 
     public ViewerLayer(AmodeusComponent amodeusComponent) {
         this.amodeusComponent = amodeusComponent;
-        loadSettings(amodeusComponent.defaultConfig.settings);
+        loadSettings(amodeusComponent.viewerConfig.settings);
     }
 
     protected abstract void createPanel(RowPanel rowPanel);

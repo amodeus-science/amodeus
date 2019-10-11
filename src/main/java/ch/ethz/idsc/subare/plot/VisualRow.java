@@ -9,13 +9,15 @@ import java.util.Objects;
 import ch.ethz.idsc.tensor.Tensor;
 
 public class VisualRow {
+    private static final Stroke STROKE_DEFAULT = new BasicStroke(1f);
+    // ---
     private final Tensor points;
     private final ComparableLabel comparableLabel;
     private Color color = Color.BLUE;
-    private Stroke stroke = new BasicStroke(2f);
+    private Stroke stroke = STROKE_DEFAULT;
 
     /** Mathematica::ListPlot[points]
-     * 
+     *
      * @param points of the form {{x1, y1}, {x2, y2}, ..., {xn, yn}}
      * @return */
     VisualRow(Tensor points, int index) {
@@ -26,14 +28,6 @@ public class VisualRow {
     /** @return points of the form {{x1, y1}, {x2, y2}, ..., {xn, yn}} */
     public Tensor points() {
         return points.unmodifiable();
-    }
-
-    public Tensor domain() {
-        return points.get(Tensor.ALL, 0).unmodifiable();
-    }
-
-    public Tensor values() {
-        return points.get(Tensor.ALL, 1).unmodifiable();
     }
 
     public void setColor(Color color) {

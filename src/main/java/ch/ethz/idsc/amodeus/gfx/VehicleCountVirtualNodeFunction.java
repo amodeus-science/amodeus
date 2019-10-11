@@ -24,8 +24,8 @@ import ch.ethz.idsc.tensor.sca.Increment;
         for (VehicleContainer vc : ref.vehicles) {
             int linkIndex = vc.linkTrace[vc.linkTrace.length - 1];
             Link link = db.getOsmLink(linkIndex).link;
-            VirtualNode<Link> vn = virtualNetwork.getVirtualNode(link);
-            count.set(Increment.ONE, vn.getIndex());
+            VirtualNode<Link> virtualNode = virtualNetwork.getVirtualNode(link);
+            count.set(Increment.ONE, virtualNode.getIndex());
         }
         return count;
     }

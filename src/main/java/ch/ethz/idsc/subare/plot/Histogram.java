@@ -18,7 +18,7 @@ public enum Histogram {
 
     /* package */ static JFreeChart of(VisualSet visualSet, boolean stacked) {
         Function<Scalar, String> naming = visualSet.visualRows().stream() //
-                .allMatch(visualRow -> visualRow.points().length() == 1 && visualSet.hasCommonDomain()) //
+                .allMatch(visualRow -> visualRow.points().length() == 1) //
                         ? s -> "" // special case with only one group/stack -> neglect group name
                         : Scalar::toString; // general case
         return JFreeCharts.barChart(visualSet, stacked, naming);

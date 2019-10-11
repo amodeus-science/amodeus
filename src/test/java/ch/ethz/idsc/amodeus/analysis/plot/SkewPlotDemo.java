@@ -44,8 +44,8 @@ enum SkewPlotDemo {
             // row2.setLabel("row 2");
             row2.setLabel("row 2");
 
-            visualSet.setDomainAxisLabel("x axis");
-            visualSet.setRangeAxisLabel("y axis");
+            visualSet.setAxesLabelX("x axis");
+            visualSet.setAxesLabelY("y axis");
         }
 
         /* amodeus specific */

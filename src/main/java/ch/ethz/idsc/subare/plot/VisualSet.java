@@ -6,19 +6,27 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import ch.ethz.idsc.amodeus.analysis.plot.ChartTheme;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.MatrixQ;
 import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.img.ColorDataLists;
+import org.jfree.chart.ChartFactory;
 
 public class VisualSet {
+    static {
+        ChartFactory.setChartTheme(ChartTheme.STANDARD);
+        // BarRenderer.setDefaultBarPainter(new StandardBarPainter());
+        // BarRenderer.setDefaultShadowsVisible(false);
+    }
+    // ---
     private final List<VisualRow> visualRows = new ArrayList<>();
     private final ColorDataIndexed colorDataIndexed;
     private String plotLabel = "";
-    private String domainAxisLabel = "";
-    private String rangeAxisLabel = "";
+    private String axesLabelX = "";
+    private String axesLabelY = "";
 
     public VisualSet(ColorDataIndexed colorDataIndexed) {
         this.colorDataIndexed = Objects.requireNonNull(colorDataIndexed);
@@ -58,13 +66,13 @@ public class VisualSet {
         return plotLabel;
     }
 
-    public String getDomainAxisLabel() {
-        return domainAxisLabel;
+    public String getAxesLabelX() {
+        return axesLabelX;
     }
 
     /** @return name of codomain/target set */
-    public String getRangeAxisLabel() {
-        return rangeAxisLabel;
+    public String getAxesLabelY() {
+        return axesLabelY;
     }
 
     public boolean hasLegend() {
@@ -77,19 +85,12 @@ public class VisualSet {
         plotLabel = string;
     }
 
-    public void setDomainAxisLabel(String string) {
-        domainAxisLabel = string;
+    public void setAxesLabelX(String string) {
+        axesLabelX = string;
     }
 
-    public void setRangeAxisLabel(String string) {
-        rangeAxisLabel = string;
+    public void setAxesLabelY(String string) {
+        axesLabelY = string;
     }
-
-    public boolean hasCommonDomain() {
-        return visualRows.isEmpty() || //
-                visualRows.stream().allMatch(visualRow -> getVisualRow(0).domain().equals(visualRow.domain()));
-    }
-
     // TODO is there a way to make better use of similarity?
-
 }
