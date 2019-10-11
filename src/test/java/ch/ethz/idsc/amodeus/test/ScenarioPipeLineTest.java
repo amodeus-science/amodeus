@@ -34,6 +34,7 @@ import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.red.Mean;
 import ch.ethz.idsc.tensor.red.Total;
+import ch.ethz.idsc.tensor.sca.Round;
 
 public class ScenarioPipeLineTest {
 
@@ -150,7 +151,7 @@ public class ScenarioPipeLineTest {
 
         //
         scalarAssert.add(RationalScalar.of(2369, 28800), occupancyRatio);
-        scalarAssert.add(RealScalar.of(0.6859942202326029), distanceRatio);
+        scalarAssert.add(RealScalar.of(0.6740724342712175), distanceRatio);
 
         /** fleet distances */
         assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistance));
@@ -165,11 +166,11 @@ public class ScenarioPipeLineTest {
         assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).equals( //
                 ate.getDistancElement().totalDistance));
 
-        scalarAssert.add(RealScalar.of(34023.54116536432), ate.getDistancElement().totalDistance);
-        scalarAssert.add(RealScalar.of(28712.764946237683), ate.getDistancElement().totalDistanceWtCst);
-        scalarAssert.add(RealScalar.of(5310.77621912671), ate.getDistancElement().totalDistancePicku);
+        scalarAssert.add((Scalar) RealScalar.of(45566.56792).map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
+        scalarAssert.add((Scalar) RealScalar.of(37714.81659).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
+        scalarAssert.add(RealScalar.of(7851.751329216706), ate.getDistancElement().totalDistancePicku);
         scalarAssert.add(RealScalar.of(0.0), ate.getDistancElement().totalDistanceRebal);
-        scalarAssert.add(RealScalar.of(0.8439087750062607), ate.getDistancElement().totalDistanceRatio);
+        scalarAssert.add((Scalar) RealScalar.of(0.82769).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRatio.map(Round._5));
 
         scalarAssert.add((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle), //
                 ate.getDistancElement().totalDistance);

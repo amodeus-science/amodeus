@@ -21,7 +21,6 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.Join;
 import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.red.Mean;
@@ -34,7 +33,7 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
     // ---
 
     private int simObjIndex = 0; // Index for the Simulation Object which is loaded
-    private List<VehicleStatistic> list = new ArrayList<>();
+    private List<VehicleTraceAnalyzer> list = new ArrayList<>();
     /** vector for instance {10, 20, ...} */
     public final Tensor time = Tensors.empty();
     /** vector for instance { 0.0, 0.2, 0.1, 0.3, ...} */
@@ -59,7 +58,7 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
     public boolean consolidated = false;
 
     public DistanceElement(int numVehicles, int size, MatsimAmodeusDatabase db) {
-        IntStream.range(0, numVehicles).forEach(i -> list.add(new VehicleStatistic(size, db)));
+        IntStream.range(0, numVehicles).forEach(i -> list.add(new VehicleTraceAnalyzer(size, db)));
     }
 
     @Override
@@ -86,18 +85,18 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
 
     @Override
     public void consolidate() {
-        list.forEach(VehicleStatistic::consolidate);
+        list.forEach(VehicleTraceAnalyzer::consolidate);
 
-        Tensor distTotal = list.stream().map(vs -> vs.distanceTotal).reduce(Tensor::add).get().multiply(KM2M);
-        Tensor distWtCst = list.stream().map(vs -> vs.distanceWithCustomer).reduce(Tensor::add).get().multiply(KM2M);
-        Tensor distPicku = list.stream().map(vs -> vs.distancePickup).reduce(Tensor::add).get().multiply(KM2M);
-        Tensor distRebal = list.stream().map(vs -> vs.distanceRebalance).reduce(Tensor::add).get().multiply(KM2M);
+        Tensor distTotal = list.stream().map(vs -> vs.stepDistanceTotal).reduce(Tensor::add).get().multiply(KM2M);
+        Tensor distWtCst = list.stream().map(vs -> vs.stepDistanceWithCustomer).reduce(Tensor::add).get().multiply(KM2M);
+        Tensor distPicku = list.stream().map(vs -> vs.stepDistancePickup).reduce(Tensor::add).get().multiply(KM2M);
+        Tensor distRebal = list.stream().map(vs -> vs.stepDistanceRebalance).reduce(Tensor::add).get().multiply(KM2M);
         Tensor distRatio = distTotal.map(InvertUnlessZero.FUNCTION).pmul(distWtCst);
         // ---
         distancesOverDay = Transpose.of(Tensors.of(distTotal, distWtCst, distPicku, distRebal, distRatio));
 
         // total distances driven per vehicle
-        totalDistancesPerVehicle = Tensor.of(list.stream().map(vs -> Total.of(vs.distanceTotal))).multiply(KM2M);
+        totalDistancesPerVehicle = Tensor.of(list.stream().map(vs -> Total.of(vs.stepDistanceTotal))).multiply(KM2M);
 
         // Total Values For one Day
         totalDistance = totalDistancesPerVehicle.stream().reduce(Tensor::add).get().Get();
@@ -110,17 +109,8 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
         consolidated = true;
     }
 
-    /** @return newest distances available {distTotal,distWtCst} */
-    public Tensor getNewestDistances() {
-        return list.stream() //
-                .map(VehicleStatistic::getLatestRecordings) //
-                .map(tensor -> tensor.extract(0, 2)) //
-                .reduce(Tensor::add) //
-                .orElse(Array.zeros(2));
-    }
-
     /** @return An unmodifiable List of all the Vehicle Statistics for all Vehicles in the fleet. */
-    public List<VehicleStatistic> getVehicleStatistics() {
+    public List<VehicleTraceAnalyzer> getVehicleStatistics() {
         return Collections.unmodifiableList(list);
     }
 

@@ -11,7 +11,7 @@ import ch.ethz.idsc.tensor.Tensor;
  * 
  * IMPORTANT:
  * if the functionality is required in amod or elsewhere, make a copy in the external repo */
-/* package */ enum SaveUtils {
+public enum SaveUtils {
     ;
 
     /** Saves tensor in all available file formats ({@link SaveFormats} to @param saveToFolder.
@@ -20,7 +20,7 @@ import ch.ethz.idsc.tensor.Tensor;
      * @param name
      * @param saveToFolder
      * @throws Exception */
-    static void saveFile(Tensor tensor, String name, File saveToFolder) throws Exception {
+    public static void saveFile(Tensor tensor, String name, File saveToFolder) throws Exception {
         saveFile(tensor, name, saveToFolder, SaveFormats.values());
     }
 
@@ -31,7 +31,7 @@ import ch.ethz.idsc.tensor.Tensor;
      * @param saveToFolder
      * @param formats
      * @throws Exception */
-    static void saveFile(Tensor tensor, String name, File saveToFolder, SaveFormats... formats) throws Exception {
+    /* package */ static void saveFile(Tensor tensor, String name, File saveToFolder, SaveFormats... formats) throws Exception {
         GlobalAssert.that(saveToFolder.isDirectory());
         File folder = createFileDir(name, saveToFolder, false);
         String formatsString = "";
@@ -42,7 +42,7 @@ import ch.ethz.idsc.tensor.Tensor;
         System.out.println("Saved " + name + " in formats " + formatsString + "to " + folder);
     }
 
-    static File createFileDir(String name, File saveToFolder, boolean copy) {
+    /* package */ static File createFileDir(String name, File saveToFolder, boolean copy) {
         File folder = new File(saveToFolder, name);
         int i = 0;
         while (copy && folder.isDirectory()) {

@@ -4,12 +4,10 @@ package ch.ethz.idsc.amodeus.linkspeed;
 import org.matsim.api.core.v01.network.Link;
 
 @FunctionalInterface
-public interface TaxiTrafficData {
-    /** Reads out velocity of given link at given time
-     * 
-     * @param link
-     * @param now
-     * @return velocity on {@link Link} at time now */
-    double getTravelTimeData(Link link, double now);
+/* package */ interface TaxiTrafficData {
+
+    /** @return speed in [m/s] on {@link Link} @param link
+     *         at time @param now (must return freespeed if no recordings present) */
+    public double getTrafficSpeed(Link link, double now);
 
 }

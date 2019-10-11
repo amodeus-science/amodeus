@@ -42,7 +42,11 @@ public class VehiclesLayer extends ViewerLayer {
         int carwidth = (int) Math.max(zoom <= 12 ? 2 : 3, Math.round(5 / amodeusComponent.getMeterPerPixel()));
         int car_half = carwidth / 2;
         Map<Integer, List<VehicleContainer>> map = //
+<<<<<<< HEAD
                 ref.vehicles.stream().collect(Collectors.groupingBy(VehicleContainer::getLastLinkIndex));
+=======
+                ref.vehicles.stream().collect(Collectors.groupingBy(this::indexFrom));
+>>>>>>> master
         for (Entry<Integer, List<VehicleContainer>> entry : map.entrySet()) {
             int size = entry.getValue().size();
             OsmLink osmLink = amodeusComponent.db.getOsmLink(entry.getKey());
@@ -164,5 +168,9 @@ public class VehiclesLayer extends ViewerLayer {
             bits.clear();
             settings.bits.stream().forEach(bits::set);
         }
+    }
+
+    private int indexFrom(VehicleContainer vc) {
+        return vc.linkTrace[vc.linkTrace.length - 1];
     }
 }

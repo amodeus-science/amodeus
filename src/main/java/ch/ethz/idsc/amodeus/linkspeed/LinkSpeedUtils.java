@@ -19,9 +19,13 @@ public enum LinkSpeedUtils {
      * @throws ClassNotFoundException
      * @throws IOException
      * @throws DataFormatException */
-    public static LinkSpeedDataContainer loadLinkSpeedData(File inputFile)//
-            throws ClassNotFoundException, IOException, DataFormatException {
-        return Import.object(inputFile);
+    public static LinkSpeedDataContainer loadLinkSpeedData(File inputFile) {
+        try {
+            return Import.object(inputFile);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
     }
 
     /** Writes the {@link LinkSpeedDataContainer} @param lsData to the location @param file

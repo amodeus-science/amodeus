@@ -5,6 +5,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import org.matsim.api.core.v01.events.Event;
 import org.matsim.api.core.v01.network.Link;
@@ -119,6 +120,8 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
      * stopped, also taxis which have lost their pickup assignment */
     private void afterStepTasks() {
         stopAbortedPickupRoboTaxis();
+        // flushLocationTraces();
+
     }
 
     private void consistencyCheck() {
@@ -135,15 +138,23 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
         if (!roboTaxis.isEmpty()) {
             for (RoboTaxi robotaxi : roboTaxis) {
                 final Link link = RoboTaxiLocation.of(robotaxi);
+<<<<<<< HEAD
                 if (link != null) {
                     robotaxi.lastKnownTime = time;
                     robotaxi.addKnownLocation(time, link);
+=======
+                if (Objects.nonNull(link)) {
+                    robotaxi.setLastKnownLocation(link);
+                    updateLocationTrace(robotaxi, link);
+>>>>>>> master
                 } else {
                     ++failed;
                 }
             }
         }
     }
+
+    /* package */ abstract void updateLocationTrace(RoboTaxi roboTaxi, Link lastKnownLoc);
 
     /* package */ abstract void executePickups();
 

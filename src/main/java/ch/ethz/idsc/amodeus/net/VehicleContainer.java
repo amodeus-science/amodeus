@@ -26,6 +26,7 @@ public class VehicleContainer implements Serializable {
 
     public int vehicleIndex = -1; // for tracking of individual vehicles
 
+<<<<<<< HEAD
     private NavigableMap<Long, Integer> linkTrace = new TreeMap<>();
     private NavigableMap<Long, RoboTaxiStatus> statusTrace = new TreeMap<>();
     private NavigableMap<Long, Integer> destTrace = new TreeMap<>();
@@ -37,6 +38,13 @@ public class VehicleContainer implements Serializable {
             return LINK_UNSPECIFIED;
         return linkTrace.lastEntry().getValue();
     }
+=======
+    /** Links the RoboTaxi traveled on ordered w.r.t time, the integer
+     * linkIndex is unrelated to MATSIM's LinkId, but is our own consecutive
+     * and memory efficient id, the value -1 is set in case the information is
+     * not available */
+    public int[] linkTrace = new int[] { LINK_UNSPECIFIED };
+>>>>>>> master
 
     /** record known link location: (@param time,@param linkIndex) */
     public void addLinkLocation(Long time, Integer linkIndex) {
@@ -50,6 +58,7 @@ public class VehicleContainer implements Serializable {
         return statusTrace.lastEntry().getValue();
     }
 
+<<<<<<< HEAD
     /** record {@link RoboTaxiStatus}: (@param time,@param status) */
     public void addStatus(Long time, RoboTaxiStatus status) {
         this.statusTrace.put(time, status);
@@ -68,4 +77,6 @@ public class VehicleContainer implements Serializable {
         this.destTrace.put(time, linkIndex);
     }
 
+=======
+>>>>>>> master
 }

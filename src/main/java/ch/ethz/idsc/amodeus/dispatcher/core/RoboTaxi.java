@@ -41,6 +41,7 @@ public class RoboTaxi {
 
     private final RoboTaxiUsageType usageType; // final might be removed if dispatchers can modify usage
 
+<<<<<<< HEAD
     /** These maps contains the past few {locations,statii,destinations} of the {@link RoboTaxi},
      * they are emptied regularly for memory efficiency */
     private NavigableMap<Long, Link> locationTrace = new TreeMap<>();
@@ -51,6 +52,10 @@ public class RoboTaxi {
 
     /** this is updated at the beginning of every dispatching step */
     /* package */ long lastKnownTime;
+=======
+    /** last known location of the RoboTaxi */
+    private Link lastKnownLocation;
+>>>>>>> master
 
     /** drive destination of the RoboTaxi, null for stay task */
 

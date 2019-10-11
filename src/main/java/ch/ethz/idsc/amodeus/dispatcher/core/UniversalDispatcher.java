@@ -1,13 +1,9 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -16,7 +12,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.matsim.api.core.v01.events.Event;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
@@ -27,19 +22,13 @@ import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
 
-import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDriveTaskTracker;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
-import ch.ethz.idsc.amodeus.net.SimulationDistribution;
-import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.net.SimulationObjectCompiler;
-import ch.ethz.idsc.amodeus.net.SimulationObjects;
-import ch.ethz.idsc.amodeus.net.StorageUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AVDispatcherConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
-import ch.ethz.matsim.av.dispatcher.AVVehicleAssignmentEvent;
 import ch.ethz.matsim.av.generator.AVGenerator;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
@@ -51,15 +40,13 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 /** purpose of {@link UniversalDispatcher} is to collect and manage
  * {@link AVRequest}s alternative implementation of {@link AVDispatcher};
  * supersedes {@link AbstractDispatcher}. */
-public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
-    private final MatsimAmodeusDatabase db;
-    private final FuturePathFactory futurePathFactory;
-    private final Set<AVRequest> pendingRequests = new LinkedHashSet<>();
+public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
     private final Map<AVRequest, RoboTaxi> pickupRegister = new HashMap<>();
     private final Map<AVRequest, RoboTaxi> rqstDrvRegister = new HashMap<>();
     private final Map<AVRequest, RoboTaxi> periodFulfilledRequests = new HashMap<>();
     private final Set<AVRequest> periodAssignedRequests = new HashSet<>();
     private final Set<AVRequest> periodPickedUpRequests = new HashSet<>();
+<<<<<<< HEAD
     private final double pickupDurationPerStop;
     private final double dropoffDurationPerStop;
     protected int publishPeriod; // not final, so that dispatchers can disable, or manipulate
@@ -80,36 +67,24 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
         dropoffDurationPerStop = avDispatcherConfig.getParent().getTimingParameters().getDropoffDurationPerStop();
         SafeConfig safeConfig = SafeConfig.wrap(avDispatcherConfig);
         publishPeriod = safeConfig.getInteger("publishPeriod", 10);
+=======
+
+    protected UniversalDispatcher(Config config, AVDispatcherConfig avDispatcherConfig, //
+            TravelTime travelTime, ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, //
+            EventsManager eventsManager, MatsimAmodeusDatabase db) {
+        super(eventsManager, config, avDispatcherConfig, travelTime, //
+                parallelLeastCostPathCalculator, db);
+>>>>>>> master
     }
 
     // ===================================================================================
     // Methods to use EXTERNALLY in derived dispatchers
-
-    /** @return {@Collection} of all {@AVRequests} which are currently open. Requests
-     *         are removed from list in setAcceptRequest function. */
-    protected synchronized final Collection<AVRequest> getAVRequests() {
-        return Collections.unmodifiableCollection(pendingRequests);
-    }
 
     /** @return {@link AVRequests}s currently not assigned to a vehicle */
     protected synchronized final List<AVRequest> getUnassignedAVRequests() {
         return pendingRequests.stream() //
                 .filter(r -> !pickupRegister.containsKey(r)) //
                 .collect(Collectors.toList());
-    }
-
-    /** Example call: getRoboTaxiSubset(RoboTaxiStatus.STAY,
-     * RoboTaxiStatus.DRIVEWITHCUSTOMER)
-     * 
-     * @param status {@ARoboTaxiStatus} of desired robotaxis, e.g.,
-     *            STAY,DRIVETOCUSTOMER,...
-     * @return list of {@link RoboTaxi}s which are in {@AVStatus} status */
-    public final List<RoboTaxi> getRoboTaxiSubset(RoboTaxiStatus... status) {
-        return getRoboTaxiSubset(EnumSet.copyOf(Arrays.asList(status)));
-    }
-
-    private List<RoboTaxi> getRoboTaxiSubset(Set<RoboTaxiStatus> status) {
-        return getRoboTaxis().stream().filter(rt -> status.contains(rt.getStatus())).collect(Collectors.toList());
     }
 
     /** @return divertable {@link RoboTaxi}s which currently not on a pickup drive */
@@ -120,14 +95,6 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
         GlobalAssert.that(!divertableUnassignedRoboTaxis.stream().anyMatch(pickupRegister::containsValue));
         GlobalAssert.that(divertableUnassignedRoboTaxis.stream().allMatch(RoboTaxi::isWithoutCustomer));
         return divertableUnassignedRoboTaxis;
-    }
-
-    /** @return {@Collection} of {@RoboTaxi}s which can be redirected during
-     *         iteration */
-    protected final Collection<RoboTaxi> getDivertableRoboTaxis() {
-        return getRoboTaxis().stream() //
-                .filter(RoboTaxi::isDivertable)//
-                .collect(Collectors.toList());
     }
 
     /** @return {@Collection} of {@RoboTaxi}s which is in stay task (idling) */
@@ -358,15 +325,6 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
         }
     }
 
-    /** called when a new request enters the system, adds request to
-     * {@link pendingRequests}, needs to be public because called from other not
-     * derived MATSim functions which are located in another package */
-    @Override
-    public final void onRequestSubmitted(AVRequest request) {
-        boolean added = pendingRequests.add(request);
-        GlobalAssert.that(added);
-    }
-
     /** function stops {@link RoboTaxi} which are still heading towards an
      * {@link AVRequest} but another {@link RoboTaxi} was scheduled to pickup this
      * {@link AVRequest} in the meantime */
@@ -398,6 +356,7 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
 
     }
 
+<<<<<<< HEAD
     /** save simulation data into {@link SimulationObject} for later analysis and
      * visualization. */
     @Override
@@ -449,6 +408,31 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
                 super.getInfoLine(), //
                 getAVRequests().size(), //
                 total_matchedRequests);
+=======
+    /* package */ void insertRequestInfo(SimulationObjectCompiler simulationObjectCompiler) {
+        /** pickup register must be after pending requests, request is pending from
+         * moment it appears until it is picked up, this period may contain several not
+         * connected pickup periods (cancelled pickup attempts) */
+        simulationObjectCompiler.insertRequests(pendingRequests, RequestStatus.REQUESTED);
+        simulationObjectCompiler.insertRequests(pickupRegister.keySet(), RequestStatus.PICKUPDRIVE);
+        simulationObjectCompiler.insertRequests(rqstDrvRegister.keySet(), RequestStatus.DRIVING);
+
+        /** the request is only contained in these three maps durnig 1 time step, which
+         * is why they must be inserted after the first three which (potentially) are
+         * for multiple time steps. */
+        simulationObjectCompiler.insertRequests(periodAssignedRequests, RequestStatus.ASSIGNED);
+        simulationObjectCompiler.insertRequests(periodPickedUpRequests, RequestStatus.PICKUP);
+        simulationObjectCompiler.insertRequests(periodFulfilledRequests.keySet(), RequestStatus.DROPOFF);
+
+        /** insert information of association of {@link RoboTaxi}s and {@link AVRequest}s */
+        simulationObjectCompiler.addRequestRoboTaxiAssoc(pickupRegister);
+        simulationObjectCompiler.addRequestRoboTaxiAssoc(rqstDrvRegister);
+        simulationObjectCompiler.addRequestRoboTaxiAssoc(periodFulfilledRequests);
+
+        periodFulfilledRequests.clear();
+        periodAssignedRequests.clear();
+        periodPickedUpRequests.clear();
+>>>>>>> master
     }
 
     @Override
@@ -464,9 +448,7 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
     /** adding a vehicle during setup of simulation, handeled by {@link AVGenerator} */
     @Override
     public final void addVehicle(AVVehicle vehicle) {
-        RoboTaxi roboTaxi = new RoboTaxi(vehicle, new LinkTimePair(vehicle.getStartLink(), 0.0), vehicle.getStartLink(), RoboTaxiUsageType.SINGLEUSED);
-        Event event = new AVVehicleAssignmentEvent(vehicle, 0);
-        addRoboTaxi(roboTaxi, event);
+        super.addVehicle(vehicle, RoboTaxiUsageType.SINGLEUSED);
     }
 
     /** updates the divertable locations, i.e., locations from which a
@@ -517,5 +499,4 @@ public abstract class UniversalDispatcher extends RoboTaxiMaintainer {
             };
         }
     }
-
 }

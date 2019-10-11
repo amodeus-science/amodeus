@@ -9,6 +9,7 @@ import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
+import ch.ethz.idsc.amodeus.analysis.SaveUtils;
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.amodeus.analysis.element.NumberPassengersAnalysis;
 import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionElement;
@@ -102,8 +103,7 @@ public enum NumberPassengerStatusDistribution implements AnalysisExport {
         for (int i = 0; i < statusLabels.length; ++i) {
             Tensor vals = valuesComplet.get(Tensor.ALL, i);
             vals = StaticHelper.FILTER_ON //
-                    ? MeanFilter.of(vals, StaticHelper.FILTERSIZE)
-                    : vals;
+                    ? MeanFilter.of(vals, StaticHelper.FILTERSIZE) : vals;
             VisualRow visualRow = visualSet.add(time, vals);
             visualRow.setLabel(statusLabels[i]);
         }
