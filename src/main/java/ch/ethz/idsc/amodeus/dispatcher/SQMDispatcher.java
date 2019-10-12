@@ -60,7 +60,7 @@ public class SQMDispatcher extends PartitionedDispatcher {
             VirtualNetwork<Link> virtualNetwork, MatsimAmodeusDatabase db) {
         super(config, operatorConfig, travelTime, router, eventsManager, virtualNetwork, db);
         // <- virtualNetwork is non-null here
-        GlobalAssert.that((int) operatorConfig.getGeneratorConfig().getNumberOfVehicles() == virtualNetwork.getvNodesCount());
+        GlobalAssert.that(operatorConfig.getGeneratorConfig().getNumberOfVehicles() == virtualNetwork.getvNodesCount());
         this.db = db;
         this.fastLinkLookup = new FastLinkLookup(network, db);
         this.virtualCenters = assignNodesToNearestLinks(virtualNetwork.getVirtualNodes());

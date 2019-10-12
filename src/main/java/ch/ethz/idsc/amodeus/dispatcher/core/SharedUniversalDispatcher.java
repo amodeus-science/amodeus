@@ -405,6 +405,7 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
 
     }
 
+    @Override
     /* package */ void insertRequestInfo(SimulationObjectCompiler simulationObjectCompiler) {
         simulationObjectCompiler.insertRequests(reqStatuses);
         simulationObjectCompiler.insertRequests(periodAssignedRequests, RequestStatus.ASSIGNED);

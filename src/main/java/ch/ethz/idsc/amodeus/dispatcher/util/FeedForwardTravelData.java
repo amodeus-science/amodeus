@@ -33,7 +33,7 @@ import ch.ethz.matsim.av.config.operator.GeneratorConfig;
                 AVConfigGroup avConfigGroup = new AVConfigGroup();
                 Config config = ConfigUtils.loadConfig(scenarioOptions.getSimulationConfigName(), avConfigGroup);
                 GeneratorConfig avGeneratorConfig = avConfigGroup.getOperatorConfigs().values().iterator().next().getGeneratorConfig();
-                int numRt = (int) avGeneratorConfig.getNumberOfVehicles();
+                int numRt = avGeneratorConfig.getNumberOfVehicles();
                 int endTime = (int) config.qsim().getEndTime();
                 Scenario scenario = ScenarioUtils.loadScenario(config);
 

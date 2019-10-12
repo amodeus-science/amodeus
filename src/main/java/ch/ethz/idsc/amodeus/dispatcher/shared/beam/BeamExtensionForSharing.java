@@ -125,7 +125,8 @@ public class BeamExtensionForSharing {
         Optional<Scalar> angle = directionAngle(roboTaxi, request2);
         /** check if the direction of the Request is similar */
         return angle.isPresent() //
-                ? angle.get().number().doubleValue() < phiMax : false;
+                ? angle.get().number().doubleValue() < phiMax
+                : false;
     }
 
     /** As we plan to make the order of pickups and dropoffs such that first all pickups then all dropoffs it makes sense that not dropoffs are planed than

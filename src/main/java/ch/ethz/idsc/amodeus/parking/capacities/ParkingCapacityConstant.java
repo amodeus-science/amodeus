@@ -29,8 +29,7 @@ public class ParkingCapacityConstant implements ParkingCapacity {
     public Collection<Id<Link>> getAvailableLinks() {
         if (capacity > 0) // all links
             return network.getLinks().keySet();
-        else // or empty set
-            return new ArrayList<Id<Link>>();
+        return new ArrayList<>();
     }
 
 }

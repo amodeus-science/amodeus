@@ -21,13 +21,12 @@ public enum VirtualNetworkGet {
      * @throws DataFormatException
      * @throws ClassNotFoundException */
     public static VirtualNetwork<Link> readFile(Network network, File path) throws IOException, ClassNotFoundException, DataFormatException {
-        if (!path.exists()) {
+        if (!path.exists())
             throw new FileNotFoundException(path.toString());
-        } else {
-            Map<String, Link> map = new HashMap<>();
-            network.getLinks().entrySet().forEach(e -> map.put(e.getKey().toString(), e.getValue()));
-            return VirtualNetworkIO.fromByte(map, path);
-        }
+
+        Map<String, Link> map = new HashMap<>();
+        network.getLinks().entrySet().forEach(e -> map.put(e.getKey().toString(), e.getValue()));
+        return VirtualNetworkIO.fromByte(map, path);
     }
 
     /** @param network

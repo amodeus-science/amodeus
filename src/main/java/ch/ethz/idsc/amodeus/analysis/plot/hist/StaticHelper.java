@@ -1,7 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.analysis.plot.hist;
 
-/* package */ class StaticHelper {
+/* package */ enum StaticHelper {
     ;
 
     public static String binName(double binSize, int i) {

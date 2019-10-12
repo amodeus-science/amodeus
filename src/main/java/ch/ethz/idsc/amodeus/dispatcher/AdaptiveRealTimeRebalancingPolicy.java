@@ -82,7 +82,7 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
         super(config, operatorConfig, travelTime, router, eventsManager, virtualNetwork, db);
         virtualNodeDest = abstractVirtualNodeDest;
         vehicleDestMatcher = abstractVehicleDestMatcher;
-        numRobotaxi = (int) operatorConfig.getGeneratorConfig().getNumberOfVehicles();
+        numRobotaxi = operatorConfig.getGeneratorConfig().getNumberOfVehicles();
         lpMinFlow = new LPMinFlow(virtualNetwork);
         lpMinFlow.initiateLP();
         DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());

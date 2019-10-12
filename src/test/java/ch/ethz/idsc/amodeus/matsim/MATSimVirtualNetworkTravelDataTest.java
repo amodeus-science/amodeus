@@ -90,7 +90,7 @@ public class MATSimVirtualNetworkTravelDataTest {
         Assert.assertNotEquals(virtualNetworkIds.get(0), virtualNetworkIds.get(1));
     }
 
-    private Controler prepare() throws IOException {
+    private static Controler prepare() throws IOException {
         File scenarioDirectory = new File(Locate.repoFolder(StandardMATSimScenarioTest.class, "amodeus"), "resources/testScenario");
         File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         GlobalAssert.that(workingDirectory.isDirectory());
@@ -158,11 +158,10 @@ public class MATSimVirtualNetworkTravelDataTest {
 
         return controler;
     }
-    
-    
+
     @AfterClass
     public static void tearDownOnce() throws IOException {
         TestFileHandling.removeGeneratedFiles();
     }
-    
+
 }
