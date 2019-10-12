@@ -269,7 +269,7 @@ public class StandardMATSimScenarioTest {
                 lpOptions.setProperty(LPOptionsBase.LPSOLVER, "timeInvariant");
                 lpOptions.saveAndOverwriteLPOptions();
                 TravelData travelData = StaticTravelDataCreator.create(simOptions.getWorkingDirectory(), virtualNetworks.get(AVOperator.createId("test")),
-                        networks.get(AVOperator.createId("test")), population, simOptions.getdtTravelData(), (int) generatorConfig.getNumberOfVehicles(), endTime);
+                        networks.get(AVOperator.createId("test")), population, simOptions.getdtTravelData(), generatorConfig.getNumberOfVehicles(), endTime);
 
                 return Collections.singletonMap(AVOperator.createId("test"), travelData);
             }

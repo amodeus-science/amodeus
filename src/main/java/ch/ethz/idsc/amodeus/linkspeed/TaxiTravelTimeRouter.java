@@ -69,7 +69,7 @@ public class TaxiTravelTimeRouter implements AVRouter {
         public AVRouter createRouter(RouterConfig routerConfig, Network network) {
             Objects.requireNonNull(db);
             TravelTime travelTime = new LSDataTravelTime(lsData, db);
-            return new TaxiTravelTimeRouter(DefaultParallelLeastCostPathCalculator.create((int) config.getNumberOfThreads(), //
+            return new TaxiTravelTimeRouter(DefaultParallelLeastCostPathCalculator.create(config.getNumberOfThreads(), //
                     new DijkstraFactory(), network, new OnlyTimeDependentTravelDisutility(travelTime), travelTime));
         }
     }
