@@ -97,7 +97,8 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
         }
 
         virtualNodesCount = Objects.isNull(virtualNetwork) //
-                ? UNDEFINED_INT : virtualNetwork.getvNodesCount();
+                ? UNDEFINED_INT
+                : virtualNetwork.getvNodesCount();
 
         iterations = config.controler().getLastIteration();
 

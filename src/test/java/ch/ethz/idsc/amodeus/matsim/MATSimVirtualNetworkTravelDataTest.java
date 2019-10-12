@@ -158,11 +158,10 @@ public class MATSimVirtualNetworkTravelDataTest {
 
         return controler;
     }
-    
-    
+
     @AfterClass
     public static void tearDownOnce() throws IOException {
         TestFileHandling.removeGeneratedFiles();
     }
-    
+
 }

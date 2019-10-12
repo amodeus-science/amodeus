@@ -23,7 +23,7 @@ public enum LocalDateTimes {
      *         the {@link LocalDateTime} @param ldt2 and false otherwise. */
     public static boolean lessThan(LocalDateTime ldt1, LocalDateTime ldt2) {
         return ldt1.toInstant(ZoneOffset.UTC).toEpochMilli() < //
-        ldt2.toInstant(ZoneOffset.UTC).toEpochMilli();
+                ldt2.toInstant(ZoneOffset.UTC).toEpochMilli();
     }
 
     /** @return the {@link LocalDateTime} @param ldt to which @param seconds were added, works

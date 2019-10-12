@@ -27,9 +27,8 @@ public enum TravelTimeExport implements AnalysisExport {
             UnitSaveUtils.saveFile(travelTime.requstStmps.getTable(), identifier, relDir);
             File dataFolder = new File(relDir, identifier);
             GlobalAssert.that(dataFolder.isDirectory());
-            SaveFormats.CSV.save(
-                    Tensors.fromString("request index, submission time, "//
-                            + "assignment time, pickup time, dropoff time"), //
+            SaveFormats.CSV.save(Tensors.fromString("request index, submission time, "//
+                    + "assignment time, pickup time, dropoff time"), //
                     dataFolder, "description");
         } catch (Exception e) {
             System.err.println("Error saving the travel time information for every request.");

@@ -169,9 +169,8 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
         }
 
         /** PARKING EXTENSION */
-        parkingStrategy
-                .keepFree(getRoboTaxiSubset(RoboTaxiStatus.STAY), //
-                        getRoboTaxiSubset(RoboTaxiStatus.REBALANCEDRIVE), round_now)//
+        parkingStrategy.keepFree(getRoboTaxiSubset(RoboTaxiStatus.STAY), //
+                getRoboTaxiSubset(RoboTaxiStatus.REBALANCEDRIVE), round_now)//
                 .forEach((rt, l) -> setRoboTaxiRebalance(rt, l));
         /** PARKING EXTENSION */
     }

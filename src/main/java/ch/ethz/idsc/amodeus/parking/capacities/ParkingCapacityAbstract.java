@@ -21,7 +21,8 @@ public abstract class ParkingCapacityAbstract implements ParkingCapacity {
     @Override
     public long getSpatialCapacity(Id<Link> linkId) {
         return capacities.containsKey(linkId) //
-                ? capacities.get(linkId) : 0;
+                ? capacities.get(linkId)
+                : 0;
     }
 
     /** @return {@link Collection} of all {@link Id<Link>}s which
