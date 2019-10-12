@@ -10,7 +10,7 @@ import com.google.inject.Singleton;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 
 @Singleton
-/* package */ class DefaultTaxiTrafficData implements TaxiTrafficData {
+public class DefaultTaxiTrafficData implements TaxiTrafficData {
 
     private final LinkSpeedDataContainer lsData;
     private final MatsimAmodeusDatabase db;
@@ -31,5 +31,10 @@ import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
                 speed = trafficSpeed;
         }
         return speed;
+    }
+
+    @Override
+    public LinkSpeedDataContainer getLSData() {
+        return lsData;
     }
 }
