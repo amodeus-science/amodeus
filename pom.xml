@@ -13,7 +13,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<github.global.server>github</github.global.server>
 		<matsim.version>11.0</matsim.version>
-		<av.version>1.0.2-matsim11</av.version>
+		<av.version>1.0.3-matsim11</av.version>
 	</properties>
 
 	<dependencies>
