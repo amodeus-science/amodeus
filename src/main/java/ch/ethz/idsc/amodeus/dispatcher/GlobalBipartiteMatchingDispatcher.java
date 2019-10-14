@@ -91,8 +91,7 @@ public class GlobalBipartiteMatchingDispatcher extends RebalancingDispatcher {
 
         @Override
         public AVDispatcher createDispatcher(OperatorConfig operatorConfig, AVRouter router, Network network) {
-            return new GlobalBipartiteMatchingDispatcher( //
-                    network, config, operatorConfig, travelTime, router, eventsManager, db);
+            return new GlobalBipartiteMatchingDispatcher(network, config, operatorConfig, travelTime, router, eventsManager, db);
         }
     }
 }
