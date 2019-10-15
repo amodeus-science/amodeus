@@ -38,7 +38,7 @@ public enum DistanceDistributionOverDayImage implements AnalysisExport {
         }
 
         visualSet.setPlotLabel("Distance Distribution over Day");
-        visualSet.setAxesLabelY("Distance [km]");
+        visualSet.setAxesLabelY(String.format("Distance [%s]", DistanceElement.TARGET_UNIT));
 
         JFreeChart chart = StackedTimedChart.of(visualSet);
 
