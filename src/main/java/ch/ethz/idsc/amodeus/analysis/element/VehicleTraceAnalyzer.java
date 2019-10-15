@@ -5,13 +5,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+import ch.ethz.idsc.tensor.qty.Quantity;
+import ch.ethz.idsc.tensor.qty.Unit;
+import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.VehicleContainer;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Array;
@@ -19,6 +21,7 @@ import ch.ethz.idsc.tensor.alg.Array;
 public class VehicleTraceAnalyzer {
 
     private final MatsimAmodeusDatabase db;
+    private final Unit unit;
 
     public final Tensor stepDistanceTotal;
     public final Tensor stepDistanceWithCustomer;
@@ -34,10 +37,12 @@ public class VehicleTraceAnalyzer {
 
     public VehicleTraceAnalyzer(int stepsMax, MatsimAmodeusDatabase db) {
         this.db = db;
-        stepDistanceTotal = Array.zeros(stepsMax);
-        stepDistanceWithCustomer = Array.zeros(stepsMax);
-        stepDistancePickup = Array.zeros(stepsMax);
-        stepDistanceRebalance = Array.zeros(stepsMax);
+        unit = db.referenceFrame.unit();
+        ScalarUnaryOperator applyUnit = s -> Quantity.of(s, unit);
+        stepDistanceTotal = Array.zeros(stepsMax).map(applyUnit);
+        stepDistanceWithCustomer = Array.zeros(stepsMax).map(applyUnit);
+        stepDistancePickup = Array.zeros(stepsMax).map(applyUnit);
+        stepDistanceRebalance = Array.zeros(stepsMax).map(applyUnit);
     }
 
     public void register(int simObjIndex, VehicleContainer vc) {
@@ -65,7 +70,7 @@ public class VehicleTraceAnalyzer {
                 if (prevListHead.linkTrace.length > 1 && frstInNew != lastInOld) {
                     Link lastInOldLink = db.getOsmLink(lastInOld).link;
                     double dist = lastInOldLink.getLength();
-                    addDistanceAt(prevIndex, prevListHead.roboTaxiStatus, RealScalar.of(dist));
+                    addDistanceAt(prevIndex, prevListHead.roboTaxiStatus, Quantity.of(dist, unit));
                 }
             }
 
@@ -86,7 +91,7 @@ public class VehicleTraceAnalyzer {
             int parts = Math.toIntExact(list.stream().filter(vc -> vc.roboTaxiStatus.isDriving()).count());
 
             /** distance covered by one {@link VehicleContainer} */
-            Scalar distPerStep = RealScalar.of(distance / parts);
+            Scalar distPerStep = Quantity.of(distance / parts, unit);
             int count = 0;
             for (VehicleContainer vehicleContainer : list) {
                 final int index = simObjIndLastLinkChange + count;
