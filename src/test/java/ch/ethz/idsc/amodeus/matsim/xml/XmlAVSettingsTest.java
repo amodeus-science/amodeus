@@ -27,13 +27,16 @@ public class XmlAVSettingsTest {
         GlobalAssert.that(workingDirectory.isDirectory());
         CopyFiles.now(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath(), //
                 Arrays.asList(new String[] { "config_full.xml" }), true);
+        
+        
+        String configFilePath = new File(scenarioDirectory,"config_full.xml").getAbsolutePath();
 
         /** perform some action on it */
-        XmlNumberOfVehiclesChanger.of(workingDirectory, 111);
+        ConfigVehiclesChanger.change(configFilePath, 111);
         XmlRebalancingPeriodChanger.of(workingDirectory, 222);
         XmlDispatchPeriodChanger.of(workingDirectory, 333);
         XmlGeneratorChanger.of(workingDirectory, "Tannhaeuser");
-        XmlDispatcherChanger.of(workingDirectory, "FliegenderHollaender");
+        ConfigDispatcherChanger.change(configFilePath, "FliegenderHollaender");
         XmlDistanceHeuristicChanger.of(workingDirectory, "Lohegrin22");
 
         // TODO when less lazy, open and inspect av.xml, write some tests..
