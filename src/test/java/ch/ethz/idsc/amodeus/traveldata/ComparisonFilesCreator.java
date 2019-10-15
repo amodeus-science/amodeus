@@ -16,7 +16,7 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkGet;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkIO;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkIOTest;
 
-public enum ComparisonFilesCreator {
+/* package */ enum ComparisonFilesCreator {
     ;
 
     /** This file can be used to generate the files resources/testScenario/virtualNetwork and

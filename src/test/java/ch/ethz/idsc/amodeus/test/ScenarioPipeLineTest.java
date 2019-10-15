@@ -151,7 +151,7 @@ public class ScenarioPipeLineTest {
 
         //
         scalarAssert.add(RationalScalar.of(88841, 1080000), occupancyRatio);
-        scalarAssert.add(RealScalar.of(0.669469728473632), distanceRatio);
+        scalarAssert.add((Scalar) RealScalar.of(0.669469728473632).map(Round._5), (Scalar) distanceRatio.map(Round._5));
 
         /** fleet distances */
         assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistance));
