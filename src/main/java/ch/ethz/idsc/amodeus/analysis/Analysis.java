@@ -240,7 +240,7 @@ public class Analysis {
         for (int index = 0; index < size; ++index) {
             SimulationObject simulationObject = storageSupplier.getSimulationObject(index);
             analysisElements.stream().forEach(analysisElement -> analysisElement.register(simulationObject));
-            if (simulationObject.now % 10000 == 0)
+            if (simulationObject.now % 10_000 == 0)
                 System.out.println(simulationObject.now);
         }
 
