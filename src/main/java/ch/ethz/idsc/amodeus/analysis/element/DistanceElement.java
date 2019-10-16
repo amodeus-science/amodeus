@@ -23,7 +23,6 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Join;
 import ch.ethz.idsc.tensor.alg.Transpose;
-import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.qty.Unit;
 import ch.ethz.idsc.tensor.qty.UnitConvert;
 import ch.ethz.idsc.tensor.red.Mean;
@@ -46,12 +45,12 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
     /** fields assigned in compile */
     public Tensor totalDistancesPerVehicle;
     public Tensor distancesOverDay;
-    public Quantity totalDistance;
-    public Quantity totalDistanceWtCst;
-    public Quantity totalDistancePicku;
-    public Quantity totalDistanceRebal;
+    public Scalar totalDistance;
+    public Scalar totalDistanceWtCst;
+    public Scalar totalDistancePicku;
+    public Scalar totalDistanceRebal;
     public Scalar totalDistanceRatio;
-    private Quantity avgTripDistance;
+    private Scalar avgTripDistance;
     public Scalar avgOccupancy;
 
     /** distRatio */
@@ -103,12 +102,12 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
         totalDistancesPerVehicle = Tensor.of(list.stream().map(vs -> Total.of(vs.stepDistanceTotal))).map(any2target);
 
         // Total Values For one Day
-        totalDistance = (Quantity) totalDistancesPerVehicle.stream().reduce(Tensor::add).get().Get();
-        totalDistanceWtCst = (Quantity) distWtCst.stream().reduce(Tensor::add).get().Get();
-        totalDistancePicku = (Quantity) distPicku.stream().reduce(Tensor::add).get().Get();
-        totalDistanceRebal = (Quantity) distRebal.stream().reduce(Tensor::add).get().Get();
+        totalDistance = totalDistancesPerVehicle.stream().reduce(Tensor::add).get().Get();
+        totalDistanceWtCst = distWtCst.stream().reduce(Tensor::add).get().Get();
+        totalDistancePicku = distPicku.stream().reduce(Tensor::add).get().Get();
+        totalDistanceRebal = distRebal.stream().reduce(Tensor::add).get().Get();
         totalDistanceRatio = totalDistanceWtCst.divide(totalDistance);
-        avgTripDistance = (Quantity) totalDistanceWtCst.divide(RealScalar.of(requestIndices.size()));
+        avgTripDistance = totalDistanceWtCst.divide(RealScalar.of(requestIndices.size()));
         ratios = Transpose.of(Join.of(Tensors.of(occupancyTensor), Tensors.of(distRatio)));
         consolidated = true;
     }

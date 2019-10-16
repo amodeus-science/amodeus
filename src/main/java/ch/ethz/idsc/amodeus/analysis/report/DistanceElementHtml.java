@@ -10,7 +10,8 @@ import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.StackedDistanceChartImage;
 import ch.ethz.idsc.amodeus.analysis.element.DistanceElement;
 import ch.ethz.idsc.tensor.RealScalar;
-import ch.ethz.idsc.tensor.qty.Quantity;
+import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.qty.QuantityUnit;
 
 public enum DistanceElementHtml implements HtmlReportElement {
     INSTANCE;
@@ -25,7 +26,6 @@ public enum DistanceElementHtml implements HtmlReportElement {
         // Aggregated Results:
         String aRKey = BodyElementKeys.AGGREGATERESULTS;
         HtmlBodyElement aRElement = new HtmlBodyElement();
-        // aRElement.getHTMLGenerator();
         aRElement.getHTMLGenerator().insertTextLeft( //
                 "\nDistance Ratio:" + //
                 "\nOccupancy Ratio:" + //
@@ -50,7 +50,7 @@ public enum DistanceElementHtml implements HtmlReportElement {
                 "\n" + format(de.totalDistanceWtCst) + " (" + //
                 DECIMAL.format(100 * de.totalDistanceWtCst.number().doubleValue() / de.totalDistance.number().doubleValue()) + "%)" + //
                 "\n" + //
-                "\n" + format((Quantity) de.totalDistanceWtCst.divide(RealScalar.of(de.requestIndices.size()))));
+                "\n" + format(de.totalDistanceWtCst.divide(RealScalar.of(de.requestIndices.size()))));
         File img = new File(IMAGE_FOLDER, StackedDistanceChartImage.FILENAME + ".png");
         aRElement.getHTMLGenerator() //
                 .insertImg(img.getPath(), StackedDistanceChartImage.WIDTH, StackedDistanceChartImage.HEIGHT);
@@ -58,7 +58,7 @@ public enum DistanceElementHtml implements HtmlReportElement {
         return bodyElements;
     }
 
-    private String format(Quantity quantity) {
-        return DECIMAL.format(quantity.number().doubleValue()) + " " + quantity.unit();
+    private String format(Scalar scalar) {
+        return DECIMAL.format(scalar.number().doubleValue()) + " " + QuantityUnit.of(scalar);
     }
 }
