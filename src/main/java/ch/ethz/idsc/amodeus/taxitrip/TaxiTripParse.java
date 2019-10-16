@@ -3,7 +3,7 @@ package ch.ethz.idsc.amodeus.taxitrip;
 
 import java.time.LocalDateTime;
 
-import ch.ethz.idsc.amodeus.util.CsvReader;
+import ch.ethz.idsc.amodeus.util.io.CsvReader;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;

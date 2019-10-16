@@ -1,9 +1,10 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.util.math;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class IntPoint {
+public class IntPoint implements Serializable {
     public final int x;
     public final int y;
 
