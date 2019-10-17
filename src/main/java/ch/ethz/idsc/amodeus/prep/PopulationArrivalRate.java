@@ -31,7 +31,7 @@ public enum PopulationArrivalRate {
             int vNodeIndexFrom = virtualNetwork.getVirtualNode(request.startLink()).getIndex();
             int vNodeIndexTo = virtualNetwork.getVirtualNode(request.endLink()).getIndex();
             // add customer to matrix
-            lambda.set(s -> s.add(RealScalar.ONE), timeIndex, vNodeIndexFrom, vNodeIndexTo);
+            lambda.set(RealScalar.ONE::add, timeIndex, vNodeIndexFrom, vNodeIndexTo);
         }
         return lambda;
     }

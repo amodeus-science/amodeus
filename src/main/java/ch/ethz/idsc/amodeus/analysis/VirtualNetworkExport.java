@@ -27,7 +27,7 @@ import ch.ethz.idsc.tensor.img.ColorDataIndexed;
             copyToDir.delete();
             copyToDir.mkdirs();
             for (File file : new MultiFileReader(virtualNetworkFolder).getFolderFiles()) {
-                Files.copy(file, new File(copyToDir + "/" + file.getName()));
+                Files.copy(file, new File(copyToDir, file.getName()));
             }
         } catch (IOException exception) {
             System.err.println("The virtual network file was not copied to the data directory...");

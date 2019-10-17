@@ -47,7 +47,7 @@ public final class TheApocalypse {
         return this;
     }
 
-    public final void people() {
+    public void people() {
         System.out.println("Population size: " + population.getPersons().values().size());
     }
 }

@@ -20,7 +20,8 @@ import ch.ethz.idsc.tensor.Tensors;
 
 public class MatsimRectangleVirtualNetworkCreator {
 
-    public static VirtualNetwork<Link> createVirtualNetwork(Population population, Network network, boolean completeGraph, //
+    public static VirtualNetwork<Link> createVirtualNetwork( //
+            Population population, Network network, boolean completeGraph, //
             int divLat, int divLng) {
         /** bounds */
         Tensor bounds = NetworkBounds.of(network);
@@ -36,7 +37,8 @@ public class MatsimRectangleVirtualNetworkCreator {
         @SuppressWarnings("unchecked")
         Collection<Link> elements = (Collection<Link>) network.getLinks().values();
         RectangleGridVirtualNetworkCreator<Link, Node> creator = //
-                new RectangleGridVirtualNetworkCreator<>(elements, TensorLocation::of, NetworkCreatorUtils::linkToID, //
+                new RectangleGridVirtualNetworkCreator<>( //
+                        elements, TensorLocation::of, NetworkCreatorUtils::linkToID, //
                         divLat, divLng, xBounds, yBounds, //
                         uElements, completeGraph);
         return creator.getVirtualNetwork();
