@@ -2,8 +2,8 @@
 package ch.ethz.idsc.amodeus.prep;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
@@ -31,7 +31,7 @@ public class MatsimRectangleVirtualNetworkCreator {
         System.out.println("Network bounds:  " + xBounds + " , " + yBounds);
 
         /** u elements to determine neighbors */
-        Map<Node, HashSet<Link>> uElements = NodeAdjacencyMap.of(network);
+        Map<Node, Set<Link>> uElements = NodeAdjacencyMap.of(network);
 
         @SuppressWarnings("unchecked")
         Collection<Link> elements = (Collection<Link>) network.getLinks().values();

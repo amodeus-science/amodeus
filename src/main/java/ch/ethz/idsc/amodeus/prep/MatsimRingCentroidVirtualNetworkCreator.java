@@ -3,9 +3,9 @@ package ch.ethz.idsc.amodeus.prep;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
@@ -29,7 +29,7 @@ public class MatsimRingCentroidVirtualNetworkCreator {
             boolean completeGraph) {
         @SuppressWarnings("unchecked")
         Collection<Link> elements = (Collection<Link>) network.getLinks().values();
-        Map<Node, HashSet<Link>> uElements = NodeAdjacencyMap.of(network);
+        Map<Node, Set<Link>> uElements = NodeAdjacencyMap.of(network);
 
         /** generating centroids on a ring */
         List<Link> centroids = getRingCentroids(network, numVNodes);

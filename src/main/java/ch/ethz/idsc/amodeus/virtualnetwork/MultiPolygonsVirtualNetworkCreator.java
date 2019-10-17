@@ -3,7 +3,6 @@ package ch.ethz.idsc.amodeus.virtualnetwork;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -28,7 +27,7 @@ public class MultiPolygonsVirtualNetworkCreator<T, U> extends AbstractVirtualNet
     // private final VirtualNetwork<T> virtualNetwork;
 
     public MultiPolygonsVirtualNetworkCreator(MultiPolygons multipolygons, Collection<T> elements, //
-            Function<T, Tensor> locationOf, Function<T, String> nameOf, Map<U, HashSet<T>> uElements, //
+            Function<T, Tensor> locationOf, Function<T, String> nameOf, Map<U, Set<T>> uElements, //
             Tensor lbounds, Tensor ubounds, boolean completeGraph) {
 
         Map<VirtualNode<T>, Set<T>> vNodeTMap = createAssignmentMap( //
@@ -41,7 +40,7 @@ public class MultiPolygonsVirtualNetworkCreator<T, U> extends AbstractVirtualNet
 
     private Map<VirtualNode<T>, Set<T>> createAssignmentMap(MultiPolygons multipolygons, //
             Collection<T> elements, Function<T, Tensor> locationOf, Function<T, String> nameOf, //
-            Map<U, HashSet<T>> uElements, boolean completeGraph) {
+            Map<U, Set<T>> uElements, boolean completeGraph) {
 
         System.out.println("creating a virtual network with " + multipolygons.getPolygons().size() //
                 + " multipolygons");
