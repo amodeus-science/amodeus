@@ -1,5 +1,5 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.analysis.plot.hist;
+package ch.ethz.idsc.amodeus.analysis.plot;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -16,7 +16,6 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
 
-import ch.ethz.idsc.amodeus.analysis.plot.PlotSave;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -45,7 +44,7 @@ public enum HistogramPlot {
      * @param imageHeight, height of the .png image
      * @param colorDataIndexed, e.g., ColorDataAmodeus.indexed("097")
      * @param rangeYAxis, Range of the y Axis, e.g., Tensors.vector(0,100)
-     * @param labels, optinal labels for the data
+     * @param labels, optional labels for the data
      * @return
      * @throws Exception */
     public static File of(Tensor values, Scalar binSize, boolean norm, //
