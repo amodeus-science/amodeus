@@ -74,6 +74,7 @@ public class Analysis {
 
     // List of Analysis Elements which will be loaded
     private final static String DATAFOLDERNAME = "data";
+    // ---
     private final List<AnalysisElement> analysisElements = new LinkedList<>();
     private final List<AnalysisExport> analysisExports = new LinkedList<>();
     private final List<AnalysisReport> analysisReports = new LinkedList<>();

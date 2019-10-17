@@ -1,11 +1,11 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.analysis;
+package ch.ethz.idsc.amodeus.util.math;
 
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Sign;
 
-/* package */ enum PositiveSubVector {
+public enum PositiveSubVector {
     ;
 
     // TODO document why this function is useful?

@@ -11,7 +11,7 @@ import ch.ethz.idsc.tensor.io.TableBuilder;
 /* package */ enum DistancesRatiosTable implements AnalysisExport {
     INSTANCE;
 
-    private static final String identifier = "DistanceRatios";
+    private static final String IDENTIFIER = "DistanceRatios";
 
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
@@ -22,7 +22,7 @@ import ch.ethz.idsc.tensor.io.TableBuilder;
             tableBuilder.appendRow(distanceElement.time.Get(index), distanceElement.ratios.get(index));
 
         try {
-            SaveUtils.saveFile(tableBuilder.getTable(), identifier, relativeDirectory);
+            SaveUtils.saveFile(tableBuilder.getTable(), IDENTIFIER, relativeDirectory);
         } catch (Exception exception) {
             exception.printStackTrace();
         }

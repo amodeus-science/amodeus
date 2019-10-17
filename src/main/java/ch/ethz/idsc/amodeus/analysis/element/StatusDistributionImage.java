@@ -12,7 +12,6 @@ import ch.ethz.idsc.subare.plot.VisualRow;
 import ch.ethz.idsc.subare.plot.VisualSet;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
-import ch.ethz.idsc.tensor.img.MeanFilter;
 
 public enum StatusDistributionImage implements AnalysisExport {
     INSTANCE;
@@ -29,7 +28,7 @@ public enum StatusDistributionImage implements AnalysisExport {
         VisualSet visualSet = new VisualSet(colorDataIndexed);
         for (int i = 0; i < statusLabels.length; i++) {
             Tensor values = st.statusTensor.get(Tensor.ALL, i);
-            values = AnalysisConstants.FILTER_ON ? MeanFilter.of(values, AnalysisConstants.FILTERSIZE) : values;
+            values = AnalysisMeanFilter.of(values);
             VisualRow visualRow = visualSet.add(st.time, values);
             visualRow.setLabel(statusLabels[i]);
         }

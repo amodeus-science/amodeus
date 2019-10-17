@@ -55,16 +55,11 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
     public final String date = DATEFORMAT.format(new Date());
 
     public ScenarioParameters(ScenarioOptions scenOptions) {
-        // ScenarioOptions scenOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
-        // File configFile = new File(workingDirectory, scenOptions.getSimulationConfigName());
         System.out.println("scenOptions.getSimulationConfigName: " + scenOptions.getSimulationConfigName());
 
         AVConfigGroup avConfigGroup = new AVConfigGroup();
         Config config = ConfigUtils.loadConfig(scenOptions.getSimulationConfigName(), avConfigGroup);
-        // scenOptions.getcon
-        // Config config = ConfigUtils.loadConfig(configFile.toString());
 
-        // File configPath = new File(scenOptions.getWorkingDirectory(), "av.xml");
         OperatorConfig operatorConfig = avConfigGroup.getOperatorConfigs().values().iterator().next();
         DispatcherConfig dispatcherConfig = operatorConfig.getDispatcherConfig();
         SafeConfig safeConfig = SafeConfig.wrap(dispatcherConfig);
@@ -89,7 +84,6 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
         VirtualNetwork<Link> virtualNetwork = null;
         try {
             virtualNetwork = VirtualNetworkGet.readDefault(network, scenOptions);
-
         } catch (IOException e) {
             System.err.println("INFO not able to load virtual network for report");
             e.printStackTrace();
@@ -104,7 +98,9 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
     }
 
     public String getVirtualNetworkDescription() {
-        return virtualNodesCount == UNDEFINED_INT ? "no virtual network found" : virtualNodesCount + " virtual nodes.";
+        return virtualNodesCount == UNDEFINED_INT //
+                ? "no virtual network found"
+                : virtualNodesCount + " virtual nodes.";
     }
 
     @Override

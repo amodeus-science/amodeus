@@ -15,7 +15,6 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
-import ch.ethz.idsc.tensor.img.MeanFilter;
 import ch.ethz.idsc.tensor.red.Max;
 
 public enum WaitingCustomerExport implements AnalysisExport {
@@ -35,7 +34,7 @@ public enum WaitingCustomerExport implements AnalysisExport {
                 .reduce(Max::of).get().Get().number().doubleValue();
 
         Tensor values = tta.waitingCustomers;
-        values = AnalysisConstants.FILTER_ON ? MeanFilter.of(values, AnalysisConstants.FILTERSIZE) : values;
+        values = AnalysisMeanFilter.of(values);
         VisualSet visualSet = new VisualSet(colorDataIndexed);
         visualSet.add(tta.time, values);
 
