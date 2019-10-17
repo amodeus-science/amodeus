@@ -37,7 +37,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         return Optional.empty();
     }
 
-    private static final void pickupAndAssignDirective(RoboTaxi roboTaxi, AVRequest avRequest, double now, double pickupDurationPerStop, FuturePathFactory futurePathFactory) {
+    private static void pickupAndAssignDirective(RoboTaxi roboTaxi, AVRequest avRequest, double now, double pickupDurationPerStop, FuturePathFactory futurePathFactory) {
         GlobalAssert.that(OnMenuRequests.canPickupNewCustomer(roboTaxi));
         Optional<SharedCourse> currentCourse = SharedCourseAccess.getStarter(roboTaxi);
         GlobalAssert.that(currentCourse.isPresent());

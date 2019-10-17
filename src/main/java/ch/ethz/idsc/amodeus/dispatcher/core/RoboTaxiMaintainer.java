@@ -91,7 +91,7 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
     /** the info line is displayed in the console at every dispatching timestep and in the
      * AMoDeus viewer */
-    protected void updateInfoLine() {
+    protected final void updateInfoLine() {
         String infoLine = getInfoLine();
         this.infoLine.updateInfoLine(infoLine, getTimeNow());
     }

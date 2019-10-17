@@ -9,18 +9,15 @@ import org.matsim.contrib.dvrp.tracker.TaskTracker;
 import ch.ethz.matsim.av.schedule.AVDriveTask;
 
 /** for vehicles that are currently driving, but should go to a new destination:
- * 1) change path of current drive task /* package */
-final class DriveVehicleRerouteDirective extends FuturePathDirective {
-    // field
-    RoboTaxi roboTaxi;
+ * 1) change path of current drive task */
+/* package */ final class DriveVehicleRerouteDirective extends FuturePathDirective {
+    private final RoboTaxi roboTaxi;
 
-    // constructor
     DriveVehicleRerouteDirective(FuturePathContainer futurePathContainer, RoboTaxi roboTaxi) {
         super(futurePathContainer);
         this.roboTaxi = roboTaxi;
     }
 
-    // methods
     @Override
     void executeWithPath(VrpPathWithTravelData vrpPathWithTravelData) {
         final Schedule schedule = roboTaxi.getSchedule();

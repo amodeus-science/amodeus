@@ -8,13 +8,13 @@ import ch.ethz.matsim.av.passenger.AVRequest;
  * 4) append new stay task */
 // TODO check if we could make that possible to use such a directive for pickup and dropoff
 /* package */ abstract class SharedFixedLocationDirective implements DirectiveInterface {
-    final RoboTaxi robotaxi;
+    final RoboTaxi roboTaxi;
     final AVRequest avRequest;
     final double getTimeNow;
     final double durationOfTask;
 
-    public SharedFixedLocationDirective(RoboTaxi robotaxi, AVRequest avRequest, double getTimeNow, double durationOfTask) {
-        this.robotaxi = robotaxi;
+    public SharedFixedLocationDirective(RoboTaxi roboTaxi, AVRequest avRequest, double getTimeNow, double durationOfTask) {
+        this.roboTaxi = roboTaxi;
         this.avRequest = avRequest;
         this.getTimeNow = getTimeNow;
         this.durationOfTask = durationOfTask;

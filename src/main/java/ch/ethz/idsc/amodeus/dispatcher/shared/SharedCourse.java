@@ -47,7 +47,7 @@ public class SharedCourse {
     /** class implementation */
     private final AVRequest avRequest;
     private final Link link;
-    private final String courseID;
+    private final String courseId;
     private final SharedMealType sharedRoboTaxiMealType;
 
     /** @param for {@link SharedMealType} PICKUP and DROPOFF the requestID must be the
@@ -58,7 +58,7 @@ public class SharedCourse {
     protected SharedCourse(AVRequest avRequest, Link link, String courseId, SharedMealType sharedAVMealType) {
         this.avRequest = avRequest;
         this.link = Objects.requireNonNull(link);
-        this.courseID = Objects.requireNonNull(courseId);
+        this.courseId = Objects.requireNonNull(courseId);
         this.sharedRoboTaxiMealType = Objects.requireNonNull(sharedAVMealType);
     }
 
@@ -66,16 +66,15 @@ public class SharedCourse {
         return sharedRoboTaxiMealType;
     }
 
-    // TODO make final and allow direct access ?
-    public String getCourseId() {
-        return courseID;
+    public final String getCourseId() {
+        return courseId;
     }
 
-    public Link getLink() {
+    public final Link getLink() {
         return link;
     }
 
-    public AVRequest getAvRequest() {
+    public final AVRequest getAvRequest() {
         return avRequest;
     }
 
@@ -85,7 +84,7 @@ public class SharedCourse {
             SharedCourse sharedAVCourse = (SharedCourse) object;
             /** avRequest not used in the comparison because
              * the avRequest can be null as well (In the Redirect case). */
-            return sharedAVCourse.getCourseId().equals(courseID) && //
+            return sharedAVCourse.getCourseId().equals(courseId) && //
                     sharedAVCourse.getLink().equals(link) && //
                     sharedAVCourse.getMealType().equals(sharedRoboTaxiMealType);
         }
@@ -94,6 +93,6 @@ public class SharedCourse {
 
     @Override
     public int hashCode() {
-        return Objects.hash(courseID, sharedRoboTaxiMealType, link);
+        return Objects.hash(courseId, sharedRoboTaxiMealType, link);
     }
 }

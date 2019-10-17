@@ -66,8 +66,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
             ScheduleUtils.makeWhole(robotaxi, endDropoffTime, scheduleEndTime, avRequest.getToLink());
 
-            // jan: following computation is mandatory for the internal scoring
-            // function
+            // following computation is mandatory for the internal scoring function
             final double distance = VrpPathUtils.getDistance(vrpPathWithTravelData);
             avRequest.getRoute().setDistance(distance);
 

@@ -98,7 +98,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
      * 
      * @param roboTaxi
      * @param avRequest */
-    public void setRoboTaxiPickup(RoboTaxi roboTaxi, AVRequest avRequest) {
+    public final void setRoboTaxiPickup(RoboTaxi roboTaxi, AVRequest avRequest) {
         GlobalAssert.that(roboTaxi.isWithoutCustomer());
         GlobalAssert.that(pendingRequests.contains(avRequest));
 
@@ -151,7 +151,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
 
     /** this function will re-route the taxi if it is not in stay task (for
      * congestion relieving purpose) */
-    protected void reRoute(RoboTaxi robotaxi) {
+    protected final void reRoute(RoboTaxi robotaxi) {
         if (!robotaxi.isInStayTask() && robotaxi.canReroute())
             routingForDiversion(robotaxi, robotaxi.getCurrentDriveDestination(), true);
     }
@@ -270,7 +270,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
     /** complete all matchings if a {@link RoboTaxi} has arrived at the fromLink of
      * an {@link AVRequest} */
     @Override
-    void executePickups() {
+    final void executePickups() {
         Map<AVRequest, RoboTaxi> pickupRegisterCopy = new HashMap<>(pickupRegister);
         for (Entry<AVRequest, RoboTaxi> entry : pickupRegisterCopy.entrySet()) {
             AVRequest avRequest = entry.getKey();
@@ -287,7 +287,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
     /** complete all matchings if a {@link RoboTaxi} has arrived at the toLink of an
      * {@link AVRequest} */
     @Override
-    void executeDropoffs() {
+    final void executeDropoffs() {
         Map<AVRequest, RoboTaxi> requestRegisterCopy = new HashMap<>(rqstDrvRegister);
         for (Entry<AVRequest, RoboTaxi> entry : requestRegisterCopy.entrySet()) {
             if (Objects.nonNull(entry.getValue())) {
@@ -334,7 +334,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
     }
 
     @Override
-    /* package */ void insertRequestInfo(SimulationObjectCompiler simulationObjectCompiler) {
+    /* package */ final void insertRequestInfo(SimulationObjectCompiler simulationObjectCompiler) {
         /** pickup register must be after pending requests, request is pending from
          * moment it appears until it is picked up, this period may contain several not
          * connected pickup periods (cancelled pickup attempts) */

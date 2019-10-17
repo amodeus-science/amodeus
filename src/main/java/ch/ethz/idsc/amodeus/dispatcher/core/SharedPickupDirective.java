@@ -19,7 +19,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
     @Override
     public void execute() {
-        final Schedule schedule = robotaxi.getSchedule();
+        final Schedule schedule = roboTaxi.getSchedule();
         final AVStayTask avStayTask = (AVStayTask) Schedules.getLastTask(schedule);
         final double scheduleEndTime = avStayTask.getEndTime();
         final double endTaskTime = getTimeNow + durationOfTask;
@@ -36,7 +36,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
             pickupTask.addRequest(avRequest); // serving only one request at a time
             schedule.addTask(pickupTask);
 
-            ScheduleUtils.makeWhole(robotaxi, endTaskTime, scheduleEndTime, avRequest.getFromLink());
+            ScheduleUtils.makeWhole(roboTaxi, endTaskTime, scheduleEndTime, avRequest.getFromLink());
 
             // jan: following computation is mandatory for the internal scoring
             // function
