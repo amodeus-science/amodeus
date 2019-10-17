@@ -23,7 +23,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
  * @author clruch */
 public class TreeMaintainer<T> {
 
-    private final QuadTree<T> tree;
+    private final QuadTree<T> quadTree;
     /** data structures are used to enable fast "contains" searching */
     private final Set<T> set = new HashSet<>();
     private final Function<T, Tensor> location;
@@ -36,13 +36,13 @@ public class TreeMaintainer<T> {
     public TreeMaintainer(double[] networkBounds, Function<T, Tensor> location) {
         this.location = location;
         this.outerRect = new Rect(networkBounds[0], networkBounds[1], networkBounds[2], networkBounds[3]);
-        tree = new QuadTree<>(networkBounds[0], networkBounds[1], networkBounds[2], networkBounds[3]);
+        quadTree = new QuadTree<>(networkBounds[0], networkBounds[1], networkBounds[2], networkBounds[3]);
     }
 
     /** @return closest {@link T} in tree from {@link Tensor} @param coord */
     public T getClosest(Tensor coord) {
         VectorQ.requireLength(coord, 2); // ensure that vector of length 2;
-        return tree.getClosest( //
+        return quadTree.getClosest( //
                 coord.Get(0).number().doubleValue(), //
                 coord.Get(1).number().doubleValue());
     }
@@ -52,7 +52,7 @@ public class TreeMaintainer<T> {
         if (!set.contains(t)) {
             Tensor coord = location.apply(t);
             boolean setok = set.add(t);
-            boolean treeok = tree.put( //
+            boolean treeok = quadTree.put( //
                     coord.Get(0).number().doubleValue(), //
                     coord.Get(1).number().doubleValue(), t);
             GlobalAssert.that(setok && treeok);
@@ -63,7 +63,7 @@ public class TreeMaintainer<T> {
     public void remove(T t) {
         Tensor coord = location.apply(t);
         boolean setok = set.remove(t);
-        boolean treeok = tree.remove( //
+        boolean treeok = quadTree.remove( //
                 coord.Get(0).number().doubleValue(), //
                 coord.Get(1).number().doubleValue(), t);
         GlobalAssert.that(setok && treeok);
@@ -74,12 +74,12 @@ public class TreeMaintainer<T> {
     }
 
     public int size() {
-        GlobalAssert.that(tree.size() == set.size());
-        return tree.size();
+        GlobalAssert.that(quadTree.size() == set.size());
+        return quadTree.size();
     }
 
     public Collection<T> inFrame(Rect bounds) {
-        return tree.getRectangle(bounds, new HashSet<>());
+        return quadTree.getRectangle(bounds, new HashSet<>());
     }
 
     /** Gets all objects within a certain distance around x/y
@@ -89,7 +89,7 @@ public class TreeMaintainer<T> {
      * @param distance the maximal distance returned objects can be away from x/y
      * @return the objects found within distance to x/y */
     public Collection<T> disk(double x, double y, double distance) {
-        return tree.getDisk(x, y, distance);
+        return quadTree.getDisk(x, y, distance);
     }
 
     public boolean contains(Tensor coord) {
@@ -105,7 +105,7 @@ public class TreeMaintainer<T> {
 
     /** Clears the whole tree. After this method is called no elements will remain */
     public void clear() {
-        set.forEach(t -> GlobalAssert.that(tree.remove( //
+        set.forEach(t -> GlobalAssert.that(quadTree.remove( //
                 location.apply(t).Get(0).number().doubleValue(), //
                 location.apply(t).Get(1).number().doubleValue(), t)));
         set.clear();

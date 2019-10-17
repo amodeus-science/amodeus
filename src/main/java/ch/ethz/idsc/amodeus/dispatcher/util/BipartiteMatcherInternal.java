@@ -27,14 +27,14 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     }
 
     @Override
-    public Tensor executePickup(UniversalDispatcher universalDispatcher, //
+    public final Tensor executePickup(UniversalDispatcher universalDispatcher, //
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
             Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
             DistanceFunction distanceFunction, Network network) {
         return executeGeneralPickup(universalDispatcher, roboTaxis, requests, distanceFunction, null, network);
     }
 
-    protected Tensor executeGeneralPickup(UniversalDispatcher universalDispatcher, //
+    protected final Tensor executeGeneralPickup(UniversalDispatcher universalDispatcher, //
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
             Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
             DistanceFunction distanceFunction, CachedNetworkTimeDistance distanceCashed, Network network) {

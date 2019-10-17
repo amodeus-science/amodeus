@@ -7,14 +7,14 @@ import org.matsim.core.mobsim.qsim.qnetsimengine.linkspeedcalculator.LinkSpeedCa
 
 /* package */ final class AmodeusLinkSpeedCalculator implements LinkSpeedCalculator {
 
-    private final TaxiTrafficData trafficData;
+    private final TaxiTrafficData taxiTrafficData;
 
-    public AmodeusLinkSpeedCalculator(TaxiTrafficData trafficData) {
-        this.trafficData = trafficData;
+    public AmodeusLinkSpeedCalculator(TaxiTrafficData taxiTrafficData) {
+        this.taxiTrafficData = taxiTrafficData;
     }
 
     @Override
     public double getMaximumVelocity(QVehicle vehicle, Link link, double time) {
-        return trafficData.getTrafficSpeed(link, time);
+        return taxiTrafficData.getTrafficSpeed(link, time);
     }
 }
