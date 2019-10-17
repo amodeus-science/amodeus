@@ -1,7 +1,6 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.analysis;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.DateFormat;
@@ -60,21 +59,21 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
         // File configFile = new File(workingDirectory, scenOptions.getSimulationConfigName());
         System.out.println("scenOptions.getSimulationConfigName: " + scenOptions.getSimulationConfigName());
 
-        AVConfigGroup avConfig = new AVConfigGroup();
-        Config config = ConfigUtils.loadConfig(scenOptions.getSimulationConfigName(), avConfig);
+        AVConfigGroup avConfigGroup = new AVConfigGroup();
+        Config config = ConfigUtils.loadConfig(scenOptions.getSimulationConfigName(), avConfigGroup);
         // scenOptions.getcon
         // Config config = ConfigUtils.loadConfig(configFile.toString());
 
-        File configPath = new File(scenOptions.getWorkingDirectory(), "av.xml");
-        OperatorConfig oc = avConfig.getOperatorConfigs().values().iterator().next();
-        DispatcherConfig avdispatcherconfig = oc.getDispatcherConfig();
-        SafeConfig safeConfig = SafeConfig.wrap(avdispatcherconfig);
-        GeneratorConfig avgeneratorconfig = oc.getGeneratorConfig();
+        // File configPath = new File(scenOptions.getWorkingDirectory(), "av.xml");
+        OperatorConfig operatorConfig = avConfigGroup.getOperatorConfigs().values().iterator().next();
+        DispatcherConfig dispatcherConfig = operatorConfig.getDispatcherConfig();
+        SafeConfig safeConfig = SafeConfig.wrap(dispatcherConfig);
+        GeneratorConfig generatorConfig = operatorConfig.getGeneratorConfig();
 
         redispatchPeriod = safeConfig.getInteger(DISPATCHPERIODSTRING, UNDEFINED_INT);
         rebalancingPeriod = safeConfig.getInteger(REBALANCINGPERIODSTRING, UNDEFINED_INT);
-        dispatcher = avdispatcherconfig.getType();
-        vehicleGenerator = avgeneratorconfig.getType();
+        dispatcher = dispatcherConfig.getType();
+        vehicleGenerator = generatorConfig.getType();
         Scenario scenario = ScenarioUtils.loadScenario(config);
 
         distanceHeuristic = safeConfig.getString(DISTANCEHEURISTICSTRING, UNDEFINED_STRING);

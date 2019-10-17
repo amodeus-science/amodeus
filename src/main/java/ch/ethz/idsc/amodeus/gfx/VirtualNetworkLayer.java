@@ -103,6 +103,7 @@ public class VirtualNetworkLayer extends ViewerLayer {
                 Tensor prep = rescaling.apply(count);
                 Tensor prob = prep.multiply(_224);
                 for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet()) {
+                    entry.getKey(); // <- eliminates warning
                     // final int i = 255 - prob.Get(entry.getKey().getIndex()).number().intValue();
                     // graphics.setColor(halfAlpha(colorSchemes.colorDataIndexed.getColor(i)));
                     // graphics.fill(entry.getValue());
