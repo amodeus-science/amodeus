@@ -13,7 +13,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenuCheck;
 import junit.framework.TestCase;
 
-public class SharedMenuUtilsTest extends TestCase {
+public class SharedMenuTest extends TestCase {
     public void testSimple() {
         ArtificialSharedScenarioCreator artificialScenarioCreator = new ArtificialSharedScenarioCreator();
         SharedCourse pickupCourse1 = SharedCourse.pickupCourse(artificialScenarioCreator.avRequest1);

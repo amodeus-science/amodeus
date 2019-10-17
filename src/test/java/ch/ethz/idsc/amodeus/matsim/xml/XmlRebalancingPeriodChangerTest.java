@@ -14,7 +14,7 @@ import ch.ethz.idsc.amodeus.util.io.Locate;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.io.DeleteDirectory;
 
-public class XmlAVSettingsTest {
+public class XmlRebalancingPeriodChangerTest {
 
     private static File workingDirectory;
 
@@ -22,7 +22,7 @@ public class XmlAVSettingsTest {
     public static void prepare() throws Exception {
 
         /** copy av.xml file from test directory */
-        File scenarioDirectory = new File(Locate.repoFolder(XmlAVSettingsTest.class, "amodeus"), "resources/testScenario");
+        File scenarioDirectory = new File(Locate.repoFolder(XmlRebalancingPeriodChangerTest.class, "amodeus"), "resources/testScenario");
 
         workingDirectory = new File(scenarioDirectory, "Temp");
         if (!workingDirectory.isDirectory())

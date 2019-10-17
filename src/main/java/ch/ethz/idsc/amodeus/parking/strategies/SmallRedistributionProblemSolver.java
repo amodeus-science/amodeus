@@ -50,7 +50,7 @@ public class SmallRedistributionProblemSolver<T> {
             }
         });
 
-        int unitsTotal = unitsToMove.values().stream().mapToInt(i -> i).sum();
+        // int unitsTotal = unitsToMove.values().stream().mapToInt(i -> i).sum();
 
         /** this is only entered if every origin is unique */
         if (!globOptimSolPossible) {

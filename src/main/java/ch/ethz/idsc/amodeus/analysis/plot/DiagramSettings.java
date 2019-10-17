@@ -4,7 +4,7 @@ package ch.ethz.idsc.amodeus.analysis.plot;
 import java.awt.Color;
 import java.awt.Font;
 
-@Deprecated
+// TODO this class was marked deprecated but replacement has not been carried out yet
 public enum DiagramSettings {
     ;
 
