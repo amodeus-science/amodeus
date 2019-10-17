@@ -19,11 +19,11 @@ import ch.ethz.idsc.tensor.qty.Quantity;
 
 public class ShortestDurationCalculator {
 
-    private final FastLinkLookup fll;
-    private final LeastCostPathCalculator lcpc;
+    private final FastLinkLookup fastLinkLookup;
+    private final LeastCostPathCalculator leastCostPathCalculator;
 
     public ShortestDurationCalculator(Network network, MatsimAmodeusDatabase db) {
-        lcpc = new FastAStarLandmarksFactory().createPathCalculator(network, //
+        leastCostPathCalculator = new FastAStarLandmarksFactory().createPathCalculator(network, //
                 new TravelDisutility() { // free speed travel time
                     @Override
                     public double getLinkTravelDisutility(Link link, double time, Person person, Vehicle vehicle) {
@@ -42,13 +42,13 @@ public class ShortestDurationCalculator {
                     }
                 });
         // fast link lookup
-        fll = new FastLinkLookup(network, db);
+        fastLinkLookup = new FastLinkLookup(network, db);
     }
 
     public ShortestDurationCalculator(LeastCostPathCalculator lcpc, Network network, MatsimAmodeusDatabase db) {
-        this.lcpc = lcpc;
+        this.leastCostPathCalculator = lcpc;
         // fast link lookup
-        fll = new FastLinkLookup(network, db);
+        fastLinkLookup = new FastLinkLookup(network, db);
     }
 
     public Scalar computeFreeFlowTime(TaxiTrip taxiTrip) {
@@ -56,8 +56,8 @@ public class ShortestDurationCalculator {
     }
 
     public Path computePath(TaxiTrip taxiTrip) {
-        Link pickupLink = fll.getLinkFromWGS84(TensorCoords.toCoord(taxiTrip.pickupLoc));
-        Link dropOffLink = fll.getLinkFromWGS84(TensorCoords.toCoord(taxiTrip.dropoffLoc));
-        return lcpc.calcLeastCostPath(pickupLink.getFromNode(), dropOffLink.getToNode(), 1, null, null);
+        Link pickupLink = fastLinkLookup.getLinkFromWGS84(TensorCoords.toCoord(taxiTrip.pickupLoc));
+        Link dropOffLink = fastLinkLookup.getLinkFromWGS84(TensorCoords.toCoord(taxiTrip.dropoffLoc));
+        return leastCostPathCalculator.calcLeastCostPath(pickupLink.getFromNode(), dropOffLink.getToNode(), 1, null, null);
     }
 }

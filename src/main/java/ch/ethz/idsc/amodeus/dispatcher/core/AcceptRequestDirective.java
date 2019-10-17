@@ -18,15 +18,15 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
  * 1) finish stay task 2) append pickup task 3) append drive task 4) append
  * dropoff task 5) append new stay task */
 /* package */ final class AcceptRequestDirective extends FuturePathDirective {
-    final RoboTaxi robotaxi;
+    final RoboTaxi roboTaxi;
     final AVRequest avRequest;
     final double getTimeNow;
     final double dropoffDurationPerStop;
 
-    public AcceptRequestDirective(RoboTaxi robotaxi, AVRequest avRequest, //
+    public AcceptRequestDirective(RoboTaxi roboTaxi, AVRequest avRequest, //
             FuturePathContainer futurePathContainer, final double getTimeNow, double dropoffDurationPerStop) {
         super(futurePathContainer);
-        this.robotaxi = robotaxi;
+        this.roboTaxi = roboTaxi;
         this.avRequest = avRequest;
         this.getTimeNow = getTimeNow;
         this.dropoffDurationPerStop = dropoffDurationPerStop;
@@ -34,7 +34,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
     @Override
     void executeWithPath(final VrpPathWithTravelData vrpPathWithTravelData) {
-        final Schedule schedule = robotaxi.getSchedule();
+        final Schedule schedule = roboTaxi.getSchedule();
         final AVStayTask avStayTask = (AVStayTask) Schedules.getLastTask(schedule);
         final double scheduleEndTime = avStayTask.getEndTime();
         GlobalAssert.that(scheduleEndTime == schedule.getEndTime());
@@ -64,7 +64,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
                     avRequest.getToLink(), // location of dropoff
                     Arrays.asList(avRequest)));
 
-            ScheduleUtils.makeWhole(robotaxi, endDropoffTime, scheduleEndTime, avRequest.getToLink());
+            ScheduleUtils.makeWhole(roboTaxi, endDropoffTime, scheduleEndTime, avRequest.getToLink());
 
             // following computation is mandatory for the internal scoring function
             final double distance = VrpPathUtils.getDistance(vrpPathWithTravelData);

@@ -20,14 +20,14 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     /** Finds all the {@link RoboTaxi}s which can reach a specific link within the maximal Time specified
      * 
      * @param link
-     * @param robotaxis
+     * @param roboTaxis
      * @param timeDb
      * @param maxTime
      * @return */
     public static NavigableMap<Double, RoboTaxi> getRoboTaxisWithinMaxTime( //
-            Link link, Collection<RoboTaxi> robotaxis, NetworkTimeDistInterface timeDb, double maxTime, //
+            Link link, Collection<RoboTaxi> roboTaxis, NetworkTimeDistInterface timeDb, double maxTime, //
             RoboTaxiHandler roboTaxiMaintainer, Double now) {
-        Collection<RoboTaxi> closeRoboTaxis = roboTaxiMaintainer.getRoboTaxisWithinFreeSpeedDisk(link.getCoord(), maxTime).stream().filter(rt -> robotaxis.contains(rt))
+        Collection<RoboTaxi> closeRoboTaxis = roboTaxiMaintainer.getRoboTaxisWithinFreeSpeedDisk(link.getCoord(), maxTime).stream().filter(rt -> roboTaxis.contains(rt))
                 .collect(Collectors.toSet());
         NavigableMap<Double, RoboTaxi> map = new TreeMap<>();
         for (RoboTaxi roboTaxi : closeRoboTaxis) {

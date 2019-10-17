@@ -101,11 +101,11 @@ public class ExtDemandSupplyBeamSharing extends SharedRebalancingDispatcher {
                     }
                     /** undersupply case */
                 } else {
-                    for (RoboTaxi robotaxi : robotaxisDivertable) {
-                        AVRequest closest = requestMaintainer.getClosest(getRoboTaxiLoc(robotaxi));
+                    for (RoboTaxi roboTaxi : robotaxisDivertable) {
+                        AVRequest closest = requestMaintainer.getClosest(getRoboTaxiLoc(roboTaxi));
                         if (closest != null) {
-                            addSharedRoboTaxiPickup(robotaxi, closest);
-                            unassignedRoboTaxis.remove(robotaxi);
+                            addSharedRoboTaxiPickup(roboTaxi, closest);
+                            unassignedRoboTaxis.remove(roboTaxi);
                             requestMaintainer.remove(closest);
                         }
                     }
@@ -115,10 +115,10 @@ public class ExtDemandSupplyBeamSharing extends SharedRebalancingDispatcher {
 
             Collection<RoboTaxi> unassignedRoboTaxisNow = new HashSet<>(unassignedRoboTaxis.getValues());
 
-            for (RoboTaxi robotaxi : unassignedRoboTaxisNow) {
-                if (!robotaxi.getStatus().equals(RoboTaxiStatus.STAY)) {
-                    if (unassignedRoboTaxis.contains(robotaxi)) {
-                        unassignedRoboTaxis.remove(robotaxi);
+            for (RoboTaxi roboTaxi : unassignedRoboTaxisNow) {
+                if (!roboTaxi.getStatus().equals(RoboTaxiStatus.STAY)) {
+                    if (unassignedRoboTaxis.contains(roboTaxi)) {
+                        unassignedRoboTaxis.remove(roboTaxi);
                     }
                 }
             }

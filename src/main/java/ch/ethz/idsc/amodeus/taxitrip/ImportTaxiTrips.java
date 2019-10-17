@@ -45,7 +45,8 @@ public enum ImportTaxiTrips {
                             Tensors.fromString(splits[3]), //
                             Scalars.fromString(splits[4]), //
                             Scalars.fromString(splits[5]), //
-                            ldt, Scalars.fromString(splits[8])//
+                            ldt, //
+                            Scalars.fromString(splits[8])//
                     );
                     trips.add(trip);
                 }

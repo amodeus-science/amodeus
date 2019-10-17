@@ -11,13 +11,13 @@ public enum EuclideanDistanceFunction implements DistanceFunction {
     INSTANCE;
 
     @Override
-    public double getDistance(RoboTaxi robotaxi, AVRequest avrequest) {
-        return CoordUtils.calcEuclideanDistance(robotaxi.getDivertableLocation().getCoord(), avrequest.getFromLink().getCoord());
+    public double getDistance(RoboTaxi roboTaxi, AVRequest avrequest) {
+        return CoordUtils.calcEuclideanDistance(roboTaxi.getDivertableLocation().getCoord(), avrequest.getFromLink().getCoord());
     }
 
     @Override
-    public double getDistance(RoboTaxi robotaxi, Link link) {
-        return CoordUtils.calcEuclideanDistance(robotaxi.getDivertableLocation().getCoord(), link.getCoord());
+    public double getDistance(RoboTaxi roboTaxi, Link link) {
+        return CoordUtils.calcEuclideanDistance(roboTaxi.getDivertableLocation().getCoord(), link.getCoord());
     }
 
     @Override

@@ -52,8 +52,8 @@ public class SimulationObjectCompiler {
         }
     }
 
-    public void insertVehicles(List<RoboTaxi> robotaxis) {
-        robotaxis.forEach(rt -> {
+    public void insertVehicles(List<RoboTaxi> roboTaxis) {
+        roboTaxis.forEach(rt -> {
             insertVehicle(rt, Arrays.asList(rt.getLastKnownLocation()));
         });
     }
@@ -73,9 +73,9 @@ public class SimulationObjectCompiler {
         }
     }
 
-    private void insertVehicle(RoboTaxi robotaxi, List<Link> tempTrace) {
-        VehicleContainer vehicleContainer = VehicleContainerCompiler.compile(robotaxi, tempTrace, db);
-        final String key = robotaxi.getId().toString();
+    private void insertVehicle(RoboTaxi roboTaxi, List<Link> tempTrace) {
+        VehicleContainer vehicleContainer = VehicleContainerCompiler.compile(roboTaxi, tempTrace, db);
+        final String key = roboTaxi.getId().toString();
         vehicleMap.put(key, vehicleContainer);
     }
 

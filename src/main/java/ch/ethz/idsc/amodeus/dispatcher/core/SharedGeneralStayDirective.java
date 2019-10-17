@@ -14,19 +14,19 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
  * 1) change path of current drive task 2) remove former stay task with old
  * destination 3) append new stay task */
 /* package */ final class SharedGeneralStayDirective extends VehicleDiversionDirective {
-    final RoboTaxi robotaxi;
+    final RoboTaxi roboTaxi;
     final double getTimeNow;
 
-    SharedGeneralStayDirective(RoboTaxi robotaxi, Link destLink, //
+    SharedGeneralStayDirective(RoboTaxi roboTaxi, Link destLink, //
             FuturePathContainer futurePathContainer, final double getTimeNow) {
-        super(robotaxi, destLink, futurePathContainer);
-        this.robotaxi = robotaxi;
+        super(roboTaxi, destLink, futurePathContainer);
+        this.roboTaxi = roboTaxi;
         this.getTimeNow = getTimeNow;
     }
 
     @Override
     void executeWithPath(VrpPathWithTravelData vrpPathWithTravelData) {
-        final Schedule schedule = robotaxi.getSchedule();
+        final Schedule schedule = roboTaxi.getSchedule();
         final AVStayTask avStayTask = (AVStayTask) schedule.getCurrentTask(); // <- implies that task is started
         final double scheduleEndTime = avStayTask.getEndTime(); // typically 108000.0
         GlobalAssert.that(scheduleEndTime == schedule.getEndTime());
@@ -35,14 +35,14 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
         if (endDriveTask < scheduleEndTime) {
 
-            GlobalAssert.that(vrpPathWithTravelData.getDepartureTime() == robotaxi.getDivertableTime());
+            GlobalAssert.that(vrpPathWithTravelData.getDepartureTime() == roboTaxi.getDivertableTime());
             avStayTask.setEndTime(vrpPathWithTravelData.getDepartureTime());
 
             DriveTask driveTask = new AVDriveTask( //
                     vrpPathWithTravelData);
             schedule.addTask(driveTask);
 
-            ScheduleUtils.makeWhole(robotaxi, endDriveTask, scheduleEndTime, destination);
+            ScheduleUtils.makeWhole(roboTaxi, endDriveTask, scheduleEndTime, destination);
 
             // jan: following computation is mandatory for the internal scoring
             // function

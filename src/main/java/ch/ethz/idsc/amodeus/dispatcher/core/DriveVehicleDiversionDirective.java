@@ -19,8 +19,8 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
  * 3) append new stay task */
 /* package */ final class DriveVehicleDiversionDirective extends VehicleDiversionDirective {
 
-    DriveVehicleDiversionDirective(RoboTaxi robotaxi, Link destination, FuturePathContainer futurePathContainer) {
-        super(robotaxi, destination, futurePathContainer);
+    DriveVehicleDiversionDirective(RoboTaxi roboTaxi, Link destination, FuturePathContainer futurePathContainer) {
+        super(roboTaxi, destination, futurePathContainer);
     }
 
     @Override

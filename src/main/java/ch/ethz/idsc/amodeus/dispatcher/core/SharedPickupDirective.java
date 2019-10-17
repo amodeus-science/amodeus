@@ -13,8 +13,8 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
  * 1) finish pickup or dropoff task 2) append drive task 3) append new stay task */
 /* package */ final class SharedPickupDirective extends SharedFixedLocationDirective {
 
-    public SharedPickupDirective(RoboTaxi robotaxi, AVRequest avRequest, double getTimeNow, double durationOfTask) {
-        super(robotaxi, avRequest, getTimeNow, durationOfTask);
+    public SharedPickupDirective(RoboTaxi roboTaxi, AVRequest avRequest, double getTimeNow, double durationOfTask) {
+        super(roboTaxi, avRequest, getTimeNow, durationOfTask);
     }
 
     @Override

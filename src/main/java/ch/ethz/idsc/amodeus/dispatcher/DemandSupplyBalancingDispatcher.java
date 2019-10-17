@@ -59,7 +59,7 @@ public class DemandSupplyBalancingDispatcher extends RebalancingDispatcher {
 
         if (round_now % dispatchPeriod == 0) {
             /** get open requests and available vehicles */
-            Collection<RoboTaxi> robotaxisDivertable = getDivertableUnassignedRoboTaxis();
+            Collection<RoboTaxi> roboTaxisDivertable = getDivertableUnassignedRoboTaxis();
             getRoboTaxiSubset(RoboTaxiStatus.STAY).stream().forEach(rt -> unassignedRoboTaxis.add(rt));
             List<AVRequest> requests = getUnassignedAVRequests();
             requests.stream().forEach(r -> requestMaintainer.add(r));
@@ -82,13 +82,13 @@ public class DemandSupplyBalancingDispatcher extends RebalancingDispatcher {
                     }
                     /** undersupply case */
                 } else {
-                    for (RoboTaxi robotaxi : robotaxisDivertable) {
-                        Coord coord = robotaxi.getDivertableLocation().getFromNode().getCoord();
+                    for (RoboTaxi roboTaxi : roboTaxisDivertable) {
+                        Coord coord = roboTaxi.getDivertableLocation().getFromNode().getCoord();
                         Tensor tCoord = Tensors.vector(coord.getX(), coord.getY());
                         AVRequest closest = requestMaintainer.getClosest(tCoord);
                         if (closest != null) {
-                            setRoboTaxiPickup(robotaxi, closest);
-                            unassignedRoboTaxis.remove(robotaxi);
+                            setRoboTaxiPickup(roboTaxi, closest);
+                            unassignedRoboTaxis.remove(roboTaxi);
                             requestMaintainer.remove(closest);
                         }
                     }

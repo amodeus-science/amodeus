@@ -13,21 +13,21 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 /** for vehicles that are in stay task and should pickup a customer at the link:
  * 1) finish stay task 2) append pickup task 3) append drive task 4) append new stay task */
 /* package */ final class SharedGeneralPickupDirective extends FuturePathDirective {
-    final RoboTaxi robotaxi;
+    final RoboTaxi roboTaxi;
     final AVRequest currentRequest;
     final double getTimeNow;
 
-    public SharedGeneralPickupDirective(RoboTaxi robotaxi, AVRequest currentRequest, //
+    public SharedGeneralPickupDirective(RoboTaxi roboTaxi, AVRequest currentRequest, //
             FuturePathContainer futurePathContainer, final double getTimeNow) {
         super(futurePathContainer);
-        this.robotaxi = robotaxi;
+        this.roboTaxi = roboTaxi;
         this.currentRequest = currentRequest;
         this.getTimeNow = getTimeNow;
     }
 
     @Override
     void executeWithPath(final VrpPathWithTravelData vrpPathWithTravelData) {
-        final Schedule schedule = robotaxi.getSchedule();
+        final Schedule schedule = roboTaxi.getSchedule();
         final AVStayTask avStayTask = (AVStayTask) Schedules.getLastTask(schedule);
         final double scheduleEndTime = avStayTask.getEndTime();
         GlobalAssert.that(scheduleEndTime == schedule.getEndTime());
@@ -50,7 +50,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
             // ScheduleUtils.makeWhole(robotaxi, endTaskTime, scheduleEndTime, vrpPathWithTravelData.getToLink());
 
             GlobalAssert.that(futurePathContainer.getStartTime() < scheduleEndTime);
-            ScheduleUtils.makeWhole(robotaxi, futurePathContainer.getStartTime(), scheduleEndTime, currentRequest.getFromLink());
+            ScheduleUtils.makeWhole(roboTaxi, futurePathContainer.getStartTime(), scheduleEndTime, currentRequest.getFromLink());
 
             // jan: following computation is mandatory for the internal scoring
             // // function

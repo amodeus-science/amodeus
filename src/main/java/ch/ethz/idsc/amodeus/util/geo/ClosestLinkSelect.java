@@ -17,16 +17,16 @@ import ch.ethz.idsc.tensor.Tensor;
 public class ClosestLinkSelect {
 
     private final MatsimAmodeusDatabase db;
-    private final QuadTree<Link> qt;
+    private final QuadTree<Link> quadTree;
 
-    public ClosestLinkSelect(MatsimAmodeusDatabase db, QuadTree<Link> qt) {
+    public ClosestLinkSelect(MatsimAmodeusDatabase db, QuadTree<Link> quadTree) {
         this.db = db;
-        this.qt = qt;
+        this.quadTree = quadTree;
     }
 
     public int indexFromWGS84(Coord wgs84location) {
         Coord local = db.referenceFrame.coords_fromWGS84().transform(wgs84location);
-        return db.getLinkIndex(qt.getClosest(local.getX(), local.getY()));
+        return db.getLinkIndex(quadTree.getClosest(local.getX(), local.getY()));
     }
 
     public int indexFromWGS84(Tensor wgs84location) {
@@ -36,7 +36,7 @@ public class ClosestLinkSelect {
 
     public Link linkFromWGS84(Coord wgs84location) {
         Coord local = db.referenceFrame.coords_fromWGS84().transform(wgs84location);
-        return qt.getClosest(local.getX(), local.getY());
+        return quadTree.getClosest(local.getX(), local.getY());
     }
 
     public Link linkFromWGS84(Tensor wgs84location) {
