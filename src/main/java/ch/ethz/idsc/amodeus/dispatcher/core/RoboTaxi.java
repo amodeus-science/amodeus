@@ -35,7 +35,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
  * MATSim. */
 public final class RoboTaxi {
     /** unit capacity fields */
-    static private final Logger logger = Logger.getLogger(RoboTaxi.class);
+    private static final Logger LOGGER = Logger.getLogger(RoboTaxi.class);
 
     private final AVVehicle avVehicle;
     private RoboTaxiStatus status;
@@ -210,7 +210,7 @@ public final class RoboTaxi {
             if (!usageType.equals(RoboTaxiUsageType.SHARED)) { // for shared this is allowed e.g. when a new course is
                                                                // added but the it has not been executed
                                                                // yet
-                logger.warn("RoboTaxiStatus != STAY, but Schedule.getCurrentTask() == AVStayTask; probably needs fixing");
+                LOGGER.warn("RoboTaxiStatus != STAY, but Schedule.getCurrentTask() == AVStayTask; probably needs fixing");
                 System.out.println("status: " + status);
             }
             return true;

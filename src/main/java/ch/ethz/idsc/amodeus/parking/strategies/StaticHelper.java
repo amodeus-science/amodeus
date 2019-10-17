@@ -44,8 +44,8 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
     }
 
     /** removes all entries with value 0 */
-    public static <T> HashMap<T, Integer> removeZeroValues(HashMap<T, Integer> mapIn) {
-        HashMap<T, Integer> mapOut = new HashMap<>();
+    public static <T> Map<T, Integer> removeZeroValues(Map<T, Integer> mapIn) {
+        Map<T, Integer> mapOut = new HashMap<>();
         mapIn.entrySet().forEach(e -> {
             if (e.getValue() != 0) {
                 mapOut.put(e.getKey(), e.getValue());
