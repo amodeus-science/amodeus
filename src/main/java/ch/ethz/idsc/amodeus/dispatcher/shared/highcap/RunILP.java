@@ -7,7 +7,7 @@ import java.util.Set;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-public enum RunILP {
+/* package */ enum RunILP {
     ;
     public static List<Double> of(List<TripWithVehicle> grossListOfRTVEdges, List<AVRequest> openRequestList, //
             List<RoboTaxi> listOfRoboTaxiWithValidTrip, double costOfIgnoredReuqestNormal, //

@@ -15,7 +15,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     private final Set<Set<AVRequest>> rvEdges = new HashSet<>();
     private final double pickupDurationPerStop;
     private final double dropoffDurationPerStop;
-    private Map<Set<AVRequest>, Double> rvEdgesValidityMap = new HashMap<>();
+    private final Map<Set<AVRequest>, Double> rvEdgesValidityMap = new HashMap<>();
 
     public AdvanceTVRVGenerator(double pickupDurationPerStop, double dropoffDurationPerStop) {
         this.pickupDurationPerStop = pickupDurationPerStop;
@@ -29,20 +29,15 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         if (!rvEdges.isEmpty()) {
             Set<Set<AVRequest>> edgesToRemove = new HashSet<>();
             // 1.1 add no longer valid edges to edgeToRemove
-            for (Set<AVRequest> rvEdge : rvEdges) {
-                if (rvEdgesValidityMap.get(rvEdge) < now) {
+            for (Set<AVRequest> rvEdge : rvEdges)
+                if (rvEdgesValidityMap.get(rvEdge) < now)
                     edgesToRemove.add(rvEdge);
-                }
-            }
 
             // 1.2 add edge containing removed request to edgeToRmove
-            for (AVRequest avRequest : removedRequests) {
-                for (Set<AVRequest> edge : rvEdges) {
-                    if (edge.contains(avRequest)) {
+            for (AVRequest avRequest : removedRequests)
+                for (Set<AVRequest> edge : rvEdges)
+                    if (edge.contains(avRequest))
                         edgesToRemove.add(edge);
-                    }
-                }
-            }
 
             // 1.3 remove
             rvEdges.removeAll(edgesToRemove);
