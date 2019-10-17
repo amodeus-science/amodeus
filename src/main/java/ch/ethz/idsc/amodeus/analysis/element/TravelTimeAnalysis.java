@@ -12,6 +12,8 @@ import ch.ethz.idsc.amodeus.analysis.report.TtlValIdent;
 import ch.ethz.idsc.amodeus.dispatcher.core.RStatusHelper;
 import ch.ethz.idsc.amodeus.net.RequestContainer;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
+import ch.ethz.idsc.amodeus.util.math.MeanOrZero;
+import ch.ethz.idsc.amodeus.util.math.QuantileOrZero;
 import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -64,8 +66,8 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
         Tensor submission = Tensor.of(simulationObject.requests.stream()//
                 .filter(rc -> RStatusHelper.unserviced(rc.requestStatus))//
                 .map(rc -> RealScalar.of(simulationObject.now - rc.submissionTime)));
-        waitTimePlotValues.append(Join.of(AnalysisHelper.quantiles(submission, Quantiles.SET), //
-                Tensors.vector(AnalysisHelper.means(submission).number().doubleValue())));
+        waitTimePlotValues.append(Join.of(Quantiles.SET.map(QuantileOrZero.of(submission)), //
+                Tensors.vector(MeanOrZero.of(submission).number().doubleValue())));
         waitingCustomers.append(RationalScalar.of(simulationObject.requests.stream()//
                 .filter(rc -> RStatusHelper.unserviced(rc.requestStatus)).count(), 1));//
 
@@ -95,13 +97,13 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
         maxDrveTime = getDriveTimes().flatten(-1).reduce(Max::of).get().Get();
         maxTravelTime = getTotalJourneyTimes().flatten(-1).reduce(Max::of).get().Get();
         /** aggregate information {quantile1, quantile2, quantile3, mean, maximum} */
-        waitTAgg = Tensors.of(AnalysisHelper.quantiles(getWaitTimes(), Quantiles.SET), //
+        waitTAgg = Tensors.of(Quantiles.SET.map(QuantileOrZero.of(getWaitTimes())), //
                 Mean.of(getWaitTimes()), //
                 maxWaitTime);
-        drveAgg = Tensors.of(AnalysisHelper.quantiles(getDriveTimes(), Quantiles.SET), //
+        drveAgg = Tensors.of(Quantiles.SET.map(QuantileOrZero.of(getDriveTimes())), //
                 Mean.of(getDriveTimes()), //
                 maxDrveTime);
-        totJTAgg = Tensors.of(AnalysisHelper.quantiles(getTotalJourneyTimes(), Quantiles.SET), //
+        totJTAgg = Tensors.of(Quantiles.SET.map(QuantileOrZero.of(getTotalJourneyTimes())), //
                 Mean.of(getTotalJourneyTimes()), //
                 maxTravelTime);
 
