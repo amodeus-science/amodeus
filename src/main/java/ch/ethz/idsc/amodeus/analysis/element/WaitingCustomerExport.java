@@ -10,10 +10,10 @@ import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.UnitSaveUtils;
 import ch.ethz.idsc.amodeus.util.io.SaveFormats;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.subare.plot.VisualSet;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Transpose;
+import ch.ethz.idsc.tensor.fig.VisualSet;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.red.Max;
 
@@ -42,7 +42,7 @@ public enum WaitingCustomerExport implements AnalysisExport {
         visualSet.setAxesLabelX("Time");
         visualSet.setAxesLabelY("Waiting Customers [#]");
 
-        JFreeChart chart = ch.ethz.idsc.subare.plot.TimedChart.of(visualSet);
+        JFreeChart chart = ch.ethz.idsc.tensor.fig.TimedChart.of(visualSet);
         chart.getXYPlot().getRangeAxis().setRange(0., maxWaiting + 1);
 
         try {

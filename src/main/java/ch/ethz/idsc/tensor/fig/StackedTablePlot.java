@@ -1,13 +1,14 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.subare.plot;
+package ch.ethz.idsc.tensor.fig;
 
 import org.jfree.chart.JFreeChart;
 
-public enum StackedTimedChart {
+/** plotting utility */
+public enum StackedTablePlot {
     ;
 
     public static JFreeChart of(VisualSet visualSet) {
-        return TimedChart.of(visualSet, true);
+        return JFreeCharts.stackedAreaPlot(visualSet, StaticHelper.categoryTableXYDataset(visualSet));
     }
 
 }
