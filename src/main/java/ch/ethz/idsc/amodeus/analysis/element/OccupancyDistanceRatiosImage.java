@@ -29,7 +29,7 @@ public enum OccupancyDistanceRatiosImage implements AnalysisExport {
         VisualSet visualSet = new VisualSet(colorDataIndexed);
         for (int i = 0; i < RATIOS_LABELS.length; ++i) {
             Tensor values = de.ratios.get(Tensor.ALL, i);
-            values = StaticHelper.FILTER_ON ? MeanFilter.of(values, StaticHelper.FILTERSIZE) : values;
+            values = AnalysisConstants.FILTER_ON ? MeanFilter.of(values, AnalysisConstants.FILTERSIZE) : values;
             VisualRow visualRow = visualSet.add(de.time, values);
             visualRow.setLabel(RATIOS_LABELS[i]);
         }

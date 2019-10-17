@@ -35,7 +35,7 @@ public enum WaitingCustomerExport implements AnalysisExport {
                 .reduce(Max::of).get().Get().number().doubleValue();
 
         Tensor values = tta.waitingCustomers;
-        values = StaticHelper.FILTER_ON ? MeanFilter.of(values, StaticHelper.FILTERSIZE) : values;
+        values = AnalysisConstants.FILTER_ON ? MeanFilter.of(values, AnalysisConstants.FILTERSIZE) : values;
         VisualSet visualSet = new VisualSet(colorDataIndexed);
         visualSet.add(tta.time, values);
 

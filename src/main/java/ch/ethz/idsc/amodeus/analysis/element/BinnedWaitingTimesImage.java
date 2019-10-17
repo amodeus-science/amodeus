@@ -32,7 +32,7 @@ public enum BinnedWaitingTimesImage implements AnalysisExport {
         VisualSet visualSet = new VisualSet(colorDataIndexed);
         for (int i = 0; i < Quantiles.LBL.length; ++i) {
             Tensor values = tta.waitTimePlotValues.get(Tensor.ALL, i).divide(scalingFactor);
-            values = StaticHelper.FILTER_ON ? MeanFilter.of(values, StaticHelper.FILTERSIZE) : values;
+            values = AnalysisConstants.FILTER_ON ? MeanFilter.of(values, AnalysisConstants.FILTERSIZE) : values;
             VisualRow visualRow = visualSet.add(tta.time, values);
             visualRow.setLabel(Quantiles.LBL[i]);
         }

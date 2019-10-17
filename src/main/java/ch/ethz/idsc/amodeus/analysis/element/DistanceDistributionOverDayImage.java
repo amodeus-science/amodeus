@@ -32,7 +32,7 @@ public enum DistanceDistributionOverDayImage implements AnalysisExport {
         VisualSet visualSet = new VisualSet(colorDataIndexed);
         for (int i = 0; i < 3; i++) {
             Tensor values = i == 0 ? distances.get(i).multiply(RealScalar.of(-1)) : distances.get(i);
-            values = StaticHelper.FILTER_ON ? MeanFilter.of(values, StaticHelper.FILTERSIZE) : values;
+            values = AnalysisConstants.FILTER_ON ? MeanFilter.of(values, AnalysisConstants.FILTERSIZE) : values;
             VisualRow visualRow = visualSet.add(de.time, values);
             visualRow.setLabel(StaticHelper.descriptions()[i]);
         }
