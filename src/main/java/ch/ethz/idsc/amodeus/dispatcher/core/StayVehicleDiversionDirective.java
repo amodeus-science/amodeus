@@ -22,7 +22,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
     @Override
     void executeWithPath(VrpPathWithTravelData vrpPathWithTravelData) {
-        final Schedule schedule = robotaxi.getSchedule();
+        final Schedule schedule = roboTaxi.getSchedule();
         final AVStayTask avStayTask = (AVStayTask) schedule.getCurrentTask(); // <- implies that task is started
         final double scheduleEndTime = avStayTask.getEndTime(); // typically 108000.0
         GlobalAssert.that(scheduleEndTime == schedule.getEndTime());
@@ -33,11 +33,11 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         if (endDriveTask < scheduleEndTime) {
 
             GlobalAssert.that(avStayTask.getStatus() == Task.TaskStatus.STARTED);
-            avStayTask.setEndTime(robotaxi.getDivertableTime());
+            avStayTask.setEndTime(roboTaxi.getDivertableTime());
 
             schedule.addTask(avDriveTask);
 
-            ScheduleUtils.makeWhole(robotaxi, endDriveTask, scheduleEndTime, destination);
+            ScheduleUtils.makeWhole(roboTaxi, endDriveTask, scheduleEndTime, destination);
 
         } else
             reportExecutionBypass(endDriveTask - scheduleEndTime);

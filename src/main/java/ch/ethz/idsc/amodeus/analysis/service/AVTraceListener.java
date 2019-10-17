@@ -18,14 +18,14 @@ import org.matsim.api.core.v01.events.handler.PersonLeavesVehicleEventHandler;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.vehicles.Vehicle;
 
-/* package */ class AVTraceListener
-        implements ActivityStartEventHandler, ActivityEndEventHandler, LinkEnterEventHandler, PersonEntersVehicleEventHandler, PersonLeavesVehicleEventHandler {
-    final private Network network;
-    final private AVTraceWriter writer;
+/* package */ class AVTraceListener implements ActivityStartEventHandler, ActivityEndEventHandler, //
+        LinkEnterEventHandler, PersonEntersVehicleEventHandler, PersonLeavesVehicleEventHandler {
+    private final Network network;
+    private final AVTraceWriter writer;
 
-    final private Map<Id<Vehicle>, AVTraceItem> active = new HashMap<>();
-    final private Map<Id<Vehicle>, AVTraceItem> finished = new HashMap<>();
-    final private Map<Id<Vehicle>, Integer> occupancy = new HashMap<>();
+    private final Map<Id<Vehicle>, AVTraceItem> active = new HashMap<>();
+    private final Map<Id<Vehicle>, AVTraceItem> finished = new HashMap<>();
+    private final Map<Id<Vehicle>, Integer> occupancy = new HashMap<>();
 
     public AVTraceListener(Network network, AVTraceWriter writer) {
         this.network = network;

@@ -13,8 +13,8 @@ import ch.ethz.idsc.tensor.opt.ScalarTensorFunction;
 import ch.ethz.idsc.tensor.sca.Exp;
 
 /* package */ class NumberPassengerColorScheme {
-    private static final double SCALINGFACTOR = 4;
-
+    private static final Scalar SCALINGFACTOR = RealScalar.of(4.0);
+    // ---
     private final ScalarTensorFunction colorDataGradient;
     private final ColorDataIndexed statusColorScheme;
 
@@ -36,7 +36,7 @@ import ch.ethz.idsc.tensor.sca.Exp;
     }
 
     private static Scalar functionTofraction(Scalar scalar) {
-        return RealScalar.ONE.subtract(Exp.of(scalar.negate().divide(RealScalar.of(SCALINGFACTOR))));
+        return RealScalar.ONE.subtract(Exp.of(scalar.negate().divide(SCALINGFACTOR)));
     }
 
 }

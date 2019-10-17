@@ -7,7 +7,6 @@ import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
 
-import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 
@@ -35,6 +34,6 @@ public enum LegCount {
                 }
             }
         }
-        return RationalScalar.of(reqCount, 1);
+        return RealScalar.of(reqCount);
     }
 }

@@ -6,8 +6,6 @@ import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 
-// TODO eventually remove, was introduced to ensure that all link indexes
-// are encoded in the same way.
 public enum LinkIndex {
     ;
 

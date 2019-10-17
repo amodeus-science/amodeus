@@ -98,7 +98,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
      * 
      * @param roboTaxi
      * @param avRequest */
-    public void setRoboTaxiPickup(RoboTaxi roboTaxi, AVRequest avRequest) {
+    public final void setRoboTaxiPickup(RoboTaxi roboTaxi, AVRequest avRequest) {
         GlobalAssert.that(roboTaxi.isWithoutCustomer());
         GlobalAssert.that(pendingRequests.contains(avRequest));
 
@@ -134,34 +134,34 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
      * setVehicleDiversion(...) may only be invoked once for a single
      * {@link RoboTaxi} vehicle
      *
-     * @param robotaxi {@link RoboTaxi} supplied with a getFunction,e.g.,
+     * @param roboTaxi {@link RoboTaxi} supplied with a getFunction,e.g.,
      *            {@link this.getDivertableRoboTaxis}
      * @param destination {@link Link} the {@link RoboTaxi} should be diverted to
      * @param status {@link} the {@link RoboTaxiStatus} the {@link RoboTaxi}
      *            has after the diversion, depends if used from
      *            {@link setRoboTaxiPickup} or {@link setRoboTaxiRebalance} */
-    final void setRoboTaxiDiversion(RoboTaxi robotaxi, Link destination, RoboTaxiStatus status) {
+    final void setRoboTaxiDiversion(RoboTaxi roboTaxi, Link destination, RoboTaxiStatus status) {
         /** update {@link RoboTaxiStatus} of {@link RoboTaxi} */
-        GlobalAssert.that(robotaxi.isWithoutCustomer());
-        GlobalAssert.that(robotaxi.isWithoutDirective());
-        robotaxi.setStatus(status);
+        GlobalAssert.that(roboTaxi.isWithoutCustomer());
+        GlobalAssert.that(roboTaxi.isWithoutDirective());
+        roboTaxi.setStatus(status);
 
-        routingForDiversion(robotaxi, destination, false);
+        routingForDiversion(roboTaxi, destination, false);
     }
 
     /** this function will re-route the taxi if it is not in stay task (for
      * congestion relieving purpose) */
-    protected void reRoute(RoboTaxi robotaxi) {
-        if (!robotaxi.isInStayTask() && robotaxi.canReroute())
-            routingForDiversion(robotaxi, robotaxi.getCurrentDriveDestination(), true);
+    protected final void reRoute(RoboTaxi roboTaxi) {
+        if (!roboTaxi.isInStayTask() && roboTaxi.canReroute())
+            routingForDiversion(roboTaxi, roboTaxi.getCurrentDriveDestination(), true);
     }
 
     // the function below is for internal use only!
-    private final void routingForDiversion(RoboTaxi robotaxi, Link destination, boolean reRoute) {
+    private final void routingForDiversion(RoboTaxi roboTaxi, Link destination, boolean reRoute) {
         /** update {@link Schedule} of {@link RoboTaxi} */
         // the 3rd parameter "reRoute" is added for re-routing the taxi to avoid
         // congestion
-        final Schedule schedule = robotaxi.getSchedule();
+        final Schedule schedule = roboTaxi.getSchedule();
         Task task = schedule.getCurrentTask();
         new RoboTaxiTaskAdapter(task) {
             @Override
@@ -169,14 +169,14 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
                 if (reRoute || !avDriveTask.getPath().getToLink().equals(destination)) { // ignore when vehicle is
                                                                                          // already going there
                     FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer( //
-                            robotaxi.getDivertableLocation(), destination, robotaxi.getDivertableTime());
+                            roboTaxi.getDivertableLocation(), destination, roboTaxi.getDivertableTime());
                     if (reRoute) {
-                        robotaxi.assignDirective(new DriveVehicleRerouteDirective(futurePathContainer, robotaxi));
+                        roboTaxi.assignDirective(new DriveVehicleRerouteDirective(futurePathContainer, roboTaxi));
                     } else {
-                        robotaxi.assignDirective(new DriveVehicleDiversionDirective(robotaxi, destination, futurePathContainer));
+                        roboTaxi.assignDirective(new DriveVehicleDiversionDirective(roboTaxi, destination, futurePathContainer));
                     }
                 } else
-                    robotaxi.assignDirective(EmptyDirective.INSTANCE);
+                    roboTaxi.assignDirective(EmptyDirective.INSTANCE);
             }
 
             @Override
@@ -184,10 +184,10 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
                 // if (!reRoute) {/** a staying vehicle cannot be rerouted */
                 if (!avStayTask.getLink().equals(destination)) { // ignore request where location == target
                     FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer( //
-                            robotaxi.getDivertableLocation(), destination, robotaxi.getDivertableTime());
-                    robotaxi.assignDirective(new StayVehicleDiversionDirective(robotaxi, destination, futurePathContainer));
+                            roboTaxi.getDivertableLocation(), destination, roboTaxi.getDivertableTime());
+                    roboTaxi.assignDirective(new StayVehicleDiversionDirective(roboTaxi, destination, futurePathContainer));
                 } else
-                    robotaxi.assignDirective(EmptyDirective.INSTANCE);
+                    roboTaxi.assignDirective(EmptyDirective.INSTANCE);
                 // }
             }
         };
@@ -270,7 +270,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
     /** complete all matchings if a {@link RoboTaxi} has arrived at the fromLink of
      * an {@link AVRequest} */
     @Override
-    void executePickups() {
+    final void executePickups() {
         Map<AVRequest, RoboTaxi> pickupRegisterCopy = new HashMap<>(pickupRegister);
         for (Entry<AVRequest, RoboTaxi> entry : pickupRegisterCopy.entrySet()) {
             AVRequest avRequest = entry.getKey();
@@ -287,7 +287,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
     /** complete all matchings if a {@link RoboTaxi} has arrived at the toLink of an
      * {@link AVRequest} */
     @Override
-    void executeDropoffs() {
+    final void executeDropoffs() {
         Map<AVRequest, RoboTaxi> requestRegisterCopy = new HashMap<>(rqstDrvRegister);
         for (Entry<AVRequest, RoboTaxi> entry : requestRegisterCopy.entrySet()) {
             if (Objects.nonNull(entry.getValue())) {
@@ -334,7 +334,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
     }
 
     @Override
-    /* package */ void insertRequestInfo(SimulationObjectCompiler simulationObjectCompiler) {
+    /* package */ final void insertRequestInfo(SimulationObjectCompiler simulationObjectCompiler) {
         /** pickup register must be after pending requests, request is pending from
          * moment it appears until it is picked up, this period may contain several not
          * connected pickup periods (cancelled pickup attempts) */
@@ -380,9 +380,9 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
      * MATSim engine */
     @Override
     protected final void updateDivertableLocations() {
-        for (RoboTaxi robotaxi : getRoboTaxis()) {
-            GlobalAssert.that(robotaxi.isWithoutDirective());
-            Schedule schedule = robotaxi.getSchedule();
+        for (RoboTaxi roboTaxi : getRoboTaxis()) {
+            GlobalAssert.that(roboTaxi.isWithoutDirective());
+            Schedule schedule = roboTaxi.getSchedule();
             new RoboTaxiTaskAdapter(schedule.getCurrentTask()) {
                 @Override
                 public void handle(AVDriveTask avDriveTask) {
@@ -390,34 +390,34 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
                     TaskTracker taskTracker = avDriveTask.getTaskTracker();
                     AmodeusDriveTaskTracker onlineDriveTaskTracker = (AmodeusDriveTaskTracker) taskTracker;
                     LinkTimePair linkTimePair = onlineDriveTaskTracker.getSafeDiversionPoint();
-                    robotaxi.setDivertableLinkTime(linkTimePair); // contains null check
-                    robotaxi.setCurrentDriveDestination(avDriveTask.getPath().getToLink());
+                    roboTaxi.setDivertableLinkTime(linkTimePair); // contains null check
+                    roboTaxi.setCurrentDriveDestination(avDriveTask.getPath().getToLink());
                     if (ScheduleUtils.isNextToLastTask(schedule, avDriveTask)) {
-                        GlobalAssert.that(!robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
+                        GlobalAssert.that(!roboTaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
                     } else {
-                        GlobalAssert.that(robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
+                        GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
                     }
                 }
 
                 @Override
                 public void handle(AVPickupTask avPickupTask) {
-                    GlobalAssert.that(robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
+                    GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
                 }
 
                 @Override
                 public void handle(AVDropoffTask avDropOffTask) {
-                    GlobalAssert.that(robotaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
+                    GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
                 }
 
                 @Override
                 public void handle(AVStayTask avStayTask) {
                     // for empty vehicles the current task has to be the last task
-                    if (ScheduleUtils.isLastTask(schedule, avStayTask) && !isInPickupRegister(robotaxi)) {
+                    if (ScheduleUtils.isLastTask(schedule, avStayTask) && !isInPickupRegister(roboTaxi)) {
                         GlobalAssert.that(avStayTask.getBeginTime() <= getTimeNow());
                         GlobalAssert.that(avStayTask.getLink() != null);
-                        robotaxi.setDivertableLinkTime(new LinkTimePair(avStayTask.getLink(), getTimeNow()));
-                        robotaxi.setCurrentDriveDestination(avStayTask.getLink());
-                        robotaxi.setStatus(RoboTaxiStatus.STAY);
+                        roboTaxi.setDivertableLinkTime(new LinkTimePair(avStayTask.getLink(), getTimeNow()));
+                        roboTaxi.setCurrentDriveDestination(avStayTask.getLink());
+                        roboTaxi.setStatus(RoboTaxiStatus.STAY);
                     }
                 }
             };

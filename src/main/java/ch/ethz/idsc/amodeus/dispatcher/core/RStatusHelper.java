@@ -3,12 +3,13 @@ package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.Set;
 
-public class RStatusHelper {
+public enum RStatusHelper {
+    ;
 
-    public static boolean unserviced(Set<RequestStatus> statii) {
-        boolean inService = statii.contains(RequestStatus.PICKUP) || //
-                statii.contains(RequestStatus.DRIVING) || //
-                statii.contains(RequestStatus.DROPOFF);
+    public static boolean unserviced(Set<RequestStatus> set) {
+        boolean inService = set.contains(RequestStatus.PICKUP) //
+                || set.contains(RequestStatus.DRIVING) //
+                || set.contains(RequestStatus.DROPOFF);
         return !inService;
     }
 }

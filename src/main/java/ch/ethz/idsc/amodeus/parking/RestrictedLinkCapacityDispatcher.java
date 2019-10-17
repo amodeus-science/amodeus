@@ -131,12 +131,12 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
                     }
                     /** undersupply case */
                 } else {
-                    for (RoboTaxi robotaxi : robotaxisDivertable) {
-                        AVRequest closest = requestMaintainer.getClosest(getRoboTaxiLoc(robotaxi));
+                    for (RoboTaxi roboTaxi : robotaxisDivertable) {
+                        AVRequest closest = requestMaintainer.getClosest(getRoboTaxiLoc(roboTaxi));
                         if (closest != null) {
-                            addSharedRoboTaxiPickup(robotaxi, closest);
+                            addSharedRoboTaxiPickup(roboTaxi, closest);
 
-                            unassignedRoboTaxis.remove(robotaxi);
+                            unassignedRoboTaxis.remove(roboTaxi);
                             requestMaintainer.remove(closest);
                         }
                     }
@@ -147,9 +147,9 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
 
             Collection<RoboTaxi> unassignedRoboTaxisNow = new HashSet<>(unassignedRoboTaxis.getValues());
 
-            for (RoboTaxi robotaxi : unassignedRoboTaxisNow)
-                if (!robotaxi.getStatus().equals(RoboTaxiStatus.STAY))
-                    unassignedRoboTaxis.remove(robotaxi);
+            for (RoboTaxi roboTaxi : unassignedRoboTaxisNow)
+                if (!roboTaxi.getStatus().equals(RoboTaxiStatus.STAY))
+                    unassignedRoboTaxis.remove(roboTaxi);
 
         }
 

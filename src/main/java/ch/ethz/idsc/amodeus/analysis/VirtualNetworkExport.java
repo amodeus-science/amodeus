@@ -18,7 +18,7 @@ import ch.ethz.idsc.tensor.img.ColorDataIndexed;
         this.scenarioOptions = scenarioOptions;
     }
 
-    @Override
+    @Override // from AnalysisExport
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
         final File virtualNetworkFolder = new File(scenarioOptions.getVirtualNetworkDirectoryName());
         System.out.println("virtualNetworkFolder:  " + virtualNetworkFolder.getAbsolutePath());
@@ -27,7 +27,7 @@ import ch.ethz.idsc.tensor.img.ColorDataIndexed;
             copyToDir.delete();
             copyToDir.mkdirs();
             for (File file : new MultiFileReader(virtualNetworkFolder).getFolderFiles()) {
-                Files.copy(file, new File(copyToDir + "/" + file.getName()));
+                Files.copy(file, new File(copyToDir, file.getName()));
             }
         } catch (IOException exception) {
             System.err.println("The virtual network file was not copied to the data directory...");

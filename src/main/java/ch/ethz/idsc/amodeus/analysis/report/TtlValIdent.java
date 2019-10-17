@@ -1,8 +1,9 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.analysis.report;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public enum TtlValIdent implements TotalValueIdentifier {
     // TODO Lukas, clean this up such that only the relevant parts are present
@@ -63,12 +64,11 @@ public enum TtlValIdent implements TotalValueIdentifier {
         return identifier;
     }
 
+    // ---
     public static Set<String> getAllIdentifiers() {
-        Set<String> allIdentifiers = new HashSet<>();
-        for (TtlValIdent totalValueIdentifiersAmodeus : values()) {
-            allIdentifiers.add(totalValueIdentifiersAmodeus.identifier);
-        }
-        return allIdentifiers;
+        return Stream.of(values()) //
+                .map(TtlValIdent::getIdentifier) //
+                .collect(Collectors.toSet());
     }
 
     public static boolean contains(TotalValueIdentifier totalValueIdentifier) {

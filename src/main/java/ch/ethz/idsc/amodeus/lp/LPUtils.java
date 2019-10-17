@@ -3,7 +3,6 @@ package ch.ethz.idsc.amodeus.lp;
 
 import org.matsim.api.core.v01.network.Link;
 
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.util.math.Magnitude;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualLink;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
@@ -51,7 +50,7 @@ import ch.ethz.idsc.tensor.sca.Sign;
      * @return the rounded vector where almost integer elements are required, else an exception is thrown */
     static Tensor getRounded(Tensor tensor) {
         Tensor rounded = Round.of(tensor);
-        GlobalAssert.that(Chop._04.close(tensor, rounded));
+        Chop._04.requireClose(tensor, rounded);
         return rounded;
     }
 }

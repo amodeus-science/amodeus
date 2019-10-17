@@ -20,7 +20,7 @@ import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 
     abstract void executeWithPath(VrpPathWithTravelData vrpPathWithTravelData);
 
-    protected void reportExecutionBypass(double excess) {
+    protected final void reportExecutionBypass(double excess) {
         // System.out.println(" \\- bypass " + getClass().getSimpleName() + ",
         // exceeds EndTime by " + excess + " sec");
     }

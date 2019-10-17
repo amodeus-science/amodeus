@@ -1,10 +1,10 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.dispatcher.shared.tshare;
+package ch.ethz.idsc.amodeus.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-/* package */ enum Intersection {
+public enum Intersection {
     ;
 
     /** @return {@link Collection} of elements which are contained

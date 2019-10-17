@@ -3,6 +3,7 @@ package ch.ethz.idsc.amodeus.dispatcher.util;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 
 import org.matsim.api.core.v01.network.Link;
 
@@ -13,20 +14,20 @@ import ch.ethz.matsim.av.passenger.AVRequest;
  * or {@link Link} using the Hungarian Method */
 public class GlobalBipartiteMatching extends AbstractRoboTaxiDestMatcher {
 
-    protected final GlobalBipartiteCost specificWeight;
+    protected final GlobalBipartiteCost globalBipartiteCost;
 
-    public GlobalBipartiteMatching(GlobalBipartiteCost specificWeight) {
-        this.specificWeight = specificWeight;
+    public GlobalBipartiteMatching(GlobalBipartiteCost globalBipartiteCost) {
+        this.globalBipartiteCost = Objects.requireNonNull(globalBipartiteCost);
     }
 
     @Override
     protected Map<RoboTaxi, AVRequest> protected_match(Collection<RoboTaxi> roboTaxis, Collection<AVRequest> requests) {
-        return GlobalBipartiteHelper.genericMatch(roboTaxis, requests, AVRequest::getFromLink, specificWeight);
+        return GlobalBipartiteHelper.genericMatch(roboTaxis, requests, AVRequest::getFromLink, globalBipartiteCost);
     }
 
     @Override
     protected Map<RoboTaxi, Link> protected_matchLink(Collection<RoboTaxi> roboTaxis, Collection<Link> links) {
-        return GlobalBipartiteHelper.genericMatch(roboTaxis, links, link -> link, specificWeight);
+        return GlobalBipartiteHelper.genericMatch(roboTaxis, links, link -> link, globalBipartiteCost);
     }
 
 }

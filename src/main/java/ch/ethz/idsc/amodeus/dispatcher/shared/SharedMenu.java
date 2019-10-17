@@ -39,7 +39,7 @@ public class SharedMenu {
     // ---
     /** Unmodifiable List of Shared Courses */
     private final List<SharedCourse> roboTaxiMenu;
-    public final long menuOnBoardCustomers;
+    private final long menuOnBoardCustomers;
 
     private SharedMenu(List<SharedCourse> list) {
         roboTaxiMenu = Collections.unmodifiableList(list);
@@ -49,6 +49,10 @@ public class SharedMenu {
     /** @return an unmodifiable view of the menu */
     public List<SharedCourse> getCourseList() {
         return roboTaxiMenu;
+    }
+
+    public long getMenuOnBoardCustomers() {
+        return menuOnBoardCustomers;
     }
 
     @Override

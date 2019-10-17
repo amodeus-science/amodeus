@@ -2,8 +2,8 @@
 package ch.ethz.idsc.amodeus.virtualnetwork.core;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.util.math.IntPoint;
@@ -13,7 +13,7 @@ import ch.ethz.idsc.tensor.red.Norm;
     ;
 
     public static <T, U> void build( //
-            VirtualNetwork<T> virtualNetwork, boolean completeGraph, Map<U, HashSet<T>> uElements) {
+            VirtualNetwork<T> virtualNetwork, boolean completeGraph, Map<U, Set<T>> uElements) {
         if (completeGraph)
             VirtualLinkBuilder.buildComplete(virtualNetwork);
         else
@@ -42,7 +42,7 @@ import ch.ethz.idsc.tensor.red.Norm;
     /** @param virtualNetwork without {@link VirtualLink}
      * @param uElements a {@link HashMap} with elements U that are associated to 1 or more T, two {@link VirtualNode}
      *            are neighboring if some U is associated to a {@link T} in both of them. */
-    private static <T, U> void buildNeighboring(VirtualNetwork<T> _virtualNetwork, Map<U, HashSet<T>> uElements) {
+    private static <T, U> void buildNeighboring(VirtualNetwork<T> _virtualNetwork, Map<U, Set<T>> uElements) {
         VirtualNetworkImpl<T> virtualNetwork = (VirtualNetworkImpl<T>) _virtualNetwork;
         GenericButterfliesAndRainbows<T, U> gbf = new GenericButterfliesAndRainbows<>();
 

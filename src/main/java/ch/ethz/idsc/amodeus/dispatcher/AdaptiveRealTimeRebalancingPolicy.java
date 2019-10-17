@@ -117,8 +117,8 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
             {
                 Map<VirtualNode<Link>, List<RoboTaxi>> availableVehicles = getVirtualNodeDivertableNotRebalancingRoboTaxis();
                 int totalAvailable = 0;
-                for (List<RoboTaxi> robotaxiList : availableVehicles.values()) {
-                    totalAvailable += robotaxiList.size();
+                for (List<RoboTaxi> roboTaxiList : availableVehicles.values()) {
+                    totalAvailable += roboTaxiList.size();
                 }
 
                 /** calculate desired vehicles per vNode */

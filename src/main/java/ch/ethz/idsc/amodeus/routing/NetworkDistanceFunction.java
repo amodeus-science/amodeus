@@ -19,15 +19,15 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     }
 
     @Override
-    public final double getDistance(RoboTaxi robotaxi, AVRequest avrequest) {
-        Node from = robotaxi.getDivertableLocation().getFromNode();
+    public final double getDistance(RoboTaxi roboTaxi, AVRequest avrequest) {
+        Node from = roboTaxi.getDivertableLocation().getFromNode();
         Node to = avrequest.getFromLink().getFromNode();
         return distNetwork(from, to);
     }
 
     @Override
-    public final double getDistance(RoboTaxi robotaxi, Link link) {
-        Node from = robotaxi.getDivertableLocation().getFromNode();
+    public final double getDistance(RoboTaxi roboTaxi, Link link) {
+        Node from = roboTaxi.getDivertableLocation().getFromNode();
         Node to = link.getFromNode();
         return distNetwork(from, to);
     }

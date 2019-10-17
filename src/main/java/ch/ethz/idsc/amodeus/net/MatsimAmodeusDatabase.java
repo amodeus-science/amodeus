@@ -103,8 +103,8 @@ public class MatsimAmodeusDatabase {
         return requestIdIntegerDatabase.getId(avRequest.getId().toString());
     }
 
-    public int getVehicleIndex(RoboTaxi robotaxi) {
-        return vehicleIdIntegerDatabase.getId(robotaxi.getId().toString());
+    public int getVehicleIndex(RoboTaxi roboTaxi) {
+        return vehicleIdIntegerDatabase.getId(roboTaxi.getId().toString());
     }
 
     void setIteration(Integer iteration) {

@@ -9,7 +9,7 @@ import java.util.Set;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-public class CheckingUpdateMenuOrNot {
+/* package */ class CheckingUpdateMenuOrNot {
     private final Map<RoboTaxi, Set<AVRequest>> lastSetOfRequestsInRoute = new HashMap<>();
     private final Map<RoboTaxi, Set<AVRequest>> secondLastSetOfRequestInRoute = new HashMap<>();
 

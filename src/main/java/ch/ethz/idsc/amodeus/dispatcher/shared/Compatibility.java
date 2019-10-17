@@ -2,6 +2,7 @@
 package ch.ethz.idsc.amodeus.dispatcher.shared;
 
 import java.util.List;
+import java.util.Objects;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 
@@ -12,11 +13,12 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
  * Compatibility.of(courses).forCapacity(c) */
 public class Compatibility {
 
-    private final List<? extends SharedCourse> courses;
-
     public static Compatibility of(List<? extends SharedCourse> courses) {
-        return new Compatibility(courses);
+        return new Compatibility(Objects.requireNonNull(courses));
     }
+
+    // ---
+    private final List<? extends SharedCourse> courses;
 
     private Compatibility(List<? extends SharedCourse> courses) {
         this.courses = courses;

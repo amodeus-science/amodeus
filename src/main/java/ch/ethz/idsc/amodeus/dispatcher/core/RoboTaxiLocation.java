@@ -19,14 +19,15 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
     /** @param avVehicle
      * @return link or null with a small chance */
-    public static Link of(RoboTaxi robotaxi) {
-        Schedule schedule = Objects.requireNonNull(robotaxi.getSchedule());
+    public static Link of(RoboTaxi roboTaxi) {
+        Schedule schedule = Objects.requireNonNull(roboTaxi.getSchedule());
         /** {@link ScheduleImpl.failIfNotStarted} triggers, very likely you have
          * entered a simulation start time other than 0:00. Check that in the
          * av_config.xml file. */
         return new RoboTaxiLocation(schedule.getCurrentTask()).link;
     }
 
+    // ---
     /** DO NOT INITIALIZE THE LINK VARIABLE !!! */
     private Link link;
 

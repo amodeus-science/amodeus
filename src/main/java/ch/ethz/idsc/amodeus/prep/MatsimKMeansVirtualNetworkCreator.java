@@ -2,8 +2,8 @@
 package ch.ethz.idsc.amodeus.prep;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
@@ -28,7 +28,7 @@ public enum MatsimKMeansVirtualNetworkCreator {
         Tensor lbounds = bounds.get(0);
         Tensor ubounds = bounds.get(1);
 
-        Map<Node, HashSet<Link>> uElements = NodeAdjacencyMap.of(network);
+        Map<Node, Set<Link>> uElements = NodeAdjacencyMap.of(network);
 
         int tryIterations = 100;
         KMeansVirtualNetworkCreator<Link, Node> vnc = new KMeansVirtualNetworkCreator<>( //

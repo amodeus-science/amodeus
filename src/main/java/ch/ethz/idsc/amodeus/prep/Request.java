@@ -10,9 +10,12 @@ import org.matsim.api.core.v01.network.Link;
 public class Request {
     /** returns the requests that have their startLink in the given set of links */
     public static Set<Request> filterLinks(Set<Request> requests, Set<Link> links) {
-        return requests.stream().filter(request -> links.contains(request.startLink)).collect(Collectors.toSet());
+        return requests.stream() //
+                .filter(request -> links.contains(request.startLink)) //
+                .collect(Collectors.toSet());
     }
 
+    // ---
     private final double startTime;
     private final Link startLink;
     private final Link endLink;

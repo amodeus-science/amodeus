@@ -69,27 +69,22 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     }
 
     private void removeRoboTaxiFromMap(double travelTime, Block block, RoboTaxi roboTaxi) {
-        if (travelTimesSorted.containsKey(travelTime)) {
-            if (travelTimesSorted.get(travelTime).containsKey(block)) {
+        if (travelTimesSorted.containsKey(travelTime))
+            if (travelTimesSorted.get(travelTime).containsKey(block))
                 if (travelTimesSorted.get(travelTime).get(block).contains(roboTaxi)) {
                     travelTimesSorted.get(travelTime).get(block).remove(roboTaxi);
-                    if (travelTimesSorted.get(travelTime).get(block).isEmpty()) {
+                    if (travelTimesSorted.get(travelTime).get(block).isEmpty())
                         removeBlockFromMap(travelTime, block);
-                    }
                 }
-            }
-        }
     }
 
     private void removeBlockFromMap(double travelTime, Block block) {
-        if (travelTimesSorted.containsKey(travelTime)) {
+        if (travelTimesSorted.containsKey(travelTime))
             if (travelTimesSorted.get(travelTime).containsKey(block)) {
                 travelTimesSorted.get(travelTime).remove(block);
-                if (travelTimesSorted.get(travelTime).isEmpty()) {
+                if (travelTimesSorted.get(travelTime).isEmpty())
                     travelTimesSorted.remove(travelTime);
-                }
             }
-        }
     }
 
     /** gets the currently shortest trip in the data structure. If some trips have equal length a random choice is made.
@@ -97,20 +92,6 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
      * @return */
     public ShortestTrip getShortestTrip() {
         GlobalAssert.that(!travelTimesSorted.isEmpty());
-        return new ShortestTrip();
-    }
-
-    /** Helper class to wrap the three elements Travel Time, Block and roboTaxi */
-    public class ShortestTrip {
-        final double travelTime;
-        final Block block;
-        final RoboTaxi roboTaxi;
-
-        ShortestTrip() {
-            Entry<Double, Map<Block, Set<RoboTaxi>>> nearestTrips = travelTimesSorted.firstEntry();
-            this.travelTime = nearestTrips.getKey();
-            this.block = nearestTrips.getValue().keySet().iterator().next();
-            this.roboTaxi = nearestTrips.getValue().get(block).iterator().next();
-        }
+        return new ShortestTrip(travelTimesSorted.firstEntry());
     }
 }
