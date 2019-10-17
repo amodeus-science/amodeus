@@ -14,7 +14,7 @@ import org.matsim.contrib.dvrp.util.LinkTimePair;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import junit.framework.TestCase;
 
-public class SharedRoboTaxiDiversionHelperTest extends TestCase {
+public class RetrieveToLinkTest extends TestCase {
     @Test
     public void testStayTask() {
         ArtificialSharedScenarioCreator s = new ArtificialSharedScenarioCreator();

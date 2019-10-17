@@ -16,7 +16,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseUtil;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import junit.framework.TestCase;
 
-public class RoboTaxiUtilsTest extends TestCase {
+public class SharedRoboTaxiUtilsTest extends TestCase {
     public void testSimple() {
         ArtificialSharedScenarioCreator s = new ArtificialSharedScenarioCreator();
 
