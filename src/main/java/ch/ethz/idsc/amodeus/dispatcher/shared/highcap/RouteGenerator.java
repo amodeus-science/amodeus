@@ -14,7 +14,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.OnMenuRequests;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-public enum RouteGenerator {
+/* package */ enum RouteGenerator {
     ;
     /** Route Generator
      * this function generate a route base on current request on board and additional requests to be assigned to the roboTaxi

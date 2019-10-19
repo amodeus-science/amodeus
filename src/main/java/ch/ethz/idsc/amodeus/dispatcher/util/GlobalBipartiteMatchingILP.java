@@ -33,12 +33,12 @@ public class GlobalBipartiteMatchingILP extends GlobalBipartiteMatching {
     @Override
     protected Map<RoboTaxi, AVRequest> protected_match(Collection<RoboTaxi> roboTaxis, Collection<AVRequest> requests) {
         return (new GlobalBipartiteHelperILP<AVRequest>(new GLPKAssignmentSolverBetter(costFunctionWeights)))//
-                .genericMatch(roboTaxis, requests, AVRequest::getFromLink, specificWeight);
+                .genericMatch(roboTaxis, requests, AVRequest::getFromLink, globalBipartiteCost);
     }
 
     @Override
     protected Map<RoboTaxi, Link> protected_matchLink(Collection<RoboTaxi> roboTaxis, Collection<Link> links) {
         return (new GlobalBipartiteHelperILP<Link>(new GLPKAssignmentSolverBetter(costFunctionWeights)))//
-                .genericMatch(roboTaxis, links, l -> l, specificWeight);
+                .genericMatch(roboTaxis, links, l -> l, globalBipartiteCost);
     }
 }

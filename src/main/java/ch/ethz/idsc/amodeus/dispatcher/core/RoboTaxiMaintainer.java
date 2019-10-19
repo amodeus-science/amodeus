@@ -91,7 +91,7 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
     /** the info line is displayed in the console at every dispatching timestep and in the
      * AMoDeus viewer */
-    protected void updateInfoLine() {
+    protected final void updateInfoLine() {
         String infoLine = getInfoLine();
         this.infoLine.updateInfoLine(infoLine, getTimeNow());
     }
@@ -135,11 +135,11 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
         @SuppressWarnings("unused")
         int failed = 0;
         if (!roboTaxis.isEmpty()) {
-            for (RoboTaxi robotaxi : roboTaxis) {
-                final Link link = RoboTaxiLocation.of(robotaxi);
+            for (RoboTaxi roboTaxi : roboTaxis) {
+                final Link link = RoboTaxiLocation.of(roboTaxi);
                 if (Objects.nonNull(link)) {
-                    robotaxi.setLastKnownLocation(link);
-                    updateLocationTrace(robotaxi, link);
+                    roboTaxi.setLastKnownLocation(link);
+                    updateLocationTrace(roboTaxi, link);
                 } else {
                     ++failed;
                 }

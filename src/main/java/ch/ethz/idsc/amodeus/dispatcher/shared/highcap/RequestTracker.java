@@ -8,7 +8,7 @@ import java.util.Set;
 
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-public enum RequestTracker {
+/* package */ enum RequestTracker {
     ;
     public static Set<AVRequest> getNewAddedValidRequests(Set<AVRequest> openRequestSet, Set<AVRequest> lastValidRequestSet) {
         Set<AVRequest> newAddedValidRequests = new HashSet<>();

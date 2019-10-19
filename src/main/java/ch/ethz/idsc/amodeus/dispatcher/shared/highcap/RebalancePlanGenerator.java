@@ -4,7 +4,7 @@ package ch.ethz.idsc.amodeus.dispatcher.shared.highcap;
 import java.util.ArrayList;
 import java.util.List;
 
-public enum RebalancePlanGenerator {
+/* package */ enum RebalancePlanGenerator {
     ;
     /** RebalancingPlanGenerator.of will generate a list of RebalanceTripWithVehicle. It intakes listOfAllRebalanceTripWithVehicle. The
      * way we assign the re-balancing vehicle is according to the paper (see the dispatcher). We do not use LP since we have found other

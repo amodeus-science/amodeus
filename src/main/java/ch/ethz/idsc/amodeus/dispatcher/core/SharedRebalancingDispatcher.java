@@ -48,14 +48,14 @@ public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatc
     }
 
     /** @return {@link List } of all {@link RoboTaxi} which are currently rebalancing. */
-    protected List<RoboTaxi> getRebalancingRoboTaxis() {
+    protected final List<RoboTaxi> getRebalancingRoboTaxis() {
         return getRoboTaxis().stream()//
                 .filter(rt -> rt.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE))//
                 .collect(Collectors.toList());
     }
 
     /** @return {@link List} of all {@link RoboTaxi} which are divertable and not in a rebalacing task. */
-    protected List<RoboTaxi> getDivertableNotRebalancingRoboTaxis() {
+    protected final List<RoboTaxi> getDivertableNotRebalancingRoboTaxis() {
         return getDivertableRoboTaxis().stream()//
                 .filter(rt -> !rt.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE))//
                 .collect(Collectors.toList());

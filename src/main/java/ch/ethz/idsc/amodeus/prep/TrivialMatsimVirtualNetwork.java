@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
@@ -25,7 +26,7 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
         @SuppressWarnings("unchecked")
         Collection<Link> elements = (Collection<Link>) network.getLinks().values();
 
-        Map<Node, HashSet<Link>> uElements = new HashMap<>();
+        Map<Node, Set<Link>> uElements = new HashMap<>();
         network.getNodes().values().forEach(n -> uElements.put(n, new HashSet<>()));
         network.getLinks().values().forEach(l -> uElements.get(l.getFromNode()).add(l));
         network.getLinks().values().forEach(l -> uElements.get(l.getToNode()).add(l));

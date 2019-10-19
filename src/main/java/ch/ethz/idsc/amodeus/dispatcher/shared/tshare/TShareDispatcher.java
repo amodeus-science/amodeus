@@ -60,7 +60,7 @@ import ch.ethz.matsim.av.router.AVRouter;
  * already being transported by a taxi. In order to operate the policy with taxis with capacity N, in this
  * version the time windows of all requests already in a taxi are checked before the insertion of a
  * new request is allowed.
- * - To limit computation time, a maximum legth of the planned {@link SharedMenu} was introduced. */
+ * - To limit computation time, a maximum length of the planned {@link SharedMenu} was introduced. */
 public class TShareDispatcher extends SharedPartitionedDispatcher {
 
     /** general */

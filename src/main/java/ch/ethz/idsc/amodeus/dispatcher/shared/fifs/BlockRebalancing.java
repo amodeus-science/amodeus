@@ -27,7 +27,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     /** in this Set All the operations are made. */
     private final Map<Integer, Block> blocks;
     /** this tree is only used as an lookup to quickly find the corresponding block */
-    private final HashMap<Link, Block> linkBlockLookup = new HashMap<>();
+    private final Map<Link, Block> linkBlockLookup = new HashMap<>();
 
     /** The {@link BlockRebalancing} enables calculations of a Grid based Rebalancing strategy. It generates a grid of Blocks over the network and then
      * calculates
@@ -75,11 +75,12 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param allUnassignedAVRequests all currently unassigned {@link AvRequest}s
      * @param allAvailableRobotaxisforRebalance all {@link RoboTaxi}s which should be considered for Rebalancing
      * @return */
-    public RebalancingDirectives getRebalancingDirectives(double now, Set<Link> historicalRequestLinks, Set<AVRequest> allUnassignedAVRequests,
+    public RebalancingDirectives getRebalancingDirectives( //
+            double now, Set<Link> historicalRequestLinks, Set<AVRequest> allUnassignedAVRequests, //
             Set<RoboTaxi> allAvailableRobotaxisforRebalance) {
 
         /** First we have to update all the blocks with the new values of requests and RoboTaxis */
-        blocks.values().forEach(v -> v.clear());
+        blocks.values().forEach(Block::clear);
 
         allAvailableRobotaxisforRebalance.forEach(rt -> blocks.get(linkBlockLookup.get(rt.getDivertableLocation()).getId()).addRoboTaxi(rt));
         allUnassignedAVRequests.forEach(req -> blocks.get(linkBlockLookup.get(req.getFromLink()).getId()).addUnassignedRequest());
@@ -93,7 +94,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
         /** Calculate for each block which vehicles will move to which link based on the results of the
          * calculated rebalancing numbers above */
-        // TODO this was diabled as it fails, but entire class will be removed anyways later and the
+        // TODO this was disabled as it fails, but entire class will be removed anyways later and the
         // functionality should remain identical.
         // GlobalAssert.that(timeDb.checkTime(now));
         RebalancingDirectives directives = new RebalancingDirectives(new HashMap<>());

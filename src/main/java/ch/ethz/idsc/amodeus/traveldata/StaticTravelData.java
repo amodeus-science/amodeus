@@ -23,7 +23,7 @@ import ch.ethz.idsc.tensor.sca.Sign;
  * then it can be injected in the Server by {@link AmodeusVirtualNetworkModule}.
  * 
  * TravelData is also used in tests. */
-public class StaticTravelData implements Serializable, TravelData {
+public class StaticTravelData implements TravelData, Serializable {
     private final Clip timeClip;
     /** tensor (k,i,j) of dimension (numberofTimeSteps, numberVirtualNodes, numberVirtualNodes) that contains
      * the number of requests that come up in timeStep k from VS i to j */

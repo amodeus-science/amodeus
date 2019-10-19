@@ -3,7 +3,6 @@ package ch.ethz.idsc.amodeus.virtualnetwork;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -38,7 +37,7 @@ public class RectangleGridVirtualNetworkCreator<T, U> extends AbstractVirtualNet
      * @param completeGraph */
     public RectangleGridVirtualNetworkCreator(Collection<T> elements, Function<T, Tensor> locationOf, //
             Function<T, String> nameOf, int xDiv, int yDiv, Tensor xBounds, Tensor yBounds, //
-            Map<U, HashSet<T>> uElements, boolean completeGraph) {
+            Map<U, Set<T>> uElements, boolean completeGraph) {
         System.out.println("Creating a virtual rectangular virtual network with number of cells: ");
         System.out.println("( " + xDiv + " x " + yDiv + " )    lat x lng");
 

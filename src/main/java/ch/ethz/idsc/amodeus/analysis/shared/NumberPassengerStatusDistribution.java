@@ -11,21 +11,21 @@ import org.jfree.chart.JFreeChart;
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.SaveUtils;
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
+import ch.ethz.idsc.amodeus.analysis.element.AnalysisMeanFilter;
 import ch.ethz.idsc.amodeus.analysis.element.NumberPassengersAnalysis;
 import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionElement;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.subare.plot.VisualRow;
-import ch.ethz.idsc.subare.plot.VisualSet;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Join;
 import ch.ethz.idsc.tensor.alg.Reverse;
 import ch.ethz.idsc.tensor.alg.Transpose;
+import ch.ethz.idsc.tensor.fig.VisualRow;
+import ch.ethz.idsc.tensor.fig.VisualSet;
 import ch.ethz.idsc.tensor.img.ColorDataGradients;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
-import ch.ethz.idsc.tensor.img.MeanFilter;
 import ch.ethz.idsc.tensor.opt.ScalarTensorFunction;
 import ch.ethz.idsc.tensor.red.Total;
 
@@ -102,9 +102,7 @@ public enum NumberPassengerStatusDistribution implements AnalysisExport {
         VisualSet visualSet = new VisualSet(colorDataIndexed);
         for (int i = 0; i < statusLabels.length; ++i) {
             Tensor vals = valuesComplet.get(Tensor.ALL, i);
-            vals = StaticHelper.FILTER_ON //
-                    ? MeanFilter.of(vals, StaticHelper.FILTERSIZE)
-                    : vals;
+            vals = AnalysisMeanFilter.of(vals);
             VisualRow visualRow = visualSet.add(time, vals);
             visualRow.setLabel(statusLabels[i]);
         }
@@ -112,7 +110,7 @@ public enum NumberPassengerStatusDistribution implements AnalysisExport {
         visualSet.setPlotLabel("Number Passengers");
         visualSet.setAxesLabelY("RoboTaxis");
 
-        JFreeChart chart = ch.ethz.idsc.subare.plot.StackedTimedChart.of(visualSet);
+        JFreeChart chart = ch.ethz.idsc.tensor.fig.StackedTimedChart.of(visualSet);
 
         try {
             File fileChart = new File(relativeDirectory, FILENAME + ".png");

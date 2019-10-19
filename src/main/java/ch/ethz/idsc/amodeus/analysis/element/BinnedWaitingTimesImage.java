@@ -8,14 +8,13 @@ import org.jfree.chart.JFreeChart;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.subare.plot.TimedChart;
-import ch.ethz.idsc.subare.plot.VisualRow;
-import ch.ethz.idsc.subare.plot.VisualSet;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.fig.TimedChart;
+import ch.ethz.idsc.tensor.fig.VisualRow;
+import ch.ethz.idsc.tensor.fig.VisualSet;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
-import ch.ethz.idsc.tensor.img.MeanFilter;
 
 public enum BinnedWaitingTimesImage implements AnalysisExport {
     INSTANCE;
@@ -32,7 +31,7 @@ public enum BinnedWaitingTimesImage implements AnalysisExport {
         VisualSet visualSet = new VisualSet(colorDataIndexed);
         for (int i = 0; i < Quantiles.LBL.length; ++i) {
             Tensor values = tta.waitTimePlotValues.get(Tensor.ALL, i).divide(scalingFactor);
-            values = StaticHelper.FILTER_ON ? MeanFilter.of(values, StaticHelper.FILTERSIZE) : values;
+            values = AnalysisMeanFilter.of(values);
             VisualRow visualRow = visualSet.add(tta.time, values);
             visualRow.setLabel(Quantiles.LBL[i]);
         }

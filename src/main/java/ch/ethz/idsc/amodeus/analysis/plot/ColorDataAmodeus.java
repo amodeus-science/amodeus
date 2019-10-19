@@ -13,11 +13,12 @@ public enum ColorDataAmodeus {
     // ---
     public static ColorDataIndexed indexed(String name) {
         ColorDataIndexed colorDataIndexed = INSTANCE.map.get(normalize(name));
-        if (Objects.isNull(colorDataIndexed))
-            return ColorDataAmodeusSpecific.COLORFUL.cyclic();
-        return colorDataIndexed;
+        return Objects.isNull(colorDataIndexed) //
+                ? ColorDataAmodeusSpecific.COLORFUL.cyclic()
+                : colorDataIndexed;
     }
 
+    // ---
     private final Map<String, ColorDataIndexed> map = new HashMap<>();
 
     private ColorDataAmodeus() {
@@ -28,13 +29,13 @@ public enum ColorDataAmodeus {
             put(colorDataAmodeusSpecific.name(), colorDataAmodeusSpecific.cyclic());
     }
 
-    public void put(String name, ColorDataIndexed colorDataIndexed) {
+    private void put(String name, ColorDataIndexed colorDataIndexed) {
         map.put(normalize(name), colorDataIndexed);
     }
 
     private static String normalize(String name) {
-        if (name.charAt(0) == '_')
-            return normalize(name.substring(1));
-        return name.toUpperCase();
+        return name.charAt(0) == '_' //
+                ? normalize(name.substring(1))
+                : name.toUpperCase();
     }
 }

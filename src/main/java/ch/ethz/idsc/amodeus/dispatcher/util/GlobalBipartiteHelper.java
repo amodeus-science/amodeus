@@ -18,7 +18,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     ;
 
     public static <T> Map<RoboTaxi, T> genericMatch(Collection<RoboTaxi> roboTaxis, Collection<T> linkObjects, //
-            Function<T, Link> linkOfT, GlobalBipartiteCost weight) {
+            Function<T, Link> linkOfT, GlobalBipartiteCost globalBipartiteCost) {
         /** storage in {@link List} as {@link Collection} does not guarantee order */
         final List<RoboTaxi> orderedRoboTaxis = new ArrayList<>(roboTaxis);
         final List<T> ordered_linkObjects = new ArrayList<>(linkObjects);
@@ -33,7 +33,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         for (RoboTaxi roboTaxi : orderedRoboTaxis) {
             int j = 0;
             for (T t : ordered_linkObjects) {
-                costMatrix[i][j] = weight.between(roboTaxi, linkOfT.apply(t));
+                costMatrix[i][j] = globalBipartiteCost.between(roboTaxi, linkOfT.apply(t));
                 ++j;
             }
             ++i;

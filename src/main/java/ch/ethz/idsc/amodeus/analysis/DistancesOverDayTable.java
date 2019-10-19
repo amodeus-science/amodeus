@@ -17,7 +17,7 @@ import ch.ethz.idsc.tensor.io.TableBuilder;
 /* package */ enum DistancesOverDayTable implements AnalysisExport {
     INSTANCE;
 
-    private static final String identifier = "DistancesOverDay";
+    private static final String IDENTIFIER = "DistancesOverDay";
 
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
@@ -26,8 +26,8 @@ import ch.ethz.idsc.tensor.io.TableBuilder;
         for (int index = 0; index < de.time.length(); ++index)
             tableBuilder.appendRow(de.time.Get(index), de.distancesOverDay.get(index));
         try {
-            UnitSaveUtils.saveFile(tableBuilder.getTable(), identifier, relativeDirectory);
-            File dataFolder = new File(relativeDirectory, identifier);
+            UnitSaveUtils.saveFile(tableBuilder.getTable(), IDENTIFIER, relativeDirectory);
+            File dataFolder = new File(relativeDirectory, IDENTIFIER);
             SaveFormats.CSV.save(Tensors.fromString("time step, total distance, distance with customer, "//
                     + "pickup distance, rebalancing distance, distance ratio"), //
                     dataFolder, "description");

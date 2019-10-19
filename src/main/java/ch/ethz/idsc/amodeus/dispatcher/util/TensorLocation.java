@@ -15,8 +15,8 @@ public enum TensorLocation {
         return ofLink(avRequest.getFromLink());
     }
 
-    public static Tensor of(RoboTaxi robotaxi) {
-        return ofLink(robotaxi.getDivertableLocation());
+    public static Tensor of(RoboTaxi roboTaxi) {
+        return ofLink(roboTaxi.getDivertableLocation());
     }
 
     public static Tensor of(Link link) {

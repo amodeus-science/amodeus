@@ -11,7 +11,7 @@ import org.matsim.api.core.v01.network.Link;
 
 /*package */ enum StaticHelper {
     ;
-    /* package */ static List<Link> getSortedLinks(Collection<Link> links) {
+    public static List<Link> getSortedLinks(Collection<Link> links) {
         List<Link> sortedLinks = new ArrayList<>(links);
         Collections.sort(sortedLinks, LINK_COMPARATOR);
         return sortedLinks;

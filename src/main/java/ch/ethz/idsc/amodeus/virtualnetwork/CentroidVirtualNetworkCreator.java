@@ -3,7 +3,6 @@ package ch.ethz.idsc.amodeus.virtualnetwork;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -25,7 +24,7 @@ import ch.ethz.idsc.tensor.Tensors;
 public class CentroidVirtualNetworkCreator<T, U> extends AbstractVirtualNetworkCreator<T, U> {
 
     public CentroidVirtualNetworkCreator(Collection<T> elements, List<T> centroids, Function<T, Tensor> locationOf, //
-            Function<T, String> nameOf, Map<U, HashSet<T>> uElements, boolean completeGraph) {
+            Function<T, String> nameOf, Map<U, Set<T>> uElements, boolean completeGraph) {
 
         /** find min, max values for quad tree */
         NavigableSet<Scalar> xVals = new TreeSet<>();

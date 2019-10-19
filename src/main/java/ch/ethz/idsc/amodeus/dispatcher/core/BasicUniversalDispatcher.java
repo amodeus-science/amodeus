@@ -41,12 +41,12 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
     protected int publishPeriod; // not final, so that dispatchers can disable, or manipulate
 
-    /* package */ final Set<AVRequest> pendingRequests = new LinkedHashSet<>();
-    /* package */ final MatsimAmodeusDatabase db;
-    /* package */ final FuturePathFactory futurePathFactory;
-    /* package */ final double pickupDurationPerStop;
-    /* package */ final double dropoffDurationPerStop;
-    /* package */ int total_matchedRequests = 0;
+    final Set<AVRequest> pendingRequests = new LinkedHashSet<>();
+    final MatsimAmodeusDatabase db;
+    final FuturePathFactory futurePathFactory;
+    final double pickupDurationPerStop;
+    final double dropoffDurationPerStop;
+    int total_matchedRequests = 0;
 
     private Map<RoboTaxi, List<Link>> tempLocationTrace = new HashMap<>();
 
@@ -76,8 +76,9 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
         return getRoboTaxiSubset(EnumSet.copyOf(Arrays.asList(status)));
     }
 
-    protected List<RoboTaxi> getRoboTaxiSubset(Set<RoboTaxiStatus> status) {
-        return getRoboTaxis().stream().filter(rt -> status.contains(rt.getStatus())).collect(Collectors.toList());
+    protected final List<RoboTaxi> getRoboTaxiSubset(Set<RoboTaxiStatus> status) {
+        return getRoboTaxis().stream() //
+                .filter(rt -> status.contains(rt.getStatus())).collect(Collectors.toList());
     }
 
     /** @return {@Collection} of {@RoboTaxi}s which can be redirected during
@@ -93,7 +94,7 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
     /** Adding a @param vehicle during setup of simulation handled by {@link AVGenerator},
      * the parameter @param singleOrShared indicates if multi-passenger ride-sharing case
      * or unit capacity case. */
-    protected void addVehicle(AVVehicle vehicle, RoboTaxiUsageType singleOrShared) {
+    protected final void addVehicle(AVVehicle vehicle, RoboTaxiUsageType singleOrShared) {
         RoboTaxi roboTaxi = new RoboTaxi(vehicle, new LinkTimePair(vehicle.getStartLink(), 0.0), vehicle.getStartLink(), singleOrShared);
         Event event = new AVVehicleAssignmentEvent(vehicle, 0);
         addRoboTaxi(roboTaxi, event);

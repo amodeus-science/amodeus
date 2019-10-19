@@ -30,7 +30,7 @@ import ch.ethz.matsim.av.router.AVRouter;
  * router to AMoDeus which is not the standard choice of the Paralllel Djikstra
  * router used normally to calculate the path for {@link RoboTaxi} */
 public class TaxiTravelTimeRouter implements AVRouter {
-    final private ParallelLeastCostPathCalculator delegate;
+    private final ParallelLeastCostPathCalculator delegate;
 
     public TaxiTravelTimeRouter(ParallelLeastCostPathCalculator delegate) {
         this.delegate = delegate;
@@ -62,7 +62,7 @@ public class TaxiTravelTimeRouter implements AVRouter {
         // File linkSpeedDataFile = new File(scenarioOptions.getLinkSpeedDataName());
         // File linkSpeedDataFile = new
         // File("/home/clruch/data/TaxiComparion_ChicagoSim/linkSpeedData");
-        File linkSpeedDataFile = new File(workingDir, "/linkSpeedData");
+        File linkSpeedDataFile = new File(workingDir, "linkSpeedData");
         LinkSpeedDataContainer lsData = LinkSpeedUtils.loadLinkSpeedData(linkSpeedDataFile);
 
         @Override
