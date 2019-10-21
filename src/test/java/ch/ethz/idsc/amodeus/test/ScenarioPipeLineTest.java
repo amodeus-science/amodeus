@@ -37,25 +37,13 @@ import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.Round;
 
 public class ScenarioPipeLineTest {
-
+    private static final Scalar ZERO_KM = Quantity.of(0, "km");
+    // ---
     private static TestPreparer testPreparer;
     private static TestServer testServer;
 
     @BeforeClass
     public static void setUpOnce() throws Exception {
-
-        /** TODO remove all of this commented below if no problems occur and Oct-1-2019 has passed,
-         * This line was originally added to remove problems that tests failed only during certain iterations
-         * - hard to find bug. But should be resolved with newer MATSim and AV versions used.
-         * 
-         * 
-         * // TODO TEST This reset call should eventually be removed. Right now we need this to reset the random number generator for MATSim.
-         * // In general, this is not necessary, because all MATSim components use MatsimRandom.getLocalInstance(). However,
-         * // the PopulationDensity strategy in the av package uses MatsimRandom.getRandom(), which is NOT reset between
-         * // simulations and iterations. Once the av package makes proper use of MatsimRandom generator, this can be removed
-         * // here (should happen once av:0.1.5 is used here). /shoerl mar18
-         * MatsimRandom.reset(); */
-
         System.out.print("GLPK version is: ");
         System.out.println(GLPK.glp_version());
 
@@ -114,9 +102,9 @@ public class ScenarioPipeLineTest {
         File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
 
-        assertEquals(workingDirectory.getAbsolutePath() + "/config.xml", scenarioOptions.getSimulationConfigName());
-        assertEquals(workingDirectory.getAbsolutePath() + "/preparedNetwork", scenarioOptions.getPreparedNetworkName());
-        assertEquals(workingDirectory.getAbsolutePath() + "/preparedPopulation", scenarioOptions.getPreparedPopulationName());
+        assertEquals(new File(workingDirectory, "config.xml").getAbsolutePath(), scenarioOptions.getSimulationConfigName());
+        assertEquals(new File(workingDirectory, "preparedNetwork").getAbsolutePath(), scenarioOptions.getPreparedNetworkName());
+        assertEquals(new File(workingDirectory, "preparedPopulation").getAbsolutePath(), scenarioOptions.getPreparedPopulationName());
 
         // simulation objects should exist after simulation (simulation data)
         File simobj = new File("output/001/simobj/it.00");
@@ -154,22 +142,19 @@ public class ScenarioPipeLineTest {
         scalarAssert.add((Scalar) RealScalar.of(0.669469728473632).map(Round._5), (Scalar) distanceRatio.map(Round._5));
 
         /** fleet distances */
-        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistance));
-        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistanceWtCst));
-        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistancePicku));
-        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistanceRebal));
+        assertTrue(Scalars.lessEquals(ZERO_KM, ate.getDistancElement().totalDistance));
+        assertTrue(Scalars.lessEquals(ZERO_KM, ate.getDistancElement().totalDistanceWtCst));
+        assertTrue(Scalars.lessEquals(ZERO_KM, ate.getDistancElement().totalDistancePicku));
+        assertTrue(Scalars.lessEquals(ZERO_KM, ate.getDistancElement().totalDistanceRebal));
         assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistanceRatio));
         ate.getDistancElement().totalDistancesPerVehicle.flatten(-1).forEach(s -> //
-        assertTrue(Scalars.lessEquals(RealScalar.ZERO, (Scalar) s)));
-        assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).equals( //
-                ate.getDistancElement().totalDistance));
-        assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).equals( //
-                ate.getDistancElement().totalDistance));
+        assertTrue(Scalars.lessEquals(ZERO_KM, (Scalar) s)));
+        assertEquals(Total.of(ate.getDistancElement().totalDistancesPerVehicle), ate.getDistancElement().totalDistance);
 
-        scalarAssert.add((Scalar) RealScalar.of(45698.95657).map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
-        scalarAssert.add((Scalar) RealScalar.of(37593.30920).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
-        scalarAssert.add((Scalar) RealScalar.of(8105.647362303572).map(Round._5), (Scalar) ate.getDistancElement().totalDistancePicku.map(Round._5));
-        scalarAssert.add(RealScalar.of(0.0), ate.getDistancElement().totalDistanceRebal);
+        scalarAssert.add((Scalar) Quantity.of(13929.04196, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
+        scalarAssert.add((Scalar) Quantity.of(11458.44065, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
+        scalarAssert.add((Scalar) Quantity.of(2470.60132, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistancePicku.map(Round._5));
+        scalarAssert.add(ZERO_KM, ate.getDistancElement().totalDistanceRebal);
         scalarAssert.add((Scalar) RealScalar.of(0.82263).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRatio.map(Round._5));
 
         scalarAssert.add((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle), //
