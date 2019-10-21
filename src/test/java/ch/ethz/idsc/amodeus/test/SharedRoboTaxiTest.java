@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import ch.ethz.idsc.amodeus.analysis.element.NumberPassengersAnalysis;
+import ch.ethz.idsc.tensor.alg.Dimensions;
 import org.gnu.glpk.GLPK;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -167,6 +169,10 @@ public class SharedRoboTaxiTest {
         assertTrue(Scalars.lessEquals(ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(0), ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(1)));
         assertTrue(Scalars.lessEquals(ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(1), ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(2)));
         assertTrue(Scalars.lessEquals(Quantity.of(0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1)));
+
+        /** number of passengers */
+        NumberPassengersAnalysis npa = testServer.numberPassengersAnalysis();
+        assertEquals(Total.of(npa.getSharedOthersDistribution()).Get().number().intValue(), npa.getSharedOthersPerRequest().length());
 
         /** presence of plot files */
         File data = new File("output/001/data");
