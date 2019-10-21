@@ -41,10 +41,11 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
                 " in directory " + directory.getAbsolutePath());
         File simOptionsFile = new File(directory, fileName);
         if (simOptionsFile.exists()) {
-            properties.load(new FileInputStream(simOptionsFile));
-        } else {
-            LPOptionsBase.savePropertiesToFile(properties, simOptionsFile);
-        }
+            FileInputStream fileInputStream = new FileInputStream(simOptionsFile);
+            properties.load(fileInputStream);
+            fileInputStream.close();
+        } else
+            LPOptionsBase.savePropertiesToFile(properties, simOptionsFile); // TODO should this be saveDefault or can it be omitted?
         return properties;
     }
 }
