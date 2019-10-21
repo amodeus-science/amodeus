@@ -125,6 +125,7 @@ public class ScenarioPipeLineTest {
 
         /** fleet size */
         assertEquals(200, ate.getSimulationInformationElement().vehicleSize());
+        assertEquals(200, ate.getDistancElement().getVehicleStatistics().size());
 
         /** status distribution, every row must equal the total of vehicles */
         Tensor distributionSum = Total.of(Transpose.of(ate.getStatusDistribution().statusTensor));
