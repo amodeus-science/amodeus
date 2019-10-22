@@ -132,7 +132,7 @@ public class ScenarioPipeLineTest {
         /** status distribution, every row must equal the total of vehicles */
         Tensor distributionSum = Total.of(Transpose.of(ate.getStatusDistribution().statusTensor));
         distributionSum.flatten(-1).forEach(e -> //
-        assertTrue(e.equals(RealScalar.of(ate.getSimulationInformationElement().vehicleSize()))));
+                assertEquals(e, RealScalar.of(ate.getSimulationInformationElement().vehicleSize())));
 
         ScalarAssert scalarAssert = new ScalarAssert();
 
