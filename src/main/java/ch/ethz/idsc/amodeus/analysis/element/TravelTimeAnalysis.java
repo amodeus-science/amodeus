@@ -54,7 +54,7 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
 
         /** build a travel history for every request */
         for (RequestContainer requestContainer : simulationObject.requests) {
-            Integer requestIndex = Integer.valueOf(requestContainer.requestIndex);
+            Integer requestIndex = requestContainer.requestIndex;
             if (travelHistories.containsKey(requestIndex))
                 travelHistories.get(requestIndex).register(requestContainer, Quantity.of(simulationObject.now, SI.SECOND));
             else

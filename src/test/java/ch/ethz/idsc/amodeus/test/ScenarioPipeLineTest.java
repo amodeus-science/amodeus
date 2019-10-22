@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
+import ch.ethz.idsc.amodeus.analysis.element.TravelHistory;
+import ch.ethz.idsc.tensor.qty.UnitConvert;
 import org.gnu.glpk.GLPK;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -160,6 +162,11 @@ public class ScenarioPipeLineTest {
 
         scalarAssert.add((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle), //
                 ate.getDistancElement().totalDistance);
+
+        /** travel time history */
+        assertEquals(1975, ate.getTravelTimeAnalysis().getTravelHistories().size());
+        assertTrue(ate.getTravelTimeAnalysis().getTravelHistories().values().stream().map(TravelHistory::getDropOffTime) //
+                .allMatch(s -> Scalars.lessEquals(s, UnitConvert.SI().to(SI.SECOND).apply(Quantity.of(30, "h")))));
 
         /** wait times, drive times */
         assertTrue(Scalars.lessEquals(Quantity.of(0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(2)));
