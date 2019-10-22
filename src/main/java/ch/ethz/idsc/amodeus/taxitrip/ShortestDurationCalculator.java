@@ -14,6 +14,7 @@ import org.matsim.vehicles.Vehicle;
 import ch.ethz.idsc.amodeus.net.FastLinkLookup;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.TensorCoords;
+import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.qty.Quantity;
 
@@ -52,7 +53,7 @@ public class ShortestDurationCalculator {
     }
 
     public Scalar computeFreeFlowTime(TaxiTrip taxiTrip) {
-        return Quantity.of(computePath(taxiTrip).travelTime, "s");
+        return Quantity.of(computePath(taxiTrip).travelTime, SI.SECOND);
     }
 
     public Path computePath(TaxiTrip taxiTrip) {

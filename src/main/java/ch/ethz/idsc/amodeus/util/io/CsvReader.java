@@ -43,13 +43,6 @@ public final class CsvReader {
         }
     }
 
-    @Deprecated // did not work well...
-    public Stream<Row> rows() throws IOException {
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
-            return bufferedReader.lines().skip(1).map(line -> new Row(line.split(delim)));
-        }
-    }
-
     public Collection<String> headers() {
         return Collections.unmodifiableCollection(headers.keySet());
     }
