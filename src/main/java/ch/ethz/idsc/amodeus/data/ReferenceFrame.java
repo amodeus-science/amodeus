@@ -1,9 +1,10 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.data;
 
+import org.matsim.core.utils.geometry.CoordinateTransformation;
+
 import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.qty.Unit;
-import org.matsim.core.utils.geometry.CoordinateTransformation;
 
 /** the ScenarioViewer requires coordinates in WGS84
  * that uses latitude and longitude.

@@ -10,8 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import ch.ethz.idsc.amodeus.analysis.element.NumberPassengersAnalysis;
-import ch.ethz.idsc.tensor.alg.Dimensions;
 import org.gnu.glpk.GLPK;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -20,6 +18,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisConstants;
+import ch.ethz.idsc.amodeus.analysis.element.NumberPassengersAnalysis;
 import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
@@ -154,7 +153,7 @@ public class SharedRoboTaxiTest {
         scalarAssert.consolidate();
 
         ate.getDistancElement().totalDistancesPerVehicle.flatten(-1).forEach(s -> //
-                assertTrue(Scalars.lessEquals(ZERO_KM, (Scalar) s)));
+        assertTrue(Scalars.lessEquals(ZERO_KM, (Scalar) s)));
         assertEquals(Total.of(ate.getDistancElement().totalDistancesPerVehicle), ate.getDistancElement().totalDistance);
 
         /** waiting Times */

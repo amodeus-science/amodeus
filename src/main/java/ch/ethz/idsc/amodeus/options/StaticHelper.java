@@ -41,9 +41,9 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
                 " in directory " + directory.getAbsolutePath());
         File simOptionsFile = new File(directory, fileName);
         if (simOptionsFile.exists()) {
-            FileInputStream fileInputStream = new FileInputStream(simOptionsFile);
-            properties.load(fileInputStream);
-            fileInputStream.close();
+            try (FileInputStream fileInputStream = new FileInputStream(simOptionsFile)) {
+                properties.load(fileInputStream);
+            }
         } else
             LPOptionsBase.savePropertiesToFile(properties, simOptionsFile); // TODO should this be saveDefault or can it be omitted?
         return properties;

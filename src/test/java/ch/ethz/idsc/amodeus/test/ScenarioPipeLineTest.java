@@ -8,8 +8,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
-import ch.ethz.idsc.amodeus.analysis.element.TravelHistory;
-import ch.ethz.idsc.tensor.qty.UnitConvert;
 import org.gnu.glpk.GLPK;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -18,6 +16,7 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisConstants;
+import ch.ethz.idsc.amodeus.analysis.element.TravelHistory;
 import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
@@ -34,6 +33,7 @@ import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.qty.Quantity;
+import ch.ethz.idsc.tensor.qty.UnitConvert;
 import ch.ethz.idsc.tensor.red.Mean;
 import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.Round;
@@ -132,7 +132,7 @@ public class ScenarioPipeLineTest {
         /** status distribution, every row must equal the total of vehicles */
         Tensor distributionSum = Total.of(Transpose.of(ate.getStatusDistribution().statusTensor));
         distributionSum.flatten(-1).forEach(e -> //
-                assertEquals(e, RealScalar.of(ate.getSimulationInformationElement().vehicleSize())));
+        assertEquals(e, RealScalar.of(ate.getSimulationInformationElement().vehicleSize())));
 
         ScalarAssert scalarAssert = new ScalarAssert();
 

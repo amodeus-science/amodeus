@@ -3,7 +3,6 @@ package ch.ethz.idsc.amodeus.testutils;
 
 import java.io.File;
 
-import ch.ethz.idsc.amodeus.analysis.element.NumberPassengersAnalysis;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
@@ -23,6 +22,7 @@ import com.google.inject.Key;
 import com.google.inject.name.Names;
 
 import ch.ethz.idsc.amodeus.analysis.Analysis;
+import ch.ethz.idsc.amodeus.analysis.element.NumberPassengersAnalysis;
 import ch.ethz.idsc.amodeus.data.LocationSpec;
 import ch.ethz.idsc.amodeus.data.ReferenceFrame;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDatabaseModule;

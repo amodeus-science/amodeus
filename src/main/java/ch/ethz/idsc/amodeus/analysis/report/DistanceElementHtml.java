@@ -28,29 +28,29 @@ public enum DistanceElementHtml implements HtmlReportElement {
         HtmlBodyElement aRElement = new HtmlBodyElement();
         aRElement.getHTMLGenerator().insertTextLeft( //
                 "\nDistance Ratio:" + //
-                "\nOccupancy Ratio:" + //
-                "\n" + //
-                "\n" + HtmlGenerator.bold("Distances") + //
-                "\n\tTotal:" + //
-                "\n\tRebalancing:" + //
-                "\n\tPickup:" + //
-                "\n\tWith Customer:" + //
-                "\n" + //
-                "\nAverage Trip Distance:" //
+                        "\nOccupancy Ratio:" + //
+                        "\n" + //
+                        "\n" + HtmlGenerator.bold("Distances") + //
+                        "\n\tTotal:" + //
+                        "\n\tRebalancing:" + //
+                        "\n\tPickup:" + //
+                        "\n\tWith Customer:" + //
+                        "\n" + //
+                        "\nAverage Trip Distance:" //
         );
         aRElement.getHTMLGenerator().insertTextLeft( //
                 "\n" + DECIMAL.format(de.totalDistanceRatio.number().doubleValue() * 100) + "%" + //
-                "\n" + DECIMAL.format(de.avgOccupancy.number().doubleValue() * 100) + "%" + //
-                "\n\n" + //
-                "\n" + format(de.totalDistance) + //
-                "\n" + format(de.totalDistanceRebal) + " (" + //
-                DECIMAL.format(100 * de.totalDistanceRebal.number().doubleValue() / de.totalDistance.number().doubleValue()) + "%)" + //
-                "\n" + format(de.totalDistancePicku) + " (" + //
-                DECIMAL.format(100 * de.totalDistancePicku.number().doubleValue() / de.totalDistance.number().doubleValue()) + "%)" + //
-                "\n" + format(de.totalDistanceWtCst) + " (" + //
-                DECIMAL.format(100 * de.totalDistanceWtCst.number().doubleValue() / de.totalDistance.number().doubleValue()) + "%)" + //
-                "\n" + //
-                "\n" + format(de.totalDistanceWtCst.divide(RealScalar.of(de.requestIndices.size()))));
+                        "\n" + DECIMAL.format(de.avgOccupancy.number().doubleValue() * 100) + "%" + //
+                        "\n\n" + //
+                        "\n" + format(de.totalDistance) + //
+                        "\n" + format(de.totalDistanceRebal) + " (" + //
+                        DECIMAL.format(100 * de.totalDistanceRebal.number().doubleValue() / de.totalDistance.number().doubleValue()) + "%)" + //
+                        "\n" + format(de.totalDistancePicku) + " (" + //
+                        DECIMAL.format(100 * de.totalDistancePicku.number().doubleValue() / de.totalDistance.number().doubleValue()) + "%)" + //
+                        "\n" + format(de.totalDistanceWtCst) + " (" + //
+                        DECIMAL.format(100 * de.totalDistanceWtCst.number().doubleValue() / de.totalDistance.number().doubleValue()) + "%)" + //
+                        "\n" + //
+                        "\n" + format(de.totalDistanceWtCst.divide(RealScalar.of(de.requestIndices.size()))));
         File img = new File(IMAGE_FOLDER, StackedDistanceChartImage.FILENAME + ".png");
         aRElement.getHTMLGenerator() //
                 .insertImg(img.getPath(), StackedDistanceChartImage.WIDTH, StackedDistanceChartImage.HEIGHT);
@@ -58,7 +58,7 @@ public enum DistanceElementHtml implements HtmlReportElement {
         return bodyElements;
     }
 
-    private String format(Scalar scalar) {
+    private static String format(Scalar scalar) {
         return DECIMAL.format(scalar.number().doubleValue()) + " " + QuantityUnit.of(scalar);
     }
 }
