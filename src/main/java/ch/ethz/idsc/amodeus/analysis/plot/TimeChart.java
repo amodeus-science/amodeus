@@ -19,7 +19,8 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Unprotect;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
-// TODO this class was marked deprecated but replacement has not been carried out yet
+/** TODO this class was marked deprecated but replacement has not been carried out yet
+ * see {@link ch.ethz.idsc.tensor.fig.TimedChart} */
 public enum TimeChart {
     ;
     private static final int WIDTH = DiagramSettings.WIDTH;

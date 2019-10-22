@@ -10,6 +10,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.img.MeanFilter;
 
+// TODO only used in deprecated classes
 /* package */ enum StaticHelper {
     ;
 
