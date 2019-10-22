@@ -34,7 +34,6 @@ public class HtmlReport implements AnalysisReport {
         /** copy the MATSim config file and the av.xml config file to the report folder of the simulation */
         try {
             saveConfigs(scenarioOptions);
-
         } catch (Exception ex) {
             System.err.println("Unable to copy MATSim config and av.xml config to report folder.");
             ex.printStackTrace();
@@ -49,9 +48,8 @@ public class HtmlReport implements AnalysisReport {
     @Override
     public void generate(AnalysisSummary analysisSummary) {
         // Set up body elements
-        for (HtmlReportElement htmlReportElement : htmlReportElements) {
+        for (HtmlReportElement htmlReportElement : htmlReportElements)
             addBodyElements(htmlReportElement.process(analysisSummary));
-        }
 
         /** setup **/
         htmlGenerator.html();
@@ -84,22 +82,18 @@ public class HtmlReport implements AnalysisReport {
         try {
             htmlGenerator.saveFile(REPORT_NAME, reportFolder);
             System.out.println("the report is located at " + reportFolder.getAbsolutePath());
-
         } catch (Exception e) {
             System.err.println("Not able to save report. ");
             e.printStackTrace();
         }
-
     }
 
     public void addBodyElements(Map<String, HtmlBodyElement> bodyElementsIn) {
-        for (String bEK : bodyElementsIn.keySet()) {
-            if (bodyElements.containsKey(bEK)) {
+        for (String bEK : bodyElementsIn.keySet())
+            if (bodyElements.containsKey(bEK))
                 bodyElements.get(bEK).append(bodyElementsIn.get(bEK));
-            } else {
+            else
                 bodyElements.put(bEK, bodyElementsIn.get(bEK));
-            }
-        }
     }
 
     private void saveConfigs(ScenarioOptions scenarioOptions) throws Exception {
@@ -109,5 +103,4 @@ public class HtmlReport implements AnalysisReport {
         configCopy.delete();
         Files.copy(configFile.toPath(), configCopy.toPath());
     }
-
 }

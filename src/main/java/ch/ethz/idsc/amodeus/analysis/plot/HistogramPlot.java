@@ -26,7 +26,8 @@ import ch.ethz.idsc.tensor.alg.Dimensions;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.pdf.BinCounts;
 
-// TODO this class was marked deprecated but replacement has not been carried out yet
+/** TODO this class was marked deprecated but replacement has not been carried out yet
+ * see {@link ch.ethz.idsc.tensor.fig.Histogram} */
 public enum HistogramPlot {
     ;
 

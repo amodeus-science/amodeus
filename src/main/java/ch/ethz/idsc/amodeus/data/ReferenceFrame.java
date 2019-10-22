@@ -1,6 +1,8 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.data;
 
+import ch.ethz.idsc.amodeus.util.math.SI;
+import ch.ethz.idsc.tensor.qty.Unit;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
 
 /** the ScenarioViewer requires coordinates in WGS84
@@ -14,4 +16,8 @@ public interface ReferenceFrame {
 
     /** @return transformation from simulation coordinates to WGS84 */
     CoordinateTransformation coords_toWGS84();
+
+    default Unit unit() {
+        return SI.METER;
+    }
 }

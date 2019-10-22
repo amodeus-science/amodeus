@@ -3,6 +3,7 @@ package ch.ethz.idsc.amodeus.testutils;
 
 import java.io.File;
 
+import ch.ethz.idsc.amodeus.analysis.element.NumberPassengersAnalysis;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
@@ -60,6 +61,7 @@ public class SharedTestServer {
     private Population population;
     private Controler controler;
     private AnalysisTestExport ate;
+    private NumberPassengersAnalysis npa = new NumberPassengersAnalysis();
 
     private SharedTestServer(File workingDirectory) throws Exception {
         this.workingDirectory = workingDirectory;
@@ -147,15 +149,18 @@ public class SharedTestServer {
         SimulationServer.INSTANCE.stopAccepting();
 
         Analysis analysis = Analysis.setup(scenarioOptions, new File(workingDirectory, "output/001"), network, db);
+        analysis.addAnalysisElement(npa);
         ate = new AnalysisTestExport();
         analysis.addAnalysisExport(ate);
         analysis.run();
-
     }
 
     public AnalysisTestExport getAnalysisTestExport() {
         return ate;
+    }
 
+    public NumberPassengersAnalysis numberPassengersAnalysis() {
+        return npa;
     }
 
     public File getConfigFile() {

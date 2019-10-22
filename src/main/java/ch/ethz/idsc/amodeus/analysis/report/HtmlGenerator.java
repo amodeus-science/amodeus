@@ -12,14 +12,13 @@ import java.nio.file.Files;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 public class HtmlGenerator {
-    final StringBuilder stringBuilder = new StringBuilder();
-    boolean html = false;
-    boolean head = false;
-    boolean header = false;
-    boolean body = false;
-    boolean paragraph = false;
-    boolean footer = false;
-    boolean style = false;
+    private final StringBuilder stringBuilder = new StringBuilder();
+    private boolean html = false;
+    private boolean head = false;
+    private boolean header = false;
+    private boolean body = false;
+    private boolean footer = false;
+    private boolean style = false;
 
     public HtmlGenerator() {
     }
@@ -99,8 +98,7 @@ public class HtmlGenerator {
     }
 
     public void insertImg(File file, int width, int heigth) {
-        stringBuilder.append("<img src=" + file.getName().toString() + " alt=\"Image not found\" style=\"width:" + //
-                width + "px;height:" + heigth + "px;\">");
+        insertImg(file.getName(), width, heigth);
     }
 
     public static String bold(String text) {
