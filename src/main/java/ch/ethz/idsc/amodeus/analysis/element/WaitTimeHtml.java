@@ -22,7 +22,7 @@ public enum WaitTimeHtml implements HtmlReportElement {
         aRElement.getHTMLGenerator().insertTextLeft(Quantiles.formatAggregates(travelTimeAnalysis.getWaitAggrgte()));
         aRElement.getHTMLGenerator().newLine();
         aRElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + WaitTimeHistoImage.FILENAME + ".png", 800, 600);
-        aRElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + BinnedWaitingTimesImage.FILENAME + ".png", 800, 600);
+        aRElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + BinnedWaitingTimesImage.FILE_NAME, 800, 600);
         aRElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + WaitingCustomerExport.FILENAME + ".png", 800, 600);
 
         // TODO Who? also distribution over time bins?

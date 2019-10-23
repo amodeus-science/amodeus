@@ -18,6 +18,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisConstants;
+import ch.ethz.idsc.amodeus.analysis.element.BinnedWaitingTimesImage;
 import ch.ethz.idsc.amodeus.analysis.element.NumberPassengersAnalysis;
 import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
@@ -175,22 +176,22 @@ public class SharedRoboTaxiTest {
 
         /** presence of plot files */
         File data = new File("output/001/data");
-        assertTrue(new File(data, "binnedWaitingTimes.png").exists());
-        assertTrue(new File(data, "distanceDistribution.png").exists());
-        assertTrue(new File(data, "occAndDistRatios.png").exists());
-        assertTrue(new File(data, "stackedDistance.png").exists());
-        assertTrue(new File(data, "statusDistribution.png").exists());
-        assertTrue(new File(data, AnalysisConstants.ParametersExportFilename).exists());
+        assertTrue(new File(data, BinnedWaitingTimesImage.FILE_NAME).isFile());
+        assertTrue(new File(data, "distanceDistribution.png").isFile());
+        assertTrue(new File(data, "occAndDistRatios.png").isFile());
+        assertTrue(new File(data, "stackedDistance.png").isFile());
+        assertTrue(new File(data, "statusDistribution.png").isFile());
+        assertTrue(new File(data, AnalysisConstants.ParametersExportFilename).isFile());
         assertTrue(new File(data, "WaitingTimes").isDirectory());
-        assertTrue(new File(data, "WaitingTimes/WaitingTimes.mathematica").exists());
+        assertTrue(new File(data, "WaitingTimes/WaitingTimes.mathematica").isFile());
         assertTrue(new File(data, "StatusDistribution").isDirectory());
-        assertTrue(new File(data, "StatusDistribution/StatusDistribution.mathematica").exists());
+        assertTrue(new File(data, "StatusDistribution/StatusDistribution.mathematica").isFile());
         assertTrue(new File(data, "DistancesOverDay").isDirectory());
-        assertTrue(new File(data, "DistancesOverDay/DistancesOverDay.mathematica").exists());
+        assertTrue(new File(data, "DistancesOverDay/DistancesOverDay.mathematica").isFile());
         assertTrue(new File(data, "DistanceRatios").isDirectory());
-        assertTrue(new File(data, "DistanceRatios/DistanceRatios.mathematica").exists());
-        assertTrue(new File("output/001/report/report.html").exists());
-        assertTrue(new File("output/001/report/config.xml").exists());
+        assertTrue(new File(data, "DistanceRatios/DistanceRatios.mathematica").isFile());
+        assertTrue(new File("output/001/report/report.html").isFile());
+        assertTrue(new File("output/001/report/config.xml").isFile());
     }
 
     @AfterClass
