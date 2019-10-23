@@ -3,6 +3,8 @@ package ch.ethz.idsc.amodeus.testutils;
 
 import java.io.File;
 
+import ch.ethz.idsc.amodeus.analysis.service.RequestHistoriesExportFromEvents;
+import ch.ethz.idsc.amodeus.analysis.service.RoboTaxiHistoriesExportFromEvents;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
@@ -147,13 +149,13 @@ public class TestServer {
         Analysis analysis = Analysis.setup(scenarioOptions, new File(workingDirectory, "output/001"), network, db);
         ate = new AnalysisTestExport();
         analysis.addAnalysisExport(ate);
+        analysis.addAnalysisExport(new RoboTaxiHistoriesExportFromEvents(network, config));
+        analysis.addAnalysisExport(new RequestHistoriesExportFromEvents(network, config));
         analysis.run();
-
     }
 
     public AnalysisTestExport getAnalysisTestExport() {
         return ate;
-
     }
 
     public File getConfigFile() {
