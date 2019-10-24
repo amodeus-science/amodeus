@@ -20,41 +20,41 @@ public class SharedRoboTaxiUtilsTest extends TestCase {
     public void testSimple() {
         ArtificialSharedScenarioCreator s = new ArtificialSharedScenarioCreator();
 
-        assertTrue(SharedRoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1).equals(RoboTaxiStatus.STAY));
+        assertEquals(SharedRoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1), RoboTaxiStatus.STAY);
         s.roboTaxi1.addRedirectCourseToMenu(SharedCourse.redirectCourse(s.linkUp, "redirect0"));
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.linkUp, 1.0));
-        assertTrue(SharedRoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1).equals(RoboTaxiStatus.REBALANCEDRIVE));
+        assertEquals(SharedRoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1), RoboTaxiStatus.REBALANCEDRIVE);
         s.roboTaxi1.finishRedirection();
 
         s.roboTaxi1.addAVRequestToMenu(s.avRequest1);
         try { // A request can only be added once to a robo Taxi
             s.roboTaxi1.addAVRequestToMenu(s.avRequest1);
-            assertTrue(false);
+            fail();
         } catch (Exception e) {
             // ---
         }
         try { // The PickupCourse can not be after the dropoff
             s.roboTaxi1.moveAVCourseToNext(SharedCourse.pickupCourse(s.avRequest1));
-            assertTrue(false);
+            fail();
         } catch (Exception e) {
             // ---
         }
         try { // it can not be possible to dropoff a customer as there is none on board
             s.roboTaxi1.dropOffCustomer();
-            assertTrue(false);
+            fail();
         } catch (Exception e) {
             // ---
         }
         try { // can not move as long as the request is not in the menu
             s.roboTaxi1.moveAVCourseToPrev(SharedCourse.pickupCourse(s.avRequest2));
-            assertTrue(false);
+            fail();
         } catch (Exception e) {
             // ---
         }
         Optional<SharedCourse> secondcourse1 = SharedCourseAccess.getSecond(s.roboTaxi1.getUnmodifiableViewOfCourses());
         assertTrue(secondcourse1.isPresent());
-        assertTrue(secondcourse1.get().equals(SharedCourse.dropoffCourse(s.avRequest1)));
-        assertTrue(SharedRoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1).equals(RoboTaxiStatus.DRIVETOCUSTOMER));
+        assertEquals(secondcourse1.get(), SharedCourse.dropoffCourse(s.avRequest1));
+        assertEquals(SharedRoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1), RoboTaxiStatus.DRIVETOCUSTOMER);
         s.roboTaxi1.cleanAndAbandonMenu();
         assertEquals(s.roboTaxi1.getUnmodifiableViewOfCourses(), new ArrayList<>());
 
@@ -64,7 +64,7 @@ public class SharedRoboTaxiUtilsTest extends TestCase {
         List<SharedCourse> courses = s.roboTaxi1.getUnmodifiableViewOfCourses();
         try {// You should only be able to view this list
             courses.add(0, SharedCourse.pickupCourse(s.avRequest3));
-            assertTrue(false);
+            fail();
         } catch (Exception e) {
             // ---
         }
@@ -72,7 +72,7 @@ public class SharedRoboTaxiUtilsTest extends TestCase {
         modifiableList.add(0, SharedCourse.pickupCourse(s.avRequest3));
         try { // an update of the menu with a list which does not contain the same courses is invalid
             s.roboTaxi1.updateMenu(modifiableList);
-            assertTrue(false);
+            fail();
         } catch (Exception e) {
             // ---
         }
@@ -84,7 +84,7 @@ public class SharedRoboTaxiUtilsTest extends TestCase {
         s.roboTaxi1.moveAVCourseToPrev(SharedCourse.pickupCourse(s.avRequest4));
         try { // It should not be Possible to have a menu which plans to pick up more customers than capacity
             s.roboTaxi1.moveAVCourseToPrev(SharedCourse.pickupCourse(s.avRequest4));
-            assertTrue(false);
+            fail();
         } catch (Exception e) {
             // ---
         }
@@ -92,31 +92,31 @@ public class SharedRoboTaxiUtilsTest extends TestCase {
         int numcourses = s.roboTaxi1.getUnmodifiableViewOfCourses().size();
         try { // IT is not possible to pick up if the robotaxi is not on the right link
             s.roboTaxi1.pickupNewCustomerOnBoard();
-            assertTrue(false);
+            fail();
         } catch (Exception e) {
             // ---
         }
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.linkRight, 1.0));
         s.roboTaxi1.pickupNewCustomerOnBoard();
-        assertTrue(SharedRoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1).equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
+        assertEquals(SharedRoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1), RoboTaxiStatus.DRIVEWITHCUSTOMER);
 
         assertEquals(s.roboTaxi1.getMenuOnBoardCustomers(), 1);
         assertEquals(s.roboTaxi1.getUnmodifiableViewOfCourses().size(), numcourses - 1);
         try { // It should not be Possible to have a menu which plans to pick up more customers than capacity
             s.roboTaxi1.moveAVCourseToPrev(SharedCourse.pickupCourse(s.avRequest4));
-            assertTrue(false);
+            fail();
         } catch (Exception e) {
             // ---
         }
         try { // The dropoff should only be allowed if the robotaxi has the customer on board and its the next course
             s.roboTaxi1.dropOffCustomer();
-            assertTrue(false);
+            fail();
         } catch (Exception e) {
             // ---
         }
         try { // because the next customer was picked up it is not allowed anymore to abort this request
             s.roboTaxi1.removeAVRequestFromMenu(s.avRequest3);
-            assertTrue(false);
+            fail();
         } catch (Exception e) {
             // ---
         }
@@ -129,13 +129,13 @@ public class SharedRoboTaxiUtilsTest extends TestCase {
 
         try { // dropoff not possible because next course id redirect
             s.roboTaxi1.dropOffCustomer();
-            assertTrue(false);
+            fail();
         } catch (Exception e) {
             // ---
         }
         try { // pickup not possible because next course is redirect
             s.roboTaxi1.pickupNewCustomerOnBoard();
-            assertTrue(false);
+            fail();
         } catch (Exception e) {
             // ---
         }
@@ -144,7 +144,7 @@ public class SharedRoboTaxiUtilsTest extends TestCase {
 
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.linkUp, 1.0));
         assertTrue(SharedRoboTaxiUtils.isNextCourseOfType(s.roboTaxi1, SharedMealType.REDIRECT));
-        assertTrue(SharedRoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1).equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
+        assertEquals(SharedRoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1), RoboTaxiStatus.DRIVEWITHCUSTOMER);
 
         s.roboTaxi1.finishRedirection();
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.avRequest1.getFromLink(), 1.0));
@@ -168,7 +168,7 @@ public class SharedRoboTaxiUtilsTest extends TestCase {
         s.roboTaxi1.removeAVRequestFromMenu(s.avRequest4);
         try {
             s.roboTaxi1.cleanAndAbandonMenu();
-            assertTrue(false);
+            fail();
         } catch (Exception e) {
             // ---
         }
@@ -182,7 +182,7 @@ public class SharedRoboTaxiUtilsTest extends TestCase {
         s.roboTaxi1.addAVRequestToMenu(s.avRequest5);
         try {
             s.roboTaxi1.moveAVCourseToNext(SharedCourseAccess.getStarter(s.roboTaxi1).get());
-            assertTrue(false);
+            fail();
         } catch (Exception e) {
             // ---
         }

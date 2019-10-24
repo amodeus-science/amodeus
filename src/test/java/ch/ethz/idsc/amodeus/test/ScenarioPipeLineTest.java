@@ -90,7 +90,6 @@ public class ScenarioPipeLineTest {
         // consistency of population
         Population population = testPreparer.getPreparedPopulation();
         assertEquals(2000, population.getPersons().size());
-
     }
 
     @Test
@@ -214,6 +213,9 @@ public class ScenarioPipeLineTest {
 
         assertTrue(new File("output/001/data/DistanceRatios").isDirectory());
         assertTrue(new File("output/001/data/DistanceRatios/DistanceRatios.mathematica").isFile());
+
+        assertTrue(new File("output/001/data/requestHistory.csv").isFile());
+        assertTrue(new File("output/001/data/vehicleHistory.csv").isFile());
 
         assertTrue(new File("output/001/report/report.html").isFile());
         assertTrue(new File("output/001/report/config.xml").isFile());

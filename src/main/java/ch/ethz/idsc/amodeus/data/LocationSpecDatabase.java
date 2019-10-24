@@ -25,7 +25,6 @@ public enum LocationSpecDatabase {
             System.err.println("LocationSpec=SANFRANCISCO");
         }
         return Objects.requireNonNull(locationSpec);
-
     }
 
     public boolean isEmpty() {

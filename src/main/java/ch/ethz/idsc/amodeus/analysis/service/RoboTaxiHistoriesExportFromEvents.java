@@ -10,7 +10,7 @@ import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
-/* package */ class RoboTaxiHistoriesExportFromEvents implements AnalysisExport {
+public class RoboTaxiHistoriesExportFromEvents implements AnalysisExport {
 
     private static final String VEHICLE_HISTORY_CSV = "vehicleHistory.csv";
 
