@@ -229,7 +229,7 @@ public class StandardMATSimScenarioTest {
 
         GeneratorConfig generatorConfig = operatorConfig.getGeneratorConfig();
         generatorConfig.setType("VehicleToVSGenerator");
-        generatorConfig.setNumberOfVehicles(100);
+        generatorConfig.setNumberOfVehicles(50);
 
         int endTime = (int) config.qsim().getEndTime();
 
