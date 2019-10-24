@@ -18,6 +18,7 @@ public interface ReferenceFrame {
     /** @return transformation from simulation coordinates to WGS84 */
     CoordinateTransformation coords_toWGS84();
 
+    /** @return distance unit */
     default Unit unit() {
         return SI.METER;
     }

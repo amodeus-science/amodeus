@@ -18,7 +18,7 @@ import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 public enum DistanceDistributionOverDayImage implements AnalysisExport {
     INSTANCE;
 
-    public static final String FILENAME = "distanceDistribution";
+    public static final String FILE_PNG = "distanceDistribution.png";
     public static final int WIDTH = 1000;
     public static final int HEIGHT = 750;
 
@@ -43,12 +43,12 @@ public enum DistanceDistributionOverDayImage implements AnalysisExport {
         JFreeChart chart = StackedTimedChart.of(visualSet);
 
         try {
-            File fileChart = new File(relativeDirectory, FILENAME + ".png");
+            File fileChart = new File(relativeDirectory, FILE_PNG);
             ChartUtilities.saveChartAsPNG(fileChart, chart, WIDTH, HEIGHT);
             GlobalAssert.that(fileChart.isFile());
-            System.out.println("Exported " + FILENAME + ".png");
+            System.out.println("Exported " + FILE_PNG);
         } catch (Exception e) {
-            System.err.println("Plotting " + FILENAME + " failed");
+            System.err.println("Plotting " + FILE_PNG + " failed");
             e.printStackTrace();
         }
     }

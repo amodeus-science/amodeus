@@ -16,6 +16,11 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisConstants;
+import ch.ethz.idsc.amodeus.analysis.StackedDistanceChartImage;
+import ch.ethz.idsc.amodeus.analysis.element.BinnedWaitingTimesImage;
+import ch.ethz.idsc.amodeus.analysis.element.DistanceDistributionOverDayImage;
+import ch.ethz.idsc.amodeus.analysis.element.OccupancyDistanceRatiosImage;
+import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionImage;
 import ch.ethz.idsc.amodeus.analysis.element.TravelHistory;
 import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
@@ -194,25 +199,26 @@ public class ScenarioPipeLineTest {
         scalarAssert.consolidate();
 
         /** presence of plot files */
-        assertTrue(new File("output/001/data/binnedWaitingTimes.png").isFile());
-        assertTrue(new File("output/001/data/distanceDistribution.png").isFile());
-        assertTrue(new File("output/001/data/occAndDistRatios.png").isFile());
-        assertTrue(new File("output/001/data/stackedDistance.png").isFile());
-        assertTrue(new File("output/001/data/statusDistribution.png").isFile());
+        File data = new File("output/001/data");
+        assertTrue(new File(data, BinnedWaitingTimesImage.FILE_PNG).isFile());
+        assertTrue(new File(data, DistanceDistributionOverDayImage.FILE_PNG).isFile());
+        assertTrue(new File(data, OccupancyDistanceRatiosImage.FILE_PNG).isFile());
+        assertTrue(new File(data, StackedDistanceChartImage.FILE_PNG).isFile());
+        assertTrue(new File(data, StatusDistributionImage.FILE_PNG).isFile());
 
-        assertTrue(new File("output/001/data", AnalysisConstants.ParametersExportFilename).exists());
+        assertTrue(new File(data, AnalysisConstants.ParametersExportFilename).exists());
 
-        assertTrue(new File("output/001/data/WaitingTimes").isDirectory());
-        assertTrue(new File("output/001/data/WaitingTimes/WaitingTimes.mathematica").isFile());
+        assertTrue(new File(data, "WaitingTimes").isDirectory());
+        assertTrue(new File(data, "WaitingTimes/WaitingTimes.mathematica").isFile());
 
-        assertTrue(new File("output/001/data/StatusDistribution").isDirectory());
-        assertTrue(new File("output/001/data/StatusDistribution/StatusDistribution.mathematica").isFile());
+        assertTrue(new File(data, "StatusDistribution").isDirectory());
+        assertTrue(new File(data, "StatusDistribution/StatusDistribution.mathematica").isFile());
 
-        assertTrue(new File("output/001/data/DistancesOverDay").isDirectory());
-        assertTrue(new File("output/001/data/DistancesOverDay/DistancesOverDay.mathematica").isFile());
+        assertTrue(new File(data, "DistancesOverDay").isDirectory());
+        assertTrue(new File(data, "DistancesOverDay/DistancesOverDay.mathematica").isFile());
 
-        assertTrue(new File("output/001/data/DistanceRatios").isDirectory());
-        assertTrue(new File("output/001/data/DistanceRatios/DistanceRatios.mathematica").isFile());
+        assertTrue(new File(data, "DistanceRatios").isDirectory());
+        assertTrue(new File(data, "DistanceRatios/DistanceRatios.mathematica").isFile());
 
         assertTrue(new File("output/001/data/requestHistory.csv").isFile());
         assertTrue(new File("output/001/data/vehicleHistory.csv").isFile());

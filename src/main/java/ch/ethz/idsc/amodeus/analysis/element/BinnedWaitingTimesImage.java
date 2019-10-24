@@ -19,7 +19,7 @@ import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 public enum BinnedWaitingTimesImage implements AnalysisExport {
     INSTANCE;
 
-    public static final String FILENAME = "binnedWaitingTimes";
+    public static final String FILE_PNG = "binnedWaitingTimes.png";
     public static final int WIDTH = 1000;
     public static final int HEIGHT = 750;
 
@@ -45,12 +45,12 @@ public enum BinnedWaitingTimesImage implements AnalysisExport {
                 tta.getWaitAggrgte().Get(2).divide(scalingFactor).number().doubleValue());
 
         try {
-            File fileChart = new File(relativeDirectory, FILENAME + ".png");
+            File fileChart = new File(relativeDirectory, FILE_PNG);
             ChartUtilities.saveChartAsPNG(fileChart, jFreeChart, WIDTH, HEIGHT);
             GlobalAssert.that(fileChart.isFile());
-            System.out.println("Exported " + FILENAME + ".png");
+            System.out.println("Exported " + FILE_PNG);
         } catch (Exception e) {
-            System.err.println("Plotting " + FILENAME + " failed");
+            System.err.println("Plotting " + FILE_PNG + " failed");
             e.printStackTrace();
         }
     }
