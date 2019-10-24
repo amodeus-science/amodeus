@@ -21,10 +21,10 @@ public enum FleetEfficiencyHtml implements HtmlReportElement {
 
         // Fleet Efficency
         HtmlBodyElement fEElement = new HtmlBodyElement();
-        fEElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + DistanceDistributionOverDayImage.FILENAME + ".png", 800, 600);
-        fEElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + OccupancyDistanceRatiosImage.FILENAME + ".png", 800, 600);
+        fEElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + DistanceDistributionOverDayImage.FILE_PNG, 800, 600);
+        fEElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + OccupancyDistanceRatiosImage.FILE_PNG, 800, 600);
         fEElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + NumberPassengerStatusDistribution.IMAGE_NAME, 800, 600);
-        fEElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + RideSharingDistributionCompositionStack.FILENAME + ".png", RideSharingDistributionCompositionStack.WIDTH,
+        fEElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + RideSharingDistributionCompositionStack.FILE_NAME, RideSharingDistributionCompositionStack.WIDTH,
                 RideSharingDistributionCompositionStack.HEIGHT);
         bodyElements.put(BodyElementKeys.FLEETEFFICIENCY, fEElement);
         return bodyElements;

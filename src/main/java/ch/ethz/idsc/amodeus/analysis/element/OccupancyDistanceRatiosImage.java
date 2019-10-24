@@ -16,7 +16,7 @@ import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 public enum OccupancyDistanceRatiosImage implements AnalysisExport {
     INSTANCE;
 
-    public static final String FILENAME = "occAndDistRatios";
+    public static final String FILE_PNG = "occAndDistRatios.png";
     private static final String[] RATIOS_LABELS = new String[] { "occupancy ratio", "distance ratio" };
     public static final int WIDTH = 1000;
     public static final int HEIGHT = 750;
@@ -41,12 +41,12 @@ public enum OccupancyDistanceRatiosImage implements AnalysisExport {
         chart.getXYPlot().getRangeAxis().setRange(0., 1.);
 
         try {
-            File fileChart = new File(relativeDirectory, FILENAME + ".png");
+            File fileChart = new File(relativeDirectory, FILE_PNG);
             ChartUtilities.saveChartAsPNG(fileChart, chart, WIDTH, HEIGHT);
             GlobalAssert.that(fileChart.isFile());
-            System.out.println("Exported " + FILENAME + ".png");
+            System.out.println("Exported " + FILE_PNG);
         } catch (Exception e) {
-            System.err.println("Plotting " + FILENAME + " failed");
+            System.err.println("Plotting " + FILE_PNG + " failed");
             e.printStackTrace();
         }
     }

@@ -20,7 +20,7 @@ public enum StackedDistanceChartImage implements AnalysisExport {
     INSTANCE;
 
     private static final Tensor DOMAIN = Tensors.vector(1);
-    public static final String FILENAME = "stackedDistance";
+    public static final String FILE_PNG = "stackedDistance.png";
     public static final int WIDTH = 700; /* Width of the image */
     public static final int HEIGHT = 125; /* Height of the image */
 
@@ -39,12 +39,12 @@ public enum StackedDistanceChartImage implements AnalysisExport {
         chart.getCategoryPlot().getRangeAxis().setRange(0, 1.0);
 
         try {
-            File fileChart = new File(relativeDirectory, FILENAME + ".png");
+            File fileChart = new File(relativeDirectory, FILE_PNG);
             ChartUtilities.saveChartAsPNG(fileChart, chart, WIDTH, HEIGHT);
             GlobalAssert.that(fileChart.isFile());
-            System.out.println("Exported " + FILENAME + ".png");
+            System.out.println("Exported " + FILE_PNG);
         } catch (Exception e) {
-            System.err.println("Plotting " + FILENAME + " failed");
+            System.err.println("Plotting " + FILE_PNG + " failed");
             e.printStackTrace();
         }
     }

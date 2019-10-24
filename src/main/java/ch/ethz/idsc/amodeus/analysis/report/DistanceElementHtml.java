@@ -51,7 +51,7 @@ public enum DistanceElementHtml implements HtmlReportElement {
                         DECIMAL.format(100 * de.totalDistanceWtCst.number().doubleValue() / de.totalDistance.number().doubleValue()) + "%)" + //
                         "\n" + //
                         "\n" + format(de.totalDistanceWtCst.divide(RealScalar.of(de.requestIndices.size()))));
-        File img = new File(IMAGE_FOLDER, StackedDistanceChartImage.FILENAME + ".png");
+        File img = new File(IMAGE_FOLDER, StackedDistanceChartImage.FILE_PNG);
         aRElement.getHTMLGenerator() //
                 .insertImg(img.getPath(), StackedDistanceChartImage.WIDTH, StackedDistanceChartImage.HEIGHT);
         bodyElements.put(aRKey, aRElement);

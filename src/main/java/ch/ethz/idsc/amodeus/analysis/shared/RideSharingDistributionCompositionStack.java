@@ -24,7 +24,7 @@ import ch.ethz.idsc.tensor.red.Total;
 public enum RideSharingDistributionCompositionStack implements AnalysisExport {
     INSTANCE;
 
-    public static final String FILENAME = "SharedDistributionTotal";
+    public static final String FILE_NAME = "SharedDistributionTotal.png";
     public static final int WIDTH = 700; /* Width of the image */
     public static final int HEIGHT = 125; /* Height of the image */
     // private double requestSharedRate = -1;
@@ -60,12 +60,12 @@ public enum RideSharingDistributionCompositionStack implements AnalysisExport {
         chart.getCategoryPlot().getRangeAxis().setRange(0, 1.0);
 
         try {
-            File fileChart = new File(relativeDirectory, FILENAME + ".png");
+            File fileChart = new File(relativeDirectory, FILE_NAME);
             ChartUtilities.saveChartAsPNG(fileChart, chart, WIDTH, HEIGHT);
             GlobalAssert.that(fileChart.isFile());
-            System.out.println("Exported " + FILENAME + ".png");
+            System.out.println("Exported " + FILE_NAME);
         } catch (Exception e) {
-            System.err.println("Plotting " + FILENAME + " failed");
+            System.err.println("Plotting " + FILE_NAME + " failed");
             e.printStackTrace();
         }
     }

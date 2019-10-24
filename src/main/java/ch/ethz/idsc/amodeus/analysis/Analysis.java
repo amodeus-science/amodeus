@@ -245,7 +245,7 @@ public class Analysis {
                 SimulationObject simulationObject = storageSupplier.getSimulationObject(index);
                 analysisElements.stream().forEach(analysisElement -> analysisElement.register(simulationObject));
                 if (simulationObject.now % 10_000 == 0)
-                    System.out.println(simulationObject.now);
+                    System.out.println(String.format("%6.2f now=%d", timing.seconds(), simulationObject.now));
             }
             System.out.println(String.format("%6.2f register all", timing.seconds()));
         }

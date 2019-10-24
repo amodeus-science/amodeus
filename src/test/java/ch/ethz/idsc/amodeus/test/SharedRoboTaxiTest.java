@@ -18,8 +18,12 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisConstants;
+import ch.ethz.idsc.amodeus.analysis.StackedDistanceChartImage;
 import ch.ethz.idsc.amodeus.analysis.element.BinnedWaitingTimesImage;
+import ch.ethz.idsc.amodeus.analysis.element.DistanceDistributionOverDayImage;
 import ch.ethz.idsc.amodeus.analysis.element.NumberPassengersAnalysis;
+import ch.ethz.idsc.amodeus.analysis.element.OccupancyDistanceRatiosImage;
+import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionImage;
 import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
@@ -176,11 +180,11 @@ public class SharedRoboTaxiTest {
 
         /** presence of plot files */
         File data = new File("output/001/data");
-        assertTrue(new File(data, BinnedWaitingTimesImage.FILE_NAME).isFile());
-        assertTrue(new File(data, "distanceDistribution.png").isFile());
-        assertTrue(new File(data, "occAndDistRatios.png").isFile());
-        assertTrue(new File(data, "stackedDistance.png").isFile());
-        assertTrue(new File(data, "statusDistribution.png").isFile());
+        assertTrue(new File(data, BinnedWaitingTimesImage.FILE_PNG).isFile());
+        assertTrue(new File(data, DistanceDistributionOverDayImage.FILE_PNG).isFile());
+        assertTrue(new File(data, OccupancyDistanceRatiosImage.FILE_PNG).isFile());
+        assertTrue(new File(data, StackedDistanceChartImage.FILE_PNG).isFile());
+        assertTrue(new File(data, StatusDistributionImage.FILE_PNG).isFile());
         assertTrue(new File(data, AnalysisConstants.ParametersExportFilename).isFile());
         assertTrue(new File(data, "WaitingTimes").isDirectory());
         assertTrue(new File(data, "WaitingTimes/WaitingTimes.mathematica").isFile());
