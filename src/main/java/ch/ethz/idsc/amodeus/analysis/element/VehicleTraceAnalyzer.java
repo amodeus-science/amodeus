@@ -65,8 +65,8 @@ public class VehicleTraceAnalyzer {
             /** if the first link of the new container is different than the
              * last link of the previous container, add its length to previous index. */
             if (Objects.nonNull(prevListHead)) {
-                Integer frstInNew = list.get(0).linkTrace[0];
-                Integer lastInOld = prevListHead.linkTrace[prevListHead.linkTrace.length - 1];
+                int frstInNew = list.get(0).linkTrace[0];
+                int lastInOld = prevListHead.linkTrace[prevListHead.linkTrace.length - 1];
                 if (prevListHead.linkTrace.length > 1 && frstInNew != lastInOld) {
                     Link lastInOldLink = db.getOsmLink(lastInOld).link;
                     double dist = lastInOldLink.getLength();

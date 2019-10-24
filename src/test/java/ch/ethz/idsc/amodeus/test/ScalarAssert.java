@@ -10,11 +10,8 @@ import ch.ethz.idsc.tensor.Tensors;
 
 public class ScalarAssert {
 
-    private Tensor should = Tensors.empty();
-    private Tensor actual = Tensors.empty();
-
-    public ScalarAssert() {
-    }
+    private final Tensor should = Tensors.empty();
+    private final Tensor actual = Tensors.empty();
 
     public void add(Scalar shouldEl, Scalar actualEl) {
         should.append(shouldEl);

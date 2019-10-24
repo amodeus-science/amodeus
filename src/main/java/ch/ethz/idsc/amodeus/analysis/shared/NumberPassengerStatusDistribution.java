@@ -22,6 +22,7 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Join;
 import ch.ethz.idsc.tensor.alg.Reverse;
 import ch.ethz.idsc.tensor.alg.Transpose;
+import ch.ethz.idsc.tensor.fig.StackedTimedChart;
 import ch.ethz.idsc.tensor.fig.VisualRow;
 import ch.ethz.idsc.tensor.fig.VisualSet;
 import ch.ethz.idsc.tensor.img.ColorDataGradients;
@@ -29,11 +30,13 @@ import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.opt.ScalarTensorFunction;
 import ch.ethz.idsc.tensor.red.Total;
 
+/** may */
 public enum NumberPassengerStatusDistribution implements AnalysisExport {
     INSTANCE;
 
-    public static final String FILENAME = "statusDistributionNumPassengers";
-    // TODO might be done dependent on the Secnario Options
+    public static final String TITLE = "statusDistributionNumPassengers";
+    public static final String IMAGE_NAME = "statusDistributionNumPassengers.png";
+    // TODO might be done dependent on the Scenario Options
     public static final ScalarTensorFunction COLOR_DATA_GRADIENT_DEFAULT = ColorDataGradients.SUNSET;
     public static final int WIDTH = 1000; /* Width of the image */
     public static final int HEIGHT = 750; /* Height of the image */
@@ -93,7 +96,7 @@ public enum NumberPassengerStatusDistribution implements AnalysisExport {
 
         /** Store Tensor */
         try {
-            SaveUtils.saveFile(Join.of(valuesComplet), FILENAME, relativeDirectory);
+            SaveUtils.saveFile(Join.of(valuesComplet), TITLE, relativeDirectory);
         } catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -110,15 +113,15 @@ public enum NumberPassengerStatusDistribution implements AnalysisExport {
         visualSet.setPlotLabel("Number Passengers");
         visualSet.setAxesLabelY("RoboTaxis");
 
-        JFreeChart chart = ch.ethz.idsc.tensor.fig.StackedTimedChart.of(visualSet);
+        JFreeChart chart = StackedTimedChart.of(visualSet);
 
         try {
-            File fileChart = new File(relativeDirectory, FILENAME + ".png");
+            File fileChart = new File(relativeDirectory, IMAGE_NAME);
             ChartUtilities.saveChartAsPNG(fileChart, chart, WIDTH, HEIGHT);
             GlobalAssert.that(fileChart.isFile());
-            System.out.println("Exported " + FILENAME + ".png");
+            System.out.println("Exported " + IMAGE_NAME);
         } catch (Exception exception) {
-            System.err.println("Plotting " + FILENAME + " failed");
+            System.err.println("Plotting " + IMAGE_NAME + " failed");
             exception.printStackTrace();
         }
     }

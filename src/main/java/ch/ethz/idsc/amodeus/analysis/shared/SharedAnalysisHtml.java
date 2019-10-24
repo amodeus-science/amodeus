@@ -21,7 +21,7 @@ import ch.ethz.idsc.amodeus.analysis.report.HtmlReportElement;
 
         // Fleet Efficency
         HtmlBodyElement sharedElement = new HtmlBodyElement();
-        sharedElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + NumberPassengerStatusDistribution.FILENAME + ".png", 800, 600);
+        sharedElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + NumberPassengerStatusDistribution.IMAGE_NAME, 800, 600);
         sharedElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + RideSharingDistributionCompositionStack.FILENAME + ".png", RideSharingDistributionCompositionStack.WIDTH,
                 RideSharingDistributionCompositionStack.HEIGHT);
         // fEElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + ExtraDriveTimeImage.FILENAME + ".png", 800, 600);
