@@ -44,7 +44,7 @@ public class SharedMenuTest extends TestCase {
         assertTrue(SharedMenuCheck.containSameCourses(menu1, menu2));
         SharedMenu menu2Check = SharedMenu.of(Arrays.asList(pickupCourse1, pickupCourse2, dropoffCourse1, dropoffCourse2));
         assertFalse(menu1.getCourseList().equals(menu2.getCourseList()));
-        assertTrue(menu2.getCourseList().equals(menu2Check.getCourseList()));
+        assertEquals(menu2.getCourseList(), menu2Check.getCourseList());
 
         List<SharedCourse> listInvalid = Arrays.asList(dropoffCourse1, pickupCourse1);
 
