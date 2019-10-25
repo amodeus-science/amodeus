@@ -14,13 +14,13 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
 /*package*/ class SharedDropoffDirective extends SharedFixedLocationDirective {
 
-    public SharedDropoffDirective(RoboTaxi robotaxi, AVRequest avRequest, double getTimeNow, double durationOfTask) {
-        super(robotaxi, avRequest, getTimeNow, durationOfTask);
+    public SharedDropoffDirective(RoboTaxi roboTaxi, AVRequest avRequest, double getTimeNow, double durationOfTask) {
+        super(roboTaxi, avRequest, getTimeNow, durationOfTask);
     }
 
     @Override
     public void execute() {
-        final Schedule schedule = robotaxi.getSchedule();
+        final Schedule schedule = roboTaxi.getSchedule();
         final AVStayTask avStayTask = (AVStayTask) Schedules.getLastTask(schedule);
         final double scheduleEndTime = avStayTask.getEndTime();
         GlobalAssert.that(scheduleEndTime == schedule.getEndTime());
@@ -38,7 +38,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
                     Arrays.asList(avRequest)));
 
             Link destLink = avStayTask.getLink();
-            ScheduleUtils.makeWhole(robotaxi, getTimeNow + durationOfTask, scheduleEndTime, destLink);
+            ScheduleUtils.makeWhole(roboTaxi, getTimeNow + durationOfTask, scheduleEndTime, destLink);
 
             // jan: following computation is mandatory for the internal scoring
             // function

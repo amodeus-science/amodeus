@@ -4,8 +4,8 @@ package ch.ethz.idsc.amodeus.prep;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
@@ -42,7 +42,7 @@ public enum MatsimShapeFileVirtualNetworkCreator {
         Tensor lbounds = NetworkBounds.lowerBoundsOf(network);
         Tensor ubounds = NetworkBounds.upperBoundsOf(network);
 
-        Map<Node, HashSet<Link>> uElements = NodeAdjacencyMap.of(network);
+        Map<Node, Set<Link>> uElements = NodeAdjacencyMap.of(network);
 
         MultiPolygonsVirtualNetworkCreator<Link, Node> mpvnc = new MultiPolygonsVirtualNetworkCreator<>(multiPolygons, //
                 elements, TensorLocation::of, NetworkCreatorUtils::linkToID, //

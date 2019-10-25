@@ -12,11 +12,11 @@ import ch.ethz.idsc.amodeus.util.math.LruCache;
 
 public class TravelTimeComputation {
 
-    private final LeastCostPathCalculator lcpc;
+    private final LeastCostPathCalculator leastCostPathCalculator;
     private final Map<Link, Map<Link, Double>> travelTimeDataMap;
 
-    public TravelTimeComputation(LeastCostPathCalculator lcpc, int sizeLimit) {
-        this.lcpc = lcpc;
+    public TravelTimeComputation(LeastCostPathCalculator leastCostPathCalculator, int sizeLimit) {
+        this.leastCostPathCalculator = leastCostPathCalculator;
         travelTimeDataMap = LruCache.create(sizeLimit);
     }
 
@@ -30,7 +30,7 @@ public class TravelTimeComputation {
             return travelTimeDataMap.get(fromLink).get(toLink);
 
         // if it reaches here, we need to calculate the travel time
-        Path shortest = lcpc.calcLeastCostPath(fromLink.getFromNode(), toLink.getToNode(), now, null, null);
+        Path shortest = leastCostPathCalculator.calcLeastCostPath(fromLink.getFromNode(), toLink.getToNode(), now, null, null);
         if (storeInCache)
             travelTimeDataMap.get(fromLink).put(toLink, shortest.travelTime);
 

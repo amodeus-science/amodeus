@@ -18,8 +18,8 @@ public enum RedistributionProblemHelper {
      * 
      *         Map<Link, Set<RoboTaxi>> taxisToGo;
      *         Map<Link, Integer> unitsToMove = RedistributionProblemHelper.getFlow(taxisToGo); */
-    public static <T, U> HashMap<T, Integer> getFlow(Map<T, Set<U>> unitsToMove) {
-        HashMap<T, Integer> quantitiesToMove = new HashMap<>();
+    public static <T, U> Map<T, Integer> getFlow(Map<T, Set<U>> unitsToMove) {
+        Map<T, Integer> quantitiesToMove = new HashMap<>();
         unitsToMove.entrySet().forEach(e -> {
             quantitiesToMove.put(e.getKey(), e.getValue().size());
         });
@@ -38,8 +38,8 @@ public enum RedistributionProblemHelper {
      * 
      * 
      *         where flowLP is an instance of the {@link RedistributionProblemSolverMILP} */
-    public static <T, U> Map<U, T> getSolutionCommands(Map<T, Set<U>> unitsToMove, //
-            Map<T, Map<T, Integer>> flowSolution) {
+    public static <T, U> Map<U, T> getSolutionCommands( //
+            Map<T, Set<U>> unitsToMove, Map<T, Map<T, Integer>> flowSolution) {
         Map<U, T> sendCommandMap = new HashMap<>();
         for (T origin : flowSolution.keySet()) {
             List<U> toSend = new ArrayList<>();

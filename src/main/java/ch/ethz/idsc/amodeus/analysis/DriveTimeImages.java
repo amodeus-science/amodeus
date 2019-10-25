@@ -5,6 +5,7 @@ import java.io.File;
 
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.amodeus.analysis.element.TravelTimeAnalysis;
+import ch.ethz.idsc.amodeus.util.math.PositiveSubVector;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
 public enum DriveTimeImages implements AnalysisExport {

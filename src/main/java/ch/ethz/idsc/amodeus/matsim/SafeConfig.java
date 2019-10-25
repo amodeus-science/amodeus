@@ -12,6 +12,7 @@ public class SafeConfig {
         return new SafeConfig(reflectiveConfigGroup);
     }
 
+    // ---
     private final ReflectiveConfigGroup reflectiveConfigGroup;
 
     protected SafeConfig(ReflectiveConfigGroup reflectiveConfigGroup) {

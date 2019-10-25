@@ -1,7 +1,6 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.analysis;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.DateFormat;
@@ -56,25 +55,20 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
     public final String date = DATEFORMAT.format(new Date());
 
     public ScenarioParameters(ScenarioOptions scenOptions) {
-        // ScenarioOptions scenOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
-        // File configFile = new File(workingDirectory, scenOptions.getSimulationConfigName());
         System.out.println("scenOptions.getSimulationConfigName: " + scenOptions.getSimulationConfigName());
 
-        AVConfigGroup avConfig = new AVConfigGroup();
-        Config config = ConfigUtils.loadConfig(scenOptions.getSimulationConfigName(), avConfig);
-        // scenOptions.getcon
-        // Config config = ConfigUtils.loadConfig(configFile.toString());
+        AVConfigGroup avConfigGroup = new AVConfigGroup();
+        Config config = ConfigUtils.loadConfig(scenOptions.getSimulationConfigName(), avConfigGroup);
 
-        File configPath = new File(scenOptions.getWorkingDirectory(), "av.xml");
-        OperatorConfig oc = avConfig.getOperatorConfigs().values().iterator().next();
-        DispatcherConfig avdispatcherconfig = oc.getDispatcherConfig();
-        SafeConfig safeConfig = SafeConfig.wrap(avdispatcherconfig);
-        GeneratorConfig avgeneratorconfig = oc.getGeneratorConfig();
+        OperatorConfig operatorConfig = avConfigGroup.getOperatorConfigs().values().iterator().next();
+        DispatcherConfig dispatcherConfig = operatorConfig.getDispatcherConfig();
+        SafeConfig safeConfig = SafeConfig.wrap(dispatcherConfig);
+        GeneratorConfig generatorConfig = operatorConfig.getGeneratorConfig();
 
         redispatchPeriod = safeConfig.getInteger(DISPATCHPERIODSTRING, UNDEFINED_INT);
         rebalancingPeriod = safeConfig.getInteger(REBALANCINGPERIODSTRING, UNDEFINED_INT);
-        dispatcher = avdispatcherconfig.getType();
-        vehicleGenerator = avgeneratorconfig.getType();
+        dispatcher = dispatcherConfig.getType();
+        vehicleGenerator = generatorConfig.getType();
         Scenario scenario = ScenarioUtils.loadScenario(config);
 
         distanceHeuristic = safeConfig.getString(DISTANCEHEURISTICSTRING, UNDEFINED_STRING);
@@ -90,7 +84,6 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
         VirtualNetwork<Link> virtualNetwork = null;
         try {
             virtualNetwork = VirtualNetworkGet.readDefault(network, scenOptions);
-
         } catch (IOException e) {
             System.err.println("INFO not able to load virtual network for report");
             e.printStackTrace();
@@ -105,7 +98,9 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
     }
 
     public String getVirtualNetworkDescription() {
-        return virtualNodesCount == UNDEFINED_INT ? "no virtual network found" : virtualNodesCount + " virtual nodes.";
+        return virtualNodesCount == UNDEFINED_INT //
+                ? "no virtual network found"
+                : virtualNodesCount + " virtual nodes.";
     }
 
     @Override

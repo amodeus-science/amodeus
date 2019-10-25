@@ -84,7 +84,7 @@ public class VehicleToVSGenerator implements AVGenerator {
             int vNodeIndex = getNextVirtualNode();
             Link linkGen = getNextLink(virtualNetwork.getVirtualNode(vNodeIndex));
             /** update placedVehicles */
-            placedVehicles.set(v -> v.add(RealScalar.ONE), vNodeIndex);
+            placedVehicles.set(RealScalar.ONE::add, vNodeIndex);
             Id<DvrpVehicle> id = AVUtils.createId(operatorConfig.getId(), generatedNumberOfVehicles);
             vehicles.add(new AVVehicle(id, linkGen, 0.0, Double.POSITIVE_INFINITY, vehicleType));
         }

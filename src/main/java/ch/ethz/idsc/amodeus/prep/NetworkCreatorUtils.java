@@ -17,7 +17,7 @@ import org.matsim.core.router.StageActivityTypesImpl;
 import org.matsim.pt.PtConstants;
 
 public class NetworkCreatorUtils {
-    private static final Logger logger = Logger.getLogger(NetworkCreatorUtils.class);
+    private static final Logger LOGGER = Logger.getLogger(NetworkCreatorUtils.class);
 
     public static String linkToID(Link link) {
         return link.getId().toString();
@@ -48,7 +48,7 @@ public class NetworkCreatorUtils {
                                 double y = link.getCoord().getY();
                                 dataList.add(new double[] { x, y });
                             } else {
-                                logger.warn(String.format("Link '%s' not found for agent '%s'. Either the link does not exist or has invalid modes?",
+                                LOGGER.warn(String.format("Link '%s' not found for agent '%s'. Either the link does not exist or has invalid modes?",
                                         activity.getLinkId().toString(), person.getId().toString()));
                             }
                         }

@@ -2,7 +2,6 @@
 package ch.ethz.idsc.amodeus.virtualnetwork.core;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -30,7 +29,7 @@ public abstract class AbstractVirtualNetworkCreator<T, U> {
      *         {@link VirtualNode}s should be introduced or only the {@link VirtualLink}s between neighboring
      *         {@link VirtualNode}s */
     protected VirtualNetwork<T> createVirtualNetwork(Map<VirtualNode<T>, Set<T>> vNodeTMap, //
-            Collection<T> elements, Map<U, HashSet<T>> uElements, Function<T, String> nameOf, //
+            Collection<T> elements, Map<U, Set<T>> uElements, Function<T, String> nameOf, //
             boolean completeGraph) {
 
         /** initialize new {@link VirtualNetwork} */

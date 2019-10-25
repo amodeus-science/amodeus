@@ -22,6 +22,7 @@ import com.google.inject.Key;
 import com.google.inject.name.Names;
 
 import ch.ethz.idsc.amodeus.analysis.Analysis;
+import ch.ethz.idsc.amodeus.analysis.element.NumberPassengersAnalysis;
 import ch.ethz.idsc.amodeus.data.LocationSpec;
 import ch.ethz.idsc.amodeus.data.ReferenceFrame;
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDatabaseModule;
@@ -60,6 +61,7 @@ public class SharedTestServer {
     private Population population;
     private Controler controler;
     private AnalysisTestExport ate;
+    private NumberPassengersAnalysis npa = new NumberPassengersAnalysis();
 
     private SharedTestServer(File workingDirectory) throws Exception {
         this.workingDirectory = workingDirectory;
@@ -147,15 +149,18 @@ public class SharedTestServer {
         SimulationServer.INSTANCE.stopAccepting();
 
         Analysis analysis = Analysis.setup(scenarioOptions, new File(workingDirectory, "output/001"), network, db);
+        analysis.addAnalysisElement(npa);
         ate = new AnalysisTestExport();
         analysis.addAnalysisExport(ate);
         analysis.run();
-
     }
 
     public AnalysisTestExport getAnalysisTestExport() {
         return ate;
+    }
 
+    public NumberPassengersAnalysis numberPassengersAnalysis() {
+        return npa;
     }
 
     public File getConfigFile() {

@@ -42,7 +42,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
             if (!freeSpacesToGo.isEmpty()) {
                 /** at this point the parking repositioning problem is solved */
                 /** creating unitsToMove map */
-                HashMap<Link, Integer> unitsToMove = RedistributionProblemHelper.getFlow(taxisToGo);
+                Map<Link, Integer> unitsToMove = RedistributionProblemHelper.getFlow(taxisToGo);
 
                 /** if not enough free spaces area available, shorten the units to send
                  * by an equal number in all overflowing parking reservoirs */

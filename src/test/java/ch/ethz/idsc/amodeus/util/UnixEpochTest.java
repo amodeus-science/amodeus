@@ -9,6 +9,7 @@ import java.util.Random;
 
 import org.junit.Test;
 
+import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.qty.Quantity;
 
@@ -51,7 +52,7 @@ public class UnixEpochTest {
             int day = random.nextInt(28) + 1;
             LocalDate localDate = LocalDate.of(year, month, day);
             Scalar dayLength = Duration.between(timeConvert.beginOf(localDate), timeConvert.endOf(localDate));
-            Scalar dayLengthShould = Quantity.of(86399, "s");
+            Scalar dayLengthShould = Quantity.of(86399, SI.SECOND);
             if (!dayLength.equals(dayLengthShould)) {
                 System.err.println(dayLength + " =daylength is not " + dayLengthShould);
                 fail("UnixEpoch to Amodeus converter broken.");

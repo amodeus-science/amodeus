@@ -49,6 +49,7 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
+import ch.ethz.idsc.tensor.io.Timing;
 
 public class Analysis {
 
@@ -74,6 +75,7 @@ public class Analysis {
 
     // List of Analysis Elements which will be loaded
     private final static String DATAFOLDERNAME = "data";
+    // ---
     private final List<AnalysisElement> analysisElements = new LinkedList<>();
     private final List<AnalysisExport> analysisExports = new LinkedList<>();
     private final List<AnalysisReport> analysisReports = new LinkedList<>();
@@ -237,21 +239,36 @@ public class Analysis {
 
     public void run() throws Exception {
         /** iterate simulation objects */
-        for (int index = 0; index < size; ++index) {
-            SimulationObject simulationObject = storageSupplier.getSimulationObject(index);
-            analysisElements.stream().forEach(analysisElement -> analysisElement.register(simulationObject));
-            if (simulationObject.now % 10000 == 0)
-                System.out.println(simulationObject.now);
+        {
+            Timing timing = Timing.started();
+            for (int index = 0; index < size; ++index) {
+                SimulationObject simulationObject = storageSupplier.getSimulationObject(index);
+                analysisElements.stream().forEach(analysisElement -> analysisElement.register(simulationObject));
+                if (simulationObject.now % 10_000 == 0)
+                    System.out.println(String.format("%6.2f now=%d", timing.seconds(), simulationObject.now));
+            }
+            System.out.println(String.format("%6.2f register all", timing.seconds()));
         }
 
         /** this tep includes processing after all time steps are loaded */
-        analysisElements.forEach(AnalysisElement::consolidate);
+        {
+            Timing timing = Timing.started();
+            analysisElements.forEach(AnalysisElement::consolidate);
+            System.out.println(String.format("%6.2f consolidate all", timing.seconds()));
+        }
 
-        for (AnalysisExport analysisExport : analysisExports)
+        for (AnalysisExport analysisExport : analysisExports) {
+            Timing timing = Timing.started();
             analysisExport.summaryTarget(analysisSummary, dataDirectory, colorDataIndexed);
+            System.out.println(String.format("%6.2f %s", timing.seconds(), analysisExport.getClass().getSimpleName()));
+        }
 
         /** generate reports */
-        analysisReports.forEach(analysisReport -> analysisReport.generate(analysisSummary));
+        {
+            Timing timing = Timing.started();
+            analysisReports.forEach(analysisReport -> analysisReport.generate(analysisSummary));
+            System.out.println(String.format("%6.2f generate all", timing.seconds()));
+        }
     }
 
 }

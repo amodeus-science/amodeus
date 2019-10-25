@@ -5,7 +5,6 @@ import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 
 @FunctionalInterface
 public interface AnalysisReport {
-    // TODO Joel document
     /** @param analysisSummary */
     void generate(AnalysisSummary analysisSummary);
 }

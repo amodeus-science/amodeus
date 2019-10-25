@@ -17,7 +17,7 @@ public enum DispatcherUtils {
      * calls to the function return the identical collection.
      * 
      * @return list of {@link AVRequest}s grouped by link */
-    public static final Map<Link, List<AVRequest>> getAVRequestsAtLinks(Collection<AVRequest> avRequests) {
+    public static Map<Link, List<AVRequest>> getAVRequestsAtLinks(Collection<AVRequest> avRequests) {
         return avRequests.stream() // <- intentionally not parallel to guarantee ordering of requests
                 .collect(Collectors.groupingBy(AVRequest::getFromLink));
     }

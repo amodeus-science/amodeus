@@ -16,7 +16,7 @@ import ch.ethz.idsc.tensor.io.TableBuilder;
 /* package */ enum WaitingTimesTable implements AnalysisExport {
     INSTANCE;
 
-    private static final String identifier = "WaitingTimes";
+    private static final String IDENTIFIER = "WaitingTimes";
 
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
@@ -25,8 +25,8 @@ import ch.ethz.idsc.tensor.io.TableBuilder;
         for (int index = 0; index < tta.time.length(); ++index)
             tableBuilder.appendRow(tta.time.Get(index), tta.waitTimePlotValues.get(index));
         try {
-            UnitSaveUtils.saveFile(tableBuilder.getTable(), identifier, relativeDirectory);
-            File dataFolder = new File(relativeDirectory, identifier);
+            UnitSaveUtils.saveFile(tableBuilder.getTable(), IDENTIFIER, relativeDirectory);
+            File dataFolder = new File(relativeDirectory, IDENTIFIER);
             SaveFormats.CSV.save(Tensors.fromString("time step, " + Quantiles.LBL[0] + ", " //
                     + Quantiles.LBL[1] + ", " + Quantiles.LBL[2] + ", mean wait time"), //
                     dataFolder, "description");

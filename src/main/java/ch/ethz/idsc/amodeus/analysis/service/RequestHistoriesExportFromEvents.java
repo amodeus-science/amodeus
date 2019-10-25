@@ -10,26 +10,24 @@ import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
-/* package */ class RequestHistoriesExportFromEvents implements AnalysisExport {
+public class RequestHistoriesExportFromEvents implements AnalysisExport {
 
-    // TODO Sebastian/Lukas: take from controler or config if possible
-    private static final String FILENAME_MANUAL = "/output_events.xml.gz";
-
-    private static final String SERVICEFILENAME = "requestHistory.csv";
+    private static final String REQUEST_HISTORY_CSV = "requestHistory.csv";
+    // ---
     private final Network network;
     private final String eventFile;
 
     public RequestHistoriesExportFromEvents(Network network, Config config) {
         this.network = network;
-        eventFile = config.controler().getOutputDirectory() + FILENAME_MANUAL;
+        eventFile = config.controler().getOutputDirectory() + StaticHelper.FILENAME_MANUAL;
     }
 
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
         try {
-            ConvertAVServicesFromEvents.write(network, relativeDirectory.getAbsolutePath() + "/" + SERVICEFILENAME, eventFile);
+            ConvertAVServicesFromEvents.write(network, relativeDirectory.getAbsolutePath() + "/" + REQUEST_HISTORY_CSV, eventFile);
         } catch (Exception e) {
-            System.err.println("It was not possible to create the " + SERVICEFILENAME);
+            System.err.println("It was not possible to create the " + REQUEST_HISTORY_CSV);
         }
     }
 

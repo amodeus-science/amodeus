@@ -50,13 +50,14 @@ public class TotalValues implements AnalysisReport {
             System.err.println("The save of the Total Properties failed");
             e.printStackTrace();
         }
-
     }
 
+    // TODO check usage -> delete
     public Properties loadProperties() throws FileNotFoundException, IOException {
         return loadProperties(dataDirectory);
     }
 
+    // TODO check usage -> delete
     public static Properties loadProperties(File dataDirectory) throws FileNotFoundException, IOException {
         Properties properties = new Properties();
         File propertiesFile = new File(dataDirectory, DEFAULT_FILENAME);
@@ -64,5 +65,4 @@ public class TotalValues implements AnalysisReport {
             properties.load(new FileInputStream(propertiesFile));
         return properties;
     }
-
 }

@@ -24,7 +24,7 @@ public enum VirtualNetworkCreators implements VirtualNetworkCreator {
     FROMFILE {
         @Override
         public VirtualNetwork<Link> create(Network network, Population population, ScenarioOptions scenarioOptions, int numRt, int endTime) {
-            File absFileName = new File(scenarioOptions.getWorkingDirectory(), "/" + scenarioOptions.getString("vnFile"));
+            File absFileName = new File(scenarioOptions.getWorkingDirectory(), scenarioOptions.getString("vnFile"));
             Map<String, Link> map = new HashMap<>();
             network.getLinks().entrySet().forEach(e -> map.put(e.getKey().toString(), e.getValue()));
             try {

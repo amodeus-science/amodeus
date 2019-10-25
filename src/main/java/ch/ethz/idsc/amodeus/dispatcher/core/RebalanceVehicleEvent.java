@@ -9,13 +9,13 @@ import org.matsim.api.core.v01.population.Person;
 /* package */ class RebalanceVehicleEvent extends ActivityStartEvent {
     public static final String ACTTYPE = "AVRebalance";
 
-    public static RebalanceVehicleEvent create(double time, RoboTaxi robotaxi, Link link) {
+    public static RebalanceVehicleEvent create(double time, RoboTaxi roboTaxi, Link link) {
         // get the id of the AV -related agent (driver) as id of vehicle not
         // possible to access directly
         Id<Person> id = new Id<Person>() {
             @Override
             public String toString() {
-                return robotaxi.getId().toString();
+                return roboTaxi.getId().toString();
             }
         };
         return new RebalanceVehicleEvent(time, id, link.getId());

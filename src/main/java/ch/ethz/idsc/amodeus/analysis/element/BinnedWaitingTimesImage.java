@@ -8,19 +8,18 @@ import org.jfree.chart.JFreeChart;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.subare.plot.TimedChart;
-import ch.ethz.idsc.subare.plot.VisualRow;
-import ch.ethz.idsc.subare.plot.VisualSet;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.fig.TimedChart;
+import ch.ethz.idsc.tensor.fig.VisualRow;
+import ch.ethz.idsc.tensor.fig.VisualSet;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
-import ch.ethz.idsc.tensor.img.MeanFilter;
 
 public enum BinnedWaitingTimesImage implements AnalysisExport {
     INSTANCE;
 
-    public static final String FILENAME = "binnedWaitingTimes";
+    public static final String FILE_PNG = "binnedWaitingTimes.png";
     public static final int WIDTH = 1000;
     public static final int HEIGHT = 750;
 
@@ -32,7 +31,7 @@ public enum BinnedWaitingTimesImage implements AnalysisExport {
         VisualSet visualSet = new VisualSet(colorDataIndexed);
         for (int i = 0; i < Quantiles.LBL.length; ++i) {
             Tensor values = tta.waitTimePlotValues.get(Tensor.ALL, i).divide(scalingFactor);
-            values = StaticHelper.FILTER_ON ? MeanFilter.of(values, StaticHelper.FILTERSIZE) : values;
+            values = AnalysisMeanFilter.of(values);
             VisualRow visualRow = visualSet.add(tta.time, values);
             visualRow.setLabel(Quantiles.LBL[i]);
         }
@@ -46,12 +45,12 @@ public enum BinnedWaitingTimesImage implements AnalysisExport {
                 tta.getWaitAggrgte().Get(2).divide(scalingFactor).number().doubleValue());
 
         try {
-            File fileChart = new File(relativeDirectory, FILENAME + ".png");
+            File fileChart = new File(relativeDirectory, FILE_PNG);
             ChartUtilities.saveChartAsPNG(fileChart, jFreeChart, WIDTH, HEIGHT);
             GlobalAssert.that(fileChart.isFile());
-            System.out.println("Exported " + FILENAME + ".png");
+            System.out.println("Exported " + FILE_PNG);
         } catch (Exception e) {
-            System.err.println("Plotting " + FILENAME + " failed");
+            System.err.println("Plotting " + FILE_PNG + " failed");
             e.printStackTrace();
         }
     }

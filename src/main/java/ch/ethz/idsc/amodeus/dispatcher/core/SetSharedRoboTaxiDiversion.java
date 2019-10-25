@@ -25,15 +25,15 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
      * {@VehicleMaintainer}, the function setVehicleDiversion(...) may only be
      * invoked once for a single {@RoboTaxi} vehicle
      *
-     * @paramsRoboTaxi {@link RoboTaxi} supplied with a getFunction,e.g.,
-     *                 {@link this.getDivertableRoboTaxis}
+     * @param sRoboTaxi {@link RoboTaxi} supplied with a getFunction,e.g.,
+     *            {@link this.getDivertableRoboTaxis}
      * @param destination
      *            {@link Link} the {@link RoboTaxi} should be diverted to
      * @param status
      *            {@link} the {@link AVStatus} the {@link RoboTaxi} has after
      *            the diversion, depends if used from {@link setRoboTaxiPickup} or
      *            {@link setRoboTaxiRebalance} */
-    /* package */ final static void now(RoboTaxi sRoboTaxi, Link destination, FuturePathFactory futurePathFactory, //
+    /* package */ static void now(RoboTaxi sRoboTaxi, Link destination, FuturePathFactory futurePathFactory, //
             double now, EventsManager eventsManager, boolean reRoute) {
         GlobalAssert.that(SharedCourseAccess.hasStarter(sRoboTaxi));
         // update Status Of Robo Taxi
@@ -113,6 +113,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
                 // }
             }
 
+            // FIXME very error prone: parameter name is used as variable !!!
             private void handlePickupAndDropoff(RoboTaxi sRoboTaxi, Task task, Link nextLink, double now) {
                 boolean isOnLastTask = LastTimeStep.check(task, now, SharedUniversalDispatcher.SIMTIMESTEP);
                 boolean isSecondLastTaskAndEndsNow = (task.getEndTime() == now && ScheduleUtils.isNextToLastTask(schedule, task));

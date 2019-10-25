@@ -15,16 +15,14 @@ import org.matsim.core.api.experimental.events.EventsManager;
         removeRedirectionToDivertableLocationInBeginning(roboTaxi);
 
         Optional<Link> link = RetrieveToLink.forShared(roboTaxi, now);
-        if (link.isPresent()) {
+        if (link.isPresent())
             SetSharedRoboTaxiDiversion.now(roboTaxi, link.get(), futurePathFactory, now, eventsManager, reRoute);
-        }
 
     }
 
     private static void removeRedirectionToDivertableLocationInBeginning(RoboTaxi roboTaxi) {
-        while (NextCourseIsRedirectToCurrentLink.check(roboTaxi)) {
+        while (NextCourseIsRedirectToCurrentLink.check(roboTaxi))
             roboTaxi.finishRedirection();
-        }
     }
 
 }

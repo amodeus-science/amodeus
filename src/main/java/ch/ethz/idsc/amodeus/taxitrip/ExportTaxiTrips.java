@@ -23,13 +23,15 @@ public enum ExportTaxiTrips {
      * @throws IOException */
     public static void toFile(Stream<TaxiTrip> stream, File outFile) throws IOException {
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outFile))) {
-            String headers = Arrays.stream(TaxiTrip.class.getFields()).map(Field::getName) //
+            String headers = Arrays.stream(TaxiTrip.class.getFields()) //
+                    .map(Field::getName) //
                     .collect(Collectors.joining(";"));
             bufferedWriter.write(headers);
             stream.forEachOrdered(trip -> {
                 String line = "";
                 try {
                     bufferedWriter.newLine();
+                    // TODO use introspection as with header to extract field values and convert to string
                     line += trip.localId;
                     line += ";" + trip.taxiId;
                     line += ";" + trip.pickupLoc;

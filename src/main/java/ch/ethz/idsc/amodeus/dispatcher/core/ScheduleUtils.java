@@ -17,19 +17,19 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         return task.getTaskIdx() == schedule.getTaskCount() - 2;
     }
 
-    public static String scheduleOf(RoboTaxi robotaxi) {
-        Schedule schedule = robotaxi.getSchedule();
+    public static String scheduleOf(RoboTaxi roboTaxi) {
+        Schedule schedule = roboTaxi.getSchedule();
         return toString(schedule);
     }
 
-    /** @param robotaxi
+    /** @param roboTaxi
      * @param taskEndTime has to be strictly less than scheduleEndTime
      * @param scheduleEndTime
      * @param destination */
     public static void makeWhole( //
-            RoboTaxi robotaxi, double taskEndTime, double scheduleEndTime, Link destination) {
+            RoboTaxi roboTaxi, double taskEndTime, double scheduleEndTime, Link destination) {
         if (taskEndTime < scheduleEndTime) {
-            Schedule schedule = robotaxi.getSchedule();
+            Schedule schedule = roboTaxi.getSchedule();
             schedule.addTask(new AVStayTask(taskEndTime, scheduleEndTime, destination));
         } else {
             throw new IllegalArgumentException("taskEndTime " + taskEndTime + " > scheduleEndTime " + scheduleEndTime);

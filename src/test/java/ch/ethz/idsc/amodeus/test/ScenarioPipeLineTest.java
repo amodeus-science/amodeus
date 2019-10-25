@@ -16,6 +16,12 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisConstants;
+import ch.ethz.idsc.amodeus.analysis.StackedDistanceChartImage;
+import ch.ethz.idsc.amodeus.analysis.element.BinnedWaitingTimesImage;
+import ch.ethz.idsc.amodeus.analysis.element.DistanceDistributionOverDayImage;
+import ch.ethz.idsc.amodeus.analysis.element.OccupancyDistanceRatiosImage;
+import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionImage;
+import ch.ethz.idsc.amodeus.analysis.element.TravelHistory;
 import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
@@ -32,30 +38,19 @@ import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.qty.Quantity;
+import ch.ethz.idsc.tensor.qty.UnitConvert;
 import ch.ethz.idsc.tensor.red.Mean;
 import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.Round;
 
 public class ScenarioPipeLineTest {
-
+    private static final Scalar ZERO_KM = Quantity.of(0, "km");
+    // ---
     private static TestPreparer testPreparer;
     private static TestServer testServer;
 
     @BeforeClass
     public static void setUpOnce() throws Exception {
-
-        /** TODO remove all of this commented below if no problems occur and Oct-1-2019 has passed,
-         * This line was originally added to remove problems that tests failed only during certain iterations
-         * - hard to find bug. But should be resolved with newer MATSim and AV versions used.
-         * 
-         * 
-         * // TODO TEST This reset call should eventually be removed. Right now we need this to reset the random number generator for MATSim.
-         * // In general, this is not necessary, because all MATSim components use MatsimRandom.getLocalInstance(). However,
-         * // the PopulationDensity strategy in the av package uses MatsimRandom.getRandom(), which is NOT reset between
-         * // simulations and iterations. Once the av package makes proper use of MatsimRandom generator, this can be removed
-         * // here (should happen once av:0.1.5 is used here). /shoerl mar18
-         * MatsimRandom.reset(); */
-
         System.out.print("GLPK version is: ");
         System.out.println(GLPK.glp_version());
 
@@ -100,7 +95,6 @@ public class ScenarioPipeLineTest {
         // consistency of population
         Population population = testPreparer.getPreparedPopulation();
         assertEquals(2000, population.getPersons().size());
-
     }
 
     @Test
@@ -114,9 +108,9 @@ public class ScenarioPipeLineTest {
         File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
 
-        assertEquals(workingDirectory.getAbsolutePath() + "/config.xml", scenarioOptions.getSimulationConfigName());
-        assertEquals(workingDirectory.getAbsolutePath() + "/preparedNetwork", scenarioOptions.getPreparedNetworkName());
-        assertEquals(workingDirectory.getAbsolutePath() + "/preparedPopulation", scenarioOptions.getPreparedPopulationName());
+        assertEquals(new File(workingDirectory, "config.xml").getAbsolutePath(), scenarioOptions.getSimulationConfigName());
+        assertEquals(new File(workingDirectory, "preparedNetwork").getAbsolutePath(), scenarioOptions.getPreparedNetworkName());
+        assertEquals(new File(workingDirectory, "preparedPopulation").getAbsolutePath(), scenarioOptions.getPreparedPopulationName());
 
         // simulation objects should exist after simulation (simulation data)
         File simobj = new File("output/001/simobj/it.00");
@@ -137,11 +131,12 @@ public class ScenarioPipeLineTest {
 
         /** fleet size */
         assertEquals(200, ate.getSimulationInformationElement().vehicleSize());
+        assertEquals(200, ate.getDistancElement().getVehicleStatistics().size());
 
         /** status distribution, every row must equal the total of vehicles */
         Tensor distributionSum = Total.of(Transpose.of(ate.getStatusDistribution().statusTensor));
         distributionSum.flatten(-1).forEach(e -> //
-        assertTrue(e.equals(RealScalar.of(ate.getSimulationInformationElement().vehicleSize()))));
+        assertEquals(e, RealScalar.of(ate.getSimulationInformationElement().vehicleSize())));
 
         ScalarAssert scalarAssert = new ScalarAssert();
 
@@ -154,26 +149,28 @@ public class ScenarioPipeLineTest {
         scalarAssert.add((Scalar) RealScalar.of(0.669469728473632).map(Round._5), (Scalar) distanceRatio.map(Round._5));
 
         /** fleet distances */
-        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistance));
-        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistanceWtCst));
-        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistancePicku));
-        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistanceRebal));
+        assertTrue(Scalars.lessEquals(ZERO_KM, ate.getDistancElement().totalDistance));
+        assertTrue(Scalars.lessEquals(ZERO_KM, ate.getDistancElement().totalDistanceWtCst));
+        assertTrue(Scalars.lessEquals(ZERO_KM, ate.getDistancElement().totalDistancePicku));
+        assertTrue(Scalars.lessEquals(ZERO_KM, ate.getDistancElement().totalDistanceRebal));
         assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistanceRatio));
         ate.getDistancElement().totalDistancesPerVehicle.flatten(-1).forEach(s -> //
-        assertTrue(Scalars.lessEquals(RealScalar.ZERO, (Scalar) s)));
-        assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).equals( //
-                ate.getDistancElement().totalDistance));
-        assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).equals( //
-                ate.getDistancElement().totalDistance));
+        assertTrue(Scalars.lessEquals(ZERO_KM, (Scalar) s)));
+        assertEquals(Total.of(ate.getDistancElement().totalDistancesPerVehicle), ate.getDistancElement().totalDistance);
 
-        scalarAssert.add((Scalar) RealScalar.of(45698.95657).map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
-        scalarAssert.add((Scalar) RealScalar.of(37593.30920).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
-        scalarAssert.add((Scalar) RealScalar.of(8105.647362303572).map(Round._5), (Scalar) ate.getDistancElement().totalDistancePicku.map(Round._5));
-        scalarAssert.add(RealScalar.of(0.0), ate.getDistancElement().totalDistanceRebal);
+        scalarAssert.add((Scalar) Quantity.of(13929.04196, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
+        scalarAssert.add((Scalar) Quantity.of(11458.44065, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
+        scalarAssert.add((Scalar) Quantity.of(2470.60132, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistancePicku.map(Round._5));
+        scalarAssert.add(ZERO_KM, ate.getDistancElement().totalDistanceRebal);
         scalarAssert.add((Scalar) RealScalar.of(0.82263).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRatio.map(Round._5));
 
         scalarAssert.add((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle), //
                 ate.getDistancElement().totalDistance);
+
+        /** travel time history */
+        assertEquals(1975, ate.getTravelTimeAnalysis().getTravelHistories().size());
+        assertTrue(ate.getTravelTimeAnalysis().getTravelHistories().values().stream().map(TravelHistory::getDropOffTime) //
+                .allMatch(s -> Scalars.lessEquals(s, UnitConvert.SI().to(SI.SECOND).apply(Quantity.of(30, "h")))));
 
         /** wait times, drive times */
         assertTrue(Scalars.lessEquals(Quantity.of(0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(2)));
@@ -202,25 +199,29 @@ public class ScenarioPipeLineTest {
         scalarAssert.consolidate();
 
         /** presence of plot files */
-        assertTrue(new File("output/001/data/binnedWaitingTimes.png").isFile());
-        assertTrue(new File("output/001/data/distanceDistribution.png").isFile());
-        assertTrue(new File("output/001/data/occAndDistRatios.png").isFile());
-        assertTrue(new File("output/001/data/stackedDistance.png").isFile());
-        assertTrue(new File("output/001/data/statusDistribution.png").isFile());
+        File data = new File("output/001/data");
+        assertTrue(new File(data, BinnedWaitingTimesImage.FILE_PNG).isFile());
+        assertTrue(new File(data, DistanceDistributionOverDayImage.FILE_PNG).isFile());
+        assertTrue(new File(data, OccupancyDistanceRatiosImage.FILE_PNG).isFile());
+        assertTrue(new File(data, StackedDistanceChartImage.FILE_PNG).isFile());
+        assertTrue(new File(data, StatusDistributionImage.FILE_PNG).isFile());
 
-        assertTrue(new File("output/001/data", AnalysisConstants.ParametersExportFilename).exists());
+        assertTrue(new File(data, AnalysisConstants.ParametersExportFilename).exists());
 
-        assertTrue(new File("output/001/data/WaitingTimes").isDirectory());
-        assertTrue(new File("output/001/data/WaitingTimes/WaitingTimes.mathematica").isFile());
+        assertTrue(new File(data, "WaitingTimes").isDirectory());
+        assertTrue(new File(data, "WaitingTimes/WaitingTimes.mathematica").isFile());
 
-        assertTrue(new File("output/001/data/StatusDistribution").isDirectory());
-        assertTrue(new File("output/001/data/StatusDistribution/StatusDistribution.mathematica").isFile());
+        assertTrue(new File(data, "StatusDistribution").isDirectory());
+        assertTrue(new File(data, "StatusDistribution/StatusDistribution.mathematica").isFile());
 
-        assertTrue(new File("output/001/data/DistancesOverDay").isDirectory());
-        assertTrue(new File("output/001/data/DistancesOverDay/DistancesOverDay.mathematica").isFile());
+        assertTrue(new File(data, "DistancesOverDay").isDirectory());
+        assertTrue(new File(data, "DistancesOverDay/DistancesOverDay.mathematica").isFile());
 
-        assertTrue(new File("output/001/data/DistanceRatios").isDirectory());
-        assertTrue(new File("output/001/data/DistanceRatios/DistanceRatios.mathematica").isFile());
+        assertTrue(new File(data, "DistanceRatios").isDirectory());
+        assertTrue(new File(data, "DistanceRatios/DistanceRatios.mathematica").isFile());
+
+        assertTrue(new File("output/001/data/requestHistory.csv").isFile());
+        assertTrue(new File("output/001/data/vehicleHistory.csv").isFile());
 
         assertTrue(new File("output/001/report/report.html").isFile());
         assertTrue(new File("output/001/report/config.xml").isFile());

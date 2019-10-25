@@ -19,13 +19,13 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
  * 3) append new stay task */
 /* package */ final class DriveVehicleDiversionDirective extends VehicleDiversionDirective {
 
-    DriveVehicleDiversionDirective(RoboTaxi robotaxi, Link destination, FuturePathContainer futurePathContainer) {
-        super(robotaxi, destination, futurePathContainer);
+    DriveVehicleDiversionDirective(RoboTaxi roboTaxi, Link destination, FuturePathContainer futurePathContainer) {
+        super(roboTaxi, destination, futurePathContainer);
     }
 
     @Override
     void executeWithPath(VrpPathWithTravelData vrpPathWithTravelData) {
-        final Schedule schedule = robotaxi.getSchedule();
+        final Schedule schedule = roboTaxi.getSchedule();
         final AVDriveTask avDriveTask = (AVDriveTask) schedule.getCurrentTask(); // <- implies that task is started
         final AVStayTask avStayTask = (AVStayTask) Schedules.getLastTask(schedule);
         final double scheduleEndTime = avStayTask.getEndTime();
@@ -51,9 +51,9 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
                 GlobalAssert.that(avDriveTask.getEndTime() == newEndTime);
 
                 schedule.removeLastTask(); // remove former stay task with old destination
-                ScheduleUtils.makeWhole(robotaxi, newEndTime, scheduleEndTime, destination);
+                ScheduleUtils.makeWhole(roboTaxi, newEndTime, scheduleEndTime, destination);
             } catch (Exception e) {
-                System.err.println("Robotaxi ID: " + robotaxi.getId().toString());
+                System.err.println("Robotaxi ID: " + roboTaxi.getId().toString());
                 System.err.println("====================================");
                 System.err.println("Found problem with diversionLinkIdx!");
                 System.err.println("====================================");

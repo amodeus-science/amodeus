@@ -8,7 +8,7 @@ import java.util.Objects;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-public enum TotalDelayCalculator {
+/* package */ enum TotalDelayCalculator {
 
     ;
     /** the function (TotalDelayCalculator.of) intakes the route (a list of stopInRoute)

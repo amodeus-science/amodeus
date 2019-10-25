@@ -45,7 +45,8 @@ public enum ImportTaxiTrips {
                             Tensors.fromString(splits[3]), //
                             Scalars.fromString(splits[4]), //
                             Scalars.fromString(splits[5]), //
-                            ldt, Scalars.fromString(splits[8])//
+                            ldt, //
+                            Scalars.fromString(splits[8])//
                     );
                     trips.add(trip);
                 }
@@ -56,7 +57,7 @@ public enum ImportTaxiTrips {
 
     public static void main(String[] args) {
 
-        DateTimeFormatter ldtFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+        // DateTimeFormatter ldtFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
         DateTimeFormatter ldtFormat2 = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         LocalDateTime.parse("2019-07-19T00:10:50", ldtFormat2);
     }

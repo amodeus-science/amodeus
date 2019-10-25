@@ -23,13 +23,15 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Join;
 import ch.ethz.idsc.tensor.alg.Transpose;
+import ch.ethz.idsc.tensor.qty.Unit;
+import ch.ethz.idsc.tensor.qty.UnitConvert;
 import ch.ethz.idsc.tensor.red.Mean;
 import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.InvertUnlessZero;
+import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
 
 public class DistanceElement implements AnalysisElement, TotalValueAppender {
-    /** link distances in the network must be in [m] */
-    private static final Scalar KM2M = RealScalar.of(0.001);
+    public static final Unit TARGET_UNIT = Unit.of("km"); // TODO maybe make customizable
     // ---
 
     private int simObjIndex = 0; // Index for the Simulation Object which is loaded
@@ -54,7 +56,7 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
     /** distRatio */
     public Tensor ratios;
 
-    /** variable to check for other classes if the consolidatioin already happend */
+    /** variable to check for other classes if the consolidation already happened */
     public boolean consolidated = false;
 
     public DistanceElement(int numVehicles, int size, MatsimAmodeusDatabase db) {
@@ -87,16 +89,17 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
     public void consolidate() {
         list.forEach(VehicleTraceAnalyzer::consolidate);
 
-        Tensor distTotal = list.stream().map(vs -> vs.stepDistanceTotal).reduce(Tensor::add).get().multiply(KM2M);
-        Tensor distWtCst = list.stream().map(vs -> vs.stepDistanceWithCustomer).reduce(Tensor::add).get().multiply(KM2M);
-        Tensor distPicku = list.stream().map(vs -> vs.stepDistancePickup).reduce(Tensor::add).get().multiply(KM2M);
-        Tensor distRebal = list.stream().map(vs -> vs.stepDistanceRebalance).reduce(Tensor::add).get().multiply(KM2M);
+        ScalarUnaryOperator any2target = UnitConvert.SI().to(TARGET_UNIT);
+        Tensor distTotal = list.stream().map(vs -> vs.stepDistanceTotal).reduce(Tensor::add).get().map(any2target);
+        Tensor distWtCst = list.stream().map(vs -> vs.stepDistanceWithCustomer).reduce(Tensor::add).get().map(any2target);
+        Tensor distPicku = list.stream().map(vs -> vs.stepDistancePickup).reduce(Tensor::add).get().map(any2target);
+        Tensor distRebal = list.stream().map(vs -> vs.stepDistanceRebalance).reduce(Tensor::add).get().map(any2target);
         Tensor distRatio = distTotal.map(InvertUnlessZero.FUNCTION).pmul(distWtCst);
         // ---
         distancesOverDay = Transpose.of(Tensors.of(distTotal, distWtCst, distPicku, distRebal, distRatio));
 
         // total distances driven per vehicle
-        totalDistancesPerVehicle = Tensor.of(list.stream().map(vs -> Total.of(vs.stepDistanceTotal))).multiply(KM2M);
+        totalDistancesPerVehicle = Tensor.of(list.stream().map(vs -> Total.of(vs.stepDistanceTotal))).map(any2target);
 
         // Total Values For one Day
         totalDistance = totalDistancesPerVehicle.stream().reduce(Tensor::add).get().Get();

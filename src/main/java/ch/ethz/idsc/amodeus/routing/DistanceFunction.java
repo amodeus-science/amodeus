@@ -11,11 +11,11 @@ public interface DistanceFunction {
 
     /** @return distance from the {@link RoboTaxi} @param robotaxi to the {@link AVRequest}
      * @param avRequest */
-    double getDistance(RoboTaxi robotaxi, AVRequest avRequest);
+    double getDistance(RoboTaxi roboTaxi, AVRequest avRequest);
 
     /** @return distance from the {@link RoboTaxi} @param robotaxi to the {@link Link}
      * @param link */
-    double getDistance(RoboTaxi robotaxi, Link link);
+    double getDistance(RoboTaxi roboTaxi, Link link);
 
     /** @return distance between the {@link Link} @param from and the {@link Link}
      * @param to */

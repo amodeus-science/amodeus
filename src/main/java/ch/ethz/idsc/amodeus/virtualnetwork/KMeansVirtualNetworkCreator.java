@@ -4,7 +4,6 @@ package ch.ethz.idsc.amodeus.virtualnetwork;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -46,14 +45,14 @@ public class KMeansVirtualNetworkCreator<T, U> extends AbstractVirtualNetworkCre
      * @param numVNodes
      * @param completeGraph */
     public KMeansVirtualNetworkCreator( //
-            double data[][], Collection<T> elements, Map<U, HashSet<T>> uElements, Function<T, Tensor> locationOf, //
+            double data[][], Collection<T> elements, Map<U, Set<T>> uElements, Function<T, Tensor> locationOf, //
             Function<T, String> nameOf, Tensor lbounds, Tensor ubounds, int numVNodes, boolean completeGraph, //
             int tryIterations) {
         virtualNetwork = createVirtualNetwork(data, elements, uElements, locationOf, nameOf, lbounds, ubounds, numVNodes, completeGraph, tryIterations);
     }
 
     private VirtualNetwork<T> createVirtualNetwork( //
-            double data[][], Collection<T> elements, Map<U, HashSet<T>> uElements, Function<T, Tensor> locationOf, //
+            double data[][], Collection<T> elements, Map<U, Set<T>> uElements, Function<T, Tensor> locationOf, //
             Function<T, String> nameOf, Tensor lbounds, Tensor ubounds, int numVNodes, boolean completeGraph, //
             int tryIterations) {
 
@@ -80,7 +79,7 @@ public class KMeansVirtualNetworkCreator<T, U> extends AbstractVirtualNetworkCre
     }
 
     private Map<VirtualNode<T>, Set<T>> createAssignmentMap( //
-            double data[][], Collection<T> elements, Map<U, HashSet<T>> uElements, Function<T, Tensor> locationOf, //
+            double data[][], Collection<T> elements, Map<U, Set<T>> uElements, Function<T, Tensor> locationOf, //
             Function<T, String> nameOf, Tensor lbounds, Tensor ubounds, int numVNodes, boolean completeGraph, long initSeed) {
 
         RandomlyGeneratedInitialMeans init = new RandomlyGeneratedInitialMeans(RandomFactory.get(initSeed));

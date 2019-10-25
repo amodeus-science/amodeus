@@ -18,6 +18,12 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisConstants;
+import ch.ethz.idsc.amodeus.analysis.StackedDistanceChartImage;
+import ch.ethz.idsc.amodeus.analysis.element.BinnedWaitingTimesImage;
+import ch.ethz.idsc.amodeus.analysis.element.DistanceDistributionOverDayImage;
+import ch.ethz.idsc.amodeus.analysis.element.NumberPassengersAnalysis;
+import ch.ethz.idsc.amodeus.analysis.element.OccupancyDistanceRatiosImage;
+import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionImage;
 import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
@@ -39,7 +45,8 @@ import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.Round;
 
 public class SharedRoboTaxiTest {
-
+    private static final Scalar ZERO_KM = Quantity.of(0, "km");
+    // ---
     private static TestPreparer testPreparer;
     private static SharedTestServer testServer;
 
@@ -99,9 +106,9 @@ public class SharedRoboTaxiTest {
         /** scenario options */
         File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
-        assertEquals(workingDirectory.getAbsolutePath() + "/config.xml", scenarioOptions.getSimulationConfigName());
-        assertEquals(workingDirectory.getAbsolutePath() + "/preparedNetwork", scenarioOptions.getPreparedNetworkName());
-        assertEquals(workingDirectory.getAbsolutePath() + "/preparedPopulation", scenarioOptions.getPreparedPopulationName());
+        assertEquals(new File(workingDirectory, "config.xml").getAbsolutePath(), scenarioOptions.getSimulationConfigName());
+        assertEquals(new File(workingDirectory, "preparedNetwork").getAbsolutePath(), scenarioOptions.getPreparedNetworkName());
+        assertEquals(new File(workingDirectory, "preparedPopulation").getAbsolutePath(), scenarioOptions.getPreparedPopulationName());
 
         /** simulation objects should exist after simulation (simulation data) */
         File simobj = new File("output/001/simobj/it.00");
@@ -109,7 +116,6 @@ public class SharedRoboTaxiTest {
         assertEquals(109, simobj.listFiles().length);
         assertTrue(new File(simobj, "0108000/0108000.bin").exists());
         assertTrue(new File(simobj, "0000000/0000010.bin").exists());
-
     }
 
     @Test
@@ -139,24 +145,21 @@ public class SharedRoboTaxiTest {
         scalarAssert.add((Scalar) RealScalar.of(0.318973780).map(Round._9), (Scalar) distanceRatio.map(Round._9));
 
         /** fleet distances */
-        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistance));
-        scalarAssert.add((Scalar) RealScalar.of(339606.55728).map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
-        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistanceWtCst));
-        scalarAssert.add((Scalar) RealScalar.of(108021.44853).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
-        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistancePicku));
-        scalarAssert.add((Scalar) RealScalar.of(12779.35341).map(Round._5), (Scalar) ate.getDistancElement().totalDistancePicku.map(Round._5));
-        assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistanceRebal));
-        scalarAssert.add((Scalar) RealScalar.of(218805.75534).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRebal.map(Round._5));
+        assertTrue(Scalars.lessEquals(ZERO_KM, ate.getDistancElement().totalDistance));
+        scalarAssert.add((Scalar) Quantity.of(103512.07866, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
+        assertTrue(Scalars.lessEquals(ZERO_KM, ate.getDistancElement().totalDistanceWtCst));
+        scalarAssert.add((Scalar) Quantity.of(32924.93751, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
+        assertTrue(Scalars.lessEquals(ZERO_KM, ate.getDistancElement().totalDistancePicku));
+        scalarAssert.add((Scalar) Quantity.of(3895.14692, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistancePicku.map(Round._5));
+        assertTrue(Scalars.lessEquals(ZERO_KM, ate.getDistancElement().totalDistanceRebal));
+        scalarAssert.add((Scalar) Quantity.of(66691.99423, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRebal.map(Round._5));
         assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistanceRatio));
         scalarAssert.add((Scalar) RealScalar.of(0.31808).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRatio.map(Round._5));
         scalarAssert.consolidate();
 
         ate.getDistancElement().totalDistancesPerVehicle.flatten(-1).forEach(s -> //
-        assertTrue(Scalars.lessEquals(RealScalar.ZERO, (Scalar) s)));
-        assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).equals( //
-                ate.getDistancElement().totalDistance));
-        assertTrue(((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle)).equals( //
-                ate.getDistancElement().totalDistance));
+        assertTrue(Scalars.lessEquals(ZERO_KM, (Scalar) s)));
+        assertEquals(Total.of(ate.getDistancElement().totalDistancesPerVehicle), ate.getDistancElement().totalDistance);
 
         /** waiting Times */
         assertTrue(Scalars.lessEquals(Quantity.of(0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(2)));
@@ -171,24 +174,28 @@ public class SharedRoboTaxiTest {
         assertTrue(Scalars.lessEquals(ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(1), ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(2)));
         assertTrue(Scalars.lessEquals(Quantity.of(0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1)));
 
+        /** number of passengers */
+        NumberPassengersAnalysis npa = testServer.numberPassengersAnalysis();
+        assertEquals(Total.of(npa.getSharedOthersDistribution()).Get().number().intValue(), npa.getSharedOthersPerRequest().length());
+
         /** presence of plot files */
         File data = new File("output/001/data");
-        assertTrue(new File(data, "binnedWaitingTimes.png").exists());
-        assertTrue(new File(data, "distanceDistribution.png").exists());
-        assertTrue(new File(data, "occAndDistRatios.png").exists());
-        assertTrue(new File(data, "stackedDistance.png").exists());
-        assertTrue(new File(data, "statusDistribution.png").exists());
-        assertTrue(new File(data, AnalysisConstants.ParametersExportFilename).exists());
+        assertTrue(new File(data, BinnedWaitingTimesImage.FILE_PNG).isFile());
+        assertTrue(new File(data, DistanceDistributionOverDayImage.FILE_PNG).isFile());
+        assertTrue(new File(data, OccupancyDistanceRatiosImage.FILE_PNG).isFile());
+        assertTrue(new File(data, StackedDistanceChartImage.FILE_PNG).isFile());
+        assertTrue(new File(data, StatusDistributionImage.FILE_PNG).isFile());
+        assertTrue(new File(data, AnalysisConstants.ParametersExportFilename).isFile());
         assertTrue(new File(data, "WaitingTimes").isDirectory());
-        assertTrue(new File(data, "WaitingTimes/WaitingTimes.mathematica").exists());
+        assertTrue(new File(data, "WaitingTimes/WaitingTimes.mathematica").isFile());
         assertTrue(new File(data, "StatusDistribution").isDirectory());
-        assertTrue(new File(data, "StatusDistribution/StatusDistribution.mathematica").exists());
+        assertTrue(new File(data, "StatusDistribution/StatusDistribution.mathematica").isFile());
         assertTrue(new File(data, "DistancesOverDay").isDirectory());
-        assertTrue(new File(data, "DistancesOverDay/DistancesOverDay.mathematica").exists());
+        assertTrue(new File(data, "DistancesOverDay/DistancesOverDay.mathematica").isFile());
         assertTrue(new File(data, "DistanceRatios").isDirectory());
-        assertTrue(new File(data, "DistanceRatios/DistanceRatios.mathematica").exists());
-        assertTrue(new File("output/001/report/report.html").exists());
-        assertTrue(new File("output/001/report/config.xml").exists());
+        assertTrue(new File(data, "DistanceRatios/DistanceRatios.mathematica").isFile());
+        assertTrue(new File("output/001/report/report.html").isFile());
+        assertTrue(new File("output/001/report/config.xml").isFile());
     }
 
     @AfterClass

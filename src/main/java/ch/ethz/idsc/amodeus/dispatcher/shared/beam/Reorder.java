@@ -15,21 +15,18 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
     public static List<SharedCourse> firstAllPickupsThenDropoffs(List<SharedCourse> roboTaxiMenu) {
         List<SharedCourse> list = new ArrayList<>();
         // add PickupCourses
-        for (SharedCourse sharedCourse : roboTaxiMenu) {
-            if (sharedCourse.getMealType().equals(SharedMealType.PICKUP)) {
+        for (SharedCourse sharedCourse : roboTaxiMenu)
+            if (sharedCourse.getMealType().equals(SharedMealType.PICKUP))
                 list.add(sharedCourse);
-            }
-        }
-        for (SharedCourse sharedCourse : roboTaxiMenu) {
-            if (sharedCourse.getMealType().equals(SharedMealType.DROPOFF)) {
+
+        for (SharedCourse sharedCourse : roboTaxiMenu)
+            if (sharedCourse.getMealType().equals(SharedMealType.DROPOFF))
                 list.add(sharedCourse);
-            }
-        }
-        for (SharedCourse sharedCourse : roboTaxiMenu) {
-            if (sharedCourse.getMealType().equals(SharedMealType.REDIRECT)) {
+
+        for (SharedCourse sharedCourse : roboTaxiMenu)
+            if (sharedCourse.getMealType().equals(SharedMealType.REDIRECT))
                 list.add(sharedCourse);
-            }
-        }
+
         return list;
     }
 

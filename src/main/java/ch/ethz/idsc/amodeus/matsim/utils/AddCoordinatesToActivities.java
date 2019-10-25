@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.matsim.utils;
 
 import org.matsim.api.core.v01.Scenario;
@@ -16,8 +17,9 @@ import org.matsim.core.scenario.ScenarioUtils;
 import ch.ethz.matsim.av.routing.AVRoute;
 import ch.ethz.matsim.av.routing.AVRouteFactory;
 
-public class AddCoordinatesToActivities {
-    static public void run(Scenario scenario) {
+public enum AddCoordinatesToActivities {
+    ;
+    public static void run(Scenario scenario) {
         for (Person person : scenario.getPopulation().getPersons().values()) {
             for (Plan plan : person.getPlans()) {
                 for (PlanElement element : plan.getPlanElements()) {
@@ -34,7 +36,7 @@ public class AddCoordinatesToActivities {
         }
     }
 
-    static public void main(String[] args) {
+    public static void main(String[] args) {
         String inputPopulationPath = args[0];
         String inputNetworkPath = args[1];
         String outputPopulationPath = args[2];

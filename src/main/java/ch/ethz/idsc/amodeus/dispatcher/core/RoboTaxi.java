@@ -33,9 +33,10 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 /** RoboTaxi is central class to be used in all dispatchers. Dispatchers control
  * a fleet of RoboTaxis, each is uniquely associated to an AVVehicle object in
  * MATSim. */
-public class RoboTaxi {
+public final class RoboTaxi {
     /** unit capacity fields */
-    static private final Logger logger = Logger.getLogger(RoboTaxi.class);
+    private static final Logger LOGGER = Logger.getLogger(RoboTaxi.class);
+
     private final AVVehicle avVehicle;
     private RoboTaxiStatus status;
     private final RoboTaxiUsageType usageType; // final might be removed if dispatchers can modify usage
@@ -168,7 +169,7 @@ public class RoboTaxi {
         // For now this works with universal dispatcher i.e. single used robotaxis as
         // number of customers is never changed
         return !status.equals(RoboTaxiStatus.DRIVEWITHCUSTOMER) && //
-                menu.menuOnBoardCustomers == 0;
+                menu.getMenuOnBoardCustomers() == 0;
     }
 
     /** @return {@Schedule} of the RoboTaxi, to be used only inside core package, the
@@ -209,7 +210,7 @@ public class RoboTaxi {
             if (!usageType.equals(RoboTaxiUsageType.SHARED)) { // for shared this is allowed e.g. when a new course is
                                                                // added but the it has not been executed
                                                                // yet
-                logger.warn("RoboTaxiStatus != STAY, but Schedule.getCurrentTask() == AVStayTask; probably needs fixing");
+                LOGGER.warn("RoboTaxiStatus != STAY, but Schedule.getCurrentTask() == AVStayTask; probably needs fixing");
                 System.out.println("status: " + status);
             }
             return true;
@@ -269,7 +270,7 @@ public class RoboTaxi {
     }
 
     public long getMenuOnBoardCustomers() {
-        return menu.menuOnBoardCustomers;
+        return menu.getMenuOnBoardCustomers();
     }
 
     /** Modifies the menu of the RoboTaxi. The given course is moved up in the menu
@@ -376,8 +377,8 @@ public class RoboTaxi {
     }
 
     private void checkAbilityToDropOff() {
-        GlobalAssert.that(menu.menuOnBoardCustomers > 0);
-        GlobalAssert.that(menu.menuOnBoardCustomers <= getCapacity());
+        GlobalAssert.that(menu.getMenuOnBoardCustomers() > 0);
+        GlobalAssert.that(menu.getMenuOnBoardCustomers() <= getCapacity());
         GlobalAssert.that(SharedRoboTaxiUtils.isNextCourseOfType(this, SharedMealType.DROPOFF));
         GlobalAssert.that(SharedRoboTaxiUtils.getStarterLink(this).equals(getDivertableLocation()));
     }
@@ -408,7 +409,7 @@ public class RoboTaxi {
      * 
      * @return all the courses which have been removed */
     /* package */ List<SharedCourse> cleanAndAbandonMenu() {
-        GlobalAssert.that(menu.menuOnBoardCustomers == 0);
+        GlobalAssert.that(menu.getMenuOnBoardCustomers() == 0);
         GlobalAssert.that(isDivertable());
         List<SharedCourse> oldMenu = SharedCourseUtil.copy(menu.getCourseList());
         setMenu(SharedMenu.empty());
