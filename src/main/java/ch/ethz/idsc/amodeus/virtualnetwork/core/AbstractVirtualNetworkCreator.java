@@ -19,7 +19,7 @@ public abstract class AbstractVirtualNetworkCreator<T, U> {
     /** @return a {@link VirtualNetwork}, children classes must call this function to create a
      *         {@link VirtualNetwork}, the following inputs are needed:
      * 
-     *         - a {@link Map} @param vNodeTMap that assings all the elements in the network T to a certain
+     *         - a {@link Map} @param vNodeTMap that assigns all the elements in the network T to a certain
      *         {@link VirtualNode}
      *         - the {@link Collection} @param elements of all link elements T in the network
      *         - the {@link Map} @param uElements of all node elements U that assigns all link elements T adjacent to the
@@ -36,13 +36,16 @@ public abstract class AbstractVirtualNetworkCreator<T, U> {
         VirtualNetwork<T> virtualNetwork = new VirtualNetworkImpl<>();
 
         /** assign link elements to virtual nodes */
+        System.out.println("Add to VNodes...");
         VirtualNetworkCreatorUtils.addToVNodes(vNodeTMap, nameOf, virtualNetwork);
 
         /** create virtualLinks for complete or neighboring graph */
+        System.out.println("Build...");
         VirtualLinkBuilder.build(virtualNetwork, completeGraph, uElements);
         GlobalAssert.that(VirtualNetworkCheck.virtualLinkConsistencyCheck(virtualNetwork));
 
         /** fill information for serialization */
+        System.out.println("Serialization info...");
         VirtualNetworkCreatorUtils.fillSerializationInfo(elements, virtualNetwork, nameOf);
 
         return virtualNetwork;
