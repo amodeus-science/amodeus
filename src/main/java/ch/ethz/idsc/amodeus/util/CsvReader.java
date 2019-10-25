@@ -6,11 +6,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -50,8 +54,12 @@ public final class CsvReader {
         }
     }
 
-    public Collection<String> headers() {
-        return Collections.unmodifiableCollection(headers.keySet());
+    public List<String> sortedHeaders() {
+        SortedMap<Integer, String> sortedHeaderMap = new TreeMap<>();
+        headers.entrySet().forEach(e -> sortedHeaderMap.put(e.getValue(), e.getKey()));
+        List<String> sortedHeaders = new ArrayList<>();
+        sortedHeaderMap.values().stream().forEach(s -> sortedHeaders.add(s));
+        return sortedHeaders;
     }
 
     public class Row {
@@ -66,7 +74,7 @@ public final class CsvReader {
          * @throws Exception if key is not an element in the header row */
         public String get(String key) {
             if (!headers.containsKey(key)) {
-                throw new IllegalArgumentException("Possible keys: " + //
+                throw new IllegalArgumentException("Your key: " + key + ", possible keys: " + //
                         headers.keySet().stream().collect(Collectors.joining(",")) + ", entered key: " + key);
             }
             return row[headers.get(key)];
