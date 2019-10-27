@@ -60,7 +60,13 @@ public final class CsvReader {
         List<String> sortedHeaders = new ArrayList<>();
         sortedHeaderMap.values().stream().forEach(s -> sortedHeaders.add(s));
         return sortedHeaders;
+    }
 
+    public String headerLine() {
+        SortedMap<Integer, String> sortedHeaderMap = new TreeMap<>();
+        headers.entrySet().forEach(e -> sortedHeaderMap.put(e.getValue(), e.getKey()));
+        List<String> sortedHeaders = new ArrayList<>();
+        return sortedHeaderMap.values().stream().collect(Collectors.joining(delim));
     }
 
     public class Row {
@@ -87,7 +93,7 @@ public final class CsvReader {
 
         @Override
         public String toString() {
-            return Stream.of(row).collect(Collectors.joining(","));
+            return Stream.of(row).collect(Collectors.joining(delim));
         }
     }
 }
