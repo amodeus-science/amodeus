@@ -14,12 +14,10 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
         if (SharedCourseAccess.hasStarter(roboTaxi)) {
             Optional<SharedCourse> currentCourse = SharedCourseAccess.getStarter(roboTaxi);
             /** search redirect courses */
-            if (currentCourse.get().getMealType().equals(SharedMealType.REDIRECT)) {
+            if (currentCourse.get().getMealType().equals(SharedMealType.REDIRECT))
                 /** search if arrived at redirect destination */
-                if (currentCourse.get().getLink().equals(roboTaxi.getDivertableLocation())) {
+                if (currentCourse.get().getLink().equals(roboTaxi.getDivertableLocation()))
                     roboTaxi.finishRedirection();
-                }
-            }
         }
     }
 

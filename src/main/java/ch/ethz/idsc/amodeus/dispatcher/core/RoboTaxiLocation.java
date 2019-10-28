@@ -17,7 +17,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
 /* package */ class RoboTaxiLocation extends RoboTaxiTaskAdapter {
 
-    /** @param avVehicle
+    /** @param roboTaxi
      * @return link or null with a small chance */
     public static Link of(RoboTaxi roboTaxi) {
         Schedule schedule = Objects.requireNonNull(roboTaxi.getSchedule());

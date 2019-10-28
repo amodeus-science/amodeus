@@ -46,8 +46,8 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     /* package */ static final double TASK_END = 10.0;
     private static final String STAYINGVEHICLEID = "stayingRoboTaxi";
 
-    /** @param divertableLinkTime
-     * @param vehicleLink if null the link from Divertable link is taken
+    /** @param divertableLink
+     * @param vehicleLinkin if null the link from Divertable link is taken
      * @return */
     /* package */ static RoboTaxi createStayingRoboTaxi(Link divertableLink, Link vehicleLinkin) {
         Link vehicleLink = vehicleLinkin == null ? divertableLink : vehicleLinkin;

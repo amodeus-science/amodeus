@@ -37,8 +37,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         OnlineDriveTaskTracker onlineDriveTaskTracker = (OnlineDriveTaskTracker) taskTracker;
         final double newEndTime = vrpPathWithTravelData.getArrivalTime();
 
-        if (newEndTime < scheduleEndTime) {
-
+        if (newEndTime < scheduleEndTime)
             try {
                 onlineDriveTaskTracker.divertPath(vrpPathWithTravelData);
                 GlobalAssert.that(VrpPathUtils.isConsistent(avDriveTask.getPath()));
@@ -58,8 +57,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
                 System.err.println("Found problem with diversionLinkIdx!");
                 System.err.println("====================================");
             }
-
-        } else
+        else
             reportExecutionBypass(newEndTime - scheduleEndTime);
     }
 

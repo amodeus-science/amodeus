@@ -58,8 +58,9 @@ public final class RoboTaxi {
     /** Standard constructor
      * 
      * @param avVehicle binding association to MATSim AVVehicle object
-     * @param linkTimePair
-     * @param driveDestination */
+     * @param divertableLinkTime
+     * @param driveDestination
+     * @param usageType */
     // TODO make this package again
     public RoboTaxi(AVVehicle avVehicle, LinkTimePair divertableLinkTime, Link driveDestination, RoboTaxiUsageType usageType) {
         this.avVehicle = avVehicle;
@@ -241,8 +242,7 @@ public final class RoboTaxi {
     // **********************************************
 
     public boolean isDivertable() {
-        return (canReroute() && usageType.equals(RoboTaxiUsageType.SHARED) || //
-                (canReroute() && isWithoutCustomer()));
+        return canReroute() && (usageType.equals(RoboTaxiUsageType.SHARED) || isWithoutCustomer());
     }
 
     // added by luc for rerouting purpose
@@ -314,7 +314,7 @@ public final class RoboTaxi {
      * is in progress if the divertable link of the robotaxi equals the link of the
      * Dropoff Course.
      * 
-     * @param List<SharedCourse> */
+     * @param list {@link List<SharedCourse>} */
     public void updateMenu(List<SharedCourse> list) {
         updateMenu(SharedMenu.of(list));
     }
@@ -339,9 +339,8 @@ public final class RoboTaxi {
         // addAVrequestandRemoveFirstRebalancing(AVrequest)
         if (status.equals(RoboTaxiStatus.REBALANCEDRIVE)) {
             GlobalAssert.that(SharedCourseAccess.getStarter(this).get().getMealType().equals(SharedMealType.REDIRECT));
-            if (getUnmodifiableViewOfCourses().size() == 1) {
+            if (getUnmodifiableViewOfCourses().size() == 1)
                 finishRedirection();
-            }
         }
         SharedCourse pickupCourse = SharedCourse.pickupCourse(avRequest);
         SharedCourse dropoffCourse = SharedCourse.dropoffCourse(avRequest);
@@ -353,9 +352,8 @@ public final class RoboTaxi {
     /* package */ void addRedirectCourseToMenu(SharedCourse redirectCourse) {
         GlobalAssert.that(redirectCourse.getMealType().equals(SharedMealType.REDIRECT));
         // this if statment is added by Luc and that fix the problem
-        if (status.equals(RoboTaxiStatus.REBALANCEDRIVE)) {
+        if (status.equals(RoboTaxiStatus.REBALANCEDRIVE))
             finishRedirection();
-        }
         setMenu(SharedCourseAdd.asDessert(menu, redirectCourse));
     }
 

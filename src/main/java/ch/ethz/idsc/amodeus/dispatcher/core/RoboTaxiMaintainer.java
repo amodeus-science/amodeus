@@ -39,7 +39,6 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
         this.infoLine = new InfoLine(safeConfig.getInteger("infoLinePeriod", 10));
         String outputdirectory = config.controler().getOutputDirectory();
         this.storageUtils = new StorageUtils(new File(outputdirectory));
-
     }
 
     /** @return time of current re-dispatching iteration step
@@ -69,7 +68,6 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
     /** functions called at every MATSim timestep, dispatching action happens in <b> redispatch <b> */
     @Override
     public final void onNextTimestep(double now) {
-
         private_now = now; // <- time available to derived class via getTimeNow()
         updateInfoLine();
         notifySimulationSubscribers(Math.round(now), storageUtils);
@@ -86,7 +84,6 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
         afterStepTasks();
         executeDirectives();
         consistencyCheck();
-
     }
 
     /** the info line is displayed in the console at every dispatching timestep and in the
@@ -104,15 +101,14 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
         return String.format("%s@%6d V=(%4ds,%4dd)", //
                 string.substring(0, 6), //
                 (long) getTimeNow(), //
-                roboTaxis.stream().filter(rt -> rt.isInStayTask()).count(), //
-                roboTaxis.stream().filter(rt -> rt.getStatus().isDriving()).count());
+                roboTaxis.stream().filter(RoboTaxi::isInStayTask).count(), //
+                roboTaxis.stream().map(RoboTaxi::getStatus).filter(RoboTaxiStatus::isDriving).count());
     }
 
     private void beforeStepTasks() {
         updateDivertableLocations();
-        if (private_now > 0) { // at time 0, tasks are not started.
+        if (private_now > 0) // at time 0, tasks are not started.
             updateCurrentLocations();
-        }
     }
 
     /** {@link RoboTaxi} on a pickup ride which are sent to another location are
@@ -120,7 +116,6 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
     private void afterStepTasks() {
         stopAbortedPickupRoboTaxis();
         // flushLocationTraces();
-
     }
 
     private void consistencyCheck() {
@@ -134,17 +129,15 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
     private void updateCurrentLocations() {
         @SuppressWarnings("unused")
         int failed = 0;
-        if (!roboTaxis.isEmpty()) {
+        if (!roboTaxis.isEmpty())
             for (RoboTaxi roboTaxi : roboTaxis) {
                 final Link link = RoboTaxiLocation.of(roboTaxi);
                 if (Objects.nonNull(link)) {
                     roboTaxi.setLastKnownLocation(link);
                     updateLocationTrace(roboTaxi, link);
-                } else {
+                } else
                     ++failed;
-                }
             }
-        }
     }
 
     /* package */ abstract void updateLocationTrace(RoboTaxi roboTaxi, Link lastKnownLoc);

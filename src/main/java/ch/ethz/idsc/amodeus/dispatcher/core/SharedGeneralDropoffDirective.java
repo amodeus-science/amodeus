@@ -42,7 +42,6 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         GlobalAssert.that(avStayTask.getLink().equals(currentRequest.getToLink()));
 
         if (endTimeNextTask < scheduleEndTime) {
-
             avStayTask.setEndTime(getTimeNow); // finish the last task now
 
             schedule.addTask(new AVDropoffTask( //

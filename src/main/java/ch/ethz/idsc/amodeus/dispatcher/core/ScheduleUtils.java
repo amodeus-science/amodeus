@@ -31,9 +31,8 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         if (taskEndTime < scheduleEndTime) {
             Schedule schedule = roboTaxi.getSchedule();
             schedule.addTask(new AVStayTask(taskEndTime, scheduleEndTime, destination));
-        } else {
+        } else
             throw new IllegalArgumentException("taskEndTime " + taskEndTime + " > scheduleEndTime " + scheduleEndTime);
-        }
     }
 
     /** function is useful for debugging
@@ -53,9 +52,8 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
                 stringBuilder.append(isStarted ? ">" : " ");
                 stringBuilder.append(task.toString());
                 stringBuilder.append('\n');
-            } else {
+            } else
                 ++hiddenCount;
-            }
         }
         return stringBuilder.toString().trim();
     }

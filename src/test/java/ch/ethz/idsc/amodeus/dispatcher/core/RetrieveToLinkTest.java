@@ -117,7 +117,6 @@ public class RetrieveToLinkTest extends TestCase {
         assertTrue(RetrieveToLink.forShared(roboTaxi, 0.0).isPresent()); // case redirect course
         assertEquals(RetrieveToLink.forShared(roboTaxi, 0.0).get(), s.linkUp); // case pickup course
         StaticRoboTaxiCreator.cleanRTMenu(roboTaxi);
-
     }
 
     public void testPickupTask() {

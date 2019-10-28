@@ -32,10 +32,9 @@ public abstract class SharedPartitionedDispatcher extends SharedRebalancingDispa
             MatsimAmodeusDatabase db) {
         super(config, operatorConfig, travelTime, router, eventsManager, db);
 
-        if (virtualNetwork == null) {
+        if (virtualNetwork == null)
             throw new IllegalStateException(
                     "The VirtualNetwork is not set. Make sure you active DefaultVirtualNetworkModule in the ScenarioServer, OR provide a custom VirtualNetwork via injection.");
-        }
 
         this.virtualNetwork = Objects.requireNonNull(virtualNetwork);
     }
@@ -78,5 +77,4 @@ public abstract class SharedPartitionedDispatcher extends SharedRebalancingDispa
     protected Map<VirtualNode<Link>, List<RoboTaxi>> getVirtualNodeDriveWithCustomerRoboTaxis() {
         return virtualNetwork.binToVirtualNode(getRoboTaxiSubset(RoboTaxiStatus.DRIVEWITHCUSTOMER), RoboTaxi::getDivertableLocation);
     }
-
 }

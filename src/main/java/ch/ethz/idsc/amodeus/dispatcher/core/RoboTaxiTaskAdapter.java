@@ -19,24 +19,18 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
     public RoboTaxiTaskAdapter(Task task) {
         final AVTask avTask = (AVTask) task;
         switch (avTask.getAVTaskType()) {
-        case PICKUP: {
+        case PICKUP:
             handle((AVPickupTask) avTask);
             break;
-        }
-        case DROPOFF: {
+        case DROPOFF:
             handle((AVDropoffTask) avTask);
             break;
-        }
-        case DRIVE: {
+        case DRIVE:
             handle((AVDriveTask) avTask);
             break;
-        }
-        case STAY: {
+        case STAY:
             handle((AVStayTask) avTask);
-            break;
         }
-        }
-
     }
 
     @Override
