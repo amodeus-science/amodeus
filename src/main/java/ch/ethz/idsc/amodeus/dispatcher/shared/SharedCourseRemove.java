@@ -28,14 +28,6 @@ public enum SharedCourseRemove {
         return SharedMenu.of(courses);
     }
 
-    /** @return {@link List} of {@link SharedCourse}s identical to @param courses without
-     *         the course @param toRemove, if @param toRemove is not contained in @param courses
-     *         no modification is made. */
-    public static void specific(List<SharedCourse> courses, SharedCourse toRemove) {
-        if (courses.contains(toRemove))
-            courses.remove(toRemove);
-    }
-
     /** @return {@link SharedMenu} identical to @param sharedMenu without the courses
      *         supplied in @param removeCourses */
     public static SharedMenu several(SharedMenu sharedMenu, SharedCourse... removeCourses) {

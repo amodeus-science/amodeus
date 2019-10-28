@@ -57,11 +57,7 @@ public class SharedMenu {
 
     @Override
     public boolean equals(Object object) {
-        if (object instanceof SharedMenu) {
-            SharedMenu sharedMenu = (SharedMenu) object;
-            return roboTaxiMenu.equals(sharedMenu.roboTaxiMenu);
-        }
-        return false;
+        return object instanceof SharedMenu && ((SharedMenu) object).roboTaxiMenu.equals(roboTaxiMenu);
     }
 
     @Override
