@@ -40,7 +40,7 @@ public enum MatsimShapeFileVirtualNetworkCreator {
         @SuppressWarnings("unchecked")
         Collection<Link> elements = (Collection<Link>) network.getLinks().values();
         Tensor lbounds = NetworkBounds.lowerBoundsOf(network);
-        Tensor ubounds = NetworkBounds.upperBoundsOf(network);
+        Tensor ubounds = NetworkBounds.square(network);
 
         Map<Node, Set<Link>> uElements = NodeAdjacencyMap.of(network);
 
