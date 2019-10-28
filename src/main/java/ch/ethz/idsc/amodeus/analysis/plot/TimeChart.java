@@ -77,14 +77,12 @@ public enum TimeChart {
         timechart.getXYPlot().setDomainGridlinePaint(Color.LIGHT_GRAY);
 
         /** line thickness */
-        for (int k = 0; k < time.length(); ++k) {
+        for (int k = 0; k < time.length(); ++k)
             timechart.getXYPlot().getRenderer().setSeriesStroke(k, new BasicStroke(2.0f));
-        }
 
         /** color themes, adapt colors & style */
-        for (int i = 0; i < labels.length; ++i) {
+        for (int i = 0; i < labels.length; ++i)
             timechart.getXYPlot().getRenderer().setSeriesPaint(i, colorDataIndexed.getColor(i));
-        }
 
         LegendTitle legend = new LegendTitle(timechart.getXYPlot().getRenderer());
         legend.setPosition(RectangleEdge.TOP);

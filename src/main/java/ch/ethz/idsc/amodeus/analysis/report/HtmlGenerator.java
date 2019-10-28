@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.file.Files;
+import java.util.stream.Stream;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
@@ -86,8 +87,7 @@ public class HtmlGenerator {
     public void insertCSS(String... line) {
         head();
         style();
-        for (int i = 0; i < line.length; i++)
-            stringBuilder.append(line[i]);
+        Stream.of(line).forEachOrdered(stringBuilder::append);
         style();
         head();
     }

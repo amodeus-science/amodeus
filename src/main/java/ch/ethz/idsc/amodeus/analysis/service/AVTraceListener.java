@@ -3,6 +3,7 @@ package ch.ethz.idsc.amodeus.analysis.service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.events.ActivityEndEvent;
@@ -37,20 +38,19 @@ import org.matsim.vehicles.Vehicle;
     }
 
     private static String getVehicleType(String id) {
-        if (id.startsWith("av_")) {
+        if (id.startsWith("av_"))
             return "sav";
-        } else if (id.startsWith("prav_")) {
+        else if (id.startsWith("prav_"))
             return "prav";
-        } else {
+        else
             return "unknown";
-        }
     }
 
     @Override
     public void handleEvent(ActivityEndEvent endEvent) {
         AVTraceItem item = finished.remove(Id.createVehicleId(endEvent.getPersonId()));
 
-        if (item != null) {
+        if (Objects.nonNull(item)) {
             item.followingTaskDuration = endEvent.getTime() - item.arrivalTime;
             writer.write(item);
         }
@@ -69,7 +69,7 @@ import org.matsim.vehicles.Vehicle;
     public void handleEvent(ActivityStartEvent startEvent) {
         AVTraceItem item = active.remove(Id.createVehicleId(startEvent.getPersonId()));
 
-        if (item != null) {
+        if (Objects.nonNull(item)) {
             item.followingTaskType = startEvent.getActType();
             item.destinationLink = network.getLinks().get(startEvent.getLinkId());
             item.arrivalTime = startEvent.getTime();
@@ -97,15 +97,13 @@ import org.matsim.vehicles.Vehicle;
     public void handleEvent(LinkEnterEvent linkEvent) {
         AVTraceItem item = active.get(linkEvent.getVehicleId());
 
-        if (item != null) {
+        if (Objects.nonNull(item)) {
             item.distance += network.getLinks().get(linkEvent.getLinkId()).getLength();
             item.occupancy = occupancy.getOrDefault(linkEvent.getVehicleId(), 0);
         }
     }
 
     public void finish() {
-        for (AVTraceItem item : finished.values()) {
-            writer.write(item);
-        }
+        finished.values().forEach(writer::write);
     }
 }

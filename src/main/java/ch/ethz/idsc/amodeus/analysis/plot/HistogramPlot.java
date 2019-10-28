@@ -86,7 +86,7 @@ public enum HistogramPlot {
 
         /** compute JFreeChart */
         JFreeChart chart = ChartFactory.createBarChart(diagramTitle, xAxisLabel, yAxisLabel, dataset, //
-                PlotOrientation.VERTICAL, labels.length > 0 ? true : false, false, false);
+                PlotOrientation.VERTICAL, labels.length > 0, false, false);
         chart.getCategoryPlot().getDomainAxis().setLowerMargin(0.0);
         chart.getCategoryPlot().getDomainAxis().setUpperMargin(0.0);
         chart.getCategoryPlot().getDomainAxis().setCategoryMargin(0.0);

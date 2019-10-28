@@ -55,15 +55,12 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
         /** AV Request Sharing Rate */
         for (List<RequestContainer> requestsInVehicle : map.values()) {
             int numberOtherPassengers = requestsInVehicle.size() - 1;
-            for (RequestContainer reqContainer : requestsInVehicle) {
+            for (RequestContainer reqContainer : requestsInVehicle)
                 if (sharedOthersMap.containsKey(reqContainer.requestIndex)) {
-                    if (sharedOthersMap.get(reqContainer.requestIndex) < numberOtherPassengers) {
+                    if (sharedOthersMap.get(reqContainer.requestIndex) < numberOtherPassengers)
                         sharedOthersMap.put(reqContainer.requestIndex, numberOtherPassengers);
-                    }
-                } else {
+                } else
                     sharedOthersMap.put(reqContainer.requestIndex, numberOtherPassengers);
-                }
-            }
         }
     }
 
@@ -75,9 +72,11 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
         passengerDistribution = //
                 PadRight.zeros(passengerDistribution.length(), maxLengthNumberPassengers.number().intValue())//
                         .apply(passengerDistribution);
-        for (Integer index : sharedOthersMap.keySet()) {
-            sharedOtherPassengersPerRequest.append(RealScalar.of(sharedOthersMap.get(index)));
-        }
+        // // for (Integer index : sharedOthersMap.keySet())
+        // //     sharedOtherPassengersPerRequest.append(RealScalar.of(sharedOthersMap.get(index)));
+        // for (Integer others : sharedOthersMap.values())
+        //     sharedOtherPassengersPerRequest.append(RealScalar.of(others));
+        sharedOthersMap.values().stream().map(RealScalar::of).forEach(sharedOtherPassengersPerRequest::append);
     }
 
     public Tensor getPassengerDistribution() {

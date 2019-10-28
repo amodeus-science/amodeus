@@ -126,9 +126,8 @@ public class Analysis {
         }
         System.out.println("Outputdirectory chosen in Analysis: " + outputDirectory.getAbsolutePath());
 
-        if (Objects.isNull(network)) {
+        if (Objects.isNull(network))
             network = NetworkLoader.fromConfigFile(configFile);
-        }
 
         // load colorScheme & theme
         colorDataIndexed = ColorDataAmodeus.indexed(scenOptions.getColorScheme());
@@ -243,7 +242,7 @@ public class Analysis {
             Timing timing = Timing.started();
             for (int index = 0; index < size; ++index) {
                 SimulationObject simulationObject = storageSupplier.getSimulationObject(index);
-                analysisElements.stream().forEach(analysisElement -> analysisElement.register(simulationObject));
+                analysisElements.forEach(analysisElement -> analysisElement.register(simulationObject));
                 if (simulationObject.now % 10_000 == 0)
                     System.out.println(String.format("%6.2f now=%d", timing.seconds(), simulationObject.now));
             }

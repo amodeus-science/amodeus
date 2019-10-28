@@ -10,7 +10,6 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 public class ConfigurableBipartiteMatcher extends BipartiteMatcherInternal {
@@ -34,17 +33,19 @@ public class ConfigurableBipartiteMatcher extends BipartiteMatcherInternal {
     public ConfigurableBipartiteMatcher(Network network, GlobalBipartiteCost cost, SafeConfig safeConfig) {
         super(network);
         String matchingAlg = safeConfig.getString("matchingAlgorithm", "HUNGARIAN");
-        if (matchingAlg.equals("HUNGARIAN")) {
+        switch (matchingAlg) {
+        case "HUNGARIAN":
             hungarian = true;
             globalBipartiteMatcher = new GlobalBipartiteMatching(cost);
-        } else if (matchingAlg.equals("ILP")) {
+            break;
+        case "ILP":
             hungarian = false;
             globalBipartiteMatcher = new GlobalBipartiteMatchingILP(cost, safeConfig);
-        } else {
-            System.err.println("An invalid option for the matching algorithm was chosen.");
-            hungarian = null;
-            globalBipartiteMatcher = null;
-            GlobalAssert.that(false);
+            break;
+        default:
+            // hungarian = null;
+            // globalBipartiteMatcher = null;
+            throw new RuntimeException("An invalid option for the matching algorithm was chosen. " + matchingAlg);
         }
     }
 
@@ -67,8 +68,7 @@ public class ConfigurableBipartiteMatcher extends BipartiteMatcherInternal {
         Map<RoboTaxi, AVRequest> gbpMatch = globalBipartiteMatcher.match(roboTaxis, requests);
         /** prevent cycling an assignment is only updated if the new distance is smaller than the
          * old distance */
-        Map<RoboTaxi, AVRequest> gbpMatchCleaned = CyclicSolutionPreventer.apply(gbpMatch, universalDispatcher, accDstFctn);
-        return gbpMatchCleaned;
+        return CyclicSolutionPreventer.apply(gbpMatch, universalDispatcher, accDstFctn);
     }
 
     private Map<RoboTaxi, AVRequest> integerLinearProgramMatch(UniversalDispatcher universalDispatcher, //
@@ -77,10 +77,9 @@ public class ConfigurableBipartiteMatcher extends BipartiteMatcherInternal {
             DistanceFunction distanceFunction, Network network) {
         /** reduction of problem size with kd-tree, helps to downsize problems where n << m or m>> n
          * for n number of available taxis and m number of available requests */
-        Map<RoboTaxi, AVRequest> gbpMatch = globalBipartiteMatcher.match(roboTaxis, requests);
+        return globalBipartiteMatcher.match(roboTaxis, requests);
         /** prevent cycling an assignment is only updated if the new distance is smaller than the
          * old distance */
-        return gbpMatch;
     }
 
 }

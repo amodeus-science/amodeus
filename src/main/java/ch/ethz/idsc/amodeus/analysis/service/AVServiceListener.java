@@ -4,6 +4,7 @@ package ch.ethz.idsc.amodeus.analysis.service;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.matsim.api.core.v01.Id;
@@ -61,12 +62,11 @@ import ch.ethz.matsim.av.schedule.AVTransitEventHandler;
     public void handleEvent(PersonEntersVehicleEvent enterEvent) {
         AVServiceItem item = active.get(enterEvent.getPersonId());
 
-        if (item != null) {
+        if (Objects.nonNull(item)) {
             item.waitingTime = enterEvent.getTime() - item.departureTime;
 
-            if (!passengers.containsKey(enterEvent.getVehicleId())) {
+            if (!passengers.containsKey(enterEvent.getVehicleId()))
                 passengers.put(enterEvent.getVehicleId(), new HashSet<>());
-            }
 
             Set<AVServiceItem> vehiclePassengers = passengers.get(enterEvent.getVehicleId());
             vehiclePassengers.add(item);
@@ -77,7 +77,7 @@ import ch.ethz.matsim.av.schedule.AVTransitEventHandler;
     public void handleEvent(PersonLeavesVehicleEvent leaveEvent) {
         AVServiceItem item = active.get(leaveEvent.getPersonId());
 
-        if (item != null) {
+        if (Objects.nonNull(item)) {
             Set<AVServiceItem> vehiclePassengers = passengers.getOrDefault(leaveEvent.getVehicleId(), new HashSet<>());
             vehiclePassengers.remove(item);
         }
@@ -87,7 +87,7 @@ import ch.ethz.matsim.av.schedule.AVTransitEventHandler;
     public void handleEvent(AVTransitEvent transitEvent) {
         AVServiceItem item = active.get(transitEvent.getPersonId());
 
-        if (item != null) {
+        if (Objects.nonNull(item)) {
             item.chargedDistance = transitEvent.getDistance();
             item.operatorId = transitEvent.getOperatorId();
         }
@@ -97,7 +97,7 @@ import ch.ethz.matsim.av.schedule.AVTransitEventHandler;
     public void handleEvent(LinkEnterEvent linkEvent) {
         Set<AVServiceItem> items = passengers.get(linkEvent.getVehicleId());
 
-        if (items != null) {
+        if (Objects.nonNull(items)) {
             double linkLength = network.getLinks().get(linkEvent.getLinkId()).getLength();
             items.forEach(item -> item.distance += linkLength);
         }
@@ -107,7 +107,7 @@ import ch.ethz.matsim.av.schedule.AVTransitEventHandler;
     public void handleEvent(PersonArrivalEvent arrivalEvent) {
         AVServiceItem item = active.remove(arrivalEvent.getPersonId());
 
-        if (item != null) {
+        if (Objects.nonNull(item)) {
             item.destinationLink = network.getLinks().get(arrivalEvent.getLinkId());
             item.inVehicleTime = arrivalEvent.getTime() - item.departureTime - item.waitingTime;
             writer.write(item);
