@@ -26,9 +26,8 @@ import ch.ethz.idsc.tensor.img.ColorDataIndexed;
             File copyToDir = new File(relativeDirectory, virtualNetworkFolder.getName());
             copyToDir.delete();
             copyToDir.mkdirs();
-            for (File file : new MultiFileReader(virtualNetworkFolder).getFolderFiles()) {
+            for (File file : new MultiFileReader(virtualNetworkFolder).getFolderFiles())
                 Files.copy(file, new File(copyToDir, file.getName()));
-            }
         } catch (IOException exception) {
             System.err.println("The virtual network file was not copied to the data directory...");
             System.err.println("Some I/O error, check class ch.ethz.idsc.amodeus.analysis.VirtualNetworkExport");

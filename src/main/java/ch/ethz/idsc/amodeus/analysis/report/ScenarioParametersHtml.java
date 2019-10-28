@@ -48,6 +48,5 @@ public enum ScenarioParametersHtml implements HtmlReportElement {
         Map<String, HtmlBodyElement> bodyElements = new HashMap<>();
         bodyElements.put(BodyElementKeys.SIMULATIONINFORMATION, bodyElement);
         return bodyElements;
-
     }
 }

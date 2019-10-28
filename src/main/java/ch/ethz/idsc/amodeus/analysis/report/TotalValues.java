@@ -8,7 +8,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 
@@ -31,8 +30,7 @@ public class TotalValues implements AnalysisReport {
     }
 
     private void add(Map<TotalValueIdentifier, String> values) {
-        for (Entry<TotalValueIdentifier, String> value : values.entrySet())
-            properties.setProperty(value.getKey().getIdentifier(), value.getValue());
+        values.forEach((key, value) -> properties.setProperty(key.getIdentifier(), value));
     }
 
     @Override

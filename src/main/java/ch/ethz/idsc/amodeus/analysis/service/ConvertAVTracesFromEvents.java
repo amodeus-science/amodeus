@@ -12,6 +12,7 @@ import ch.ethz.matsim.av.schedule.AVTransitEventMapper;
 
 /* package */ enum ConvertAVTracesFromEvents {
     ;
+
     public static void write(Network network, String outputPath, String eventsPath) {
         AVTraceWriter writer = new AVTraceWriter(new File(outputPath));
         AVTraceListener listener = new AVTraceListener(network, writer);
