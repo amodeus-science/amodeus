@@ -37,7 +37,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
             // first get feasible request from last step
             if (!feasibleOpenRequestFromLastStepMap.containsKey(roboTaxi)) {
                 feasibleOpenRequestFromLastStepMap.put(roboTaxi, new HashSet<>());
-                System.out.println("RTV Supplmentary map generated for a robotaxi");
+                System.out.println("RTV Supplementary map generated for a robotaxi");
             }
 
             candidateRequests.addAll(feasibleOpenRequestFromLastStepMap.get(roboTaxi));
@@ -50,14 +50,13 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
             // change the maxWaitTime of assigned request of this roboTaxi to the original value (there is uncertainty on the road)
             // IMPORTANT!!! deadlines need to be changed back to the old value after we finish dealing with this roboTaxi
-            for (TripWithVehicle tripWithVehicle : lastAssignment) {
+            for (TripWithVehicle tripWithVehicle : lastAssignment)
                 if (tripWithVehicle.getRoboTaxi() == roboTaxi) {
                     for (AVRequest avRequest : tripWithVehicle.getTrip())
                         if (requestKeyInfoMap.containsKey(avRequest))
                             requestKeyInfoMap.get(avRequest).addTrafficAllowance(trafficAllowance);
                     break;
                 }
-            }
 
             // size 1 trips:
             List<Set<AVRequest>> listOfsize1Trip = new ArrayList<>(); // this is useful for generating possible combination for size 2 trip
@@ -78,9 +77,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
                         // (thisTrip=additionalRequest in size 1 case)
                         // requestDelayMap.put(additionalRequest, totalDelayForThisTrip);
                         TripWithVehicle thisTripWithVehicle = new TripWithVehicle(roboTaxi, totalDelayForThisTrip, additionalRequest, route);
-                        if (thisTripWithVehicle.getRoute().isEmpty() && totalDelayForThisTrip != 0) {
+                        if (thisTripWithVehicle.getRoute().isEmpty() && totalDelayForThisTrip != 0)
                             System.err.println("something is wrong");
-                        }
                         grossListOfRTVEdges.add(thisTripWithVehicle);
                         listOfsize1Trip.add(additionalRequest); // this is useful for generating possible combination for size 2 trip
                         feasibleOpenRequestFromLastStepMap.get(roboTaxi).add(avRequest);
@@ -90,13 +88,13 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
             // size 2 trips:
             List<Set<AVRequest>> listOfSize2Trips = new ArrayList<>();
-            for (int i = 0; i < listOfsize1Trip.size(); i++) {
+            for (int i = 0; i < listOfsize1Trip.size(); i++)
                 for (int j = i + 1; j < listOfsize1Trip.size(); j++) {
                     Set<AVRequest> thisTrip = new HashSet<>();
                     thisTrip.add(listOfsize1Trip.get(i).iterator().next());
                     thisTrip.add(listOfsize1Trip.get(j).iterator().next());
                     // check if this trip is in RV graph
-                    if (rvEdges.contains(thisTrip) == true) {
+                    if (rvEdges.contains(thisTrip)) {
                         List<StopInRoute> route = RouteGenerator.of(roboTaxi, thisTrip, now, //
                                 requestKeyInfoMap, capacityOfTaxi, ttc, pickupDurationPerStop, dropoffDurationPerStop);
                         double totalDelayForThisTrip = TotalDelayCalculator.of(route, requestKeyInfoMap, ttc);
@@ -107,7 +105,6 @@ import ch.ethz.matsim.av.passenger.AVRequest;
                         }
                     }
                 }
-            }
 
             // size 3 to maximum trip length
             List<Set<AVRequest>> listOfTripsFromLastLoop = listOfSize2Trips;
@@ -159,12 +156,10 @@ import ch.ethz.matsim.av.passenger.AVRequest;
                 }
         }
         return grossListOfRTVEdges;
-
     }
 
     static boolean isTripValid(double totalDelayForThisTrip) {
         // return totalDelayForThisTrip !=null;
         return totalDelayForThisTrip < MAX_RANGE;
     }
-
 }

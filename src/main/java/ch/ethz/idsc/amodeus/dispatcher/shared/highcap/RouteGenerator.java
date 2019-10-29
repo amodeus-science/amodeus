@@ -61,15 +61,13 @@ import ch.ethz.matsim.av.passenger.AVRequest;
                     indexOfStop = i;
                     break;
                 }
-
             }
             NextPossibleStop chosenNextStop = nextPossibleStopsList.get(indexOfStop);
             // add this stop to the output list
             // determine sharedMealType
             SharedMealType stopType = SharedMealType.PICKUP;
-            if (chosenNextStop.getOnboardStatus()) {
+            if (chosenNextStop.getOnboardStatus())
                 stopType = SharedMealType.DROPOFF; // if request is on board, then it will be drop off task
-            }
             // determine time (expected arrival time at that stop)
             double arrivalTime = nowInThisFunction + ttc.of(currentLink, chosenNextStop.getLink(), //
                     nowInThisFunction, true);
@@ -77,9 +75,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
             // if arrival time is later than deadline, return null immediately (to save time)
             boolean stopIsValid = //
                     stopIsValid(chosenNextStop, arrivalTime, requestKeyInfoMap, ttc);
-            if (!stopIsValid) {
+            if (!stopIsValid)
                 return null;
-            }
 
             // modify number of passenger in vehicle
             if (stopType == SharedMealType.PICKUP) {
@@ -91,9 +88,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
                 nowInThisFunction = arrivalTime + dropoffDurationPerStop;
             }
             // check if vehicle is overloaded (if overloaded, return null immediately)
-            if (numberOfPassengerOnboard > capacityOfTaxi) {
+            if (numberOfPassengerOnboard > capacityOfTaxi)
                 return null; // taxi is overloaded. This route is not feasible
-            }
 
             // If it reached here, this stop is valid. Write it down in the list
             StopInRoute nextStopInRoute = new StopInRoute(arrivalTime, chosenNextStop.getLink(), //
@@ -106,7 +102,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
             // modify the nextPossibleStopSet
             nextPossibleStopsList.remove(indexOfStop); // need to use list (remove item from set somehow doesn't work well here)
-            if (chosenNextStop.getOnboardStatus() == false) {
+            if (!chosenNextStop.getOnboardStatus()) {
                 chosenNextStop.changeOnboardStatus(true);
                 nextPossibleStopsList.add(chosenNextStop);
             }
@@ -118,14 +114,10 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     static boolean stopIsValid(NextPossibleStop chosenStop, Double arrivalTime, //
             Map<AVRequest, RequestKeyInfo> requestKeyInfoMap, //
             TravelTimeComputation ttc) {
-        AVRequest avRequest = chosenStop.getAVRequest();
-        boolean onboardOrNot = chosenStop.getOnboardStatus();
-        final double deadline;
-        if (onboardOrNot) {
-            deadline = requestKeyInfoMap.get(avRequest).getDeadlineDropOff();
-        } else {
-            deadline = requestKeyInfoMap.get(avRequest).getDeadlinePickUp();
-        }
+        RequestKeyInfo requestKeyInfo = requestKeyInfoMap.get(chosenStop.getAVRequest());
+        final double deadline = chosenStop.getOnboardStatus() //
+                ? requestKeyInfo.getDeadlineDropOff() //
+                : requestKeyInfo.getDeadlinePickUp();
         // check if deadline is met
         return arrivalTime <= deadline;
     }

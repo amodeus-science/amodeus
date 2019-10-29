@@ -17,7 +17,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
             List<AVRequest> listOfUnassignedRequest, List<RoboTaxi> idlingRoboTaxis, //
             double now, TravelTimeComputation ttc) {
         List<RebalanceTripWithVehicle> listOfAllRebalanceTripWithVehicle = new ArrayList<>();
-        for (RoboTaxi idlingRoboTaxi : idlingRoboTaxis) {
+        for (RoboTaxi idlingRoboTaxi : idlingRoboTaxis)
             for (AVRequest unassignedRequest : listOfUnassignedRequest) {
                 Link taxiLink = idlingRoboTaxi.getDivertableLocation();
                 Link requestLink = unassignedRequest.getFromLink();
@@ -25,9 +25,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
                 RebalanceTripWithVehicle thisRebalanceTrip = new RebalanceTripWithVehicle(idlingRoboTaxi, timeToTravel, unassignedRequest);
                 listOfAllRebalanceTripWithVehicle.add(thisRebalanceTrip);
             }
-        }
 
         return listOfAllRebalanceTripWithVehicle;
-
     }
 }

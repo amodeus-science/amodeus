@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import ch.ethz.matsim.av.passenger.AVRequest;
 
@@ -16,25 +17,15 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param thisTrip
      * @return */
     public static boolean of(List<Set<AVRequest>> listOfTripsFromLastLoop, Set<AVRequest> thisTrip) {
+        List<AVRequest> listOfSingleRequest = new ArrayList<>(thisTrip);
 
         // generate all sub-trips
-        List<Set<AVRequest>> listOfSubtrips = new ArrayList<>();
-        List<AVRequest> listOfSingleRequest = new ArrayList<>();
-        listOfSingleRequest.addAll(thisTrip);
+        List<Set<AVRequest>> listOfSubtrips = listOfSingleRequest.stream().map(avRequest -> {
+            HashSet<AVRequest> set = new HashSet<>(listOfSingleRequest);
+            set.remove(avRequest);
+            return set;
+        }).collect(Collectors.toList());
 
-        for (int i = 0; i < listOfSingleRequest.size(); i++) {
-            Set<AVRequest> subtrip = new HashSet<>();
-            subtrip.addAll(listOfSingleRequest.subList(0, i));
-            subtrip.addAll(listOfSingleRequest.subList(i + 1, listOfSingleRequest.size()));
-            listOfSubtrips.add(subtrip);
-        }
-
-        for (Set<AVRequest> thisSubTrip : listOfSubtrips) {
-            if (!listOfTripsFromLastLoop.contains(thisSubTrip)) {
-                return false;
-            }
-        }
-
-        return true;
+        return listOfTripsFromLastLoop.containsAll(listOfSubtrips);
     }
 }

@@ -46,7 +46,7 @@ import ch.ethz.matsim.av.router.AVRouter;
  * 
  * at each time dispatcher is called, for each vehicle, all possible trips (adding additional open request to the vehicle) is explored
  * and then ILP is called to choose the optimal assignment. */
-// TODO extend from HighCapacityDispatcher
+// TODO extend from HighCapacityDispatcher see PARKING EXTENSIONs
 /* package */ class ParkHighCapacityDispatcher extends SharedRebalancingDispatcher {
     /** parameters */
 
@@ -131,7 +131,6 @@ import ch.ethz.matsim.av.router.AVRouter;
 
     @Override
     protected void redispatch(double now) {
-
         final long round_now = Math.round(now);
 
         /** main part of the dispatcher */
@@ -144,29 +143,23 @@ import ch.ethz.matsim.av.router.AVRouter;
             overduedRequests = RequestTracker.removeOverduedRequest(requestPool, requestKeyInfoMap, now, requestMatchedLastStep);
             // put new open requests in requestKeyInfoMap (if size limit is not reached)
             for (AVRequest avRequest : getAVRequests()) {
-                if (requestPool.size() < sizeLimit && !overduedRequests.contains(avRequest)) {
+                if (requestPool.size() < sizeLimit && !overduedRequests.contains(avRequest))
                     requestPool.add(avRequest);
-                }
-                if (!requestKeyInfoMap.keySet().contains(avRequest)) {
+                if (!requestKeyInfoMap.keySet().contains(avRequest))
                     requestKeyInfoMap.put(avRequest, new RequestKeyInfo(avRequest, maxWaitTime, MAX_DELAY, ttc));
-                }
             }
             // modify the request key info (submission time and pickup deadline)
-            for (AVRequest avRequest : requestKeyInfoMap.keySet()) {
-                requestKeyInfoMap.get(avRequest).modifySubmissionTime(now, maxWaitTime, avRequest, overduedRequests); // see notes inside
-                requestKeyInfoMap.get(avRequest).modifyDeadlinePickUp(lastAssignment, avRequest, maxWaitTime); // according to paper
-            }
+            requestKeyInfoMap.forEach(((avRequest, requestKeyInfo) -> {
+                requestKeyInfo.modifySubmissionTime(now, maxWaitTime, avRequest, overduedRequests); // see notes inside
+                requestKeyInfo.modifyDeadlinePickUp(lastAssignment, avRequest, maxWaitTime); // according to paper
+            }));
 
             Set<AVRequest> newAddedValidRequests = RequestTracker.getNewAddedValidRequests(requestPool, lastRequestPool); // write down new added requests
             Set<AVRequest> removedRequests = RequestTracker.getRemovedRequests(requestPool, lastRequestPool); // write down removed request
             Set<AVRequest> remainedRequests = RequestTracker.getRemainedRequests(requestPool, lastRequestPool); // write down remained request
 
             // remove the data from cache to release memory
-            for (AVRequest avRequest : removedRequests) {
-                if (!overduedRequests.contains(avRequest)) {
-                    ttc.removeEntry(avRequest.getFromLink());
-                }
-            }
+            removedRequests.stream().filter(avRequest -> !overduedRequests.contains(avRequest)).map(AVRequest::getFromLink).forEach(ttc::removeEntry);
 
             // RV diagram construction
             Set<Set<AVRequest>> rvEdges = rvGenerator.generateRVGraph(newAddedValidRequests, removedRequests, remainedRequests, //
@@ -181,20 +174,15 @@ import ch.ethz.matsim.av.router.AVRouter;
             // start
             List<TripWithVehicle> sharedTaxiAssignmentPlan = new ArrayList<>();
             if (!grossListOfRTVEdges.isEmpty()) {
-                List<RoboTaxi> listOfRoboTaxiWithValidTrip = new ArrayList<>(); // we need to find the number of taxi in ILP
-                for (TripWithVehicle thisTrip : grossListOfRTVEdges) {
-                    if (listOfRoboTaxiWithValidTrip.contains(thisTrip.getRoboTaxi()) == false) {
-                        listOfRoboTaxiWithValidTrip.add(thisTrip.getRoboTaxi());
-                    }
-                }
+                // we need to find the number of taxi in ILP
+                List<RoboTaxi> listOfRoboTaxiWithValidTrip = grossListOfRTVEdges.stream().map(TripWithVehicle::getRoboTaxi).distinct().collect(Collectors.toList());
+
                 List<AVRequest> validOpenRequestList = new ArrayList<>(requestPool);
                 List<Double> iLPResultList = RunILP.of(grossListOfRTVEdges, validOpenRequestList, listOfRoboTaxiWithValidTrip, //
                         costOfIgnoredReuqestNormal, costOfIgnoredReuqestHigh, requestMatchedLastStep);
-                for (int i = 0; i < grossListOfRTVEdges.size(); i++) {
-                    if (iLPResultList.get(i) == 1) {
+                for (int i = 0; i < grossListOfRTVEdges.size(); i++)
+                    if (iLPResultList.get(i) == 1)
                         sharedTaxiAssignmentPlan.add(grossListOfRTVEdges.get(i));
-                    }
-                }
             }
             // end
 
@@ -210,23 +198,18 @@ import ch.ethz.matsim.av.router.AVRouter;
                 List<SharedCourse> courseForThisTaxi = routeToAssign.stream() //
                         .map(StopInRoute::getSharedCourse) //
                         .collect(Collectors.toList());
-                for (AVRequest avRequest : tripWithVehicle.getTrip()) {
+                for (AVRequest avRequest : tripWithVehicle.getTrip())
                     addSharedRoboTaxiPickup(roboTaxiToAssign, avRequest);
-                }
                 // create set of requests in the route
                 Set<AVRequest> setOfAVRequestInRoute = routeToAssign.stream() //
                         .map(StopInRoute::getavRequest) //
                         .collect(Collectors.toSet());
-                for (AVRequest avRequest : SharedCourseUtil.getUniqueAVRequests(roboTaxiToAssign.getUnmodifiableViewOfCourses())) {
-                    if (!setOfAVRequestInRoute.contains(avRequest)) {
+                for (AVRequest avRequest : SharedCourseUtil.getUniqueAVRequests(roboTaxiToAssign.getUnmodifiableViewOfCourses()))
+                    if (!setOfAVRequestInRoute.contains(avRequest))
                         abortAvRequest(avRequest);
-                    }
-                }
 
-                if (checkingUpdateMenuOrNot.updateMenuOrNot(roboTaxiToAssign, setOfAVRequestInRoute)) {
+                if (checkingUpdateMenuOrNot.updateMenuOrNot(roboTaxiToAssign, setOfAVRequestInRoute))
                     roboTaxiToAssign.updateMenu(courseForThisTaxi);
-                }
-
             }
 
             lastRequestPool.clear();
@@ -243,16 +226,12 @@ import ch.ethz.matsim.av.router.AVRouter;
         if (round_now % rebalancePeriod == 2) { // in order to avoid dispatch and re-balance happen at same time
             // check if there are both idling vehicles and unassigned requests at same time
             List<AVRequest> listOfUnassignedRequest = getUnassignedAVRequests();
-            List<RoboTaxi> listOfIdlingTaxi = new ArrayList<>();
+            List<RoboTaxi> listOfIdlingTaxi = new ArrayList<>(getDivertableUnassignedRoboTaxis());
 
             // for (RoboTaxi roboTaxi : getRoboTaxis()) {
             // System.out.println("taxi id: " + roboTaxi.getId().toString() + ", link id:" + roboTaxi.getDivertableLocation().getId().toString() + //
             // "status: " + roboTaxi.getStatus() + ", Number of passenger: " + RoboTaxiUtils.getNumberOnBoardRequests(roboTaxi));
             // }
-
-            for (RoboTaxi roboTaxi : getDivertableUnassignedRoboTaxis()) {
-                listOfIdlingTaxi.add(roboTaxi);
-            }
 
             if (listOfIdlingTaxi.size() != 0 && listOfUnassignedRequest.size() != 0) {
                 // re-balance
@@ -263,15 +242,10 @@ import ch.ethz.matsim.av.router.AVRouter;
                 List<RebalanceTripWithVehicle> rebalancePlan = RebalancePlanGenerator.of(listOfAllRebalanceTripWithVehicle);
 
                 // assign Taxi to re-balance (first stop the taxi that is not in the new re-balance plan)
-                Set<RoboTaxi> roboTaxisInNewRebalancePlan = new HashSet<>();
-                for (RebalanceTripWithVehicle chosenTrip : rebalancePlan) {
-                    roboTaxisInNewRebalancePlan.add(chosenTrip.getRoboTaxi());
-                }
-                for (RoboTaxi roboTaxi : listOfIdlingTaxi) {
-                    if (!roboTaxisInNewRebalancePlan.contains(roboTaxi)) {
+                Set<RoboTaxi> roboTaxisInNewRebalancePlan = rebalancePlan.stream().map(RebalanceTripWithVehicle::getRoboTaxi).collect(Collectors.toSet());
+                for (RoboTaxi roboTaxi : listOfIdlingTaxi)
+                    if (!roboTaxisInNewRebalancePlan.contains(roboTaxi))
                         setRoboTaxiRebalance(roboTaxi, roboTaxi.getDivertableLocation());
-                    }
-                }
                 for (RebalanceTripWithVehicle chosenRebalanceTask : rebalancePlan) {
                     RoboTaxi rebalanceRoboTaxi = chosenRebalanceTask.getRoboTaxi();
                     Link destinationOfRebalance = chosenRebalanceTask.getAvRequest().getFromLink();
@@ -281,8 +255,8 @@ import ch.ethz.matsim.av.router.AVRouter;
         }
 
         /** PARKING EXTENSION */
-        parkingStrategy.keepFree(getRoboTaxiSubset(RoboTaxiStatus.STAY), getRoboTaxiSubset(RoboTaxiStatus.REBALANCEDRIVE), round_now)
-                .forEach((rt, l) -> setRoboTaxiRebalance(rt, l));
+        parkingStrategy.keepFree(getRoboTaxiSubset(RoboTaxiStatus.STAY), getRoboTaxiSubset(RoboTaxiStatus.REBALANCEDRIVE), round_now) //
+                .forEach(this::setRoboTaxiRebalance);
         /** PARKING EXTENSION */
 
     }
