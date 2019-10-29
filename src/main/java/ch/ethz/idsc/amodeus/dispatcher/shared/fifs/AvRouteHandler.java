@@ -22,10 +22,9 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
      * @param sharedAvRoute */
     void add(RoboTaxi roboTaxi, SharedAvRoute sharedAvRoute) {
         double endTime = sharedAvRoute.getEndTime();
-        if (!routes.containsKey(endTime))
-            routes.put(endTime, new HashMap<>());
-        if (!routes.get(endTime).containsKey(roboTaxi))
-            routes.get(endTime).put(roboTaxi, new HashSet<>());
+
+        routes.putIfAbsent(endTime, new HashMap<>());
+        routes.get(endTime).putIfAbsent(roboTaxi, new HashSet<>());
         routes.get(endTime).get(roboTaxi).add(sharedAvRoute);
     }
 

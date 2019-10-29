@@ -15,11 +15,9 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
     public boolean updateMenuOrNot(RoboTaxi roboTaxi, Set<AVRequest> setOfRequestsInRoute) {
         // prevent looping
-        if (!secondLastSetOfRequestInRoute.containsKey(roboTaxi))
-            secondLastSetOfRequestInRoute.put(roboTaxi, new HashSet<>());
+        secondLastSetOfRequestInRoute.putIfAbsent(roboTaxi, new HashSet<>());
 
-        if (!lastSetOfRequestsInRoute.containsKey(roboTaxi))
-            lastSetOfRequestsInRoute.put(roboTaxi, new HashSet<>());
+        lastSetOfRequestsInRoute.putIfAbsent(roboTaxi, new HashSet<>());
 
         if (secondLastSetOfRequestInRoute.get(roboTaxi) == setOfRequestsInRoute) {
             secondLastSetOfRequestInRoute.put(roboTaxi, lastSetOfRequestsInRoute.get(roboTaxi));

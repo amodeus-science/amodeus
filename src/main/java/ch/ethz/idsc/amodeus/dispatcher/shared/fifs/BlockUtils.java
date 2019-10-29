@@ -2,6 +2,7 @@
 package ch.ethz.idsc.amodeus.dispatcher.shared.fifs;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.Set;
 
@@ -41,24 +42,12 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
     public static Block getBlockWithHighestAbsolutBalance(Collection<Block> blocks) {
         GlobalAssert.that(!blocks.isEmpty());
-        Block highestAbsBalanceBlock = null;
-        for (Block block : blocks)
-            if (highestAbsBalanceBlock == null)
-                highestAbsBalanceBlock = block;
-            else if (Math.abs(highestAbsBalanceBlock.getBlockBalance()) < Math.abs(block.getBlockBalance()))
-                highestAbsBalanceBlock = block;
-        return highestAbsBalanceBlock;
+        return blocks.stream().max(Comparator.comparingDouble(block -> Math.abs(block.getBlockBalance()))).get();
     }
 
     public static Block getBlockwithLowestBalance(Set<Block> blocks) {
         GlobalAssert.that(!blocks.isEmpty());
-        Block lowestBalanceBlock = null;
-        for (Block block : blocks)
-            if (lowestBalanceBlock == null)
-                lowestBalanceBlock = block;
-            else if (lowestBalanceBlock.getBlockBalance() > block.getBlockBalance())
-                lowestBalanceBlock = block;
-        return lowestBalanceBlock;
+        return blocks.stream().min(Comparator.comparingDouble(block -> Math.abs(block.getBlockBalance()))).get();
     }
 
     public static boolean lowerBalancesPresentInNeighbourhood(Block block) {
@@ -67,9 +56,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
     public static boolean higherBalancesPresentInNeighbourhood(Block block) {
         Optional<Block> adjacentBlock = BlockUtils.getBlockwithHighestBalanceAndAvailableRobotaxi(block.getAdjacentBlocks());
-        if (adjacentBlock.isPresent())
-            return balance1HigherThanBalance2(adjacentBlock.get(), block);
-        return false;
+        return adjacentBlock.map(ab -> balance1HigherThanBalance2(ab, block)).orElse(false);
     }
 
     public static boolean balance1HigherThanBalance2(Block block1, Block block2) {

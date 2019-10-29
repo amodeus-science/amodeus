@@ -34,10 +34,9 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         for (RoboTaxi roboTaxi : freeRoboTaxis)
             for (Block block : blocks) {
                 double travelTime = timeDb.travelTime(roboTaxi.getDivertableLocation(), block.getCenterLink(), now).number().doubleValue();
-                if (!travelTimesSorted.containsKey(travelTime))
-                    travelTimesSorted.put(travelTime, new HashMap<>());
-                if (!travelTimesSorted.get(travelTime).containsKey(block))
-                    travelTimesSorted.get(travelTime).put(block, new HashSet<>());
+
+                travelTimesSorted.putIfAbsent(travelTime, new HashMap<>());
+                travelTimesSorted.get(travelTime).putIfAbsent(block, new HashSet<>());
                 travelTimesSorted.get(travelTime).get(block).add(roboTaxi);
                 blocktravelTimes.get(block).add(travelTime);
                 allTravelTimesForRoboTaxis.get(roboTaxi).put(block, travelTime);
