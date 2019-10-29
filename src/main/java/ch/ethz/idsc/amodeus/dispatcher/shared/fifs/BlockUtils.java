@@ -30,63 +30,49 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     public static Optional<Block> getBlockwithHighestBalanceAndAvailableRobotaxi(Set<Block> blocks) {
         GlobalAssert.that(!blocks.isEmpty());
         Block highestBalanceBlock = null;
-        for (Block block : blocks) {
-            if (block.hasAvailableRobotaxisToRebalance()) {
-                if (highestBalanceBlock == null) {
+        for (Block block : blocks)
+            if (block.hasAvailableRobotaxisToRebalance())
+                if (highestBalanceBlock == null)
                     highestBalanceBlock = block;
-                } else {
-                    if (highestBalanceBlock.getBlockBalance() < block.getBlockBalance()) {
-                        highestBalanceBlock = block;
-                    }
-                }
-            }
-        }
+                else if (highestBalanceBlock.getBlockBalance() < block.getBlockBalance())
+                    highestBalanceBlock = block;
         return Optional.ofNullable(highestBalanceBlock);
     }
 
     public static Block getBlockWithHighestAbsolutBalance(Collection<Block> blocks) {
         GlobalAssert.that(!blocks.isEmpty());
         Block highestAbsBalanceBlock = null;
-        for (Block block : blocks) {
-            if (highestAbsBalanceBlock == null) {
+        for (Block block : blocks)
+            if (highestAbsBalanceBlock == null)
                 highestAbsBalanceBlock = block;
-            } else {
-                if (Math.abs(highestAbsBalanceBlock.getBlockBalance()) < Math.abs(block.getBlockBalance())) {
-                    highestAbsBalanceBlock = block;
-                }
-            }
-        }
+            else if (Math.abs(highestAbsBalanceBlock.getBlockBalance()) < Math.abs(block.getBlockBalance()))
+                highestAbsBalanceBlock = block;
         return highestAbsBalanceBlock;
     }
 
     public static Block getBlockwithLowestBalance(Set<Block> blocks) {
         GlobalAssert.that(!blocks.isEmpty());
         Block lowestBalanceBlock = null;
-        for (Block block : blocks) {
-            if (lowestBalanceBlock == null) {
+        for (Block block : blocks)
+            if (lowestBalanceBlock == null)
                 lowestBalanceBlock = block;
-            } else {
-                if (lowestBalanceBlock.getBlockBalance() > block.getBlockBalance()) {
-                    lowestBalanceBlock = block;
-                }
-            }
-        }
+            else if (lowestBalanceBlock.getBlockBalance() > block.getBlockBalance())
+                lowestBalanceBlock = block;
         return lowestBalanceBlock;
     }
 
     public static boolean lowerBalancesPresentInNeighbourhood(Block block) {
-        return (BlockUtils.getBlockwithLowestBalance(block.getAdjacentBlocks()).getBlockBalance() < block.getBlockBalance() - 1);
+        return BlockUtils.getBlockwithLowestBalance(block.getAdjacentBlocks()).getBlockBalance() < block.getBlockBalance() - 1;
     }
 
     public static boolean higherBalancesPresentInNeighbourhood(Block block) {
         Optional<Block> adjacentBlock = BlockUtils.getBlockwithHighestBalanceAndAvailableRobotaxi(block.getAdjacentBlocks());
-        if (adjacentBlock.isPresent()) {
+        if (adjacentBlock.isPresent())
             return balance1HigherThanBalance2(adjacentBlock.get(), block);
-        }
         return false;
     }
 
     public static boolean balance1HigherThanBalance2(Block block1, Block block2) {
-        return (block1.getBlockBalance() > block2.getBlockBalance() + 1);
+        return block1.getBlockBalance() > block2.getBlockBalance() + 1;
     }
 }

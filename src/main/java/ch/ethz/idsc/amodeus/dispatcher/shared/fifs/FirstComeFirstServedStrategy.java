@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import ch.ethz.idsc.amodeus.net.TensorCoords;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
@@ -27,7 +28,6 @@ import ch.ethz.idsc.amodeus.routing.CachedNetworkTimeDistance;
 import ch.ethz.idsc.amodeus.routing.EasyMinTimePathCalculator;
 import ch.ethz.idsc.amodeus.routing.TimeDistanceProperty;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.matsim.av.config.operator.OperatorConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.framework.AVModule;
@@ -71,8 +71,8 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
 
         double[] networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
         this.unassignedRoboTaxis = new TreeMaintainer<>(networkBounds, this::getRoboTaxiLoc);
-        this.unassignedRequests = new TreeMultipleItems<>(this::getSubmissionTime);
-        this.requestsLastHour = new TreeMultipleItems<>(this::getSubmissionTime);
+        this.unassignedRequests = new TreeMultipleItems<>(AVRequest::getSubmissionTime);
+        this.requestsLastHour = new TreeMultipleItems<>(AVRequest::getSubmissionTime);
 
         FastAStarLandmarksFactory factory = new FastAStarLandmarksFactory();
         LeastCostPathCalculator calculator = EasyMinTimePathCalculator.prepPathCalculator(network, factory);
@@ -86,21 +86,20 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
         final long round_now = Math.round(now);
 
         if (round_now % dispatchPeriod == 0) {
-
             /** get open requests and available vehicles and put them into the desired
              * structures. Furthermore add all the requests to the one hour bin which is
              * used for rebalancing */
 
             /** prepare the registers for the dispatching */
-            getDivertableUnassignedRoboTaxis().stream().forEach(rt -> unassignedRoboTaxis.add(rt));
-            getUnassignedAVRequests().stream().forEach(r -> {
+            getDivertableUnassignedRoboTaxis().forEach(unassignedRoboTaxis::add);
+            getUnassignedAVRequests().forEach(r -> {
                 unassignedRequests.add(r);
                 requestsLastHour.add(r);
             });
             requestsLastHour.removeAllElementsWithValueSmaller(now - BINSIZETRAVELDEMAND);
 
             /** calculate Rebalance before dispatching */
-            Set<Link> lastHourRequests = requestsLastHour.getValues().stream().map(avr -> avr.getFromLink()).collect(Collectors.toSet());
+            Set<Link> lastHourRequests = requestsLastHour.getValues().stream().map(AVRequest::getFromLink).collect(Collectors.toSet());
             RebalancingDirectives rebalanceDirectives = kockelmanRebalancing.getRebalancingDirectives(round_now, //
                     lastHourRequests, //
                     unassignedRequests.getValues(), unassignedRoboTaxis.getValues());
@@ -124,14 +123,13 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
                 if (assigned) {
                     requestsToRemove.add(avRequest);
                 } else {
-                    if (!waitList.contains(avRequest)) {
+                    if (!waitList.contains(avRequest))
                         waitList.add(avRequest);
-                    } else { // and if it was already on the wait list put it to the extreme wait list
+                    else // and if it was already on the wait list put it to the extreme wait list
                         extremWaitList.add(avRequest);
-                    }
                 }
             }
-            requestsToRemove.forEach(avR -> unassignedRequests.remove(avR));
+            requestsToRemove.forEach(unassignedRequests::remove);
 
             /** execute New Rebalance Directives */
             rebalanceDirectives.getDirectives().forEach((rt, l) -> {
@@ -141,31 +139,23 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
 
             /** For all robotaxis which were on rebalance and did not receive a new directive
              * stop on current link */
-            getRebalancingRoboTaxis().stream().//
-                    filter(rt -> !rebalanceDirectives.getDirectives().containsKey(rt)).//
-                    forEach(rt -> setRoboTaxiRebalance(rt, rt.getDivertableLocation()));
+            getRebalancingRoboTaxis().stream() //
+                    .filter(rt -> !rebalanceDirectives.getDirectives().containsKey(rt)) //
+                    .forEach(rt -> setRoboTaxiRebalance(rt, rt.getDivertableLocation()));
 
         }
     }
 
     /** @param request
-     * @return {@link Double} with {@link AVRequest} submission Time */
-    /* package */ double getSubmissionTime(AVRequest request) {
-        return request.getSubmissionTime();
-    }
-
-    /** @param request
      * @return {@link Coord} with {@link AVRequest} location */
-    /* package */ Tensor getLocation(AVRequest request) {
-        Coord coord = request.getFromLink().getFromNode().getCoord();
-        return Tensors.vector(coord.getX(), coord.getY());
+    private Tensor getLocation(AVRequest request) {
+        return TensorCoords.toTensor(request.getFromLink().getFromNode().getCoord());
     }
 
     /** @param roboTaxi
      * @return {@link Coord} with {@link RoboTaxi} location */
-    /* package */ Tensor getRoboTaxiLoc(RoboTaxi roboTaxi) {
-        Coord coord = roboTaxi.getDivertableLocation().getCoord();
-        return Tensors.vector(coord.getX(), coord.getY());
+    private Tensor getRoboTaxiLoc(RoboTaxi roboTaxi) {
+        return TensorCoords.toTensor(roboTaxi.getDivertableLocation().getCoord());
     }
 
     public static class Factory implements AVDispatcherFactory {

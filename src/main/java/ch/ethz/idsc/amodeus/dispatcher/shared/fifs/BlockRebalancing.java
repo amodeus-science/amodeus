@@ -15,7 +15,6 @@ import org.matsim.api.core.v01.network.Network;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.util.TreeMultipleItems;
 import ch.ethz.idsc.amodeus.routing.CachedNetworkTimeDistance;
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 /* package */ class BlockRebalancing {
@@ -31,7 +30,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
     /** The {@link BlockRebalancing} enables calculations of a Grid based Rebalancing strategy. It generates a grid of Blocks over the network and then
      * calculates
-     * at each call of {@link getRebalancingDirectives()} for each of this cells a block balance which is a measure for the need or surplus of robotaxis. Based
+     * at each call of {@link #getRebalancingDirectives} for each of this cells a block balance which is a measure for the need or surplus of robotaxis. Based
      * on
      * that measure Rebalancing directives are returned. That is a List of directives for Robotaxis to drive to certain links.
      * 
@@ -60,11 +59,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     /** @param coord
      * @return the corresponding block based oon the given coordinate */
     private Block getCorespondingBlock(Coord coord) {
-        for (Block block : blocks.values())
-            if (block.contains(coord))
-                return block;
-        GlobalAssert.that(false); // every link has to be part of a block otherwise the generation was not concise
-        return null;
+        return blocks.values().stream().filter(block -> block.contains(coord)).findFirst() // replace by findAny if order does not matter or is unique
+                .orElseThrow(RuntimeException::new); // every link has to be part of a block otherwise the generation was not concise
     }
 
     /** Calculates rebalancing directives based on the current state of the robotaxis and requests
@@ -72,9 +68,9 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param now the current time
      * @param historicalRequestLinks historical request link data. should correspond to the historicalDataTime entered in the constructor. Can come from a
      *            collection of the data in the simulation or from historical data like a taxi company could have it.
-     * @param allUnassignedAVRequests all currently unassigned {@link AvRequest}s
+     * @param allUnassignedAVRequests all currently unassigned {@link AVRequest}s
      * @param allAvailableRobotaxisforRebalance all {@link RoboTaxi}s which should be considered for Rebalancing
-     * @return */
+     * @return rebalancing directives */
     public RebalancingDirectives getRebalancingDirectives( //
             double now, Set<Link> historicalRequestLinks, Set<AVRequest> allUnassignedAVRequests, //
             Set<RoboTaxi> allAvailableRobotaxisforRebalance) {
@@ -107,23 +103,22 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
         /** Store the Blocks in the Order of their Block Balance */
         TreeMultipleItems<Block> blockBalances = new TreeMultipleItems<>(this::getAbsOfBlockBalance);
-        blocks.forEach((k, v) -> blockBalances.add(v));
+        blocks.values().forEach(blockBalances::add);
         Set<Block> calculatedBlocks = new HashSet<>();
 
-        /** Get the block with the largest absolut value of the block Balance */
+        /** Get the block with the largest absolute value of the block Balance */
         Block block = blockBalances.getLast().iterator().next();
 
         while (getAbsOfBlockBalance(block) > minNumberForRebalance) {
             /** remove the block and its adjacent blocks from the tree, will be added with the updated balance afterwards */
-            block.getAdjacentBlocks().forEach(b -> blockBalances.remove(b));
+            block.getAdjacentBlocks().forEach(blockBalances::remove);
             blockBalances.remove(block);
 
             /** If the Block has enough free Robotaxis it pushes to other blocks (block balance > minNumberForRebalancing) */
             if (block.getBlockBalance() > minNumberForRebalance) {
-                while (block.getBlockBalance() > minNumberForRebalance && BlockUtils.lowerBalancesPresentInNeighbourhood(block) && block.hasAvailableRobotaxisToRebalance()) {
+                while (block.getBlockBalance() > minNumberForRebalance && BlockUtils.lowerBalancesPresentInNeighbourhood(block) && block.hasAvailableRobotaxisToRebalance())
                     block.pushRobotaxiTo(BlockUtils.getBlockwithLowestBalance(block.getAdjacentBlocks()));
-                }
-                /** If the Block has not enough free Robotaxis it pulls from other blocks (block balance < -minNumberForRebalancing) */
+            /** If the Block has not enough free Robotaxis it pulls from other blocks (block balance < -minNumberForRebalancing) */
             } else if (block.getBlockBalance() < 0 - minNumberForRebalance) {
                 Optional<Block> blockWithHighestBalance = BlockUtils.getBlockwithHighestBalanceAndAvailableRobotaxi(block.getAdjacentBlocks());
                 while (block.getBlockBalance() < 0 - minNumberForRebalance && blockWithHighestBalance.isPresent()
@@ -131,28 +126,25 @@ import ch.ethz.matsim.av.passenger.AVRequest;
                     blockWithHighestBalance.get().pushRobotaxiTo(block);
                     blockWithHighestBalance = BlockUtils.getBlockwithHighestBalanceAndAvailableRobotaxi(block.getAdjacentBlocks());
                 }
-            } else {
-                GlobalAssert.that(false);
-            }
+            } else
+                throw new RuntimeException();
 
             /** add the adjacent blocks back to the block balance tree with the updated balance. Btw The current block is not added Anymore as all possible
-             * rebalncings have
+             * rebalancings have
              * been carried out. It could well be that this block still has the highest balance but we have to move on to the next block. */
             calculatedBlocks.add(block);
-            block.getAdjacentBlocks().stream().filter(b -> !calculatedBlocks.contains(b)).forEach(b -> blockBalances.add(b));
+            block.getAdjacentBlocks().stream().filter(b -> !calculatedBlocks.contains(b)).forEach(blockBalances::add);
             /** update the current block */
             Set<Block> set = blockBalances.getLast();
-            if (Objects.isNull(set)) {
+            if (Objects.isNull(set))
                 break;
-            }
             block = set.iterator().next();
         }
     }
 
-    /** @param roboTaxi
+    /** @param block
      * @return {@link Coord} with {@link RoboTaxi} location */
     private double getAbsOfBlockBalance(Block block) {
         return Math.abs(block.getBlockBalance());
     }
-
 }

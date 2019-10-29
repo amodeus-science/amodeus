@@ -10,7 +10,7 @@ import java.util.TreeMap;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 
-/** Stores {@link SharedAVRoute}s in the order of the end Time. Like that it is easy to keep track of the fastest routes. Furthermore It keeps track of the
+/** Stores {@link SharedAvRoute}s in the order of the end Time. Like that it is easy to keep track of the fastest routes. Furthermore It keeps track of the
  * routes for different RoboTaxis. If one of the Routes is for example invalid it is easy to remove it. */
 /* package */ class AvRouteHandler {
 
@@ -22,23 +22,21 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
      * @param sharedAvRoute */
     void add(RoboTaxi roboTaxi, SharedAvRoute sharedAvRoute) {
         double endTime = sharedAvRoute.getEndTime();
-        if (!routes.containsKey(endTime)) {
+        if (!routes.containsKey(endTime))
             routes.put(endTime, new HashMap<>());
-        }
-        if (!routes.get(endTime).containsKey(roboTaxi)) {
+        if (!routes.get(endTime).containsKey(roboTaxi))
             routes.get(endTime).put(roboTaxi, new HashSet<>());
-        }
         routes.get(endTime).get(roboTaxi).add(sharedAvRoute);
     }
 
-    /** Removes all {@link SharedAvRoutes} where {@link getEndTime()} equals the given {@link endTime};
+    /** Removes all {@link SharedAvRoute}s where {@link SharedAvRoute#getEndTime} equals the given {@param endTime};
      * 
      * @param endTime */
     void remove(double endTime) {
         routes.remove(endTime);
     }
 
-    /** Checks if the given {@link endTime} exists in the tree structure
+    /** Checks if the given {@param endTime} exists in the tree structure
      * 
      * @param endTime
      * @return true if it exists, false else. */
@@ -57,7 +55,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 
     /** get the number of Route end times stored
      * 
-     * @return a Key Value Mapping of RoboTaxis to a Set of SharedAvRoutes all with the earliest end time currently present in the internal Tree struchtur */
+     * @return a Key Value Mapping of RoboTaxis to a Set of SharedAvRoutes all with the earliest end time currently present in the internal Tree structure */
     int getNumbervalues() {
         return routes.size();
     }
@@ -70,5 +68,4 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
     boolean isEmpty() {
         return routes.isEmpty();
     }
-
 }

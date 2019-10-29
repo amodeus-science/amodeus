@@ -26,8 +26,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
         sharedCourses.removeAll(set);
 
-        int numIter = set.size();
-        for (int i = 0; i < numIter; i++) {
+        for (int i = 0; i < set.size(); i++) {
             SharedCourse sharedCourse = StaticHelper.getClosestCourse(set, lastPickupCoord);
             SharedCourseAdd.asDessertList(sharedCourses, sharedCourse);
             set.remove(sharedCourse);
@@ -37,13 +36,6 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     }
 
     private static SharedCourse getLastPickup(List<SharedCourse> sharedMenu) {
-        SharedCourse lastCourse = null;
-        for (SharedCourse sharedCourse : sharedMenu) {
-            if (sharedCourse.getMealType().equals(SharedMealType.PICKUP)) {
-                lastCourse = sharedCourse;
-            }
-        }
-        return lastCourse;
+        return sharedMenu.stream().filter(sharedCourse -> sharedCourse.getMealType().equals(SharedMealType.PICKUP)).reduce((c1, c2) -> c2).orElse(null);
     }
-
 }
