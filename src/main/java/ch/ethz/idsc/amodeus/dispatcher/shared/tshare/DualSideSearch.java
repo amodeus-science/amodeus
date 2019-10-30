@@ -48,20 +48,18 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         /** Loop finds potential taxis for which trip insertion is evaluated */
         int i0 = 0;
         int iD = 0;
-        while (potentialTaxis.isEmpty() && (stop0 == false || stopD == false)) {
+        while (potentialTaxis.isEmpty() && (!stop0 || !stopD)) {
             if (i0 < oCloseCells.size()) {
                 VirtualNode<Link> vNode = oCell.getDistAt(i0);
-                if (oCloseCells.contains(vNode)) {
+                if (oCloseCells.contains(vNode))
                     oTaxis.addAll(plannedLocations.get(vNode));
-                }
                 ++i0;
             } else
                 stop0 = true;
             if (iD < dCloseCells.size()) {
                 VirtualNode<Link> vNode = dCell.getDistAt(iD);
-                if (dCloseCells.contains(vNode)) {
+                if (dCloseCells.contains(vNode))
                     dTaxis.addAll(plannedLocations.get(vNode));
-                }
                 ++iD;
             } else
                 stopD = true;

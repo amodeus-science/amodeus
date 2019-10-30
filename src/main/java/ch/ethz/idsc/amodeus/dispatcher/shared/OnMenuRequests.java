@@ -14,11 +14,11 @@ public enum OnMenuRequests {
     ;
 
     public static Set<AVRequest> getOnBoardRequests(List<? extends SharedCourse> courses) {
-        Set<AVRequest> pickups = courseMealStream(courses, SharedMealType.PICKUP)//
-                .map(sc -> sc.getAvRequest()).collect(Collectors.toSet());
+        Set<AVRequest> pickups = courseMealStream(courses, SharedMealType.PICKUP) //
+                .map(SharedCourse::getAvRequest).collect(Collectors.toSet());
 
-        Set<AVRequest> dropoffs = courseMealStream(courses, SharedMealType.DROPOFF)//
-                .map(sc -> sc.getAvRequest()).collect(Collectors.toSet());
+        Set<AVRequest> dropoffs = courseMealStream(courses, SharedMealType.DROPOFF) //
+                .map(SharedCourse::getAvRequest).collect(Collectors.toSet());
 
         for (AVRequest avRequestIDpickup : pickups) {
             boolean removeOk = dropoffs.remove(avRequestIDpickup);
@@ -31,9 +31,8 @@ public enum OnMenuRequests {
     // ---
 
     public static long getOnBoardCustomers(List<? extends SharedCourse> courses) {
-        long onBoard = getNumberMealTypes(courses, SharedMealType.DROPOFF) - //
+        return getNumberMealTypes(courses, SharedMealType.DROPOFF) - //
                 getNumberMealTypes(courses, SharedMealType.PICKUP);
-        return onBoard;
     }
 
     public static boolean canPickupNewCustomer(RoboTaxi roboTaxi) {
@@ -54,5 +53,4 @@ public enum OnMenuRequests {
             SharedMealType sharedMealType) {
         return courses.stream().filter(sc -> sc.getMealType().equals(sharedMealType));
     }
-
 }

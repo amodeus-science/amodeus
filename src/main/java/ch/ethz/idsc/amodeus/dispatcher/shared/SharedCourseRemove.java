@@ -33,11 +33,9 @@ public enum SharedCourseRemove {
     public static SharedMenu several(SharedMenu sharedMenu, SharedCourse... removeCourses) {
         List<SharedCourse> copy = new ArrayList<>();
         List<SharedCourse> toRemove = Arrays.asList(removeCourses);
-        for (SharedCourse sharedCourse : sharedMenu.getCourseList()) {
+        for (SharedCourse sharedCourse : sharedMenu.getCourseList())
             if (!toRemove.contains(sharedCourse))
                 copy.add(sharedCourse);
-        }
         return SharedMenu.of(copy);
     }
-
 }
