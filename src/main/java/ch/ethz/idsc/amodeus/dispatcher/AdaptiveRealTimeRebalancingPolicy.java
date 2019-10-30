@@ -116,10 +116,7 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
             /** compute rebalancing vehicles and send to virtualNodes */
             {
                 Map<VirtualNode<Link>, List<RoboTaxi>> availableVehicles = getVirtualNodeDivertableNotRebalancingRoboTaxis();
-                int totalAvailable = 0;
-                for (List<RoboTaxi> roboTaxiList : availableVehicles.values()) {
-                    totalAvailable += roboTaxiList.size();
-                }
+                int totalAvailable = availableVehicles.values().stream().mapToInt(List::size).sum();
 
                 /** calculate desired vehicles per vNode */
                 int num_requests = requests.values().stream().mapToInt(List::size).sum();
@@ -152,9 +149,8 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
                 if (totalAvailable > 0) {
                     lpMinFlow.solveLP(false, rhs);
                     rebalanceCount2 = lpMinFlow.getAlphaAbsolute_ij();
-                } else {
+                } else
                     rebalanceCount2 = Array.zeros(virtualNetwork.getvNodesCount(), virtualNetwork.getvNodesCount());
-                }
                 Tensor rebalanceCount = Round.of(rebalanceCount2);
 
                 /** assert that solution is integer and does not contain negative values */
@@ -178,8 +174,7 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
                 }
 
                 /** consistency check: rebalancing destination links must not exceed available vehicles in virtual node */
-                Map<VirtualNode<Link>, List<RoboTaxi>> finalAvailableVehicles = availableVehicles;
-                GlobalAssert.that(virtualNetwork.getVirtualNodes().stream().allMatch(v -> finalAvailableVehicles.get(v).size() >= rebalanceDestinations.get(v).size()));
+                GlobalAssert.that(virtualNetwork.getVirtualNodes().stream().allMatch(v -> availableVehicles.get(v).size() >= rebalanceDestinations.get(v).size()));
 
                 /** send rebalancing vehicles using the setVehicleRebalance command */
                 for (VirtualNode<Link> virtualNode : rebalanceDestinations.keySet()) {
@@ -190,10 +185,9 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
         }
 
         /** Part II: outside rebalancing periods, permanently assign destinations to vehicles using bipartite matching */
-        if (round_now % dispatchPeriod == 0) {
+        if (round_now % dispatchPeriod == 0)
             printVals = bipartiteMatcher.executePickup(this, getDivertableRoboTaxis(), //
                     getAVRequests(), distanceFunction, network);
-        }
     }
 
     @Override
