@@ -1,6 +1,8 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.util;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
@@ -51,13 +53,7 @@ public class TreeMultipleItems<T> {
         if (!set.contains(t)) {
             double submission = function.apply(t);
             boolean setok = set.add(t);
-            if (tree.containsKey(submission)) {
-                tree.get(submission).add(t);
-            } else {
-                Set<T> newSet = new HashSet<>();
-                newSet.add(t);
-                tree.put(submission, newSet);
-            }
+            tree.put(submission, tree.getOrDefault(submission, new HashSet<>(Collections.singletonList(t))));
             GlobalAssert.that(setok);
         }
     }
@@ -72,14 +68,15 @@ public class TreeMultipleItems<T> {
             if (tree.get(value).isEmpty())
                 tree.remove(value);
         }
-
     }
 
     public void removeAllElementsWithValueSmaller(double minValue) {
         if (!tree.isEmpty()) {
-            // TODO make use of allready sorted Navigable Map
+            // TODO make use of already sorted Navigable Map
             Set<T> toRemoveSet = getTsInOrderOfValue().stream().filter(t -> function.apply(t) <= minValue).collect(Collectors.toSet());
             toRemoveSet.forEach(this::remove);
+
+            // getTsInOrderOfValue().stream().filter(t -> function.apply(t) <= minValue).distinct().forEachOrdered(this::remove);
         }
     }
 

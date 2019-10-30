@@ -47,10 +47,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         for (RoboTaxi roboTaxi : orderedRoboTaxis) {
             /** cost of current assignments */
             int j = 0;
-            for (T t : ordered_linkObjects) {
-                costMatrix[i][j] = weight.between(roboTaxi, linkOfT.apply(t));
-                ++j;
-            }
+            for (T t : ordered_linkObjects)
+                costMatrix[i][j++] = weight.between(roboTaxi, linkOfT.apply(t));
             ++i;
 
             /** possible previous assignments */
@@ -58,9 +56,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
                 AVRequest previous = (AVRequest) previousAssignment.get(roboTaxi);
                 int k = 0;
                 for (T t : ordered_linkObjects) {
-                    if (((AVRequest) t).equals(previous)) {
+                    if (t.equals(previous))
                         break;
-                    }
                     ++k;
                 }
                 lastSolution.set(RealScalar.ONE, i, k);
@@ -84,16 +81,13 @@ import ch.ethz.matsim.av.passenger.AVRequest;
             // other value admissible
             GlobalAssert.that(tSum.equals(RealScalar.ONE) || tSum.equals(RealScalar.ZERO));
             if (tSum.equals(RealScalar.ONE)) { // assignment was made by algorithm
-
-                for (int l = 0; l < t.length(); ++l) {
+                for (int l = 0; l < t.length(); ++l)
                     if (t.Get(l).equals(RealScalar.ONE)) {
                         map.put(orderedRoboTaxis.get(k), ordered_linkObjects.get(l));
                         break;
                     }
-                }
             }
         }
-
         previousAssignment = map;
         return map;
     }

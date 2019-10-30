@@ -12,6 +12,5 @@ public enum EuclideanDistanceCost implements GlobalBipartiteCost {
     @Override
     public double between(RoboTaxi roboTaxi, Link link) {
         return EuclideanDistanceFunction.INSTANCE.getDistance(roboTaxi, link);
-
     }
 }

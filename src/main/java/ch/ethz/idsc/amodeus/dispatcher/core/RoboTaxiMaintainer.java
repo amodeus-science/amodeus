@@ -129,15 +129,14 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
     private void updateCurrentLocations() {
         @SuppressWarnings("unused")
         int failed = 0;
-        if (!roboTaxis.isEmpty())
-            for (RoboTaxi roboTaxi : roboTaxis) {
-                final Link link = RoboTaxiLocation.of(roboTaxi);
-                if (Objects.nonNull(link)) {
-                    roboTaxi.setLastKnownLocation(link);
-                    updateLocationTrace(roboTaxi, link);
-                } else
-                    ++failed;
-            }
+        for (RoboTaxi roboTaxi : roboTaxis) {
+            final Link link = RoboTaxiLocation.of(roboTaxi);
+            if (Objects.nonNull(link)) {
+                roboTaxi.setLastKnownLocation(link);
+                updateLocationTrace(roboTaxi, link);
+            } else
+                ++failed;
+        }
     }
 
     /* package */ abstract void updateLocationTrace(RoboTaxi roboTaxi, Link lastKnownLoc);
