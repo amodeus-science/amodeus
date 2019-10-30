@@ -2,6 +2,7 @@
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
@@ -37,7 +38,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         final AVStayTask avStayTask = (AVStayTask) Schedules.getLastTask(schedule);
         final double scheduleEndTime = avStayTask.getEndTime();
         GlobalAssert.that(scheduleEndTime == schedule.getEndTime());
-        final boolean moreRequestsToServe = (vrpPathWithTravelData != null);
+        final boolean moreRequestsToServe = Objects.nonNull(vrpPathWithTravelData);
         final double endTimeNextTask = (moreRequestsToServe) ? vrpPathWithTravelData.getArrivalTime() : getTimeNow + dropoffDurationPerStop;
         GlobalAssert.that(avStayTask.getLink().equals(currentRequest.getToLink()));
 
@@ -60,5 +61,4 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         } else
             reportExecutionBypass(endTimeNextTask - scheduleEndTime);
     }
-
 }

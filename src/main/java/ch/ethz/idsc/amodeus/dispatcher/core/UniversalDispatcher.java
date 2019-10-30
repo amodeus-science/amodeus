@@ -77,7 +77,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
     /** @return {@link Collection<RoboTaxi>}s which is in stay task (idling) */
     protected final Collection<RoboTaxi> getStayingTaxi() {
         return getDivertableUnassignedRoboTaxis().stream() //
-                .filter(RoboTaxi::isInStayTask)//
+                .filter(RoboTaxi::isInStayTask) //
                 .collect(Collectors.toList());
     }
 
@@ -108,15 +108,13 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
             periodAssignedRequests.add(avRequest);
 
         // 1) enter information into pickup table
-        if (!pickupRegister.containsValue(roboTaxi))
-            pickupRegister.put(avRequest, roboTaxi);
-        else {
+        if (pickupRegister.containsValue(roboTaxi)) {
             AVRequest toRemove = pickupRegister.entrySet().stream()//
                     .filter(e -> e.getValue().equals(roboTaxi)).findAny().get().getKey();
             pickupRegister.remove(toRemove); // remove AVRequest/RoboTaxi pair served before by roboTaxi
             pickupRegister.remove(avRequest); // remove AVRequest/RoboTaxi pair corresponding to avRequest
-            pickupRegister.put(avRequest, roboTaxi); // add new pair
         }
+        pickupRegister.put(avRequest, roboTaxi); // add new pair
         GlobalAssert.that(pickupRegister.size() == pickupRegister.values().stream().distinct().count());
 
         // 2) set vehicle diversion
@@ -253,8 +251,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
     }
 
     /* package */ final boolean removeFromPickupRegisters(AVRequest avRequest) {
-        RoboTaxi rt1 = pickupRegister.remove(avRequest);
-        return Objects.isNull(rt1);
+        return Objects.isNull(pickupRegister.remove(avRequest));
     }
 
     /** @param avRequest
@@ -387,10 +384,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
                     LinkTimePair linkTimePair = onlineDriveTaskTracker.getSafeDiversionPoint();
                     roboTaxi.setDivertableLinkTime(linkTimePair); // contains null check
                     roboTaxi.setCurrentDriveDestination(avDriveTask.getPath().getToLink());
-                    if (ScheduleUtils.isNextToLastTask(schedule, avDriveTask))
-                        GlobalAssert.that(!roboTaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
-                    else
-                        GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
+                    GlobalAssert.that(ScheduleUtils.isNextToLastTask(schedule, avDriveTask) != roboTaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
                 }
 
                 @Override

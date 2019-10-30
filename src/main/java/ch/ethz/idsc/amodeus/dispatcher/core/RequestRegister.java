@@ -20,8 +20,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
     /** Adding and removing */
     /* package */ void add(RoboTaxi roboTaxi, AVRequest avRequest) {
-        if (!register.containsKey(roboTaxi))
-            register.put(roboTaxi, new HashMap<>());
+        register.putIfAbsent(roboTaxi, new HashMap<>());
         register.get(roboTaxi).put(avRequest.getId().toString(), avRequest);
     }
 
@@ -94,5 +93,4 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     /* package */ Map<RoboTaxi, Map<String, AVRequest>> getRegister() {
         return Collections.unmodifiableMap(register);
     }
-
 }

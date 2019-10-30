@@ -26,9 +26,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
      *         is of {@link SharedMealType} @param sharedMealType, otherwise @return false */
     public static boolean isNextCourseOfType(RoboTaxi roboTaxi, SharedMealType sharedMealType) {
         Optional<SharedCourse> nextcourse = SharedCourseAccess.getStarter(roboTaxi);
-        if (nextcourse.isPresent())
-            return nextcourse.get().getMealType().equals(sharedMealType);
-        return false;
+        return nextcourse.map(SharedCourse::getMealType).map(type -> type.equals(sharedMealType)).orElse(false);
     }
 
     /** @return {@link RoboTaxiStatus} of {@link RoboTaxi} @param roboTaxi computed according
@@ -52,5 +50,4 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
         }
         return RoboTaxiStatus.STAY;
     }
-
 }

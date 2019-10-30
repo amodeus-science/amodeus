@@ -157,11 +157,8 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
     private void flushLocationTraces() {
         tempLocationTrace.values().forEach(value -> {
             int size = value.size();
-            if (size > 1) {
-                Link last = value.get(size - 1);
-                value.clear();
-                value.add(last);
-            }
+            if (size > 1)
+                value.subList(0, size - 1).clear();
         });
     }
 }

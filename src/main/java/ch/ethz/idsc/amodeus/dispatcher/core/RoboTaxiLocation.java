@@ -51,7 +51,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         OnlineDriveTaskTracker onlineDriveTaskTracker = (OnlineDriveTaskTracker) taskTracker;
         // there is a slim chance that function getDiversionPoint() returns null
         LinkTimePair linkTimePair = onlineDriveTaskTracker.getDiversionPoint();
-        if (linkTimePair != null)
+        if (Objects.nonNull(linkTimePair))
             link = linkTimePair.link;
     }
 
