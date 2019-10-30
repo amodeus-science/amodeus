@@ -18,7 +18,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 public enum PersonCreate {
     ;
 
-    public static Person fromTrip(TaxiTrip taxiTrip, long globalId, PopulationFactory populationFactory, //
+    public static Person fromTrip(TaxiTrip taxiTrip, String globalId, PopulationFactory populationFactory, //
             ClosestLinkSelect linkSelect, LocalDate simulationDate, AmodeusTimeConvert timeConvert) {
 
         Id<Person> personID = Id.create(globalId, Person.class);

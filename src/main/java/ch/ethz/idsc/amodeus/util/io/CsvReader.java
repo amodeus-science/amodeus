@@ -7,8 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,16 +25,20 @@ public final class CsvReader {
     private final Map<String, Integer> headers = new HashMap<>();
 
     public CsvReader(File file, String delim) throws FileNotFoundException, IOException {
-        System.out.println("CSVReader: " + file.getAbsolutePath());
         this.file = file;
         this.delim = delim;
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
             String line = bufferedReader.readLine();
-            System.out.println("Line: (1)" + line);
             if (Objects.nonNull(line)) {
-                System.out.println("Line: (2)" + line);
+                System.out.println(line);
                 String[] splits = line.split(delim);
-                IntStream.range(0, splits.length).forEach(index -> headers.put(splits[index], index));
+                IntStream.range(0, splits.length).forEach(index -> {
+                    Integer ret = headers.put(splits[index], index);
+                    if (Objects.nonNull(ret)) {
+                        System.err.println("Attention, the read .csv file contains duplicate row headers!");
+                        System.err.println(splits[index]);
+                    }
+                });
             }
         }
     }
@@ -84,6 +86,8 @@ public final class CsvReader {
                 throw new IllegalArgumentException("Your key: " + key + ", possible keys: " + //
                         headers.keySet().stream().collect(Collectors.joining(",")) + ", entered key: " + key);
             }
+//            System.out.println(key);
+//            System.out.println(headers.get(key));
             return row[headers.get(key)];
         }
 

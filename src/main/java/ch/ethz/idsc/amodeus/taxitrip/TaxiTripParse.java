@@ -14,7 +14,7 @@ public enum TaxiTripParse {
 
     public static TaxiTrip fromRow(CsvReader.Row line) {
         // get attributes
-        Integer globalId = Integer.parseInt(line.get("localId"));
+        String globalId = line.get("localId");
         String taxiId = line.get("taxiId");
         Tensor pickupLoc = Tensors.fromString(line.get("pickupLoc"));
         Tensor dropoffLoc = Tensors.fromString(line.get("dropoffLoc"));

@@ -39,7 +39,7 @@ public enum ImportTaxiTrips {
                     }
                     Objects.requireNonNull(ldt);
                     TaxiTrip trip = TaxiTrip.of(//
-                            Integer.parseInt(splits[0]), //
+                            splits[0], //
                             splits[1], //
                             Tensors.fromString(splits[2]), //
                             Tensors.fromString(splits[3]), //

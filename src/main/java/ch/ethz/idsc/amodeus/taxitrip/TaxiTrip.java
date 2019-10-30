@@ -13,7 +13,7 @@ import ch.ethz.idsc.tensor.sca.Sign;
  * for AMoDeus. It contains the relevant recordings of a typical taxi trip recording. */
 // TODO better explanation of entries, localID, pickup,dropofLoc in WGS, renames...
 public class TaxiTrip implements Comparable<TaxiTrip> {
-    public final Integer localId;
+    public final String localId;
     public final String taxiId;
     public final Tensor pickupLoc;
     public final Tensor dropoffLoc;
@@ -32,7 +32,7 @@ public class TaxiTrip implements Comparable<TaxiTrip> {
      * @param dropoffLoc
      * @param distance
      * @param waitTime */
-    public static TaxiTrip of(Integer id, String taxiId, Tensor pickupLoc, Tensor dropoffLoc, //
+    public static TaxiTrip of(String id, String taxiId, Tensor pickupLoc, Tensor dropoffLoc, //
             Scalar distance, Scalar waitTime, //
             LocalDateTime pickupDate, LocalDateTime dropoffDate) {
         try {
@@ -55,7 +55,7 @@ public class TaxiTrip implements Comparable<TaxiTrip> {
      * @param dropoffLoc
      * @param distance
      * @param waitTime */
-    public static TaxiTrip of(Integer id, String taxiId, Tensor pickupLoc, Tensor dropoffLoc, //
+    public static TaxiTrip of(String id, String taxiId, Tensor pickupLoc, Tensor dropoffLoc, //
             Scalar distance, Scalar waitTime, //
             LocalDateTime pickupDate, Scalar duration) {
         try {
@@ -73,7 +73,7 @@ public class TaxiTrip implements Comparable<TaxiTrip> {
 
     /** This constructor is private as it allows ambiguous entries, of the triple
      * {pickupDate, dropoffDate, duration} only two are necessary. */
-    private TaxiTrip(Integer id, String taxiId, Tensor pickupLoc, Tensor dropoffLoc, //
+    private TaxiTrip(String id, String taxiId, Tensor pickupLoc, Tensor dropoffLoc, //
             Scalar distance, Scalar waitTime, // ,
             LocalDateTime pickupDate, LocalDateTime dropoffDate, Scalar duration) {
         this.localId = id;
