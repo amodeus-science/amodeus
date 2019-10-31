@@ -3,6 +3,7 @@ package ch.ethz.idsc.amodeus.dispatcher.shared.fifs;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -30,14 +31,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
     public static Optional<Block> getBlockwithHighestBalanceAndAvailableRobotaxi(Set<Block> blocks) {
         GlobalAssert.that(!blocks.isEmpty());
-        Block highestBalanceBlock = null;
-        for (Block block : blocks)
-            if (block.hasAvailableRobotaxisToRebalance())
-                if (highestBalanceBlock == null)
-                    highestBalanceBlock = block;
-                else if (highestBalanceBlock.getBlockBalance() < block.getBlockBalance())
-                    highestBalanceBlock = block;
-        return Optional.ofNullable(highestBalanceBlock);
+        return blocks.stream().filter(Block::hasAvailableRobotaxisToRebalance).max(Comparator.comparingDouble(block -> Math.abs(block.getBlockBalance())));
     }
 
     public static Block getBlockWithHighestAbsolutBalance(Collection<Block> blocks) {

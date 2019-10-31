@@ -123,10 +123,8 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
                 if (assigned) {
                     requestsToRemove.add(avRequest);
                 } else {
-                    if (!waitList.contains(avRequest))
-                        waitList.add(avRequest);
-                    else // and if it was already on the wait list put it to the extreme wait list
-                        extremWaitList.add(avRequest);
+                    if (!waitList.add(avRequest))
+                        extremWaitList.add(avRequest); // and if it was already on the wait list put it to the extreme wait list
                 }
             }
             requestsToRemove.forEach(unassignedRequests::remove);
