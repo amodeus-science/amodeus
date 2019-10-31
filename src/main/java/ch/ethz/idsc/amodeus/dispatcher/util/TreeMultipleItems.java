@@ -1,12 +1,13 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.util;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Function;
@@ -36,22 +37,15 @@ public class TreeMultipleItems<T> {
     }
 
     private Set<T> returnIfPossible(Entry<Double, Set<T>> entry) {
-        if (Objects.isNull(entry)) {
-            return null;
-        }
-        return entry.getValue();
+        return Optional.ofNullable(entry).map(Entry::getValue).orElse(null);
     }
 
     public List<T> getTsInOrderOfValue() {
-        List<T> list = new ArrayList<>();
-        tree.values().forEach(ts -> list.addAll(ts)); // is asscending order ?!
-        return list;
+        return tree.values().stream().flatMap(Set::stream).collect(Collectors.toList()); // is ascending order ?!
     }
 
     public List<T> getTsInOrderOfValueDescending() {
-        List<T> list = new ArrayList<>();
-        tree.descendingMap().values().forEach(ts -> list.addAll(ts)); // is asscending order ?!
-        return list;
+        return tree.descendingMap().values().stream().flatMap(Set::stream).collect(Collectors.toList()); // is ascending order ?!
     }
 
     /** Adds the {@link T} @param t to the Tree Maintainer. */
@@ -59,13 +53,7 @@ public class TreeMultipleItems<T> {
         if (!set.contains(t)) {
             double submission = function.apply(t);
             boolean setok = set.add(t);
-            if (tree.containsKey(submission)) {
-                tree.get(submission).add(t);
-            } else {
-                Set<T> newSet = new HashSet<>();
-                newSet.add(t);
-                tree.put(submission, newSet);
-            }
+            tree.put(submission, tree.getOrDefault(submission, new HashSet<>(Collections.singletonList(t))));
             GlobalAssert.that(setok);
         }
     }
@@ -77,20 +65,19 @@ public class TreeMultipleItems<T> {
             boolean setok = set.remove(t);
             boolean treeok = tree.get(value).remove(t);
             GlobalAssert.that(setok && treeok);
-            if (tree.get(value).isEmpty()) {
+            if (tree.get(value).isEmpty())
                 tree.remove(value);
-            }
         }
-
     }
 
     public void removeAllElementsWithValueSmaller(double minValue) {
         if (!tree.isEmpty()) {
-            // TODO make use of allready sorted Navigable Map
+            // TODO make use of already sorted Navigable Map
             Set<T> toRemoveSet = getTsInOrderOfValue().stream().filter(t -> function.apply(t) <= minValue).collect(Collectors.toSet());
-            toRemoveSet.forEach(t -> remove(t));
-        }
+            toRemoveSet.forEach(this::remove);
 
+            // getTsInOrderOfValue().stream().filter(t -> function.apply(t) <= minValue).distinct().forEachOrdered(this::remove);
+        }
     }
 
     public Set<T> getValues() {
@@ -102,7 +89,7 @@ public class TreeMultipleItems<T> {
     }
 
     public int size() {
-        int numberTreeElements = tree.values().stream().mapToInt(s -> s.size()).sum();
+        int numberTreeElements = tree.values().stream().mapToInt(Set::size).sum();
         GlobalAssert.that(numberTreeElements == set.size());
         return tree.size();
     }

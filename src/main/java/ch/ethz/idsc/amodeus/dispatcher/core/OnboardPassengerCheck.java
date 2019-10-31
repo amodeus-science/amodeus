@@ -18,9 +18,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         this.totalDropoff = total_dropedOffRequests;
     }
 
-    public void now(int total_matchedRequests, int total_dropedOffRequests, //
-            List<RoboTaxi> allTaxis) {
-
+    public void now(int total_matchedRequests, int total_dropedOffRequests, List<RoboTaxi> allTaxis) {
         /** only test if change happened */
         if (totalMatched != total_matchedRequests || totalDropoff != total_dropedOffRequests) {
             /** requests are matched once a pickup process is in execution */
@@ -29,7 +27,6 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
             int menuOnboard = allTaxis.stream().mapToInt(rt -> (int) rt.getMenuOnBoardCustomers()).sum();
             GlobalAssert.that(travelling == menuOnboard);
         }
-
         this.totalMatched = total_matchedRequests;
         this.totalDropoff = total_dropedOffRequests;
     }

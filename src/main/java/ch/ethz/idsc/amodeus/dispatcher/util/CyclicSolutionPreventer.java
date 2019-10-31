@@ -55,15 +55,12 @@ public enum CyclicSolutionPreventer {
 
     public static Map<RoboTaxi, AVRequest> apply(Map<RoboTaxi, AVRequest> assgnmt, Function<AVRequest, RoboTaxi> getPickupTaxi, //
             DistanceFunction accDstFctn) {
-
         Map<RoboTaxi, AVRequest> assgnmtCopy = new HashMap<>(assgnmt);
 
         for (Entry<RoboTaxi, AVRequest> entry : assgnmtCopy.entrySet()) {
             /** previously assigned {@link RoboTaxi} */
-
-            RoboTaxi roboTaxi = getPickupTaxi.apply(entry.getValue());
-            if (Objects.nonNull(roboTaxi)) {
-                final RoboTaxi prvTaxi = roboTaxi;
+            RoboTaxi prvTaxi = getPickupTaxi.apply(entry.getValue());
+            if (Objects.nonNull(prvTaxi)) {
                 final RoboTaxi newTaxi = entry.getKey();
                 GlobalAssert.that(Objects.nonNull(newTaxi));
                 if (!prvTaxi.equals(newTaxi)) {

@@ -28,7 +28,6 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         double endTimeDropoff = getTimeNow + durationOfTask;
 
         if (endTimeDropoff < scheduleEndTime) {
-
             avStayTask.setEndTime(getTimeNow); // finish the last task now
 
             schedule.addTask(new AVDropoffTask( //

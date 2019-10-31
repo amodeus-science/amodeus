@@ -47,10 +47,10 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
             locationMap.get(vNode).add(roboTaxi);
 
             /** get reachable neighbors */
-            List<VirtualNode<Link>> neighbors = virtualNetwork.getVirtualLinks().stream()//
-                    .filter(vl -> vl.getFrom().equals(vNode))//
+            List<VirtualNode<Link>> neighbors = virtualNetwork.getVirtualLinks().stream() //
+                    .filter(vl -> vl.getFrom().equals(vNode)) //
                     .map(VirtualLink::getTo).collect(Collectors.toList());
-            neighbors.stream().forEach(vn -> locationMap.get(vn).add(roboTaxi));
+            neighbors.stream().map(locationMap::get).forEach(set -> set.add(roboTaxi));
         }
 
         return locationMap;

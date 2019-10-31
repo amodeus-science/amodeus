@@ -44,17 +44,14 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     }
 
     public double getPickupTime() {
-        GlobalAssert.that(pickupTime.isPresent());
-        return pickupTime.get();
+        return pickupTime.orElseThrow(RuntimeException::new);
     }
 
     public void setUnitCapDriveTime(double doubleValue) {
-        unitCapacityDriveTime = Optional.of(doubleValue);
+        unitCapacityDriveTime = Optional.of(doubleValue); // is null valid? -> ofNullable
     }
 
     public double getUnitDriveTime() {
-        GlobalAssert.that(unitCapacityDriveTime.isPresent());
-        return unitCapacityDriveTime.get();
+        return unitCapacityDriveTime.orElseThrow(RuntimeException::new);
     }
-
 }

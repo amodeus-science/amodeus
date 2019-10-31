@@ -19,7 +19,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     ;
 
     /** For UniversalDispatcher, VehicleMaintainer internal use only. Use
-     * {@link UniveralDispatcher.setRoboTaxiPickup} or {@link setRoboTaxiRebalance}
+     * {@link UniversalDispatcher#setRoboTaxiPickup} or {@link setRoboTaxiRebalance}
      * from dispatchers. Assigns new destination to vehicle, if vehicle is already
      * located at destination, nothing happens. In one pass of {@redispatch(...)} in
      * {@VehicleMaintainer}, the function setVehicleDiversion(...) may only be
@@ -31,7 +31,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
      *            {@link Link} the {@link RoboTaxi} should be diverted to
      * @param status
      *            {@link} the {@link AVStatus} the {@link RoboTaxi} has after
-     *            the diversion, depends if used from {@link setRoboTaxiPickup} or
+     *            the diversion, depends if used from {@link UniversalDispatcher#setRoboTaxiPickup} or
      *            {@link setRoboTaxiRebalance} */
     /* package */ static void now(RoboTaxi sRoboTaxi, Link destination, FuturePathFactory futurePathFactory, //
             double now, EventsManager eventsManager, boolean reRoute) {
@@ -49,11 +49,10 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
                 if (reRoute || !avDriveTask.getPath().getToLink().equals(destination)) { // ignore when vehicle is already going
                     FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer( //
                             sRoboTaxi.getDivertableLocation(), destination, sRoboTaxi.getDivertableTime());
-                    if (reRoute && avDriveTask.getPath().getToLink().equals(destination)) {
+                    if (reRoute && avDriveTask.getPath().getToLink().equals(destination))
                         sRoboTaxi.assignDirective(new DriveVehicleRerouteDirective(futurePathContainer, sRoboTaxi));
-                    } else {
+                    else
                         sRoboTaxi.assignDirective(new DriveVehicleDiversionDirective(sRoboTaxi, destination, futurePathContainer));
-                    }
                 } else
                     sRoboTaxi.assignDirective(EmptyDirective.INSTANCE);
             }
@@ -124,9 +123,8 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
             }
         };
 
-        if (sRoboTaxi.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE)) {
+        if (sRoboTaxi.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE))
             eventsManager.processEvent(RebalanceVehicleEvent.create(now, sRoboTaxi, destination));
-        }
 
         GlobalAssert.that(MaxTwoMoreTasksAfterEndingOne.check(schedule, task, now, SharedUniversalDispatcher.SIMTIMESTEP));
     }

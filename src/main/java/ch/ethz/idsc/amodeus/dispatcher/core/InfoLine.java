@@ -11,7 +11,6 @@ package ch.ethz.idsc.amodeus.dispatcher.core;
 
     public InfoLine(int infoLinePeriod) {
         this.infoLinePeriod = infoLinePeriod;
-
     }
 
     /** @param infoLinePeriod */
@@ -26,7 +25,6 @@ package ch.ethz.idsc.amodeus.dispatcher.core;
      * @param now
      *            current time */
     /* package */ void updateInfoLine(String infoLine, double now) {
-
         if (0 < infoLinePeriod && Math.round(now) % infoLinePeriod == 0) {
             String marker = infoLine.substring(COMPARELENGTH);
             if (!marker.equals(previousInfoMarker)) {

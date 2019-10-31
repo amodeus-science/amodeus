@@ -23,8 +23,7 @@ import ch.ethz.idsc.tensor.img.MeanFilter;
 
         int year = Calendar.getInstance().get(Calendar.YEAR);
         int month = Calendar.getInstance().get(Calendar.MONTH) + 1; // Month are 0 based, thus it is nesscessary to add 1
-        Second second = new Second(seconds, minutes, hours, day, month, year); // month and year can not be zero
-        return second;
+        return new Second(seconds, minutes, hours, day, month, year); // month and year can not be zero
     }
 
     public static String fileTitle(String diagramTitle) {

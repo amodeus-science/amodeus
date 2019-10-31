@@ -3,11 +3,11 @@ package ch.ethz.idsc.amodeus.dispatcher.shared.basic;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.NavigableMap;
 import java.util.Random;
-import java.util.TreeMap;
 
+import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -64,11 +64,10 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
     protected void redispatch(double now) {
         final long round_now = Math.round(now);
 
-        if (round_now % dispatchPeriod == 0) {
+        if (round_now % dispatchPeriod == 0)
             /** assignment of {@link RoboTaxi}s */
-            for (RoboTaxi sharedRoboTaxi : getDivertableUnassignedRoboTaxis()) {
+            for (RoboTaxi sharedRoboTaxi : getDivertableUnassignedRoboTaxis())
                 if (getUnassignedAVRequests().size() >= 4) {
-
                     /** select 4 requests */
                     AVRequest firstRequest = getUnassignedAVRequests().get(0);
                     AVRequest secondRequest = getUnassignedAVRequests().get(1);
@@ -97,65 +96,51 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
                     sharedRoboTaxi.updateMenu(courses);
 
                     /** add a redirect task (to the north pole) and move to prev */
-                    Link redirectLink = cityNorthPole;
-                    SharedCourse redirectCourse = SharedCourse.redirectCourse(redirectLink, Double.toString(now) + sharedRoboTaxi.getId().toString());
+                    SharedCourse redirectCourse = SharedCourse.redirectCourse(cityNorthPole, Double.toString(now) + sharedRoboTaxi.getId().toString());
                     addSharedRoboTaxiRedirect(sharedRoboTaxi, redirectCourse);
                     sharedRoboTaxi.moveAVCourseToPrev(redirectCourse);
 
                     /** check consistency and end */
                     GlobalAssert.that(Compatibility.of(sharedRoboTaxi.getUnmodifiableViewOfCourses()).forCapacity(sharedRoboTaxi.getCapacity()));
-                } else {
+                } else
                     break;
-                }
-            }
-        }
 
         /** dispatching of available {@link RoboTaxi}s to the equator */
-        if (round_now % rebalancePeriod == 0) {
+        if (round_now % rebalancePeriod == 0)
             /** relocation of empty {@link RoboTaxi}s to a random link on the equator */
             for (RoboTaxi roboTaxi : getDivertableUnassignedRoboTaxis()) {
                 Link rebalanceLink = equatorLinks.get(randGen.nextInt(equatorLinks.size()));
                 setRoboTaxiRebalance(roboTaxi, rebalanceLink);
             }
-        }
     }
 
     /** @param network
      * @return northern most {@link Link} in the {@link Network} */
     private static Link getNorthPole(Network network) {
-        NavigableMap<Double, Link> links = new TreeMap<>();
-        network.getLinks().values().stream().forEach(l -> {
-            links.put(l.getCoord().getY(), l);
-        });
-        return links.lastEntry().getValue();
+        return network.getLinks().values().stream().max(Comparator.comparingDouble(l -> l.getCoord().getY())).get();
     }
 
     /** @param network
      * @return all {@link Link}s crossing the equator of the city {@link Network} , starting
      *         with links on the equator, if no links found, the search radius is increased by 1 m */
     private static List<Link> getEquator(Network network) {
-        NavigableMap<Double, Link> links = new TreeMap<>();
-        network.getLinks().values().stream().forEach(l -> {
-            links.put(l.getCoord().getY(), l);
-        });
-        double northX = links.lastEntry().getValue().getCoord().getY();
-        double southX = links.firstEntry().getValue().getCoord().getY();
+        double northX = network.getLinks().values().stream().map(Link::getCoord).map(Coord::getY).max(Double::compare).get();
+        double southX = network.getLinks().values().stream().map(Link::getCoord).map(Coord::getY).min(Double::compare).get();
         double equator = southX + (northX - southX) / 2;
 
         List<Link> equatorLinks = new ArrayList<>();
         double margin = 0.0;
-        while (equatorLinks.size() < 1) {
+        while (equatorLinks.isEmpty()) {
             for (Link l : network.getLinks().values()) {
-                boolean crossEq1 = l.getFromNode().getCoord().getY() - margin <= //
-                        equator && l.getToNode().getCoord().getY() + margin >= equator;
-                boolean crossEq2 = l.getFromNode().getCoord().getY() + margin >= //
-                        equator && l.getToNode().getCoord().getY() - margin <= equator;
-                if (crossEq1 || crossEq2)
+                double fromY = l.getFromNode().getCoord().getY();
+                double toY = l.getToNode().getCoord().getY();
+                if((fromY - margin <= equator && toY + margin >= equator) || //
+                        (fromY + margin >= equator && toY - margin <= equator))
                     equatorLinks.add(l);
             }
             margin += 1.0;
         }
-        GlobalAssert.that(equatorLinks.size() > 0);
+        // GlobalAssert.that(equatorLinks.size() > 0); // always true
         return equatorLinks;
     }
 

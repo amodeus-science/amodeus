@@ -28,7 +28,6 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
     /** geometrical properties */
     private final Rect bounds;
-    private final Coord centerCoord;
     private final Link centerLink;
 
     /** All the adjacent Blocks with an Integer for the number of Planed
@@ -62,7 +61,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     Block(Rect bounds, Network network, int id, double historicalDataTime, double predictedTime) {
         this.bounds = bounds;
         this.id = id;
-        centerCoord = new Coord(bounds.centerX, bounds.centerY);
+        Coord centerCoord = new Coord(bounds.centerX, bounds.centerY);
         centerLink = NetworkUtils.getNearestLink(network, centerCoord);
         this.predictionFraction = predictedTime / historicalDataTime;
     }
@@ -200,7 +199,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
     /** calcualtes the number of planned pushes to the adjacent blocks */
     private int getNumberPushingVehicles() {
-        return adjacentBlocks.values().stream().mapToInt(aI -> aI.intValue()).filter(aI -> aI > 0).sum();
+        return adjacentBlocks.values().stream().mapToInt(AtomicInteger::intValue).filter(aI -> aI > 0).sum();
     }
 
     // *******************************************************************/
@@ -226,5 +225,4 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     int getId() {
         return id;
     }
-
 }

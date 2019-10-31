@@ -20,8 +20,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
             Scalar pickupDelayMax, Scalar drpoffDelayMax) {
         boolean timeComp = true;
         Scalar timePrev = Quantity.of(timeNow, SI.SECOND);
-        for (int k = 0; k < newMenu.size(); ++k) {
-            SharedCourse course = newMenu.get(k);
+        for (SharedCourse course : newMenu) {
             Scalar travelTime = travelTimeCashed.travelTime(roboTaxi.getLastKnownLocation(), course.getLink(), timeNow);
             Scalar timeofCourse = timePrev.add(travelTime);
             if (course.getMealType().equals(SharedMealType.PICKUP)) {

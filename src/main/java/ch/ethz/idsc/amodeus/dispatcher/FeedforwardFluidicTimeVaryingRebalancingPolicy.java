@@ -149,7 +149,7 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
             }
 
             /** consistency check: rebalancing destination links must not exceed available vehicles in virtual node */
-            GlobalAssert.that(!virtualNetwork.getVirtualNodes().stream().filter(v -> availableVehicles.get(v).size() < destinationLinks.get(v).size()).findAny().isPresent());
+            GlobalAssert.that(virtualNetwork.getVirtualNodes().stream().noneMatch(v -> availableVehicles.get(v).size() < destinationLinks.get(v).size()));
 
             /** send rebalancing vehicles using the setVehicleRebalance command */
             for (VirtualNode<Link> virtualNode : destinationLinks.keySet()) {
@@ -162,10 +162,9 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
 
         /** Part II: outside rebalancing periods, permanently assign destinations to vehicles using
          * bipartite matching */
-        if (round_now % dispatchPeriod == 0) {
+        if (round_now % dispatchPeriod == 0)
             printVals = bipartiteMatcher.executePickup(this, getDivertableRoboTaxis(), //
                     getAVRequests(), distanceFunction, network);
-        }
     }
 
     @Override

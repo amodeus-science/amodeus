@@ -10,7 +10,6 @@ import org.matsim.api.core.v01.Coord;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAdd;
-import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseRemove;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
@@ -21,13 +20,11 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         List<SharedCourse> originalSharedCourses = new ArrayList<>(unmodifiableSharedMenu);
 
         GlobalAssert.that(StaticHelper.checkAllPickupsFirst(originalSharedCourses));
-        int originalSize = originalSharedCourses.size();
-        Collection<SharedCourse> sharedCourses = originalSharedCourses.stream()//
+        final int originalSize = originalSharedCourses.size();
+        Collection<SharedCourse> sharedCourses = originalSharedCourses.stream() //
                 .filter(sc -> sc.getMealType().equals(SharedMealType.PICKUP)).collect(Collectors.toList());
 
-        for (SharedCourse sharedCourse : sharedCourses) {
-            SharedCourseRemove.specific(originalSharedCourses, sharedCourse);
-        }
+        originalSharedCourses.removeAll(sharedCourses);
 
         int currentIndex = 0;
         Coord nextCoord = startCoord;
@@ -42,5 +39,4 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         GlobalAssert.that(originalSize == originalSharedCourses.size());
         return originalSharedCourses;
     }
-
 }

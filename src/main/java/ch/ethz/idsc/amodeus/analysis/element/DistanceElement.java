@@ -68,8 +68,7 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
 
         /** Get the TimeStep */
         time.append(RealScalar.of(simulationObject.now));
-        simulationObject.requests.stream() //
-                .forEach(requestContainer -> requestIndices.add(requestContainer.requestIndex));
+        simulationObject.requests.forEach(requestContainer -> requestIndices.add(requestContainer.requestIndex));
 
         /** Get the Occupancy Ratio per TimeStep */
         Tensor numStatus = StaticHelper.getNumStatus(simulationObject);

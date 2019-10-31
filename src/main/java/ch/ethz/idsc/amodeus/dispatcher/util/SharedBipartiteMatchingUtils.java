@@ -4,7 +4,6 @@ package ch.ethz.idsc.amodeus.dispatcher.util;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.function.Function;
 
 import org.matsim.api.core.v01.network.Network;
@@ -37,9 +36,8 @@ public class SharedBipartiteMatchingUtils {
         Map<RoboTaxi, AVRequest> gbpMatchCleaned = getGBPMatch(getPickupTaxi, roboTaxis, requests, distanceFunction, network);
 
         /** perform dispatching */
-        for (Entry<RoboTaxi, AVRequest> entry : gbpMatchCleaned.entrySet())
-            universalDispatcher.addSharedRoboTaxiPickup(entry.getKey(), entry.getValue());
-        return infoLine;
+        gbpMatchCleaned.forEach(universalDispatcher::addSharedRoboTaxiPickup);
+        return infoLine; // TODO always empty?
     }
 
     public Map<RoboTaxi, AVRequest> getGBPMatch(Function<AVRequest, RoboTaxi> getPickupTaxi, //
@@ -53,8 +51,6 @@ public class SharedBipartiteMatchingUtils {
 
         /** prevent cycling an assignment is only updated if the new distance is smaller than the
          * old distance */
-        Map<RoboTaxi, AVRequest> gbpMatchCleaned = CyclicSolutionPreventer.apply(gbpMatch, getPickupTaxi, accDstFctn);
-
-        return gbpMatchCleaned;
+        return CyclicSolutionPreventer.apply(gbpMatch, getPickupTaxi, accDstFctn);
     }
 }

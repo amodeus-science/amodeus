@@ -27,9 +27,8 @@ import ch.ethz.matsim.av.router.AVRouter;
         System.out.println("***");
         System.out.println("schedule of roboTaxi " + roboTaxi.getId() + " at " + now + ":");
         Map<String, Scalar> expDropOff = of(roboTaxi, now, router);
-        for (Entry<String, Scalar> entry : expDropOff.entrySet()) {
+        for (Entry<String, Scalar> entry : expDropOff.entrySet())
             System.out.println(entry.getKey() + ": " + entry.getValue());
-        }
         System.out.println("***");
     }
 
@@ -50,9 +49,8 @@ import ch.ethz.matsim.av.router.AVRouter;
                 time = time.add(timeTo);
                 linkCurr = course.getLink();
                 expDropoff.put(course.getCourseId(), time);
-            } else {
+            } else
                 expDropoff.put(course.getCourseId(), null);
-            }
         }
         return expDropoff;
     }

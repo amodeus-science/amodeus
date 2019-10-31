@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared.fifs;
 
+import java.util.Objects;
 import java.util.Set;
 
 import ch.ethz.matsim.av.passenger.AVRequest;
@@ -17,10 +18,9 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     }
 
     public double calculate(AVRequest avRequest, Set<AVRequest> waitList, Set<AVRequest> extremeWaitList) {
-        if (extremeWaitList == null)
+        if (Objects.isNull(extremeWaitList))
             return calculate(avRequest, waitList);
-        return (extremeWaitList.contains(avRequest)) ? extremeWaitListTime : calculate(avRequest, waitList);
-
+        return extremeWaitList.contains(avRequest) ? extremeWaitListTime : calculate(avRequest, waitList);
     }
 
     public double calculate(AVRequest avRequest, Set<AVRequest> waitLists) {

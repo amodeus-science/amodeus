@@ -70,20 +70,17 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         return rideSharingConstraints.combinedConstraintAcceptable(sharedAvRoute, oldRoute, unitCapacityDriveTime);
     }
 
-    /** @param allRoboTaxis
-     * @param robotaxisWithMenu
+    /** @param robotaxisWithMenu
      * @param avRequest
      * @param now
      * @param timeDb
+     * @param requestMaintainer
      * @param roboTaxiMaintainer
-     * @param maxTime
-     * @param timeSharing
      * @return The Closest RoboTaxi with a Shared Menu associated with it. */
-    /* package */ Optional<Entry<RoboTaxi, List<SharedCourse>>> getClosestValidSharingRoboTaxi(Set<RoboTaxi> robotaxisWithMenu, AVRequest avRequest, double now,
+    /* package */ Optional<Entry<RoboTaxi, List<SharedCourse>>> getClosestValidSharingRoboTaxi(Set<RoboTaxi> robotaxisWithMenu, AVRequest avRequest, double now, //
+            CachedNetworkTimeDistance timeDb, RequestHandler requestMaintainer, RoboTaxiHandler roboTaxiMaintainer) {
 
-            CachedNetworkTimeDistance timeDb, RequestHandler requestMaintainer, RoboTaxiHandler roboTaxiMaintainer, double maxTime) {
-
-        GlobalAssert.that(robotaxisWithMenu.stream().allMatch(r -> SharedCourseAccess.hasStarter(r)));
+        GlobalAssert.that(robotaxisWithMenu.stream().allMatch(SharedCourseAccess::hasStarter));
 
         NavigableMap<Double, RoboTaxi> roboTaxisWithinMaxPickup = RoboTaxiUtilsFagnant.getRoboTaxisWithinMaxTime(avRequest.getFromLink(), //
                 robotaxisWithMenu, timeDb, maxPickupTime, roboTaxiMaintainer, now);
@@ -109,9 +106,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
             oldRoutes.put(roboTaxi, SharedAvRoute.of(roboTaxi.getUnmodifiableViewOfCourses(), roboTaxi.getDivertableLocation(), now, pickupDuration, dropoffDuration, timeDb));
         }
         Optional<Entry<RoboTaxi, List<SharedCourse>>> rt = getFastestValidEntry(avRouteHandler, avRequest, oldRoutes, now, requestMaintainer);
-        if (rt.isPresent()) {
-            GlobalAssert.that(Compatibility.of(rt.get().getValue()).forCapacity(rt.get().getKey().getCapacity()));
-        }
+        rt.ifPresent(rtle -> GlobalAssert.that(Compatibility.of(rtle.getValue()).forCapacity(rtle.getKey().getCapacity())));
         return rt;
     }
 
@@ -125,9 +120,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
             for (Entry<RoboTaxi, Set<SharedAvRoute>> entry : map.entrySet())
                 for (SharedAvRoute sharedAvRoute : entry.getValue())
                     if (isValidRoute(sharedAvRoute, oldRoutes.get(entry.getKey()), requestMaintainer.getRequestWrap(avRequest), now, requestMaintainer))
-                        if (Compatibility.of(sharedAvRoute.getRoboTaxiMenu()).forCapacity(entry.getKey().getCapacity())) {
+                        if (Compatibility.of(sharedAvRoute.getRoboTaxiMenu()).forCapacity(entry.getKey().getCapacity()))
                             return Optional.of(new SimpleEntry<>(entry.getKey(), sharedAvRoute.getRoboTaxiMenu()));
-                        }
 
             avRouteHandler.remove(nextValue);
             GlobalAssert.that(!avRouteHandler.contains(nextValue));
@@ -145,5 +139,4 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         SharedAvRoute oldRoute = SharedAvRoute.of(roboTaxi.getUnmodifiableViewOfCourses(), roboTaxi.getDivertableLocation(), now, pickupDuration, dropoffDuration, timeDb);
         return isValidRoute(sharedAvRoute, oldRoute, requestMaintainer.getRequestWrap(avRequest), now, requestMaintainer);
     }
-
 }

@@ -42,7 +42,6 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         final double endDropoffTime = begDropoffTime + dropoffDurationPerStop;
 
         if (endDropoffTime < scheduleEndTime) {
-
             avStayTask.setEndTime(getTimeNow); // finish the last task now
 
             AVPickupTask pickupTask = new AVPickupTask( //

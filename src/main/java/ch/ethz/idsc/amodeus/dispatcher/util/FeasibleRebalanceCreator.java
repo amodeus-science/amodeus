@@ -3,13 +3,14 @@ package ch.ethz.idsc.amodeus.dispatcher.util;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import ch.ethz.idsc.tensor.RationalScalar;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Dimensions;
@@ -34,22 +35,15 @@ public enum FeasibleRebalanceCreator {
 
         Tensor feasibleRebalance = rebalanceInput.copy();
 
-        for (int i = 0; i < dim0; ++i) {
+        for (AtomicInteger ai = new AtomicInteger(); ai.get() < dim0; ai.getAndIncrement()) {
             // count number of outgoing vehicles per vNode
-            double outgoingNmrvNode = 0.0;
-            Tensor outgoingVehicles = rebalanceInput.get(i);
-            for (int j = 0; j < dim0; ++j) {
-                outgoingNmrvNode = outgoingNmrvNode + outgoingVehicles.Get(j).number().doubleValue();
-            }
-            int outgoingVeh = (int) outgoingNmrvNode;
-            int finalI = i;
+            int outgoingVeh = rebalanceInput.get(ai.get()).stream().map(Scalar.class::cast).reduce(Scalar::add).get().number().intValue();
             int availableVehvNode = availableVehicles //
-                    .get(availableVehicles.keySet().stream().filter(v -> v.getIndex() == finalI).findAny().get()).size();
+                    .get(availableVehicles.keySet().stream().filter(v -> v.getIndex() == ai.get()).findAny().get()).size();
             // if number of outoing vehicles too small, reduce proportionally
             if (availableVehvNode < outgoingVeh) {
-                double shrinkingFactor = ((double) availableVehvNode / ((double) outgoingVeh));
-                Tensor newRow = Floor.of(rebalanceInput.get(i).multiply(RealScalar.of(shrinkingFactor)));
-                feasibleRebalance.set(newRow, i);
+                Tensor newRow = Floor.of(rebalanceInput.get(ai.get()).multiply(RationalScalar.of(availableVehvNode, outgoingVeh)));
+                feasibleRebalance.set(newRow, ai.get());
             }
         }
         return feasibleRebalance;

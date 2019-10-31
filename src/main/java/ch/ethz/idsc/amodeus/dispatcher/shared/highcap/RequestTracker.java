@@ -2,44 +2,28 @@
 package ch.ethz.idsc.amodeus.dispatcher.shared.highcap;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 /* package */ enum RequestTracker {
     ;
     public static Set<AVRequest> getNewAddedValidRequests(Set<AVRequest> openRequestSet, Set<AVRequest> lastValidRequestSet) {
-        Set<AVRequest> newAddedValidRequests = new HashSet<>();
-        for (AVRequest avRequest : openRequestSet)
-            if (!lastValidRequestSet.contains(avRequest))
-                newAddedValidRequests.add(avRequest);
-        return newAddedValidRequests;
+        return openRequestSet.stream().filter(avRequest -> !lastValidRequestSet.contains(avRequest)).collect(Collectors.toSet());
     }
 
     public static Set<AVRequest> getRemovedRequests(Set<AVRequest> openRequestSet, Set<AVRequest> lastValidRequestSet) {
-        Set<AVRequest> removedRequests = new HashSet<>();
-        for (AVRequest avRequest : lastValidRequestSet)
-            if (!openRequestSet.contains(avRequest))
-                removedRequests.add(avRequest);
-        return removedRequests;
+        return lastValidRequestSet.stream().filter(avRequest -> !openRequestSet.contains(avRequest)).collect(Collectors.toSet());
     }
 
     public static Set<AVRequest> getRemainedRequests(Set<AVRequest> openRequestSet, Set<AVRequest> lastValidRequestSet) {
-        Set<AVRequest> remainedRequests = new HashSet<>();
-        for (AVRequest avRequest : lastValidRequestSet)
-            if (openRequestSet.contains(avRequest))
-                remainedRequests.add(avRequest);
-        return remainedRequests;
+        return lastValidRequestSet.stream().filter(openRequestSet::contains).collect(Collectors.toSet());
     }
 
     public static void removeClosedRequest(Set<AVRequest> requestPool, Collection<AVRequest> openRequests) {
-        Set<AVRequest> closedRequests = new HashSet<>();
-        for (AVRequest avRequest : requestPool)
-            if (!openRequests.contains(avRequest))
-                closedRequests.add(avRequest);
-        requestPool.removeAll(closedRequests);
+        requestPool.stream().filter(avRequest -> !openRequests.contains(avRequest)).forEach(requestPool::remove);
     }
 
     /** this function remove overdue request in the request pool
@@ -49,14 +33,10 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param now
      * @param requestMatchedLastTime
      * @return the set of removed requests */
-
     public static Set<AVRequest> removeOverduedRequest(Set<AVRequest> requestPool, //
-
             Map<AVRequest, RequestKeyInfo> requestKeyInfoMap, double now, Set<AVRequest> requestMatchedLastTime) {
-        Set<AVRequest> overduedRequests = new HashSet<>();
-        for (AVRequest avRequest : requestPool)
-            if (requestKeyInfoMap.get(avRequest).getDeadlinePickUp() < now && !requestMatchedLastTime.contains(avRequest))
-                overduedRequests.add(avRequest);
+        Set<AVRequest> overduedRequests = requestPool.stream().filter(avRequest -> //
+                requestKeyInfoMap.get(avRequest).getDeadlinePickUp() < now && !requestMatchedLastTime.contains(avRequest)).collect(Collectors.toSet());
         requestPool.removeAll(overduedRequests);
         return overduedRequests;
     }

@@ -50,10 +50,6 @@ public enum SharedCourseAccess {
     /** @return true if the {@link List} of {@link SharedCourse}s @param courses has a second
      *         course, otherwise return false */
     public static boolean hasSecondCourse(List<SharedCourse> courses) {
-        if (hasStarter(courses)) {
-            return courses.size() >= 2;
-        }
-        return false;
+        return hasStarter(courses) && courses.size() >= 2;
     }
-
 }

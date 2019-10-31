@@ -34,7 +34,6 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         final double endDriveTask = vrpPathWithTravelData.getArrivalTime();
 
         if (endDriveTask < scheduleEndTime) {
-
             GlobalAssert.that(vrpPathWithTravelData.getDepartureTime() == roboTaxi.getDivertableTime());
             avStayTask.setEndTime(vrpPathWithTravelData.getDepartureTime());
 
@@ -48,7 +47,6 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
             // function
             // final double distance = VrpPathUtils.getDistance(vrpPathWithTravelData);
             // nextRequest.getRoute().setDistance(distance);
-
         } else
             reportExecutionBypass(endDriveTask - scheduleEndTime);
     }

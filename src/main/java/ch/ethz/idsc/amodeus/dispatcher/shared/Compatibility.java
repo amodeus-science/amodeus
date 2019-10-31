@@ -29,18 +29,20 @@ public class Compatibility {
     public boolean forCapacity(int capacity) {
         long onBoardPassengers = OnMenuRequests.getOnBoardCustomers(courses);
         for (SharedCourse course : courses) {
-            if (course.getMealType().equals(SharedMealType.PICKUP)) {
+            switch (course.getMealType()) {
+            case PICKUP:
                 onBoardPassengers++;
-            } else if (course.getMealType().equals(SharedMealType.DROPOFF)) {
+                break;
+            case DROPOFF:
                 onBoardPassengers--;
-            } else if (course.getMealType().equals(SharedMealType.REDIRECT)) {
-                // --
-            } else {
+                break;
+            case REDIRECT:
+                break;
+            default:
                 throw new IllegalArgumentException("Unknown SharedAVMealType -- please specify it !!!--");
             }
-            if (onBoardPassengers > capacity) {
+            if (onBoardPassengers > capacity)
                 return false;
-            }
         }
         return true;
     }

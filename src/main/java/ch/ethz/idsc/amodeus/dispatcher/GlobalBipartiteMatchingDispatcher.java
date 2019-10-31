@@ -61,10 +61,9 @@ public class GlobalBipartiteMatchingDispatcher extends RebalancingDispatcher {
     @Override
     public void redispatch(double now) {
         final long round_now = Math.round(now);
-        if (round_now % dispatchPeriod == 0) {
+        if (round_now % dispatchPeriod == 0)
             printVals = bipartiteMatcher.executePickup(this, getDivertableRoboTaxis(), //
                     getAVRequests(), distanceFunction, network);
-        }
     }
 
     @Override

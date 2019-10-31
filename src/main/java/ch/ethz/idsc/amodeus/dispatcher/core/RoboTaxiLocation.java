@@ -17,7 +17,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
 /* package */ class RoboTaxiLocation extends RoboTaxiTaskAdapter {
 
-    /** @param avVehicle
+    /** @param roboTaxi
      * @return link or null with a small chance */
     public static Link of(RoboTaxi roboTaxi) {
         Schedule schedule = Objects.requireNonNull(roboTaxi.getSchedule());
@@ -51,7 +51,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         OnlineDriveTaskTracker onlineDriveTaskTracker = (OnlineDriveTaskTracker) taskTracker;
         // there is a slim chance that function getDiversionPoint() returns null
         LinkTimePair linkTimePair = onlineDriveTaskTracker.getDiversionPoint();
-        if (linkTimePair != null)
+        if (Objects.nonNull(linkTimePair))
             link = linkTimePair.link;
     }
 

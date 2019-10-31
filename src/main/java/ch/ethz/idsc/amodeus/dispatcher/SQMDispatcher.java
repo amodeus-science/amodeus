@@ -6,8 +6,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
-import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
@@ -69,23 +70,19 @@ public class SQMDispatcher extends PartitionedDispatcher {
     @Override
     public void redispatch(double now) {
         // skip redispatch at the beginning where RoboTaxis are not yet initialized
-        if (getRoboTaxis().isEmpty()) {
+        if (getRoboTaxis().isEmpty())
             return;
-        }
 
         // for the first time assign to each virtual node the closest link
-        if (nodeToTaxi.isEmpty()) {
+        if (nodeToTaxi.isEmpty())
             assignVirtualNodes();
-        }
 
         List<AVRequest> unassigned_requests = getUnassignedAVRequests();
 
         for (RoboTaxi taxi : getRoboTaxiSubset(RoboTaxiStatus.STAY)) {
-
             // move unassigned taxis back to their virtual station
-            if (taxi.getDivertableLocation() != nodeToLink.get(taxiToNode.get(taxi))) {
+            if (taxi.getDivertableLocation() != nodeToLink.get(taxiToNode.get(taxi)))
                 setRoboTaxiRebalance(taxi, nodeToLink.get(taxiToNode.get(taxi)));
-            }
 
             // assign pick-up demands to the according taxi in the virtualStation in a
             // first-in first-out manner
@@ -98,9 +95,8 @@ public class SQMDispatcher extends PartitionedDispatcher {
                         earliestAvr = avr;
                     }
                 }
-                if (earliestAvr != null) {
+                if (Objects.nonNull(earliestAvr))
                     setRoboTaxiPickup(taxi, earliestAvr);
-                }
             }
         }
     }
@@ -132,21 +128,9 @@ public class SQMDispatcher extends PartitionedDispatcher {
      *         closest links to corresponding virtual nodes
      * @author fluric */
     private List<Link> assignNodesToNearestLinks(Collection<VirtualNode<Link>> nodes) {
-        List<Link> list = new ArrayList<>();
-
-        for (VirtualNode<Link> node : nodes) {
-            // get the center coordinate
-
-            Coord coord = TensorCoords.toCoord(node.getCoord());
-
-            // find the closest link
-            int index = fastLinkLookup.getLinkIndexFromXY(coord);
-            Link closest = db.getOsmLink(index).link;
-
-            list.add(closest);
-        }
-
-        return list;
+        return nodes.stream().map(VirtualNode::getCoord).map(TensorCoords::toCoord) // get the center coordinate
+                .mapToInt(fastLinkLookup::getLinkIndexFromXY).mapToObj(db::getOsmLink).map(osml -> osml.link) // find the closest link
+                .collect(Collectors.toList());
     }
 
     public static class Factory implements AVDispatcherFactory {

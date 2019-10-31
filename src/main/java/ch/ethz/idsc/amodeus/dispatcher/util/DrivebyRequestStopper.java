@@ -3,10 +3,8 @@ package ch.ethz.idsc.amodeus.dispatcher.util;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.BiConsumer;
 
 import org.matsim.api.core.v01.network.Link;
@@ -38,12 +36,7 @@ public enum DrivebyRequestStopper {
                 }
             }
         }
-        Set<AVRequest> requests = new HashSet<>();
-        pickups.values().stream().forEach(r -> {
-            boolean notContained = requests.add(r);
-            GlobalAssert.that(notContained);
-
-        });
+        GlobalAssert.that(pickups.values().stream().distinct().count() == pickups.size());
         return pickups;
     }
 }

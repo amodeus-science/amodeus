@@ -28,7 +28,7 @@ public enum SharedMenuCheck {
      *         exactly one {@link SharedCourse} of {@link SharedMealType} dropoff
      *         appears in @param courses */
     public static boolean eachPickupAfterDropoff(List<? extends SharedCourse> courses) {
-        for (SharedCourse course : courses) {
+        for (SharedCourse course : courses)
             if (course.getMealType().equals(SharedMealType.PICKUP)) {
                 int pickupIndex = courses.indexOf(course);
                 SharedCourse dropoffCourse = SharedCourse.dropoffCourse(course.getAvRequest());
@@ -41,8 +41,6 @@ public enum SharedMenuCheck {
                     return false;
                 }
             }
-        }
         return true;
     }
-
 }

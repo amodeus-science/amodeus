@@ -12,8 +12,8 @@ import ch.ethz.matsim.av.schedule.AVTransitEventMapper;
 
 public enum ConvertAVServicesFromEvents {
     ;
-    public static void write(Network network, String outputPath, String eventsPath) {
 
+    public static void write(Network network, String outputPath, String eventsPath) {
         AVServiceWriter writer = new AVServiceWriter(new File(outputPath));
         AVServiceListener listener = new AVServiceListener(network, writer);
 
@@ -27,6 +27,5 @@ public enum ConvertAVServicesFromEvents {
 
         writer.close();
         System.out.println("Exported " + outputPath);
-
     }
 }

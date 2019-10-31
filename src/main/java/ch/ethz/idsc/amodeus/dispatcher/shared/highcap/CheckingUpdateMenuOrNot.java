@@ -15,12 +15,9 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
     public boolean updateMenuOrNot(RoboTaxi roboTaxi, Set<AVRequest> setOfRequestsInRoute) {
         // prevent looping
-        if (!secondLastSetOfRequestInRoute.containsKey(roboTaxi)) {
-            secondLastSetOfRequestInRoute.put(roboTaxi, new HashSet<>());
-        }
-        if (!lastSetOfRequestsInRoute.containsKey(roboTaxi)) {
-            lastSetOfRequestsInRoute.put(roboTaxi, new HashSet<>());
-        }
+        secondLastSetOfRequestInRoute.putIfAbsent(roboTaxi, new HashSet<>());
+
+        lastSetOfRequestsInRoute.putIfAbsent(roboTaxi, new HashSet<>());
 
         if (secondLastSetOfRequestInRoute.get(roboTaxi) == setOfRequestsInRoute) {
             secondLastSetOfRequestInRoute.put(roboTaxi, lastSetOfRequestsInRoute.get(roboTaxi));
@@ -35,16 +32,13 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         }
 
         // Prevent update menu when dropping off/picking up
-        if (!roboTaxi.getUnmodifiableViewOfCourses().isEmpty()) {
-            if (roboTaxi.getDivertableLocation() == roboTaxi.getUnmodifiableViewOfCourses().get(0).getLink()) {
+        if (!roboTaxi.getUnmodifiableViewOfCourses().isEmpty())
+            if (roboTaxi.getDivertableLocation() == roboTaxi.getUnmodifiableViewOfCourses().get(0).getLink())
                 return false; // if divertable location is equal to the link of first course, do not update menu
-            }
-        }
 
         secondLastSetOfRequestInRoute.put(roboTaxi, lastSetOfRequestsInRoute.get(roboTaxi));
         lastSetOfRequestsInRoute.put(roboTaxi, setOfRequestsInRoute);
 
         return true;
     }
-
 }
