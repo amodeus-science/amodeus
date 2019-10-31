@@ -31,14 +31,14 @@ public class TaxiTripImportExportTest {
         // 3 import again
         List<TaxiTrip> importedTrips = ImportTaxiTrips.fromFile(tripFile).collect(Collectors.toList());
 
-        // 4 compare
+        // 4 compare all trips
         for (int i = 0; i < importedTrips.size(); ++i) {
             TaxiTrip original = someTrips.get(i);
             TaxiTrip imported = importedTrips.get(i);
             Assert.assertTrue(original.equals(imported));
         }
 
-        // 5 remove file
+        // 5 remove the trip export file
         boolean isDeleted = tripFile.delete();
         Assert.assertTrue(isDeleted);
     }
