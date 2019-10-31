@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -25,7 +24,6 @@ public enum ImportTaxiTrips {
             bufferedReader.lines().skip(1).forEach(line -> {
                 if (Objects.nonNull(line)) {
                     String[] splits = line.split(";");
-
                     // TODO more elegant? unfortunately necessary as toString()
                     // of LDT removes last :00 if full hour...
                     LocalDateTime ldt = null;
@@ -44,9 +42,8 @@ public enum ImportTaxiTrips {
                             Tensors.fromString(splits[2]), //
                             Tensors.fromString(splits[3]), //
                             Scalars.fromString(splits[4]), //
-                            Scalars.fromString(splits[5]), //
-                            ldt, //
-                            Scalars.fromString(splits[8])//
+                            ldt, Scalars.fromString(splits[8]), //
+                            Scalars.fromString(splits[9])//
                     );
                     trips.add(trip);
                 }
@@ -54,5 +51,4 @@ public enum ImportTaxiTrips {
         }
         return trips.stream();
     }
-
 }

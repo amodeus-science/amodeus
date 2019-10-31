@@ -24,8 +24,8 @@ public class TaxiTrip implements Comparable<TaxiTrip> {
     public LocalDateTime submissionTimeDate; // trip submission time and date
     public LocalDateTime pickupTimeDate; // trip pickup time and date
     public LocalDateTime dropoffTimeDate; // trip dropoff time and date
-    public final Scalar driveTime; // trip drive time
     public final Scalar waitTime; // wait time if recorded in data set
+    public final Scalar driveTime; // trip drive time
 
     /** @return a {@link TaxiTrip} for wich the {@link LocalDateTime} of the dropoff is determined
      *         using the @param pickupDate the trip @param duration, the {@link LocalDateTime} of the
@@ -97,7 +97,25 @@ public class TaxiTrip implements Comparable<TaxiTrip> {
 
     @Override
     public String toString() {
-        return pickupTimeDate + "\t:\tTrip " + localId + "\t(Taxi " + taxiId + ")";
+        String printline = "";
+        Field[] fields = TaxiTrip.class.getFields();
+
+        for (int i = 0; i < fields.length; ++i) {
+            Field field = fields[i];
+            try {
+                Object ofMe = field.get(this);
+                if (Objects.nonNull(ofMe)) {
+
+                    if (i == 0)
+                        printline += ofMe.toString();
+                    else
+                        printline += "; " + ofMe.toString();
+                }
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+        }
+        return printline;
     }
 
     @Override
@@ -111,7 +129,6 @@ public class TaxiTrip implements Comparable<TaxiTrip> {
                 Object ofMe = field.get(this);
                 Object ofOther = field.get(other);
                 if (Objects.nonNull(ofMe) && Objects.nonNull(ofOther)) {
-                    System.out.println(ofMe.toString() + " =?= " + ofOther.toString());
                     if (!ofMe.equals(ofOther)) {
                         isSame = false;
                         break;
