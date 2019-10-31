@@ -26,7 +26,8 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
         sharedCourses.removeAll(set);
 
-        for (int i = 0; i < set.size(); i++) {
+        final int iter = set.size();
+        for (int i = 0; i < iter; i++) {
             SharedCourse sharedCourse = StaticHelper.getClosestCourse(set, lastPickupCoord);
             SharedCourseAdd.asDessertList(sharedCourses, sharedCourse);
             set.remove(sharedCourse);

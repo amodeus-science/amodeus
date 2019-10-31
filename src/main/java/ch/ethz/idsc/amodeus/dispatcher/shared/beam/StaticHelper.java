@@ -17,10 +17,10 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     public static boolean checkAllPickupsFirst(List<SharedCourse> sharedMenu) {
         boolean justPickupsSoFar = true;
         for (SharedCourse sharedCourse : sharedMenu)
-            if (sharedCourse.getMealType().equals(SharedMealType.PICKUP))
+            if (sharedCourse.getMealType().equals(SharedMealType.PICKUP)) {
                 if (!justPickupsSoFar)
                     return false;
-            else
+            } else
                 justPickupsSoFar = false;
         return true;
     }
