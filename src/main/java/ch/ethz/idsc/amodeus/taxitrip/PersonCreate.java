@@ -31,11 +31,11 @@ public enum PersonCreate {
 
         /** start activity */
         Activity startActivity = populationFactory.createActivityFromLinkId("activity", pickupLocation.getId());
-        startActivity.setEndTime(timeConvert.ldtToAmodeus(taxiTrip.pickupDate, simulationDate));
+        startActivity.setEndTime(timeConvert.ldtToAmodeus(taxiTrip.pickupTimeDate, simulationDate));
 
         /** end activity */
         Activity endActivity = populationFactory.createActivityFromLinkId("activity", drpoffLocation.getId());
-        endActivity.setStartTime(timeConvert.ldtToAmodeus(taxiTrip.dropoffDate, simulationDate));
+        endActivity.setStartTime(timeConvert.ldtToAmodeus(taxiTrip.dropoffTimeDate, simulationDate));
 
         /** leg between activity */
         Leg leg = populationFactory.createLeg("av");

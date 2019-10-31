@@ -31,6 +31,9 @@ public enum ExportTaxiTrips {
                 String line = "";
                 try {
                     bufferedWriter.newLine();
+                    
+
+                    
                     // TODO use introspection as with header to extract field values and convert to string
                     line += trip.localId;
                     line += ";" + trip.taxiId;
@@ -38,9 +41,9 @@ public enum ExportTaxiTrips {
                     line += ";" + trip.dropoffLoc;
                     line += ";" + trip.distance;
                     line += ";" + trip.waitTime;
-                    line += ";" + trip.pickupDate;
-                    line += ";" + trip.dropoffDate;
-                    line += ";" + trip.duration;
+                    line += ";" + trip.pickupTimeDate;
+                    line += ";" + trip.dropoffTimeDate;
+                    line += ";" + trip.driveTime;
                     bufferedWriter.write(line);
                 } catch (IOException e) {
                     System.err.println("Unable to export taxi trip: ");

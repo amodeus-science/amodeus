@@ -55,10 +55,4 @@ public enum ImportTaxiTrips {
         return trips.stream();
     }
 
-    public static void main(String[] args) {
-
-        // DateTimeFormatter ldtFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
-        DateTimeFormatter ldtFormat2 = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-        LocalDateTime.parse("2019-07-19T00:10:50", ldtFormat2);
-    }
 }
