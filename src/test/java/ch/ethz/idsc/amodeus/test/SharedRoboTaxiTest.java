@@ -72,7 +72,7 @@ public class SharedRoboTaxiTest {
         // ... or why is it necessary?
         // VirtualNetworkGet.readDefault(testPreparer.getPreparedNetwork(), new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault()));
         Map<String, Link> map = new HashMap<>();
-        testPreparer.getPreparedNetwork().getLinks().entrySet().forEach(e -> map.put(e.getKey().toString(), e.getValue()));
+        testPreparer.getPreparedNetwork().getLinks().forEach((k, v) -> map.put(k.toString(), v));
     }
 
     @Test
@@ -133,7 +133,7 @@ public class SharedRoboTaxiTest {
         /** status distribution, every row must equal the total of vehicles */
         Tensor distributionSum = Total.of(Transpose.of(ate.getStatusDistribution().statusTensor));
         distributionSum.flatten(-1).forEach(e -> //
-        assertTrue(e.equals(RealScalar.of(ate.getSimulationInformationElement().vehicleSize()))));
+        assertEquals(RealScalar.of(ate.getSimulationInformationElement().vehicleSize()), e));
 
         /** distance and occupancy ratios */
         Scalar occupancyRatio = Mean.of(ate.getDistancElement().ratios).Get(0);

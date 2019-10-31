@@ -114,13 +114,10 @@ public class ExtDemandSupplyBeamSharing extends SharedRebalancingDispatcher {
 
             Collection<RoboTaxi> unassignedRoboTaxisNow = new HashSet<>(unassignedRoboTaxis.getValues());
 
-            for (RoboTaxi roboTaxi : unassignedRoboTaxisNow) {
-                if (!roboTaxi.getStatus().equals(RoboTaxiStatus.STAY)) {
-                    if (unassignedRoboTaxis.contains(roboTaxi)) {
+            for (RoboTaxi roboTaxi : unassignedRoboTaxisNow)
+                if (!roboTaxi.getStatus().equals(RoboTaxiStatus.STAY))
+                    if (unassignedRoboTaxis.contains(roboTaxi))
                         unassignedRoboTaxis.remove(roboTaxi);
-                    }
-                }
-            }
         }
 
         // ADDITIONAL SHARING POSSIBILITY AT EACH PICKUP

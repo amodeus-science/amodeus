@@ -35,11 +35,10 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
             if (closestCourse == null) {
                 closestCourse = sharedCourse;
                 distance = d;
-            } else
-                if (d < distance) {
-                    distance = d;
-                    closestCourse = sharedCourse;
-                }
+            } else if (d < distance) {
+                distance = d;
+                closestCourse = sharedCourse;
+            }
         }
         return closestCourse;
     }

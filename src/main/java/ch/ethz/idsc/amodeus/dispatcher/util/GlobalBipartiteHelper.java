@@ -44,8 +44,8 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
         /** do the assignment according to the Hungarian algorithm (only for the matched elements) */
         AtomicInteger ai = new AtomicInteger();
-        final Map<RoboTaxi, T> map = orderedRoboTaxis.stream().collect(Collectors.toMap(rt -> rt, //
-                rt -> ordered_linkObjects.get(matchinghungarianAlgorithm[ai.getAndIncrement()])));
+        final Map<RoboTaxi, T> map = orderedRoboTaxis.stream().filter(rt -> 0 <= matchinghungarianAlgorithm[ai.getAndIncrement()]) //
+                .collect(Collectors.toMap(rt -> rt, rt -> ordered_linkObjects.get(matchinghungarianAlgorithm[ai.get() - 1])));
         GlobalAssert.that(map.size() == Math.min(n, m));
         return map;
     }

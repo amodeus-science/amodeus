@@ -1,8 +1,6 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.util;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
@@ -53,7 +51,8 @@ public class TreeMultipleItems<T> {
         if (!set.contains(t)) {
             double submission = function.apply(t);
             boolean setok = set.add(t);
-            tree.put(submission, tree.getOrDefault(submission, new HashSet<>(Collections.singletonList(t))));
+            tree.putIfAbsent(submission, new HashSet<>());
+            tree.get(submission).add(t);
             GlobalAssert.that(setok);
         }
     }
