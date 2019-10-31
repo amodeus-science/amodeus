@@ -28,8 +28,8 @@ import ch.ethz.idsc.tensor.Tensors;
     }
 
     public void update(Collection<RoboTaxi> newAllRoboTaxis, Collection<RoboTaxi> unassignedRoboTaxis) {
-        newAllRoboTaxis.forEach(rt -> allRoboTaxis.add(rt));
-        unassignedRoboTaxis.stream().forEach(rt -> this.unassignedRoboTaxis.add(rt));
+        newAllRoboTaxis.forEach(allRoboTaxis::add);
+        this.unassignedRoboTaxis.addAll(unassignedRoboTaxis);
     }
 
     public void assign(RoboTaxi roboTaxi) {
@@ -63,5 +63,4 @@ import ch.ethz.idsc.tensor.Tensors;
         double distance = maxTime * maxSpeed;
         return allRoboTaxis.disk(coord.getX(), coord.getY(), distance);
     }
-
 }

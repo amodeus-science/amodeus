@@ -3,7 +3,6 @@ package ch.ethz.idsc.amodeus.dispatcher.util;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.router.FastAStarLandmarksFactory;
@@ -41,8 +40,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         Tensor infoLine = Tensors.empty();
         Map<RoboTaxi, AVRequest> gbpMatchCleaned = getGBPMatch(universalDispatcher, roboTaxis, requests, distanceFunction, network);
         /** perform dispatching */
-        for (Entry<RoboTaxi, AVRequest> entry : gbpMatchCleaned.entrySet())
-            universalDispatcher.setRoboTaxiPickup(entry.getKey(), entry.getValue());
+        gbpMatchCleaned.forEach(universalDispatcher::setRoboTaxiPickup);
         return infoLine;
     }
 
@@ -50,5 +48,4 @@ import ch.ethz.matsim.av.passenger.AVRequest;
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
             Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
             DistanceFunction distanceFunction, Network network);
-
 }

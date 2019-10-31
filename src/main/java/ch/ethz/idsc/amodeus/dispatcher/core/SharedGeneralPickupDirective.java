@@ -34,7 +34,6 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         final double endTaskTime = vrpPathWithTravelData.getArrivalTime();
 
         if (endTaskTime < scheduleEndTime) {
-
             avStayTask.setEndTime(getTimeNow); // finish the last task now
 
             AVPickupTask pickupTask = new AVPickupTask( //
@@ -56,7 +55,6 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
             // // function
             final double distance = VrpPathUtils.getDistance(vrpPathWithTravelData);
             currentRequest.getRoute().setDistance(distance);
-
         } else
             reportExecutionBypass(endTaskTime - scheduleEndTime);
     }

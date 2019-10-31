@@ -20,7 +20,6 @@ import org.matsim.core.utils.collections.QuadTree.Rect;
      * @param gridDistance
      * @return */
     public static Map<Integer, Block> of(Network network, double historicalDataTime, double predictedTime, double gridDistance) {
-
         double[] xy = getXYLength(network, gridDistance);
         double blockLengthX = xy[0];
         double BlockLengthY = xy[1];
@@ -33,25 +32,23 @@ import org.matsim.core.utils.collections.QuadTree.Rect;
         double yMinBlock = outerBoundsRect.centerY - nY / 2.0 * BlockLengthY;
 
         double[] xLimits = new double[nX + 1];
-        for (int i = 0; i < nX + 1; i++) {
+        for (int i = 0; i < nX + 1; i++)
             xLimits[i] = xMinBlock + i * blockLengthX;
-        }
 
         double[] yLimits = new double[nY + 1];
-        for (int j = 0; j < nY + 1; j++) {
+        for (int j = 0; j < nY + 1; j++)
             yLimits[j] = yMinBlock + j * BlockLengthY;
-        }
+
         int id = 0;
         Block[][] blockBounds = new Block[nX][nY];
-        for (int i = 0; i < nX; i++) {
+        for (int i = 0; i < nX; i++)
             for (int j = 0; j < nY; j++) {
                 Rect rect = new Rect(xLimits[i], yLimits[j], xLimits[i + 1], yLimits[j + 1]);
                 blockBounds[i][j] = new Block(rect, network, id, historicalDataTime, predictedTime);
                 id++;
             }
-        }
 
-        for (int i = 0; i < nX; i++) {
+        for (int i = 0; i < nX; i++)
             for (int j = 0; j < nY; j++) {
                 Block newBlock = blockBounds[i][j];
                 if (i != 0)
@@ -64,7 +61,6 @@ import org.matsim.core.utils.collections.QuadTree.Rect;
                     newBlock.addAdjacentBlock(blockBounds[i][j + 1]);
                 blocks.put(newBlock.getId(), newBlock);
             }
-        }
         return blocks;
     }
 
@@ -89,7 +85,6 @@ import org.matsim.core.utils.collections.QuadTree.Rect;
         double nY = yDistance / gridDistance;
         double yDistCoord = Math.abs(southWestCoord.getY() - northEastCoord.getY());
         double blockLengthY = yDistCoord / nY;
-        double[] returnValues = { blockLengthX, blockLengthY };
-        return returnValues;
+        return new double[]{ blockLengthX, blockLengthY };
     }
 }

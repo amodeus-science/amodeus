@@ -36,19 +36,17 @@ public class RequestKeyInfo {
     public void modifyDeadlinePickUp(List<TripWithVehicle> lastAssignment, AVRequest avRequest, double maxWaitTime) {
         deadlinePickUp = modifiableSubmissionTime + maxWaitTime; // first write the original value
         // if it is assigned last time then make the deadline earlier
-        for (TripWithVehicle tripWithVehicle : lastAssignment) {
+        for (TripWithVehicle tripWithVehicle : lastAssignment)
             if (tripWithVehicle.getTrip().contains(avRequest)) {
                 for (StopInRoute stopInRoute : tripWithVehicle.getRoute()) {
                     if (stopInRoute.getavRequest() == avRequest && stopInRoute.getStopType() == SharedMealType.PICKUP) {
-                        if (stopInRoute.getTime() < deadlinePickUp) { // since we have added traffic allowance, we need to make sure this one
+                        if (stopInRoute.getTime() < deadlinePickUp) // since we have added traffic allowance, we need to make sure this one
                             deadlinePickUp = stopInRoute.getTime();
-                        }
                         break;
                     }
                 }
                 break;
             }
-        }
     }
 
     public void addTrafficAllowance(double trafficAllowance) {
@@ -59,7 +57,7 @@ public class RequestKeyInfo {
 
     public void removeTrafficAllowance(double trafficAllowance) { // this function is needed when we finish dealing with one roboTaxi, we need to change back
                                                                   // the deadlines
-        if (allowanceGiven == true) {
+        if (allowanceGiven) {
             deadlinePickUp -= trafficAllowance;
             deadlineDropOff -= trafficAllowance;
             allowanceGiven = false;
@@ -75,5 +73,4 @@ public class RequestKeyInfo {
             // limit the size of open request is strongly recommended
         }
     }
-
 }

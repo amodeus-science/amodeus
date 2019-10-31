@@ -102,7 +102,7 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
     }
 
     /** called when a new request enters the system, adds request to
-     * {@link pendingRequests}, needs to be public because called from other not
+     * {@link #pendingRequests}, needs to be public because called from other not
      * derived MATSim functions which are located in another package */
     @Override
     public void onRequestSubmitted(AVRequest request) {
@@ -135,9 +135,8 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
             /** first pass vehicles typically empty, then no storage / communication of
              * {@link SimulationObject}s */
             SimulationObject simulationObject = simulationObjectCompiler.compile();
-            if (SimulationObjects.hasVehicles(simulationObject)) {
+            if (SimulationObjects.hasVehicles(simulationObject))
                 SimulationDistribution.of(simulationObject, storageUtils);
-            }
 
             /** the temporary locaion traces are flushed at this point as they have
              * been communicated, saved. */
@@ -156,13 +155,10 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
     }
 
     private void flushLocationTraces() {
-        tempLocationTrace.entrySet().forEach(e -> {
-            int size = e.getValue().size();
-            if (size > 1) {
-                Link last = e.getValue().get(size - 1);
-                e.getValue().clear();
-                e.getValue().add(last);
-            }
+        tempLocationTrace.values().forEach(value -> {
+            int size = value.size();
+            if (size > 1)
+                value.subList(0, size - 1).clear();
         });
     }
 }

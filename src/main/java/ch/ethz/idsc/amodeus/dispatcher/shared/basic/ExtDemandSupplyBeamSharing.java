@@ -90,7 +90,7 @@ public class ExtDemandSupplyBeamSharing extends SharedRebalancingDispatcher {
 
             if (unassignedRoboTaxis.size() > 0 && requests.size() > 0) {
                 /** oversupply case */
-                if (oversupply) {
+                if (oversupply)
                     for (AVRequest avr : requests) {
                         RoboTaxi closest = unassignedRoboTaxis.getClosest(getLocation(avr));
                         if (closest != null) {
@@ -99,8 +99,8 @@ public class ExtDemandSupplyBeamSharing extends SharedRebalancingDispatcher {
                             requestMaintainer.remove(avr);
                         }
                     }
-                    /** undersupply case */
-                } else {
+                /** undersupply case */
+                else
                     for (RoboTaxi roboTaxi : robotaxisDivertable) {
                         AVRequest closest = requestMaintainer.getClosest(getRoboTaxiLoc(roboTaxi));
                         if (closest != null) {
@@ -109,7 +109,6 @@ public class ExtDemandSupplyBeamSharing extends SharedRebalancingDispatcher {
                             requestMaintainer.remove(closest);
                         }
                     }
-                }
             }
             /** Delete the not staying vehicles from the tree as they might move to next link and then they have to be updated in the Quad Tree */
 
@@ -132,12 +131,10 @@ public class ExtDemandSupplyBeamSharing extends SharedRebalancingDispatcher {
                 GlobalAssert.that(!unassignedRoboTaxis.contains(entry.getValue()));
                 /** a avRequest is not contained in the requestMaintainer if the request was already assigned before. in that case a removal is not
                  * needed */
-                if (requestMaintainer.contains(entry.getKey())) {
+                if (requestMaintainer.contains(entry.getKey()))
                     requestMaintainer.remove(entry.getKey());
-                }
             }
         }
-
     }
 
     /** @param request

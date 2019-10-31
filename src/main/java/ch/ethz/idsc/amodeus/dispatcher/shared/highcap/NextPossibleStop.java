@@ -15,10 +15,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     }
 
     public Link getLink() {
-        if (onboardTrueOrFalse)
-            return avRequest.getToLink();
-
-        return avRequest.getFromLink();
+        return onboardTrueOrFalse ? avRequest.getToLink() : avRequest.getFromLink();
     }
 
     public boolean getOnboardStatus() {

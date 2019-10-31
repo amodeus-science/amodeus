@@ -14,7 +14,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
     }
 
     public static void of(List<SharedCourse> sharedMenu) {
-        sharedMenu.stream().forEach(sc -> {
+        sharedMenu.forEach(sc -> {
             System.out.println("\tavRequest: " + sc.getAvRequest().getId().toString()//
                     + "\tlink: :" + sc.getLink().getId().toString()//
                     + "\tcourse id: " + sc.getCourseId()//

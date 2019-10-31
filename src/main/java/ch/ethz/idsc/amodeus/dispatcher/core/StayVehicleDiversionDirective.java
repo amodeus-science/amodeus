@@ -31,14 +31,12 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         final double endDriveTask = avDriveTask.getEndTime();
 
         if (endDriveTask < scheduleEndTime) {
-
             GlobalAssert.that(avStayTask.getStatus() == Task.TaskStatus.STARTED);
             avStayTask.setEndTime(roboTaxi.getDivertableTime());
 
             schedule.addTask(avDriveTask);
 
             ScheduleUtils.makeWhole(roboTaxi, endDriveTask, scheduleEndTime, destination);
-
         } else
             reportExecutionBypass(endDriveTask - scheduleEndTime);
     }

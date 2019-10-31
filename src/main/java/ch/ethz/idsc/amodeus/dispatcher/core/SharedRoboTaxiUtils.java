@@ -10,7 +10,6 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 /** Package internal helper class to do computations for {@link} {@link RoboTaxi} which
  * are in shared use. */
@@ -20,18 +19,14 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     /** @return the {@link} Link the (shared) {@link RoboTaxi} @param roboTaxi is travelling to next. */
     public static Link getStarterLink(RoboTaxi roboTaxi) {
         Optional<SharedCourse> currentCourse = SharedCourseAccess.getStarter(roboTaxi);
-        if (currentCourse.isPresent())
-            return currentCourse.get().getLink();
-        return null;
+        return currentCourse.map(SharedCourse::getLink).orElse(null);
     }
 
     /** @return true of the next {@link SharedCourse} of the {@link RoboTaxi} @param roboTaxi
      *         is of {@link SharedMealType} @param sharedMealType, otherwise @return false */
     public static boolean isNextCourseOfType(RoboTaxi roboTaxi, SharedMealType sharedMealType) {
         Optional<SharedCourse> nextcourse = SharedCourseAccess.getStarter(roboTaxi);
-        if (nextcourse.isPresent())
-            return nextcourse.get().getMealType().equals(sharedMealType);
-        return false;
+        return nextcourse.map(SharedCourse::getMealType).map(type -> type.equals(sharedMealType)).orElse(false);
     }
 
     /** @return {@link RoboTaxiStatus} of {@link RoboTaxi} @param roboTaxi computed according
@@ -39,23 +34,20 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     public static RoboTaxiStatus calculateStatusFromMenu(RoboTaxi roboTaxi) {
         Optional<SharedCourse> nextCourseOptional = SharedCourseAccess.getStarter(roboTaxi);
         if (nextCourseOptional.isPresent()) {
-            if (roboTaxi.getMenuOnBoardCustomers() > 0) {
+            if (roboTaxi.getMenuOnBoardCustomers() > 0)
                 return RoboTaxiStatus.DRIVEWITHCUSTOMER;
-            } else //
-            if (nextCourseOptional.get().getMealType().equals(SharedMealType.PICKUP)) {
+
+            switch (nextCourseOptional.get().getMealType()) {
+            case PICKUP:
                 return RoboTaxiStatus.DRIVETOCUSTOMER;
-            } else //
-            if (nextCourseOptional.get().getMealType().equals(SharedMealType.REDIRECT)) {
-                if (OnMenuRequests.getNumberMealTypes(roboTaxi.getUnmodifiableViewOfCourses(), SharedMealType.PICKUP) > 0) {
+            case REDIRECT:
+                if (OnMenuRequests.getNumberMealTypes(roboTaxi.getUnmodifiableViewOfCourses(), SharedMealType.PICKUP) > 0)
                     return RoboTaxiStatus.DRIVETOCUSTOMER;
-                }
                 return RoboTaxiStatus.REBALANCEDRIVE;
-            } else {
-                System.out.println("We have a not Covered Status of the Robotaxi");
-                GlobalAssert.that(false);
+            default:
+                throw new RuntimeException("We have a not Covered Status of the Robotaxi");
             }
         }
         return RoboTaxiStatus.STAY;
     }
-
 }

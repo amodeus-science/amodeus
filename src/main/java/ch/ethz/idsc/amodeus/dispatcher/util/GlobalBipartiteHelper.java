@@ -3,10 +3,11 @@ package ch.ethz.idsc.amodeus.dispatcher.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.matsim.api.core.v01.network.Link;
 
@@ -32,10 +33,8 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         int i = 0;
         for (RoboTaxi roboTaxi : orderedRoboTaxis) {
             int j = 0;
-            for (T t : ordered_linkObjects) {
-                costMatrix[i][j] = globalBipartiteCost.between(roboTaxi, linkOfT.apply(t));
-                ++j;
-            }
+            for (T t : ordered_linkObjects)
+                costMatrix[i][j++] = globalBipartiteCost.between(roboTaxi, linkOfT.apply(t));
             ++i;
         }
 
@@ -44,14 +43,9 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         int[] matchinghungarianAlgorithm = HungarianAlgorithmWrap.matching(costMatrix);
 
         /** do the assignment according to the Hungarian algorithm (only for the matched elements) */
-        final Map<RoboTaxi, T> map = new HashMap<>();
-        i = 0;
-        for (RoboTaxi roboTaxi : orderedRoboTaxis) {
-            if (0 <= matchinghungarianAlgorithm[i]) {
-                map.put(roboTaxi, ordered_linkObjects.get(matchinghungarianAlgorithm[i]));
-            }
-            ++i;
-        }
+        AtomicInteger ai = new AtomicInteger();
+        final Map<RoboTaxi, T> map = orderedRoboTaxis.stream().collect(Collectors.toMap(rt -> rt, //
+                rt -> ordered_linkObjects.get(matchinghungarianAlgorithm[ai.getAndIncrement()])));
         GlobalAssert.that(map.size() == Math.min(n, m));
         return map;
     }

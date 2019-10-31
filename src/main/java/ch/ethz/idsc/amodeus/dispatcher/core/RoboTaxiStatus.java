@@ -12,7 +12,7 @@ public enum RoboTaxiStatus {
     private final String description;
     private final boolean isDriving;
 
-    private RoboTaxiStatus(boolean isDriving, String xmlTag, String description) {
+    RoboTaxiStatus(boolean isDriving, String xmlTag, String description) {
         this.isDriving = isDriving;
         this.tag = xmlTag;
         this.description = description;

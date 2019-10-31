@@ -41,7 +41,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
             System.err.println("menu size of " + roboTaxi.getId().toString() + " is: " + length);
             System.err.println("this part of the method should only be reached to insert additional requests.");
             System.err.println("aborting.");
-            GlobalAssert.that(false);
+            throw new RuntimeException();
         }
 
         /** original length */
@@ -61,9 +61,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
                 for (int k = 0; k <= length; ++k) {
                     if (i == k)
                         newMenu.add(pickupCourse);
-                    if (j == k) {
+                    if (j == k)
                         newMenu.add(drpoffCourse);
-                    }
                     if (k < length)
                         newMenu.add(originalMenu.get(k));
                 }

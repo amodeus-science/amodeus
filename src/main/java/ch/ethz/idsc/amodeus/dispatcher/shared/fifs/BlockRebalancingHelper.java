@@ -4,7 +4,6 @@ package ch.ethz.idsc.amodeus.dispatcher.shared.fifs;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.Set;
 import java.util.TreeMap;
@@ -32,20 +31,16 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
         blocks.forEach(b -> blocktravelTimes.put(b, new HashSet<>()));
         freeRoboTaxis.forEach(rt -> allTravelTimesForRoboTaxis.put(rt, new HashMap<>()));
-        for (RoboTaxi roboTaxi : freeRoboTaxis) {
+        for (RoboTaxi roboTaxi : freeRoboTaxis)
             for (Block block : blocks) {
                 double travelTime = timeDb.travelTime(roboTaxi.getDivertableLocation(), block.getCenterLink(), now).number().doubleValue();
-                if (!travelTimesSorted.containsKey(travelTime)) {
-                    travelTimesSorted.put(travelTime, new HashMap<>());
-                }
-                if (!travelTimesSorted.get(travelTime).containsKey(block)) {
-                    travelTimesSorted.get(travelTime).put(block, new HashSet<>());
-                }
+
+                travelTimesSorted.putIfAbsent(travelTime, new HashMap<>());
+                travelTimesSorted.get(travelTime).putIfAbsent(block, new HashSet<>());
                 travelTimesSorted.get(travelTime).get(block).add(roboTaxi);
                 blocktravelTimes.get(block).add(travelTime);
                 allTravelTimesForRoboTaxis.get(roboTaxi).put(block, travelTime);
             }
-        }
     }
 
     /** remove the shortest trip and all the trips which are associated with this trip.
@@ -54,18 +49,13 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
      * @param updatedPushing value of how many pushes are still required to the block in shortest trip. */
     public void update(ShortestTrip shortestTrip, int updatedPushing) {
         // remove All The entries where the just added RoboTaxi Occured
-        for (Entry<Block, Double> entry : allTravelTimesForRoboTaxis.get(shortestTrip.roboTaxi).entrySet()) {
-            removeRoboTaxiFromMap(entry.getValue(), entry.getKey(), shortestTrip.roboTaxi);
-        }
+        allTravelTimesForRoboTaxis.get(shortestTrip.roboTaxi).forEach((block, travelTime) -> removeRoboTaxiFromMap(travelTime, block, shortestTrip.roboTaxi));
 
         // If the adjacent block has received all the required Taxis, remove it from all travel times
-        if (updatedPushing == 0) {
-            for (double travelTimeBlock : blocktravelTimes.get(shortestTrip.block)) {
-                if (travelTimeBlock >= shortestTrip.travelTime) {
+        if (updatedPushing == 0)
+            for (double travelTimeBlock : blocktravelTimes.get(shortestTrip.block))
+                if (travelTimeBlock >= shortestTrip.travelTime)
                     removeBlockFromMap(travelTimeBlock, shortestTrip.block);
-                }
-            }
-        }
     }
 
     private void removeRoboTaxiFromMap(double travelTime, Block block, RoboTaxi roboTaxi) {

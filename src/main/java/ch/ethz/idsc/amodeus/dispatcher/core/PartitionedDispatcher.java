@@ -20,8 +20,7 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 /** All dispatchers wich perform rebalancing and use a virtualNetwork dividing the city into zones are derived from {@link PartitionedDispatcher}.
  * A {@link PartitionedDispatcher} always has a {@link VirtualNetwork}
  * 
- * @author Claudio Ruch
- * @param <T> */
+ * @author Claudio Ruch */
 public abstract class PartitionedDispatcher extends RebalancingDispatcher {
     protected final VirtualNetwork<Link> virtualNetwork; //
 
@@ -35,20 +34,19 @@ public abstract class PartitionedDispatcher extends RebalancingDispatcher {
             MatsimAmodeusDatabase db) {
         super(config, operatorConfig, travelTime, router, eventsManager, db);
 
-        if (virtualNetwork == null) {
+        if (Objects.isNull(virtualNetwork))
             throw new IllegalStateException(
                     "The VirtualNetwork is not set. Make sure you active DefaultVirtualNetworkModule in the ScenarioServer, OR provide a custom VirtualNetwork via injection.");
-        }
 
         this.virtualNetwork = Objects.requireNonNull(virtualNetwork);
     }
 
-    /** @return {@link java.util.Map} where all {@link AVRequest} are listed at the {@link VirtualNode} where their {@link AVRequest.fromLink} is. */
+    /** @return {@link java.util.Map} where all {@link AVRequest} are listed at the {@link VirtualNode} where their {@link AVRequest#getFromLink} is. */
     protected Map<VirtualNode<Link>, List<AVRequest>> getVirtualNodeRequests() {
         return virtualNetwork.binToVirtualNode(getAVRequests(), AVRequest::getFromLink);
     }
 
-    /** @return {@link java.util.Map} where all {@link AVRequest} are listed at the {@link VirtualNode} where their {@link AVRequest.fromLink} is. */
+    /** @return {@link java.util.Map} where all {@link AVRequest} are listed at the {@link VirtualNode} where their {@link AVRequest#getFromLink} is. */
     protected Map<VirtualNode<Link>, List<AVRequest>> getVirtualNodeUnassignedRequests() {
         return virtualNetwork.binToVirtualNode(getUnassignedAVRequests(), AVRequest::getFromLink);
     }

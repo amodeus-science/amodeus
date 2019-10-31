@@ -43,7 +43,7 @@ public class GLPKAssignmentSolverBetter {
     public void defineStructuralVariables(int var_counter) {
         /* Add variables xij */
         GLPK.glp_add_cols(lp, variables);
-        for (int i = 1; i <= requests; ++i) {
+        for (int i = 1; i <= requests; ++i)
             for (int j = 1; j <= vehicles; ++j) {
                 String varName = "x(t)" + i + j;
                 GLPK.glp_set_col_name(lp, var_counter, varName);
@@ -51,7 +51,6 @@ public class GLPKAssignmentSolverBetter {
                 GlobalAssert.that(var_counter <= variables);
                 ++var_counter;
             }
-        }
     }
 
     public void defineConstraints() {
@@ -60,11 +59,10 @@ public class GLPKAssignmentSolverBetter {
         SWIGTYPE_p_double val = GLPK.new_doubleArray(len + 1);
         int num_constraints = requests + vehicles;
         int num_rows_lp = GLPK.glp_get_num_rows(lp); // Already existing number of rows
-        if (num_constraints > num_rows_lp) {
+        if (num_constraints > num_rows_lp)
             GLPK.glp_add_rows(lp, num_constraints - num_rows_lp); // Prevents memory overflow
-        } else if (num_constraints < num_rows_lp) {
-            GlobalAssert.that(false); // Currently it is not possible to remove rows
-        }
+        else if (num_constraints < num_rows_lp)
+            throw new RuntimeException(); // Currently it is not possible to remove rows
 
         // Constraint: Only one Assignment per Request
         int constraint_counter = 1;
@@ -112,11 +110,10 @@ public class GLPKAssignmentSolverBetter {
         }
         for (int i = 1; i <= variables; i++) {
             /** Maximum Matching && Min. Cost */
-            if (p_ij.Get(i - 1).number().doubleValue() == 1) {
+            if (p_ij.Get(i - 1).number().doubleValue() == 1)
                 GLPK.glp_set_obj_coef(lp, i, -1 * alpha - 1 * beta + gamma * c_ij.Get(i - 1).number().doubleValue());
-            } else {
+            else
                 GLPK.glp_set_obj_coef(lp, i, -1 * alpha + gamma * c_ij.Get(i - 1).number().doubleValue());
-            }
         }
     }
 
@@ -128,13 +125,12 @@ public class GLPKAssignmentSolverBetter {
         obj_val = RealScalar.of(GLPK.glp_get_obj_val(lp));
 
         int var_counter = 1;
-        for (int i = 0; i < requests; ++i) {
+        for (int i = 0; i < requests; ++i)
             for (int j = 0; j < vehicles; ++j) {
                 double prim = GLPK.glp_get_col_prim(lp, var_counter);
                 last_sol.set(RealScalar.of(prim), i, j);
                 ++var_counter;
             }
-        }
         // if (ret_val == 0) {
         // PrintSolution.of(lp);
         // GLPK.glp_write_lp(lp, null, "./target/test/Example");
@@ -194,8 +190,7 @@ public class GLPKAssignmentSolverBetter {
 
         // For first run: If no previous solution exists, generate Zero-solution
         if (last_sol == null) {
-            Tensor initial_last_sol = Tensors.matrix((i, j) -> RealScalar.ZERO, requests, vehicles);
-            this.last_sol = initial_last_sol;
+            this.last_sol = Tensors.matrix((i, j) -> RealScalar.ZERO, requests, vehicles);
             defineStructuralVariables(1);
             System.out.println("Structural variables defined");
         }
@@ -212,5 +207,4 @@ public class GLPKAssignmentSolverBetter {
         GLPK.glp_delete_prob(lp);
         return last_sol;
     }
-
 }

@@ -20,8 +20,8 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         List<SharedCourse> originalSharedCourses = new ArrayList<>(unmodifiableSharedMenu);
 
         GlobalAssert.that(StaticHelper.checkAllPickupsFirst(originalSharedCourses));
-        int originalSize = originalSharedCourses.size();
-        Collection<SharedCourse> sharedCourses = originalSharedCourses.stream()//
+        final int originalSize = originalSharedCourses.size();
+        Collection<SharedCourse> sharedCourses = originalSharedCourses.stream() //
                 .filter(sc -> sc.getMealType().equals(SharedMealType.PICKUP)).collect(Collectors.toList());
 
         originalSharedCourses.removeAll(sharedCourses);
@@ -39,5 +39,4 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         GlobalAssert.that(originalSize == originalSharedCourses.size());
         return originalSharedCourses;
     }
-
 }

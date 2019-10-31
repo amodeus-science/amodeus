@@ -19,9 +19,9 @@ public enum SharedCourseUtil {
     /** @return {@link Set} of unique {@link AVRequest}s in the {@link List} of {@link SharedCourse}s
      *         provided in @param courses */
     public static Set<AVRequest> getUniqueAVRequests(List<? extends SharedCourse> courses) {
-        return courses.stream()//
-                .filter(sc -> !sc.getMealType().equals(SharedMealType.REDIRECT))//
-                .map(sc -> sc.getAvRequest()).collect(Collectors.toSet());//
+        return courses.stream() //
+                .filter(sc -> !sc.getMealType().equals(SharedMealType.REDIRECT)) //
+                .map(SharedCourse::getAvRequest).collect(Collectors.toSet()); //
     }
 
 }

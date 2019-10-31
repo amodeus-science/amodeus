@@ -28,7 +28,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         double totalDelay = 0.0;
         // List<StopInRoute> thisRoute = new ArrayList<>(route); //in order not to modify the original route, we copy it to thisRoute.
 
-        for (StopInRoute stopInRoute : route) {
+        for (StopInRoute stopInRoute : route)
             if (stopInRoute.getStopType() == SharedMealType.DROPOFF) {
                 AVRequest requestOfTheStop = stopInRoute.getavRequest();
                 double modifiedSubmissionTime = requestKeyInfoMap.get(requestOfTheStop).getModifiableSubmissionTime();
@@ -38,13 +38,10 @@ import ch.ethz.matsim.av.passenger.AVRequest;
                 double delayOfThisStop = stopInRoute.getTime() - bestArrivalTime;
                 totalDelay = totalDelay + delayOfThisStop;
             }
-        }
-        if (totalDelay < 0) {
+        if (totalDelay < 0)
             System.err.println("something may be wrong with the total Delay");
-        }
         return totalDelay;
     }
-
 }
 
 // TODO Carl if you make the Stop in Route an extension of Shared Course you can use the following functionalities:

@@ -51,7 +51,6 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
             // function
             // final double distance = VrpPathUtils.getDistance(vrpPathWithTravelData);
             // nextRequest.getRoute().setDistance(distance);
-
         } else
             reportExecutionBypass(endTaskTime - scheduleEndTime);
     }

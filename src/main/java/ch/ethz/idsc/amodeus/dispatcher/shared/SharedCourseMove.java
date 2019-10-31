@@ -23,9 +23,8 @@ public enum SharedCourseMove {
     private static SharedMenu applyFunction(SharedMenu sharedMenu, BiConsumer<List<SharedCourse>, SharedCourse> listFunction, //
             SharedCourse... sharedCourses) {
         List<SharedCourse> list = SharedCourseUtil.copy(sharedMenu.getCourseList());
-        for (SharedCourse sharedCourse : sharedCourses) {
+        for (SharedCourse sharedCourse : sharedCourses)
             listFunction.accept(list, sharedCourse);
-        }
         return SharedMenu.of(list);
     }
 

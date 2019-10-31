@@ -19,11 +19,9 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         Entry<T, U> entry = map.firstEntry();
         closest.add(entry.getValue());
         for (int i = 1; i < n; ++i) {
-            Entry<T, U> next = map.higherEntry(entry.getKey());
-            entry = next;
+            entry = map.higherEntry(entry.getKey());
             closest.add(entry.getValue());
         }
         return closest;
     }
-
 }

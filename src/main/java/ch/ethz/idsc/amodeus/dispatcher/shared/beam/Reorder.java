@@ -13,21 +13,13 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
     /** Changes order of the menu such that first all pickups and then all dropoffs occur.
      * The order is kept. The Redirect Courses are put at the end */
     public static List<SharedCourse> firstAllPickupsThenDropoffs(List<SharedCourse> roboTaxiMenu) {
-        List<SharedCourse> list = new ArrayList<>();
-        // add PickupCourses
-        for (SharedCourse sharedCourse : roboTaxiMenu)
-            if (sharedCourse.getMealType().equals(SharedMealType.PICKUP))
-                list.add(sharedCourse);
-
-        for (SharedCourse sharedCourse : roboTaxiMenu)
-            if (sharedCourse.getMealType().equals(SharedMealType.DROPOFF))
-                list.add(sharedCourse);
-
-        for (SharedCourse sharedCourse : roboTaxiMenu)
-            if (sharedCourse.getMealType().equals(SharedMealType.REDIRECT))
-                list.add(sharedCourse);
-
-        return list;
+        List<SharedCourse> list = appendType(roboTaxiMenu, new ArrayList<>(), SharedMealType.PICKUP); // add PickupCourses
+        /* list = */ appendType(roboTaxiMenu, list, SharedMealType.DROPOFF);
+        return appendType(roboTaxiMenu, list, SharedMealType.REDIRECT);
     }
 
+    private static List<SharedCourse> appendType(List<SharedCourse> orig, List<SharedCourse> dest, SharedMealType type) {
+        orig.stream().filter(c -> c.getMealType().equals(type)).forEachOrdered(dest::add);
+        return dest;
+    }
 }

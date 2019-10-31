@@ -111,7 +111,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
                     + "computed in the ScenarioPreparer. Currently the file LPOptions.properties is set to compute the feedforward\n" + "rebalancing data with: ");
             System.err.println(travelData.getLPName());
             System.err.println("The correct setting in LPOptions.properties to run this dispatcher is:  " + LPCreator.TIMEINVARIANT.name());
-            GlobalAssert.that(false);
+            throw new RuntimeException();
         }
     }
 
@@ -155,7 +155,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
             }
 
             /** consistency check: rebalancing destination links must not exceed available vehicles in virtual node */
-            GlobalAssert.that(!virtualNetwork.getVirtualNodes().stream().filter(v -> availableVehicles.get(v).size() < destinationLinks.get(v).size()).findAny().isPresent());
+            GlobalAssert.that(virtualNetwork.getVirtualNodes().stream().noneMatch(v -> availableVehicles.get(v).size() < destinationLinks.get(v).size()));
 
             /** send rebalancing vehicles using the setVehicleRebalance command */
             for (VirtualNode<Link> virtualNode : destinationLinks.keySet()) {
@@ -168,10 +168,9 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
 
         /** Part II: outside rebalancing periods, permanently assign destinations to vehicles using
          * bipartite matching */
-        if (round_now % dispatchPeriod == 0) {
+        if (round_now % dispatchPeriod == 0)
             printVals = bipartiteMatcher.executePickup(this, getDivertableRoboTaxis(), //
                     getAVRequests(), distanceFunction, network);
-        }
     }
 
     @Override
@@ -207,7 +206,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
         public AVDispatcher createDispatcher(OperatorConfig operatorConfig, AVRouter router, Network network) {
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceCost.INSTANCE);
-            return new FeedforwardFluidicRebalancingPolicy(config, operatorConfig, travelTime, router, eventsManager, network, virtualNetworks.get(operatorConfig.getId()),
+            return new FeedforwardFluidicRebalancingPolicy(config, operatorConfig, travelTime, router, eventsManager, network, virtualNetworks.get(operatorConfig.getId()), //
                     abstractVirtualNodeDest, abstractVehicleDestMatcher, travelDatas.get(operatorConfig.getId()), db);
         }
     }

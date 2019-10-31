@@ -124,25 +124,25 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
 
             /** unit capacity dispatching for all divertable vehicles with zero passengers on board,
              * in this implementation, global bipartite matching is used */
-            Collection<RoboTaxi> divertableAndEmpty = getDivertableRoboTaxis().stream().filter(rt -> (rt.getUnmodifiableViewOfCourses().size() == 0))//
+            Collection<RoboTaxi> divertableAndEmpty = getDivertableRoboTaxis().stream().filter(rt -> (rt.getUnmodifiableViewOfCourses().size() == 0)) //
                     .collect(Collectors.toList());
             printVals = bipartiteMatchingUtils.executePickup(this, this::getCurrentPickupTaxi, divertableAndEmpty, //
                     getAVRequests(), distanceFunction, network);
 
             /** update the roboTaxi planned locations */
-            Collection<RoboTaxi> customerCarrying = getDivertableRoboTaxis().stream()//
-                    .filter(rt -> rt.getMenuOnBoardCustomers() >= 1)//
-                    .filter(rt -> (rt.getCapacity() - rt.getMenuOnBoardCustomers()) >= 1)//
-                    .filter(OnMenuRequests::canPickupNewCustomer)//
+            Collection<RoboTaxi> customerCarrying = getDivertableRoboTaxis().stream() //
+                    .filter(rt -> rt.getMenuOnBoardCustomers() >= 1) //
+                    .filter(rt -> (rt.getCapacity() - rt.getMenuOnBoardCustomers()) >= 1) //
+                    .filter(OnMenuRequests::canPickupNewCustomer) //
                     .collect(Collectors.toList());
 
             Map<VirtualNode<Link>, Set<RoboTaxi>> plannedLocations = //
                     RoboTaxiPlannedLocations.of(customerCarrying, virtualNetwork);
 
             /** do T-share ridesharing */
-            List<AVRequest> sortedRequests = getAVRequests().stream()//
-                    .filter(avr -> !getCurrentPickupAssignements().keySet().contains(avr))//
-                    .sorted(RequestWaitTimeComparator.INSTANCE)//
+            List<AVRequest> sortedRequests = getAVRequests().stream() //
+                    .filter(avr -> !getCurrentPickupAssignements().keySet().contains(avr)) //
+                    .sorted(RequestWaitTimeComparator.INSTANCE) //
                     .collect(Collectors.toList());
 
             for (AVRequest avr : sortedRequests) {
@@ -155,14 +155,13 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
 
                 /** insertion feasibility check */
                 NavigableMap<Scalar, InsertionCheck> insertions = new TreeMap<>();
-                for (RoboTaxi taxi : potentialTaxis) {
+                for (RoboTaxi taxi : potentialTaxis)
                     if (taxi.getUnmodifiableViewOfCourses().size() < taxi.getCapacity() * 2 * menuHorizon) {
                         InsertionCheck check = new InsertionCheck(distanceCashed, travelTimeCalculator, taxi, avr, //
                                 pickupDelayMax, drpoffDelayMax, now);
                         if (Objects.nonNull(check.getAddDistance()))
                             insertions.put(check.getAddDistance(), check);
                     }
-                }
 
                 /** plan update */
                 if (Objects.nonNull(insertions.firstEntry())) {
@@ -170,9 +169,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
                     insertions.firstEntry().getValue().insert(this::addSharedRoboTaxiPickup);
                     /** remove the {@link RoboTaxi} so that it does not get assigned again in the same round */
                     RoboTaxi sentTaxi = insertions.firstEntry().getValue().getRoboTaxi();
-                    plannedLocations.values().stream().forEach(rtc -> {
-                        rtc.remove(sentTaxi);
-                    });
+                    plannedLocations.values().forEach(rtc -> rtc.remove(sentTaxi));
                 }
             }
         }

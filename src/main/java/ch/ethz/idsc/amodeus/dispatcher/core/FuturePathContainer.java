@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -13,7 +14,7 @@ import org.matsim.core.router.util.TravelTime;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 /** the purpose of the container is to store an initiated path computation represented by
- * {@link LeastCostPathFuture}
+ * {@link Future<Path>}
  * and provide the result
  * {@link VrpPathWithTravelData}
  * at a later point in time. */
@@ -39,9 +40,8 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     }
 
     public final VrpPathWithTravelData getVrpPathWithTravelData() {
-        if (vrpPathWithTravelData == null)
-            vrpPathWithTravelData = getRouteBlocking( //
-                    startLink, destLink, startTime, leastCostPathFuture, travelTime);
+        if (Objects.isNull(vrpPathWithTravelData))
+            vrpPathWithTravelData = getRouteBlocking(startLink, destLink, startTime, leastCostPathFuture, travelTime);
         return vrpPathWithTravelData;
     }
 

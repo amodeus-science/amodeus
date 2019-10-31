@@ -37,13 +37,10 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param requestMaintainer
      * @return */
     public boolean driveTimeCurrentPassengersExceeded(Map<AVRequest, Double> driveTimes, AVRequest newAvRequest, RequestHandler requestMaintainer) {
-        for (AVRequest avRequest : driveTimes.keySet()) {
-            if (!avRequest.equals(newAvRequest)) {
-                if (driveTimes.get(avRequest) > maxDriveTimeIncrease * requestMaintainer.getDriveTimeDirectUnitCap(avRequest)) {
+        for (AVRequest avRequest : driveTimes.keySet())
+            if (!avRequest.equals(newAvRequest))
+                if (driveTimes.get(avRequest) > maxDriveTimeIncrease * requestMaintainer.getDriveTimeDirectUnitCap(avRequest))
                     return true;
-                }
-            }
-        }
         return false;
     }
 
@@ -62,11 +59,9 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     public boolean remainingTimeCurrentPassengerExceeded(SharedAvRoute sharedAvRoute, SharedAvRoute oldRoute, double now) {
         Map<AVRequest, Double> newrouteRemainingTimes = getRemainingTimes(sharedAvRoute, now);
         Map<AVRequest, Double> oldrouteRemainingTimes = getRemainingTimes(oldRoute, now);
-        for (Entry<AVRequest, Double> entry : oldrouteRemainingTimes.entrySet()) {
-            if (newrouteRemainingTimes.get(entry.getKey()) > entry.getValue() * maxRemainingTimeIncrease) {
+        for (Entry<AVRequest, Double> entry : oldrouteRemainingTimes.entrySet())
+            if (newrouteRemainingTimes.get(entry.getKey()) > entry.getValue() * maxRemainingTimeIncrease)
                 return true;
-            }
-        }
         return false;
     }
 
@@ -88,14 +83,11 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @param now
      * @return */
     public boolean waitTimesExceeded(SharedAvRoute sharedAvRoute, double now) {
-        for (SharedRoutePoint sharedRoutePoint : sharedAvRoute.getRoute()) {
-            if (sharedRoutePoint.getMealType().equals(SharedMealType.PICKUP)) {
+        for (SharedRoutePoint sharedRoutePoint : sharedAvRoute.getRoute())
+            if (sharedRoutePoint.getMealType().equals(SharedMealType.PICKUP))
                 // TODO Check this constraint could be that from submission to this time
-                if (sharedRoutePoint.getArrivalTime() >= now + maxPickupTime) {
+                if (sharedRoutePoint.getArrivalTime() >= now + maxPickupTime)
                     return true;
-                }
-            }
-        }
         return false;
     }
 
@@ -114,11 +106,9 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
     private static Map<AVRequest, Double> getRemainingTimes(SharedAvRoute route, double now) {
         Map<AVRequest, Double> remainingTimes = new HashMap<>();
-        for (SharedRoutePoint sharedRoutePoint : route.getRoute()) {
-            if (sharedRoutePoint.getMealType().equals(SharedMealType.DROPOFF)) {
+        for (SharedRoutePoint sharedRoutePoint : route.getRoute())
+            if (sharedRoutePoint.getMealType().equals(SharedMealType.DROPOFF))
                 remainingTimes.put(sharedRoutePoint.getAvRequest(), sharedRoutePoint.getArrivalTime() - now);
-            }
-        }
         return remainingTimes;
     }
 }

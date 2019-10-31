@@ -44,7 +44,7 @@ public abstract class RebalancingDispatcher extends UniversalDispatcher {
     /** @return {@link java.util.List } of all {@link RoboTaxi} which are currently rebalancing. */
     protected final List<RoboTaxi> getRebalancingRoboTaxis() {
         return getRoboTaxis().stream() //
-                .filter(rt -> rt.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE))//
+                .filter(rt -> rt.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE)) //
                 .collect(Collectors.toList());
     }
 
@@ -52,7 +52,7 @@ public abstract class RebalancingDispatcher extends UniversalDispatcher {
      *         task. */
     protected final List<RoboTaxi> getDivertableNotRebalancingRoboTaxis() {
         return getDivertableRoboTaxis().stream() //
-                .filter(rt -> !rt.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE))//
+                .filter(rt -> !rt.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE)) //
                 .collect(Collectors.toList());
     }
 

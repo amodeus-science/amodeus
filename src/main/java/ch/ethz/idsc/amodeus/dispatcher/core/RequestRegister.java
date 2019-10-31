@@ -20,27 +20,21 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
     /** Adding and removing */
     /* package */ void add(RoboTaxi roboTaxi, AVRequest avRequest) {
-        if (!register.containsKey(roboTaxi)) {
-            register.put(roboTaxi, new HashMap<>());
-        }
+        register.putIfAbsent(roboTaxi, new HashMap<>());
         register.get(roboTaxi).put(avRequest.getId().toString(), avRequest);
     }
 
     /* package */ void remove(RoboTaxi roboTaxi, AVRequest avRequest) {
         GlobalAssert.that(register.containsKey(roboTaxi));
         GlobalAssert.that(register.get(roboTaxi).containsKey(avRequest.getId().toString()));
-        AVRequest val = register.get(roboTaxi).remove(avRequest.getId().toString());
-        Objects.requireNonNull(val);
-        if (register.get(roboTaxi).isEmpty()) {
-            Map<String, AVRequest> val2 = register.remove(roboTaxi);
-            Objects.requireNonNull(val2);
-        }
+        Objects.requireNonNull(register.get(roboTaxi).remove(avRequest.getId().toString()));
+        if (register.get(roboTaxi).isEmpty())
+            Objects.requireNonNull(register.remove(roboTaxi));
     }
 
     /* package */ void remove(RoboTaxi roboTaxi) {
         GlobalAssert.that(register.containsKey(roboTaxi));
-        Map<String, AVRequest> val2 = register.remove(roboTaxi);
-        Objects.requireNonNull(val2);
+        Objects.requireNonNull(register.remove(roboTaxi));
     }
 
     /** contains functions */
@@ -88,7 +82,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     }
 
     /* package */ Set<AVRequest> getAssignedPendingRequests(Set<AVRequest> pendingRequests) {
-        return getAssignedAvRequests().stream().filter(avr -> pendingRequests.contains(avr)).collect(Collectors.toSet());
+        return getAssignedAvRequests().stream().filter(pendingRequests::contains).collect(Collectors.toSet());
     }
 
     /* package */ Map<String, AVRequest> get(RoboTaxi roboTaxi) {
@@ -99,5 +93,4 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     /* package */ Map<RoboTaxi, Map<String, AVRequest>> getRegister() {
         return Collections.unmodifiableMap(register);
     }
-
 }
