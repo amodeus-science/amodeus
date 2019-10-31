@@ -4,16 +4,11 @@ package ch.ethz.idsc.amodeus.data;
 import ch.ethz.idsc.amodeus.testutils.TestLocationSpecs;
 import ch.ethz.idsc.tensor.qty.Unit;
 import junit.framework.TestCase;
-import org.junit.FixMethodOrder;
-import org.junit.runners.MethodSorters;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class LocationSpecDatabaseTest extends TestCase {
-    public void testEmpty() {
-        assertTrue(LocationSpecDatabase.INSTANCE.isEmpty());
-    }
-
     public void testLookUp() {
+        assertTrue(LocationSpecDatabase.INSTANCE.isEmpty()); // needs to be in same test as travis ignores ordering
+
         LocationSpecDatabase.INSTANCE.put(TestLocationSpecs.SANFRANCISCO);
 
         assertFalse(LocationSpecDatabase.INSTANCE.isEmpty());
