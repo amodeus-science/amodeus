@@ -59,12 +59,12 @@ public class TaxiTrip implements Comparable<TaxiTrip> {
      *         {longitude, latitude}. The @param distance is a distance recorded in the data set,
      *         if available, and null otherwise. */
     public static TaxiTrip of(String id, String taxiId, Tensor pickupLoc, Tensor dropoffLoc, Scalar distance, //
-            LocalDateTime submissionTime, LocalDateTime pickupTimeDate, LocalDateTime dropoffTimeDate) {
+            LocalDateTime submissionTimeDate, LocalDateTime pickupTimeDate, LocalDateTime dropoffTimeDate) {
         try {
-            Scalar waitTime = Duration.between(submissionTime, pickupTimeDate);
+            Scalar waitTime = Duration.between(submissionTimeDate, pickupTimeDate);
             Scalar duration = Duration.between(pickupTimeDate, dropoffTimeDate);
             return new TaxiTrip(id, taxiId, pickupLoc, dropoffLoc, distance, //
-                    submissionTime, pickupTimeDate, dropoffTimeDate, //
+                    submissionTimeDate, pickupTimeDate, dropoffTimeDate, //
                     waitTime, duration);
         } catch (Exception exception) {
             System.err.println("Possible: pickupDate after dropoff date in generation" + //
