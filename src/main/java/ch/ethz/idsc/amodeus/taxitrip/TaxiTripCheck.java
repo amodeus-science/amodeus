@@ -10,9 +10,9 @@ public enum TaxiTripCheck {
      *         required information for most processing steps:
      *         pickup and dropoff date and time. */
     public static boolean isOfMinimalScope(TaxiTrip taxiTrip) {
-        return Objects.nonNull(taxiTrip.duration) && //
-                Objects.nonNull(taxiTrip.pickupDate) && //
-                Objects.nonNull(taxiTrip.dropoffDate) && //
+        return Objects.nonNull(taxiTrip.driveTime) && //
+                Objects.nonNull(taxiTrip.pickupTimeDate) && //
+                Objects.nonNull(taxiTrip.dropoffTimeDate) && //
                 Objects.nonNull(taxiTrip.pickupLoc) && //
                 Objects.nonNull(taxiTrip.dropoffLoc);
     }
