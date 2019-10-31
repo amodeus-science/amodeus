@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import ch.ethz.idsc.amodeus.net.TensorCoords;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
@@ -24,6 +23,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.util.TreeMaintainer;
 import ch.ethz.idsc.amodeus.dispatcher.util.TreeMultipleItems;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
+import ch.ethz.idsc.amodeus.net.TensorCoords;
 import ch.ethz.idsc.amodeus.routing.CachedNetworkTimeDistance;
 import ch.ethz.idsc.amodeus.routing.EasyMinTimePathCalculator;
 import ch.ethz.idsc.amodeus.routing.TimeDistanceProperty;

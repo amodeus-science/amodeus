@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.taxitrip;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -13,7 +14,7 @@ import ch.ethz.idsc.tensor.sca.Sign;
 
 /** The class {@link TaxiTrip} is used to transform taxi trips from databases into scenarios
  * for AMoDeus. It contains the relevant recordings of a typical taxi trip recording. */
-public class TaxiTrip implements Comparable<TaxiTrip> {
+public class TaxiTrip implements Comparable<TaxiTrip>, Serializable {
     public final String localId; // id allowing to identify individual trips
     public final String taxiId; // id allowing to identify individual taxis
     public final Tensor pickupLoc; // pickup location in format {longitude,latidue}
