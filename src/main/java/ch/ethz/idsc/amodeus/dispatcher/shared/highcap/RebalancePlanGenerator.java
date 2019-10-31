@@ -29,7 +29,7 @@ import java.util.List;
 
             // remove any other entry with the same roboTaxi or same request
             listOfAllRebalanceTripWithVehicle.removeIf(trip -> //
-                    trip.getAvRequest() == rebalanceTripWithVehicle.getAvRequest() || trip.getRoboTaxi() == rebalanceTripWithVehicle.getRoboTaxi());
+            trip.getAvRequest() == rebalanceTripWithVehicle.getAvRequest() || trip.getRoboTaxi() == rebalanceTripWithVehicle.getRoboTaxi());
         }
         return rebalancePlan;
     }

@@ -118,7 +118,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
             if (block.getBlockBalance() > minNumberForRebalance) {
                 while (block.getBlockBalance() > minNumberForRebalance && BlockUtils.lowerBalancesPresentInNeighbourhood(block) && block.hasAvailableRobotaxisToRebalance())
                     block.pushRobotaxiTo(BlockUtils.getBlockwithLowestBalance(block.getAdjacentBlocks()));
-            /** If the Block has not enough free Robotaxis it pulls from other blocks (block balance < -minNumberForRebalancing) */
+                /** If the Block has not enough free Robotaxis it pulls from other blocks (block balance < -minNumberForRebalancing) */
             } else if (block.getBlockBalance() < 0 - minNumberForRebalance) {
                 Optional<Block> blockWithHighestBalance = BlockUtils.getBlockwithHighestBalanceAndAvailableRobotaxi(block.getAdjacentBlocks());
                 while (block.getBlockBalance() < 0 - minNumberForRebalance && blockWithHighestBalance.isPresent()

@@ -19,23 +19,23 @@ import ch.ethz.idsc.tensor.qty.Quantity;
         return create(random, tripId);
     }
 
-    public TaxiTrip createSpecific(long seed, String tripId) {
+    public static TaxiTrip createSpecific(long seed, String tripId) {
         Random random = new Random(seed);
         return create(random, tripId);
     }
 
-    private TaxiTrip create(Random random, String tripId) {
+    private static TaxiTrip create(Random random, String tripId) {
         // id
         String taxiId = "taxi_" + Integer.toString(random.nextInt(100));
-        
+
         // locations
         Tensor pickupLoc = Tensors.vector(random.nextDouble(), random.nextDouble());
         Tensor dropoffLoc = Tensors.vector(random.nextDouble(), random.nextDouble());
         Scalar distance = Quantity.of(random.nextDouble(), "m");
 
         // times
-        LocalDateTime submissionTime = LocalDateTime.of(random.nextInt(5) + 2019, random.nextInt(12)+1, //
-                random.nextInt(27)+1, random.nextInt(24), random.nextInt(60));
+        LocalDateTime submissionTime = LocalDateTime.of(random.nextInt(5) + 2019, random.nextInt(12) + 1, //
+                random.nextInt(27) + 1, random.nextInt(24), random.nextInt(60));
         Scalar waitTime = Quantity.of(random.nextInt(500), "s");
         LocalDateTime pickupDate = LocalDateTimes.addTo(submissionTime, waitTime);
         Scalar driveTime = Quantity.of(random.nextInt(500), "s");

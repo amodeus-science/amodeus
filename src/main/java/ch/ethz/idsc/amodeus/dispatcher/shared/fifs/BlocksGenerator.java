@@ -85,6 +85,6 @@ import org.matsim.core.utils.collections.QuadTree.Rect;
         double nY = yDistance / gridDistance;
         double yDistCoord = Math.abs(southWestCoord.getY() - northEastCoord.getY());
         double blockLengthY = yDistCoord / nY;
-        return new double[]{ blockLengthX, blockLengthY };
+        return new double[] { blockLengthX, blockLengthY };
     }
 }

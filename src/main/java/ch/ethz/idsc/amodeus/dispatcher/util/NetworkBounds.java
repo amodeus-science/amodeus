@@ -1,14 +1,14 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.util;
 
-import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.red.Max;
-import ch.ethz.idsc.tensor.sca.Sign;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.network.NetworkUtils;
 
+import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.red.Max;
+import ch.ethz.idsc.tensor.sca.Sign;
 
 public enum NetworkBounds {
     ;

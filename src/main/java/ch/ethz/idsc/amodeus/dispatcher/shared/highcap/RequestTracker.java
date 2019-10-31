@@ -36,7 +36,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     public static Set<AVRequest> removeOverduedRequest(Set<AVRequest> requestPool, //
             Map<AVRequest, RequestKeyInfo> requestKeyInfoMap, double now, Set<AVRequest> requestMatchedLastTime) {
         Set<AVRequest> overduedRequests = requestPool.stream().filter(avRequest -> //
-                requestKeyInfoMap.get(avRequest).getDeadlinePickUp() < now && !requestMatchedLastTime.contains(avRequest)).collect(Collectors.toSet());
+        requestKeyInfoMap.get(avRequest).getDeadlinePickUp() < now && !requestMatchedLastTime.contains(avRequest)).collect(Collectors.toSet());
         requestPool.removeAll(overduedRequests);
         return overduedRequests;
     }

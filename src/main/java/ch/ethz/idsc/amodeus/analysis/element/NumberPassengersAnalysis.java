@@ -73,9 +73,9 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
                 PadRight.zeros(passengerDistribution.length(), maxLengthNumberPassengers.number().intValue())//
                         .apply(passengerDistribution);
         // // for (Integer index : sharedOthersMap.keySet())
-        // //     sharedOtherPassengersPerRequest.append(RealScalar.of(sharedOthersMap.get(index)));
+        // // sharedOtherPassengersPerRequest.append(RealScalar.of(sharedOthersMap.get(index)));
         // for (Integer others : sharedOthersMap.values())
-        //     sharedOtherPassengersPerRequest.append(RealScalar.of(others));
+        // sharedOtherPassengersPerRequest.append(RealScalar.of(others));
         sharedOthersMap.values().stream().map(RealScalar::of).forEach(sharedOtherPassengersPerRequest::append);
     }
 

@@ -29,57 +29,57 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
          * step 1 is to count the open tasks */
         // NavigableMap<Double, Task> upComing = new TreeMap<>();
         // for (Task task : schedule.getTasks()) {
-        //     GlobalAssert.that(task.getBeginTime() <= task.getEndTime());
-        //     if (task.getEndTime() >= time)
-        //         upComing.put(task.getBeginTime(), task);
+        // GlobalAssert.that(task.getBeginTime() <= task.getEndTime());
+        // if (task.getEndTime() >= time)
+        // upComing.put(task.getBeginTime(), task);
         // }
         //
         // if (upComing.size() == 1) {
-        //     Task stayTask = upComing.firstEntry().getValue();
-        //     GlobalAssert.that(stayTask instanceof AVStayTask);
-        //     RoboTaxiPlanEntry entry = new RoboTaxiPlanEntry( //
-        //             stayTask.getBeginTime(), //
-        //             stayTask.getEndTime(), //
-        //             RoboTaxiStatus.STAY);
-        //     plans.put(entry.beginTime, entry);
+        // Task stayTask = upComing.firstEntry().getValue();
+        // GlobalAssert.that(stayTask instanceof AVStayTask);
+        // RoboTaxiPlanEntry entry = new RoboTaxiPlanEntry( //
+        // stayTask.getBeginTime(), //
+        // stayTask.getEndTime(), //
+        // RoboTaxiStatus.STAY);
+        // plans.put(entry.beginTime, entry);
         // } else //
         //
         // if (upComing.size() == 2) {
-        //     int i = 0;
-        //     for (Task task : upComing.values()) {
-        //         ++i;
-        //         RoboTaxiStatus status = null;
-        //         if (i == 1) {
-        //             status = RoboTaxiStatus.REBALANCEDRIVE;
-        //         } else //
-        //         if (i == 2) {
-        //             status = RoboTaxiStatus.STAY;
-        //         }
-        //         RoboTaxiPlanEntry entry = new RoboTaxiPlanEntry( //
-        //                 task.getBeginTime(), //
-        //                 task.getEndTime(), //
-        //                 status);
-        //         plans.put(entry.beginTime, entry);
-        //     }
+        // int i = 0;
+        // for (Task task : upComing.values()) {
+        // ++i;
+        // RoboTaxiStatus status = null;
+        // if (i == 1) {
+        // status = RoboTaxiStatus.REBALANCEDRIVE;
+        // } else //
+        // if (i == 2) {
+        // status = RoboTaxiStatus.STAY;
+        // }
+        // RoboTaxiPlanEntry entry = new RoboTaxiPlanEntry( //
+        // task.getBeginTime(), //
+        // task.getEndTime(), //
+        // status);
+        // plans.put(entry.beginTime, entry);
+        // }
         // } else //
         //
         // if (upComing.size() == 3) {
-        //     int i = 0;
-        //     for (Task task : upComing.values()) {
-        //         ++i;
-        //         RoboTaxiStatus status = null;
-        //         if (i == 1 || i == 2) {
-        //             status = RoboTaxiStatus.DRIVEWITHCUSTOMER;
-        //         } else //
-        //         if (i == 3) {
-        //             status = RoboTaxiStatus.STAY;
-        //         }
-        //         RoboTaxiPlanEntry entry = new RoboTaxiPlanEntry( //
-        //                 task.getBeginTime(), //
-        //                 task.getEndTime(), //
-        //                 status);
-        //         plans.put(entry.beginTime, entry);
-        //     }
+        // int i = 0;
+        // for (Task task : upComing.values()) {
+        // ++i;
+        // RoboTaxiStatus status = null;
+        // if (i == 1 || i == 2) {
+        // status = RoboTaxiStatus.DRIVEWITHCUSTOMER;
+        // } else //
+        // if (i == 3) {
+        // status = RoboTaxiStatus.STAY;
+        // }
+        // RoboTaxiPlanEntry entry = new RoboTaxiPlanEntry( //
+        // task.getBeginTime(), //
+        // task.getEndTime(), //
+        // status);
+        // plans.put(entry.beginTime, entry);
+        // }
         // }
 
         GlobalAssert.that(schedule.getTasks().stream().allMatch(task -> task.getBeginTime() <= task.getEndTime()));

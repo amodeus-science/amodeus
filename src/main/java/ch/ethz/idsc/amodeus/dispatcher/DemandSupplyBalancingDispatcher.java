@@ -4,7 +4,6 @@ package ch.ethz.idsc.amodeus.dispatcher;
 import java.util.Collection;
 import java.util.List;
 
-import ch.ethz.idsc.amodeus.net.TensorCoords;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -21,6 +20,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.dispatcher.util.TreeMaintainer;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
+import ch.ethz.idsc.amodeus.net.TensorCoords;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.matsim.av.config.operator.OperatorConfig;
@@ -81,7 +81,7 @@ public class DemandSupplyBalancingDispatcher extends RebalancingDispatcher {
                             requestMaintainer.remove(avr);
                         }
                     }
-                /** undersupply case */
+                    /** undersupply case */
                 } else
                     for (RoboTaxi roboTaxi : roboTaxisDivertable) {
                         Coord coord = roboTaxi.getDivertableLocation().getFromNode().getCoord();

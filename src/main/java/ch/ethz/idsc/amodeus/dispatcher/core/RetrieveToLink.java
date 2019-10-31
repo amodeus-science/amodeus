@@ -116,7 +116,7 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
                         // c) A pickup Task always needs to have a next course in the menu. but that we can check as well
                     }
                 }
-            }  else {
+            } else {
                 System.out.println("Thats a case is not allowed. It means that we plan more than two tasks ahead");
                 System.out.println("This is only allowed after the redispatchInternal() until the end of the Time Step");
                 throw new RuntimeException("no can do");

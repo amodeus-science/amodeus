@@ -362,8 +362,8 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
         /** test: every request appears only 2 times, pickup and dropoff across all menus */
         List<String> requestsInMenus = new ArrayList<>();
         getRoboTaxis().stream().filter(SharedCourseAccess::hasStarter).forEach(rtx -> //
-                SharedCourseUtil.getUniqueAVRequests(rtx.getUnmodifiableViewOfCourses()) //
-                        .forEach(r -> requestsInMenus.add(r.getId().toString())));
+        SharedCourseUtil.getUniqueAVRequests(rtx.getUnmodifiableViewOfCourses()) //
+                .forEach(r -> requestsInMenus.add(r.getId().toString())));
         Set<String> uniqueMenuRequests = new HashSet<>(requestsInMenus);
         GlobalAssert.that(uniqueMenuRequests.size() == requestsInMenus.size());
 

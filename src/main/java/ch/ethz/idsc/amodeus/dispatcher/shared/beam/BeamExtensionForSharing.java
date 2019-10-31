@@ -11,8 +11,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import ch.ethz.idsc.tensor.RealScalar;
-import ch.ethz.idsc.tensor.Scalars;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.core.network.NetworkUtils;
 
@@ -25,7 +23,9 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.red.VectorAngle;
 import ch.ethz.matsim.av.passenger.AVRequest;
