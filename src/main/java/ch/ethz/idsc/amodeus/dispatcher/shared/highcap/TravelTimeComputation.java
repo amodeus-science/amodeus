@@ -22,7 +22,7 @@ public class TravelTimeComputation {
 
     // map data structure
     public double of(Link fromLink, Link toLink, double now, boolean storeInCache) {
-        travelTimeDataMap.putIfAbsent(fromLink, new HashMap<>());
+        travelTimeDataMap.computeIfAbsent(fromLink, l -> new HashMap<>());
 
         if (travelTimeDataMap.get(fromLink).containsKey(toLink))
             return travelTimeDataMap.get(fromLink).get(toLink);

@@ -51,8 +51,8 @@ public class TreeMultipleItems<T> {
         if (!set.contains(t)) {
             double submission = function.apply(t);
             boolean setok = set.add(t);
-            tree.putIfAbsent(submission, new HashSet<>());
-            tree.get(submission).add(t);
+            tree.computeIfAbsent(submission, s -> new HashSet<>()) //
+            /* tree.get(submission) */ .add(t);
             GlobalAssert.that(setok);
         }
     }
