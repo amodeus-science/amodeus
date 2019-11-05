@@ -53,24 +53,22 @@ public class RedistributionTestsVerySimple {
         System.out.println(solution.get(roboTaxi).getId());
 
         /** solution should send roboTaxi to linkup */
-        Assert.assertTrue(solution.size() == 1);
-        Assert.assertTrue(solution.get(roboTaxi).getId().toString().equals("linkUp"));
+        Assert.assertEquals(1, solution.size());
+        Assert.assertEquals("linkUp", solution.get(roboTaxi).getId().toString());
     }
 
     private static Map<RoboTaxi, Link> flowLayerSolution(Map<Link, Set<RoboTaxi>> taxisToGo, Map<Link, Integer> freeSpaces, //
             DistanceFunction distanceFunction) {
-
         /** creating unitsToMove map */
         Map<Link, Integer> unitsToMove = RedistributionProblemHelper.getFlow(taxisToGo);
 
         /** solve flow problem */
         RedistributionProblemSolver<Link> parkingLP = new RedistributionProblemSolver<>(unitsToMove, freeSpaces, //
-                (l1, l2) -> distanceFunction.getDistance(l1, l2), l -> l.getId().toString(), //
+                distanceFunction::getDistance, l -> l.getId().toString(), //
                 false, "");
         Map<Link, Map<Link, Integer>> flowSolution = parkingLP.returnSolution();
 
         /** create roboTaxi movement map */
         return RedistributionProblemHelper.getSolutionCommands(taxisToGo, flowSolution);
     }
-
 }

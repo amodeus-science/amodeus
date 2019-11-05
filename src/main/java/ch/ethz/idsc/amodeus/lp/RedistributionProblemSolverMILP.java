@@ -24,7 +24,7 @@ import org.gnu.glpk.glp_iocp;
  * 
  *
  * @param <T> slots, e.g., roads or parking lots */
-@Deprecated // TODO delete later, use LP based solver. This sone is exactly identical
+@Deprecated // TODO delete later, use LP based solver. This one is exactly identical
 // but it uses MI programming to solve the problem which is not necessary due to the
 // totally unimodular constraint matrix.
 public class RedistributionProblemSolverMILP<T> extends RedistributionProblemSolver<T> {
@@ -51,20 +51,12 @@ public class RedistributionProblemSolverMILP<T> extends RedistributionProblemSol
         if (print)
             printSolution();
 
-        if (ret != 0) { // ret==0 indicates of the algorithm terminated correctly
-            System.out.println("something went wrong");
-            // GlobalAssert.that(false);
-        }
-        if (stat == GLPK.GLP_NOFEAS) {
-            System.out.println("LP has found infeasible solution");
-            // GlobalAssert.that(false);
-        }
-
-        if (stat != GLPK.GLP_OPT) {
-            System.out.println("LP has found suboptimal solution");
-            // GlobalAssert.that(false);
-        }
-
+        if (ret != 0) // ret==0 indicates of the algorithm terminated correctly
+            System.out.println("something went wrong"); // throw new RuntimeException("something went wrong");
+        if (stat == GLPK.GLP_NOFEAS)
+            System.out.println("LP has found infeasible solution"); // throw new RuntimeException("LP has found infeasible solution");
+        if (stat != GLPK.GLP_OPT)
+            System.out.println("LP has found suboptimal solution"); // throw new RuntimeException("LP has found suboptimal solution");
     }
 
     @Override
@@ -79,7 +71,6 @@ public class RedistributionProblemSolverMILP<T> extends RedistributionProblemSol
 
     @Override
     protected void extractSolution() {
-
         for (T origin : originsList) {
             solution.put(origin, new HashMap<>());
             for (T dest : destinationList) {

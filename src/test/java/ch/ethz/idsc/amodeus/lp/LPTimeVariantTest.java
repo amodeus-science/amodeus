@@ -2,7 +2,8 @@
 package ch.ethz.idsc.amodeus.lp;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -90,11 +91,11 @@ public class LPTimeVariantTest {
     public void testLP2Nodes() {
         // init LP time-invariant
         LPTimeVariant lp = new LPTimeVariant(virtualNetwork2, network, lpOptions, Tensors.of(Tensors.of(Tensors.vector(0, 0), Tensors.vector(0, 0))), 100, endTime);
-        assertEquals(lp.getAlphaRate_ij(), null);
-        assertEquals(lp.getAlphaAbsolute_ij(), null);
-        assertEquals(lp.getFRate_ij(), null);
-        assertEquals(lp.getFAbsolute_ij(), null);
-        assertEquals(lp.getV0_i(), null);
+        assertNull(lp.getAlphaRate_ij());
+        assertNull(lp.getAlphaAbsolute_ij());
+        assertNull(lp.getFRate_ij());
+        assertNull(lp.getFAbsolute_ij());
+        assertNull(lp.getV0_i());
         assertEquals(lp.getTimeIntervalLength(), 30 * 3600); // there is only one time interval over the whole day
 
         // test trivial case
@@ -107,14 +108,14 @@ public class LPTimeVariantTest {
         // test infeasible cases
         try {
             lp = new LPTimeVariant(virtualNetwork2, network, lpOptions, Tensors.of(Tensors.of(Tensors.vector(0, -1), Tensors.vector(0, 0))), 100, endTime);
-            assertTrue(false);
+            fail();
         } catch (Exception exception) {
             // ---
         }
 
         try {
             lp = new LPTimeVariant(virtualNetwork2, network, lpOptions, Tensors.of(Tensors.of(Tensors.vector(0, 0.01), Tensors.vector(0, 0))), 100, endTime);
-            assertTrue(false);
+            fail();
         } catch (Exception exception) {
             // ---
         }
@@ -179,11 +180,11 @@ public class LPTimeVariantTest {
         // init LP time-invariant
         LPTimeVariant lp = new LPTimeVariant(virtualNetwork3, network, lpOptions, Tensors.of(Tensors.of(Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))),
                 100, endTime);
-        assertEquals(lp.getAlphaRate_ij(), null);
-        assertEquals(lp.getAlphaAbsolute_ij(), null);
-        assertEquals(lp.getFRate_ij(), null);
-        assertEquals(lp.getFAbsolute_ij(), null);
-        assertEquals(lp.getV0_i(), null); // the 10 vehicles from av.xml are distributed equally
+        assertNull(lp.getAlphaRate_ij());
+        assertNull(lp.getAlphaAbsolute_ij());
+        assertNull(lp.getFRate_ij());
+        assertNull(lp.getFAbsolute_ij());
+        assertNull(lp.getV0_i()); // the 10 vehicles from av.xml are distributed equally
         assertEquals(lp.getTimeIntervalLength(), 30 * 3600); // there is only one time interval [0, endTime]
 
         // test trivial case
@@ -196,7 +197,7 @@ public class LPTimeVariantTest {
         try {
             lp = new LPTimeVariant(virtualNetwork3, network, lpOptions, Tensors.of(Tensors.of(Tensors.vector(0, -1, 0), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))), 100,
                     endTime);
-            assertTrue(false);
+            fail();
         } catch (Exception exception) {
             // ---
         }
@@ -204,7 +205,7 @@ public class LPTimeVariantTest {
         try {
             lp = new LPTimeVariant(virtualNetwork3, network, lpOptions, Tensors.of(Tensors.of(Tensors.vector(0, 0.01, 0), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))), 100,
                     endTime);
-            assertTrue(false);
+            fail();
         } catch (Exception exception) {
             // ---
         }

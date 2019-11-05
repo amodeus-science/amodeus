@@ -4,6 +4,7 @@ package ch.ethz.idsc.amodeus.lp;
 import org.gnu.glpk.GLPK;
 import org.gnu.glpk.glp_prob;
 
+// TODO unused -> check usage and maybe remove
 public enum PrintLPSolution {
     ;
 

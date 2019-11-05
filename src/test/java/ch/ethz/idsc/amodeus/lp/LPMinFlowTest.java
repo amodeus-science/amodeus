@@ -2,7 +2,7 @@
 package ch.ethz.idsc.amodeus.lp;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -96,7 +96,7 @@ public class LPMinFlowTest {
         // test infeasible case, sum of minFlow argument has to be less or equal zero
         try {
             lpMinFlow.solveLP(false, Tensors.vector(1, 0));
-            assertTrue(false);
+            fail();
         } catch (Exception exception) {
             // ---
         }
@@ -104,7 +104,7 @@ public class LPMinFlowTest {
         // test infeasible case, the input variable has to be almost integer
         try {
             lpMinFlow.solveLP(false, Tensors.vector(-0.1, 0));
-            assertTrue(false);
+            fail();
         } catch (Exception exception) {
             // ---
         }
@@ -146,7 +146,7 @@ public class LPMinFlowTest {
         // test infeasible case, sum of minFlow argument has to be less or equal zero
         try {
             lpMinFlow.solveLP(false, Tensors.vector(1, 0, 0));
-            assertTrue(false);
+            fail();
         } catch (Exception exception) {
             // ---
         }
@@ -154,7 +154,7 @@ public class LPMinFlowTest {
         // test infeasible case, the input variable has to be almost integer
         try {
             lpMinFlow.solveLP(false, Tensors.vector(-0.1, 0, 0));
-            assertTrue(false);
+            fail();
         } catch (Exception exception) {
             // ---
         }
@@ -216,7 +216,7 @@ public class LPMinFlowTest {
         // test infeasible case, sum of minFlow argument has to be less or equal zero
         try {
             lpMinFlow.solveLP(false, Tensors.vector(1, 0, 0));
-            assertTrue(false);
+            fail();
         } catch (Exception exception) {
             // ---
         }
@@ -224,7 +224,7 @@ public class LPMinFlowTest {
         // test infeasible case, the input variable has to be almost integer
         try {
             lpMinFlow.solveLP(false, Tensors.vector(-0.1, 0, 0));
-            assertTrue(false);
+            fail();
         } catch (Exception exception) {
             // ---
         }
