@@ -42,8 +42,8 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkIOTest;
         /** create virtual network */
         VirtualNetworkIO.toByte(VirtualNetworkIOTest.COMPARISON_VN_FILE, vNCreated);
         /** create travel data */
-        TravelData tDCreated = TravelDataGet.readStatic(vNCreated, scenarioOptions);
-        TravelDataIO.writeStatic(TravelDataTestHelper.COMPARISON_FILE_TD, (StaticTravelData) tDCreated);
+        StaticTravelData tDCreated = TravelDataGet.readStatic(vNCreated, scenarioOptions);
+        TravelDataIO.writeStatic(TravelDataTestHelper.COMPARISON_FILE_TD, tDCreated);
 
         /** remove generated and unneeded files */
         TestFileHandling.removeGeneratedFiles();

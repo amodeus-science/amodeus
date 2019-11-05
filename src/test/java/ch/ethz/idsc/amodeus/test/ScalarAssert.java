@@ -31,9 +31,7 @@ public class ScalarAssert {
         }
 
         /** test */
-        for (int i = 0; i < should.length(); ++i) {
+        for (int i = 0; i < should.length(); ++i)
             assertArrayEquals(new Scalar[] { should.Get(i) }, new Scalar[] { actual.Get(i) });
-        }
     }
-
 }
