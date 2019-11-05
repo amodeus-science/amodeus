@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
+import ch.ethz.idsc.amodeus.testutils.TestViewer;
 import org.gnu.glpk.GLPK;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -48,6 +49,7 @@ public class ScenarioPipeLineTest {
     // ---
     private static TestPreparer testPreparer;
     private static TestServer testServer;
+    private static TestViewer testViewer;
 
     @BeforeClass
     public static void setUpOnce() throws Exception {
@@ -65,6 +67,9 @@ public class ScenarioPipeLineTest {
 
         // run scenario server
         testServer = TestServer.run().on(workingDirectory);
+
+        // run scenario viewer
+        testViewer = TestViewer.run(workingDirectory);
     }
 
     @Test
@@ -225,6 +230,14 @@ public class ScenarioPipeLineTest {
 
         assertTrue(new File("output/001/report/report.html").isFile());
         assertTrue(new File("output/001/report/config.xml").isFile());
+    }
+
+    @Test
+    public void testViewer() throws Exception {
+        System.out.println("Viewer Test:");
+
+        assertEquals(9, testViewer.getAmodeusComponent().viewerLayers.size());
+        assertEquals(31, testViewer.getViewerConfig().settings.getClass().getFields().length);
     }
 
     @AfterClass
