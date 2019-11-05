@@ -12,31 +12,28 @@ import org.matsim.api.core.v01.network.Link;
 
 public class LinkSpeedDataContainer implements Serializable {
 
-    private final SortedMap<Integer, LinkSpeedTimeSeries> linkSet = new TreeMap<>();
+    private final SortedMap<Integer, LinkSpeedTimeSeries> linkMap = new TreeMap<>();
 
     /** add a speed recording for @param link at @param time with a speed value [m/s] @param speed */
     public void addData(Integer linkIndex, int time, double speed) {
-        if (linkSet.containsKey(linkIndex)) {
-            LinkSpeedTimeSeries linkSpeeds = linkSet.get(linkIndex);
+        // could be shortened if LinkSpeedTimeSeries was initialized empty
+        if (linkMap.containsKey(linkIndex)) {
+            LinkSpeedTimeSeries linkSpeeds = linkMap.get(linkIndex);
             linkSpeeds.setSpeed(time, speed);
         } else {
-            linkSet.put(linkIndex, new LinkSpeedTimeSeries(time, speed));
+            linkMap.put(linkIndex, new LinkSpeedTimeSeries(time, speed));
         }
     }
 
-    public SortedMap<Integer, LinkSpeedTimeSeries> getLinkSet() {
-        return Collections.unmodifiableSortedMap(linkSet);
+    public SortedMap<Integer, LinkSpeedTimeSeries> getLinkMap() {
+        return Collections.unmodifiableSortedMap(linkMap);
     }
 
     /** @return {@link Set} with all time steps for which a link
      *         speed was recorded on some {@link Link} */
     public Set<Integer> getRecordedTimes() {
         HashSet<Integer> recordedTimes = new HashSet<>();
-        getLinkSet().values().stream().forEach(lsts -> {
-            lsts.getRecordedTimes().stream().forEach(i -> {
-                recordedTimes.add(i);
-            });
-        });
+        getLinkMap().values().stream().map(LinkSpeedTimeSeries::getRecordedTimes).forEach(recordedTimes::addAll);
         return recordedTimes;
     }
 }

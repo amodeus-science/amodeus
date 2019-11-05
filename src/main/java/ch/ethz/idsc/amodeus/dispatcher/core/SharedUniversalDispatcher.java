@@ -224,8 +224,8 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
                 GlobalAssert.that(requestRegister.contains(roboTaxi, avRequest.get()));
                 roboTaxi.startDropoff();
                 Double endDropOffTime = getTimeNow() + dropoffDurationPerStop;
-                dropOffTimes.putIfAbsent(endDropOffTime, new HashMap<>());
-                dropOffTimes.get(endDropOffTime).put(roboTaxi, avRequest.get());
+                dropOffTimes.computeIfAbsent(endDropOffTime, t -> new HashMap<>()) //
+                /* dropOffTimes.get(endDropOffTime) */ .put(roboTaxi, avRequest.get());
             }
         }
         /** Until here only the directives were given. The actual drop off takes place now.

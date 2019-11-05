@@ -20,8 +20,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
     /** Adding and removing */
     /* package */ void add(RoboTaxi roboTaxi, AVRequest avRequest) {
-        register.putIfAbsent(roboTaxi, new HashMap<>());
-        register.get(roboTaxi).put(avRequest.getId().toString(), avRequest);
+        register.computeIfAbsent(roboTaxi, roboTaxi1 -> new HashMap<>()) //
+        /* register.get(roboTaxi) */ .put(avRequest.getId().toString(), avRequest);
     }
 
     /* package */ void remove(RoboTaxi roboTaxi, AVRequest avRequest) {

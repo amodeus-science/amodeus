@@ -23,7 +23,7 @@ public class DefaultTaxiTrafficData implements TaxiTrafficData {
     @Override
     public double getTrafficSpeed(Link link, double now) {
         Integer index = db.getLinkIndex(link);
-        LinkSpeedTimeSeries series = lsData.getLinkSet().get(index);
+        LinkSpeedTimeSeries series = lsData.getLinkMap().get(index);
         Double speed = link.getFreespeed();
         if (Objects.nonNull(series)) {
             Double trafficSpeed = series.getSpeedsFloor((int) now);

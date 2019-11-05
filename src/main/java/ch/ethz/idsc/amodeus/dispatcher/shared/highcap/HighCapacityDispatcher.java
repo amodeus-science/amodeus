@@ -122,7 +122,7 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
             for (AVRequest avRequest : getAVRequests()) {
                 if (requestPool.size() < sizeLimit && !overduedRequests.contains(avRequest))
                     requestPool.add(avRequest);
-                requestKeyInfoMap.putIfAbsent(avRequest, new RequestKeyInfo(avRequest, maxWaitTime, MAX_DELAY, ttc));
+                requestKeyInfoMap.computeIfAbsent(avRequest, avr -> new RequestKeyInfo(avr, maxWaitTime, MAX_DELAY, ttc));
             }
             // modify the request key info (submission time and pickup deadline)
             requestKeyInfoMap.forEach(((avRequest, requestKeyInfo) -> {
