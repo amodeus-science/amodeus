@@ -9,15 +9,18 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensors;
 
 public enum ImportTaxiTrips {
     ;
-
-    public static Stream<TaxiTrip> fromFile(File tripsCSVFile) throws IOException {
+    /** Converts lines in CSV file to elements in list of taxi trips
+     * 
+     * @param tripsCSVFile
+     * @return
+     * @throws IOException */
+    public static List<TaxiTrip> fromFile(File tripsCSVFile) throws IOException {
         List<TaxiTrip> trips = new ArrayList<>();
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(tripsCSVFile))) {
             // skip header and parse
@@ -49,6 +52,6 @@ public enum ImportTaxiTrips {
                 }
             });
         }
-        return trips.stream();
+        return trips;
     }
 }
