@@ -139,14 +139,13 @@ public class StandardMATSimScenarioTest {
         // to
         // handle these cases.
 
-        for (Person person : scenario.getPopulation().getPersons().values()) {
+        for (Person person : scenario.getPopulation().getPersons().values())
             for (Plan plan : person.getPlans()) {
                 Activity trickyActivity = PopulationUtils.createActivityFromCoordAndLinkId("pt interaction", new Coord(5500.0, 5500.0), Id.createLinkId("pt_fwd_5:5"));
 
                 plan.getPlanElements().add(PopulationUtils.createLeg("walk"));
                 plan.getPlanElements().add(trickyActivity);
             }
-        }
     }
 
     private static void fixInvalidActivityLocations(Network network, Population population) {
@@ -155,9 +154,9 @@ public class StandardMATSimScenarioTest {
         Network roadNetwork = NetworkUtils.createNetwork();
         new TransportModeNetworkFilter(network).filter(roadNetwork, Collections.singleton("car"));
 
-        for (Person person : population.getPersons().values()) {
-            for (Plan plan : person.getPlans()) {
-                for (PlanElement element : plan.getPlanElements()) {
+        for (Person person : population.getPersons().values())
+            for (Plan plan : person.getPlans())
+                for (PlanElement element : plan.getPlanElements())
                     if (element instanceof Activity) {
                         Activity activity = (Activity) element;
 
@@ -168,9 +167,6 @@ public class StandardMATSimScenarioTest {
                             activity.setLinkId(link.getId());
                         }
                     }
-                }
-            }
-        }
     }
 
     @BeforeClass
@@ -219,7 +215,6 @@ public class StandardMATSimScenarioTest {
         makeMultimodal(scenario);
 
         // Config
-
         AVConfigGroup avConfig = AVConfigGroup.getOrCreate(config);
         avConfig.setAllowedLinkMode("car");
 
