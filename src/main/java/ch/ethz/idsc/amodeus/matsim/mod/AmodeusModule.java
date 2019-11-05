@@ -3,6 +3,7 @@ package ch.ethz.idsc.amodeus.matsim.mod;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
@@ -64,25 +65,24 @@ public class AmodeusModule extends AbstractModule {
             String vehicleTypeName = generatorConfig.getVehicleType();
             String numberOfSeatsParameter = generatorConfig.getParams().get("numberOfSeats");
 
-            if (vehicleTypeName != null && numberOfSeatsParameter != null) {
-                throw new IllegalStateException(String.format(
-                        "Both vehicleType and numberOfSeats are set for operator %s. This is amiguous. Option one is to define 'numberOfSeats' alone. In this case Amodeus will create an internal vehicle type with the specified number of seats automatically. Option two is to explicitly define a 'vehicleType' alone and register it through the possible ways that MATSim prvoides (either manually adding a VehicleType to the Vehicles container after loeading the scenario, or providing a vehicles.xml.gz file).",
-                        operatorConfig.getId()));
-            }
-
-            if (numberOfSeatsParameter != null) {
+            if (Objects.nonNull(numberOfSeatsParameter)) {
+                if (Objects.nonNull(vehicleTypeName))
+                    throw new IllegalStateException(String.format( //
+                            "Both vehicleType and numberOfSeats are set for operator %s. This is amiguous. "
+                                    + "Option one is to define 'numberOfSeats' alone. In this case Amodeus will create an internal "
+                                    + "vehicle type with the specified number of seats automatically. Option two is to explicitly "
+                                    + "define a 'vehicleType' alone and register it through the possible ways that MATSim prvoides "
+                                    + "(either manually adding a VehicleType to the Vehicles container after loeading the scenario, or providing a vehicles.xml.gz file).",
+                            operatorConfig.getId()));
                 int numberOfSeats = Integer.parseInt(numberOfSeatsParameter);
-
                 if (!amodeusTypes.containsKey(numberOfSeats)) {
                     logger.info(String.format("Creating an on-the-fly vehicle type for Amodeus with %d seats", numberOfSeats));
                     VehicleType vehicleType = vehicles.getFactory().createVehicleType(Id.create(String.format("amodeus:%d", numberOfSeats), VehicleType.class));
                     amodeusTypes.put(numberOfSeats, vehicleType);
                 }
-
                 vehicleTypes.put(operatorConfig.getId(), amodeusTypes.get(numberOfSeats));
             }
         }
-
         return vehicleTypes;
     }
 
@@ -90,21 +90,16 @@ public class AmodeusModule extends AbstractModule {
         @Override
         public void notifyStartup(StartupEvent event) {
             boolean anyWarnings = false;
-
             for (Person person : event.getServices().getScenario().getPopulation().getPersons().values()) {
                 boolean skip = false;
-
                 for (Plan plan : person.getPlans()) {
                     if (skip)
                         break;
-
                     for (PlanElement element : plan.getPlanElements()) {
                         if (skip)
                             break;
-
                         if (element instanceof Activity) {
                             Activity activity = (Activity) element;
-
                             if (activity.getCoord() == null) {
                                 logger.error(String.format("Agent '%s' has activity without coordiantes", person.getId()));
                                 anyWarnings = true;
@@ -114,14 +109,12 @@ public class AmodeusModule extends AbstractModule {
                     }
                 }
             }
-
-            if (anyWarnings) {
+            if (anyWarnings)
                 throw new RuntimeException(//
                         "Since the last update of Amodeus it is necessary that each activity in a MATSim popuatlion"
                                 + " has a coordinate and not only a link ID to determine its location. You can either modify the way"
                                 + " you generate your population or use the AddCoordinatesToActivities tool to automatically "
                                 + "assign to each activity the coordinate of the currently associated link.");
-            }
         }
     }
 }

@@ -10,8 +10,7 @@ import org.jdom2.Element;
 public enum XmlCustomOperatorValueChanger {
     ;
 
-    public static void of(File simFolder, String groupName, String newValue)//
-            throws Exception {
+    public static void of(File simFolder, String groupName, String newValue) throws Exception {
         File xmlFile = new File(simFolder, "av.xml");
         try (XmlCustomModifier xmlModifier = new XmlCustomModifier(xmlFile)) {
             Document doc = xmlModifier.getDocument();
@@ -19,7 +18,7 @@ public enum XmlCustomOperatorValueChanger {
             Element operator = rootNode.getChild("operator");
             Element dispatcher = operator.getChild(groupName);
             Attribute strategy = dispatcher.getAttribute("strategy");
-            if (strategy.getValue() != newValue)
+            if (!strategy.getValue().equals(newValue))
                 strategy.setValue(newValue);
         }
     }

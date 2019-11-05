@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.zip.DataFormatException;
 
 import org.apache.log4j.Logger;
@@ -60,15 +61,14 @@ public class AmodeusVirtualNetworkModule extends AbstractModule {
 
             String virtualNetworkPath = operatorConfig.getParams().get("virtualNetworkPath");
 
-            if (virtualNetworkPath == null) {
+            if (Objects.isNull(virtualNetworkPath)) {
                 // If nothing is set in the configuration file, we fall back to sceanrioOptions. This *may* return null.
 
                 if (scenarioOptions.getVirtualNetworkName().trim().length() > 0) {
                     logger.info(String.format("Loading VirtualNetwork for operator '%s' from ScenarioOptions", operatorConfig.getId()));
                     virtualNetwork = VirtualNetworkGet.readDefault(network, scenarioOptions);
-                } else {
+                } else
                     logger.info(String.format("Not loading any VirtualNetwork for operator '%s'", operatorConfig.getId()));
-                }
             } else {
                 URL virtualNetworkUrl = ConfigGroup.getInputFileURL(mainConfig.getContext(), virtualNetworkPath);
                 File virtualNetworkFile = new File(virtualNetworkUrl.getPath());
@@ -78,29 +78,26 @@ public class AmodeusVirtualNetworkModule extends AbstractModule {
 
                 if (!virtualNetworkFile.exists() || regenerateVirtualNetwork) {
                     logger.info(String.format("Regenerating VirtualNetwork for operator '%s' at '%s'", operatorConfig.getId(), virtualNetworkFile));
-                    logger.info(String.format("Currently we use information from ScenarioOptions for that. Later on this should be moved to a specific config module."));
+                    logger.info("Currently we use information from ScenarioOptions for that. Later on this should be moved to a specific config module.");
                     logger.info(String.format("Using VirtualNetworkCreator: %s", scenarioOptions.getVirtualNetworkCreator().getClass().getSimpleName()));
 
                     int numberOfVehicles = operatorConfig.getGeneratorConfig().getNumberOfVehicles();
-                    virtualNetwork = scenarioOptions.getVirtualNetworkCreator().create(network, population, scenarioOptions, numberOfVehicles,
+                    virtualNetwork = scenarioOptions.getVirtualNetworkCreator().create(network, population, scenarioOptions, numberOfVehicles, //
                             (int) mainConfig.qsim().getEndTime());
 
                     VirtualNetworkIO.toByte(virtualNetworkFile, virtualNetwork);
-                } else {
+                } else
                     logger.info(String.format("Loading VirtualNetwork for operator '%s' from '%s'", operatorConfig.getId(), virtualNetworkFile));
                     virtualNetwork = VirtualNetworkGet.readFile(network, virtualNetworkFile);
-                }
             }
-
             virtualNetworks.put(operatorConfig.getId(), virtualNetwork);
         }
-
         return virtualNetworks;
     }
 
     @Provides
     @Singleton
-    public Map<Id<AVOperator>, TravelData> provideTravelDatas(Config mainConfig, AVConfigGroup config, Map<Id<AVOperator>, VirtualNetwork<Link>> virtualNetworks,
+    public Map<Id<AVOperator>, TravelData> provideTravelDatas(Config mainConfig, AVConfigGroup config, Map<Id<AVOperator>, VirtualNetwork<Link>> virtualNetworks, //
             Map<Id<AVOperator>, Network> networks, Population population) throws Exception {
         Map<Id<AVOperator>, TravelData> travelDatas = new HashMap<>();
 
@@ -111,16 +108,14 @@ public class AmodeusVirtualNetworkModule extends AbstractModule {
 
             String travelDataPath = operatorConfig.getParams().get("travelDataPath");
 
-            if (virtualNetwork != null) {
-                if (travelDataPath == null) {
+            if (Objects.nonNull(virtualNetwork)) {
+                if (Objects.isNull(travelDataPath)) {
                     // If nothing is set in the configuration file, we fall back to sceanrioOptions. This *may* return null.
-
                     if (scenarioOptions.getVirtualNetworkName().trim().length() > 0) {
                         logger.info(String.format("Loading TravelData for operator '%s' from ScenarioOptions", operatorConfig.getId()));
                         travelData = TravelDataGet.readStatic(virtualNetwork, scenarioOptions);
-                    } else {
+                    } else
                         logger.info(String.format("Not loading any TravelData for operator '%s'", operatorConfig.getId()));
-                    }
                 } else {
                     URL travelDataUrl = ConfigGroup.getInputFileURL(mainConfig.getContext(), travelDataPath);
                     File travelDataFile = new File(travelDataUrl.getPath());
@@ -130,14 +125,14 @@ public class AmodeusVirtualNetworkModule extends AbstractModule {
 
                     if (!travelDataFile.exists() || regenerateTravelData) {
                         logger.info(String.format("Regenerating TravelData for operator '%s' at '%s'", operatorConfig.getId(), travelDataFile));
-                        logger.info(String.format("Currently we use information from ScenarioOptions for that. Later on this should be moved to a specific config module."));
-                        logger.info(String.format("Using StaticTravelDataCreator"));
+                        logger.info("Currently we use information from ScenarioOptions for that. Later on this should be moved to a specific config module.");
+                        logger.info("Using StaticTravelDataCreator");
 
                         File workingDirectory = new File(mainConfig.getContext().getPath());
                         int numberOfVehicles = operatorConfig.getGeneratorConfig().getNumberOfVehicles();
                         int interval = scenarioOptions.getdtTravelData();
 
-                        travelData = StaticTravelDataCreator.create(workingDirectory, virtualNetwork, network, population, interval, numberOfVehicles,
+                        travelData = StaticTravelDataCreator.create(workingDirectory, virtualNetwork, network, population, interval, numberOfVehicles, //
                                 (int) mainConfig.qsim().getEndTime());
                         TravelDataIO.writeStatic(travelDataFile, travelData);
                     } else {
@@ -145,13 +140,10 @@ public class AmodeusVirtualNetworkModule extends AbstractModule {
                         travelData = TravelDataGet.readFile(virtualNetwork, travelDataFile);
                     }
                 }
-
                 travelDatas.put(operatorConfig.getId(), travelData);
-            } else {
+            } else
                 logger.info(String.format("Not loading any TravelData for operator '%s' because not VirtualNetwork is available", operatorConfig.getId()));
-            }
         }
-
         return travelDatas;
     }
 }

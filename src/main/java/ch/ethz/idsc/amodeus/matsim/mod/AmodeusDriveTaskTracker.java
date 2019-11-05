@@ -98,9 +98,7 @@ public class AmodeusDriveTaskTracker implements OnlineDriveTaskTracker {
      *         current path as a backup diversion point. */
     private LinkTimePair getPathEndDiversionPoint() {
         System.err.println("Diversionpoint was null, returning path end point as diversion point.");
-        LinkTimePair returnPair = new LinkTimePair(path.getToLink(), predictLinkExitTime());
-        GlobalAssert.that(Objects.nonNull(returnPair));
-        return returnPair;
+        return new LinkTimePair(path.getToLink(), predictLinkExitTime());
     }
 
     @Override
@@ -111,12 +109,10 @@ public class AmodeusDriveTaskTracker implements OnlineDriveTaskTracker {
         GlobalAssert.that(Objects.nonNull(newSubPath.getFromLink()));
         GlobalAssert.that(Objects.nonNull(diversionPoint.link));
 
-        if (!newSubPath.getFromLink().equals(diversionPoint.link)) {
+        if (!newSubPath.getFromLink().equals(diversionPoint.link))
             throw new IllegalArgumentException("links dont match: " + newSubPath.getFromLink().getId() + "!=" + diversionPoint.link.getId());
-        }
-        if (newSubPath.getDepartureTime() != diversionPoint.time) {
+        if (newSubPath.getDepartureTime() != diversionPoint.time)
             throw new IllegalArgumentException("times dont match" + newSubPath.getDepartureTime() + "!=" + diversionPoint.time);
-        }
 
         int diversionLinkIdx = getDiversionLinkIndex();
 
