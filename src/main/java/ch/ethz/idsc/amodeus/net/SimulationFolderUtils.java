@@ -7,6 +7,7 @@ import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 
 public enum SimulationFolderUtils {
     ;
+
     /** This recursive function looks for the folderName and returns the maximal folder depth found to this named folder
      * relative to the root. If no folder with this name was found, -1 is returned */
     public static int getMaxDepth(File root, String folderName) {
@@ -33,9 +34,8 @@ public enum SimulationFolderUtils {
         System.out.println("getting all output folders from: " + root.getAbsolutePath());
         File[] outputFolders = MultiFileTools.getAllDirectoriesSorted(root);
         String[] outputFolderNames = new String[outputFolders.length];
-        for (int i = 0; i < outputFolders.length; ++i) {
+        for (int i = 0; i < outputFolders.length; ++i)
             outputFolderNames[i] = outputFolders[i].getName();
-        }
         return outputFolderNames;
     }
 }

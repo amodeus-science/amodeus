@@ -9,6 +9,6 @@ import ch.ethz.idsc.amodeus.util.net.ObjectHandler;
     public static final SimulationClientSet INSTANCE = new SimulationClientSet();
 
     private SimulationClientSet() {
+        // ---
     }
-
 }

@@ -4,6 +4,7 @@ package ch.ethz.idsc.amodeus.net;
 import ch.ethz.idsc.amodeus.dispatcher.core.RequestStatus;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 
+// TODO unused -> check usage and maybe remove
 /* package */ enum RequestStatusParser {
     ;
 

@@ -4,7 +4,6 @@ package ch.ethz.idsc.amodeus.net;
 import java.io.File;
 import java.util.Objects;
 
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.util.net.ObjectHandler;
 import ch.ethz.idsc.tensor.io.Export;
 
@@ -24,9 +23,8 @@ public class StorageSubscriber implements ObjectHandler {
             file = storageUtils.getFileForStorageOf(simulationObject);
             Export.object(file, simulationObject);
         } catch (Exception exception) {
-            System.err.println(file.getAbsolutePath());
             exception.printStackTrace();
-            GlobalAssert.that(false);
+            throw new RuntimeException(file.getAbsolutePath());
         }
     }
 }
