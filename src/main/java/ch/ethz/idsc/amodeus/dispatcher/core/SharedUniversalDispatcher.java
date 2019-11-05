@@ -225,7 +225,7 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
                 roboTaxi.startDropoff();
                 Double endDropOffTime = getTimeNow() + dropoffDurationPerStop;
                 dropOffTimes.computeIfAbsent(endDropOffTime, t -> new HashMap<>()) //
-                /* dropOffTimes.get(endDropOffTime) */ .put(roboTaxi, avRequest.get());
+                        /* dropOffTimes.get(endDropOffTime) */ .put(roboTaxi, avRequest.get());
             }
         }
         /** Until here only the directives were given. The actual drop off takes place now.

@@ -52,7 +52,7 @@ public class TreeMultipleItems<T> {
             double submission = function.apply(t);
             boolean setok = set.add(t);
             tree.computeIfAbsent(submission, s -> new HashSet<>()) //
-            /* tree.get(submission) */ .add(t);
+                    /* tree.get(submission) */ .add(t);
             GlobalAssert.that(setok);
         }
     }
