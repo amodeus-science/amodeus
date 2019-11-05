@@ -14,11 +14,11 @@ import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.TileSource;
 
 public class TilesLayer extends ViewerLayer {
 
-    static enum Blend {
+    enum Blend {
         Dark(0), Light(255);
         final int rgb;
 
-        private Blend(int rgb) {
+        Blend(int rgb) {
             this.rgb = rgb;
         }
     }
@@ -34,7 +34,7 @@ public class TilesLayer extends ViewerLayer {
             rowPanel.add(sl.getLabelComponent());
         }
         {
-            JPanel jPanel = new JPanel(new FlowLayout(1, 2, 2));
+            JPanel jPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 2));
             {
                 SpinnerLabel<Blend> spinnerLabel = new SpinnerLabel<>();
                 spinnerLabel.setArray(Blend.values());
@@ -47,7 +47,6 @@ public class TilesLayer extends ViewerLayer {
                 spinnerLabel.getLabelComponent().setPreferredSize(new Dimension(55, DEFAULT_HEIGHT));
                 spinnerLabel.getLabelComponent().setToolTipText("cover gray level");
                 jPanel.add(spinnerLabel.getLabelComponent());
-
             }
             {
                 SpinnerLabel<Integer> spinnerLabel = new SpinnerLabel<>();
@@ -58,7 +57,6 @@ public class TilesLayer extends ViewerLayer {
                 spinnerLabel.getLabelComponent().setPreferredSize(new Dimension(55, DEFAULT_HEIGHT));
                 spinnerLabel.getLabelComponent().setToolTipText("cover alpha");
                 jPanel.add(spinnerLabel.getLabelComponent());
-
             }
             rowPanel.add(jPanel);
         }
@@ -89,5 +87,4 @@ public class TilesLayer extends ViewerLayer {
         }
         amodeusComponent.setTileSource(mapSource.getTileSource());
     }
-
 }

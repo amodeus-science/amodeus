@@ -55,9 +55,9 @@ public class RequestsLayer extends ViewerLayer {
                 GlobalAssert.that(entry.getKey() >= 0);
                 OsmLink osmLink = amodeusComponent.db.getOsmLink(entry.getKey());
                 // final int size = entry.getValue().size();
-                Long size = entry.getValue().stream() //
+                long size = entry.getValue().stream() //
                         .filter(StaticHelper::isWaiting) //
-                        .collect(Collectors.counting());
+                        .count();
                 for (int count = 0; count < size; ++count) {
                     Coord coord = osmLink.getAt(count / (double) size);
                     requestHeatMap.addPoint(coord.getX(), coord.getY());
@@ -78,11 +78,9 @@ public class RequestsLayer extends ViewerLayer {
                 for (int count = 0; count < size; ++count) {
                     Coord coord = osmLink.getAt(count / (double) size);
                     requestDestMap.addPoint(coord.getX(), coord.getY());
-
                 }
             }
         }
-
     }
 
     @Override
@@ -103,7 +101,7 @@ public class RequestsLayer extends ViewerLayer {
                 OsmLink osmLink = amodeusComponent.db.getOsmLink(linkId);
                 p1 = amodeusComponent.getMapPosition(osmLink.getAt(0.5));
             }
-            if (p1 != null) {
+            if (Objects.nonNull(p1)) {
                 final int numRequests = entry.getValue().size();
 
                 final int x = p1.x;
@@ -132,9 +130,9 @@ public class RequestsLayer extends ViewerLayer {
                 }
                 if (showNumbers) {
                     graphics.setColor(Color.GRAY);
-                    Long numNotPickedUp = entry.getValue().stream() //
+                    long numNotPickedUp = entry.getValue().stream() //
                             .filter(StaticHelper::isWaiting) //
-                            .collect(Collectors.counting());
+                            .count();
                     String printValue = (numNotPickedUp > 0) ? "" + numNotPickedUp : "";
                     graphics.drawString(printValue, x, y); // - numRequests
                 }
@@ -144,7 +142,7 @@ public class RequestsLayer extends ViewerLayer {
 
     @Override
     protected void hud(Graphics2D graphics, SimulationObject ref) {
-        if (ref != null) {
+        if (Objects.nonNull(ref)) {
             // InfoString infoString = new InfoString(String.format("%5d %s", ref.requests.size(), "open requests"));
             InfoString infoString = new InfoString(String.format("%5d %s", //
                     ref.requests.stream().filter(rc -> isUnserved(rc.requestStatus)).count(), "open requests"));
@@ -156,7 +154,7 @@ public class RequestsLayer extends ViewerLayer {
             infoString.color = Color.BLACK; // new Color(255, 102, 0);
             amodeusComponent.append(infoString);
         }
-        if (ref != null)
+        if (Objects.nonNull(ref))
             amodeusComponent.append("%5d %s", ref.total_matchedRequests, "matched req.");
         amodeusComponent.appendSeparator();
     }
@@ -238,12 +236,11 @@ public class RequestsLayer extends ViewerLayer {
 
     private static boolean isUnserved(Collection<RequestStatus> statii) {
         boolean unserved = false;
-        for (RequestStatus status : statii) {
+        for (RequestStatus status : statii) { // TODO does never loop
             if (status.isUnserved())
                 unserved = true;
             break;
         }
         return unserved;
     }
-
 }

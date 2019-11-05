@@ -62,9 +62,8 @@ public class LoadLayer extends ViewerLayer {
             if (1 < width) {
                 weight = Subdivide.of(RealScalar.of(1), RealScalar.of(.1), width - 1);
                 weight = weight.divide(Total.of(weight).Get());
-            } else {
+            } else
                 weight = Tensors.of(RealScalar.ONE);
-            }
 
             GraphicsUtil.setQualityHigh(graphics);
             // System.out.println(linkStats.linkIndex.size());
@@ -74,7 +73,7 @@ public class LoadLayer extends ViewerLayer {
                 final OsmLink osmLink = amodeusComponent.db.getOsmLink(index);
                 final double factor = Math.max(osmLink.getLength(), 1) * amodeusComponent.getMeterPerPixel();
                 Point p1 = amodeusComponent.getMapPosition(osmLink.getCoordFrom());
-                if (p1 != null) {
+                if (Objects.nonNull(p1)) {
                     Point p2 = amodeusComponent.getMapPositionAlways(osmLink.getCoordTo());
                     Tensor linkTable = weight.dot(entry.getValue());
                     final double total = Total.of(linkTable).Get().number().doubleValue();
@@ -92,7 +91,6 @@ public class LoadLayer extends ViewerLayer {
             GraphicsUtil.setQualityDefault(graphics);
             graphics.setStroke(new BasicStroke());
         }
-
     }
 
     @Override
@@ -135,7 +133,6 @@ public class LoadLayer extends ViewerLayer {
                 spinnerLabel.getLabelComponent().setPreferredSize(new Dimension(55, DEFAULT_HEIGHT));
                 spinnerLabel.getLabelComponent().setToolTipText("load scaling");
                 jPanel.add(spinnerLabel.getLabelComponent());
-
             }
             rowPanel.add(jPanel);
         }
@@ -154,5 +151,4 @@ public class LoadLayer extends ViewerLayer {
         historyLength = settings.historyLength;
         loadScale = settings.loadScale;
     }
-
 }

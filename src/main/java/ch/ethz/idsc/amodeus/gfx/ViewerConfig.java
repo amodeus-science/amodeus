@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -49,9 +50,8 @@ public class ViewerConfig {
 
     private ViewerConfig(MatsimAmodeusDatabase db, ViewerSettings settings) {
         this.settings = settings;
-        if (this.settings.coord == null) {
+        if (Objects.isNull(this.settings.coord))
             this.settings.coord = db.getCenter();
-        }
     }
 
     private ViewerConfig(MatsimAmodeusDatabase db) {

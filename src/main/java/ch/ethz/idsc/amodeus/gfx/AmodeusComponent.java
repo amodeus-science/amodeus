@@ -20,7 +20,6 @@ import org.matsim.api.core.v01.Coord;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.util.gui.GraphicsUtil;
-import ch.ethz.idsc.amodeus.view.jmapviewer.AmodeusHeatMap;
 import ch.ethz.idsc.amodeus.view.jmapviewer.Coordinate;
 import ch.ethz.idsc.amodeus.view.jmapviewer.JMapViewer;
 import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.ICoordinate;
@@ -75,8 +74,7 @@ public class AmodeusComponent extends JMapViewer {
 
     public void addLayer(ViewerLayer viewerLayer) {
         viewerLayers.add(viewerLayer);
-        for (AmodeusHeatMap m : viewerLayer.getHeatmaps())
-            matsimHeatmaps.add(m);
+        matsimHeatmaps.addAll(viewerLayer.getHeatmaps());
     }
 
     public void reorientMap(ViewerConfig viewerConfig) {
@@ -99,9 +97,7 @@ public class AmodeusComponent extends JMapViewer {
         ICoordinate ic = getPosition(point);
         // System.out.println("lat=" + ic.getLat() + " lon=" + ic.getLon());
         Coord coord = new Coord(ic.getLon(), ic.getLat());
-        Coord xy = db.referenceFrame.coords_fromWGS84().transform(coord);
-        // System.out.println(xy);
-        return xy;
+        return db.referenceFrame.coords_fromWGS84().transform(coord);
     }
 
     @Override
@@ -147,7 +143,6 @@ public class AmodeusComponent extends JMapViewer {
 
         if (0 < infoFontSize)
             drawInfoStrings(graphics);
-
     }
 
     private void drawInfoStrings(Graphics2D graphics) {
@@ -203,5 +198,4 @@ public class AmodeusComponent extends JMapViewer {
     public int getFontSize() {
         return infoFontSize;
     }
-
 }

@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import javax.swing.JButton;
@@ -237,7 +238,7 @@ public class AmodeusViewerFrame implements Runnable {
         try {
             amodeusComponent.virtualNetworkLayer.setVirtualNetwork(VirtualNetworkGet.readFromOutputDirectory(network, selectedDirectory, scenarioOptions));
         } catch (IOException e) {
-            GlobalAssert.that(false);
+            throw new RuntimeException();
         }
     }
 
@@ -248,7 +249,7 @@ public class AmodeusViewerFrame implements Runnable {
 
         File[] subfolders = MultiFileTools.getAllDirectoriesSortedWithSubfolderName(rootDirectory, SIMOBJ);
 
-        spinnerLabelFolder.setArray(Stream.of(subfolders).map(v -> v.getName()).toArray(String[]::new));
+        spinnerLabelFolder.setArray(Stream.of(subfolders).map(File::getName).toArray(String[]::new));
         spinnerLabelFolder.setIndex(0);
         spinnerLabelFolder.setSpinnerListener(s -> {
             File selectedFolder = new File(rootDirectory, s);
@@ -259,9 +260,8 @@ public class AmodeusViewerFrame implements Runnable {
 
         // set default value else just take the first folder
         int index = 0;
-        if (defaultDirectory != null) {
+        if (Objects.nonNull(defaultDirectory))
             index = getDefaultFolderIndex(rootDirectory, defaultDirectory);
-        }
 
         spinnerLabelFolder.setIndex(index);
         setSpinnerLabel(subfolders[index], defaultDirectory, listIndex);
@@ -272,9 +272,8 @@ public class AmodeusViewerFrame implements Runnable {
         if (rootDirectory.equals(defaultDirectory))
             return 0;
         File rootChild = defaultDirectory;
-        while (!rootDirectory.equals(rootChild.getParentFile())) {
+        while (!rootDirectory.equals(rootChild.getParentFile()))
             rootChild = rootChild.getParentFile();
-        }
         List<File> subfolders = Arrays.asList(MultiFileTools.getAllDirectoriesSortedWithSubfolderName(rootDirectory, SIMOBJ));
         return subfolders.indexOf(rootChild);
     }
@@ -285,9 +284,8 @@ public class AmodeusViewerFrame implements Runnable {
             setVirtualNetwork(selectedFolder);
             reindex(storageUtils);
             removeSubsequentSpinnerLabels(index + 1);
-        } else {
+        } else
             updateSubsequentSpinnerLabels(selectedFolder, defaultDirectory, index + 1);
-        }
     }
 
     private void removeSubsequentSpinnerLabels(int listIndex) {
@@ -326,7 +324,7 @@ public class AmodeusViewerFrame implements Runnable {
     public void run() {
         while (isLaunched) {
             int millis = 500;
-            if (jSlider != null && jToggleButtonAuto.isSelected()) {
+            if (jToggleButtonAuto.isSelected()) {
                 jSlider.setValue(jSlider.getValue() + 1);
                 int STEPSIZE_SECONDS = storageSupplier.getIntervalEstimate();
                 millis = RealScalar.of(1000 * STEPSIZE_SECONDS).divide(RealScalar.of(playbackSpeed)).number().intValue();
@@ -338,5 +336,4 @@ public class AmodeusViewerFrame implements Runnable {
             }
         }
     }
-
 }
