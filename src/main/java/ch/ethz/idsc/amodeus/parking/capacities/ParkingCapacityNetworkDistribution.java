@@ -55,7 +55,8 @@ public class ParkingCapacityNetworkDistribution extends ParkingCapacityAbstract 
 
         /** assign according to distribution */
         Map<Id<Link>, Long> parkingCount = new HashMap<>();
-        int bound = linksWithParking.size();LongStream.range(0, desiredTotalSpots).mapToInt(l -> random.nextInt(bound)).mapToObj(linksWithParking::get)
+        int bound = linksWithParking.size();
+        LongStream.range(0, desiredTotalSpots).mapToInt(l -> random.nextInt(bound)).mapToObj(linksWithParking::get)
                 .forEach(link -> parkingCount.merge(link.getId(), 1L, Long::sum));
         parkingCount.forEach(capacities::put);
     }
