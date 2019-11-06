@@ -2,12 +2,10 @@
 package ch.ethz.idsc.amodeus.parking.strategies;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.NavigableMap;
-import java.util.TreeMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -33,7 +31,6 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
  * process speed if solutions of {1,2,3,...} units have to be found with a high
  * sampling rate. */
 public class SmallRedistributionProblemSolver<T> {
-
     private boolean globOptimSolPossible = true;
     private boolean foundGlobOptimSol = false;
     protected final Map<T, Map<T, Integer>> solution = new HashMap<>();
@@ -44,11 +41,7 @@ public class SmallRedistributionProblemSolver<T> {
             Function<T, String> getName, boolean print, String exportLocation) {
 
         /** checking if at most unit to move per origin */
-        unitsToMove.values().forEach(i -> {
-            if (i > 1) {
-                globOptimSolPossible = false;
-            }
-        });
+        globOptimSolPossible = unitsToMove.values().stream().noneMatch(i -> i > 1);
 
         // int unitsTotal = unitsToMove.values().stream().mapToInt(i -> i).sum();
 
@@ -61,45 +54,29 @@ public class SmallRedistributionProblemSolver<T> {
         // the full LP based solver must be used if more than 1 unit
         // at some origin...
         List<T> unitsMultiplicity = new ArrayList<>();
-        unitsToMove.entrySet().forEach(e -> {
-            int units = e.getValue();
+        unitsToMove.forEach((t, units) -> {
             GlobalAssert.that(units == 0 || units == 1);
-            if (units == 1) {
-                unitsMultiplicity.add(e.getKey());
-            }
+            if (units == 1)
+                unitsMultiplicity.add(t);
         });
 
         // find best destination for every unit
         Map<T, Integer> bestDestinationCount = new HashMap<>();
         Map<T, T> bestPairs = new HashMap<>();
         for (T origin : unitsMultiplicity) {
-            NavigableMap<Double, T> lowestCost = new TreeMap<>();
-            for (T destin : availableDestinations.keySet()) {
-                Double cost = costFunction.apply(origin, destin);
-                lowestCost.put(cost, destin);
-            }
-            T bestDestin = lowestCost.firstEntry().getValue();
-            if (!bestDestinationCount.containsKey(bestDestin))
-                bestDestinationCount.put(bestDestin, 0);
-            bestDestinationCount.put(bestDestin, bestDestinationCount.get(bestDestin) + 1);
+            T bestDestin = availableDestinations.keySet().stream().min(Comparator.comparingDouble(dest -> costFunction.apply(origin, dest))).get();
+            bestDestinationCount.merge(bestDestin, 1, Integer::sum);
             bestPairs.put(origin, bestDestin);
-
         }
 
         // assess validity: every no conflicting best destinations
-        for (Entry<T, Integer> bestDestEntry : bestDestinationCount.entrySet()) {
-            if (bestDestEntry.getValue() > availableDestinations.get(bestDestEntry.getKey())) {
-                globOptimSolPossible = false;
-                break;
-            }
-        }
+        globOptimSolPossible = bestDestinationCount.entrySet().stream().noneMatch(e -> e.getValue() > availableDestinations.get(e.getKey()));
 
         // at this point, a valid solution has been found
         if (globOptimSolPossible) {
-            for (T origin : unitsMultiplicity) {
-                solution.put(origin, new HashMap<>());
-                solution.get(origin).put(bestPairs.get(origin), 1);
-            }
+            for (T origin : unitsMultiplicity)
+                solution.computeIfAbsent(origin, o -> new HashMap<>()) //
+                /* solution.get(origin) */ .put(bestPairs.get(origin), 1);
             foundGlobOptimSol = true;
         }
 
@@ -126,5 +103,4 @@ public class SmallRedistributionProblemSolver<T> {
     public Map<T, Map<T, Integer>> returnSolution() {
         return solution;
     }
-
 }

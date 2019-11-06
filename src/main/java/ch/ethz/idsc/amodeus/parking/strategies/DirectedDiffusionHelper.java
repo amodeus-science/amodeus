@@ -12,6 +12,7 @@ import java.util.NavigableMap;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.matsim.api.core.v01.network.Link;
 
@@ -39,24 +40,21 @@ import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
         List<Link> deg2Neighbors = getNeighborLinks(deg1Neighbors, rt);
         NavigableMap<Long, Link> destMap = new TreeMap<>();
         /** search possible destinations in degree 1 neighboring roads */
-        deg1Neighbors.stream()//
-                .forEach(link -> {
-                    Long freeSpaces = parkingCapacity.getSpatialCapacity(link.getId());
-                    if (occMap.containsKey(link))
-                        freeSpaces = Math.max(0, freeSpaces - occMap.get(link).size());
-                    if (freeSpaces > 0) {
-                        destMap.put(freeSpaces, link);
-                    }
-                });
-
-        /** search possible destinations in degree 2 neighboring roads */
-        deg2Neighbors.stream().forEach(link -> {
+        deg1Neighbors.forEach(link -> {
             Long freeSpaces = parkingCapacity.getSpatialCapacity(link.getId());
             if (occMap.containsKey(link))
                 freeSpaces = Math.max(0, freeSpaces - occMap.get(link).size());
-            if (freeSpaces > 0) {
+            if (freeSpaces > 0)
                 destMap.put(freeSpaces, link);
-            }
+        });
+
+        /** search possible destinations in degree 2 neighboring roads */
+        deg2Neighbors.forEach(link -> {
+            Long freeSpaces = parkingCapacity.getSpatialCapacity(link.getId());
+            if (occMap.containsKey(link))
+                freeSpaces = Math.max(0, freeSpaces - occMap.get(link).size());
+            if (freeSpaces > 0)
+                destMap.put(freeSpaces, link);
         });
 
         /** if there are no valid destinations, select a degree 2 neighbor at random */
@@ -66,64 +64,34 @@ import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
             refreshOccMap(rt, destination);
             return destination;
         }
-        Link destination = destMap.lastEntry().getValue();
-        return destination;
+        return destMap.lastEntry().getValue();
     }
 
     private void refreshOccMap(RoboTaxi rt, Link destination) {
         // remove
         Link location = rt.getDivertableLocation();
         occMap.get(location).remove(rt);
-        if (occMap.get(location).isEmpty()) {
+        if (occMap.get(location).isEmpty())
             occMap.remove(location);
-        }
         // add
-        if (!occMap.containsKey(destination)) {
-            occMap.put(destination, new HashSet<>());
-        }
-        occMap.get(destination).add(rt);
+        occMap.computeIfAbsent(destination, l -> new HashSet<>()) //
+        /* occMap.get(destination) */ .add(rt);
     }
 
     private static List<Link> getNeighborLinks(List<Link> firstNeighbors, RoboTaxi rt) {
-        List<Link> secondNeighbors = new ArrayList<>();
-        for (Link link : firstNeighbors) {
-            List<Link> newNeighbors = new ArrayList<>(link.getToNode().getOutLinks().values());
-            for (Link link2 : newNeighbors) {
-                if ((!secondNeighbors.contains(link2)) & (rt.getDivertableLocation() != link2)) {
-                    secondNeighbors.add(link2);
-                }
-            }
-        }
-        return secondNeighbors;
+        return firstNeighbors.stream().flatMap(link -> //
+                link.getToNode().getOutLinks().values().stream().filter(l -> l != rt.getDivertableLocation())
+        ).distinct().collect(Collectors.toList());
     }
 
     private static Map<Link, Set<RoboTaxi>> getOccMap(Collection<RoboTaxi> stayingRobotaxis, //
             Collection<RoboTaxi> rebalancingRobotaxis) {
-        Map<Link, Set<RoboTaxi>> occMap = new HashMap<>();
-
-        for (RoboTaxi stayRT : stayingRobotaxis) {
-            if (occMap.containsKey(stayRT.getDivertableLocation())) {
-                Set<RoboTaxi> currSet = occMap.get(stayRT.getDivertableLocation());
-                currSet.add(stayRT);
-                occMap.replace(stayRT.getDivertableLocation(), currSet);
-            } else {
-                Set<RoboTaxi> newSet = new HashSet<>();
-                newSet.add(stayRT);
-                occMap.put(stayRT.getDivertableLocation(), newSet);
-            }
-        }
-
-        for (RoboTaxi rebRT : rebalancingRobotaxis) {
-            if (occMap.containsKey(rebRT.getCurrentDriveDestination())) {
-                Set<RoboTaxi> currSet = occMap.get(rebRT.getCurrentDriveDestination());
-                currSet.add(rebRT);
-                occMap.replace(rebRT.getCurrentDriveDestination(), currSet);
-            } else {
-                Set<RoboTaxi> newSet = new HashSet<>();
-                newSet.add(rebRT);
-                occMap.put(rebRT.getCurrentDriveDestination(), newSet);
-            }
-        }
+        // Map<Link, Set<RoboTaxi>> occMap = new HashMap<>();
+        // for (RoboTaxi stayRT : stayingRobotaxis)
+        //     occMap.computeIfAbsent(stayRT.getDivertableLocation(), l -> new HashSet<>()).add(stayRT);
+        Map<Link, Set<RoboTaxi>> occMap = stayingRobotaxis.stream().collect(Collectors.groupingBy(RoboTaxi::getDivertableLocation, Collectors.toSet()));
+        for (RoboTaxi rebRT : rebalancingRobotaxis)
+            occMap.computeIfAbsent(rebRT.getCurrentDriveDestination(), l -> new HashSet<>()).add(rebRT);
         return occMap;
     }
 }

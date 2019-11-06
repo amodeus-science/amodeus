@@ -31,11 +31,10 @@ import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
             Integer nominalSpaces = (int) Math.ceil(nominalCapacity);
             Integer numTaxis = linkStayTaxi.get(link).size();
             if (numTaxis > nominalSpaces) {
-                Integer shouldLeave = Math.max(0, numTaxis - nominalSpaces);
+                int shouldLeave = Math.max(0, numTaxis - nominalSpaces);
                 for (T rt : linkStayTaxi.get(link)) {
-                    if (!shouldLeaveTaxis.containsKey(link))
-                        shouldLeaveTaxis.put(link, new HashSet<T>());
-                    shouldLeaveTaxis.get(link).add(rt);
+                    shouldLeaveTaxis.computeIfAbsent(link, l -> new HashSet<>()) //
+                    /* shouldLeaveTaxis.get(link) */ .add(rt);
                     shouldLeave--;
                     if (shouldLeave < 1)
                         break;
@@ -55,7 +54,7 @@ import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
             double nominalCapacity = parkingCapacity.getSpatialCapacity(link.getId());
             Integer nominalSpaces = (int) Math.ceil(nominalCapacity);
             Integer stayTaxis = linkStayTaxi.containsKey(link) ? linkStayTaxi.get(link).size() : 0;
-            Integer reblTaxis = linkRebalancingTaxi.containsKey(link) ? linkRebalancingTaxi.get(link) : 0;
+            Integer reblTaxis = linkRebalancingTaxi.getOrDefault(link, 0);
             Integer freeSpaces = Math.max(0, nominalSpaces - stayTaxis - reblTaxis);
             if (freeSpaces > 0)
                 freeSpacesToGo.put(link, freeSpaces);

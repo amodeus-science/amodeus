@@ -93,6 +93,7 @@ public class StandardMATSimScenarioTest {
                 { "TShareDispatcher" }, //
                 { "FirstComeFirstServedStrategy" }, //
                 { "DynamicRideSharingStrategy" }, //
+                // { "RestrictedLinkCapacityDispatcher" }, // TODO parking strategy
 
                 // This one doesn't finish all requests. Bug or not enough of time? Also it's not good in an automated unit test because it
                 // produces large amounts of log output.

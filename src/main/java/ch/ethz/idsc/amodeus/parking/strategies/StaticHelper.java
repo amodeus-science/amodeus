@@ -2,10 +2,9 @@
 package ch.ethz.idsc.amodeus.parking.strategies;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.matsim.api.core.v01.network.Link;
 
@@ -18,40 +17,13 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
      *         and for each {@link Link} the number of {@link RoboTaxi}s driving there based on a
      *         {@link Collection} of {@link RoboTaxi}s @param roboTaxis */
     public static Map<Link, Integer> getDestinationCount(Collection<RoboTaxi> roboTaxis) {
-        Map<Link, Integer> destCount = new HashMap<>();
-        roboTaxis.stream().map(rt -> rt.getCurrentDriveDestination())//
-                .forEach(l -> {
-                    if (destCount.containsKey(l))
-                        destCount.put(l, destCount.get(l) + 1);
-                    else
-                        destCount.put(l, 1);
-                });
-        return destCount;
+        return roboTaxis.stream().collect(Collectors.toMap(RoboTaxi::getCurrentDriveDestination, rt -> 1, Integer::sum));
     }
 
     /** @return {@link Map} containing all {@link Link}s with staying {@link RoboTaxi} and a
      *         {@link Set} of all staying {@link RoboTaxi} on these links based
      *         on a set of {@link RoboTaxi}s @param stayRoboTaxis */
     public static Map<Link, Set<RoboTaxi>> getOccupiedLinks(Collection<RoboTaxi> stayingRobotaxis) {
-        /** create empty map */
-        Map<Link, Set<RoboTaxi>> stayTaxis = new HashMap<>();
-        /** add all links that will occur */
-        stayingRobotaxis.stream().map(rt -> rt.getDivertableLocation())//
-                .forEach(l -> stayTaxis.put(l, new HashSet<RoboTaxi>()));
-        /** associate RoboTaxis to links */
-        stayingRobotaxis.stream().forEach(rt -> stayTaxis.get(rt.getDivertableLocation()).add(rt));
-        return stayTaxis;
+        return stayingRobotaxis.stream().collect(Collectors.groupingBy(RoboTaxi::getDivertableLocation, Collectors.toSet()));
     }
-
-    /** removes all entries with value 0 */
-    public static <T> Map<T, Integer> removeZeroValues(Map<T, Integer> mapIn) {
-        Map<T, Integer> mapOut = new HashMap<>();
-        mapIn.entrySet().forEach(e -> {
-            if (e.getValue() != 0) {
-                mapOut.put(e.getKey(), e.getValue());
-            }
-        });
-        return mapOut;
-    }
-
 }

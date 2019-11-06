@@ -9,7 +9,6 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
 public class ParkingCapacityConstant implements ParkingCapacity {
-
     private final long capacity;
     private final Network network;
 
@@ -31,5 +30,4 @@ public class ParkingCapacityConstant implements ParkingCapacity {
             return network.getLinks().keySet();
         return new ArrayList<>();
     }
-
 }

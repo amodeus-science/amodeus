@@ -56,15 +56,11 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
                 }
 
                 // remove elements with value 0 to speed up computation of LP
-                unitsToMove = StaticHelper.removeZeroValues(unitsToMove);
+                unitsToMove.entrySet().removeIf(e -> e.getValue() == 0);
 
-                freeSpacesToGo.entrySet().forEach(e -> {
-                    if (e.getValue() == 0) {
-                        System.err.println("Has available dest with 0...");
-                    }
-                });
+                freeSpacesToGo.values().stream().filter(v -> v == 0).forEach(v -> System.err.println("Has available dest with 0..."));
 
-                GlobalAssert.that(totalUnits <= totalSpots);
+                // GlobalAssert.that(totalUnits <= totalSpots); // always true
 
                 /** if there are less parking spots than vehicles, the total units to displace
                  * may be zero and the LP does not need to be solved. */
@@ -79,14 +75,12 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
                     if (totalUnits < 20) { // TODO find meaningful value, remove magic const.
                         System.out.println("Fast solver is started...");
                         fastSolver = new SmallRedistributionProblemSolver<>(unitsToMove, freeSpacesToGo, //
-                                (l1, l2) -> distanceFunction.getDistance(l1, l2), l -> l.getId().toString(), //
+                                distanceFunction::getDistance, l -> l.getId().toString(), //
                                 false, "");
                         foundSolution = fastSolver.success();
                         System.out.println("Fast solver status: " + foundSolution);
 
-                        if (totalUnits == 1 && !fastSolver.success()) {
-                            GlobalAssert.that(false);
-                        }
+                        GlobalAssert.that(totalUnits != 1 || fastSolver.success());
 
                         flowSolution = fastSolver.returnSolution();
                     }
@@ -94,8 +88,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
                     if (!foundSolution) {
                         /** set up the flow problem and solve */
                         parkingLP = new RedistributionProblemSolver<>(unitsToMove, freeSpacesToGo, //
-                                (l1, l2) -> distanceFunction.getDistance(l1, l2), l -> l.getId().toString(), //
-                                false, "");
+                                distanceFunction::getDistance, l -> l.getId().toString(), false, "");
                         flowSolution = parkingLP.returnSolution();
                     }
                     /** compute command map */
@@ -105,5 +98,4 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         }
         return new HashMap<>();
     }
-
 }
