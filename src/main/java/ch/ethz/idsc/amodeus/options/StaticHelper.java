@@ -18,9 +18,8 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
      * @throws IOException */
     public static Properties loadOrCreateScenarioOptions(File directory, Properties simOptions)//
             throws IOException {
-        if (!directory.isDirectory()) {
+        if (!directory.isDirectory())
             throw new IllegalArgumentException("Not a directory: " + directory.getAbsolutePath());
-        }
         return locateOrLoad(directory, simOptions, ScenarioOptionsBase.OPTIONSFILENAME, //
                 ScenarioOptionsBase::savePropertiesToFile);
     }
