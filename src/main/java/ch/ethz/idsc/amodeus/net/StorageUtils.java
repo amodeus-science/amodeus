@@ -24,14 +24,12 @@ public class StorageUtils {
         System.out.println("StorageUtils output directory location: " + outputdirectory.getAbsolutePath());
         if (outputdirectory.isDirectory()) {
             output = outputdirectory;
-
         } else {
             System.err.println(outputdirectory.getAbsolutePath());
             System.out.println("supplied outputdircetory does not exist, using default");
             System.out.println("outputdirectory = " + DEFAULT_OUTPUT_DIRECTORY.getAbsolutePath());
             output = DEFAULT_OUTPUT_DIRECTORY;
         }
-
         directory = new File(output, SIMOBJ);
     }
 
@@ -39,18 +37,8 @@ public class StorageUtils {
         System.out.println("StorageUtils object has properties:");
         System.out.println("OUTPUT File: " + output.getAbsolutePath());
         System.out.println("DIRECTORY File: " + directory.getAbsolutePath());
-        if (output.isDirectory()) {
-            System.out.println("OUTPUT is present");
-        } else {
-            System.out.println("OUTPUT not present");
-        }
-
-        if (directory.isDirectory()) {
-            System.out.println("DIRECTORY is present");
-        } else {
-            System.out.println("DIRECTORY not present");
-        }
-
+        System.out.println(output.isDirectory() ? "OUTPUT is present" : "OUTPUT not present");
+        System.out.println(directory.isDirectory() ? "DIRECTORY is present" : "DIRECTORY not present");
     }
 
     /** @return {@link List} of {@link IterationFolder} where simulation results
@@ -62,7 +50,7 @@ public class StorageUtils {
         }
 
         List<IterationFolder> returnList = new ArrayList<>();
-        Stream.of(directory.listFiles()).sorted()//
+        Stream.of(directory.listFiles()).sorted() //
                 .forEach(f -> returnList.add(new IterationFolder(f, this)));
         return returnList;
     }
@@ -85,7 +73,6 @@ public class StorageUtils {
         File lastIter = files[files.length - 1];
         System.out.println("loading last Iter = " + lastIter);
         return getFrom(lastIter);
-
     }
 
     /** function only called from {@link StorageSubscriber} when data is recorded
@@ -120,5 +107,4 @@ public class StorageUtils {
                         navigableMap.put(Integer.parseInt(file.getName().substring(0, 7)), file);
         return navigableMap;
     }
-
 }

@@ -3,6 +3,8 @@ package ch.ethz.idsc.amodeus.gfx;
 
 import javax.swing.JToggleButton;
 
+import java.util.Objects;
+
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.net.SimulationServer;
 import ch.ethz.idsc.amodeus.util.net.ObjectClient;
@@ -16,12 +18,12 @@ import ch.ethz.idsc.amodeus.util.net.ObjectHandler;
         super("connect...");
 
         addActionListener(event -> {
+            if (Objects.nonNull(client)) {
+                client.close();
+                client = null;
+            }
             if (isSelected()) {
                 try {
-                    if (client != null) {
-                        client.close();
-                        client = null;
-                    }
                     client = new ObjectClient("localhost", SimulationServer.OBJECT_SERVER_PORT, new ObjectHandler() {
                         @Override
                         public void handle(Object object) {
@@ -30,11 +32,6 @@ import ch.ethz.idsc.amodeus.util.net.ObjectHandler;
                     });
                 } catch (Exception exception) {
                     exception.printStackTrace();
-                }
-            } else {
-                if (client != null) {
-                    client.close();
-                    client = null;
                 }
             }
         });

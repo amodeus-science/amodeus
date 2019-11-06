@@ -82,9 +82,8 @@ public class LPTimeVariant extends LPTimeVariantBase {
     public Tensor getVmin_i() {
         Tensor Vmin_i = Array.zeros(nvNodes);
         // set lower bound on available vehicles per virtual station to 0
-        for (int i = 0; i < nvNodes; i++) {
+        for (int i = 0; i < nvNodes; i++)
             Vmin_i.set(RealScalar.of(1.0), i);
-        }
         return Vmin_i;
     }
 
@@ -101,8 +100,8 @@ public class LPTimeVariant extends LPTimeVariantBase {
     @Override
     public void initColumnF_ij() {
         // optimization variable f_ij[k]
-        for (int t = 0; t < timeSteps; t++) {
-            for (int i = 0; i < nvNodes; ++i) {
+        for (int t = 0; t < timeSteps; t++)
+            for (int i = 0; i < nvNodes; ++i)
                 for (int j = 0; j < nvNodes; ++j) {
                     if (j == i)
                         continue;
@@ -114,16 +113,14 @@ public class LPTimeVariant extends LPTimeVariantBase {
                     GLPK.glp_set_col_bnds(lp, columnId, GLPKConstants.GLP_LO, 0.0, 0.0); // Lower bound: second number irrelevant
                     fIDvarID.put(Arrays.asList(t, i, j), columnId);
                 }
-            }
-        }
         System.out.println("f_ij[k] done");
     }
 
     @Override
     public void initRowF_ij_k(SWIGTYPE_p_int ind, SWIGTYPE_p_double val) {
         // row variable F_ij[k]
-        for (int t = 1; t < timeSteps; t++) {
-            for (int i = 0; i < nvNodes; i++) {
+        for (int t = 1; t < timeSteps; t++)
+            for (int i = 0; i < nvNodes; i++)
                 for (int j = 0; j < nvNodes; j++) {
                     if (i == j)
                         continue;
@@ -134,9 +131,8 @@ public class LPTimeVariant extends LPTimeVariantBase {
 
                     // set upper bound
                     double upperBound = 0;
-                    for (int k = 0; k < t; k++) {
+                    for (int k = 0; k < t; k++)
                         upperBound += lambdaAbsolute_ij.Get(k, i, j).number().doubleValue();
-                    }
                     GLPK.glp_set_row_bnds(lp, rowId, GLPKConstants.GLP_UP, 0.0, upperBound); // Upper bound: first number irrelevant
 
                     // set all coefficient entries of matrix A to zero first
@@ -153,14 +149,12 @@ public class LPTimeVariant extends LPTimeVariantBase {
                     // turn over the entries to GLPK
                     GLPK.glp_set_mat_row(lp, rowId, columnTotal, ind, val);
                 }
-            }
-        }
     }
 
     @Override
     public void initRowF_ij_K(SWIGTYPE_p_int ind, SWIGTYPE_p_double val) {
         // row variable F_ij[K]
-        for (int i = 0; i < nvNodes; i++) {
+        for (int i = 0; i < nvNodes; i++)
             for (int j = 0; j < nvNodes; j++) {
                 if (i == j)
                     continue;
@@ -171,9 +165,8 @@ public class LPTimeVariant extends LPTimeVariantBase {
 
                 // set fixed bound
                 double fixedBound = 0;
-                for (int k = 0; k < timeSteps; k++) {
+                for (int k = 0; k < timeSteps; k++)
                     fixedBound += lambdaAbsolute_ij.Get(k, i, j).number().doubleValue();
-                }
                 GLPK.glp_set_row_bnds(lp, rowId, GLPKConstants.GLP_FX, fixedBound, fixedBound);
 
                 // set all coefficient entries of matrix A to zero first
@@ -190,7 +183,6 @@ public class LPTimeVariant extends LPTimeVariantBase {
                 // turn over the entries to GLPK
                 GLPK.glp_set_mat_row(lp, rowId, columnTotal, ind, val);
             }
-        }
     }
 
     @Override
@@ -218,7 +210,7 @@ public class LPTimeVariant extends LPTimeVariantBase {
                 GLPK.doubleArray_setitem(val, index, 1.0);
 
                 // set f_ij[k] and alpha_ij[k]
-                for (int k = 0; k < t; k++) {
+                for (int k = 0; k < t; k++)
                     for (int j = 0; j < nvNodes; j++) {
                         if (j == i)
                             continue;
@@ -229,9 +221,8 @@ public class LPTimeVariant extends LPTimeVariantBase {
                         GLPK.intArray_setitem(ind, index, index);
                         GLPK.doubleArray_setitem(val, index, -1);
                     }
-                }
                 // set f_ji[k] and alpha_ji[k]
-                for (int k = 0; k < t; k++) {
+                for (int k = 0; k < t; k++)
                     for (int j = 0; j < nvNodes; j++) {
                         if (j == i)
                             continue;
@@ -247,7 +238,6 @@ public class LPTimeVariant extends LPTimeVariantBase {
                             GLPK.doubleArray_setitem(val, index, 1);
                         }
                     }
-                }
 
                 // turn over the entries to GLPK
                 GLPK.glp_set_mat_row(lp, rowId, columnTotal, ind, val);
@@ -275,7 +265,7 @@ public class LPTimeVariant extends LPTimeVariantBase {
 
             int index;
             // set f_ij[k] and alpha_ij[k]
-            for (int k = 0; k < timeSteps; k++) {
+            for (int k = 0; k < timeSteps; k++)
                 for (int j = 0; j < nvNodes; j++) {
                     if (j == i)
                         continue;
@@ -286,9 +276,8 @@ public class LPTimeVariant extends LPTimeVariantBase {
                     GLPK.intArray_setitem(ind, index, index);
                     GLPK.doubleArray_setitem(val, index, -1);
                 }
-            }
             // set f_ji[k] and alpha_ji[k]
-            for (int k = 0; k < timeSteps; k++) {
+            for (int k = 0; k < timeSteps; k++)
                 for (int j = 0; j < nvNodes; j++) {
                     if (j == i)
                         continue;
@@ -299,7 +288,6 @@ public class LPTimeVariant extends LPTimeVariantBase {
                     GLPK.intArray_setitem(ind, index, index);
                     GLPK.doubleArray_setitem(val, index, 1);
                 }
-            }
 
             // turn over the entries to GLPK
             GLPK.glp_set_mat_row(lp, rowId, columnTotal, ind, val);
@@ -309,44 +297,38 @@ public class LPTimeVariant extends LPTimeVariantBase {
     @Override
     public void initObjCr() {
         // set C_r
-        for (int t = 0; t < timeSteps; t++) {
-            for (int i = 0; i < nvNodes; i++) {
+        for (int t = 0; t < timeSteps; t++)
+            for (int i = 0; i < nvNodes; i++)
                 for (int j = 0; j < nvNodes; j++) {
                     if (i == j)
                         continue;
                     int index = alphaIDvarID.get(Arrays.asList(t, i, j));
                     GLPK.glp_set_obj_coef(lp, index, weightR / endTime * gamma_ij.Get(i, j).number().doubleValue());
                 }
-            }
-        }
     }
 
     @Override
     public void initObjCq() {
         // set C_q (the lambdaij term can be ignored)
-        for (int t = 0; t < timeSteps - 1; t++) {
-            for (int i = 0; i < nvNodes; i++) {
+        for (int t = 0; t < timeSteps - 1; t++)
+            for (int i = 0; i < nvNodes; i++)
                 for (int j = 0; j < nvNodes; j++) {
                     if (i == j)
                         continue;
                     int index = fIDvarID.get(Arrays.asList(t, i, j));
                     GLPK.glp_set_obj_coef(lp, index, -weightQ * timeIntervalLength / endTime * (timeSteps - t - 1));
                 }
-            }
-        }
     }
 
     @Override
     protected void readF_ij() {
-        for (int t = 0; t < timeSteps; t++) {
-            for (int i = 0; i < nvNodes; i++) {
+        for (int t = 0; t < timeSteps; t++)
+            for (int i = 0; i < nvNodes; i++)
                 for (int j = 0; j < nvNodes; j++) {
                     if (i == j)
                         continue;
                     fAbsolute_ij.set(RealScalar.of(GLPK.glp_get_col_prim(lp, fIDvarID.get(Arrays.asList(t, i, j)))), t, i, j);
                 }
-            }
-        }
         fAbsolute_ij = LPUtils.getRoundedRequireNonNegative(fAbsolute_ij);
         fRate_ij = fAbsolute_ij.divide(RealScalar.of(timeIntervalLength));
     }

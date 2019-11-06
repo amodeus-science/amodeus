@@ -9,6 +9,7 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.swing.JCheckBox;
@@ -35,7 +36,7 @@ public class VehiclesLayer extends ViewerLayer {
 
     @Override
     protected void paint(Graphics2D graphics, SimulationObject ref) {
-        if (ref == null || !showLocation)
+        if (Objects.isNull(ref) || !showLocation)
             return;
 
         int zoom = amodeusComponent.getZoom();
@@ -47,12 +48,12 @@ public class VehiclesLayer extends ViewerLayer {
             int size = entry.getValue().size();
             OsmLink osmLink = amodeusComponent.db.getOsmLink(entry.getKey());
             Point p1test = amodeusComponent.getMapPosition(osmLink.getAt(0.5));
-            if (p1test != null) {
+            if (Objects.nonNull(p1test)) {
                 double ofs = 0.5 / size;
                 double delta = 2 * ofs;
                 for (VehicleContainer vc : entry.getValue()) {
                     Point p1 = amodeusComponent.getMapPosition(osmLink.getAt(ofs));
-                    if (p1 != null) {
+                    if (Objects.nonNull(p1)) {
                         if (showLocation) {
                             Color color = statusColors.of(vc.roboTaxiStatus);
                             graphics.setColor(color);
@@ -75,7 +76,7 @@ public class VehiclesLayer extends ViewerLayer {
     @Override
     protected void hud(Graphics2D graphics, SimulationObject ref) {
         int[] count = new int[RoboTaxiStatus.values().length];
-        if (ref != null) {
+        if (Objects.nonNull(ref)) {
             ref.vehicles.forEach(v -> ++count[v.roboTaxiStatus.ordinal()]);
 
             for (RoboTaxiStatus avStatus : RoboTaxiStatus.values()) {
@@ -156,7 +157,7 @@ public class VehiclesLayer extends ViewerLayer {
     }
 
     private void loadBitSet(ViewerSettings settings) {
-        if (settings.bits == null) {
+        if (Objects.isNull(settings.bits)) {
             bitSet(RoboTaxiStatus.DRIVETOCUSTOMER);
             bitSet(RoboTaxiStatus.REBALANCEDRIVE);
             settings.bits = bits;

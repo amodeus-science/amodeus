@@ -23,5 +23,4 @@ public class ParkingCapacityInfinity implements ParkingCapacity {
     public Collection<Id<Link>> getAvailableLinks() {
         return network.getLinks().keySet();
     }
-
 }

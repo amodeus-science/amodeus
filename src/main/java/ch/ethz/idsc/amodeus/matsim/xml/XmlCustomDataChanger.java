@@ -18,8 +18,7 @@ public enum XmlCustomDataChanger {
      * 
      * @throws Exception */
 
-    public static void of(File simFolder, String groupName, String dataName, String newValue)//
-            throws Exception {
+    public static void of(File simFolder, String groupName, String dataName, String newValue) throws Exception {
         System.out.println("changing " + dataName + " to " + newValue);
         File xmlFile = new File(simFolder, "av.xml");
         System.out.println("looking for av.xml file at " + xmlFile.getAbsolutePath());
@@ -31,11 +30,9 @@ public enum XmlCustomDataChanger {
             List<Element> children = group.getChildren();
             for (Element element : children) {
                 List<Attribute> theAttributes = element.getAttributes();
-                if (theAttributes.get(0).getValue().equals(dataName)) {
+                if (theAttributes.get(0).getValue().equals(dataName))
                     theAttributes.get(1).setValue(newValue);
-                }
             }
         }
     }
-
 }

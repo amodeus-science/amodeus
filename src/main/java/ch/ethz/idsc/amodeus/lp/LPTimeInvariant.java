@@ -39,7 +39,6 @@ import ch.ethz.idsc.tensor.alg.Dimensions;
 public class LPTimeInvariant implements LPSolver {
     /** map with variableIDs in problem set up and linkIDs of virtualNetwork */
     private final Map<List<Integer>, Integer> alphaIDvarID = new HashMap<>();
-    protected final Map<List<Integer>, Integer> vIDvarID = new HashMap<>();
     private final glp_smcp parm = new glp_smcp();
     private final int nvNodes;
     private final int rowTotal;
@@ -70,10 +69,8 @@ public class LPTimeInvariant implements LPSolver {
         columnTotal = getColumnTotal();
         rowTotal = getRowTotal();
 
-        if (virtualNetwork.getvLinksCount() != (nvNodes * nvNodes - nvNodes)) {
-            System.err.println("These computations are only valid for a complete graph. Aborting.");
-            GlobalAssert.that(false);
-        }
+        if (virtualNetwork.getvLinksCount() != (nvNodes * nvNodes - nvNodes))
+            throw new RuntimeException("These computations are only valid for a complete graph. Aborting.");
 
         System.out.println("creating rebalancing time-invariant LP for system with " + nvNodes + " virtualNodes");
     }
@@ -146,15 +143,13 @@ public class LPTimeInvariant implements LPSolver {
         int stat = GLPK.glp_get_status(lp);
 
         if (stat == GLPK.GLP_NOFEAS) {
-            System.out.println("LP has found infeasible solution in time index " + timeIndex);
             closeLP();
-            GlobalAssert.that(false);
+            throw new RuntimeException("LP has found infeasible solution in time index " + timeIndex);
         }
 
         if (stat != GLPK.GLP_OPT) {
-            System.out.println("LP has found suboptimal in time index " + timeIndex);
             closeLP();
-            GlobalAssert.that(false);
+            throw new RuntimeException("LP has found suboptimal in time index " + timeIndex);
         }
 
         readAlpha_ij(timeIndex);
@@ -170,7 +165,7 @@ public class LPTimeInvariant implements LPSolver {
 
     private void initColumnAlpha_ij() {
         // optimization variable alpha_ij[k]
-        for (int i = 0; i < nvNodes; ++i) {
+        for (int i = 0; i < nvNodes; ++i)
             for (int j = 0; j < nvNodes; ++j) {
                 if (j == i)
                     continue;
@@ -182,7 +177,6 @@ public class LPTimeInvariant implements LPSolver {
                 GLPK.glp_set_col_bnds(lp, columnId, GLPKConstants.GLP_LO, 0.0, 0.0);
                 alphaIDvarID.put(Arrays.asList(i, j), columnId);
             }
-        }
     }
 
     private void initRowDeltaV_i(SWIGTYPE_p_int ind, SWIGTYPE_p_double val, int timeIndex) {
@@ -223,25 +217,23 @@ public class LPTimeInvariant implements LPSolver {
     }
 
     private void initObj() {
-        for (int i = 0; i < nvNodes; i++) {
+        for (int i = 0; i < nvNodes; i++)
             for (int j = 0; j < nvNodes; j++) {
                 if (i == j)
                     continue;
                 int index = alphaIDvarID.get(Arrays.asList(i, j));
                 GLPK.glp_set_obj_coef(lp, index, gamma_ij.Get(i, j).number().doubleValue());
             }
-        }
     }
 
     private void readAlpha_ij(int timeIndex) {
         Tensor alphaAbsolute = Array.zeros(nvNodes, nvNodes);
-        for (int i = 0; i < nvNodes; i++) {
+        for (int i = 0; i < nvNodes; i++)
             for (int j = 0; j < nvNodes; j++) {
                 if (i == j)
                     continue;
                 alphaAbsolute.set(RealScalar.of(GLPK.glp_get_col_prim(lp, alphaIDvarID.get(Arrays.asList(i, j)))), i, j);
             }
-        }
         Tensor alphaAbsoluteRounded = LPUtils.getRoundedRequireNonNegative(alphaAbsolute);
         alphaAbsolute_ij.set(v -> alphaAbsoluteRounded, timeIndex);
         alphaRate_ij = alphaAbsolute_ij.divide(RealScalar.of(timeIntervalLength));
@@ -294,5 +286,4 @@ public class LPTimeInvariant implements LPSolver {
     public int getTimeIntervalLength() {
         return timeIntervalLength;
     }
-
 }

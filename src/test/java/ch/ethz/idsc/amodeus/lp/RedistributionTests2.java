@@ -23,14 +23,12 @@ public class RedistributionTests2 {
         int n1 = 1;
         int n2 = 2;
         Map<String, Map<String, Integer>> solution = localSolver(n1, n2);
-        for (String origin : solution.keySet()) {
-            for (String dest : solution.get(origin).keySet()) {
+        for (String origin : solution.keySet())
+            for (String dest : solution.get(origin).keySet())
                 System.out.println(origin + " --> " + dest + " flow:  " //
                         + solution.get(origin).get(dest));
-            }
-        }
-        Assert.assertTrue(solution.get("o1").get("d1").equals(0));
-        Assert.assertTrue(solution.get("o1").get("d2").equals(1));
+        Assert.assertEquals(0, (int) solution.get("o1").get("d1"));
+        Assert.assertEquals(1, (int) solution.get("o1").get("d2"));
     }
 
     @Test
@@ -38,16 +36,14 @@ public class RedistributionTests2 {
         int n1 = 2;
         int n2 = 2;
         Map<String, Map<String, Integer>> solution = localSolver(n1, n2);
-        for (String origin : solution.keySet()) {
-            for (String dest : solution.get(origin).keySet()) {
+        for (String origin : solution.keySet())
+            for (String dest : solution.get(origin).keySet())
                 System.out.println(origin + " --> " + dest + " flow: " //
                         + solution.get(origin).get(dest));
-            }
-        }
-        Assert.assertTrue(solution.get("o1").get("d1").equals(0));
-        Assert.assertTrue(solution.get("o1").get("d2").equals(1));
-        Assert.assertTrue(solution.get("o2").get("d1").equals(1));
-        Assert.assertTrue(solution.get("o2").get("d2").equals(0));
+        Assert.assertEquals(0, (int) solution.get("o1").get("d1"));
+        Assert.assertEquals(1, (int) solution.get("o1").get("d2"));
+        Assert.assertEquals(1, (int) solution.get("o2").get("d1"));
+        Assert.assertEquals(0, (int) solution.get("o2").get("d2"));
     }
 
     /** helper functions */
@@ -59,22 +55,19 @@ public class RedistributionTests2 {
     private static Map<String, Map<String, Integer>> localSolver(int n1, int n2) {
         /** roboTaxi must leave link 1 */
         Map<String, Integer> agentsToGo = new HashMap<>();
-        for (int i = 1; i <= n1; ++i) {
+        for (int i = 1; i <= n1; ++i)
             agentsToGo.put("o" + i, 1);
-        }
 
         /** free spots available on link 2 */
         Map<String, Integer> freeSpaces = new HashMap<>();
-        for (int i = 1; i <= n2; ++i) {
+        for (int i = 1; i <= n2; ++i)
             freeSpaces.put("d" + i, i + 1);
-        }
 
         /** solve it */
         RedistributionProblemSolver<String> redistributionLP = //
                 new RedistributionProblemSolver<>(agentsToGo, freeSpaces, //
-                        (i1, i2) -> distance(i1, i2), s -> s, false, "");
-        Map<String, Map<String, Integer>> solution = redistributionLP.returnSolution();
-        return solution;
+                        RedistributionTests2::distance, s -> s, false, "");
+        return redistributionLP.returnSolution();
     }
 
 }

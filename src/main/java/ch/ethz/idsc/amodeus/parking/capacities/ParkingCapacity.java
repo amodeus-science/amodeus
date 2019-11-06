@@ -14,9 +14,9 @@ public interface ParkingCapacity {
      *         An {@link ParkingCapacity} returns the number of spaces on the Link with
      *         the given Id back. It is designed for the usage of parking spaces such
      *         that for each link the corresponding parking capacity can be found */
-    public long getSpatialCapacity(Id<Link> id);
+    long getSpatialCapacity(Id<Link> id);
 
     /** @return {@link Collection} of all {@link Id<Link>} that have nonzero
      *         parking capacity, i.e., in {1,2,3,...} parking spots */
-    public Collection<Id<Link>> getAvailableLinks();
+    Collection<Id<Link>> getAvailableLinks();
 }

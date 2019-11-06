@@ -1,7 +1,6 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.net;
 
-import java.util.Collections;
 import java.util.Comparator;
 
 /** while {@link SimulationObject} does not have any helper/member functions,
@@ -25,6 +24,6 @@ public enum SimulationObjects {
      * 
      * @param simulationObject */
     public static void sortVehiclesAccordingToIndex(SimulationObject simulationObject) {
-        Collections.sort(simulationObject.vehicles, VEHICLEINDEX_COMPARATOR);
+        simulationObject.vehicles.sort(VEHICLEINDEX_COMPARATOR);
     }
 }

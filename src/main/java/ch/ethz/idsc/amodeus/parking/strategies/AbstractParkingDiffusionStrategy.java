@@ -15,7 +15,6 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
     @Override
     public Map<RoboTaxi, Link> keepFree(Collection<RoboTaxi> stayingRobotaxis, //
             Collection<RoboTaxi> rebalancingRobotaxis, long now) {
-
         /** allow children classes to update necessary information to execute
          * the function destinationCompute */
         update(stayingRobotaxis, rebalancingRobotaxis, now);
@@ -25,16 +24,10 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
          * to random neighbors */
 
         Map<RoboTaxi, Link> directives = new HashMap<>();
-        stayTaxis.entrySet().stream().forEach(e -> {
-            Link link = e.getKey();
-            Set<RoboTaxi> taxis = e.getValue();
+        stayTaxis.forEach((link, taxis) -> {
             long capacity = parkingCapacity.getSpatialCapacity(link.getId());
-            if (taxis.size() > capacity) {
-                taxis.stream().limit(taxis.size() - capacity)//
-                        .forEach(rt -> {
-                            directives.put(rt, destinationCompute(rt));
-                        });
-            }
+            if (taxis.size() > capacity)
+                taxis.stream().limit(taxis.size() - capacity).forEach(rt -> directives.put(rt, destinationCompute(rt)));
         });
         return directives;
     }
@@ -43,5 +36,4 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 
     protected abstract void update(Collection<RoboTaxi> stayingRobotaxis, //
             Collection<RoboTaxi> rebalancingRobotaxis, long now);
-
 }

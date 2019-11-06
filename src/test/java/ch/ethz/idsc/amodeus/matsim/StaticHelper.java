@@ -7,9 +7,9 @@ import ch.ethz.idsc.amodeus.testutils.TestLocationSpecs;
 
 /* package */ enum StaticHelper {
     ;
+
     public static void setup() {
         for (LocationSpec locationSpec : TestLocationSpecs.values())
             LocationSpecDatabase.INSTANCE.put(locationSpec);
     }
-
 }

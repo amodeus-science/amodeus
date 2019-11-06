@@ -25,16 +25,13 @@ public class ParkingCapacityUniformRandomPopulationZone extends ParkingCapacityA
     @Override
     protected Collection<? extends Link> getLinks(Network network, Population population) {
         HashSet<Link> populatedLinks = new HashSet<>();
-        for (Person person : population.getPersons().values()) {
-            for (Plan plan : person.getPlans()) {
-                for (PlanElement planElement : plan.getPlanElements()) {
+        for (Person person : population.getPersons().values())
+            for (Plan plan : person.getPlans())
+                for (PlanElement planElement : plan.getPlanElements())
                     if (planElement instanceof Activity) {
                         Activity activity = (Activity) planElement;
                         populatedLinks.add(network.getLinks().get(activity.getLinkId()));
                     }
-                }
-            }
-        }
         return populatedLinks;
     }
 }

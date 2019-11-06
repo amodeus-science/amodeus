@@ -8,9 +8,7 @@ public class IdIntegerDatabase {
     private final Map<String, Integer> map = new HashMap<>();
 
     public int getId(String string) {
-        if (!map.containsKey(string))
-            map.put(string, map.size());
-        return map.get(string);
+        return map.computeIfAbsent(string, s -> map.size());
     }
 
     public int size() {

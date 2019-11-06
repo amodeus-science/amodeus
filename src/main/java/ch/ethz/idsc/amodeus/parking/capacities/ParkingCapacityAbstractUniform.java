@@ -18,9 +18,7 @@ public abstract class ParkingCapacityAbstractUniform extends ParkingCapacityAbst
     /** assigns totSpaces randomly chosen links from the network a parking space, there may
      * be multiple parking spaces per link */
     public ParkingCapacityAbstractUniform(Network network, Population population, long totSpaces, Random random) {
-        Collection<? extends Link> possibleLinks = //
-                getLinks(network, population);
-        fillUsingLinks(possibleLinks, totSpaces, random);
+        fillUsingLinks(getLinks(network, population), totSpaces, random);
     }
 
     protected abstract Collection<? extends Link> getLinks(Network network, Population population);
@@ -32,13 +30,9 @@ public abstract class ParkingCapacityAbstractUniform extends ParkingCapacityAbst
         for (int i = 0; i < totSpaces; ++i) {
             int elemRand = random.nextInt(bound);
             Link link = possibleLinks.stream().skip(elemRand).findFirst().get();
-            if (!parkingCount.containsKey(link.getId()))
-                parkingCount.put(link.getId(), (long) 0);
-            parkingCount.put(link.getId(), parkingCount.get(link.getId()) + 1);
+            parkingCount.merge(link.getId(), 1L, Long::sum);
         }
-        parkingCount.entrySet().stream().forEach(e -> {
-            capacities.put(e.getKey(), e.getValue());
-        });
+        parkingCount.forEach(capacities::put);
         GlobalAssert.that(totSpaces == capacities.values().stream().mapToLong(l -> l).sum());
     }
 }

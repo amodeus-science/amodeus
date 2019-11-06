@@ -17,7 +17,7 @@ public enum TestLocationSpecs implements LocationSpec {
     // increasing the second value goes north
     private final Coord center;
 
-    private TestLocationSpecs(ReferenceFrame referenceFrame, Coord center) {
+    TestLocationSpecs(ReferenceFrame referenceFrame, Coord center) {
         this.referenceFrame = referenceFrame;
         this.center = center;
     }

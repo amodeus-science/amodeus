@@ -1,14 +1,13 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.net;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.matsim.api.core.v01.network.Link;
 
@@ -43,33 +42,28 @@ public class SimulationObjectCompiler {
     }
 
     public void insertRequests(Collection<AVRequest> requests, RequestStatus status) {
-        requests.stream().forEach(r -> insertRequest(r, status));
+        requests.forEach(r -> insertRequest(r, status));
     }
 
     public void insertRequests(Map<AVRequest, RequestStatus> requestStatuses) {
-        for (Entry<AVRequest, RequestStatus> entry : requestStatuses.entrySet()) {
-            insertRequest(entry.getKey(), entry.getValue());
-        }
+        requestStatuses.forEach(this::insertRequest);
     }
 
     public void insertVehicles(List<RoboTaxi> roboTaxis) {
-        roboTaxis.forEach(rt -> {
-            insertVehicle(rt, Arrays.asList(rt.getLastKnownLocation()));
-        });
+        roboTaxis.forEach(rt -> insertVehicle(rt, Arrays.asList(rt.getLastKnownLocation())));
     }
 
     public void insertVehicles(Map<RoboTaxi, List<Link>> tempLocationTrace) {
-        tempLocationTrace.entrySet().forEach(e -> {
-            insertVehicle(e.getKey(), e.getValue());
-        });
+        tempLocationTrace.forEach(this::insertVehicle);
     }
 
     private void insertRequest(AVRequest avRequest, RequestStatus requestStatus) {
-        if (requestMap.containsKey(avRequest.getId().toString())) {
-            requestMap.get(avRequest.getId().toString()).requestStatus.add(requestStatus);
+        String id = avRequest.getId().toString();
+        if (requestMap.containsKey(id)) {
+            requestMap.get(id).requestStatus.add(requestStatus);
         } else {
             RequestContainer requestContainer = RequestContainerCompiler.compile(avRequest, db, requestStatus);
-            requestMap.put(avRequest.getId().toString(), requestContainer);
+            requestMap.put(id, requestContainer);
         }
     }
 
@@ -80,18 +74,16 @@ public class SimulationObjectCompiler {
     }
 
     public void addRequestRoboTaxiAssoc(Map<AVRequest, RoboTaxi> map) {
-        map.entrySet().stream().forEach(e -> {
-            if (requestMap.containsKey(e.getKey().getId().toString())) {
-                requestMap.get(e.getKey().getId().toString()).associatedVehicle = //
-                        db.getVehicleIndex(e.getValue());
-            }
+        map.forEach((k, v) -> {
+            String id = k.getId().toString();
+            if (requestMap.containsKey(id))
+                requestMap.get(id).associatedVehicle = db.getVehicleIndex(v);
         });
     }
 
     public SimulationObject compile() {
-        simulationObject.vehicles = vehicleMap.values().stream().collect(Collectors.toList());
-        simulationObject.requests = requestMap.values().stream().collect(Collectors.toList());
+        simulationObject.vehicles = new ArrayList<>(vehicleMap.values());
+        simulationObject.requests = new ArrayList<>(requestMap.values());
         return simulationObject;
     }
-
 }

@@ -66,10 +66,8 @@ public abstract class LPTimeVariantBase implements LPSolver {
         timeIntervalLength = endTime / timeSteps;
         this.numberVehicles = numberVehicles;
 
-        if (virtualNetwork.getvLinksCount() != (nvNodes * nvNodes - nvNodes)) {
-            System.err.println("These computations are only valid for a complete graph. Aborting.");
-            GlobalAssert.that(false);
-        }
+        if (virtualNetwork.getvLinksCount() != (nvNodes * nvNodes - nvNodes))
+            throw new RuntimeException("These computations are only valid for a complete graph. Aborting.");
     }
 
     /** initiate the linear program */
@@ -141,15 +139,13 @@ public abstract class LPTimeVariantBase implements LPSolver {
         int stat = GLPK.glp_get_status(lp);
 
         if (stat == GLPK.GLP_NOFEAS) {
-            System.out.println("LP has found infeasible solution");
             closeLP();
-            GlobalAssert.that(false);
+            throw new RuntimeException("LP has found infeasible solution");
         }
 
         if (stat != GLPK.GLP_OPT) {
-            System.out.println("LP has found suboptimal solution");
             closeLP();
-            GlobalAssert.that(false);
+            throw new RuntimeException("LP has found suboptimal solution");
         }
 
         readAlpha_ij();
@@ -183,8 +179,8 @@ public abstract class LPTimeVariantBase implements LPSolver {
 
     protected final void initColumnAlpha_ij() {
         // optimization variable alpha_ij[k]
-        for (int t = 0; t < timeSteps; t++) {
-            for (int i = 0; i < nvNodes; ++i) {
+        for (int t = 0; t < timeSteps; t++)
+            for (int i = 0; i < nvNodes; ++i)
                 for (int j = 0; j < nvNodes; ++j) {
                     if (j == i)
                         continue;
@@ -196,8 +192,6 @@ public abstract class LPTimeVariantBase implements LPSolver {
                     GLPK.glp_set_col_bnds(lp, columnId, GLPKConstants.GLP_LO, 0.0, 0.0); // Lower bound: second number irrelevant
                     alphaIDvarID.put(Arrays.asList(t, i, j), columnId);
                 }
-            }
-        }
     }
 
     protected abstract void initColumnF_ij();
@@ -255,15 +249,13 @@ public abstract class LPTimeVariantBase implements LPSolver {
     protected abstract void initObjCq();
 
     protected void readAlpha_ij() {
-        for (int t = 0; t < timeSteps; t++) {
-            for (int i = 0; i < nvNodes; i++) {
+        for (int t = 0; t < timeSteps; t++)
+            for (int i = 0; i < nvNodes; i++)
                 for (int j = 0; j < nvNodes; j++) {
                     if (i == j)
                         continue;
                     alphaAbsolute_ij.set(RealScalar.of(GLPK.glp_get_col_prim(lp, alphaIDvarID.get(Arrays.asList(t, i, j)))), t, i, j);
                 }
-            }
-        }
         alphaAbsolute_ij = LPUtils.getRoundedRequireNonNegative(alphaAbsolute_ij);
         alphaRate_ij = alphaAbsolute_ij.divide(RealScalar.of(timeIntervalLength));
     }
@@ -271,9 +263,8 @@ public abstract class LPTimeVariantBase implements LPSolver {
     protected abstract void readF_ij();
 
     protected void readV0_i() {
-        for (int i = 0; i < nvNodes; i++) {
+        for (int i = 0; i < nvNodes; i++)
             v0_i.set(RealScalar.of(GLPK.glp_get_col_prim(lp, vIDvarID.get(Arrays.asList(i)))), i);
-        }
         v0_i = LPUtils.getRoundedRequireNonNegative(v0_i);
     }
 
@@ -315,5 +306,4 @@ public abstract class LPTimeVariantBase implements LPSolver {
     public final int getTimeIntervalLength() {
         return timeIntervalLength;
     }
-
 }

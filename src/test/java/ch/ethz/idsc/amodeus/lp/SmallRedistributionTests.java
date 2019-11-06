@@ -26,15 +26,12 @@ public class SmallRedistributionTests {
         int n1 = 1;
         int n2 = 2;
         Map<String, Map<String, Integer>> solution = localSolver(n1, n2);
-        for (String origin : solution.keySet()) {
-            for (String dest : solution.get(origin).keySet()) {
+        for (String origin : solution.keySet())
+            for (String dest : solution.get(origin).keySet())
                 System.out.println(origin + " --> " + dest + ", flow:  " //
                         + solution.get(origin).get(dest));
-            }
-        }
 
-        Assert.assertTrue(solution.get("o1").get("d1").equals(1));
-
+        Assert.assertEquals(1, (int) solution.get("o1").get("d1"));
     }
 
     /** helper functions */
@@ -48,34 +45,29 @@ public class SmallRedistributionTests {
     private static Map<String, Map<String, Integer>> localSolver(int n1, int n2) {
         /** roboTaxi must leave link 1 */
         Map<String, Integer> agentsToGo = new HashMap<>();
-        for (int i = 1; i <= n1; ++i) {
+        for (int i = 1; i <= n1; ++i)
             agentsToGo.put("o" + i, 1);
-        }
 
         System.out.println("Agents to go: ");
-        for (Entry<String, Integer> entry : agentsToGo.entrySet()) {
+        for (Entry<String, Integer> entry : agentsToGo.entrySet())
             System.out.println(entry.getKey() + ", " + entry.getValue());
-        }
         System.out.println("===");
 
         /** free spots available on link 2 */
         Map<String, Integer> freeSpaces = new HashMap<>();
-        for (int i = 1; i <= n2; ++i) {
+        for (int i = 1; i <= n2; ++i)
             freeSpaces.put("d" + i, i + 1);
-        }
 
         System.out.println("Free spaces: ");
-        for (Entry<String, Integer> entry : freeSpaces.entrySet()) {
+        for (Entry<String, Integer> entry : freeSpaces.entrySet())
             System.out.println(entry.getKey() + ", " + entry.getValue());
-        }
         System.out.println("===");
 
         /** solve it */
         SmallRedistributionProblemSolver<String> redistributionLP = //
                 new SmallRedistributionProblemSolver<>(agentsToGo, freeSpaces, //
-                        (i1, i2) -> distance(i1, i2), s -> s, false, "");
-        Map<String, Map<String, Integer>> solution = redistributionLP.returnSolution();
-        return solution;
+                        SmallRedistributionTests::distance, s -> s, false, "");
+        return redistributionLP.returnSolution();
     }
 
 }

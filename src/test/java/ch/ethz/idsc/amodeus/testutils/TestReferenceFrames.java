@@ -23,11 +23,11 @@ import ch.ethz.idsc.tensor.qty.Unit;
     private final CoordinateTransformation coords_fromWGS84;
     private final Unit unit;
 
-    private TestReferenceFrames(CoordinateTransformation c1, CoordinateTransformation c2) {
+    TestReferenceFrames(CoordinateTransformation c1, CoordinateTransformation c2) {
         this(c1, c2, SI.METER);
     }
 
-    private TestReferenceFrames(CoordinateTransformation c1, CoordinateTransformation c2, Unit unit) {
+    TestReferenceFrames(CoordinateTransformation c1, CoordinateTransformation c2, Unit unit) {
         coords_toWGS84 = c1;
         coords_fromWGS84 = c2;
         this.unit = unit;

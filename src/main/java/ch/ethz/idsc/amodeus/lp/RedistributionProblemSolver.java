@@ -130,7 +130,7 @@ public class RedistributionProblemSolver<T> {
             }
 
             /** optimization variables and cost */
-            for (T origin : originsList) {
+            for (T origin : originsList)
                 for (T destination : destinationList) {
                     int varIndex = indexMap.get(origin).get(destination);
                     GLPK.glp_set_col_kind(lp, varIndex, GLPKConstants.GLP_IV);
@@ -138,7 +138,6 @@ public class RedistributionProblemSolver<T> {
                     GLPK.glp_set_obj_coef(lp, varIndex, costFunction.apply(origin, destination));
                     GLPK.glp_set_col_name(lp, varIndex, "f_" + getName.apply(origin) + "_" + destination.toString());
                 }
-            }
 
             /** create equality constraints */
             int constrIndex = 1;
@@ -195,7 +194,6 @@ public class RedistributionProblemSolver<T> {
                 GLPK.delete_doubleArray(val);
                 constrIndex++;
             }
-
         } catch (GlpkException e) {
             e.printStackTrace();
         }
@@ -212,20 +210,12 @@ public class RedistributionProblemSolver<T> {
         if (print)
             printSolution();
 
-        if (ret != 0) { // ret==0 indicates of the algorithm terminated correctly
-            System.out.println("something went wrong");
-            // GlobalAssert.that(false);
-        }
-        if (stat == GLPK.GLP_NOFEAS) {
-            System.out.println("LP has found infeasible solution");
-            // GlobalAssert.that(false);
-        }
-
-        if (stat != GLPK.GLP_OPT) {
-            System.out.println("LP has found suboptimal solution");
-            // GlobalAssert.that(false);
-        }
-
+        if (ret != 0) // ret==0 indicates of the algorithm terminated correctly
+            System.out.println("something went wrong"); // throw new RuntimeException("something went wrong");
+        if (stat == GLPK.GLP_NOFEAS)
+            System.out.println("LP has found infeasible solution"); // throw new RuntimeException("LP has found infeasible solution");
+        if (stat != GLPK.GLP_OPT)
+            System.out.println("LP has found suboptimal solution"); // throw new RuntimeException("LP has found suboptimal solution");
     }
 
     protected void printSolution() {

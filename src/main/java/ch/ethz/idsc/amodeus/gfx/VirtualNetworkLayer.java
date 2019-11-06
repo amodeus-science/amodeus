@@ -144,63 +144,33 @@ public class VirtualNetworkLayer extends ViewerLayer {
             }
             case RequestCount: {
                 Tensor count = prescale(new RequestCountVirtualNodeFunction(amodeusComponent.db, virtualNetwork).evaluate(ref));
-                Tensor prob = rescaling.apply(count).multiply(_224);
-                for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet()) {
-                    // graphics.setColor(new Color(128, 128, 128, prob.Get(entry.getKey().index).number().intValue()));
-                    final int i = 255 - prob.Get(entry.getKey().getIndex()).number().intValue();
-                    graphics.setColor(halfAlpha(colorSchemes.colorDataIndexed.getColor(i)));
-                    graphics.fill(entry.getValue());
-                }
+                probFill(graphics, count);
                 break;
             }
             case MeanRequestDistance: {
                 Tensor count = new MeanRequestDistanceVirtualNodeFunction(amodeusComponent.db, virtualNetwork).evaluate(ref);
-                Tensor prob = rescaling.apply(count).multiply(_224);
-                for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet()) {
-                    // graphics.setColor(new Color(128, 128, 128, prob.Get(entry.getKey().index).number().intValue()));
-                    final int i = 255 - prob.Get(entry.getKey().getIndex()).number().intValue();
-                    graphics.setColor(halfAlpha(colorSchemes.colorDataIndexed.getColor(i)));
-                    graphics.fill(entry.getValue());
-                }
+                probFill(graphics, count);
                 break;
             }
             case MeanRequestWaiting: {
                 Tensor count = new RequestWaitingVirtualNodeFunction( //
                         amodeusComponent.db, virtualNetwork, //
                         StaticHelper::meanOrZero).evaluate(ref);
-                Tensor prob = rescaling.apply(count).multiply(_224);
-                for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet()) {
-                    // graphics.setColor(new Color(128, 128, 128, prob.Get(entry.getKey().index).number().intValue()));
-                    final int i = 255 - prob.Get(entry.getKey().getIndex()).number().intValue();
-                    graphics.setColor(halfAlpha(colorSchemes.colorDataIndexed.getColor(i)));
-                    graphics.fill(entry.getValue());
-                }
+                probFill(graphics, count);
                 break;
             }
             case MedianRequestWaiting: {
                 Tensor count = new RequestWaitingVirtualNodeFunction( //
                         amodeusComponent.db, virtualNetwork, //
                         StaticHelper::medianOrZero).evaluate(ref);
-                Tensor prob = rescaling.apply(count).multiply(_224);
-                for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet()) {
-                    // graphics.setColor(new Color(128, 128, 128, prob.Get(entry.getKey().index).number().intValue()));
-                    final int i = 255 - prob.Get(entry.getKey().getIndex()).number().intValue();
-                    graphics.setColor(halfAlpha(colorSchemes.colorDataIndexed.getColor(i)));
-                    graphics.fill(entry.getValue());
-                }
+                probFill(graphics, count);
                 break;
             }
             case MaxRequestWaiting: {
                 Tensor count = new RequestWaitingVirtualNodeFunction( //
                         amodeusComponent.db, virtualNetwork, //
                         StaticHelper::maxOrZero).evaluate(ref);
-                Tensor prob = rescaling.apply(count).multiply(_224);
-                for (Entry<VirtualNode<Link>, Shape> entry : virtualNodeGeometry.getShapes(amodeusComponent).entrySet()) {
-                    // graphics.setColor(new Color(128, 128, 128, prob.Get(entry.getKey().index).number().intValue()));
-                    final int i = 255 - prob.Get(entry.getKey().getIndex()).number().intValue();
-                    graphics.setColor(halfAlpha(colorSchemes.colorDataIndexed.getColor(i)));
-                    graphics.fill(entry.getValue());
-                }
+                probFill(graphics, count);
                 break;
             }
             default:
@@ -225,6 +195,16 @@ public class VirtualNetworkLayer extends ViewerLayer {
             }
             graphics.setStroke(new BasicStroke(1));
         }
+    }
+
+    private void probFill(Graphics2D graphics, Tensor count) {
+        Tensor prob = rescaling.apply(count).multiply(_224);
+        virtualNodeGeometry.getShapes(amodeusComponent).forEach((key, value) -> {
+            // graphics.setColor(new Color(128, 128, 128, prob.Get(key.index).number().intValue()));
+            final int i = 255 - prob.Get(key.getIndex()).number().intValue();
+            graphics.setColor(halfAlpha(colorSchemes.colorDataIndexed.getColor(i)));
+            graphics.fill(value);
+        });
     }
 
     private void setDrawVNodes(boolean selected) {

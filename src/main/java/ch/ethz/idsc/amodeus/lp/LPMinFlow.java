@@ -91,10 +91,7 @@ public class LPMinFlow {
             GLPK.glp_set_obj_dir(lp, GLPKConstants.GLP_MIN);
 
             initObj();
-
-        } catch (
-
-        GlpkException ex) {
+        } catch (GlpkException ex) {
             ex.printStackTrace();
         }
     }
@@ -106,9 +103,8 @@ public class LPMinFlow {
         minFlow = LPUtils.getRounded(minFlow);
         // the problem is only feasible when the sum of minFlow is less or equal zero
         GlobalAssert.that(Sign.isNegativeOrZero(Total.of(minFlow).Get()));
-        for (int i = 0; i < nvNodes; ++i) {
+        for (int i = 0; i < nvNodes; ++i)
             GLPK.glp_set_row_bnds(lp, i + 1, GLPK.GLP_LO, minFlow.Get(i).number().doubleValue(), 0.0); // Lower bound: second number irrelevant
-        }
 
         GLPK.glp_term_out(mute ? GLPK.GLP_OFF : GLPK.GLP_ON);
 
@@ -118,15 +114,13 @@ public class LPMinFlow {
         int stat = GLPK.glp_get_status(lp);
 
         if (stat == GLPK.GLP_NOFEAS) {
-            System.out.println("LP has found infeasible solution");
             closeLP();
-            GlobalAssert.that(false);
+            throw new RuntimeException("LP has found infeasible solution");
         }
 
         if (stat != GLPK.GLP_OPT) {
-            System.out.println("LP has found suboptimal");
             closeLP();
-            GlobalAssert.that(false);
+            throw new RuntimeException("LP has found suboptimal");
         }
         readAlpha_ij();
     }

@@ -2,7 +2,8 @@
 package ch.ethz.idsc.amodeus.lp;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -87,8 +88,8 @@ public class LPTimeInvariantTest {
     public void testLP2Nodes() {
         // init LP time-invariant
         LPTimeInvariant lp = new LPTimeInvariant(virtualNetwork2, Tensors.of(Tensors.of(Tensors.vector(0, 0), Tensors.vector(0, 0))), 100, endTime);
-        assertEquals(lp.getAlphaRate_ij(), null);
-        assertEquals(lp.getAlphaAbsolute_ij(), null);
+        assertNull(lp.getAlphaRate_ij());
+        assertNull(lp.getAlphaAbsolute_ij());
         assertEquals(lp.getFRate_ij(), Tensors.of(Tensors.of(Tensors.vector(0, 0), Tensors.vector(0, 0))));
         assertEquals(lp.getFAbsolute_ij(), Tensors.of(Tensors.of(Tensors.vector(0, 0), Tensors.vector(0, 0))));
         assertEquals(lp.getV0_i(), Tensors.vector(50, 50)); // the 100 vehicles from av.xml are distributed equally
@@ -103,14 +104,14 @@ public class LPTimeInvariantTest {
         // test infeasible cases
         try {
             lp = new LPTimeInvariant(virtualNetwork2, Tensors.of(Tensors.of(Tensors.vector(0, -1), Tensors.vector(0, 0))), 100, endTime);
-            assertTrue(false);
+            fail();
         } catch (Exception exception) {
             // ---
         }
 
         try {
             lp = new LPTimeInvariant(virtualNetwork2, Tensors.of(Tensors.of(Tensors.vector(0, 0.01), Tensors.vector(0, 0))), 1, endTime);
-            assertTrue(false);
+            fail();
         } catch (Exception exception) {
             // ---
         }
@@ -178,8 +179,8 @@ public class LPTimeInvariantTest {
     public void testLP3Nodes() {
         // init LP time-invariant
         LPTimeInvariant lp = new LPTimeInvariant(virtualNetwork3, Tensors.of(Tensors.of(Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))), 100, endTime);
-        assertEquals(lp.getAlphaRate_ij(), null);
-        assertEquals(lp.getAlphaAbsolute_ij(), null);
+        assertNull(lp.getAlphaRate_ij());
+        assertNull(lp.getAlphaAbsolute_ij());
         assertEquals(lp.getFRate_ij(), Tensors.of(Tensors.of(Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))));
         assertEquals(lp.getFAbsolute_ij(), Tensors.of(Tensors.of(Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))));
         assertEquals(lp.getV0_i(), Tensors.vector(33, 33, 33)); // the 100 vehicles from av.xml are distributed equally
@@ -194,14 +195,14 @@ public class LPTimeInvariantTest {
         // test infeasible cases
         try {
             lp = new LPTimeInvariant(virtualNetwork3, Tensors.of(Tensors.of(Tensors.vector(0, -1, 0), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))), 100, endTime);
-            assertTrue(false);
+            fail();
         } catch (Exception exception) {
             // ---
         }
 
         try {
             lp = new LPTimeInvariant(virtualNetwork3, Tensors.of(Tensors.of(Tensors.vector(0, 0.01, 0), Tensors.vector(0, 0, 0), Tensors.vector(0, 0, 0))), 100, endTime);
-            assertTrue(false);
+            fail();
         } catch (Exception exception) {
             // ---
         }

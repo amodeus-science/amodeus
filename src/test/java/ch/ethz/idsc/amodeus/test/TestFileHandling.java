@@ -15,11 +15,10 @@ public enum TestFileHandling {
 
     // TODO cleanup
     public static void copyScnearioToMainDirectory(String scenarioDir, String mainDir) throws IOException {
-
         CopyFiles.now(scenarioDir, mainDir, //
-                Arrays.asList(new String[] { "AmodeusOptions.properties", //
+                Arrays.asList("AmodeusOptions.properties", //
                         "config_full.xml", "linkSpeedData.bin", //
-                        "network.xml", "population.xml" }),
+                        "network.xml", "population.xml"), //
                 true);
     }
 
@@ -59,5 +58,4 @@ public enum TestFileHandling {
             DeleteDirectory.of(output, 5, 15700);
 
     }
-
 }

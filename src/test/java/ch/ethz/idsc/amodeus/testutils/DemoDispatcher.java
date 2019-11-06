@@ -72,8 +72,7 @@ public class DemoDispatcher extends RebalancingDispatcher {
 
     private Link pollNextDestination() {
         int index = randGen.nextInt(links.size());
-        Link link = links.get(index);
-        return link;
+        return links.get(index);
     }
 
     @Override

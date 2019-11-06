@@ -3,6 +3,7 @@ package ch.ethz.idsc.amodeus.dispatcher;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Network;
@@ -61,9 +62,9 @@ public class DemandSupplyBalancingDispatcher extends RebalancingDispatcher {
         if (round_now % dispatchPeriod == 0) {
             /** get open requests and available vehicles */
             Collection<RoboTaxi> roboTaxisDivertable = getDivertableUnassignedRoboTaxis();
-            getRoboTaxiSubset(RoboTaxiStatus.STAY).stream().forEach(rt -> unassignedRoboTaxis.add(rt));
+            getRoboTaxiSubset(RoboTaxiStatus.STAY).forEach(unassignedRoboTaxis::add);
             List<AVRequest> requests = getUnassignedAVRequests();
-            requests.stream().forEach(r -> requestMaintainer.add(r));
+            requests.forEach(requestMaintainer::add);
 
             /** distinguish over- and undersupply cases */
             boolean oversupply = false;
@@ -72,7 +73,7 @@ public class DemandSupplyBalancingDispatcher extends RebalancingDispatcher {
 
             if (unassignedRoboTaxis.size() > 0 && requests.size() > 0)
                 /** oversupply case */
-                if (oversupply) {
+                if (oversupply)
                     for (AVRequest avr : requests) {
                         RoboTaxi closest = unassignedRoboTaxis.getClosest(getLocation(avr));
                         if (closest != null) {
@@ -81,13 +82,13 @@ public class DemandSupplyBalancingDispatcher extends RebalancingDispatcher {
                             requestMaintainer.remove(avr);
                         }
                     }
-                    /** undersupply case */
-                } else
+                /** undersupply case */
+                else
                     for (RoboTaxi roboTaxi : roboTaxisDivertable) {
                         Coord coord = roboTaxi.getDivertableLocation().getFromNode().getCoord();
                         Tensor tCoord = Tensors.vector(coord.getX(), coord.getY());
                         AVRequest closest = requestMaintainer.getClosest(tCoord);
-                        if (closest != null) {
+                        if (Objects.nonNull(closest)) {
                             setRoboTaxiPickup(roboTaxi, closest);
                             unassignedRoboTaxis.remove(roboTaxi);
                             requestMaintainer.remove(closest);

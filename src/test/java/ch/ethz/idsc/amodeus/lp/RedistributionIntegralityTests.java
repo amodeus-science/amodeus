@@ -25,10 +25,9 @@ public class RedistributionIntegralityTests {
 
     @Test
     public void test1() {
-
-        for (int n1 = 1; n1 < 20; ++n1) {
-            for (int n2 = n1 + 1; n2 < 20; ++n2) {
-                for (int l2 = 1; l2 < 3; ++l2) {
+        for (int n1 = 1; n1 < 20; ++n1)
+            for (int n2 = n1 + 1; n2 < 20; ++n2)
+                for (int l2 = 1; l2 < 3; ++l2)
                     for (long seed = 1; seed < 3; ++seed) {
                         random = new Random(seed);
                         Map<String, Map<String, Double>> solution_LP = localSolverLP(n1, n2);
@@ -60,11 +59,8 @@ public class RedistributionIntegralityTests {
                         Scalar normChop = Chop._10.apply(normFull);
                         System.out.println("Normfull: \t" + normFull);
                         System.out.println("Normchop: \t" + normChop);
-                        Assert.assertTrue(normFull.equals(normChop));
+                        Assert.assertEquals(normFull, normChop);
                     }
-                }
-            }
-        }
     }
 
     /** helper functions */
@@ -75,41 +71,36 @@ public class RedistributionIntegralityTests {
     private static Map<String, Map<String, Double>> localSolverLP(int n1, int n2) {
         /** roboTaxi must leave link 1 */
         Map<String, Integer> agentsToGo = new HashMap<>();
-        for (int i = 1; i <= n1; ++i) {
+        for (int i = 1; i <= n1; ++i)
             agentsToGo.put("o" + i, l1);
-        }
 
         /** free spots available on link 2 */
         Map<String, Integer> freeSpaces = new HashMap<>();
-        for (int i = 1; i <= n2; ++i) {
+        for (int i = 1; i <= n2; ++i)
             freeSpaces.put("d" + i, l2);
-        }
 
         /** solve it */
         RedistributionProblemSolver<String> redistributionLP = //
                 new RedistributionProblemSolver<>(agentsToGo, freeSpaces, //
-                        (i1, i2) -> distance(i1, i2), s -> s, false, "");
-        Map<String, Map<String, Double>> solution = redistributionLP.returnDoubleSolution();
-        return solution;
+                        RedistributionIntegralityTests::distance, s -> s, false, "");
+        return redistributionLP.returnDoubleSolution();
     }
 
     private static Map<String, Map<String, Integer>> localSolver(int n1, int n2) {
         /** roboTaxi must leave link 1 */
         Map<String, Integer> agentsToGo = new HashMap<>();
-        for (int i = 1; i <= n1; ++i) {
+        for (int i = 1; i <= n1; ++i)
             agentsToGo.put("o" + i, l1);
-        }
 
         /** free spots available on link 2 */
         Map<String, Integer> freeSpaces = new HashMap<>();
-        for (int i = 1; i <= n2; ++i) {
+        for (int i = 1; i <= n2; ++i)
             freeSpaces.put("d" + i, l2);
-        }
 
         /** solve it */
         RedistributionProblemSolverMILP<String> redistributionLP = //
                 new RedistributionProblemSolverMILP<>(agentsToGo, freeSpaces, //
-                        (i1, i2) -> distance(i1, i2), s -> s, false, "");
+                        RedistributionIntegralityTests::distance, s -> s, false, "");
         return redistributionLP.returnSolution();
     }
 

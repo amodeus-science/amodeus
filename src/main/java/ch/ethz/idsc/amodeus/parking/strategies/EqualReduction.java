@@ -2,7 +2,6 @@
 package ch.ethz.idsc.amodeus.parking.strategies;
 
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.matsim.api.core.v01.network.Link;
 
@@ -14,8 +13,6 @@ public enum EqualReduction {
         int diff = totalUnits - totalSpots;
         int locations = unitsToMove.size();
         int remove = (int) Math.ceil(((double) diff) / locations);
-        for (Entry<Link, Integer> entry : unitsToMove.entrySet()) {
-            unitsToMove.put(entry.getKey(), Math.max(entry.getValue() - remove, 0));
-        }
+        unitsToMove.replaceAll((link, i) -> Math.max(i - remove, 0));
     }
 }

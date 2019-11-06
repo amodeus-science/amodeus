@@ -2,7 +2,7 @@
 package ch.ethz.idsc.amodeus.traveldata;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -87,14 +87,14 @@ public class PopulationToolsTestVN2 {
     public void testInvalid() {
         try {
             PopulationArrivalRate.getVNodeAndInterval(requestsSingle3, virtualNetwork2, 3601, endTime);
-            assertTrue(false);
+            fail();
         } catch (Exception exception) {
             // ---
         }
 
         try {
             PopulationArrivalRate.getVNodeAndInterval(requestsSingle3, virtualNetwork2, -1, endTime);
-            assertTrue(false);
+            fail();
         } catch (Exception exception) {
             // ---
         }

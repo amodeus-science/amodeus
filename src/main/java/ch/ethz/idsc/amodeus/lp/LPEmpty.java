@@ -26,7 +26,7 @@ public class LPEmpty implements LPSolver {
     protected final Map<List<Integer>, Integer> alphaIDvarID = new HashMap<>();
     protected final Map<List<Integer>, Integer> vIDvarID = new HashMap<>();
 
-    /** @param virtualNetworkIn
+    /** @param virtualNetwork
      *            the virtual network (complete directed graph) on which the optimization is computed. */
     public LPEmpty(VirtualNetwork<Link> virtualNetwork, Tensor lambdaAbsolute_ij, int endTime) {
         int nvNodes = virtualNetwork.getvNodesCount();
@@ -42,12 +42,12 @@ public class LPEmpty implements LPSolver {
     /** initiate the linear program */
     @Override
     public final void initiateLP() {
-        return;
+        // ---
     }
 
     @Override
     public void solveLP(boolean mute) {
-        return;
+        // ---
     }
 
     @Override
@@ -78,12 +78,11 @@ public class LPEmpty implements LPSolver {
     /** writes the solution of the LP on the console */
     @Override
     public void writeLPSolution() {
-        return;
+        // ---
     }
 
     @Override
     public int getTimeIntervalLength() {
         return timeIntervalLength;
     }
-
 }

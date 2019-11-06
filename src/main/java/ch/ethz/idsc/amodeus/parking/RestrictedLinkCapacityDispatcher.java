@@ -2,10 +2,8 @@
 package ch.ethz.idsc.amodeus.parking;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 
 import org.matsim.api.core.v01.Coord;
@@ -52,7 +50,6 @@ import ch.ethz.matsim.av.router.AVRouter;
  * checked if around this {@link RoboTaxi} there exist other Open requests with the same
  * direction. Those are then picked up. */
 public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatcher {
-
     private final int dispatchPeriod;
 
     /** ride sharing parameters */
@@ -107,50 +104,41 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
             Collection<RoboTaxi> robotaxisDivertable = getDivertableUnassignedRoboTaxis();
             TreeMaintainer<RoboTaxi> unassignedRoboTaxis = new TreeMaintainer<>(networkBounds, this::getRoboTaxiLoc);
 
-            robotaxisDivertable.stream().forEach(rt -> unassignedRoboTaxis.add(rt));
+            robotaxisDivertable.forEach(unassignedRoboTaxis::add);
 
             List<AVRequest> requests = getUnassignedAVRequests();
-            requests.stream().forEach(r -> requestMaintainer.add(r));
+            requests.forEach(requestMaintainer::add);
 
             /** distinguish over- and undersupply cases */
-            boolean oversupply = false;
-            if (unassignedRoboTaxis.size() >= requests.size())
-                oversupply = true;
+            boolean oversupply = unassignedRoboTaxis.size() >= requests.size();
 
             if (unassignedRoboTaxis.size() > 0 && requests.size() > 0) {
                 /** oversupply case */
-                if (oversupply) {
+                if (oversupply)
                     for (AVRequest avr : requests) {
                         RoboTaxi closest = unassignedRoboTaxis.getClosest(getLocation(avr));
-                        if (closest != null) {
+                        if (Objects.nonNull(closest)) {
                             addSharedRoboTaxiPickup(closest, avr);
 
                             unassignedRoboTaxis.remove(closest);
                             requestMaintainer.remove(avr);
                         }
                     }
-                    /** undersupply case */
-                } else {
+                /** undersupply case */
+                else
                     for (RoboTaxi roboTaxi : robotaxisDivertable) {
                         AVRequest closest = requestMaintainer.getClosest(getRoboTaxiLoc(roboTaxi));
-                        if (closest != null) {
+                        if (Objects.nonNull(closest)) {
                             addSharedRoboTaxiPickup(roboTaxi, closest);
 
                             unassignedRoboTaxis.remove(roboTaxi);
                             requestMaintainer.remove(closest);
                         }
                     }
-                }
             }
             /** Delete the not staying vehicles from the tree as they might move to next link
              * and then they have to be updated in the Quad Tree */
-
-            Collection<RoboTaxi> unassignedRoboTaxisNow = new HashSet<>(unassignedRoboTaxis.getValues());
-
-            for (RoboTaxi roboTaxi : unassignedRoboTaxisNow)
-                if (!roboTaxi.getStatus().equals(RoboTaxiStatus.STAY))
-                    unassignedRoboTaxis.remove(roboTaxi);
-
+            unassignedRoboTaxis.getValues().stream().filter(rt -> !rt.getStatus().equals(RoboTaxiStatus.STAY)).forEach(unassignedRoboTaxis::remove);
         }
 
         // ADDITIONAL SHARING POSSIBILITY AT EACH PICKUP
@@ -158,20 +146,15 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
          * are close with similar direction and pick them up. */
         if (round_now % sharingPeriod == 0) {
             Map<AVRequest, RoboTaxi> addedRequests = beamExtensionForSharing.findAssignementAndExecute(getRoboTaxis(), getAVRequests(), this);
-            for (Entry<AVRequest, RoboTaxi> entry : addedRequests.entrySet()) {
-                // GlobalAssert.that(!unassignedRoboTaxis.contains(entry.getValue()));
+            for (AVRequest avRequest : addedRequests.keySet())
                 /** a avRequest is not contained in the requestMaintainer if the request was
                  * already assigned before. in that case a removal is not needed */
-                if (requestMaintainer.contains(entry.getKey())) {
-                    requestMaintainer.remove(entry.getKey());
-                }
-            }
+                if (requestMaintainer.contains(avRequest))
+                    requestMaintainer.remove(avRequest);
         }
 
         /** PARKING EXTENSION */
-        parkingStrategy.keepFree(getRoboTaxiSubset(RoboTaxiStatus.STAY), //
-                getRoboTaxiSubset(RoboTaxiStatus.REBALANCEDRIVE), round_now)//
-                .forEach((rt, l) -> setRoboTaxiRebalance(rt, l));
+        parkingStrategy.keepFree(getRoboTaxiSubset(RoboTaxiStatus.STAY), getRoboTaxiSubset(RoboTaxiStatus.REBALANCEDRIVE), round_now).forEach(this::setRoboTaxiRebalance);
         /** PARKING EXTENSION */
     }
 

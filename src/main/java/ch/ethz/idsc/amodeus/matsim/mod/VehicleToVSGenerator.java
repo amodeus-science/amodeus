@@ -88,23 +88,21 @@ public class VehicleToVSGenerator implements AVGenerator {
             Id<DvrpVehicle> id = AVUtils.createId(operatorConfig.getId(), generatedNumberOfVehicles);
             vehicles.add(new AVVehicle(id, linkGen, 0.0, Double.POSITIVE_INFINITY, vehicleType));
         }
-
         return vehicles;
     }
 
     /** Returns the index of the first virtual station that is still in need of more vehicles. If all virtual stations have enough, return random index */
     private int getNextVirtualNode() {
-        for (int i = 0; i < virtualNetwork.getvNodesCount(); i++) {
+        for (int i = 0; i < virtualNetwork.getvNodesCount(); i++)
             if (Sign.isPositive(vehicleDistribution.Get(i).subtract(placedVehicles.Get(i))))
                 return i;
-        }
         return random.nextInt(virtualNetwork.getvNodesCount());
     }
 
     /** Return a random {@link Link} of the according virtual station with index vNodeIndex */
     protected Link getNextLink(VirtualNode<Link> vNode) {
         Collection<Link> links = vNode.getLinks();
-        List<Link> sortedLinks = StaticHelper.getSortedLinks(links); /** needed for identical outcome with a certain random seed */
+        List<Link> sortedLinks = SortedLinks.of(links); /** needed for identical outcome with a certain random seed */
         int elemRand = random.nextInt(links.size());
         return sortedLinks.get(elemRand);
     }

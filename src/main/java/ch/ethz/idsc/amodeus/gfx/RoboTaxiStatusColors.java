@@ -20,7 +20,7 @@ import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
     private static final int ALPHA = 64;
 
-    private RoboTaxiStatusColors(ColorDataIndexed colorDataIndexed) {
+    RoboTaxiStatusColors(ColorDataIndexed colorDataIndexed) {
         this.colorDataIndexed = colorDataIndexed;
         colorDataIndexedDest = colorDataIndexed.deriveWithAlpha(ALPHA);
     }
