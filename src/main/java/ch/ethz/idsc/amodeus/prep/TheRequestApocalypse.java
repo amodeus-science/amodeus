@@ -3,21 +3,14 @@ package ch.ethz.idsc.amodeus.prep;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
-import java.util.Set;
 
-import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Population;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.tensor.RealScalar;
-import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Scalars;
 
 public final class TheRequestApocalypse {
     /** the seed is deliberately public */
@@ -34,14 +27,12 @@ public final class TheRequestApocalypse {
         this.population = population;
     }
 
-    // TODO why is maxRequests a scalar and not an integer?
-
-    public TheRequestApocalypse toNoMoreThan(Scalar maxRequests) {
+    public TheRequestApocalypse toNoMoreThan(int maxRequests) {
         return toNoMoreThan(maxRequests, DEFAULT_SEED);
     }
 
-    public TheRequestApocalypse toNoMoreThan(Scalar maxRequests, long seed) {
-        GlobalAssert.that(Scalars.lessEquals(maxRequests, LegCount.of(population, "av")));
+    public TheRequestApocalypse toNoMoreThan(int maxRequests, long seed) {
+        GlobalAssert.that(maxRequests <= LegCount.of(population, "av"));
 
         /** shuffle list of {@link Person}s */
         List<Person> list = new ArrayList<>(population.getPersons().values());
@@ -50,27 +41,27 @@ public final class TheRequestApocalypse {
 
         // skip all persons that should completely remain in the population
         Person person = iterator.next();
-        Scalar totReq = RealScalar.ZERO;
-        Scalar req = LegCount.of(person, "av");
-        while (Scalars.lessEquals(totReq.add(req), maxRequests)) {
-            totReq = totReq.add(req);
+        int totReq = 0;
+        long req = LegCount.of(person, "av");
+        while (totReq + req <= maxRequests) {
+            totReq += req;
             person = iterator.next();
             req = LegCount.of(person, "av");
         }
 
         // create new person if needed to fill requests
-        Scalar split = maxRequests.subtract(totReq);
-        if (!split.equals(RealScalar.ZERO)) {
+        int split = maxRequests - totReq;
+        if (split != 0) {
             Person splitPerson = SplitUp.of(population, person, split, "av");
             req = LegCount.of(splitPerson, "av");
-            totReq = totReq.add(req);
-            GlobalAssert.that(totReq.equals(maxRequests));
+            totReq += req;
+            GlobalAssert.that(totReq == maxRequests);
             population.addPerson(splitPerson);
         }
 
         // remove all remaining persons
         iterator.forEachRemaining(p -> population.removePerson(p.getId()));
-        GlobalAssert.that(LegCount.of(population, "av").equals(maxRequests));
+        GlobalAssert.that(LegCount.of(population, "av") == maxRequests);
         return this;
     }
 
