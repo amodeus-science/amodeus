@@ -4,6 +4,7 @@ package ch.ethz.idsc.amodeus.prep;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -43,35 +44,32 @@ public final class TheRequestApocalypse {
         GlobalAssert.that(Scalars.lessEquals(maxRequests, LegCount.of(population, "av")));
 
         /** shuffle list of {@link Person}s */
-        List<Id<Person>> list = new ArrayList<>(population.getPersons().keySet());
+        List<Person> list = new ArrayList<>(population.getPersons().values());
         Collections.shuffle(list, new Random(seed));
+        Iterator<Person> iterator = list.iterator();
 
-        /** doc */
+        // skip all persons that should completely remain in the population
+        Person person = iterator.next();
         Scalar totReq = RealScalar.ZERO;
-        Set<Id<Person>> keepList = new HashSet<>();
-        Person splitUpPerson = null;
-
-        for (Id<Person> pId : list) {
-            if (totReq.equals(maxRequests)) // TODO totReq == maxRequests -> totReq >= maxRequests?
-                break;
-            Scalar req = LegCount.of(population.getPersons().get(pId), "av");
-            if (Scalars.lessEquals(totReq.add(req), maxRequests)) {
-                totReq = totReq.add(req);
-                keepList.add(pId);
-            } else { // adding more than
-                Scalar splitNeeded = maxRequests.subtract(totReq);
-                splitUpPerson = SplitUp.of(population, population.getPersons().get(pId), splitNeeded, "av");
-                req = LegCount.of(splitUpPerson, "av");
-                GlobalAssert.that(totReq.add(req).equals(maxRequests));
-                totReq = totReq.add(req); // TODO updated but necessary added to population?
-            }
+        Scalar req = LegCount.of(person, "av");
+        while (Scalars.lessEquals(totReq.add(req), maxRequests)) {
+            totReq = totReq.add(req);
+            person = iterator.next();
+            req = LegCount.of(person, "av");
         }
 
-        list.stream().filter(pId -> !keepList.contains(pId)).forEach(population::removePerson);
+        // create new person if needed to fill requests
+        Scalar split = maxRequests.subtract(totReq);
+        if (!split.equals(RealScalar.ZERO)) {
+            Person splitPerson = SplitUp.of(population, person, split, "av");
+            req = LegCount.of(splitPerson, "av");
+            totReq = totReq.add(req);
+            GlobalAssert.that(totReq.equals(maxRequests));
+            population.addPerson(splitPerson);
+        }
 
-        if (Objects.nonNull(splitUpPerson))
-            population.addPerson(splitUpPerson);
-
+        // remove all remaining persons
+        iterator.forEachRemaining(p -> population.removePerson(p.getId()));
         GlobalAssert.that(LegCount.of(population, "av").equals(maxRequests));
         return this;
     }
