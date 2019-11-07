@@ -1,12 +1,11 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.prep;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.population.Person;
@@ -29,20 +28,13 @@ public class IDGenerator {
         this.usedIDs = getUsedIDs(populationExisting);
 
         // find largest integer used in IDs
-        List<Integer> foundInts = new ArrayList<>();
-        for (Id<Person> id : usedIDs) {
-            foundInts.add(extractLargestInt(id.toString()));
-        }
-        Collections.sort(foundInts);
-        if (foundInts.get(foundInts.size() - 1) != null) {
-            largestInteger = foundInts.get(foundInts.size() - 1);
-        } else {
-            largestInteger = 1;
-        }
+        List<Integer> foundInts = usedIDs.stream().map(Id::toString).map(this::extractLargestInt).sorted().collect(Collectors.toList());
+        largestInteger = Optional.ofNullable(foundInts.get(foundInts.size() - 1)).orElse(1);
+        // TODO confirm return value null and fallback 1 alternatively:
+        // largestInteger = usedIDs.stream().map(Id::toString).mapToInt(this::extractLargestInt).max().orElse(1);
     }
 
-    /** @param usedIDs
-     * @return new ID which is not yet in set usedIDs */
+    /** @return new ID which is not yet in set usedIDs */
     public Id<Person> generateUnusedID() {
         largestInteger++;
         String newIDs = idName + String.format(format, largestInteger);
@@ -56,18 +48,16 @@ public class IDGenerator {
     public Integer extractLargestInt(final String str) {
         // collects all strings that are contained in str (use non-digit strings as delimiter)
         String[] integerStrings = str.split("\\D+");
-        List<Integer> integerList = new ArrayList<>();
-        // convert integerStrings to real integers and add them to integerList
-        Arrays.stream(integerStrings).filter(v -> v.length() > 0).forEach(v -> integerList.add(Integer.parseInt(v)));
-
-        return Collections.max(integerList);
+        return Arrays.stream(integerStrings).filter(v -> !v.isEmpty()).mapToInt(Integer::parseInt).max().orElseThrow(RuntimeException::new);
     }
 
     /** @param populationExisting
      * @return HashSet<Id<Person>> containing all used IDs in @param populationExisting */
     public Set<Id<Person>> getUsedIDs(Population populationExisting) {
-        HashSet<Id<Person>> usedIDs = new HashSet<>();
-        populationExisting.getPersons().values().forEach(p -> usedIDs.add(p.getId()));
+        // TODO is this necessary?
+        // populationExisting.getPersons() -> Map<Id<Person>>, ? extends Person> hence this always returns the key set, also making the check redundant
+        // PopulationImpl seems to be the only place where Population::getPersons() is set
+        Set<Id<Person>> usedIDs = populationExisting.getPersons().values().stream().map(Person::getId).collect(Collectors.toSet());
         GlobalAssert.that(usedIDs.size() == populationExisting.getPersons().size());
         return usedIDs;
     }

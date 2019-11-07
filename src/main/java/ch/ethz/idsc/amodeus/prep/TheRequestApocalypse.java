@@ -20,7 +20,7 @@ import ch.ethz.idsc.tensor.Scalars;
 
 public final class TheRequestApocalypse {
     /** the seed is deliberately public */
-    public static final long DEFAULT_SEED = 7582456789l;
+    public static final long DEFAULT_SEED = 7582456789L;
 
     public static TheRequestApocalypse reducesThe(Population population) {
         return new TheRequestApocalypse(population);
@@ -31,6 +31,12 @@ public final class TheRequestApocalypse {
 
     private TheRequestApocalypse(Population population) {
         this.population = population;
+    }
+
+    // TODO why is maxRequests a scalar and not an integer?
+
+    public TheRequestApocalypse toNoMoreThan(Scalar maxRequests) {
+        return toNoMoreThan(maxRequests, DEFAULT_SEED);
     }
 
     public TheRequestApocalypse toNoMoreThan(Scalar maxRequests, long seed) {
@@ -46,13 +52,10 @@ public final class TheRequestApocalypse {
         Person splitUpPerson = null;
 
         for (Id<Person> pId : list) {
-            if (totReq.equals(maxRequests))
+            if (totReq.equals(maxRequests)) // TODO totReq == maxRequests -> totReq >= maxRequests?
                 break;
             Scalar req = LegCount.of(population.getPersons().get(pId), "av");
-            if (Scalars.lessThan(totReq.add(req), maxRequests)) {
-                totReq = totReq.add(req);
-                keepList.add(pId);
-            } else if ((totReq.add(req)).equals(maxRequests)) {
+            if (Scalars.lessEquals(totReq.add(req), maxRequests)) {
                 totReq = totReq.add(req);
                 keepList.add(pId);
             } else { // adding more than
@@ -60,15 +63,11 @@ public final class TheRequestApocalypse {
                 splitUpPerson = SplitUp.of(population, population.getPersons().get(pId), splitNeeded, "av");
                 req = LegCount.of(splitUpPerson, "av");
                 GlobalAssert.that(totReq.add(req).equals(maxRequests));
-                totReq = totReq.add(req);
+                totReq = totReq.add(req); // TODO updated but necessary added to population?
             }
         }
 
-        for (Id<Person> pId : list) {
-            if (!keepList.contains(pId)) {
-                population.removePerson(pId);
-            }
-        }
+        list.stream().filter(pId -> !keepList.contains(pId)).forEach(population::removePerson);
 
         if (Objects.nonNull(splitUpPerson))
             population.addPerson(splitUpPerson);

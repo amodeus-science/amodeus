@@ -10,11 +10,11 @@ import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.api.core.v01.population.PopulationFactory;
 
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 
-/* package */ class SplitUp {
+/* package */ enum SplitUp {
+    ;
 
     /** @return {@link Person} identical to @param oldPerson from @param population with
      *         the number of legs in mode @param mode reduced to @param numLegs
@@ -35,11 +35,14 @@ import ch.ethz.idsc.tensor.Scalar;
             for (PlanElement pE : plan.getPlanElements()) {
                 if (pE instanceof Activity) {
                     Activity actOld = (Activity) pE;
+
+                    // copy activity
                     Activity actNew = factory.createActivityFromCoord(actOld.getType(), actOld.getCoord());
                     actNew.setStartTime(actOld.getStartTime());
                     actNew.setEndTime(actOld.getEndTime());
                     actNew.setLinkId(actOld.getLinkId());
                     actNew.setFacilityId(actOld.getFacilityId());
+
                     planShifted.addActivity(actNew);
                     if (numLegs.equals(numReq))
                         break;
@@ -57,8 +60,7 @@ import ch.ethz.idsc.tensor.Scalar;
         }
         if (!LegCount.of(newPerson, mode).equals(numLegs)) {
             System.err.println("LegCount.of(newPerson, mode): " + LegCount.of(newPerson, mode));
-            System.err.println("numLegs:                      " + numLegs);
-            GlobalAssert.that(false);
+            throw new RuntimeException("numLegs:                      " + numLegs);
         }
         return newPerson;
     }

@@ -2,8 +2,9 @@
 package ch.ethz.idsc.amodeus.prep;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
@@ -25,8 +26,7 @@ public enum VirtualNetworkCreators implements VirtualNetworkCreator {
         @Override
         public VirtualNetwork<Link> create(Network network, Population population, ScenarioOptions scenarioOptions, int numRt, int endTime) {
             File absFileName = new File(scenarioOptions.getWorkingDirectory(), scenarioOptions.getString("vnFile"));
-            Map<String, Link> map = new HashMap<>();
-            network.getLinks().entrySet().forEach(e -> map.put(e.getKey().toString(), e.getValue()));
+            Map<String, Link> map = network.getLinks().entrySet().stream().collect(Collectors.toMap(e -> e.getKey().toString(), Map.Entry::getValue));
             try {
                 return VirtualNetworkIO.fromByte(map, absFileName);
             } catch (Exception exception) {
@@ -38,16 +38,14 @@ public enum VirtualNetworkCreators implements VirtualNetworkCreator {
     SHAPEFILENETWORK {
         @Override
         public VirtualNetwork<Link> create(Network network, Population population, ScenarioOptions scenarioOptions, int numRt, int endTime) {
-            GlobalAssert.that(scenarioOptions != null);
-            return MatsimShapeFileVirtualNetworkCreator.createVirtualNetwork(network, scenarioOptions);
+            return MatsimShapeFileVirtualNetworkCreator.createVirtualNetwork(network, Objects.requireNonNull(scenarioOptions));
         }
     },
     KMEANS {
         @Override
         public VirtualNetwork<Link> create(Network network, Population population, ScenarioOptions scenarioOptions, int numRt, int endTime) {
-            GlobalAssert.that(scenarioOptions != null);
-            return MatsimKMeansVirtualNetworkCreator.createVirtualNetwork( //
-                    population, network, scenarioOptions.getNumVirtualNodes(), scenarioOptions.isCompleteGraph());
+            return MatsimKMeansVirtualNetworkCreator.createVirtualNetwork(population, network, //
+                    Objects.requireNonNull(scenarioOptions).getNumVirtualNodes(), scenarioOptions.isCompleteGraph());
         }
     },
     RINGCENTROID {
