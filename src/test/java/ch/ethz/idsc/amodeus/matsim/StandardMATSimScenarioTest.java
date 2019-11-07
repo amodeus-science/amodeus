@@ -7,7 +7,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Random;
 
+import ch.ethz.idsc.amodeus.parking.AmodeusParkingModule;
+import ch.ethz.idsc.amodeus.parking.ParkingCapacityGenerators;
+import ch.ethz.idsc.amodeus.parking.strategies.ParkingStrategies;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -93,7 +97,7 @@ public class StandardMATSimScenarioTest {
                 { "TShareDispatcher" }, //
                 { "FirstComeFirstServedStrategy" }, //
                 { "DynamicRideSharingStrategy" }, //
-                // { "RestrictedLinkCapacityDispatcher" }, // TODO parking strategy
+                { "RestrictedLinkCapacityDispatcher" }, //
 
                 // This one doesn't finish all requests. Bug or not enough of time? Also it's not good in an automated unit test because it
                 // produces large amounts of log output.
@@ -201,6 +205,11 @@ public class StandardMATSimScenarioTest {
         modeParams.setMarginalUtilityOfTraveling(8.86);
         modeParams.setConstant(0.0);
 
+        int i = new Random().nextInt(ParkingStrategies.values().length);
+        simOptions.setProperty("parkingStrategy", ParkingStrategies.values()[i].name());
+        int j = new Random().nextInt(ParkingStrategies.values().length);
+        simOptions.setProperty("parkingCapacityGenerator", ParkingCapacityGenerators.values()[j].name());
+
         Controler controler = new Controler(scenario);
         controler.addOverridingModule(new DvrpModule());
         controler.addOverridingModule(new DvrpTravelTimeModule());
@@ -210,6 +219,7 @@ public class StandardMATSimScenarioTest {
         controler.addOverridingModule(new AmodeusVehicleGeneratorModule());
         controler.addOverridingModule(new AmodeusVehicleToVSGeneratorModule());
         controler.addOverridingModule(new AmodeusDatabaseModule(db));
+        controler.addOverridingModule(new AmodeusParkingModule(simOptions, new Random()));
 
         // Make the scenario multimodal
         fixInvalidActivityLocations(scenario.getNetwork(), scenario.getPopulation());
