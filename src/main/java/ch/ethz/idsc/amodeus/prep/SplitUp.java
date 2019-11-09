@@ -10,23 +10,20 @@ import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.api.core.v01.population.PopulationFactory;
 
-import ch.ethz.idsc.tensor.RealScalar;
-import ch.ethz.idsc.tensor.Scalar;
-
 /* package */ enum SplitUp {
     ;
 
     /** @return {@link Person} identical to @param oldPerson from @param population with
      *         the number of legs in mode @param mode reduced to @param numLegs
      * 
-     *         usage example: Person splitPerson = SplitUp.of(population,personX,RealScalar.ONE,"av") */
-    public static Person of(Population population, Person oldPerson, Scalar numLegs, String mode) {
+     *         usage example: Person splitPerson = SplitUp.of(population, personX, 1, "av") */
+    public static Person of(Population population, Person oldPerson, int numLegs, String mode) {
         System.out.println("split person, num Legs: " + numLegs);
         PopulationFactory factory = population.getFactory();
         IDGenerator generator = new IDGenerator(population);
         Id<Person> newID = generator.generateUnusedID();
         Person newPerson = factory.createPerson(newID);
-        Scalar numReq = RealScalar.ZERO;
+        int numReq = 0;
         for (Plan plan : oldPerson.getPlans()) {
             Plan planShifted = factory.createPlan();
             planShifted.setPerson(newPerson);
@@ -44,13 +41,13 @@ import ch.ethz.idsc.tensor.Scalar;
                     actNew.setFacilityId(actOld.getFacilityId());
 
                     planShifted.addActivity(actNew);
-                    if (numLegs.equals(numReq))
+                    if (numLegs == numReq)
                         break;
                 }
                 if (pE instanceof Leg) {
                     Leg leg = (Leg) pE;
                     if (leg.getMode().equals(mode))
-                        numReq = numReq.add(RealScalar.ONE);
+                        numReq++;;
                     Leg legNew = factory.createLeg(leg.getMode());
                     legNew.setDepartureTime(leg.getDepartureTime());
                     planShifted.addLeg(legNew);
@@ -58,7 +55,7 @@ import ch.ethz.idsc.tensor.Scalar;
             }
             newPerson.addPlan(planShifted);
         }
-        if (!LegCount.of(newPerson, mode).equals(numLegs)) {
+        if (LegCount.of(newPerson, mode) != numLegs) {
             System.err.println("LegCount.of(newPerson, mode): " + LegCount.of(newPerson, mode));
             throw new RuntimeException("numLegs:                      " + numLegs);
         }
