@@ -3,7 +3,6 @@ package ch.ethz.idsc.amodeus.taxitrip;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -29,7 +28,7 @@ public class TaxiTripImportExportTest {
         ExportTaxiTrips.toFile(someTrips.stream(), tripFile);
 
         // 3 import again
-        List<TaxiTrip> importedTrips = ImportTaxiTrips.fromFile(tripFile).collect(Collectors.toList());
+        List<TaxiTrip> importedTrips = ImportTaxiTrips.fromFile(tripFile);
 
         // 4 compare all trips
         for (int i = 0; i < importedTrips.size(); ++i) {
