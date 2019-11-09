@@ -16,6 +16,7 @@ import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.TensorCoords;
 import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.qty.Quantity;
 
 public class ShortestDurationCalculator {
@@ -57,8 +58,22 @@ public class ShortestDurationCalculator {
     }
 
     public Path computePath(TaxiTrip taxiTrip) {
-        Link pickupLink = fastLinkLookup.getLinkFromWGS84(TensorCoords.toCoord(taxiTrip.pickupLoc));
-        Link dropOffLink = fastLinkLookup.getLinkFromWGS84(TensorCoords.toCoord(taxiTrip.dropoffLoc));
+        return computePath(taxiTrip.pickupLoc, taxiTrip.dropoffLoc);
+    }
+
+    public Path computePath(Tensor pickupLoc, Tensor dropoffLoc) {
+        return computePath( //
+                fastLinkLookup.getLinkFromWGS84(TensorCoords.toCoord(pickupLoc)), //
+                fastLinkLookup.getLinkFromWGS84(TensorCoords.toCoord(dropoffLoc)));
+    }
+
+    /** function is used in amodtaxi
+     * 
+     * @param pickupLink
+     * @param dropOffLink
+     * @return */
+    public Path computePath(Link pickupLink, Link dropOffLink) {
         return leastCostPathCalculator.calcLeastCostPath(pickupLink.getFromNode(), dropOffLink.getToNode(), 1, null, null);
     }
+
 }

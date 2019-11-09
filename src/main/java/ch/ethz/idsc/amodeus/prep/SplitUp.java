@@ -48,7 +48,7 @@ import org.matsim.api.core.v01.population.PopulationFactory;
                     Leg leg = (Leg) pE;
                     if (leg.getMode().equals(mode))
                         numReq++;
-                    ;
+
                     Leg legNew = factory.createLeg(leg.getMode());
                     legNew.setDepartureTime(leg.getDepartureTime());
                     planShifted.addLeg(legNew);
