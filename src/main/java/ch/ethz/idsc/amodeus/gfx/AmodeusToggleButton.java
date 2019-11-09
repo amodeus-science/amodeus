@@ -1,9 +1,9 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.gfx;
 
-import javax.swing.JToggleButton;
-
 import java.util.Objects;
+
+import javax.swing.JToggleButton;
 
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.net.SimulationServer;

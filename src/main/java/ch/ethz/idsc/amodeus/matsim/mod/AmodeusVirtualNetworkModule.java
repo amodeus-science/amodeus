@@ -88,7 +88,7 @@ public class AmodeusVirtualNetworkModule extends AbstractModule {
                     VirtualNetworkIO.toByte(virtualNetworkFile, virtualNetwork);
                 } else
                     logger.info(String.format("Loading VirtualNetwork for operator '%s' from '%s'", operatorConfig.getId(), virtualNetworkFile));
-                    virtualNetwork = VirtualNetworkGet.readFile(network, virtualNetworkFile);
+                virtualNetwork = VirtualNetworkGet.readFile(network, virtualNetworkFile);
             }
             virtualNetworks.put(operatorConfig.getId(), virtualNetwork);
         }

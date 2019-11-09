@@ -16,7 +16,7 @@ public enum LegCount {
     /** @return number of {@link Leg}s with @param mode in @param person */
     public static long of(Person person, String mode) {
         return person.getPlans().stream().flatMap(plan -> //
-                plan.getPlanElements().stream().filter(pe -> pe instanceof Leg).map(pe -> (Leg) pe) // for each plan get stream of Legs
+        plan.getPlanElements().stream().filter(pe -> pe instanceof Leg).map(pe -> (Leg) pe) // for each plan get stream of Legs
         ).map(Leg::getMode).filter(m -> m.equals(mode)).count(); // count all Legs with mode from all streams
     }
 }

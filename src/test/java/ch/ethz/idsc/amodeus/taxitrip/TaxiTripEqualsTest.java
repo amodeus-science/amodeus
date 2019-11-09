@@ -8,7 +8,7 @@ public class TaxiTripEqualsTest {
     private static RandomTaxiTrips randomTrips = new RandomTaxiTrips();
 
     @Test
-    public void test() throws IllegalArgumentException, IllegalAccessException {
+    public void test() throws IllegalArgumentException {
 
         {
             TaxiTrip t1 = RandomTaxiTrips.createSpecific(1, "trip1");

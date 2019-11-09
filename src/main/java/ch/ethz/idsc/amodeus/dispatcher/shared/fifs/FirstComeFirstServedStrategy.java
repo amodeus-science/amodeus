@@ -146,7 +146,7 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
 
     /** @param request
      * @return {@link Coord} with {@link AVRequest} location */
-    private Tensor getLocation(AVRequest request) {
+    private static Tensor getLocation(AVRequest request) {
         return TensorCoords.toTensor(request.getFromLink().getFromNode().getCoord());
     }
 

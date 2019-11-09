@@ -28,30 +28,30 @@ public enum PopulationTimeInterval {
         // int counter = 0;
         // int nextMsg = 1;
         // while (personIter.hasNext()) {
-        //     counter++;
-        //     if (counter % nextMsg == 0) {
-        //         nextMsg *= 2;
-        //         System.out.println("we are at person # " + counter + ". ");
-        //     }
-        //     Person person = personIter.next();
-        //     boolean removePerson = false;
-        //     for (Plan plan : person.getPlans()) {
-        //         for (int i = 1; i < plan.getPlanElements().size() - 1; ++i) {
-        //             PlanElement planBefore = plan.getPlanElements().get(i - 1);
-        //             PlanElement planCurrent = plan.getPlanElements().get(i);
-        //             if (planCurrent instanceof Leg) {
-        //                 Leg leg = (Leg) planCurrent;
-        //                 Activity actBefore = (Activity) planBefore;
-        //                 if (timeClip.isOutside(RealScalar.of(leg.getDepartureTime())))
-        //                     removePerson = true;
-        //                 if (timeClip.isOutside(RealScalar.of(actBefore.getEndTime())))
-        //                     removePerson = true;
-        //             }
-        //         }
-        //     }
-        //     if (removePerson) {
-        //         personIter.remove();
-        //     }
+        // counter++;
+        // if (counter % nextMsg == 0) {
+        // nextMsg *= 2;
+        // System.out.println("we are at person # " + counter + ". ");
+        // }
+        // Person person = personIter.next();
+        // boolean removePerson = false;
+        // for (Plan plan : person.getPlans()) {
+        // for (int i = 1; i < plan.getPlanElements().size() - 1; ++i) {
+        // PlanElement planBefore = plan.getPlanElements().get(i - 1);
+        // PlanElement planCurrent = plan.getPlanElements().get(i);
+        // if (planCurrent instanceof Leg) {
+        // Leg leg = (Leg) planCurrent;
+        // Activity actBefore = (Activity) planBefore;
+        // if (timeClip.isOutside(RealScalar.of(leg.getDepartureTime())))
+        // removePerson = true;
+        // if (timeClip.isOutside(RealScalar.of(actBefore.getEndTime())))
+        // removePerson = true;
+        // }
+        // }
+        // }
+        // if (removePerson) {
+        // personIter.remove();
+        // }
         // }
 
         AtomicInteger aiCount = new AtomicInteger(1);
@@ -69,9 +69,9 @@ public enum PopulationTimeInterval {
         // TODO choose better performing option
         // List<PlanElement> planElements = plan.getPlanElements();
         // return IntStream.range(1, planElements.size()).filter(i -> planElements.get(i - 1) instanceof Leg).anyMatch(i -> {
-        //     Leg leg = (Leg) planElements.get(i - 1);
-        //     Activity prevAct = (Activity) planElements.get(i);
-        //     return clip.isOutside(RealScalar.of(leg.getDepartureTime())) || clip.isOutside(RealScalar.of(prevAct.getEndTime()));
+        // Leg leg = (Leg) planElements.get(i - 1);
+        // Activity prevAct = (Activity) planElements.get(i);
+        // return clip.isOutside(RealScalar.of(leg.getDepartureTime())) || clip.isOutside(RealScalar.of(prevAct.getEndTime()));
         // });
 
         Iterator<PlanElement> iterator = plan.getPlanElements().iterator();

@@ -31,12 +31,14 @@ public enum Duration {
             try {
                 return between(ldt2, ldt1);
             } catch (Exception ex) {
+                // ---
             }
 
         } else {
             try {
                 return between(ldt1, ldt2);
             } catch (Exception ex) {
+                // ---
             }
         }
 
