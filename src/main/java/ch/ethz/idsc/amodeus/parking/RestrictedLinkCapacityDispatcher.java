@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Network;
@@ -138,7 +139,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
             }
             /** Delete the not staying vehicles from the tree as they might move to next link
              * and then they have to be updated in the Quad Tree */
-            unassignedRoboTaxis.getValues().stream().filter(rt -> !rt.getStatus().equals(RoboTaxiStatus.STAY)).forEach(unassignedRoboTaxis::remove);
+            unassignedRoboTaxis.getValues().stream().filter(rt -> !rt.getStatus().equals(RoboTaxiStatus.STAY)).collect(Collectors.toSet()).forEach(unassignedRoboTaxis::remove);
         }
 
         // ADDITIONAL SHARING POSSIBILITY AT EACH PICKUP

@@ -30,4 +30,8 @@ public enum LocationSpecDatabase {
     public boolean isEmpty() {
         return map.isEmpty();
     }
+
+    /* package for testing */ void flush() {
+        map.clear();
+    }
 }
