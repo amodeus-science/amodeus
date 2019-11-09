@@ -34,7 +34,7 @@ import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
                 int shouldLeave = Math.max(0, numTaxis - nominalSpaces);
                 for (T rt : linkStayTaxi.get(link)) {
                     shouldLeaveTaxis.computeIfAbsent(link, l -> new HashSet<>()) //
-                    /* shouldLeaveTaxis.get(link) */ .add(rt);
+                            /* shouldLeaveTaxis.get(link) */ .add(rt);
                     shouldLeave--;
                     if (shouldLeave < 1)
                         break;

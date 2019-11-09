@@ -24,7 +24,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
     private Map<Link, Set<RoboTaxi>> getOccupiedLinks() {
         /** returns a map with a link as key and the set of robotaxis which are currently on the link */
         // Map<Link, Set<RoboTaxi>> rtLink = new HashMap<>();
-        // allRoboTaxis.forEach(rt ->  rtLink.computeIfAbsent(rt.getDivertableLocation(), l -> new HashSet<>()).add(rt));
+        // allRoboTaxis.forEach(rt -> rtLink.computeIfAbsent(rt.getDivertableLocation(), l -> new HashSet<>()).add(rt));
         // return rtLink;
         return allRoboTaxis.stream().collect(Collectors.groupingBy(RoboTaxi::getDivertableLocation, Collectors.toSet()));
     }

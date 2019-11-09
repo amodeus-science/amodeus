@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
-import ch.ethz.idsc.amodeus.testutils.TestViewer;
 import org.gnu.glpk.GLPK;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -28,6 +27,7 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.testutils.TestPreparer;
 import ch.ethz.idsc.amodeus.testutils.TestServer;
+import ch.ethz.idsc.amodeus.testutils.TestViewer;
 import ch.ethz.idsc.amodeus.util.io.Locate;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;

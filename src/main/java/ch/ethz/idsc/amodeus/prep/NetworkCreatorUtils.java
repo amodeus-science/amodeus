@@ -55,8 +55,8 @@ public class NetworkCreatorUtils {
 
         // final double data[][] = new double[dataList.size()][2];
         // for (int i = 0; i < dataList.size(); ++i) {
-        //     data[i][0] = dataList.get(i)[0];
-        //     data[i][1] = dataList.get(i)[1];
+        // data[i][0] = dataList.get(i)[0];
+        // data[i][1] = dataList.get(i)[1];
         // }
         // return data;
         return dataList.toArray(new double[dataList.size()][2]);
