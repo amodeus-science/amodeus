@@ -11,7 +11,6 @@ import org.matsim.core.router.util.LeastCostPathCalculator.Path;
     @Override // from NetworkPropertyInterface
     public Path fromTo(Link from, Link to, LeastCostPathCalculator calculator, Double now) {
         /** path */
-        return calculator.calcLeastCostPath(from.getFromNode(), to.getToNode(), now, null, null);
+        return StaticHelper.pathBetween(from, to, calculator, now);
     }
-
 }

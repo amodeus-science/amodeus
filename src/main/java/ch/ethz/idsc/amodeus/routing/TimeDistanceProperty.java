@@ -17,11 +17,11 @@ public enum TimeDistanceProperty implements NetworkPropertyInterface<Tensor> {
     @Override
     public Tensor fromTo(Link from, Link to, LeastCostPathCalculator calculator, Double now) {
         /** path */
-        Path path = calculator.calcLeastCostPath(from.getFromNode(), to.getToNode(), now, null, null);
+        Path path = StaticHelper.pathBetween(from, to, calculator, now);
         /** travel time */
         Scalar travelTime = Quantity.of(path.travelTime, SI.SECOND);
         /** path length */
-        Scalar distance = Quantity.of(path.links.stream().mapToDouble(Link::getLength).sum(), SI.METER);
+        Scalar distance = Quantity.of(StaticHelper.length(path), SI.METER);
         /** return pair */
         return Tensors.of(travelTime, distance);
     }

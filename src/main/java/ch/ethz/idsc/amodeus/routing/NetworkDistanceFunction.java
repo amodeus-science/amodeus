@@ -1,8 +1,6 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.routing;
 
-import java.util.Objects;
-
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Node;
 import org.matsim.core.router.util.LeastCostPathCalculator;
@@ -50,14 +48,12 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
     private final double distNetwork(Node from, Node to) {
         LeastCostPathCalculator.Path path = execPathCalculator(from, to);
-        return path.links.stream().mapToDouble(Link::getLength).sum();
+        return StaticHelper.length(path);
     }
 
     LeastCostPathCalculator.Path execPathCalculator(Node from, Node to) {
         // depending on implementation of traveldisutility and traveltime, starttime,
         // person and vehicle are needed
-        Objects.requireNonNull(from);
-        Objects.requireNonNull(to);
-        return leastCostPathCalculator.calcLeastCostPath(from, to, 0.0, null, null);
+        return StaticHelper.pathBetween(from, to, leastCostPathCalculator, 0.0);
     }
 }
