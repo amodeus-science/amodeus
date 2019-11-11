@@ -52,13 +52,21 @@ public class ShortestDurationCalculator {
         fastLinkLookup = new FastLinkLookup(network, db);
     }
 
-    public Scalar computeFreeFlowTime(TaxiTrip taxiTrip) {
+    public Scalar computePathTime(TaxiTrip taxiTrip) {
         return Quantity.of(computePath(taxiTrip).travelTime, SI.SECOND);
     }
 
     public Path computePath(TaxiTrip taxiTrip) {
         Link pickupLink = fastLinkLookup.getLinkFromWGS84(TensorCoords.toCoord(taxiTrip.pickupLoc));
         Link dropOffLink = fastLinkLookup.getLinkFromWGS84(TensorCoords.toCoord(taxiTrip.dropoffLoc));
+        return computePath(pickupLink,dropOffLink);
+//        return leastCostPathCalculator.calcLeastCostPath(pickupLink.getFromNode(), dropOffLink.getToNode(), 1, null, null);
+    }
+    
+    
+    public Path computePath(Link pickupLink, Link dropOffLink) {
+//        Link pickupLink = fastLinkLookup.getLinkFromWGS84(TensorCoords.toCoord(taxiTrip.pickupLoc));
+//        Link dropOffLink = fastLinkLookup.getLinkFromWGS84(TensorCoords.toCoord(taxiTrip.dropoffLoc));
         return leastCostPathCalculator.calcLeastCostPath(pickupLink.getFromNode(), dropOffLink.getToNode(), 1, null, null);
     }
 }
