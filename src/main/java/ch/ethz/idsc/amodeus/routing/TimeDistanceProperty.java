@@ -21,12 +21,8 @@ public enum TimeDistanceProperty implements NetworkPropertyInterface<Tensor> {
         /** travel time */
         Scalar travelTime = Quantity.of(path.travelTime, SI.SECOND);
         /** path length */
-        double dist = 0.0;
-        for (Link link : path.links)
-            dist += link.getLength();
-        Scalar distance = Quantity.of(dist, SI.METER);
+        Scalar distance = Quantity.of(path.links.stream().mapToDouble(Link::getLength).sum(), SI.METER);
         /** return pair */
         return Tensors.of(travelTime, distance);
     }
-
 }

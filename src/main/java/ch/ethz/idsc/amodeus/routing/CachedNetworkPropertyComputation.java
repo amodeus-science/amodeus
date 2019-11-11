@@ -4,15 +4,12 @@ package ch.ethz.idsc.amodeus.routing;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.Set;
 import java.util.TreeMap;
 
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.core.router.util.LeastCostPathCalculator;
-
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 public class CachedNetworkPropertyComputation<T> {
 
@@ -41,38 +38,30 @@ public class CachedNetworkPropertyComputation<T> {
     private final void update(double now) {
         this.now = now;
         Set<Double> timestoRemove = new HashSet<>();
-        for (Entry<Double, Map<Link, Set<Link>>> entry : calculationTimes.headMap(now - maxLag).entrySet()) {
-            GlobalAssert.that(entry.getKey() < now - maxLag);
-            timestoRemove.add(entry.getKey());
-            for (Entry<Link, Set<Link>> fromentry : entry.getValue().entrySet()) {
-                fromentry.getValue().forEach(to -> cache.get(fromentry.getKey()).remove(to));
-            }
-        }
-        timestoRemove.forEach(time -> calculationTimes.remove(time));
+        calculationTimes.headMap(now - maxLag).forEach((time, map) -> {
+            // GlobalAssert.that(time < now - maxLag); // should be guaranteed by headMap
+            timestoRemove.add(time);
+            map.forEach((fromLink, set) -> set.forEach(cache.get(fromLink)::remove));
+        });
+        timestoRemove.forEach(calculationTimes::remove);
     }
 
     public final T fromTo(Link from, Link to, double now) {
         update(now);
-        if (!cache.containsKey(from))
-            cache.put(from, new HashMap<>());
-        if (cache.get(from).containsKey(to))
-            return cache.get(from).get(to);
-        T t = pathInterface.fromTo(from, to, calculator, now);
-        cache.get(from).put(to, t);
-        addToCalculationTime(now, from, to);
-        return t;
+        return cache.computeIfAbsent(from, l -> new HashMap<>()) //
+            /* cache.get(from) */ .computeIfAbsent(to, l -> {
+            addToCalculationTime(now, from, l);
+            return pathInterface.fromTo(from, l, calculator, now);
+        });
     }
 
     private final void addToCalculationTime(double now, Link from, Link to) {
-        if (!calculationTimes.containsKey(now))
-            calculationTimes.put(now, new HashMap<>());
-        if (!calculationTimes.get(now).containsKey(from))
-            calculationTimes.get(now).put(from, new HashSet<>());
-        calculationTimes.get(now).get(from).add(to);
+        calculationTimes.computeIfAbsent(now, t -> new HashMap<>()) //
+            /* calculationTimes.get(now) */ .computeIfAbsent(from, l -> new HashSet<>()) //
+                /* calculationTimes.get(now).get(from) */ .add(to);
     }
 
     public boolean checkTime(double now) {
         return this.now == now;
     }
-
 }
