@@ -4,7 +4,9 @@ package ch.ethz.idsc.amodeus.taxitrip;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import ch.ethz.idsc.amodeus.util.Duration;
 import ch.ethz.idsc.amodeus.util.LocalDateTimes;
@@ -33,8 +35,7 @@ public class TaxiTrip implements Comparable<TaxiTrip>, Serializable {
                     submissionDate, pickupTimeDate, dropoffDate, //
                     waitTime, Sign.requirePositiveOrZero(driveTime));
         } catch (Exception exception) {
-            System.err.println("Possible: pickupDate after dropoff date in generation" + //
-                    "of taxi trip..");
+            System.err.println("Possible: pickupDate after dropoff date in generation of taxi trip..");
             exception.printStackTrace();
             return null;
         }
@@ -55,8 +56,7 @@ public class TaxiTrip implements Comparable<TaxiTrip>, Serializable {
                     submissionTimeDate, pickupTimeDate, dropoffTimeDate, //
                     waitTime, duration);
         } catch (Exception exception) {
-            System.err.println("Possible: pickupDate after dropoff date in generation" + //
-                    "of taxi trip..");
+            System.err.println("Possible: pickupDate after dropoff date in generation of taxi trip..");
             exception.printStackTrace();
             return null;
         }
@@ -85,6 +85,7 @@ public class TaxiTrip implements Comparable<TaxiTrip>, Serializable {
             Scalar waitTime, Scalar driveTime) {
         this.localId = id;
         this.taxiId = taxiId;
+        this.submissionTimeDate = submissionTimeDate;
         this.pickupTimeDate = pickupTimeDate;
         this.dropoffTimeDate = dropoffTimeDate;
         this.pickupLoc = pickupLoc;
@@ -101,25 +102,14 @@ public class TaxiTrip implements Comparable<TaxiTrip>, Serializable {
 
     @Override
     public String toString() {
-        String printline = "";
-        Field[] fields = TaxiTrip.class.getFields();
-
-        for (int i = 0; i < fields.length; ++i) {
-            Field field = fields[i];
+        return Arrays.stream(TaxiTrip.class.getFields()).map(field -> {
             try {
-                Object ofMe = field.get(this);
-                if (Objects.nonNull(ofMe)) {
-
-                    if (i == 0)
-                        printline += ofMe.toString();
-                    else
-                        printline += "; " + ofMe.toString();
-                }
-            } catch (Exception exception) {
-                exception.printStackTrace();
+                return field.get(this);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
             }
-        }
-        return printline;
+        }).filter(Objects::nonNull).map(Objects::toString).collect(Collectors.joining("; "));
     }
 
     @Override
@@ -127,22 +117,18 @@ public class TaxiTrip implements Comparable<TaxiTrip>, Serializable {
         if (!(obj instanceof TaxiTrip))
             return false;
         TaxiTrip other = (TaxiTrip) obj;
-        boolean isSame = true;
         for (Field field : TaxiTrip.class.getFields()) {
             try {
                 Object ofMe = field.get(this);
                 Object ofOther = field.get(other);
-                if (Objects.nonNull(ofMe) && Objects.nonNull(ofOther)) {
-                    if (!ofMe.equals(ofOther)) {
-                        isSame = false;
-                        break;
-                    }
-                }
+                if (Objects.nonNull(ofMe) && Objects.nonNull(ofOther))
+                    if (!ofMe.equals(ofOther))
+                        return false;
             } catch (Exception exception) {
                 exception.printStackTrace();
                 return false;
             }
         }
-        return isSame;
+        return true;
     }
 }
