@@ -28,13 +28,12 @@ public enum MatsimShapeFileVirtualNetworkCreator {
         File shapeFile = scenarioOptions.getShapeFile();
         boolean completeGraph = scenarioOptions.isCompleteGraph();
         GlobalAssert.that(shapeFile.exists());
-        MultiPolygons multiPolygons = null;
+        MultiPolygons multiPolygons;
         try {
             multiPolygons = new MultiPolygons(shapeFile);
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Not able to load shapeFile for virtual Network creation. Stopping execution.");
-            GlobalAssert.that(false);
+            throw new RuntimeException("Not able to load shapeFile for virtual Network creation. Stopping execution.");
         }
 
         @SuppressWarnings("unchecked")
@@ -47,9 +46,6 @@ public enum MatsimShapeFileVirtualNetworkCreator {
         MultiPolygonsVirtualNetworkCreator<Link, Node> mpvnc = new MultiPolygonsVirtualNetworkCreator<>(multiPolygons, //
                 elements, TensorLocation::of, NetworkCreatorUtils::linkToID, //
                 uElements, lbounds, ubounds, completeGraph);
-
         return mpvnc.getVirtualNetwork();
-
     }
-
 }

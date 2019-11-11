@@ -3,24 +3,18 @@ package ch.ethz.idsc.amodeus.prep;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
-import java.util.Set;
 
-import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Population;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.tensor.RealScalar;
-import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Scalars;
 
 public final class TheRequestApocalypse {
     /** the seed is deliberately public */
-    public static final long DEFAULT_SEED = 7582456789l;
+    public static final long DEFAULT_SEED = 7582456789L;
 
     public static TheRequestApocalypse reducesThe(Population population) {
         return new TheRequestApocalypse(population);
@@ -33,47 +27,41 @@ public final class TheRequestApocalypse {
         this.population = population;
     }
 
-    public TheRequestApocalypse toNoMoreThan(Scalar maxRequests, long seed) {
-        GlobalAssert.that(Scalars.lessEquals(maxRequests, LegCount.of(population, "av")));
+    public TheRequestApocalypse toNoMoreThan(int maxRequests) {
+        return toNoMoreThan(maxRequests, DEFAULT_SEED);
+    }
+
+    public TheRequestApocalypse toNoMoreThan(int maxRequests, long seed) {
+        GlobalAssert.that(maxRequests <= LegCount.of(population, "av"));
 
         /** shuffle list of {@link Person}s */
-        List<Id<Person>> list = new ArrayList<>(population.getPersons().keySet());
+        List<Person> list = new ArrayList<>(population.getPersons().values());
         Collections.shuffle(list, new Random(seed));
+        Iterator<Person> iterator = list.iterator();
 
-        /** doc */
-        Scalar totReq = RealScalar.ZERO;
-        Set<Id<Person>> keepList = new HashSet<>();
-        Person splitUpPerson = null;
-
-        for (Id<Person> pId : list) {
-            if (totReq.equals(maxRequests))
-                break;
-            Scalar req = LegCount.of(population.getPersons().get(pId), "av");
-            if (Scalars.lessThan(totReq.add(req), maxRequests)) {
-                totReq = totReq.add(req);
-                keepList.add(pId);
-            } else if ((totReq.add(req)).equals(maxRequests)) {
-                totReq = totReq.add(req);
-                keepList.add(pId);
-            } else { // adding more than
-                Scalar splitNeeded = maxRequests.subtract(totReq);
-                splitUpPerson = SplitUp.of(population, population.getPersons().get(pId), splitNeeded, "av");
-                req = LegCount.of(splitUpPerson, "av");
-                GlobalAssert.that(totReq.add(req).equals(maxRequests));
-                totReq = totReq.add(req);
-            }
+        // skip all persons that should completely remain in the population
+        Person person = iterator.next();
+        int totReq = 0;
+        long req = LegCount.of(person, "av");
+        while (totReq + req <= maxRequests) {
+            totReq += req;
+            person = iterator.next();
+            req = LegCount.of(person, "av");
         }
 
-        for (Id<Person> pId : list) {
-            if (!keepList.contains(pId)) {
-                population.removePerson(pId);
-            }
+        // create new person if needed to fill requests
+        int split = maxRequests - totReq;
+        if (split != 0) {
+            Person splitPerson = SplitUp.of(population, person, split, "av");
+            req = LegCount.of(splitPerson, "av");
+            totReq += req;
+            GlobalAssert.that(totReq == maxRequests);
+            population.addPerson(splitPerson);
         }
 
-        if (Objects.nonNull(splitUpPerson))
-            population.addPerson(splitUpPerson);
-
-        GlobalAssert.that(LegCount.of(population, "av").equals(maxRequests));
+        // remove all remaining persons
+        iterator.forEachRemaining(p -> population.removePerson(p.getId()));
+        GlobalAssert.that(LegCount.of(population, "av") == maxRequests);
         return this;
     }
 

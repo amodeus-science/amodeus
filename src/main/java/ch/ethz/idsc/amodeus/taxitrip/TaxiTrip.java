@@ -15,19 +15,6 @@ import ch.ethz.idsc.tensor.sca.Sign;
 /** The class {@link TaxiTrip} is used to transform taxi trips from databases into scenarios
  * for AMoDeus. It contains the relevant recordings of a typical taxi trip recording. */
 public class TaxiTrip implements Comparable<TaxiTrip>, Serializable {
-    public final String localId; // id allowing to identify individual trips
-    public final String taxiId; // id allowing to identify individual taxis
-    public final Tensor pickupLoc; // pickup location in format {longitude,latidue}
-    public final Tensor dropoffLoc; // dropoff location in format {longitude,latidue}
-    public final Scalar distance; // distance if recorded in data set
-
-    // ---
-    public LocalDateTime submissionTimeDate; // trip submission time and date
-    public LocalDateTime pickupTimeDate; // trip pickup time and date
-    public LocalDateTime dropoffTimeDate; // trip dropoff time and date
-    public final Scalar waitTime; // wait time if recorded in data set
-    public final Scalar driveTime; // trip drive time
-
     /** @return a {@link TaxiTrip} for wich the {@link LocalDateTime} of the dropoff is determined
      *         using the @param pickupDate the trip @param duration, the {@link LocalDateTime} of the
      *         submission is determined using the @param waitTime. @param id and @param taxiId ideally
@@ -74,6 +61,22 @@ public class TaxiTrip implements Comparable<TaxiTrip>, Serializable {
             return null;
         }
     }
+
+    // ---
+    /** id allowing to identify individual trips */
+    public final String localId;
+    /** id allowing to identify individual taxis */
+    public final String taxiId;
+    public final Tensor pickupLoc; // pickup location in format {longitude,latidue}
+    public final Tensor dropoffLoc; // dropoff location in format {longitude,latidue}
+    public final Scalar distance; // distance if recorded in data set
+
+    // ---
+    public LocalDateTime submissionTimeDate; // trip submission time and date
+    public LocalDateTime pickupTimeDate; // trip pickup time and date
+    public LocalDateTime dropoffTimeDate; // trip dropoff time and date
+    public final Scalar waitTime; // wait time if recorded in data set
+    public final Scalar driveTime; // trip drive time
 
     /** must be private as it allows amigibuous entries, for the 5 time quantities, only three entries
      * are required */

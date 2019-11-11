@@ -3,9 +3,6 @@ package ch.ethz.idsc.amodeus.testutils;
 
 import java.io.File;
 
-import ch.ethz.idsc.amodeus.linkspeed.LinkSpeedDataContainer;
-import ch.ethz.idsc.amodeus.linkspeed.LinkSpeedUtils;
-import ch.ethz.idsc.amodeus.linkspeed.TrafficDataModule;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
@@ -119,16 +116,15 @@ public class TestServer {
         controler = new Controler(scenario);
 
         /* TODO regenerate linkSpeedData.bin to depend on current version of LinkSpeedDataContainer, and adapt TestFileHandling or AmodeusProperties accordingly
-        try {
-            // load linkSpeedData if possible
-            File linkSpeedDataFile = new File(scenarioOptions.getLinkSpeedDataName());
-            System.out.println(linkSpeedDataFile.toString());
-            LinkSpeedDataContainer lsData = LinkSpeedUtils.loadLinkSpeedData(linkSpeedDataFile);
-            controler.addOverridingQSimModule(new TrafficDataModule(lsData));
-        } catch (Exception exception) {
-            System.err.println("Could not load static linkspeed data, running with freespeeds.");
-        }
-        */
+         * try {
+         * // load linkSpeedData if possible
+         * File linkSpeedDataFile = new File(scenarioOptions.getLinkSpeedDataName());
+         * System.out.println(linkSpeedDataFile.toString());
+         * LinkSpeedDataContainer lsData = LinkSpeedUtils.loadLinkSpeedData(linkSpeedDataFile);
+         * controler.addOverridingQSimModule(new TrafficDataModule(lsData));
+         * } catch (Exception exception) {
+         * System.err.println("Could not load static linkspeed data, running with freespeeds.");
+         * } */
 
         controler.addOverridingModule(new DvrpModule());
         controler.addOverridingModule(new DvrpTravelTimeModule());

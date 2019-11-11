@@ -76,7 +76,7 @@ public class SmallRedistributionProblemSolver<T> {
         if (globOptimSolPossible) {
             for (T origin : unitsMultiplicity)
                 solution.computeIfAbsent(origin, o -> new HashMap<>()) //
-                /* solution.get(origin) */ .put(bestPairs.get(origin), 1);
+                        /* solution.get(origin) */ .put(bestPairs.get(origin), 1);
             foundGlobOptimSol = true;
         }
 

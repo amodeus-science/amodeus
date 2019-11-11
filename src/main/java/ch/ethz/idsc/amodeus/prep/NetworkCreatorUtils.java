@@ -3,6 +3,7 @@ package ch.ethz.idsc.amodeus.prep;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.network.Link;
@@ -34,16 +35,14 @@ public class NetworkCreatorUtils {
         // TODO MISC Should be provided from outside
         StageActivityTypes stageActivityTypes = new StageActivityTypesImpl(PtConstants.TRANSIT_ACTIVITY_TYPE);
 
-        for (Person person : population.getPersons().values()) {
-            for (Plan plan : person.getPlans()) {
-                for (PlanElement planElement : plan.getPlanElements()) {
+        for (Person person : population.getPersons().values())
+            for (Plan plan : person.getPlans())
+                for (PlanElement planElement : plan.getPlanElements())
                     if (planElement instanceof Activity) {
                         Activity activity = (Activity) planElement;
-
                         if (!stageActivityTypes.isStageActivity(activity.getType())) {
                             Link link = network.getLinks().getOrDefault(activity.getLinkId(), null);
-
-                            if (link != null) {
+                            if (Objects.nonNull(link)) {
                                 double x = link.getCoord().getX();
                                 double y = link.getCoord().getY();
                                 dataList.add(new double[] { x, y });
@@ -53,17 +52,13 @@ public class NetworkCreatorUtils {
                             }
                         }
                     }
-                }
-            }
-        }
 
-        final double data[][] = new double[dataList.size()][2];
-        for (int i = 0; i < dataList.size(); ++i) {
-            data[i][0] = dataList.get(i)[0];
-            data[i][1] = dataList.get(i)[1];
-        }
-        return data;
-
+        // final double data[][] = new double[dataList.size()][2];
+        // for (int i = 0; i < dataList.size(); ++i) {
+        // data[i][0] = dataList.get(i)[0];
+        // data[i][1] = dataList.get(i)[1];
+        // }
+        // return data;
+        return dataList.toArray(new double[dataList.size()][2]);
     }
-
 }

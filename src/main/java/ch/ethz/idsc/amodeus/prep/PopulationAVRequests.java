@@ -2,6 +2,7 @@
 package ch.ethz.idsc.amodeus.prep;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.matsim.api.core.v01.network.Link;
@@ -26,15 +27,18 @@ public enum PopulationAVRequests {
      * @return the set of all AV requests in the population */
     public static Set<Request> get(Population population, Network network, int endTime) {
         Set<Request> requests = new HashSet<>();
-        Clip timeClip = Clips.positive(endTime - 1);
+        Clip timeClip = Clips.positive(endTime - 1); // TODO make this more properly using the values from the config file.
         // fill based on population file
         for (Person person : population.getPersons().values()) {
             for (Plan plan : person.getPlans()) {
-
-                for (int i = 1; i < plan.getPlanElements().size() - 1; ++i) {
-                    PlanElement planElMins = plan.getPlanElements().get(i - 1);
-                    PlanElement planElMidl = plan.getPlanElements().get(i);
-                    PlanElement planElPlus = plan.getPlanElements().get(i + 1);
+                Iterator<PlanElement> iterator = plan.getPlanElements().iterator();
+                PlanElement planElMins;
+                PlanElement planElMidl = iterator.next();
+                PlanElement planElPlus = iterator.next();
+                while (iterator.hasNext()) {
+                    planElMins = planElMidl;
+                    planElMidl = planElPlus;
+                    planElPlus = iterator.next();
 
                     if (planElMidl instanceof Leg) {
                         Leg leg = (Leg) planElMidl;
@@ -46,16 +50,9 @@ public enum PopulationAVRequests {
                              * that case the end time of the previous activity is used
                              * as the departure time. * */
                             double startTime = leg.getDepartureTime();
-                            if (startTime == Double.NEGATIVE_INFINITY) {
-                                Activity actBefore = (Activity) planElMins;
-                                // TODO make this more properly using the values from the config file.
-                                startTime = Math.max(0.0, actBefore.getEndTime());
-                            }
-                            if (startTime > 107999.0) {
-                                // TODO make this more properly using the values from the config file.
-                                startTime = 107999.0;
-                            }
-
+                            if (startTime == Double.NEGATIVE_INFINITY)
+                                startTime = Math.max(timeClip.min().number().doubleValue(), ((Activity) planElMins).getEndTime());
+                            startTime = Math.min(startTime, timeClip.max().number().doubleValue());
                             timeClip.requireInside(RealScalar.of(startTime));
 
                             Link startLink = network.getLinks().get(((Activity) planElMins).getLinkId());

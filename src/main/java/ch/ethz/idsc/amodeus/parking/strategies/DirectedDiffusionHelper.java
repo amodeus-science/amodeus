@@ -4,7 +4,6 @@ package ch.ethz.idsc.amodeus.parking.strategies;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -75,20 +74,19 @@ import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
             occMap.remove(location);
         // add
         occMap.computeIfAbsent(destination, l -> new HashSet<>()) //
-        /* occMap.get(destination) */ .add(rt);
+                /* occMap.get(destination) */ .add(rt);
     }
 
     private static List<Link> getNeighborLinks(List<Link> firstNeighbors, RoboTaxi rt) {
         return firstNeighbors.stream().flatMap(link -> //
-                link.getToNode().getOutLinks().values().stream().filter(l -> l != rt.getDivertableLocation())
-        ).distinct().collect(Collectors.toList());
+        link.getToNode().getOutLinks().values().stream().filter(l -> l != rt.getDivertableLocation())).distinct().collect(Collectors.toList());
     }
 
     private static Map<Link, Set<RoboTaxi>> getOccMap(Collection<RoboTaxi> stayingRobotaxis, //
             Collection<RoboTaxi> rebalancingRobotaxis) {
         // Map<Link, Set<RoboTaxi>> occMap = new HashMap<>();
         // for (RoboTaxi stayRT : stayingRobotaxis)
-        //     occMap.computeIfAbsent(stayRT.getDivertableLocation(), l -> new HashSet<>()).add(stayRT);
+        // occMap.computeIfAbsent(stayRT.getDivertableLocation(), l -> new HashSet<>()).add(stayRT);
         Map<Link, Set<RoboTaxi>> occMap = stayingRobotaxis.stream().collect(Collectors.groupingBy(RoboTaxi::getDivertableLocation, Collectors.toSet()));
         for (RoboTaxi rebRT : rebalancingRobotaxis)
             occMap.computeIfAbsent(rebRT.getCurrentDriveDestination(), l -> new HashSet<>()).add(rebRT);

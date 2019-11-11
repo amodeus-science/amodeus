@@ -25,20 +25,20 @@ public class ParkingCapacityNetworkDistribution extends ParkingCapacityAbstract 
          * show up in the list multiple times */
         // List<Link> linksWithParking = new ArrayList<>();
         // network.getLinks().values().forEach(l -> { //
-        //     try {
-        //         Map<String, Object> attrMap = l.getAttributes().getAsMap();
-        //         if (attrMap.containsKey(capacityIdentifier)) {
-        //             Object attribute = attrMap.get(capacityIdentifier);
-        //             Long capacity = Long.parseLong(attribute.toString());
-        //             if (capacity > 0) {
-        //                 for (int i = 0; i < capacity; ++i)
-        //                     linksWithParking.add(l);
-        //             }
-        //         }
-        //     } catch (Exception ex) {
-        //         ex.printStackTrace();
-        //         // TODO solve more elegantly
-        //     }
+        // try {
+        // Map<String, Object> attrMap = l.getAttributes().getAsMap();
+        // if (attrMap.containsKey(capacityIdentifier)) {
+        // Object attribute = attrMap.get(capacityIdentifier);
+        // Long capacity = Long.parseLong(attribute.toString());
+        // if (capacity > 0) {
+        // for (int i = 0; i < capacity; ++i)
+        // linksWithParking.add(l);
+        // }
+        // }
+        // } catch (Exception ex) {
+        // ex.printStackTrace();
+        // // TODO solve more elegantly
+        // }
         // });
         List<Link> linksWithParking = network.getLinks().values().stream().flatMap(link -> {
             Map<String, Object> attrMap = link.getAttributes().getAsMap();
@@ -55,7 +55,8 @@ public class ParkingCapacityNetworkDistribution extends ParkingCapacityAbstract 
 
         /** assign according to distribution */
         Map<Id<Link>, Long> parkingCount = new HashMap<>();
-        int bound = linksWithParking.size();LongStream.range(0, desiredTotalSpots).mapToInt(l -> random.nextInt(bound)).mapToObj(linksWithParking::get)
+        int bound = linksWithParking.size();
+        LongStream.range(0, desiredTotalSpots).mapToInt(l -> random.nextInt(bound)).mapToObj(linksWithParking::get)
                 .forEach(link -> parkingCount.merge(link.getId(), 1L, Long::sum));
         parkingCount.forEach(capacities::put);
     }

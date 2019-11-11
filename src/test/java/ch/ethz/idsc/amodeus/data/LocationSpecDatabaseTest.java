@@ -7,6 +7,8 @@ import junit.framework.TestCase;
 
 public class LocationSpecDatabaseTest extends TestCase {
     public void testLookUp() {
+        LocationSpecDatabase.INSTANCE.flush(); // necessary due to inconsistent test order
+
         assertTrue(LocationSpecDatabase.INSTANCE.isEmpty()); // needs to be in same test as travis ignores ordering
 
         LocationSpecDatabase.INSTANCE.put(TestLocationSpecs.SANFRANCISCO);
