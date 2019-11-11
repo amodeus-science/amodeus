@@ -38,7 +38,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     }
 
     public final double getTravelTime(Link from, Link to) {
-        return getTravelTime(from.getFromNode(), to.getFromNode());
+        return getTravelTime(from.getFromNode(), to.getFromNode()); // should this be to.getFromNode or to.getToNode?
     }
 
     private double getTravelTime(Node from, Node to) {
@@ -48,12 +48,12 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
     private final double distNetwork(Node from, Node to) {
         LeastCostPathCalculator.Path path = execPathCalculator(from, to);
-        return StaticHelper.length(path);
+        return PathProperty.length(path);
     }
 
-    LeastCostPathCalculator.Path execPathCalculator(Node from, Node to) {
+    private LeastCostPathCalculator.Path execPathCalculator(Node from, Node to) {
         // depending on implementation of traveldisutility and traveltime, starttime,
         // person and vehicle are needed
-        return StaticHelper.pathBetween(from, to, leastCostPathCalculator, 0.0);
+        return PathProperty.INSTANCE.fromTo(from, to, leastCostPathCalculator, 0.0);
     }
 }

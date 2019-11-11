@@ -22,7 +22,7 @@ public enum TimeResolvedPathProperty implements NetworkPropertyInterface<Navigab
     @Override
     public NavigableMap<Double, Link> fromTo(Link from, Link to, LeastCostPathCalculator calculator, Double now) {
         /** path */
-        Path path = StaticHelper.pathBetween(from, to, calculator, now);
+        Path path = PathProperty.INSTANCE.fromTo(from, to, calculator, now);
         GlobalAssert.that(path.links.size() == path.nodes.size() - 1);
         NavigableMap<Double, Link> linkEntryTimes = new TreeMap<>();
         linkEntryTimes.put(now, from);
@@ -53,7 +53,7 @@ public enum TimeResolvedPathProperty implements NetworkPropertyInterface<Navigab
         Node nodePrev = nodes.next();
         GlobalAssert.that(nodePrev.equals(from.getFromNode()));
         while (nodes.hasNext()) {
-            Path localPath = StaticHelper.pathBetween(nodePrev, nodePrev = nodes.next(), calculator, now);
+            Path localPath = PathProperty.INSTANCE.fromTo(nodePrev, nodePrev = nodes.next(), calculator, now);
             linkEntryTimes.put(now + localPath.travelTime, links.next());
         }
         GlobalAssert.that(linkEntryTimes.firstKey().equals(now));
