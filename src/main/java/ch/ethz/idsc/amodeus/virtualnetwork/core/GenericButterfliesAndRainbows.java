@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import ch.ethz.idsc.amodeus.util.math.IntPoint;
@@ -22,16 +21,14 @@ public class GenericButterfliesAndRainbows<T, U> {
     private final Map<U, Set<VirtualNode<T>>> map = new HashMap<>();
 
     public void add(U node, VirtualNode<T> virtualNode) {
-        if (!map.containsKey(node))
-            map.put(node, new HashSet<>());
-        map.get(node).add(virtualNode);
+        map.computeIfAbsent(node, n -> new HashSet<>()) //
+            /* map.get(node) */ .add(virtualNode);
     }
 
     public Collection<IntPoint> allPairs() {
         // some algorithms assume that an edge is adjacent in the list to the opposite edge
         Collection<IntPoint> collection = new LinkedHashSet<>();
-        for (Entry<U, Set<VirtualNode<T>>> entry : map.entrySet()) {
-            Set<VirtualNode<T>> set = entry.getValue();
+        for (Set<VirtualNode<T>> set : map.values()) {
             if (1 < set.size()) {
                 if (set.size() != 2)
                     System.out.println("Node shared by " + set.size() + " VirtualNodes");

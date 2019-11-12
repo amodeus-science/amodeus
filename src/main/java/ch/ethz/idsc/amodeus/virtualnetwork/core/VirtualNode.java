@@ -5,9 +5,9 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Tensor;
@@ -26,27 +26,23 @@ public class VirtualNode<T> implements Serializable {
         this.id = id;
         this.links = new HashSet<>(links.values());
         this.coord = coord;
-        links.keySet().stream().forEach(linkIDsforSerialization::add);
+        linkIDsforSerialization.addAll(links.keySet());
         GlobalAssert.that(links.size() == linkIDsforSerialization.size());
     }
 
     /* package */ void setLinks(Map<String, T> links) {
         GlobalAssert.that(Objects.nonNull(this.links));
         GlobalAssert.that(this.links.size() == 0);
-        for (Entry<String, T> entry : links.entrySet()) {
-            this.links.add(entry.getValue());
-            this.linkIDsforSerialization.add(entry.getKey());
-        }
+        links.forEach((s, t) -> {
+            this.links.add(t);
+            this.linkIDsforSerialization.add(s);
+        });
+
         GlobalAssert.that(links.size() == linkIDsforSerialization.size());
     }
 
     /* package */ void setLinksAfterSerialization2(Map<String, T> map) {
-        this.links = new HashSet<>();
-        for (String linkIDString : linkIDsforSerialization) {
-            T link = map.get(linkIDString);
-            GlobalAssert.that(Objects.nonNull(link));
-            links.add(link);
-        }
+        this.links = linkIDsforSerialization.stream().map(map::get).map(Objects::requireNonNull).collect(Collectors.toSet());
     }
 
     public Set<T> getLinks() {

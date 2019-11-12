@@ -25,12 +25,10 @@ public class CentroidVirtualNetworkCreator<T, U> extends AbstractVirtualNetworkC
 
     public CentroidVirtualNetworkCreator(Collection<T> elements, List<T> centroids, Function<T, Tensor> locationOf, //
             Function<T, String> nameOf, Map<U, Set<T>> uElements, boolean completeGraph) {
-
         /** find min, max values for quad tree */
         NavigableSet<Scalar> xVals = new TreeSet<>();
         NavigableSet<Scalar> yVals = new TreeSet<>();
-        elements.stream().forEach(t -> {
-            Tensor loc = locationOf.apply(t);
+        elements.stream().map(locationOf).forEach(loc -> {
             xVals.add(loc.Get(0));
             yVals.add(loc.Get(1));
         });
@@ -48,7 +46,7 @@ public class CentroidVirtualNetworkCreator<T, U> extends AbstractVirtualNetworkC
         int id = -1;
         for (T centroid : centroids) {
             String indexStr = VirtualNodes.getIdString(id);
-            vNodeTMap.put(new VirtualNode<>(++id, indexStr, new HashMap<>(), locationOf.apply(centroid)), new LinkedHashSet<T>());
+            vNodeTMap.put(new VirtualNode<>(++id, indexStr, new HashMap<>(), locationOf.apply(centroid)), new LinkedHashSet<>());
         }
 
         /** assign every element T to the closest centroid */

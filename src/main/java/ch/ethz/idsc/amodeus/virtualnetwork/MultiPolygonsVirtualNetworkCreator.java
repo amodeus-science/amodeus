@@ -35,13 +35,11 @@ public class MultiPolygonsVirtualNetworkCreator<T, U> extends AbstractVirtualNet
 
         /** create */
         virtualNetwork = createVirtualNetwork(vNodeTMap, elements, uElements, nameOf, completeGraph);
-
     }
 
     private Map<VirtualNode<T>, Set<T>> createAssignmentMap(MultiPolygons multipolygons, //
             Collection<T> elements, Function<T, Tensor> locationOf, Function<T, String> nameOf, //
             Map<U, Set<T>> uElements, boolean completeGraph) {
-
         System.out.println("creating a virtual network with " + multipolygons.getPolygons().size() //
                 + " multipolygons");
 
@@ -66,7 +64,6 @@ public class MultiPolygonsVirtualNetworkCreator<T, U> extends AbstractVirtualNet
             }
 
             if (!set.isEmpty()) {
-
                 String indexStr = VirtualNodes.getIdString(vNodeIndex);
                 System.out.println(indexStr);
                 Tensor centroid = Tensors.vector( //
@@ -78,8 +75,6 @@ public class MultiPolygonsVirtualNetworkCreator<T, U> extends AbstractVirtualNet
                 ++vNodeIndex;
             }
         }
-
         return vNodeTMap;
-
     }
 }

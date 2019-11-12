@@ -23,7 +23,7 @@ import ch.ethz.idsc.tensor.red.Norm;
     /** on a network with virtualNodes this function builds a graph where every {@link VirtualNode} is
      * connected to every other {@link VirtualNode}
      * 
-     * @param virtualNetwork */
+     * @param _virtualNetwork */
     public static <T> void buildComplete(VirtualNetwork<T> _virtualNetwork) {
         VirtualNetworkImpl<T> virtualNetwork = (VirtualNetworkImpl<T>) _virtualNetwork;
         GlobalAssert.that(virtualNetwork.getVirtualLinks().isEmpty());
@@ -39,16 +39,14 @@ import ch.ethz.idsc.tensor.red.Norm;
 
     }
 
-    /** @param virtualNetwork without {@link VirtualLink}
+    /** @param _virtualNetwork without {@link VirtualLink}
      * @param uElements a {@link HashMap} with elements U that are associated to 1 or more T, two {@link VirtualNode}
      *            are neighboring if some U is associated to a {@link T} in both of them. */
     private static <T, U> void buildNeighboring(VirtualNetwork<T> _virtualNetwork, Map<U, Set<T>> uElements) {
         VirtualNetworkImpl<T> virtualNetwork = (VirtualNetworkImpl<T>) _virtualNetwork;
         GenericButterfliesAndRainbows<T, U> gbf = new GenericButterfliesAndRainbows<>();
 
-        for (U u : uElements.keySet())
-            for (T t : uElements.get(u))
-                gbf.add(u, virtualNetwork.getVirtualNode(t));
+        uElements.forEach((u, tSet) -> tSet.forEach(t -> gbf.add(u, virtualNetwork.getVirtualNode(t))));
 
         int index = 0;
         System.out.println("there are " + gbf.allPairs().size() + " virtualLinks.");

@@ -2,7 +2,6 @@
 package ch.ethz.idsc.amodeus.virtualnetwork;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -35,7 +34,7 @@ public class KMeansVirtualNetworkCreator<T, U> extends AbstractVirtualNetworkCre
 
     private Clustering<KMeansModel> clustering;
 
-    /** @param datapoints of any kind with coordinates that should be used for k-Means generation of the network
+    /** @param data of any kind with coordinates that should be used for k-Means generation of the network
      * @param elements elements that should be grouped in {@link VirtualNode} clusters
      * @param uElements set of elements U and a list of all T they are associated to
      * @param locationOf
@@ -67,15 +66,14 @@ public class KMeansVirtualNetworkCreator<T, U> extends AbstractVirtualNetworkCre
             /** create */
             virtualNetwork = createVirtualNetwork(vNodeTMap, elements, uElements, nameOf, completeGraph);
 
-            if (virtualNetwork.getVirtualNodes().size() == numVNodes) {
+            if (virtualNetwork.getVirtualNodes().size() == numVNodes)
                 return virtualNetwork;
-            }
+
             ++initSeed;
             ++iterations;
         }
         System.err.println("Not possible to create a virtual network with desired number of nodes usnig k-means, try reducing number of nodes.");
         return null;
-
     }
 
     private Map<VirtualNode<T>, Set<T>> createAssignmentMap( //
@@ -108,7 +106,7 @@ public class KMeansVirtualNetworkCreator<T, U> extends AbstractVirtualNetworkCre
 
         {
             List<Cluster<KMeansModel>> allClusters = clustering.getAllClusters();
-            Collections.sort(allClusters, ClusterKMeansModelComparator.INSTANCE);
+            allClusters.sort(ClusterKMeansModelComparator.INSTANCE);
             int index = 0;
             for (Cluster<KMeansModel> cluster : allClusters) {
                 Tensor coord = Tensors.vectorDouble( //
