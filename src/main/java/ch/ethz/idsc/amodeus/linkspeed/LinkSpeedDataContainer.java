@@ -11,16 +11,17 @@ import java.util.TreeMap;
 import org.matsim.api.core.v01.network.Link;
 
 public class LinkSpeedDataContainer implements Serializable {
-
+    // linkMap saves for every link(Integer as IDs) a list with time(key)/speed(value)
     private final SortedMap<Integer, LinkSpeedTimeSeries> linkMap = new TreeMap<>();
 
     /** add a speed recording for @param link at @param time with a speed value [m/s] @param speed */
     public void addData(Integer linkIndex, int time, double speed) {
         // could be shortened if LinkSpeedTimeSeries was initialized empty
         if (linkMap.containsKey(linkIndex)) {
-            LinkSpeedTimeSeries linkSpeeds = linkMap.get(linkIndex);
-            linkSpeeds.setSpeed(time, speed);
-        } else {
+            // not sure why linkSpeeds was created before
+            linkMap.get(linkIndex).setSpeed(time, speed);
+        } // else creates new link with first speed/time record
+        else {
             linkMap.put(linkIndex, new LinkSpeedTimeSeries(time, speed));
         }
     }
