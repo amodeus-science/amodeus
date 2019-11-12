@@ -2,6 +2,7 @@
 // https://stackoverflow.com/questions/23714383/what-are-all-the-possible-values-for-http-content-type-header
 package ch.ethz.idsc.amodeus.util.io;
 
+// TODO check where this is used
 public enum ContentType {
     APPLICATION_JSON("application/json"), //
     APPLICATION_PDF("application/pdf"), //
@@ -21,7 +22,7 @@ public enum ContentType {
     ;
     private final String expression;
 
-    private ContentType(String expression) {
+    ContentType(String expression) {
         this.expression = expression;
     }
 

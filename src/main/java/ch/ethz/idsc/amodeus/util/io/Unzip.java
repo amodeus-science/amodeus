@@ -19,22 +19,20 @@ public enum Unzip {
     ;
 
     /** @param file to unzip
-     * @param output folder
+     * @param outputFolder folder
      * @param ignoreFirst applies only to zip files that has a single folder at the root level
      *            if ignoreFirst is true, this base folder can be skipped when restoring the compressed files.
      * @return list of files created in unzip process
      * @throws IOException
      * @throws FileNotFoundException */
-    public static List<File> of(File file, File outputFolder, boolean ignoreFirst) //
-            throws FileNotFoundException, IOException {
-
+    public static List<File> of(File file, File outputFolder, boolean ignoreFirst) throws FileNotFoundException, IOException {
         try (InputStream inputStream = new FileInputStream(file)) {
             return of(inputStream, outputFolder, ignoreFirst);
         }
     }
 
     /** @param inputStream to unzip
-     * @param output folder
+     * @param outputFolder folder
      * @param ignoreFirst
      * @return list of files created in unzip process
      * @throws IOException */

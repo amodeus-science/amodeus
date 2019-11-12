@@ -34,21 +34,19 @@ class Graph {
 
         costMatrix = new double[dim][];
 
-        if (rowDim <= colDim) {
+        if (rowDim <= colDim)
             for (int x = 0; x < dim; x++) { // dim == colDim
                 costMatrix[x] = new double[dim];
                 if (x < rowDim)
                     System.arraycopy(cm[x], 0, costMatrix[x], 0, cm[x].length);
             }
-        } else {
+        else
             for (int y = 0; y < dim; y++) { // dim == rowDim
                 costMatrix[y] = new double[dim];
-                for (int x = 0; x < rowDim; x++) {
+                for (int x = 0; x < rowDim; x++)
                     if (y < colDim)
                         costMatrix[y][x] = cm[x][y];
-                }
             }
-        }
 
         xMatch = new int[dim];
         Arrays.fill(xMatch, UNASSIGNED);
@@ -75,9 +73,8 @@ class Graph {
     public int[] getResult() {
         int y;
         int[] resvec = xMatch;
-        if (rowDim > colDim) {
+        if (rowDim > colDim)
             resvec = yMatch;
-        }
         int[] result = new int[rowDim];
         for (int x = 0; x < rowDim; x++) {
             y = resvec[x];
@@ -85,8 +82,8 @@ class Graph {
                 result[x] = UNASSIGNED;
                 continue;
             }
-            if (x >= rowDim)
-                continue;
+            // if (x >= rowDim)
+            //     continue;
             result[x] = y;
         }
         return result;
@@ -97,19 +94,16 @@ class Graph {
         if (rowDim > colDim)
             for (int i = 0; i < rowDim; i++) {
                 int x = yMatch[i];
-                int y = i;
                 if (x < colDim)
-                    sum += costMatrixOriginal[y][x];
+                    sum += costMatrixOriginal[i][x];
             }
         else
             for (int i = 0; i < rowDim; i++) {
-                int x = i;
                 int y = xMatch[i];
-                sum += costMatrixOriginal[x][y];
+                sum += costMatrixOriginal[i][y];
             }
 
         optimalValue = sum;
-
     }
 
     protected void match(int i, int j) {
@@ -118,15 +112,12 @@ class Graph {
     }
 
     protected void setInitialMatching() {
-        for (int i = 0; i < dim; i++) {
-            for (int j = 0; j < dim; j++) {
-
+        for (int i = 0; i < dim; i++)
+            for (int j = 0; j < dim; j++)
                 if (costMatrix[i][j] == xLabel[i] && //
                         xMatch[i] == UNASSIGNED && yMatch[j] == UNASSIGNED) { // one condition superfluous
                     match(i, j);
                     break;
                 }
-            }
-        }
     }
 }

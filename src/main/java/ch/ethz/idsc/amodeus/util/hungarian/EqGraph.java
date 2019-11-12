@@ -23,7 +23,6 @@ final class EqGraph extends Graph {
             xMatch = w.getXMatch();
             yMatch = w.getYMatch();
         } else {
-
             xLabel = w.getYLabels();
             yLabel = w.getXLabels();
             xMatch = w.getYMatch();
@@ -76,19 +75,16 @@ final class EqGraph extends Graph {
 
     private void initializeFreeNodes() {
         for (int i = 0; i < dim; i++) {
-            if (xMatch[i] < 0) {
+            if (xMatch[i] < 0)
                 freeX.add(i);
-            }
-            if (yMatch[i] < 0) {
+            if (yMatch[i] < 0)
                 freeY.add(i);
-            }
         }
     }
 
     public int[] getWarmMatch() {
-        if (rowDim > colDim) {
-            return yMatch;
-        }
-        return xMatch;
+        return rowDim > colDim //
+                ? yMatch //
+                : xMatch;
     }
 }

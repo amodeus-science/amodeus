@@ -2,9 +2,12 @@
 package ch.ethz.idsc.amodeus.util.io;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /** Util class to retrieve a set of files from a folder, usage examples:
  * // all files
@@ -37,44 +40,29 @@ public class MultiFileReader {
         return Collections.unmodifiableList(trailFiles);
     }
 
-    /** @param sharedFileName
-     * @return all files in filesDirectory that have the sequence @param
-     *         sharedFileName in their filename */
+    /** @return all files in filesDirectory */
     private List<File> getAllFiles() {
-        List<File> relevantFiles = new ArrayList<>();
-        if (filesDirectory.isDirectory())
-            for (File file : filesDirectory.listFiles()) {
-                relevantFiles.add(file);
-            }
-        return relevantFiles;
+        return filesDirectory.isDirectory() //
+                ? Optional.ofNullable(filesDirectory.listFiles()).map(Arrays::asList).orElseGet(Collections::emptyList) //
+                : Collections.emptyList();
     }
 
     /** @param sharedFileName
      * @return all files in filesDirectory that have the sequence @param
      *         sharedFileName in their filename */
     private List<File> getAllFiles(String sharedFileName) {
-        List<File> relevantFiles = new ArrayList<>();
         if (filesDirectory.isDirectory())
-            for (File file : filesDirectory.listFiles()) {
-                if (file.getName().contains(sharedFileName)) {
-                    relevantFiles.add(file);
-                }
-            }
-        return relevantFiles; // TODO DHR throw exception here or earlier
+            return Optional.ofNullable(filesDirectory.listFiles()).map(Arrays::stream).orElseGet(Stream::empty) //
+                    .filter(file -> file.getName().contains(sharedFileName)).collect(Collectors.toList());
+        return Collections.emptyList();
 
     }
 
     /** @param sharedFileName
+     * @param extension
      * @return all files in filesDirectory that have the sequence @param
-     *         sharedFileName in their filename */
+     *         sharedFileName in their filename and have @param extension */
     private List<File> getAllFiles(String sharedFileName, String extension) {
-        List<File> relevantFiles = getAllFiles(sharedFileName);
-        List<File> relevantFilesExt = new ArrayList<>();
-        for (File file : relevantFiles)
-            if (new Filename(file).hasExtension(extension))
-                relevantFilesExt.add(file);
-        return relevantFilesExt;
-
+        return getAllFiles(sharedFileName).stream().filter(file -> new Filename(file).hasExtension(extension)).collect(Collectors.toList());
     }
-
 }

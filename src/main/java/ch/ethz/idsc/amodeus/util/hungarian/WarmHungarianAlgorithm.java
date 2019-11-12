@@ -32,11 +32,10 @@ public class WarmHungarianAlgorithm {
     public WarmHungarianAlgorithm(double[][] costMatrix, double eps, List<Id<DvrpVehicle>> taxis, List<AVRequest> requests) {
         w = new Warmstarter(costMatrix, taxis, requests);
         warmstart = true;
-        if (w.hasResult) {
-            eq = new EqGraph(costMatrix, eps, w);
-        } else {
-            eq = new EqGraph(costMatrix, eps);
-        }
+
+        eq = w.hasResult //
+                ? new EqGraph(costMatrix, eps, w) //
+                : new EqGraph(costMatrix, eps);
     }
 
     public WarmHungarianAlgorithm(double[][] costMatrix, double eps, Warmstarter w) {

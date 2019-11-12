@@ -12,6 +12,7 @@ public enum HungarianAlgorithmWrap {
         return matching(distancematrix, StaticHelper.EPS_DEFAULT);
     }
 
+    // since this method is private, eps is always equal to StaticHelper.EPS_DEFAULT
     private static int[] matching(double[][] distancematrix, double eps) {
         try {
             FastHungarianAlgorithm fastHungarianAlgorithm = new FastHungarianAlgorithm(distancematrix, eps);
