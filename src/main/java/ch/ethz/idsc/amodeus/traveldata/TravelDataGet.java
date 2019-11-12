@@ -17,13 +17,11 @@ public enum TravelDataGet {
     ;
 
     public static StaticTravelData readFile(VirtualNetwork<Link> virtualNetwork, File path) throws ClassNotFoundException, DataFormatException, IOException {
-        if (virtualNetwork == null) {
+        if (Objects.isNull(virtualNetwork))
             throw new IllegalStateException("Cannot read travel data if virtual network is null");
-        }
 
-        if (!path.exists()) {
+        if (!path.exists())
             throw new FileNotFoundException(path.toString());
-        }
 
         return TravelDataIO.readStatic(path, virtualNetwork);
     }
@@ -38,8 +36,7 @@ public enum TravelDataGet {
         } catch (Exception e) {
             System.err.println("cannot load default " + travelDataFile);
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
-
 }
