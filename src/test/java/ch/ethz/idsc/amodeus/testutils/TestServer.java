@@ -62,7 +62,7 @@ public class TestServer {
     private AnalysisTestExport ate;
 
     private TestServer() {
-
+        // ---
     }
 
     public TestServer on(File workingDirectory) throws Exception {
@@ -98,10 +98,9 @@ public class TestServer {
         config = ConfigUtils.loadConfig(configFile.toString(), new AVConfigGroup(), dvrpConfigGroup);
         config.planCalcScore().addActivityParams(new PlanCalcScoreConfigGroup.ActivityParams("activity"));
 
-        for (ActivityParams activityParams : config.planCalcScore().getActivityParams()) {
+        for (ActivityParams activityParams : config.planCalcScore().getActivityParams())
             // TODO TEST fix this to meaningful values --> Sebastian how should we solve this?
             activityParams.setTypicalDuration(3600.0);
-        }
 
         outputdirectory = config.controler().getOutputDirectory();
         System.out.println("outputdirectory = " + outputdirectory);

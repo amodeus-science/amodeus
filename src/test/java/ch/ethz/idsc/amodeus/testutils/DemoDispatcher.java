@@ -61,13 +61,10 @@ public class DemoDispatcher extends RebalancingDispatcher {
         // send vehicles to travel around the city to random links (random
         // loitering)
         final long round_now = Math.round(now);
-        if (round_now % rebalancingPeriod == 0 && 0 < getAVRequests().size()) {
-            for (RoboTaxi roboTaxi : getDivertableRoboTaxis()) {
-                if (rebPos > randGen.nextDouble()) {
+        if (round_now % rebalancingPeriod == 0 && 0 < getAVRequests().size())
+            for (RoboTaxi roboTaxi : getDivertableRoboTaxis())
+                if (rebPos > randGen.nextDouble())
                     setRoboTaxiRebalance(roboTaxi, pollNextDestination());
-                }
-            }
-        }
     }
 
     private Link pollNextDestination() {
@@ -102,5 +99,4 @@ public class DemoDispatcher extends RebalancingDispatcher {
             return new DemoDispatcher(config, operatorConfig, travelTime, router, eventsManager, network, db);
         }
     }
-
 }

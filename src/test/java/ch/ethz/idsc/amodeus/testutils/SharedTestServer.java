@@ -2,6 +2,7 @@
 package ch.ethz.idsc.amodeus.testutils;
 
 import java.io.File;
+import java.util.Objects;
 
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Network;
@@ -100,10 +101,9 @@ public class SharedTestServer {
         config = ConfigUtils.loadConfig(configFile.toString(), new AVConfigGroup(), dvrpConfigGroup);
         config.planCalcScore().addActivityParams(new PlanCalcScoreConfigGroup.ActivityParams("activity"));
 
-        for (ActivityParams activityParams : config.planCalcScore().getActivityParams()) {
+        for (ActivityParams activityParams : config.planCalcScore().getActivityParams())
             // TODO TEST fix this to meaningful values --> Sebastian how should we solve this?
             activityParams.setTypicalDuration(3600.0);
-        }
 
         outputdirectory = config.controler().getOutputDirectory();
         System.out.println("outputdirectory = " + outputdirectory);
@@ -112,7 +112,7 @@ public class SharedTestServer {
         scenario = ScenarioUtils.loadScenario(config);
         network = scenario.getNetwork();
         population = scenario.getPopulation();
-        GlobalAssert.that(scenario != null && network != null && population != null);
+        GlobalAssert.that(Objects.nonNull(scenario) && Objects.nonNull(network) && Objects.nonNull(population));
 
         MatsimAmodeusDatabase db = MatsimAmodeusDatabase.initialize(network, referenceFrame);
         controler = new Controler(scenario);
