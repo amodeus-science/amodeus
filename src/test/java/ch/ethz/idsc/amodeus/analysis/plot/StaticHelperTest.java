@@ -7,6 +7,7 @@ import org.jfree.data.time.Second;
 
 import junit.framework.TestCase;
 
+@Deprecated // test deprecated class only
 public class StaticHelperTest extends TestCase {
 
     public void testSimple() {
