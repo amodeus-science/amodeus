@@ -49,7 +49,7 @@ import ch.ethz.idsc.tensor.io.AnimationWriter;
         amodeusComponent.paint(graphics);
 
         if (first) {
-            first &= false;
+            first = false;
             // TODO MISC tile loading method is not foolproof
             System.out.println("Loading Tiles...");
             Thread.sleep(millis);
@@ -60,7 +60,6 @@ import ch.ethz.idsc.tensor.io.AnimationWriter;
         }
 
         animationWriter.write(bufferedImage);
-
     }
 
     @Override // from AutoCloseable
@@ -68,5 +67,4 @@ import ch.ethz.idsc.tensor.io.AnimationWriter;
         if (Objects.nonNull(animationWriter))
             animationWriter.close();
     }
-
 }

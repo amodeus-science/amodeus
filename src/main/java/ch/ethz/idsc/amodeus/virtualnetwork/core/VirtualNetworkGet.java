@@ -4,8 +4,8 @@ package ch.ethz.idsc.amodeus.virtualnetwork.core;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.zip.DataFormatException;
 
 import org.matsim.api.core.v01.network.Link;
@@ -23,10 +23,7 @@ public enum VirtualNetworkGet {
     public static VirtualNetwork<Link> readFile(Network network, File path) throws IOException, ClassNotFoundException, DataFormatException {
         if (!path.exists())
             throw new FileNotFoundException(path.toString());
-
-        Map<String, Link> map = new HashMap<>();
-        network.getLinks().entrySet().forEach(e -> map.put(e.getKey().toString(), e.getValue()));
-        return VirtualNetworkIO.fromByte(map, path);
+        return VirtualNetworkIO.fromByte(mapByIdString(network), path);
     }
 
     /** @param network
@@ -36,15 +33,10 @@ public enum VirtualNetworkGet {
         final File virtualnetworkFile = new File(scenarioOptions.getVirtualNetworkDirectoryName(), scenarioOptions.getVirtualNetworkName());
         System.out.println("reading network from" + virtualnetworkFile.getAbsoluteFile());
         try {
-
-            Map<String, Link> map = new HashMap<>();
-            network.getLinks().entrySet().forEach(e -> map.put(e.getKey().toString(), e.getValue()));
-
-            return VirtualNetworkIO.fromByte(map, virtualnetworkFile);
+            return VirtualNetworkIO.fromByte(mapByIdString(network), virtualnetworkFile);
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("cannot load default " + virtualnetworkFile);
-
         }
         return null;
     }
@@ -57,9 +49,7 @@ public enum VirtualNetworkGet {
         final File virtualnetworkFile = new File(virtualnetworkFolder, scenarioOptions.getVirtualNetworkName());
         System.out.println("reading virtual network from" + virtualnetworkFile.getAbsoluteFile());
         try {
-            Map<String, Link> map = new HashMap<>();
-            network.getLinks().entrySet().forEach(e -> map.put(e.getKey().toString(), e.getValue()));
-            return VirtualNetworkIO.fromByte(map, virtualnetworkFile);
+            return VirtualNetworkIO.fromByte(mapByIdString(network), virtualnetworkFile);
         } catch (Exception e) {
             System.out.println("cannot load from output directory, reading default... " + virtualnetworkFile);
             return readDefault(network, scenarioOptions);
@@ -74,13 +64,14 @@ public enum VirtualNetworkGet {
     // final File virtualnetworkFile = new File(virtualnetworkFolder, scenarioOptions.getVirtualNetworkDirectoryName());
     // System.out.println("reading virtual network from" + virtualnetworkFile.getAbsoluteFile());
     // try {
-    // Map<String, Link> map = new HashMap<>();
-    // network.getLinks().entrySet().forEach(e -> map.put(e.getKey().toString(), e.getValue()));
-    // return VirtualNetworkIO.fromByte(map, virtualnetworkFile);
+    // return VirtualNetworkIO.fromByte(mapByIdString(network), virtualnetworkFile);
     // } catch (Exception e) {
     // System.out.println("cannot load default " + virtualnetworkFile);
     // }
     // return null;
     // }
 
+    private static Map<String, Link> mapByIdString(Network network) {
+        return network.getLinks().entrySet().stream().collect(Collectors.toMap(e -> e.getKey().toString(), Map.Entry::getValue));
+    }
 }

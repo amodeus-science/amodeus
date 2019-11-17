@@ -11,7 +11,6 @@ import java.util.Objects;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 public class AmodeusTimeConvert {
-
     private final ZoneId zoneId;
 
     /** @param zoneId
@@ -22,30 +21,23 @@ public class AmodeusTimeConvert {
         this.zoneId = Objects.requireNonNull(zoneId);
     }
 
-    /** @param epochSecond
-     *            String in Unix Epoch Time [seconds]
+    /** @param epochSecond in Unix Epoch Time [seconds]
      * @return seconds from midnight on @param localDate as integer for location San
      *         Francisco, US */
-    // TODO one function of toAmodeus and ldtToAmodeus should call the other! otherwise redundant
     public int toAmodeus(long epochSecond, LocalDate localDate) {
-        Instant instant = Instant.ofEpochSecond(epochSecond);
-        LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, zoneId);
-        int amodeusTime = (localDateTime.getDayOfYear() - localDate.getDayOfYear()) * 3600 * 24 //
-                + localDateTime.getHour() * 3600 //
-                + localDateTime.getMinute() * 60 //
-                + localDateTime.getSecond();
-        if (amodeusTime < 0) {
-            System.err.println("unxTime: " + epochSecond);
-            System.err.println("localDate: " + localDate);
-            System.err.println("amodeusTime: " + amodeusTime);
-        }
-        GlobalAssert.that(amodeusTime >= 0);
-        return amodeusTime;
+        return ldtToAmodeus(getLdt(epochSecond), localDate, epochSecond);
     }
 
     /** @return the time in the AMoDeus framework as an integer for the {@link LocalDateTime}
      * @param localDateTime and the simulation date @param simDate */
     public int ldtToAmodeus(LocalDateTime localDateTime, LocalDate localDate) {
+        return ldtToAmodeus(localDateTime, localDate, null);
+    }
+
+    /** @param epochSecond in Unix Epoch Time [seconds]
+     * @return the time in the AMoDeus framework as an integer for the {@link LocalDateTime}
+     * @param localDateTime and the simulation date @param simDate */
+    private int ldtToAmodeus(LocalDateTime localDateTime, LocalDate localDate, Long epochSecond) {
         int day = localDateTime.getDayOfYear() - localDate.getDayOfYear();
         int amodeusTime = day * 3600 * 24 //
                 + localDateTime.getHour() * 3600//
@@ -53,6 +45,8 @@ public class AmodeusTimeConvert {
                 + localDateTime.getSecond();
         if (amodeusTime < 0) {
             System.err.println("amodeus time is smaller than zero...");
+            if (Objects.nonNull(epochSecond))
+                System.err.println("unxTime:     " + epochSecond);
             System.err.println("ldt:         " + localDateTime.toString());
             System.err.println("simDate:     " + localDate.toString());
             System.err.println("amodeustime: " + amodeusTime);
@@ -66,13 +60,11 @@ public class AmodeusTimeConvert {
     }
 
     public LocalDate toLocalDate(String unxTime) {
-        long unxSeconds = Integer.parseInt(unxTime);
-        Instant inst = Instant.ofEpochSecond(unxSeconds);
-        LocalDateTime ldt = LocalDateTime.ofInstant(inst, zoneId);
+        LocalDateTime ldt = getLdt(Long.parseLong(unxTime));
         return LocalDate.of(ldt.getYear(), ldt.getMonth(), ldt.getDayOfMonth());
     }
 
-    public LocalDateTime getLdt(int unxSeconds) {
+    public LocalDateTime getLdt(long unxSeconds) {
         Instant inst = Instant.ofEpochSecond(unxSeconds);
         return LocalDateTime.ofInstant(inst, zoneId);
     }
@@ -91,10 +83,9 @@ public class AmodeusTimeConvert {
         return LocalDateTime.of(localDate, time);
     }
 
-    public String toString(int unxSeconds) {
+    public String toString(long unxSeconds) {
         Instant inst = Instant.ofEpochSecond(unxSeconds);
         LocalDateTime ldt = LocalDateTime.ofInstant(inst, zoneId);
-        return (ldt.toString() + " (" + unxSeconds + ")\n");
+        return ldt.toString() + " (" + unxSeconds + ")";
     }
-
 }

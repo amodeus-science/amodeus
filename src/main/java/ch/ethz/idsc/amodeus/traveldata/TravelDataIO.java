@@ -44,8 +44,9 @@ public enum TravelDataIO {
             travelData.checkIdenticalVirtualNetworkID(virtualNetwork.getvNetworkID());
             return travelData;
         } catch (InvalidClassException e) {
-            System.err.println(
-                    "You're seeing an InvalidClassException. This is likely the case because the internal class of TravelData has changed. Please re-generated your TravelData input / re-run the preparer.");
+            System.err.println("You're seeing an InvalidClassException. "
+                    + "This is likely the case because the internal class of TravelData has changed. "
+                    + "Please re-generated your TravelData input / re-run the preparer.");
             throw e;
         }
     }

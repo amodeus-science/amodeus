@@ -9,6 +9,7 @@ import org.jfree.chart.JFreeChart;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 // TODO only used in deprecated classes
+@Deprecated
 public enum PlotSave {
     ;
     public static File now(File directory, String fileTitle, JFreeChart chart, int width, int height) //

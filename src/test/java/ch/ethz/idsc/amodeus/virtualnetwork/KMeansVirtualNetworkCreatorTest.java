@@ -52,27 +52,22 @@ public class KMeansVirtualNetworkCreatorTest {
         VirtualNetworkCreator virtualNetworkCreator = scenarioOptions.getVirtualNetworkCreator();
 
         /* generate nCreations networks */
-        for (int i = 0; i < nCreations; ++i) {
+        for (int i = 0; i < nCreations; ++i)
             virtualNetworks.add(virtualNetworkCreator.create(network, population, scenarioOptions, numRt, endTime));
-        }
-
     }
 
     @Test
     public void testCreation() {
-        // ensure that every property is the same for every combination of virtual
-        // networks
-        for (int i = 0; i < virtualNetworks.size(); ++i) {
-            for (int j = 0; j < virtualNetworks.size(); ++j) {
-
+        // ensure that every property is the same for every combination of virtual networks
+        for (VirtualNetwork<Link> virtualNetworkI : virtualNetworks)
+            for (VirtualNetwork<Link> virtualNetworkJ : virtualNetworks) {
                 for (int k = 0; k < numVNodes; ++k) {
-                    int numLinksI = virtualNetworks.get(i).getVirtualNode(k).getLinks().size();
-                    int numLinksJ = virtualNetworks.get(j).getVirtualNode(k).getLinks().size();
+                    int numLinksI = virtualNetworkI.getVirtualNode(k).getLinks().size();
+                    int numLinksJ = virtualNetworkJ.getVirtualNode(k).getLinks().size();
                     assertEquals(numLinksI, numLinksJ);
                 }
-                assertEquals(virtualNetworks.get(i).getvLinksCount(), virtualNetworks.get(j).getvLinksCount());
-                assertEquals(virtualNetworks.get(i).getvNodesCount(), virtualNetworks.get(j).getvNodesCount());
+                assertEquals(virtualNetworkI.getvLinksCount(), virtualNetworkJ.getvLinksCount());
+                assertEquals(virtualNetworkI.getvNodesCount(), virtualNetworkJ.getvNodesCount());
             }
-        }
     }
 }

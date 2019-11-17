@@ -58,30 +58,27 @@ final class AlternatingTree {
                 this.alpha[yi] = alpha;
                 escapeFromY[yi] = xi;
             }
-            if (alpha == 0) {
+            if (alpha == 0)
                 nlsMinusT.add(yi);
-            }
         }
     }
 
     public int pickNlsMinusT(int xi) {
         double min = Double.POSITIVE_INFINITY;
-        int minY = UNASSIGNED;
+        // int minY = UNASSIGNED;
         if (nlsMinusT.isEmpty()) {
-            for (int yi : T.getNotNodes()) {
+            for (int yi : T.getNotNodes())
                 if (alpha[yi] < min) {
-                    minY = yi;
+                    // minY = yi;
                     min = alpha[yi];
-                    if (Math.abs(min) <= eps) {
+                    if (Math.abs(min) <= eps)
                         nlsMinusT.add(yi);
-                    }
                 }
-            }
             if (eps < Math.abs(min))
                 updateLabels(min);
         }
         min = Double.POSITIVE_INFINITY;
-        minY = UNASSIGNED;
+        int minY = UNASSIGNED;
         for (int yi : nlsMinusT) {
             if (alpha[yi] < min) {
                 min = alpha[yi];
@@ -121,21 +118,18 @@ final class AlternatingTree {
     private int updateLabels(double deltaAlpha) { // Slows down (n x n)-Problem
         double min = Double.POSITIVE_INFINITY;
         int minY = UNASSIGNED;
-        for (int x : S) {
+        for (int x : S)
             xLabel[x] += deltaAlpha;
-        }
-        for (int y : T.getNodes()) {
+        for (int y : T.getNodes())
             yLabel[y] -= deltaAlpha;
-        }
         for (int y : T.getNotNodes()) {
             if (alpha[y] < min) {
                 min = alpha[y];
                 minY = y;
             }
             alpha[y] -= deltaAlpha;
-            if (alpha[y] == 0) {
+            if (alpha[y] == 0)
                 nlsMinusT.add(y);
-            }
         }
         return minY;
     }

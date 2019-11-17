@@ -7,7 +7,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,11 +16,9 @@ public enum FileLines {
     ;
 
     public static void sort(File file) throws IOException {
-
         // Sort options by alphabet for better overview
         if (file.exists()) {
-
-            List<String> lineList = new ArrayList<>();
+            List<String> lineList;
             // try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
             // String line;
             // while ((line = bufferedReader.readLine()) != null) {
@@ -36,14 +33,10 @@ public enum FileLines {
             }
 
             try (PrintWriter printWriter = new PrintWriter(new FileWriter(file))) {
-                for (String outputLine : lineList) {
-                    printWriter.println(outputLine);
-                }
+                lineList.forEach(printWriter::println);
             }
-
         } else {
             System.err.println("file not found:\n" + file);
         }
     }
-
 }

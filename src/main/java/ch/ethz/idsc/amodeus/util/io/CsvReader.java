@@ -6,13 +6,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -57,18 +55,12 @@ public final class CsvReader {
     }
 
     public List<String> sortedHeaders() {
-        SortedMap<Integer, String> sortedHeaderMap = new TreeMap<>();
-        headers.entrySet().forEach(e -> sortedHeaderMap.put(e.getValue(), e.getKey()));
-        List<String> sortedHeaders = new ArrayList<>();
-        sortedHeaderMap.values().stream().forEach(s -> sortedHeaders.add(s));
-        return sortedHeaders;
+        return headers.entrySet().stream().sorted(Comparator.comparingInt(Map.Entry::getValue)) // sort by integer values
+                .map(Map.Entry::getKey).collect(Collectors.toList()); // keys to list
     }
 
     public String headerLine() {
-        SortedMap<Integer, String> sortedHeaderMap = new TreeMap<>();
-        headers.entrySet().forEach(e -> sortedHeaderMap.put(e.getValue(), e.getKey()));
-        List<String> sortedHeaders = new ArrayList<>();
-        return sortedHeaderMap.values().stream().collect(Collectors.joining(delim));
+        return String.join(delim, sortedHeaders());
     }
 
     public class Row {
@@ -82,10 +74,9 @@ public final class CsvReader {
          * @return
          * @throws Exception if key is not an element in the header row */
         public String get(String key) {
-            if (!headers.containsKey(key)) {
+            if (!headers.containsKey(key))
                 throw new IllegalArgumentException("Your key: " + key + ", possible keys: " + //
-                        headers.keySet().stream().collect(Collectors.joining(",")) + ", entered key: " + key);
-            }
+                        String.join(",", headers.keySet()) + ", entered key: " + key);
             // System.out.println(key);
             // System.out.println(headers.get(key));
             return row[headers.get(key)];
@@ -97,7 +88,7 @@ public final class CsvReader {
 
         @Override
         public String toString() {
-            return Stream.of(row).collect(Collectors.joining(delim));
+            return String.join(delim, row);
         }
     }
 }

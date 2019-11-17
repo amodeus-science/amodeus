@@ -151,17 +151,14 @@ public class VehicleToVSGeneratorTester {
 
     @Test
     public void testTotallyGivenDistribution() {
-        VehicleToVSGenerator vehicleToVSGenerator = //
-                new VehicleToVSGenerator(operatorConfig, virtualNetwork, travelData334, vehicleType);
         for (int i = 0; i < TRIALS; i++) {
-            vehicleToVSGenerator = //
+            VehicleToVSGenerator vehicleToVSGenerator = //
                     new VehicleToVSGenerator(operatorConfig, virtualNetwork, travelData334, vehicleType);
             vehicleToVSGenerator.generateVehicles();
             assertEquals(vehicleToVSGenerator.getPlacedVehicles(), Tensors.vector(3, 3, 4));
 
-            if (i % 10 == 0) {
+            if (i % 10 == 0)
                 System.out.print(".");
-            }
         }
     }
 }

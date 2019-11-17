@@ -80,7 +80,6 @@ public class PopulationToolsTestVN2 {
         requests3.add(new Request(3600, node1, node0));
         requests3.add(new Request(30 * 3600 - 1, node1, node0));
         requests3.add(new Request(3600, node0, node0));
-
     }
 
     @Test

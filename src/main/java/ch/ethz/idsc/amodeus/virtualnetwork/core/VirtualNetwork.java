@@ -58,7 +58,7 @@ public interface VirtualNetwork<T> {
 
     /** Completes the missing references after the virtualNetwork was read from a serialized bitmap.**
      * 
-     * @param network */
+     * @param map */
     void fillSerializationInfo(Map<String, T> map);
 
     void checkConsistency();

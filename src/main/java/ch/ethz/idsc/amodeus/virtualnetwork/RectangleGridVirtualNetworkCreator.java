@@ -51,7 +51,6 @@ public class RectangleGridVirtualNetworkCreator<T, U> extends AbstractVirtualNet
 
     private Map<VirtualNode<T>, Set<T>> createAssignmentMap(Collection<T> elements, Function<T, Tensor> locationOf, //
             int xDiv, int yDiv, Tensor xBounds, Tensor yBounds) {
-
         /** get network bounds */
         double xLength = xBounds.Get(1).subtract(xBounds.Get(0)).number().doubleValue() / xDiv;
         double yLength = yBounds.Get(1).subtract(yBounds.Get(0)).number().doubleValue() / yDiv;
@@ -62,7 +61,7 @@ public class RectangleGridVirtualNetworkCreator<T, U> extends AbstractVirtualNet
 
         Map<VirtualNode<T>, Set<T>> vNodeTMap = new LinkedHashMap<>();
         int vNodeIndex = -1;
-        for (int i = 0; i < xDiv; ++i) {
+        for (int i = 0; i < xDiv; ++i)
             for (int j = 0; j < yDiv; ++j) {
                 double xMin = xBounds.Get(0).number().doubleValue() + i * xLength;
                 double xMax = xBounds.Get(0).number().doubleValue() + (i + 1) * xLength;
@@ -74,11 +73,9 @@ public class RectangleGridVirtualNetworkCreator<T, U> extends AbstractVirtualNet
                     Tensor tPos = locationOf.apply(t);
                     Coordinate coordinate = new Coordinate(tPos.Get(0).number().doubleValue(), //
                             tPos.Get(1).number().doubleValue());
-                    if (xMin <= coordinate.x && coordinate.x < xMax) {
-                        if (yMin <= coordinate.y && coordinate.y < yMax) {
+                    if (xMin <= coordinate.x && coordinate.x < xMax && //
+                        yMin <= coordinate.y && coordinate.y < yMax)
                             set.add(t);
-                        }
-                    }
                 }
                 if (!set.isEmpty()) {
                     ++vNodeIndex;
@@ -91,7 +88,6 @@ public class RectangleGridVirtualNetworkCreator<T, U> extends AbstractVirtualNet
                     vNodeTMap.put(virtualNode, set);
                 }
             }
-        }
         return vNodeTMap;
     }
 
@@ -99,5 +95,4 @@ public class RectangleGridVirtualNetworkCreator<T, U> extends AbstractVirtualNet
     public VirtualNetwork<T> getVirtualNetwork() {
         return virtualNetwork;
     }
-
 }

@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.tensor.fig;
 
+import javax.annotation.Nonnull;
 import java.util.Objects;
 
 /* package */ class ComparableLabel implements Comparable<ComparableLabel> {
@@ -14,7 +15,7 @@ import java.util.Objects;
     }
 
     @Override
-    public int compareTo(ComparableLabel comparableLabel) {
+    public int compareTo(@Nonnull ComparableLabel comparableLabel) {
         return Integer.compare(index, comparableLabel.index);
     }
 

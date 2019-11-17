@@ -28,7 +28,6 @@ public class SingleNodeVirtualNetworkCreator<T, U> extends AbstractVirtualNetwor
     public SingleNodeVirtualNetworkCreator(//
             Collection<T> elements, Function<T, Tensor> locationOf, Function<T, String> nameOf, //
             Map<U, Set<T>> uElements, boolean completeGraph) {
-
         /** compute data for creation of {@link VirtualNetwork} */
         Map<VirtualNode<T>, Set<T>> vNodeTMap = createAssignmentMap(elements, locationOf, nameOf);
 
@@ -38,7 +37,6 @@ public class SingleNodeVirtualNetworkCreator<T, U> extends AbstractVirtualNetwor
 
     private Map<VirtualNode<T>, Set<T>> createAssignmentMap(//
             Collection<T> elements, Function<T, Tensor> locationOf, Function<T, String> nameOf) {
-
         System.out.println("creating a trivial virtual network with one virtual node spanning the \n" //
                 + "entire network.");
 
@@ -48,20 +46,15 @@ public class SingleNodeVirtualNetworkCreator<T, U> extends AbstractVirtualNetwor
         final VirtualNode<T> virtualNode = //
                 new VirtualNode<>(id, indexStr, new HashMap<>(), centroid);
 
-        final Set<T> set = new LinkedHashSet<>();
-        for (T t : elements) {
-            set.add(t);
-        }
+        final Set<T> set = new LinkedHashSet<>(elements); // order is only guaranteed if elements is also ordered
 
         Map<VirtualNode<T>, Set<T>> vNodeTMap = new LinkedHashMap<>();
         vNodeTMap.put(virtualNode, set);
 
         return vNodeTMap;
-
     }
 
     public static <T> Tensor meanOf(Collection<T> elements, Function<T, Tensor> locationOf) {
-        return Mean.of(Tensor.of(elements.stream().map(locationOf::apply)));
+        return Mean.of(Tensor.of(elements.stream().map(locationOf)));
     }
-
 }

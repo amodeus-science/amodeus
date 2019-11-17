@@ -6,12 +6,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
@@ -76,8 +76,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         }
         GlobalAssert.that(virtualNodes.size() == virtualNode.getIndex()); // <- NEVER remove this check
         virtualNodes.put(virtualNode.getIndex(), virtualNode);
-        for (T t : virtualNode.getLinks())
-            networkElements.put(t, virtualNode);
+        virtualNode.getLinks().forEach(t -> networkElements.put(t, virtualNode));
         return virtualNode;
     }
 
@@ -107,29 +106,20 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
     @Override
     public <U> Map<VirtualNode<T>, List<U>> createVNodeTypeMap() {
-        Map<VirtualNode<T>, List<U>> returnMap = new HashMap<>();
-        for (VirtualNode<T> virtualNode : this.getVirtualNodes())
-            returnMap.put(virtualNode, new ArrayList<>());
-        return returnMap;
+        return this.getVirtualNodes().stream().collect(Collectors.toMap(Function.identity(), vn -> new ArrayList<>()));
     }
 
     @Override
     public <U> Map<VirtualNode<T>, List<U>> binToVirtualNode(Collection<U> col, Function<U, T> function) {
         Map<VirtualNode<T>, List<U>> returnMap = createVNodeTypeMap();
-        col.stream()//
-                .forEach(c -> returnMap.get(getVirtualNode(function.apply(c))).add(c));
+        col.forEach(c -> returnMap.get(getVirtualNode(function.apply(c))).add(c));
         return returnMap;
     }
 
     private void fillLinkVNodeMap(Map<String, T> map) {
-        networkElements = new HashMap<>();
-        for (String linkIDString : networkElementsSerializable.keySet()) {
-            // Id<Link> linkID = Id.createLinkId(linkIDString);
-            // GlobalAssert.that(network.getLinks().get(linkID) != null);
-            T link = map.get(linkIDString);
-            VirtualNode<T> vNode = networkElementsSerializable.get(linkIDString);
-            networkElements.put(link, vNode);
-        }
+        networkElements = networkElementsSerializable.entrySet().stream().collect(Collectors.toMap( //
+                e -> map.get(e.getKey()), //
+                Map.Entry::getValue));
         checkConsistency();
     }
 
@@ -139,14 +129,12 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         // Map<String, T> map = new HashMap<>();
         // network.getLinks().entrySet().forEach(e -> map.put(e.getKey().toString(), e.getValue()));
         // virtualNodes.stream().forEach(v -> v.setLinksAfterSerialization2(map));
-        virtualNodes.values().stream().forEach(v -> v.setLinksAfterSerialization2(map));
+        virtualNodes.values().forEach(v -> v.setLinksAfterSerialization2(map));
     }
 
     protected void fillVNodeMapRAWVERYPRIVATE(Map<T, String> map) {
         GlobalAssert.that(!networkElements.isEmpty());
-        for (T element : networkElements.keySet()) {
-            networkElementsSerializable.put(map.get(element), networkElements.get(element));
-        }
+        networkElements.forEach((element, vNode) -> networkElementsSerializable.put(map.get(element), vNode));
         GlobalAssert.that(networkElements.size() == networkElementsSerializable.size());
         GlobalAssert.that(!networkElementsSerializable.isEmpty());
     }

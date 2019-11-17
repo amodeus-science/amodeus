@@ -40,7 +40,7 @@ public class VirtualNetworkIOTest {
         testPreparer = TestPreparer.run(workingDirectory);
         vNCreated = VirtualNetworkGet.readDefault(testPreparer.getPreparedNetwork(), scenarioOptions);
         Map<String, Link> map = new HashMap<>();
-        testPreparer.getPreparedNetwork().getLinks().entrySet().forEach(e -> map.put(e.getKey().toString(), e.getValue()));
+        testPreparer.getPreparedNetwork().getLinks().forEach((id, link) -> map.put(id.toString(), link));
         vNSaved = VirtualNetworkIO.fromByte(map, COMPARISON_VN_FILE);
         travelDataTestHelper = TravelDataTestHelper.prepare(vNCreated, vNSaved, scenarioOptions);
     }

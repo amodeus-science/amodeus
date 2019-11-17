@@ -4,6 +4,7 @@ package ch.ethz.idsc.amodeus.util.hungarian;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import org.matsim.api.core.v01.Id;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
@@ -50,8 +51,6 @@ public class Warmstarter {
         matchAndLabel();
         setLabelsForFreeJobs();
         hasResult = true;
-
-        return;
     }
 
     public Warmstarter(double[][] costMatrix, List<Id<DvrpVehicle>> taxis, List<AVRequest> requests) {
@@ -76,8 +75,6 @@ public class Warmstarter {
         }
         lastTaxis = taxis;
         lastRequests = requests;
-
-        return;
     }
 
     public double[] getXLabels() {
@@ -99,7 +96,7 @@ public class Warmstarter {
     private void matchAndLabel() {
         double[] oldX;
         double[] oldY;
-        for (int x = 0; x < rowDim; x++) {
+        for (int x = 0; x < rowDim; x++)
             if (newMatching[x] > UNASSIGNED) {
                 oldX = Arrays.copyOf(xLabel, xLabel.length);
                 oldY = Arrays.copyOf(yLabel, yLabel.length);
@@ -113,29 +110,23 @@ public class Warmstarter {
                     yMatch[newMatching[x]] = UNASSIGNED;
                 }
             }
-        }
     }
 
     private boolean isMatchPossible(int x, int y) {
         double cost = getCost(x, y);
         xLabel[x] = cost - yLabel[y];
-        if (!updateInY(x)) {
-            return false;
-        }
-        return true;
+        return updateInY(x);
     }
 
     private boolean updateInY(int x) {
         double xL = xLabel[x];
-        for (int y = 0; y < colDim; y++) {
+        for (int y = 0; y < colDim; y++)
             if (xL + yLabel[y] - getCost(x, y) > 1e-8) {
                 yLabel[y] = getCost(x, y) - xL;
-                if (yMatch[y] == UNASSIGNED) {
+                if (yMatch[y] == UNASSIGNED)
                     continue;
-                }
                 return false;
             }
-        }
         return true;
     }
 
@@ -150,8 +141,8 @@ public class Warmstarter {
         AVRequest tmpReq = null;
         int tmpTaxiId = UNASSIGNED;
         int last = UNASSIGNED;
-        List<Integer> taxiIDmatched = new ArrayList<>();
-        List<Integer> reqIDmatched = new ArrayList<>();
+        // List<Integer> taxiIDmatched = new ArrayList<>();
+        // List<Integer> reqIDmatched = new ArrayList<>();
 
         for (int i = 0; i < lastTaxis.size(); i++) {
             tmpTaxi = lastTaxis.get(i);
@@ -170,8 +161,8 @@ public class Warmstarter {
             }
             for (int j = 0; j < actRequest.size(); j++) {
                 if (actRequest.get(j).equals(tmpReq)) {
-                    taxiIDmatched.add(tmpTaxiId);
-                    reqIDmatched.add(j);
+                    // taxiIDmatched.add(tmpTaxiId);
+                    // reqIDmatched.add(j);
                     newMatching[tmpTaxiId] = j; // Find position of corresp request in vector
                     break;
                 }
@@ -185,7 +176,7 @@ public class Warmstarter {
         double min;
         boolean foundDummy;
         int dummy = UNASSIGNED;
-        for (int i = 0; i < newMatching.length; i++) {
+        for (int i = 0; i < newMatching.length; i++)
             if (xMatch[i] == UNASSIGNED) {
                 min = Double.POSITIVE_INFINITY;
                 foundDummy = false;
@@ -194,9 +185,8 @@ public class Warmstarter {
                         foundDummy = true;
                         dummy = y;
                     }
-                    if (min + yLabel[y] > getCost(i, y)) {
+                    if (min + yLabel[y] > getCost(i, y))
                         min = getCost(i, y) - yLabel[y];
-                    }
                 }
                 xLabel[i] = min;
                 if (foundDummy) {
@@ -205,28 +195,24 @@ public class Warmstarter {
                     yMatch[dummy] = i;
                 }
             }
-        }
     }
 
     public boolean isValidLabeling() {
         boolean valid = true;
-        for (int x = 0; x < dim; x++) {
+        for (int x = 0; x < dim; x++)
             if (xMatch[x] != UNASSIGNED) {
                 if (Math.abs(xLabel[x] + yLabel[xMatch[x]] - getCost(x, xMatch[x])) > EPS) {
                     valid = false;
                     System.out.println("Bad matching label (" + x + "," + xMatch[x] + ")");
                 }
-                for (int y = 0; y < dim; y++) {
+                for (int y = 0; y < dim; y++)
                     if (xLabel[x] + yLabel[y] - getCost(x, y) > EPS && yMatch[y] == UNASSIGNED) {
                         valid = false;
                         System.out.println("Bad label (" + x + "," + y + ")");
                     }
-                }
             }
-        }
-        if (valid) {
+        if (valid)
             System.out.println("Labels are ok");
-        }
         return valid;
     }
 
@@ -240,7 +226,7 @@ public class Warmstarter {
     }
 
     public boolean readyForWarmstart() {
-        return !(lastRequests == null);
+        return Objects.nonNull(lastRequests);
     }
 
     public int[] getXMatchBefore() {

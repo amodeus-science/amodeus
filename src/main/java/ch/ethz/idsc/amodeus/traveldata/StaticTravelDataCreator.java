@@ -21,9 +21,8 @@ public enum StaticTravelDataCreator {
         LPSolver lpSolver = LPPreparer.run(workingDir, virtualNetwork, network, lambdaAbsolute, numVehicles, endTime);
         String lpName = lpSolver.getClass().getSimpleName();
         Tensor alphaAbsolute = lpSolver.getAlphaAbsolute_ij();
-        Tensor v0_i = lpSolver.getV0_i();
         Tensor fAbsolute = lpSolver.getFAbsolute_ij();
+        Tensor v0_i = lpSolver.getV0_i();
         return new StaticTravelData(virtualNetwork.getvNetworkID(), lambdaAbsolute, alphaAbsolute, fAbsolute, v0_i, lpName, endTime);
     }
-
 }

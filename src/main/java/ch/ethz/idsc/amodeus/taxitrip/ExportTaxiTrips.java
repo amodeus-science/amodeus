@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,25 +30,23 @@ public enum ExportTaxiTrips {
                     .collect(Collectors.joining(";"));
             bufferedWriter.write(headers);
             stream.forEachOrdered(trip -> {
-                String line = "";
                 try {
                     bufferedWriter.newLine();
-                    line = "";
-
-                    Field[] fields = TaxiTrip.class.getFields();
-                    for (int i = 0; i < fields.length; ++i) {
-                        Field field = fields[i];
-                        Object obj = field.get(trip);
-                        if (Objects.isNull(obj)) {
-                            obj = "null";
+                    /** TODO similar to {@link TaxiTrip#toString()} despite delimiter, error, and null treatment */
+                    AtomicBoolean exception = new AtomicBoolean(false);
+                    String line = Arrays.stream(TaxiTrip.class.getFields()).map(field -> {
+                        try {
+                            Object obj = field.get(trip);
+                            return Objects.nonNull(obj) ? obj.toString() : "null";
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            exception.set(true);
+                            return "ERROR";
                         }
-                        if (i == 0)
-                            line += obj.toString();
-                        else
-                            line += ";" + obj.toString();
-                    }
+                    }).collect(Collectors.joining(";"));
+                    if (exception.get())
+                        throw new Exception(line);
 
-                    // // TODO use introspection as with header to extract field values and convert to string
                     // line += trip.localId;
                     // line += ";" + trip.taxiId;
                     // line += ";" + trip.pickupLoc;
@@ -60,7 +59,6 @@ public enum ExportTaxiTrips {
                     bufferedWriter.write(line);
                 } catch (Exception e) {
                     System.err.println("Unable to export taxi trip: ");
-                    System.err.println(line);
                     e.printStackTrace();
                 }
             });

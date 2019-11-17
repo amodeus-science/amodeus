@@ -3,6 +3,7 @@ package ch.ethz.idsc.amodeus.video;
 
 import java.awt.Point;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import org.matsim.api.core.v01.Coord;
@@ -14,7 +15,6 @@ import ch.ethz.idsc.amodeus.gfx.AmodeusComponent;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.view.jmapviewer.Coordinate;
-import ch.ethz.idsc.amodeus.view.jmapviewer.JMapViewer;
 
 /* package */ enum AmodeusComponentUtil {
     ;
@@ -41,17 +41,19 @@ import ch.ethz.idsc.amodeus.view.jmapviewer.JMapViewer;
         int width = amodeusComponent.getWidth();
         int height = amodeusComponent.getHeight();
         Point ccc = new Point(width / 2, height / 2);
-        ((JMapViewer) amodeusComponent).setDisplayPosition(ccc, new Coordinate(center.getY(), center.getX()), prevZoom);
+        amodeusComponent.setDisplayPosition(ccc, new Coordinate(center.getY(), center.getX()), prevZoom);
         while (!zoomAdj) {
-            if (envelop.stream().allMatch(c -> ((JMapViewer) amodeusComponent).getMapPosition(c.getY(), c.getX(), true) != null)) {
-                prevZoom = prevZoom + 1;
+            if (envelop.stream().map(c -> amodeusComponent.getMapPosition(c.getY(), c.getX(), true)).allMatch(Objects::nonNull)) {
+                prevZoom++;
                 zoomAdjPrev = true;
             } else {
-                prevZoom = prevZoom - 1;
-                zoomAdj = (zoomAdjPrev) ? true : false;
-                zoomAdjPrev = (zoomAdj) ? true : false;
+                prevZoom--;
+                // TODO this looks way to easy now
+                // zoomAdj = (zoomAdjPrev) ? true : false;
+                // zoomAdjPrev = (zoomAdj) ? true : false;
+                zoomAdj = zoomAdjPrev;
             }
-            ((JMapViewer) amodeusComponent).setDisplayPosition(ccc, new Coordinate(center.getY(), center.getX()), prevZoom);
+            amodeusComponent.setDisplayPosition(ccc, new Coordinate(center.getY(), center.getX()), prevZoom);
         }
     }
 }

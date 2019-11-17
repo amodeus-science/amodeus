@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Font;
 
 // TODO this class was marked deprecated but replacement has not been carried out yet
+@Deprecated
 public enum DiagramSettings {
     ;
 

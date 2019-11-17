@@ -31,7 +31,6 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkIOTest;
      * @param args
      * @throws Exception */
     public static void main(String[] args) throws Exception {
-
         File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         File scenarioDirectory = new File(Locate.repoFolder(ComparisonFilesCreator.class, "amodeus"), "resources/testScenario");
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
@@ -47,6 +46,5 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkIOTest;
 
         /** remove generated and unneeded files */
         TestFileHandling.removeGeneratedFiles();
-
     }
 }
