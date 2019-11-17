@@ -157,8 +157,8 @@ public class GLPKAssignmentSolverBetter {
         this.cost_matrix = costMatrix;
         this.last_sol = lastSol;
 
-        c_ij = Tensors.vector((i) -> RealScalar.ZERO, variables);
-        p_ij = Tensors.vector((i) -> RealScalar.ZERO, variables);
+        c_ij = Tensors.vector(i -> RealScalar.ZERO, variables);
+        p_ij = Tensors.vector(i -> RealScalar.ZERO, variables);
 
         // For first run: If no previous solution exists, generate Zero-solution
         defineStructuralVariables(1);
@@ -185,8 +185,8 @@ public class GLPKAssignmentSolverBetter {
         variables = this.requests * this.vehicles;
         this.cost_matrix = costMatrix;
 
-        c_ij = Tensors.vector((i) -> RealScalar.ZERO, variables);
-        p_ij = Tensors.vector((i) -> RealScalar.ZERO, variables);
+        c_ij = Tensors.vector(i -> RealScalar.ZERO, variables);
+        p_ij = Tensors.vector(i -> RealScalar.ZERO, variables);
 
         // For first run: If no previous solution exists, generate Zero-solution
         if (last_sol == null) {

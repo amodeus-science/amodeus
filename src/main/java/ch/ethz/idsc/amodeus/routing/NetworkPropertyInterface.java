@@ -16,6 +16,6 @@ import org.matsim.core.router.util.LeastCostPathCalculator;
      * @return the property T of the network defined between the {@link Link}s @param from
      *         and @param to at time @param now using the {@link LeastCostPathCalculator} @param calculator.
      *         The resulting property T may then be cached to speed up computation times. */
-    T fromTo(Link from, Link to, LeastCostPathCalculator calculator, Double now);
+    T fromTo(Link from, Link to, LeastCostPathCalculator calculator, double now);
 
 }

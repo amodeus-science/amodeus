@@ -20,6 +20,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
@@ -62,7 +63,7 @@ public class VehicleToVSGenerator implements AVGenerator {
         Tensor v0 = travelData.getV0();
         GlobalAssert.that(Total.of(v0).Get().number().intValue() <= operatorConfig.getGeneratorConfig().getNumberOfVehicles());
 
-        boolean noDistribution = Total.of(v0).Get().equals(RealScalar.ZERO);
+        boolean noDistribution = Scalars.isZero(Total.of(v0).Get());
         long average = operatorConfig.getGeneratorConfig().getNumberOfVehicles() / virtualNetwork.getvNodesCount();
         int vNodes = virtualNetwork.getvNodesCount();
 

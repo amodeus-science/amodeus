@@ -2,7 +2,7 @@
 // https://stackoverflow.com/questions/23714383/what-are-all-the-possible-values-for-http-content-type-header
 package ch.ethz.idsc.amodeus.util.io;
 
-// TODO check where this is used
+/** used in repository amod for downloading scenarios */
 public enum ContentType {
     APPLICATION_JSON("application/json"), //
     APPLICATION_PDF("application/pdf"), //

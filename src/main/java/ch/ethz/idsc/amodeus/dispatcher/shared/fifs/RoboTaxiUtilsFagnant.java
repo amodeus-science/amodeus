@@ -26,7 +26,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
      * @return */
     public static NavigableMap<Double, RoboTaxi> getRoboTaxisWithinMaxTime( //
             Link link, Collection<RoboTaxi> roboTaxis, NetworkTimeDistInterface timeDb, double maxTime, //
-            RoboTaxiHandler roboTaxiMaintainer, Double now) {
+            RoboTaxiHandler roboTaxiMaintainer, double now) {
         Collection<RoboTaxi> closeRoboTaxis = roboTaxiMaintainer.getRoboTaxisWithinFreeSpeedDisk(link.getCoord(), maxTime).stream().filter(roboTaxis::contains) //
                 .collect(Collectors.toSet());
         NavigableMap<Double, RoboTaxi> map = new TreeMap<>();
