@@ -1,8 +1,9 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.tensor.fig;
 
-import javax.annotation.Nonnull;
 import java.util.Objects;
+
+import javax.annotation.Nonnull;
 
 /* package */ class ComparableLabel implements Comparable<ComparableLabel> {
     private final int index;

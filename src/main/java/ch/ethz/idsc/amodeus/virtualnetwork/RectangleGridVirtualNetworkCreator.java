@@ -74,8 +74,8 @@ public class RectangleGridVirtualNetworkCreator<T, U> extends AbstractVirtualNet
                     Coordinate coordinate = new Coordinate(tPos.Get(0).number().doubleValue(), //
                             tPos.Get(1).number().doubleValue());
                     if (xMin <= coordinate.x && coordinate.x < xMax && //
-                        yMin <= coordinate.y && coordinate.y < yMax)
-                            set.add(t);
+                            yMin <= coordinate.y && coordinate.y < yMax)
+                        set.add(t);
                 }
                 if (!set.isEmpty()) {
                     ++vNodeIndex;

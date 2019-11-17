@@ -15,7 +15,7 @@ public enum LocalDateTimes {
     @Deprecated // (almost) redundant, see below
     public static boolean lessEquals(LocalDateTime ldt1, LocalDateTime ldt2) {
         // return lessThan(ldt1, ldt2) //
-        //         || ldt1.toInstant(ZoneOffset.UTC).toEpochMilli() == ldt2.toInstant(ZoneOffset.UTC).toEpochMilli();
+        // || ldt1.toInstant(ZoneOffset.UTC).toEpochMilli() == ldt2.toInstant(ZoneOffset.UTC).toEpochMilli();
         return ldt1.isBefore(ldt2) || ldt1.isEqual(ldt2);
     }
 
@@ -24,7 +24,7 @@ public enum LocalDateTimes {
     @Deprecated // redundant, see below
     public static boolean lessThan(LocalDateTime ldt1, LocalDateTime ldt2) {
         // return ldt1.toInstant(ZoneOffset.UTC).toEpochMilli() < //
-        //         ldt2.toInstant(ZoneOffset.UTC).toEpochMilli();
+        // ldt2.toInstant(ZoneOffset.UTC).toEpochMilli();
         return ldt1.isBefore(ldt2);
     }
 

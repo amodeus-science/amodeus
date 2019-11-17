@@ -15,7 +15,7 @@ public enum TimeDistanceProperty implements NetworkPropertyInterface<Tensor> {
     INSTANCE;
 
     @Override
-    public Tensor fromTo(Link from, Link to, LeastCostPathCalculator calculator, Double now) {
+    public Tensor fromTo(Link from, Link to, LeastCostPathCalculator calculator, double now) {
         /** path */
         Path path = PathProperty.INSTANCE.fromTo(from, to, calculator, now);
         /** travel time */

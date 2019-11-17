@@ -20,7 +20,7 @@ public enum TimeResolvedPathProperty implements NetworkPropertyInterface<Navigab
     INSTANCE;
 
     @Override
-    public NavigableMap<Double, Link> fromTo(Link from, Link to, LeastCostPathCalculator calculator, Double now) {
+    public NavigableMap<Double, Link> fromTo(Link from, Link to, LeastCostPathCalculator calculator, double now) {
         /** path */
         Path path = PathProperty.INSTANCE.fromTo(from, to, calculator, now);
         GlobalAssert.that(path.links.size() == path.nodes.size() - 1);
@@ -37,23 +37,22 @@ public enum TimeResolvedPathProperty implements NetworkPropertyInterface<Navigab
         // Node nodePrev = from.getFromNode();
         // double timePrev = now;
         // /** A path will have M nodes but only M-1 links, therefore the index i is used for nodes
-        //  * and the index i-1 for the links */
+        // * and the index i-1 for the links */
         // for (int i = 1; i < path.nodes.size(); ++i) {
-        //     Path localPath = calculator.calcLeastCostPath(nodePrev, path.nodes.get(i), now, null, null);
-        //     timePrev = now + localPath.travelTime;
-        //     nodePrev = path.nodes.get(i);
-        //     linkEntryTimes.put(timePrev, path.links.get(i - 1));
+        // Path localPath = calculator.calcLeastCostPath(nodePrev, path.nodes.get(i), now, null, null);
+        // timePrev = now + localPath.travelTime;
+        // nodePrev = path.nodes.get(i);
+        // linkEntryTimes.put(timePrev, path.links.get(i - 1));
         // }
         // GlobalAssert.that(linkEntryTimes.firstKey().equals(now));
         // return linkEntryTimes;
-
 
         Iterator<Link> links = path.links.iterator();
         Iterator<Node> nodes = path.nodes.iterator();
         Node nodePrev = nodes.next();
         GlobalAssert.that(nodePrev.equals(from.getFromNode()));
         while (nodes.hasNext()) {
-            Path localPath = PathProperty.INSTANCE.fromTo(nodePrev, nodePrev = nodes.next(), calculator, now);
+            Path localPath = PathProperty.fromTo(nodePrev, nodePrev = nodes.next(), calculator, now);
             linkEntryTimes.put(now + localPath.travelTime, links.next());
         }
         GlobalAssert.that(linkEntryTimes.firstKey().equals(now));
