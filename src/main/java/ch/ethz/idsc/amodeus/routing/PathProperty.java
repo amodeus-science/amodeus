@@ -12,11 +12,11 @@ import org.matsim.core.router.util.LeastCostPathCalculator.Path;
     INSTANCE;
 
     @Override // from NetworkPropertyInterface
-    public Path fromTo(Link from, Link to, LeastCostPathCalculator calculator, Double now) {
+    public Path fromTo(Link from, Link to, LeastCostPathCalculator calculator, double now) {
         return fromTo(Objects.requireNonNull(from).getFromNode(), Objects.requireNonNull(to).getToNode(), calculator, now);
     }
 
-    public Path fromTo(Node from, Node to, LeastCostPathCalculator calculator, Double now) {
+    public static Path fromTo(Node from, Node to, LeastCostPathCalculator calculator, double now) {
         return calculator.calcLeastCostPath(Objects.requireNonNull(from), Objects.requireNonNull(to), now, null, null);
     }
 

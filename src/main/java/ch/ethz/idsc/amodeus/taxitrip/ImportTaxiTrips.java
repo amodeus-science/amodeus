@@ -19,10 +19,12 @@ import ch.ethz.idsc.tensor.Tensors;
 public enum ImportTaxiTrips {
     ;
 
-    private static final Map<Integer, DateTimeFormatter> formatLookup = new HashMap<Integer, DateTimeFormatter>() {{
-        put(16, TaxiTripConstants.ldtFormatShort);
-        put(19, TaxiTripConstants.ldtFormat);
-    }};
+    private static final Map<Integer, DateTimeFormatter> formatLookup = new HashMap<Integer, DateTimeFormatter>() {
+        {
+            put(16, TaxiTripConstants.ldtFormatShort);
+            put(19, TaxiTripConstants.ldtFormat);
+        }
+    };
 
     /** Converts lines in CSV file to elements in list of taxi trips
      * 

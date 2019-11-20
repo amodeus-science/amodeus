@@ -49,15 +49,15 @@ public class CachedNetworkPropertyComputation<T> {
     public final T fromTo(Link from, Link to, double now) {
         update(now);
         return cache.computeIfAbsent(from, l -> new HashMap<>()) //
-            /* cache.get(from) */ .computeIfAbsent(to, l -> {
-            addToCalculationTime(now, from, l);
-            return pathInterface.fromTo(from, l, calculator, now);
-        });
+                /* cache.get(from) */ .computeIfAbsent(to, l -> {
+                    addToCalculationTime(now, from, l);
+                    return pathInterface.fromTo(from, l, calculator, now);
+                });
     }
 
     private final void addToCalculationTime(double now, Link from, Link to) {
         calculationTimes.computeIfAbsent(now, t -> new HashMap<>()) //
-            /* calculationTimes.get(now) */ .computeIfAbsent(from, l -> new HashSet<>()) //
+                /* calculationTimes.get(now) */ .computeIfAbsent(from, l -> new HashSet<>()) //
                 /* calculationTimes.get(now).get(from) */ .add(to);
     }
 

@@ -54,6 +54,6 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     private LeastCostPathCalculator.Path execPathCalculator(Node from, Node to) {
         // depending on implementation of traveldisutility and traveltime, starttime,
         // person and vehicle are needed
-        return PathProperty.INSTANCE.fromTo(from, to, leastCostPathCalculator, 0.0);
+        return PathProperty.fromTo(from, to, leastCostPathCalculator, 0.0);
     }
 }

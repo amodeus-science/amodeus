@@ -53,7 +53,7 @@ public class ShortestDurationCalculator {
         fastLinkLookup = new FastLinkLookup(network, db);
     }
 
-    public Scalar computeFreeFlowTime(TaxiTrip taxiTrip) {
+    public Scalar computePathTime(TaxiTrip taxiTrip) {
         return Quantity.of(computePath(taxiTrip).travelTime, SI.SECOND);
     }
 

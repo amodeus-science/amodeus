@@ -22,7 +22,7 @@ public class GenericButterfliesAndRainbows<T, U> {
 
     public void add(U node, VirtualNode<T> virtualNode) {
         map.computeIfAbsent(node, n -> new HashSet<>()) //
-            /* map.get(node) */ .add(virtualNode);
+                /* map.get(node) */ .add(virtualNode);
     }
 
     public Collection<IntPoint> allPairs() {
