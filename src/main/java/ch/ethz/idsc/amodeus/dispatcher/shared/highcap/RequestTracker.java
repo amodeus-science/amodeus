@@ -23,7 +23,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     }
 
     public static void removeClosedRequest(Set<AVRequest> requestPool, Collection<AVRequest> openRequests) {
-        requestPool.stream().filter(avRequest -> !openRequests.contains(avRequest)).forEach(requestPool::remove);
+        requestPool.removeIf(avRequest -> !openRequests.contains(avRequest));
     }
 
     /** this function remove overdue request in the request pool
