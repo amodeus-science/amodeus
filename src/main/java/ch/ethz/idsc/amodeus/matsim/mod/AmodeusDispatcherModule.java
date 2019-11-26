@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.matsim.mod;
 
+import ch.ethz.idsc.amodeus.dispatcher.DFRStrategy;
 import ch.ethz.idsc.amodeus.dispatcher.util.ModelFreeAdaptiveRepositioning;
 import org.matsim.core.controler.AbstractModule;
 
@@ -55,6 +56,9 @@ public class AmodeusDispatcherModule extends AbstractModule {
 
         bind(SQMDispatcher.Factory.class);
         AVUtils.bindDispatcherFactory(binder(), SQMDispatcher.class.getSimpleName()).to(SQMDispatcher.Factory.class);
+
+        bind(DFRStrategy.Factory.class);
+        AVUtils.bindDispatcherFactory(binder(), DFRStrategy.class.getSimpleName()).to(DFRStrategy.Factory.class);
 
         /** ride sharing dispatchers */
 
