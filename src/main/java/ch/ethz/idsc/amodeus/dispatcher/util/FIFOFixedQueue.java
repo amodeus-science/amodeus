@@ -2,7 +2,6 @@
 package ch.ethz.idsc.amodeus.dispatcher.util;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,20 +22,13 @@ public class FIFOFixedQueue<T> {
 
     public void manage(T t) {
         if (list.size() >= maxLength)
-            list.removeFirst();
-        list.add(t);
+            list.removeLast();
+        list.addFirst(t);
     }
 
     /** @return last
      * @param n elements added to the list */
     public List<T> getNewest(int n) {
-        List<T> returnList = new ArrayList<>();
-        Iterator<T> it = this.list.descendingIterator();
-        int count = 0;
-        while (it.hasNext() && count < n && count < list.size()) {
-            returnList.add(it.next());
-            ++count;
-        }
-        return returnList;
+        return new ArrayList<>(list.subList(0, Math.min(list.size(), n)));
     }
 }
