@@ -98,6 +98,7 @@ public class StandardMATSimScenarioTest {
                 { "FirstComeFirstServedStrategy" }, //
                 { "DynamicRideSharingStrategy" }, //
                 { "RestrictedLinkCapacityDispatcher" }, //
+                { "ModelFreeAdaptiveRepositioning" }, //
 
                 // This one doesn't finish all requests. Bug or not enough of time? Also it's not good in an automated unit test because it
                 // produces large amounts of log output.

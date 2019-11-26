@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.matsim.mod;
 
+import ch.ethz.idsc.amodeus.dispatcher.util.ModelFreeAdaptiveRepositioning;
 import org.matsim.core.controler.AbstractModule;
 
 import ch.ethz.idsc.amodeus.dispatcher.AdaptiveRealTimeRebalancingPolicy;
@@ -36,6 +37,9 @@ public class AmodeusDispatcherModule extends AbstractModule {
 
         bind(FirstComeFirstServedStrategy.Factory.class);
         AVUtils.bindDispatcherFactory(binder(), FirstComeFirstServedStrategy.class.getSimpleName()).to(FirstComeFirstServedStrategy.Factory.class);
+
+        bind(ModelFreeAdaptiveRepositioning.Factory.class);
+        AVUtils.bindDispatcherFactory(binder(), ModelFreeAdaptiveRepositioning.class.getSimpleName()).to(ModelFreeAdaptiveRepositioning.Factory.class);
 
         /** dispatchers for PartitionedDispatcher */
 
