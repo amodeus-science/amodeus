@@ -98,6 +98,8 @@ public class StandardMATSimScenarioTest {
                 { "FirstComeFirstServedStrategy" }, //
                 { "DynamicRideSharingStrategy" }, //
                 { "RestrictedLinkCapacityDispatcher" }, //
+                { "ModelFreeAdaptiveRepositioning" }, //
+                { "DFRStrategy" }, //
 
                 // This one doesn't finish all requests. Bug or not enough of time? Also it's not good in an automated unit test because it
                 // produces large amounts of log output.
@@ -241,6 +243,7 @@ public class StandardMATSimScenarioTest {
 
         // Choose a dispatcher
         DispatcherConfig dispatcherConfig = operatorConfig.getDispatcherConfig();
+        dispatcherConfig.addParam("DFR", "true"); // TODO check back whether this is the final solution
         dispatcherConfig.setType(dispatcher);
 
         // Make sure that we do not need the SimulationObjectCompiler
@@ -258,7 +261,7 @@ public class StandardMATSimScenarioTest {
             @Singleton
             public Map<Id<AVOperator>, VirtualNetwork<Link>> provideVirtualNetworks(Map<Id<AVOperator>, Network> networks) {
                 // Since we have no virtual netowrk saved in the working directory for our test
-                // sceanario, we need to provide a custom one for the LPFB dispatcher
+                // scenario, we need to provide a custom one for the LPFB dispatcher
 
                 return Collections.singletonMap(AVOperator.createId("test"),
                         MatsimKMeansVirtualNetworkCreator.createVirtualNetwork(scenario.getPopulation(), networks.get(AVOperator.createId("test")), 2, true));

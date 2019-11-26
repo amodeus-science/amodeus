@@ -14,7 +14,6 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 /** used to create a {@link NavigableMap} containing the entry times to {@link Link}s for a
  * {@link Path} */
-// TODO why NavigableMap and not LinkedList?
 // TODO only used in amodidsc so maybe move in the future (make NetworkPropertyInterface public)
 public enum TimeResolvedPathProperty implements NetworkPropertyInterface<NavigableMap<Double, Link>> {
     INSTANCE;
@@ -25,15 +24,8 @@ public enum TimeResolvedPathProperty implements NetworkPropertyInterface<Navigab
         Path path = PathProperty.INSTANCE.fromTo(from, to, calculator, now);
         GlobalAssert.that(path.links.size() == path.nodes.size() - 1);
         NavigableMap<Double, Link> linkEntryTimes = new TreeMap<>();
-        linkEntryTimes.put(now, from);
 
-        /* TODO CLAUDIO my suspicions:
-         * from == path.links.get(0) hence it gets added twice with different start times
-         * -> timePrev should only be updated after adding to map to represent end time of current link
-         * timePrev = now + localPath.travelTime should accumulate travel times but does not
-         * -> timePrev += localPath.travelTime
-         * please verify and make according changes in new code (old code for reference below) */
-
+        // linkEntryTimes.put(now, from);
         // Node nodePrev = from.getFromNode();
         // double timePrev = now;
         // /** A path will have M nodes but only M-1 links, therefore the index i is used for nodes
@@ -47,13 +39,15 @@ public enum TimeResolvedPathProperty implements NetworkPropertyInterface<Navigab
         // GlobalAssert.that(linkEntryTimes.firstKey().equals(now));
         // return linkEntryTimes;
 
+        double time = now;
         Iterator<Link> links = path.links.iterator();
         Iterator<Node> nodes = path.nodes.iterator();
         Node nodePrev = nodes.next();
         GlobalAssert.that(nodePrev.equals(from.getFromNode()));
         while (nodes.hasNext()) {
-            Path localPath = PathProperty.fromTo(nodePrev, nodePrev = nodes.next(), calculator, now);
-            linkEntryTimes.put(now + localPath.travelTime, links.next());
+            Path localPath = PathProperty.INSTANCE.fromTo(nodePrev, nodePrev = nodes.next(), calculator, time);
+            linkEntryTimes.put(time, links.next());
+            time += localPath.travelTime;
         }
         GlobalAssert.that(linkEntryTimes.firstKey().equals(now));
         GlobalAssert.that(!links.hasNext());
