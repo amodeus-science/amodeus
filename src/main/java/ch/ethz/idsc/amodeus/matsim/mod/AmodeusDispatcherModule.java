@@ -2,7 +2,9 @@
 package ch.ethz.idsc.amodeus.matsim.mod;
 
 import ch.ethz.idsc.amodeus.dispatcher.DFRStrategy;
-import ch.ethz.idsc.amodeus.dispatcher.util.ModelFreeAdaptiveRepositioning;
+import ch.ethz.idsc.amodeus.dispatcher.NoExplicitCommunication;
+import ch.ethz.idsc.amodeus.dispatcher.SBNoExplicitCommunication;
+import ch.ethz.idsc.amodeus.dispatcher.ModelFreeAdaptiveRepositioning;
 import org.matsim.core.controler.AbstractModule;
 
 import ch.ethz.idsc.amodeus.dispatcher.AdaptiveRealTimeRebalancingPolicy;
@@ -41,6 +43,12 @@ public class AmodeusDispatcherModule extends AbstractModule {
 
         bind(ModelFreeAdaptiveRepositioning.Factory.class);
         AVUtils.bindDispatcherFactory(binder(), ModelFreeAdaptiveRepositioning.class.getSimpleName()).to(ModelFreeAdaptiveRepositioning.Factory.class);
+
+        bind(NoExplicitCommunication.Factory.class);
+        AVUtils.bindDispatcherFactory(binder(), NoExplicitCommunication.class.getSimpleName()).to(NoExplicitCommunication.Factory.class);
+
+        bind(SBNoExplicitCommunication.Factory.class);
+        AVUtils.bindDispatcherFactory(binder(), SBNoExplicitCommunication.class.getSimpleName()).to(SBNoExplicitCommunication.Factory.class);
 
         /** dispatchers for PartitionedDispatcher */
 
