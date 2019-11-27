@@ -103,7 +103,7 @@ public class DFRStrategy extends PartitionedDispatcher {
         this.virtualNodeDest = new RandomVirtualNodeDest();
         SafeConfig safeConfig = SafeConfig.wrap(operatorConfig);
         bipartiteMatchingUtils = new ConfigurableBipartiteMatcher(network, new DistanceCost(distanceFunction), safeConfig);
-        this.doDFR = dispatcherConfig.getBoolStrict("DFR"); // safeConfig.getBoolStrict("DFR"); // TODO verify with sebhoerl
+        this.doDFR = dispatcherConfig.getBoolStrict("DFR");
         this.config = config;
         System.out.println("DFR is set to: " + doDFR);
         System.out.println("travelData: " + travelData.getLPName());

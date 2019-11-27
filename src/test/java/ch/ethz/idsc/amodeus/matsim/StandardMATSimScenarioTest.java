@@ -243,7 +243,7 @@ public class StandardMATSimScenarioTest {
 
         // Choose a dispatcher
         DispatcherConfig dispatcherConfig = operatorConfig.getDispatcherConfig();
-        dispatcherConfig.addParam("DFR", "true"); // TODO check back whether this is the final solution
+        dispatcherConfig.addParam("DFR", "true");
         dispatcherConfig.setType(dispatcher);
 
         // Make sure that we do not need the SimulationObjectCompiler
