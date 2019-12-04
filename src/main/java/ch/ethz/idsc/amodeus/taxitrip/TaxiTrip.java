@@ -50,7 +50,8 @@ public class TaxiTrip implements Comparable<TaxiTrip>, Serializable {
     public static TaxiTrip of(String id, String taxiId, Tensor pickupLoc, Tensor dropoffLoc, Scalar distance, //
             LocalDateTime submissionTimeDate, LocalDateTime pickupTimeDate, LocalDateTime dropoffTimeDate) {
         try {
-            Scalar waitTime = Duration.between(submissionTimeDate, pickupTimeDate);
+            Scalar waitTime = Objects.isNull(submissionTimeDate) ? //
+                    null : Duration.between(submissionTimeDate, pickupTimeDate);
             Scalar duration = Duration.between(pickupTimeDate, dropoffTimeDate);
             return new TaxiTrip(id, taxiId, pickupLoc, dropoffLoc, distance, //
                     submissionTimeDate, pickupTimeDate, dropoffTimeDate, //
@@ -75,7 +76,7 @@ public class TaxiTrip implements Comparable<TaxiTrip>, Serializable {
     public LocalDateTime submissionTimeDate; // trip submission time and date
     public LocalDateTime pickupTimeDate; // trip pickup time and date
     public LocalDateTime dropoffTimeDate; // trip dropoff time and date
-    public final Scalar waitTime; // wait time if recorded in data set
+    public final Scalar waitTime; // wait time if recorded in data set, otherwise null
     public final Scalar driveTime; // trip drive time
 
     /** must be private as it allows amigibuous entries, for the 5 time quantities, only three entries

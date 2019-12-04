@@ -141,14 +141,14 @@ public class SharedRoboTaxiTest {
 
         ScalarAssert scalarAssert = new ScalarAssert();
 
-        scalarAssert.add(RationalScalar.of(55283, 270000), occupancyRatio);
-        scalarAssert.add((Scalar) RealScalar.of(0.318973780).map(Round._9), (Scalar) distanceRatio.map(Round._9));
+        scalarAssert.add((Scalar)RealScalar.of(0.204750463).map(Round._5), (Scalar) occupancyRatio.map(Round._5));
+        scalarAssert.add((Scalar) RealScalar.of(0.318971842).map(Round._9), (Scalar) distanceRatio.map(Round._9));
 
         /** fleet distances */
         assertTrue(Scalars.lessEquals(ZERO_KM, ate.getDistancElement().totalDistance));
-        scalarAssert.add((Scalar) Quantity.of(103512.07866, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
+        scalarAssert.add((Scalar) Quantity.of(103511.72023, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
         assertTrue(Scalars.lessEquals(ZERO_KM, ate.getDistancElement().totalDistanceWtCst));
-        scalarAssert.add((Scalar) Quantity.of(32924.93751, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
+        scalarAssert.add((Scalar) Quantity.of(32924.57908, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
         assertTrue(Scalars.lessEquals(ZERO_KM, ate.getDistancElement().totalDistancePicku));
         scalarAssert.add((Scalar) Quantity.of(3895.14692, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistancePicku.map(Round._5));
         assertTrue(Scalars.lessEquals(ZERO_KM, ate.getDistancElement().totalDistanceRebal));
