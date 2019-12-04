@@ -36,16 +36,13 @@ public abstract class AbstractVirtualNetworkCreator<T, U> {
         VirtualNetwork<T> virtualNetwork = new VirtualNetworkImpl<>();
 
         /** assign link elements to virtual nodes */
-        System.out.println("Add to VNodes...");
         VirtualNetworkCreatorUtils.addToVNodes(vNodeTMap, nameOf, virtualNetwork);
 
         /** create virtualLinks for complete or neighboring graph */
-        System.out.println("Build...");
         VirtualLinkBuilder.build(virtualNetwork, completeGraph, uElements);
         GlobalAssert.that(VirtualNetworkCheck.virtualLinkConsistencyCheck(virtualNetwork));
 
         /** fill information for serialization */
-        System.out.println("Serialization info...");
         VirtualNetworkCreatorUtils.fillSerializationInfo(elements, virtualNetwork, nameOf);
 
         return virtualNetwork;
