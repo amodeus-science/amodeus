@@ -246,6 +246,7 @@ public class StandardMATSimScenarioTest {
         // Choose a dispatcher
         DispatcherConfig dispatcherConfig = operatorConfig.getDispatcherConfig();
         dispatcherConfig.addParam("DFR", "true");
+        dispatcherConfig.addParam("infoLinePeriod", "3600");
         dispatcherConfig.setType(dispatcher);
 
         // Make sure that we do not need the SimulationObjectCompiler
