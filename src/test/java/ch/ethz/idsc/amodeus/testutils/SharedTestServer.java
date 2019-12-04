@@ -71,7 +71,8 @@ public class SharedTestServer {
         scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
 
         Config config = ConfigUtils.loadConfig(scenarioOptions.getSimulationConfigName(), new DvrpConfigGroup(), new AVConfigGroup());
-        AVConfigGroup.getOrCreate(config).getOperatorConfigs().values().iterator().next().getDispatcherConfig().setType("NorthPoleSharedDispatcher");
+        AVConfigGroup.getOrCreate(config).getOperatorConfigs().values()//
+                .iterator().next().getDispatcherConfig().setType("TShareDispatcher");
         new ConfigWriter(config).write(scenarioOptions.getSimulationConfigName());
 
         simulate();
