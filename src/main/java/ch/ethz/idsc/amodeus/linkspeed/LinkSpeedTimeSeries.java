@@ -15,12 +15,10 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 public class LinkSpeedTimeSeries implements Serializable {
 
     /** keyMap contains times and Tensor a list of recorded speeds at the time */
-    private /* non-final */ NavigableMap<Integer, Double> data;
+    private /* non-final */ NavigableMap<Integer, Double> data = new TreeMap<>();
 
-    /* package */ LinkSpeedTimeSeries(int time, double speed) {
-        GlobalAssert.that(time >= 0);
-        data = new TreeMap<>();
-        data.put(time, speed);
+    /* package */ LinkSpeedTimeSeries() {
+        // ---
     }
 
     /** @return link speed at time @param time or null if no recording,
@@ -52,5 +50,4 @@ public class LinkSpeedTimeSeries implements Serializable {
         GlobalAssert.that(speed >= 0);
         data.put(time, speed);
     }
-
 }

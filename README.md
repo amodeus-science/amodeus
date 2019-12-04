@@ -27,7 +27,9 @@ It provides standard autonomous mobility-on-demand dispatching algorithms and an
 * **First Come First Served Strategy with Grid Rebalancing** from *Operations of Shared Autonomous Vehicle
 Fleet for Austin, Texas, Market* by Fagnant, D. J., Kockelman, K. M., and Bansal, P., 2015.
 * **Feedforward time-varying rebalancing policy** from Spieser, Kevin, Samitha Samaranayake, and Emilio Frazzoli. "Vehicle routing for shared-mobility systems with time-varying demand." American Control Conference (ACC), 2016. IEEE, 2016.
-
+* **+1 method** from The +1 Method: Model-Free Adaptive Repositioning Policies for Robotic Multi-Agent Systems by Ruch, C., Gächter, J., Hakenberg, J. and Frazzoli, E., 2019.
+* **DFR algorithm** from Albert, M., Ruch, C. and Frazzoli, E. "Imbalance in Mobility-on-Demand Systems: A Stochastic Model and Distributed Control Approach." ACM Transactions on Spatial Algorithms and Systems (TSAS) - Special Issue on Urban Mobility: Algorithms and Systems, 2019.
+* **Control policy requiring no explicit communication** and **sensor based control policy** from Arsie, Alessandro, Ketan Savla, and Emilio Frazzoli. "Efficient routing algorithms for multiple vehicles with no explicit communications." IEEE Transactions on Automatic Control, 2009.
 
 ### Available Ride Sharing Dispatching Algorithms
 * **Demand-supply-balancing with Beam Extension for Ride Sharing** Demand Supply Balancing heuristic from *Large-scale microscopic simulation of taxi services* by Maciejewski, M., and Bischoff J., 2015 extended with ride sharing if two requests start close to each other and have a similar direction.

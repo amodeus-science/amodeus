@@ -1,11 +1,18 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.dispatcher.util;
+package ch.ethz.idsc.amodeus.dispatcher;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 
+import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
+import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatcher;
+import ch.ethz.idsc.amodeus.dispatcher.util.ConfigurableBipartiteMatcher;
+import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceCost;
+import ch.ethz.idsc.amodeus.dispatcher.util.FIFOFixedQueue;
+import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
+import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatchingILP;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.api.experimental.events.EventsManager;

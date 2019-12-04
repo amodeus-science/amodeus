@@ -31,6 +31,8 @@ public enum PopulationAVRequests {
         // fill based on population file
         for (Person person : population.getPersons().values()) {
             for (Plan plan : person.getPlans()) {
+                if (plan.getPlanElements().size() < 3)
+                    continue;
                 Iterator<PlanElement> iterator = plan.getPlanElements().iterator();
                 PlanElement planElMins;
                 PlanElement planElMidl = iterator.next();

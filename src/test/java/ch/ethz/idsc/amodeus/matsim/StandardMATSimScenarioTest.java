@@ -100,6 +100,8 @@ public class StandardMATSimScenarioTest {
                 { "RestrictedLinkCapacityDispatcher" }, //
                 { "ModelFreeAdaptiveRepositioning" }, //
                 { "DFRStrategy" }, //
+                { "NoExplicitCommunication" }, //
+                { "SBNoExplicitCommunication" }, //
 
                 // This one doesn't finish all requests. Bug or not enough of time? Also it's not good in an automated unit test because it
                 // produces large amounts of log output.
@@ -243,7 +245,7 @@ public class StandardMATSimScenarioTest {
 
         // Choose a dispatcher
         DispatcherConfig dispatcherConfig = operatorConfig.getDispatcherConfig();
-        dispatcherConfig.addParam("DFR", "true"); // TODO check back whether this is the final solution
+        dispatcherConfig.addParam("DFR", "true");
         dispatcherConfig.setType(dispatcher);
 
         // Make sure that we do not need the SimulationObjectCompiler
