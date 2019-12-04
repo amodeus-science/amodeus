@@ -139,6 +139,7 @@ public class MATSimVirtualNetworkTravelDataTest {
 
         // Choose a dispatcher
         DispatcherConfig dispatcherConfig = operatorConfig.getDispatcherConfig();
+        dispatcherConfig.addParam("infoLinePeriod", "3600");
         dispatcherConfig.setType("FeedforwardFluidicRebalancingPolicy");
 
         // Make sure that we do not need the SimulationObjectCompiler
