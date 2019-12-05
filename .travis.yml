@@ -3,7 +3,6 @@ before_install:
   - sudo apt-get install swig
   - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:resources/3rdparty/glpk/lib/jni
   - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
 
 language: java
 jdk:
