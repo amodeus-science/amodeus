@@ -28,7 +28,7 @@ import ch.ethz.matsim.av.config.operator.GeneratorConfig;
 
 public class KMeansVirtualNetworkCreatorTest {
 
-    private static int nCreations = 20;
+    private static int nCreations = 7;
     private static List<VirtualNetwork<Link>> virtualNetworks = new ArrayList<>();
     private static int numVNodes;
 
