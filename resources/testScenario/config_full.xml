@@ -15,6 +15,7 @@
     			<param name="type" value="DemandSupplyBalancingDispatcher" />
     			<param name="dispatchPeriod" value="10" />
     			<param name="infoLinePeriod" value="3600" />
+    			<param name="publishPeriod" value="120" />
     		</parameterset>
 
     		<parameterset type="timing">
