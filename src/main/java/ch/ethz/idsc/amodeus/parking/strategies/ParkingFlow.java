@@ -73,12 +73,10 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
                     /** attempt to solve without a linear program for small numbers
                      * of units to move */
                     if (totalUnits < 20) { // TODO find meaningful value, remove magic const.
-                        System.out.println("Fast solver is started...");
                         fastSolver = new SmallRedistributionProblemSolver<>(unitsToMove, freeSpacesToGo, //
                                 distanceFunction::getDistance, l -> l.getId().toString(), //
                                 false, "");
                         foundSolution = fastSolver.success();
-                        System.out.println("Fast solver status: " + foundSolution);
 
                         GlobalAssert.that(totalUnits != 1 || fastSolver.success());
 
