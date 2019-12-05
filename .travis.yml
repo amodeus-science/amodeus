@@ -9,7 +9,3 @@ jdk:
 
 notifications:
   email: false
-
-script:
-  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -Dmaven.test.redirectTestOutputToFile -Dmatsim.preferLocalDtds=true
-  - mvn test -B -Dmaven.test.redirectTestOutputToFile -Dmatsim.preferLocalDtds=true
