@@ -57,10 +57,12 @@ public class ScenarioPipeLineTest {
         System.out.println(GLPK.glp_version());
 
         // copy scenario data into main directory
-        File scenarioDirectory = new File(Locate.repoFolder(ScenarioPipeLineTest.class, "amodeus"), "resources/testScenario");
+        File scenarioDirectory = //
+                new File(Locate.repoFolder(ScenarioPipeLineTest.class, "amodeus"), "resources/testScenario");
         File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         GlobalAssert.that(workingDirectory.isDirectory());
-        TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
+        TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), //
+                workingDirectory.getAbsolutePath());
 
         // run scenario preparer
         testPreparer = TestPreparer.run(workingDirectory);
@@ -121,8 +123,8 @@ public class ScenarioPipeLineTest {
         File simobj = new File("output/001/simobj/it.00");
         assertTrue(simobj.exists());
         assertEquals(109, simobj.listFiles().length);
-        assertTrue(new File(simobj, "0000000/0000010.bin").exists());
-        assertTrue(new File(simobj, "0107000/0107940.bin").exists());
+        assertTrue(new File(simobj, "0000000/0000120.bin").exists());
+        assertTrue(new File(simobj, "0108000/0108000.bin").exists());
     }
 
     @Test
@@ -150,8 +152,8 @@ public class ScenarioPipeLineTest {
         Scalar distanceRatio = Mean.of(ate.getDistancElement().ratios).Get(1);
 
         //
-        scalarAssert.add(RationalScalar.of(88841, 1080000), occupancyRatio);
-        scalarAssert.add((Scalar) RealScalar.of(0.669469728473632).map(Round._5), (Scalar) distanceRatio.map(Round._5));
+        scalarAssert.add(RationalScalar.of(1647, 20000), occupancyRatio);
+        scalarAssert.add((Scalar) RealScalar.of(0.67295).map(Round._5), (Scalar) distanceRatio.map(Round._5));
 
         /** fleet distances */
         assertTrue(Scalars.lessEquals(ZERO_KM, ate.getDistancElement().totalDistance));
@@ -163,11 +165,11 @@ public class ScenarioPipeLineTest {
         assertTrue(Scalars.lessEquals(ZERO_KM, (Scalar) s)));
         assertEquals(Total.of(ate.getDistancElement().totalDistancesPerVehicle), ate.getDistancElement().totalDistance);
 
-        scalarAssert.add((Scalar) Quantity.of(13929.04196, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
-        scalarAssert.add((Scalar) Quantity.of(11458.44065, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
-        scalarAssert.add((Scalar) Quantity.of(2470.60132, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistancePicku.map(Round._5));
+        scalarAssert.add((Scalar) Quantity.of(4214.13667, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
+        scalarAssert.add((Scalar) Quantity.of(3496.56660, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
+        scalarAssert.add((Scalar) Quantity.of(717.57007, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistancePicku.map(Round._5));
         scalarAssert.add(ZERO_KM, ate.getDistancElement().totalDistanceRebal);
-        scalarAssert.add((Scalar) RealScalar.of(0.82263).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRatio.map(Round._5));
+        scalarAssert.add((Scalar) RealScalar.of(0.82972).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRatio.map(Round._5));
 
         scalarAssert.add((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle), //
                 ate.getDistancElement().totalDistance);
@@ -191,9 +193,9 @@ public class ScenarioPipeLineTest {
                 ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(2)));
         assertTrue(Scalars.lessEquals(Quantity.of(0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1)));
 
-        scalarAssert.add(Quantity.of(282.95291139240504, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1));
-        scalarAssert.add(Quantity.of(3297.0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(2));
-        scalarAssert.add(Quantity.of(RationalScalar.of(355364, 395), SI.SECOND), ate.getTravelTimeAnalysis().getDrveAggrgte().Get(1));
+        scalarAssert.add(Quantity.of(336.98835443037973, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1));
+        scalarAssert.add(Quantity.of(3367.0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(2));
+        scalarAssert.add(Quantity.of(RationalScalar.of(355752, 395), SI.SECOND), ate.getTravelTimeAnalysis().getDrveAggrgte().Get(1));
         scalarAssert.add(Quantity.of(4080, SI.SECOND), ate.getTravelTimeAnalysis().getDrveAggrgte().Get(2));
 
         /* TODO Have a look at {AmodeusModule::install}. At some point the travel time calculation in DVRP has been improved.
