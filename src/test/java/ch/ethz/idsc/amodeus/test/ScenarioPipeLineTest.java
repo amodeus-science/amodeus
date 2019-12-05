@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
+import ch.ethz.idsc.tensor.io.UserName;
 import org.gnu.glpk.GLPK;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -71,7 +72,8 @@ public class ScenarioPipeLineTest {
         testServer = TestServer.run().on(workingDirectory);
 
         // run scenario viewer
-        testViewer = TestViewer.run(workingDirectory);
+        if (!UserName.is("travis"))
+            testViewer = TestViewer.run(workingDirectory);
     }
 
     @Test
@@ -236,10 +238,12 @@ public class ScenarioPipeLineTest {
 
     @Test
     public void testViewer() {
-        System.out.println("Viewer Test:");
+        if (!UserName.is("travis")) {
+            System.out.println("Viewer Test:");
 
-        assertEquals(9, testViewer.getAmodeusComponent().viewerLayers.size());
-        assertEquals(31, testViewer.getViewerConfig().settings.getClass().getFields().length);
+            assertEquals(9, testViewer.getAmodeusComponent().viewerLayers.size());
+            assertEquals(31, testViewer.getViewerConfig().settings.getClass().getFields().length);
+        }
     }
 
     @AfterClass

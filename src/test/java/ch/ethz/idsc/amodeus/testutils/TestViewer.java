@@ -4,7 +4,6 @@ package ch.ethz.idsc.amodeus.testutils;
 import java.io.File;
 import java.io.IOException;
 
-import ch.ethz.idsc.tensor.io.UserName;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
@@ -65,7 +64,7 @@ public class TestViewer {
         AmodeusViewerFrame amodeusViewerFrame = new AmodeusViewerFrame(amodeusComponent, outputDirectory, network, scenarioOptions);
         amodeusViewerFrame.setDisplayPosition(viewerConfig.settings.coord, viewerConfig.settings.zoom);
         amodeusViewerFrame.jFrame.setSize(viewerConfig.settings.dimensions);
-        amodeusViewerFrame.jFrame.setVisible(!UserName.is("travis"));
+        amodeusViewerFrame.jFrame.setVisible(true);
     }
 
     public AmodeusComponent getAmodeusComponent() {

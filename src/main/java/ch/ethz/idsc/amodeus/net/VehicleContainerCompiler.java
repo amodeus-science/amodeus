@@ -21,10 +21,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         VehicleContainer vc = new VehicleContainer();
         vc.vehicleIndex = db.getVehicleIndex(roboTaxi);
         GlobalAssert.that(!linkTrace.isEmpty());
-        int[] linkIndexTrace = new int[linkTrace.size()];
-        for (int i = 0; i < linkTrace.size(); ++i)
-            linkIndexTrace[i] = db.getLinkIndex(linkTrace.get(i));
-        vc.linkTrace = linkIndexTrace;
+        vc.linkTrace = linkTrace.stream().mapToInt(db::getLinkIndex).toArray();
         vc.roboTaxiStatus = roboTaxi.getStatus();
         Link toLink = roboTaxi.getCurrentDriveDestination();
         vc.destinationLinkIndex = db.getLinkIndex(Objects.requireNonNull(toLink));

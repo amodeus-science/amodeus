@@ -138,7 +138,7 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
             if (SimulationObjects.hasVehicles(simulationObject))
                 SimulationDistribution.of(simulationObject, storageUtils);
 
-            /** the temporary locaion traces are flushed at this point as they have
+            /** the temporary location traces are flushed at this point as they have
              * been communicated, saved. */
             flushLocationTraces();
         }
