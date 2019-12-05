@@ -71,9 +71,7 @@ public class ScenarioPipeLineTest {
         testServer = TestServer.run().on(workingDirectory);
 
         // run scenario viewer
-        // FIXME this was disabled as it fails online in Travis, need 
-        // to find different way to test the display... 
-        // testViewer = TestViewer.run(workingDirectory);
+        testViewer = TestViewer.run(workingDirectory);
     }
 
     @Test
@@ -236,13 +234,13 @@ public class ScenarioPipeLineTest {
         assertTrue(new File("output/001/report/config.xml").isFile());
     }
 
-    // @Test
-    // public void testViewer() throws Exception {
-    // System.out.println("Viewer Test:");
-    //
-    // assertEquals(9, testViewer.getAmodeusComponent().viewerLayers.size());
-    // assertEquals(31, testViewer.getViewerConfig().settings.getClass().getFields().length);
-    // }
+    @Test
+    public void testViewer() {
+        System.out.println("Viewer Test:");
+
+        assertEquals(9, testViewer.getAmodeusComponent().viewerLayers.size());
+        assertEquals(31, testViewer.getViewerConfig().settings.getClass().getFields().length);
+    }
 
     @AfterClass
     public static void tearDownOnce() throws IOException {
