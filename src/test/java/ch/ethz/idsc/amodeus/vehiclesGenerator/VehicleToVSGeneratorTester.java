@@ -37,7 +37,7 @@ import ch.ethz.matsim.av.config.operator.OperatorConfig;
 import ch.ethz.matsim.av.data.AVOperator;
 
 public class VehicleToVSGeneratorTester {
-    private static final int TRIALS = 1000;
+    private static final int TRIALS = 50;
     // ---
     private static VirtualNetwork<Link> virtualNetwork;
     private static ScenarioOptions scenarioOptions;
