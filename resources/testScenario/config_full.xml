@@ -8,11 +8,11 @@
 
     		<parameterset type="generator">
     			<param name="type" value="PopulationDensity" />
-    			<param name="numberOfVehicles" value="200" />
+    			<param name="numberOfVehicles" value="40" />
     		</parameterset>
 
     		<parameterset type="dispatcher">
-    			<param name="type" value="DemandSupplyBalancingDispatcher" />
+    			<param name="type" value="ModelFreeAdaptiveRepositioning" />
     			<param name="dispatchPeriod" value="10" />
     			<param name="infoLinePeriod" value="3600" />
     			<param name="publishPeriod" value="120" />
