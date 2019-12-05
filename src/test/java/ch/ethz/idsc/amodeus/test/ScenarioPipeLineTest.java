@@ -236,13 +236,13 @@ public class ScenarioPipeLineTest {
         assertTrue(new File("output/001/report/config.xml").isFile());
     }
 
-    @Test
-    public void testViewer() throws Exception {
-        System.out.println("Viewer Test:");
-
-        assertEquals(9, testViewer.getAmodeusComponent().viewerLayers.size());
-        assertEquals(31, testViewer.getViewerConfig().settings.getClass().getFields().length);
-    }
+    // @Test
+    // public void testViewer() throws Exception {
+    // System.out.println("Viewer Test:");
+    //
+    // assertEquals(9, testViewer.getAmodeusComponent().viewerLayers.size());
+    // assertEquals(31, testViewer.getViewerConfig().settings.getClass().getFields().length);
+    // }
 
     @AfterClass
     public static void tearDownOnce() throws IOException {
