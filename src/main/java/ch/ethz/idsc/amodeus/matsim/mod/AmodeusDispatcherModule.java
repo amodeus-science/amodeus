@@ -1,18 +1,18 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.matsim.mod;
 
-import ch.ethz.idsc.amodeus.dispatcher.DFRStrategy;
-import ch.ethz.idsc.amodeus.dispatcher.NoExplicitCommunication;
-import ch.ethz.idsc.amodeus.dispatcher.SBNoExplicitCommunication;
-import ch.ethz.idsc.amodeus.dispatcher.ModelFreeAdaptiveRepositioning;
 import org.matsim.core.controler.AbstractModule;
 
 import ch.ethz.idsc.amodeus.dispatcher.AdaptiveRealTimeRebalancingPolicy;
+import ch.ethz.idsc.amodeus.dispatcher.DFRStrategy;
 import ch.ethz.idsc.amodeus.dispatcher.DemandSupplyBalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.DriveByDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.FeedforwardFluidicRebalancingPolicy;
 import ch.ethz.idsc.amodeus.dispatcher.FeedforwardFluidicTimeVaryingRebalancingPolicy;
 import ch.ethz.idsc.amodeus.dispatcher.GlobalBipartiteMatchingDispatcher;
+import ch.ethz.idsc.amodeus.dispatcher.ModelFreeAdaptiveRepositioning;
+import ch.ethz.idsc.amodeus.dispatcher.NoExplicitCommunication;
+import ch.ethz.idsc.amodeus.dispatcher.SBNoExplicitCommunication;
 import ch.ethz.idsc.amodeus.dispatcher.SQMDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.basic.ExtDemandSupplyBeamSharing;
 import ch.ethz.idsc.amodeus.dispatcher.shared.basic.NorthPoleSharedDispatcher;

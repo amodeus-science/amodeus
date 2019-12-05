@@ -17,16 +17,17 @@ public class CyclePreventer {
     private final int maxCycle = 500;
     private final Map<RoboTaxi, Link> cyclingTaxis = new HashMap<>();
 
-    /** Prevents cycling behavior in the set of @param allTaxis (supplied with {@link ch.ethz.idsc.amodeus.dispatcher.core.BasicUniversalDispatcher#getRoboTaxis()}
+    /** Prevents cycling behavior in the set of @param allTaxis (supplied with
+     * {@link ch.ethz.idsc.amodeus.dispatcher.core.BasicUniversalDispatcher#getRoboTaxis()}
      * by applying an cycling detection algorithm to the sequence of pst links. If cycling is detected, the {@link RoboTaxi}
      * is diverted towards its current drive destination to break the cycle with a @param rebalance command. */
     public void update(List<RoboTaxi> allTaxis, BiConsumer<RoboTaxi, Link> rebalance) {
         if (allTaxis.size() > 0) {
             /** maintaining a list of past links to prevent cycling */
             // if (pastLinks.size() == 0) {
-            //     allTaxis.stream().forEach(rt -> pastLinks.put(rt, new ArrayList<>()));
+            // allTaxis.stream().forEach(rt -> pastLinks.put(rt, new ArrayList<>()));
             // } else {
-            //     allTaxis.stream().forEach(rt -> pastLinks.get(rt).add(rt.getDivertableLocation()));
+            // allTaxis.stream().forEach(rt -> pastLinks.get(rt).add(rt.getDivertableLocation()));
             // }
             allTaxis.forEach(rt -> pastLinks.computeIfAbsent(rt, r -> new ArrayList<>()).add(rt.getDivertableLocation())); // also adds first location
 

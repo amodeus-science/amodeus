@@ -15,12 +15,13 @@ public class LinkSpeedDataContainer implements Serializable {
     private final SortedMap<Integer, LinkSpeedTimeSeries> linkMap = new TreeMap<>();
 
     /** add a speed recording for link with
+     * 
      * @param linkIndex at
      * @param time with a speed value
      * @param speed [m/s] */
     public void addData(Integer linkIndex, int time, double speed) {
         linkMap.computeIfAbsent(linkIndex, idx -> new LinkSpeedTimeSeries()). //
-                /* linkMap.get(linkIndex) */ setSpeed(time, speed);
+        /* linkMap.get(linkIndex) */ setSpeed(time, speed);
     }
 
     public SortedMap<Integer, LinkSpeedTimeSeries> getLinkMap() {

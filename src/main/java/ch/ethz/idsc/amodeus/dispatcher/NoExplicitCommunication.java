@@ -3,7 +3,6 @@ package ch.ethz.idsc.amodeus.dispatcher;
 
 import java.util.Objects;
 
-import ch.ethz.idsc.amodeus.dispatcher.core.AbstractNoExplicitCommunication;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -13,6 +12,7 @@ import org.matsim.core.router.util.TravelTime;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import ch.ethz.idsc.amodeus.dispatcher.core.AbstractNoExplicitCommunication;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.TensorCoords;
@@ -43,7 +43,7 @@ public class NoExplicitCommunication extends AbstractNoExplicitCommunication {
                  * agents move towards the open targets, i.e., there can be more than
                  * one agent moving towards a target */
                 if (Objects.nonNull(closest))
-                /** excessive computation is avoided if rebalancing command given only once */
+                    /** excessive computation is avoided if rebalancing command given only once */
                     if (!roboTaxi.getCurrentDriveDestination().equals(closest.getFromLink()))
                         setRoboTaxiRebalance(roboTaxi, closest.getFromLink());
             } else {

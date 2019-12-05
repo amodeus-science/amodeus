@@ -90,8 +90,7 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
         }
 
         virtualNodesCount = Objects.isNull(virtualNetwork) //
-                ? UNDEFINED_INT
-                : virtualNetwork.getvNodesCount();
+                ? UNDEFINED_INT : virtualNetwork.getvNodesCount();
 
         iterations = config.controler().getLastIteration();
 
@@ -99,8 +98,7 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
 
     public String getVirtualNetworkDescription() {
         return virtualNodesCount == UNDEFINED_INT //
-                ? "no virtual network found"
-                : virtualNodesCount + " virtual nodes.";
+                ? "no virtual network found" : virtualNodesCount + " virtual nodes.";
     }
 
     @Override

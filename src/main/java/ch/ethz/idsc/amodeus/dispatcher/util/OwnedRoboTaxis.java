@@ -34,11 +34,11 @@ public class OwnedRoboTaxis {
 
         /** staying taxis */
         allTaxis.stream().filter(RoboTaxi::isInStayTask).forEach(rt -> //
-                owned.get(virtualNetwork.getVirtualNode(rt.getDivertableLocation())).add(rt));
+        owned.get(virtualNetwork.getVirtualNode(rt.getDivertableLocation())).add(rt));
 
         /** rebalancing taxis */
         allTaxis.stream().filter(rt -> rt.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE)).forEach(rt -> //
-                owned.get(virtualNetwork.getVirtualNode(rt.getCurrentDriveDestination())).add(rt));
+        owned.get(virtualNetwork.getVirtualNode(rt.getCurrentDriveDestination())).add(rt));
     }
 
     public List<RoboTaxi> in(VirtualNode<Link> virtualNode) {

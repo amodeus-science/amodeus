@@ -5,6 +5,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.matsim.api.core.v01.network.Network;
+import org.matsim.core.api.experimental.events.EventsManager;
+import org.matsim.core.config.Config;
+import org.matsim.core.network.NetworkUtils;
+import org.matsim.core.router.util.TravelTime;
+
 import ch.ethz.idsc.amodeus.cycling.CyclePreventer;
 import ch.ethz.idsc.amodeus.dispatcher.util.DrivebyRequestStopper;
 import ch.ethz.idsc.amodeus.dispatcher.util.TensorLocation;
@@ -16,12 +22,6 @@ import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.matsim.av.config.operator.OperatorConfig;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.router.AVRouter;
-import org.matsim.api.core.v01.network.Link;
-import org.matsim.api.core.v01.network.Network;
-import org.matsim.core.api.experimental.events.EventsManager;
-import org.matsim.core.config.Config;
-import org.matsim.core.network.NetworkUtils;
-import org.matsim.core.router.util.TravelTime;
 
 /** Arsie, Alessandro, Ketan Savla, and Emilio Frazzoli. "Efficient routing algorithms for multiple
  * vehicles with no explicit communications." IEEE Transactions on Automatic Control 54.10 (2009): 2302-2317. */
@@ -84,4 +84,3 @@ public abstract class AbstractNoExplicitCommunication extends RebalancingDispatc
 
     protected abstract void redispatchIteration();
 }
-

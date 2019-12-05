@@ -140,7 +140,7 @@ public class SharedRoboTaxiTest {
 
         ScalarAssert scalarAssert = new ScalarAssert();
 
-        scalarAssert.add((Scalar)RealScalar.of(0.04983).map(Round._5), (Scalar) occupancyRatio.map(Round._5));
+        scalarAssert.add((Scalar) RealScalar.of(0.04983).map(Round._5), (Scalar) occupancyRatio.map(Round._5));
         scalarAssert.add((Scalar) RealScalar.of(0.546791982).map(Round._9), (Scalar) distanceRatio.map(Round._9));
 
         /** fleet distances */

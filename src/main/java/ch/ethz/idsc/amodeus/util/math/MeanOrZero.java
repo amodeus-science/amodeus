@@ -12,7 +12,6 @@ public enum MeanOrZero {
 
     public static Scalar of(Tensor vector) {
         return Tensors.isEmpty(vector) //
-                ? RealScalar.ZERO
-                : (Scalar) Mean.of(vector);
+                ? RealScalar.ZERO : (Scalar) Mean.of(vector);
     }
 }

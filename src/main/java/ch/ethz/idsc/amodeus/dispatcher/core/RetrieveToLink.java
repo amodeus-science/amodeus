@@ -108,7 +108,8 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
                         GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.STAY));
                     } else {
                         // We only do it for Drive Tasks. As:
-                        // a) A dropoff Task already finishes by default with a stay task afterwards. Thus The only reason we reach this part is because we are in
+                        // a) A dropoff Task already finishes by default with a stay task afterwards. Thus The only reason we reach this part is because we are
+                        // in
                         // Dropoff
                         GlobalAssert.that(avTask.getAVTaskType().equals(AVTaskType.DROPOFF));
                         GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));

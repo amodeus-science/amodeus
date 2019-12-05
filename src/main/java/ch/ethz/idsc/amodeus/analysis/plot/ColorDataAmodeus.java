@@ -14,8 +14,7 @@ public enum ColorDataAmodeus {
     public static ColorDataIndexed indexed(String name) {
         ColorDataIndexed colorDataIndexed = INSTANCE.map.get(normalize(name));
         return Objects.isNull(colorDataIndexed) //
-                ? ColorDataAmodeusSpecific.COLORFUL.cyclic()
-                : colorDataIndexed;
+                ? ColorDataAmodeusSpecific.COLORFUL.cyclic() : colorDataIndexed;
     }
 
     // ---
@@ -35,7 +34,6 @@ public enum ColorDataAmodeus {
 
     private static String normalize(String name) {
         return name.charAt(0) == '_' //
-                ? normalize(name.substring(1))
-                : name.toUpperCase();
+                ? normalize(name.substring(1)) : name.toUpperCase();
     }
 }

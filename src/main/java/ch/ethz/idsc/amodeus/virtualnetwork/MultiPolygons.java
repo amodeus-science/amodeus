@@ -65,7 +65,6 @@ public class MultiPolygons {
         String title = file.getName();
         int index = title.lastIndexOf('.');
         return index > 0 //
-                ? title.substring(index + 1)
-                : "";
+                ? title.substring(index + 1) : "";
     }
 }

@@ -7,11 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import ch.ethz.idsc.amodeus.dispatcher.util.MetropolisHastings;
-import ch.ethz.idsc.amodeus.dispatcher.util.OwnedRoboTaxis;
-import ch.ethz.idsc.amodeus.dispatcher.util.Rounder;
-import ch.ethz.idsc.amodeus.virtualnetwork.Neighboring;
-import ch.ethz.matsim.av.data.AVOperator;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
@@ -33,12 +28,16 @@ import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
 import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceCost;
 import ch.ethz.idsc.amodeus.dispatcher.util.FeasibleRebalanceCreator;
 import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
+import ch.ethz.idsc.amodeus.dispatcher.util.MetropolisHastings;
+import ch.ethz.idsc.amodeus.dispatcher.util.OwnedRoboTaxis;
 import ch.ethz.idsc.amodeus.dispatcher.util.RandomVirtualNodeDest;
+import ch.ethz.idsc.amodeus.dispatcher.util.Rounder;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.amodeus.virtualnetwork.Neighboring;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -51,6 +50,7 @@ import ch.ethz.idsc.tensor.io.Export;
 import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.red.Mean;
 import ch.ethz.matsim.av.config.operator.OperatorConfig;
+import ch.ethz.matsim.av.data.AVOperator;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.router.AVRouter;
@@ -203,10 +203,8 @@ public class DFRStrategy extends PartitionedDispatcher {
     }
 
     private Map<VirtualNode<Link>, Scalar> getImbalances() {
-        return virtualNetwork.getVirtualNodes().stream().collect(Collectors.toMap(
-                vNode -> vNode,
-                vNode -> RealScalar.of(getVirtualNodeRequests().get(vNode).size() - ownedRoboTaxis.in(vNode).size())
-        ));
+        return virtualNetwork.getVirtualNodes().stream()
+                .collect(Collectors.toMap(vNode -> vNode, vNode -> RealScalar.of(getVirtualNodeRequests().get(vNode).size() - ownedRoboTaxis.in(vNode).size())));
     }
 
     @Override

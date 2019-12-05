@@ -3,8 +3,6 @@ package ch.ethz.idsc.amodeus.dispatcher;
 
 import java.util.Objects;
 
-import ch.ethz.idsc.amodeus.dispatcher.core.AbstractNoExplicitCommunication;
-import ch.ethz.idsc.amodeus.dispatcher.util.VoronoiPartition;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
@@ -15,7 +13,9 @@ import org.matsim.core.router.util.TravelTime;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import ch.ethz.idsc.amodeus.dispatcher.core.AbstractNoExplicitCommunication;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.util.VoronoiPartition;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.TensorCoords;
 import ch.ethz.matsim.av.config.operator.OperatorConfig;

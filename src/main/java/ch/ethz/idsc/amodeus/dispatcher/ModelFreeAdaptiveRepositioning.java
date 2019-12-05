@@ -6,13 +6,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 
-import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
-import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatcher;
-import ch.ethz.idsc.amodeus.dispatcher.util.ConfigurableBipartiteMatcher;
-import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceCost;
-import ch.ethz.idsc.amodeus.dispatcher.util.FIFOFixedQueue;
-import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
-import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatchingILP;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -26,6 +19,13 @@ import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import ch.ethz.idsc.amodeus.dispatcher.core.RebalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
+import ch.ethz.idsc.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
+import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatcher;
+import ch.ethz.idsc.amodeus.dispatcher.util.ConfigurableBipartiteMatcher;
+import ch.ethz.idsc.amodeus.dispatcher.util.EuclideanDistanceCost;
+import ch.ethz.idsc.amodeus.dispatcher.util.FIFOFixedQueue;
+import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatching;
+import ch.ethz.idsc.amodeus.dispatcher.util.GlobalBipartiteMatchingILP;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.routing.EuclideanDistanceFunction;
@@ -91,7 +91,7 @@ public class ModelFreeAdaptiveRepositioning extends RebalancingDispatcher {
 
         /** dipatch step */
         if (round_now % dispatchPeriod == 0)
-        /** step 1, execute pickup on all open requests */
+            /** step 1, execute pickup on all open requests */
             printVals = assignmentMatcher.executePickup(this, getDivertableRoboTaxis(), getAVRequests(), //
                     EuclideanDistanceFunction.INSTANCE, network);
 
@@ -105,7 +105,7 @@ public class ModelFreeAdaptiveRepositioning extends RebalancingDispatcher {
             /** stop vehicles which are still divertable and driving to have only one rebalance vehicles
              * going to a request */
             getDivertableRoboTaxis().stream().filter(rt -> rt.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE)).forEach(rt -> //
-                    setRoboTaxiRebalance(rt, rt.getDivertableLocation()));
+            setRoboTaxiRebalance(rt, rt.getDivertableLocation()));
         }
     }
 
