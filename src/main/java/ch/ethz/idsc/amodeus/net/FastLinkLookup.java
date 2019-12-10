@@ -18,7 +18,7 @@ public class FastLinkLookup {
         final double[] networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
         quadTree = new QuadTree<>( //
                 networkBounds[0], networkBounds[1], networkBounds[2], networkBounds[3]);
-        for (Link link : db.getLinkIntegerMap().keySet())
+        for (Link link : network.getLinks().values())
             quadTree.put(link.getCoord().getX(), link.getCoord().getY(), link);
     }
 
