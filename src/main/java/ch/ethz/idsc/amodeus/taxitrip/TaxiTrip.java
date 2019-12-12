@@ -12,6 +12,7 @@ import ch.ethz.idsc.amodeus.util.Duration;
 import ch.ethz.idsc.amodeus.util.LocalDateTimes;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.io.StringScalar;
 import ch.ethz.idsc.tensor.sca.Sign;
 
 /** The class {@link TaxiTrip} is used to transform taxi trips from databases into scenarios
@@ -26,9 +27,9 @@ public class TaxiTrip implements Comparable<TaxiTrip>, Serializable {
     public static TaxiTrip of(String id, String taxiId, Tensor pickupLoc, Tensor dropoffLoc, Scalar distance, //
             LocalDateTime pickupTimeDate, Scalar waitTime, Scalar driveTime) {
         try {
-            LocalDateTime submissionDate = Objects.nonNull(waitTime) ? //
+            LocalDateTime submissionDate = Objects.nonNull(waitTime) && !(waitTime instanceof StringScalar) ? //
                     LocalDateTimes.subtractFrom(pickupTimeDate, waitTime) : null;
-            LocalDateTime dropoffDate = Objects.nonNull(driveTime) ? //
+            LocalDateTime dropoffDate = Objects.nonNull(driveTime) && !(driveTime instanceof StringScalar) ? //
                     LocalDateTimes.addTo(pickupTimeDate, driveTime) : null;
 
             return new TaxiTrip(id, taxiId, pickupLoc, dropoffLoc, distance, //
