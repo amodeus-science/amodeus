@@ -59,7 +59,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
 
     /** @return {@link AVRequest}s currently not assigned to a vehicle */
     protected synchronized final List<AVRequest> getUnassignedAVRequests() {
-        return pendingRequests.stream() //
+        return getAVRequests().stream() //
                 .filter(r -> !pickupRegister.containsKey(r)) //
                 .collect(Collectors.toList());
     }
@@ -100,7 +100,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
      * @param avRequest */
     public final void setRoboTaxiPickup(RoboTaxi roboTaxi, AVRequest avRequest) {
         GlobalAssert.that(roboTaxi.isWithoutCustomer());
-        GlobalAssert.that(pendingRequests.contains(avRequest));
+        GlobalAssert.that(getAVRequests().contains(avRequest));
 
         /** for some dispatchers, reassignment is permanently invoked again, the
          * {@link RoboTaxi} should appear under only at the time step of assignment */
@@ -199,6 +199,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
     private synchronized final void setAcceptRequest(RoboTaxi roboTaxi, AVRequest avRequest) {
         roboTaxi.setStatus(RoboTaxiStatus.DRIVEWITHCUSTOMER);
         roboTaxi.setCurrentDriveDestination(avRequest.getToLink());
+        getAVRequests();
 
         /** request not pending anymore */
         boolean statusPen = pendingRequests.remove(avRequest);
@@ -270,7 +271,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
         Map<AVRequest, RoboTaxi> pickupRegisterCopy = new HashMap<>(pickupRegister);
         for (Entry<AVRequest, RoboTaxi> entry : pickupRegisterCopy.entrySet()) {
             AVRequest avRequest = entry.getKey();
-            GlobalAssert.that(pendingRequests.contains(avRequest));
+            GlobalAssert.that(getAVRequests().contains(avRequest));
             RoboTaxi pickupVehicle = entry.getValue();
             Link pickupVehicleLink = pickupVehicle.getDivertableLocation();
             boolean isOk = pickupVehicle.getSchedule().getCurrentTask() == Schedules.getLastTask(pickupVehicle.getSchedule());
@@ -309,14 +310,14 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
                 .filter(RoboTaxi::isWithoutCustomer) //
                 .filter(RoboTaxi::isWithoutDirective) //
                 .forEach(rt -> setRoboTaxiDiversion(rt, rt.getDivertableLocation(), RoboTaxiStatus.REBALANCEDRIVE));
-        GlobalAssert.that(pickupRegister.size() <= pendingRequests.size());
+        GlobalAssert.that(pickupRegister.size() <= getAVRequests().size());
     }
 
     /** Consistency checks to be called by {@link RoboTaxiHandler.consistencyCheck}
      * in each iteration. */
     @Override
     protected final void consistencySubCheck() {
-        GlobalAssert.that(pickupRegister.size() <= pendingRequests.size());
+        GlobalAssert.that(pickupRegister.size() <= getAVRequests().size());
 
         /** containment check pickupRegister and pendingRequests */
         pickupRegister.keySet().forEach(r -> GlobalAssert.that(pendingRequests.contains(r)));
@@ -330,7 +331,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
         /** pickup register must be after pending requests, request is pending from
          * moment it appears until it is picked up, this period may contain several not
          * connected pickup periods (cancelled pickup attempts) */
-        simulationObjectCompiler.insertRequests(pendingRequests, RequestStatus.REQUESTED);
+        simulationObjectCompiler.insertRequests(getAVRequests(), RequestStatus.REQUESTED);
         simulationObjectCompiler.insertRequests(pickupRegister.keySet(), RequestStatus.PICKUPDRIVE);
         simulationObjectCompiler.insertRequests(rqstDrvRegister.keySet(), RequestStatus.DRIVING);
 
@@ -340,6 +341,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
         simulationObjectCompiler.insertRequests(periodAssignedRequests, RequestStatus.ASSIGNED);
         simulationObjectCompiler.insertRequests(periodPickedUpRequests, RequestStatus.PICKUP);
         simulationObjectCompiler.insertRequests(periodFulfilledRequests.keySet(), RequestStatus.DROPOFF);
+        simulationObjectCompiler.insertRequests(cancelledRequests,RequestStatus.CANCELLED);
 
         /** insert information of association of {@link RoboTaxi}s and {@link AVRequest}s */
         simulationObjectCompiler.addRequestRoboTaxiAssoc(pickupRegister);

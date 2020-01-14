@@ -12,4 +12,9 @@ public enum RStatusHelper {
                 || set.contains(RequestStatus.DROPOFF);
         return !inService;
     }
+    public static boolean cancelled(Set<RequestStatus> set) {
+
+        return set.contains(RequestStatus.CANCELLED);
+    }
+
 }

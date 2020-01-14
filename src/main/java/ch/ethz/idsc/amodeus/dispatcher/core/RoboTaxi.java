@@ -55,6 +55,8 @@ public final class RoboTaxi {
     private SharedMenu menu = SharedMenu.empty();
     private boolean dropoffInProgress = false;
 
+    private boolean onService = false;
+
     /** Standard constructor
      * 
      * @param avVehicle binding association to MATSim AVVehicle object
@@ -77,6 +79,11 @@ public final class RoboTaxi {
 
     // ===================================================================================
     // methods to be used by dispatchers, public
+
+
+    public void setOnService(Boolean onService){ this.onService = onService; }
+
+    public Boolean getOnService() { return onService; };
 
     /** @return {@link} location at which robotaxi can be diverted, i.e. a Link with
      *         an endnode at which the robotaxi path can be altered */
@@ -242,7 +249,8 @@ public final class RoboTaxi {
     // **********************************************
 
     public boolean isDivertable() {
-        return canReroute() && (usageType.equals(RoboTaxiUsageType.SHARED) || isWithoutCustomer());
+        return (canReroute() && usageType.equals(RoboTaxiUsageType.SHARED) || //
+                (canReroute() && isWithoutCustomer())) && onService;
     }
 
     // added by luc for rerouting purpose
@@ -314,7 +322,7 @@ public final class RoboTaxi {
      * is in progress if the divertable link of the robotaxi equals the link of the
      * Dropoff Course.
      * 
-     * @param list {@link List<SharedCourse>} */
+     * @param List<SharedCourse> */
     public void updateMenu(List<SharedCourse> list) {
         updateMenu(SharedMenu.of(list));
     }
@@ -339,8 +347,9 @@ public final class RoboTaxi {
         // addAVrequestandRemoveFirstRebalancing(AVrequest)
         if (status.equals(RoboTaxiStatus.REBALANCEDRIVE)) {
             GlobalAssert.that(SharedCourseAccess.getStarter(this).get().getMealType().equals(SharedMealType.REDIRECT));
-            if (getUnmodifiableViewOfCourses().size() == 1)
+            if (getUnmodifiableViewOfCourses().size() == 1) {
                 finishRedirection();
+            }
         }
         SharedCourse pickupCourse = SharedCourse.pickupCourse(avRequest);
         SharedCourse dropoffCourse = SharedCourse.dropoffCourse(avRequest);
@@ -352,8 +361,9 @@ public final class RoboTaxi {
     /* package */ void addRedirectCourseToMenu(SharedCourse redirectCourse) {
         GlobalAssert.that(redirectCourse.getMealType().equals(SharedMealType.REDIRECT));
         // this if statment is added by Luc and that fix the problem
-        if (status.equals(RoboTaxiStatus.REBALANCEDRIVE))
+        if (status.equals(RoboTaxiStatus.REBALANCEDRIVE)) {
             finishRedirection();
+        }
         setMenu(SharedCourseAdd.asDessert(menu, redirectCourse));
     }
 
@@ -408,7 +418,13 @@ public final class RoboTaxi {
      * @return all the courses which have been removed */
     /* package */ List<SharedCourse> cleanAndAbandonMenu() {
         GlobalAssert.that(menu.getMenuOnBoardCustomers() == 0);
-        GlobalAssert.that(isDivertable());
+        try {
+            GlobalAssert.that(isDivertable());
+        }
+        catch (Exception e){
+            System.out.println("status: "+status+" usageType: "+ usageType+" onService: "+onService);
+            throw e;
+        }
         List<SharedCourse> oldMenu = SharedCourseUtil.copy(menu.getCourseList());
         setMenu(SharedMenu.empty());
         return oldMenu;

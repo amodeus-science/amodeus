@@ -1,14 +1,20 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
+import java.io.BufferedReader;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.io.IOException;
+import java.util.*;
 
+import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.sca.Clip;
+import ch.ethz.idsc.tensor.sca.Clips;
+import ch.ethz.matsim.av.generator.AVUtils;
+import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.events.Event;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
@@ -19,6 +25,7 @@ import ch.ethz.matsim.av.config.operator.OperatorConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
+import org.matsim.core.utils.io.IOUtils;
 
 /** The purpose of RoboTaxiMaintainer is to register {@link AVVehicle} and provide the collection of
  * available vehicles to derived class.
@@ -32,6 +39,9 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
     private Double private_now = null;
     public InfoLine infoLine = null;
     private final StorageUtils storageUtils;
+    private Map<Id<DvrpVehicle>, List<Clip>> serviceSchedules = new HashMap<>();
+
+
 
     RoboTaxiMaintainer(EventsManager eventsManager, Config config, OperatorConfig operatorConfig) {
         SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
@@ -39,6 +49,30 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
         this.infoLine = new InfoLine(safeConfig.getInteger("infoLinePeriod", 10));
         String outputdirectory = config.controler().getOutputDirectory();
         this.storageUtils = new StorageUtils(new File(outputdirectory));
+        config.getModules().get("moia").getParams().get("vehiclesFile");
+        BufferedReader br = IOUtils.getBufferedReader(config.getModules().get("moia").getParams().get("vehiclesFile"));
+
+        try {
+            br.readLine();
+            String info = br.readLine();
+            Id<DvrpVehicle> id;
+
+            Clip clip ;
+            String[] vehicleInfo = null;
+            while(info!= null){
+                List<Clip> clipList = new ArrayList<>();
+                vehicleInfo = info.split(";");
+                clip = Clips.interval(Double.parseDouble(vehicleInfo[3]),Double.parseDouble(vehicleInfo[4]));
+                clipList.add(clip);
+                id = AVUtils.createId(operatorConfig.getId(),vehicleInfo[0]);
+                serviceSchedules.put(id,clipList);
+                info = br.readLine();
+            }
+            br.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     /** @return time of current re-dispatching iteration step
@@ -68,6 +102,7 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
     /** functions called at every MATSim timestep, dispatching action happens in <b> redispatch <b> */
     @Override
     public final void onNextTimestep(double now) {
+
         private_now = now; // <- time available to derived class via getTimeNow()
         updateInfoLine();
         notifySimulationSubscribers(Math.round(now), storageUtils);
@@ -84,6 +119,7 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
         afterStepTasks();
         executeDirectives();
         consistencyCheck();
+
     }
 
     /** the info line is displayed in the console at every dispatching timestep and in the
@@ -106,9 +142,38 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
     }
 
     private void beforeStepTasks() {
+        for (RoboTaxi roboTaxi : roboTaxis) {
+            Scalar t = RealScalar.of(getTimeNow());
+            Id<DvrpVehicle> roboTaxiId = roboTaxi.getId();
+
+            Boolean clipExists = serviceSchedules.get(roboTaxiId).stream().anyMatch(clip -> clip.isInside(t));
+            roboTaxi.setOnService(clipExists);
+
+//            set status of robotaxi to OFFSERVICE, so far causes global assert runtime exception in line 170 of RoboTaxi.java
+//            if (!clipExists) {
+//                roboTaxi.setStatus(RoboTaxiStatus.OFFSERVICE);
+//            }
+//            else{
+//                roboTaxi.setStatus(RoboTaxiStatus.STAY);
+//            }
+//            if ( getTimeNow() % 1000 == 0){
+//                System.out.println(getTimeNow() +": On service "+ roboTaxi.getOnService() + " status: "+ roboTaxi.getStatus());
+//
+//            }
+        }
+// TODO: für alle robotaxis chekcen ob sie on oder off sind
+
+//        davon abhängig setonservice true oder false
         updateDivertableLocations();
-        if (private_now > 0) // at time 0, tasks are not started.
+        if (private_now > 0) { // at time 0, tasks are not started.
             updateCurrentLocations();
+        }
+
+        protectedBeforeStepTasks();
+    }
+
+    protected void protectedBeforeStepTasks(){
+
     }
 
     /** {@link RoboTaxi} on a pickup ride which are sent to another location are
@@ -116,6 +181,7 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
     private void afterStepTasks() {
         stopAbortedPickupRoboTaxis();
         // flushLocationTraces();
+
     }
 
     private void consistencyCheck() {

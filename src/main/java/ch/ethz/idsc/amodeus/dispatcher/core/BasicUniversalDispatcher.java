@@ -1,16 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.matsim.api.core.v01.events.Event;
@@ -50,6 +41,8 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
     private Map<RoboTaxi, List<Link>> tempLocationTrace = new HashMap<>();
 
+    protected List<AVRequest> cancelledRequests = new ArrayList<>();
+
     public BasicUniversalDispatcher(EventsManager eventsManager, Config config, //
             OperatorConfig operatorConfig, //
             TravelTime travelTime, ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, //
@@ -66,6 +59,9 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
     /** @return {@Collection} of all {@AVRequests} which are currently open.
      *         Requests are removed from list in setAcceptRequest function. */
     protected synchronized final Collection<AVRequest> getAVRequests() {
+//        if (pendingRequests.removeIf(avRequest -> Objects.isNull(avRequest.getPickupTask()) && getTimeNow() - avRequest.getSubmissionTime() > 600))
+//
+//                System.out.println("removed request");
         return Collections.unmodifiableCollection(pendingRequests);
     }
 
@@ -108,6 +104,17 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
     public void onRequestSubmitted(AVRequest request) {
         boolean added = pendingRequests.add(request);
         GlobalAssert.that(added);
+    }
+
+    @Override
+    protected void protectedBeforeStepTasks(){
+        pendingRequests.removeIf(avRequest -> {
+            boolean condition = Objects.isNull(avRequest.getPickupTask()) && getTimeNow() - avRequest.getSubmissionTime() > 600;
+            if (condition)
+                cancelledRequests.add(avRequest);
+            return condition;
+        });
+
     }
 
     /** adds information to InfoLine */

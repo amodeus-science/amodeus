@@ -80,6 +80,10 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         unassignedRequests.remove(avRequest);
     }
 
+    public void removeUnassignedRequestsBefore(double submissionTime) {
+        unassignedRequests.removeAllElementsWithValueSmaller(submissionTime);
+    }
+
     public List<AVRequest> getInOrderOffSubmissionTime() {
         return unassignedRequests.getTsInOrderOfValue();
     }

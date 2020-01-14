@@ -118,6 +118,7 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
             /** prepare the registers for the dispatching */
             roboTaxiHandler.update(getRoboTaxis(), getDivertableUnassignedRoboTaxis());
             requestHandler.addUnassignedRequests(getUnassignedAVRequests(), timeDb, now);
+            requestHandler.removeUnassignedRequestsBefore(now - MAXWAITTIME);
             requestHandler.updateLastHourRequests(now, BINSIZETRAVELDEMAND);
 
             /** calculate Rebalance before (!) dispatching */
@@ -131,7 +132,7 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
                 Set<RoboTaxi> robotaxisWithMenu = getRoboTaxis().stream().filter(StaticHelper::plansPickupsOrDropoffs).collect(Collectors.toSet());
 
                 /** THIS IS WHERE WE CALCULATE THE SHARING POSSIBILITIES */
-                Optional<Entry<RoboTaxi, List<SharedCourse>>> rideSharingRoboTaxi = routeValidation.getClosestValidSharingRoboTaxi(robotaxisWithMenu, avRequest, now, timeDb, //
+                Optional<Entry<RoboTaxi, List<SharedCourse>>> rideSharingRoboTaxi = routeValidation.getClosestValidSharingRoboTaxi(robotaxisWithMenu, avRequest, now, timeDb,
                         requestHandler, roboTaxiHandler);
 
                 if (rideSharingRoboTaxi.isPresent()) {
@@ -155,10 +156,11 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
                         requestHandler.removeFromUnasignedRequests(avRequest); // the request is not unassigned anymore
                     } else {
                         /** Assignement was not possible as no Taxi was able to fulfil the constraints -> wait list! */
-                        if (!requestHandler.isOnWaitList(avRequest))
+                        if (!requestHandler.isOnWaitList(avRequest)) {
                             requestHandler.addToWaitList(avRequest);
-                        else // and if it was already on the wait list put it to the extrem wait list
+                        } else { // and if it was already on the wait list put it to the extrem wait list
                             requestHandler.addToExtreemWaitList(avRequest);
+                        }
                     }
                 }
 
@@ -172,9 +174,11 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
 
             /** For all robotaxis which were on rebalance and did not receive a new directive
              * stop on current link */
-            getRebalancingRoboTaxis().stream() //
-                    .filter(rt -> !rebalanceDirectives.getDirectives().containsKey(rt)) //
-                    .forEach(rt -> setRoboTaxiRebalance(rt, rt.getDivertableLocation()));
+            getRebalancingRoboTaxis().stream().//
+                    filter(rt -> !rebalanceDirectives.getDirectives().containsKey(rt)).//
+                    forEach(rt -> {
+                        setRoboTaxiRebalance(rt, rt.getDivertableLocation());
+                    });
             roboTaxiHandler.clear();
         }
     }

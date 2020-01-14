@@ -47,7 +47,7 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
     private static final double maxWaitTime = 300.0;
     private static final double costOfIgnoredReuqestNormal = 7200;
     private static final double costOfIgnoredReuqestHigh = 72000;
-    private static final int DEFAULTNUMBERSEATS = 4;
+    private static final int DEFAULTNUMBERSEATS = 6;
 
     private final int dispatchPeriod;
     private final int rebalancePeriod;
@@ -142,7 +142,7 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
                     now, ttc, requestKeyInfoMap);
 
             // RTV diagram construction (generate a list of edges between trip and vehicle)
-            List<TripWithVehicle> grossListOfRTVEdges = rtvGG.generateRTV(getRoboTaxis(), newAddedValidRequests, //
+            List<TripWithVehicle> grossListOfRTVEdges = rtvGG.generateRTV(getDivertableRoboTaxis(), newAddedValidRequests, //
                     removedRequests, now, requestKeyInfoMap, //
                     rvEdges, ttc, lastAssignment, trafficTimeAllowance);
 
