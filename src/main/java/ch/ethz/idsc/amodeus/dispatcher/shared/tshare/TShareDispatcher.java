@@ -110,7 +110,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
         QuadTree<Link> linkTree = FastQuadTree.of(network);
         for (VirtualNode<Link> virtualNode : virtualNetwork.getVirtualNodes()) {
             System.out.println("preparing grid cell: " + virtualNode.getIndex());
-            gridCells.put(virtualNode, new GridCell(virtualNode, virtualNetwork, distanceCashed, travelTimeCalculator, linkTree, 0.0));
+            gridCells.put(virtualNode, new GridCell(virtualNode, virtualNetwork, distanceCashed, travelTimeCalculator, linkTree));
         }
         dualSideSearch = new DualSideSearch(gridCells, virtualNetwork);
         System.out.println("According to the reference, a rectangular {@link VirtualNetwork} should be used.");

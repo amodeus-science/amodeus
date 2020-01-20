@@ -48,14 +48,14 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         int iD = 0;
         while (potentialTaxis.isEmpty() && (!stop0 || !stopD)) {
             if (i0 < oCloseCells.size()) {
-                VirtualNode<Link> vNode = oCell.getDistAt(i0);
+                VirtualNode<Link> vNode = oCell.getVNodeAt(i0);
                 if (oCloseCells.contains(vNode))
                     oTaxis.addAll(plannedLocations.get(vNode));
                 ++i0;
             } else
                 stop0 = true;
             if (iD < dCloseCells.size()) {
-                VirtualNode<Link> vNode = dCell.getDistAt(iD);
+                VirtualNode<Link> vNode = dCell.getVNodeAt(iD);
                 if (dCloseCells.contains(vNode))
                     dTaxis.addAll(plannedLocations.get(vNode));
                 ++iD;
