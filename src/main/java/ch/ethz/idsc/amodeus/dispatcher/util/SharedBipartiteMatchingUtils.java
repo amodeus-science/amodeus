@@ -19,7 +19,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
 public class SharedBipartiteMatchingUtils {
 
-    /** network distance function used to prevent cycling solutions */
+    /** network distance function used to prevent cycling solutions  */
     private final DistanceFunction accDstFctn;
 
     public SharedBipartiteMatchingUtils(Network network) {
