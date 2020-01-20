@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.matsim.api.core.v01.network.Link;
-import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.Intersection;
@@ -22,8 +21,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     private final Map<VirtualNode<Link>, GridCell> gridCells;
     private final VirtualNetwork<Link> virtualNetwork;
 
-    // TODO parameter Network network obsolete
-    public DualSideSearch(Map<VirtualNode<Link>, GridCell> gridCells, VirtualNetwork<Link> virtualNetwork, Network network) {
+    public DualSideSearch(Map<VirtualNode<Link>, GridCell> gridCells, VirtualNetwork<Link> virtualNetwork) {
         this.gridCells = gridCells;
         this.virtualNetwork = virtualNetwork;
     }

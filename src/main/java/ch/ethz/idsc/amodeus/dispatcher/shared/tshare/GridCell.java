@@ -10,7 +10,6 @@ import java.util.NavigableMap;
 import java.util.TreeMap;
 
 import org.matsim.api.core.v01.network.Link;
-import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.utils.collections.QuadTree;
 
 import ch.ethz.idsc.amodeus.routing.CachedNetworkTimeDistance;
@@ -25,18 +24,16 @@ import ch.ethz.idsc.tensor.sca.Sign;
 
 /* package */ class GridCell {
 
-    // private final VirtualNetwork<Link> virtualNetwork;
     private final VirtualNode<Link> myVNode;
     private final NavigableMap<Scalar, VirtualNode<Link>> temporalSortedMap = new TreeMap<>();
     private final NavigableMap<Scalar, VirtualNode<Link>> distanceSortedMap = new TreeMap<>();
     private final NavigableMap<Scalar, List<VirtualNode<Link>>> nodesWithinLessThan = new TreeMap<>();
     private final Map<VirtualNode<Link>, Scalar> temporalLookupMap = new HashMap<>();
 
-    public GridCell(VirtualNode<Link> virtualNode, VirtualNetwork<Link> virtualNetwork, Network network, //
+    public GridCell(VirtualNode<Link> virtualNode, VirtualNetwork<Link> virtualNetwork, //
             CachedNetworkTimeDistance minDist, NetworkTimeDistInterface minTime, QuadTree<Link> linkTree, //
             double now) {
         this.myVNode = virtualNode;
-        // this.virtualNetwork = virtualNetwork;
         computeMaps(virtualNetwork, linkTree, minDist, minTime, now);
     }
 

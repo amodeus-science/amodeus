@@ -9,11 +9,11 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 /* package */ enum LatestPickup {
     ;
 
-    /** @param avRequest
-     * @param pickupDelayMax
-     * @return */
-    public static Scalar of(AVRequest avRequest, Scalar pickupDelayMax) {
-        return Quantity.of(avRequest.getSubmissionTime(), SI.SECOND).add(pickupDelayMax);
+    /** @return {@link Scalar} maximum pickup delay, which is the
+     *         submission time calculated from the {@link AVRequest} @param request and
+     *         a constant {@link Scalar} value @param maxPickupDelay */
+    public static Scalar of(AVRequest request, Scalar maxPickupDelay) {
+        return Quantity.of(request.getSubmissionTime(), SI.SECOND).add(maxPickupDelay);
     }
 
 }
