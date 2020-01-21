@@ -43,30 +43,36 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         Collection<RoboTaxi> dTaxis = new ArrayList<>();
         Collection<RoboTaxi> potentialTaxis = new ArrayList<>();
 
-        boolean stop0 = false;
-        boolean stopD = false;
-
         /** Loop finds potential taxis for which trip insertion is evaluated */
         int i0 = 0;
         int iD = 0;
+        boolean stop0 = false;
+        boolean stopD = false;
         while (potentialTaxis.isEmpty() && (!stop0 || !stopD)) {
-            if (i0 < oCloseCells.size()) {
+            /** iterate neighbors according to closedness, get taxis if
+             * within reachable time for pickup */
+            if (0 < oCloseCells.size()) {
                 VirtualNode<Link> vNode = oCell.getVNodeAt(i0);
-                if (oCloseCells.contains(vNode))
+                if (oCloseCells.contains(vNode)) {
                     oTaxis.addAll(plannedLocations.get(vNode));
+                    oCloseCells.remove(vNode);
+                }
                 ++i0;
             } else
                 stop0 = true;
-            if (iD < dCloseCells.size()) {
+            /** iterate neighbors according to closedness, get taxis if
+             * within reachable time for pickup */
+            if (0 < dCloseCells.size()) {
                 VirtualNode<Link> vNode = dCell.getVNodeAt(iD);
-                if (dCloseCells.contains(vNode))
+                if (dCloseCells.contains(vNode)) {
                     dTaxis.addAll(plannedLocations.get(vNode));
+                    dCloseCells.remove(vNode);
+                }
                 ++iD;
             } else
                 stopD = true;
             potentialTaxis = CollectionUtils.intersection(oTaxis, dTaxis);
         }
-        System.out.println("potentialTaxis.size()" + potentialTaxis.size());
         return potentialTaxis;
     }
 }
