@@ -146,12 +146,13 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
                     .collect(Collectors.toList());
 
             for (AVRequest avr : sortedRequests) {
-                Scalar latestPickup = LatestPickup.of(avr, pickupDelayMax);
-                Scalar latestArrval = LatestArrival.of(avr, drpoffDelayMax, travelTimeCalculator, now);
+
+                Scalar timeLeftForPickup = LatestPickup.timeTo(avr, pickupDelayMax, now);
+                Scalar timeLeftUntilArrival = LatestArrival.timeTo(avr, drpoffDelayMax, travelTimeCalculator, now);
 
                 /** dual side search */
                 Collection<RoboTaxi> potentialTaxis = //
-                        dualSideSearch.apply(avr, plannedLocations, latestPickup, latestArrval);
+                        dualSideSearch.apply(avr, plannedLocations, timeLeftForPickup, timeLeftUntilArrival);
 
                 /** insertion feasibility check */
                 NavigableMap<Scalar, InsertionCheck> insertions = new TreeMap<>();

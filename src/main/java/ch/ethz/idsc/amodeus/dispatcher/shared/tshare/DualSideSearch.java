@@ -15,7 +15,7 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-/** Implementation of the "Algorithm 1: Dual Side Taxi Searching" */
+/** Implementation of "Algorithm 1: Dual Side Taxi Searching" */
 /* package */ class DualSideSearch {
 
     private final Map<VirtualNode<Link>, GridCell> gridCells;
@@ -27,7 +27,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     }
 
     public Collection<RoboTaxi> apply(AVRequest request, Map<VirtualNode<Link>, Set<RoboTaxi>> plannedLocations, //
-            Scalar latestPickup, Scalar latestArrval) {
+            Scalar timeLeftForPickup, Scalar timeLeftUntilArrival) {
 
         /** origin cell = {@link GridCell} of {@link VirtualNode} containing the request origin link */
         GridCell oCell = gridCells.get(virtualNetwork.getVirtualNode(request.getFromLink()));
@@ -35,9 +35,9 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         GridCell dCell = gridCells.get(virtualNetwork.getVirtualNode(request.getToLink()));
 
         /** oCloseCells = cells reachable before latest pickup */
-        Collection<VirtualNode<Link>> oCloseCells = oCell.nodesReachableWithin(latestPickup);
+        Collection<VirtualNode<Link>> oCloseCells = oCell.nodesReachableWithin(timeLeftForPickup);
         /** dCloseCells = cells reachable before latest arrival */
-        Collection<VirtualNode<Link>> dCloseCells = dCell.nodesReachableWithin(latestArrval);
+        Collection<VirtualNode<Link>> dCloseCells = dCell.nodesReachableWithin(timeLeftUntilArrival);
 
         Collection<RoboTaxi> oTaxis = new ArrayList<>();
         Collection<RoboTaxi> dTaxis = new ArrayList<>();
@@ -66,6 +66,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
                 stopD = true;
             potentialTaxis = CollectionUtils.intersection(oTaxis, dTaxis);
         }
+        System.out.println("potentialTaxis.size()" + potentialTaxis.size());
         return potentialTaxis;
     }
 }
