@@ -6,10 +6,10 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.util.Intersection;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 import ch.ethz.idsc.tensor.Scalar;
@@ -29,16 +29,19 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     public Collection<RoboTaxi> apply(AVRequest request, Map<VirtualNode<Link>, Set<RoboTaxi>> plannedLocations, //
             Scalar latestPickup, Scalar latestArrval) {
 
-        /** origin and destination cells */
+        /** origin cell = {@link GridCell} of {@link VirtualNode} containing the request origin link */
         GridCell oCell = gridCells.get(virtualNetwork.getVirtualNode(request.getFromLink()));
+        /** destination cell = {@link GridCell} of {@link VirtualNode} containing the request destination link */
         GridCell dCell = gridCells.get(virtualNetwork.getVirtualNode(request.getToLink()));
+
+        /** oCloseCells = cells reachable before latest pickup */
+        Collection<VirtualNode<Link>> oCloseCells = oCell.nodesReachableWithin(latestPickup);
+        /** dCloseCells = cells reachable before latest arrival */
+        Collection<VirtualNode<Link>> dCloseCells = dCell.nodesReachableWithin(latestArrval);
 
         Collection<RoboTaxi> oTaxis = new ArrayList<>();
         Collection<RoboTaxi> dTaxis = new ArrayList<>();
         Collection<RoboTaxi> potentialTaxis = new ArrayList<>();
-
-        Collection<VirtualNode<Link>> oCloseCells = oCell.nodesReachableWithin(latestPickup);
-        Collection<VirtualNode<Link>> dCloseCells = dCell.nodesReachableWithin(latestArrval);
 
         boolean stop0 = false;
         boolean stopD = false;
@@ -61,7 +64,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
                 ++iD;
             } else
                 stopD = true;
-            potentialTaxis = Intersection.of(oTaxis, dTaxis);
+            potentialTaxis = CollectionUtils.intersection(oTaxis, dTaxis);
         }
         return potentialTaxis;
     }
