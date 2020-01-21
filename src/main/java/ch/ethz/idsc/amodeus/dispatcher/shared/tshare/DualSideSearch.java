@@ -12,7 +12,12 @@ import org.matsim.api.core.v01.network.Link;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.red.Mean;
+import ch.ethz.idsc.tensor.sca.Round;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** Implementation of "Algorithm 1: Dual Side Taxi Searching" */
@@ -20,6 +25,10 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
     private final Map<VirtualNode<Link>, GridCell> gridCells;
     private final VirtualNetwork<Link> virtualNetwork;
+
+    Tensor iOs = Tensors.empty();
+    Tensor iDs = Tensors.empty();
+    Tensor potaNum = Tensors.empty();
 
     public DualSideSearch(Map<VirtualNode<Link>, GridCell> gridCells, VirtualNetwork<Link> virtualNetwork) {
         this.gridCells = gridCells;
@@ -73,6 +82,15 @@ import ch.ethz.matsim.av.passenger.AVRequest;
                 stopD = true;
             potentialTaxis = CollectionUtils.intersection(oTaxis, dTaxis);
         }
+
+        iOs.append(RealScalar.of(i0));
+        iDs.append(RealScalar.of(iD));
+        potaNum.append(RealScalar.of(potentialTaxis.size()));
+
+        System.out.println("i0: " + i0 + ", avergae: " + Mean.of(iOs).map(Round._5));
+        System.out.println("iD: " + iD + ",  avergae: " + Mean.of(iDs).map(Round._5));
+        System.out.println("potanum: " + Mean.of(potaNum).map(Round._5));
+
         return potentialTaxis;
     }
 }
