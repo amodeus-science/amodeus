@@ -3,7 +3,8 @@ package ch.ethz.idsc.amodeus.dispatcher.shared.tshare;
 
 import java.util.List;
 
-import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import org.matsim.api.core.v01.network.Link;
+
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.routing.NetworkTimeDistInterface;
@@ -14,15 +15,21 @@ import ch.ethz.idsc.tensor.qty.Quantity;
 
 /* package */ class TimeWindowCheck {
 
+    /** @return true if the {@link List}<{@linkSharedCourse}> @param newMenu does not
+     *         violate the maximum pickup and drop-off delays tolerated specified in
+     *         the {@link Scalar} values @param pickupDelayMax and @param drpoffDelayMax,
+     *         for the domputation the current time @param timeNow, 
+     *         the {@link NetworkTimeDistInterface} @param travelTimeCashed and
+     *         a {@link List}  @param startLocation are needed */
     public static boolean of(double timeNow, List<SharedCourse> newMenu, //
-            NetworkTimeDistInterface travelTimeCashed, RoboTaxi roboTaxi, //
+            NetworkTimeDistInterface travelTimeCashed, Link startLocation, //
             Scalar pickupDelayMax, Scalar drpoffDelayMax) {
-        boolean timeComp = true;        
+        boolean timeComp = true;
         Scalar timePrev = Quantity.of(timeNow, SI.SECOND);
-        
+
         for (SharedCourse course : newMenu) {
             Scalar travelTime = //
-                    travelTimeCashed.travelTime(roboTaxi.getLastKnownLocation(), course.getLink(), timeNow);
+                    travelTimeCashed.travelTime(startLocation, course.getLink(), timeNow);
             Scalar timeofCourse = timePrev.add(travelTime);
             if (course.getMealType().equals(SharedMealType.PICKUP)) {
                 Scalar latestPickup = LatestPickup.of(course.getAvRequest(), pickupDelayMax);

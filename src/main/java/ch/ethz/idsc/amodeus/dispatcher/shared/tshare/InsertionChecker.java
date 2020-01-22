@@ -18,8 +18,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-/** Implementation of the "Algorithm 2: Insertion feasibility check" is contained in this class for all
- * possible insertions. */
+
 
 /** This class is a generalized implementation of the "Algorithm 2: Insertion feasibility check" supplied in
  * the T-Share publication. The original reference is only for menus with 1 passenger in the taxi and the
@@ -96,7 +95,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
                 /** compute expected arrival times and check compatibility with time windows */
                 boolean timeCompatible = //
-                        TimeWindowCheck.of(timeNow, newMenu, travelTimeCached, roboTaxi, pickupDelayMax, drpoffDelayMax);
+                        TimeWindowCheck.of(timeNow, newMenu, travelTimeCached, roboTaxi.getLastKnownLocation(), pickupDelayMax, drpoffDelayMax);
                 if (!timeCompatible)
                     continue;
 

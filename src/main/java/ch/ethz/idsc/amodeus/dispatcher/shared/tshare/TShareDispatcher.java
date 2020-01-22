@@ -29,7 +29,6 @@ import ch.ethz.idsc.amodeus.dispatcher.core.SharedPartitionedDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.OnMenuRequests;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
-import ch.ethz.idsc.amodeus.dispatcher.util.SharedBipartiteMatchingUtils;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.routing.CachedNetworkTimeDistance;
@@ -68,7 +67,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
     private final int dispatchPeriod;
     private final Network network;
     private final DistanceFunction distanceFunction;
-    private final SharedBipartiteMatchingUtils bipartiteMatchingUtils;
+    private final TShareBipartiteMatchingUtils bipartiteMatchingUtils;
     private Tensor printInfo = Tensors.empty();
 
     /** T-Share specific */
@@ -95,7 +94,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
                 180000.0, TimeDistanceProperty.INSTANCE);
         travelTimeCalculator = new CachedNetworkTimeDistance(EasyMinTimePathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), //
                 180000.0, TimeDistanceProperty.INSTANCE);
-        bipartiteMatchingUtils = new SharedBipartiteMatchingUtils(network);
+        bipartiteMatchingUtils = new TShareBipartiteMatchingUtils();
 
         /** T-Share specific */
         pickupDelayMax = Quantity.of(safeConfig.getInteger("pickupDelayMax", 10 * 60), SI.SECOND);
@@ -118,61 +117,68 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
         final long round_now = Math.round(now);
         if (round_now % dispatchPeriod == 0) {
 
-            /** unit capacity dispatching for all divertable vehicles with zero passengers on board,
-             * in this implementation, global bipartite matching is used */
+            /** STEP 1: search for options to to T-Share strategy ride sharing */
+            doTShareRidesharing(now);
+
+            /** STEP 2: unit capacity dispatching,in this implementation, global bipartite matching is used.
+             * The following sets are used:
+             * - vehicles: all divertable vehicles with zero passengers on board,
+             * - requests: all requests not assigned to any vehicle */
             Collection<RoboTaxi> divertableAndEmpty = getDivertableRoboTaxis().stream()//
                     .filter(rt -> (rt.getUnmodifiableViewOfCourses().size() == 0)) //
                     .collect(Collectors.toList());
             printInfo = bipartiteMatchingUtils.executePickup(this, this::getCurrentPickupTaxi, divertableAndEmpty, //
-                    getAVRequests(), distanceFunction, network);
+                    getUnassignedAVRequests(), distanceCashed, network, now);
+        }
+    }
 
-            /** update the roboTaxi planned locations */
-            Collection<RoboTaxi> occupiedNotFull = getDivertableRoboTaxis().stream() //
-                    .filter(rt -> rt.getOnBoardPassengers() >= 1) // at least 1 passenger on board
-                    .filter(OnMenuRequests::canPickupAdditionalCustomer) // still capacity left
-                    .collect(Collectors.toList());
+    private void doTShareRidesharing(double now) {
+        /** update the roboTaxi planned locations */
+        Collection<RoboTaxi> occupiedNotFull = getDivertableRoboTaxis().stream() //
+                .filter(rt -> rt.getOnBoardPassengers() >= 1) // at least 1 passenger on board
+                .filter(OnMenuRequests::canPickupAdditionalCustomer) // still capacity left
+                .collect(Collectors.toList());
 
-            Map<VirtualNode<Link>, Set<RoboTaxi>> plannedLocs = //
-                    RoboTaxiPlannedLocations.of(occupiedNotFull, virtualNetwork);
+        Map<VirtualNode<Link>, Set<RoboTaxi>> plannedLocs = //
+                RoboTaxiPlannedLocations.of(occupiedNotFull, virtualNetwork);
 
-            /** do T-share ridesharing */
-            List<AVRequest> sortedRequests = getAVRequests().stream() //
-                    .filter(avr -> !getCurrentPickupAssignements().keySet().contains(avr)) // requests are not scheduled to be picked up
-                    .sorted(RequestWaitTimeComparator.INSTANCE) // sort such that earliest submission is first
-                    .collect(Collectors.toList());
+        /** do T-share ridesharing */
+        List<AVRequest> sortedRequests = getAVRequests().stream() //
+                .filter(avr -> !getCurrentPickupAssignements().keySet().contains(avr)) // requests are not scheduled to be picked up
+                .sorted(RequestWaitTimeComparator.INSTANCE) // sort such that earliest submission is first
+                .collect(Collectors.toList());
 
-            for (AVRequest avr : sortedRequests) {
+        for (AVRequest avr : sortedRequests) {
 
-                // compute times left until pickup or dropoff window closed
-                Scalar timeLeftForPickup = LatestPickup.timeTo(avr, pickupDelayMax, now);
-                Scalar timeLeftUntilArrival = LatestArrival.timeTo(avr, drpoffDelayMax, travelTimeCalculator, now);
+            // compute times left until pickup or dropoff window closed
+            Scalar timeLeftForPickup = LatestPickup.timeTo(avr, pickupDelayMax, now);
+            Scalar timeLeftUntilArrival = LatestArrival.timeTo(avr, drpoffDelayMax, travelTimeCalculator, now);
 
-                /** if still available time, find ridesharing opportunity */
-                if (Scalars.lessThan(Quantity.of(0, SI.SECOND), timeLeftForPickup) && //
-                        Scalars.lessThan(Quantity.of(0, SI.SECOND), timeLeftForPickup)) {
+            /** if still available time, find ridesharing opportunity */
+            if (Scalars.lessThan(Quantity.of(0, SI.SECOND), timeLeftForPickup) && //
+                    Scalars.lessThan(Quantity.of(0, SI.SECOND), timeLeftForPickup)) {
 
-                    /** dual side search */
-                    Collection<RoboTaxi> potentialTaxis = dualSideSearch.apply(avr, plannedLocs, timeLeftForPickup, timeLeftUntilArrival);
+                /** dual side search */
+                Collection<RoboTaxi> potentialTaxis = dualSideSearch.apply(avr, plannedLocs, timeLeftForPickup, timeLeftUntilArrival);
 
-                    /** insertion feasibility check, compute possible insertions into schedules
-                     * of all {@link RoboTaxi}s, find the insertion with smallest additional distance */
-                    NavigableMap<Scalar, InsertionChecker> insertions = new TreeMap<>();
-                    for (RoboTaxi taxi : potentialTaxis)
-                        // very long menus are ommitted...
-                        if (taxi.getUnmodifiableViewOfCourses().size() < taxi.getCapacity() * menuHorizon) {
-                            InsertionChecker checker = //
-                                    new InsertionChecker(distanceCashed, travelTimeCalculator, taxi, avr, pickupDelayMax, drpoffDelayMax, now);
-                            if (Objects.nonNull(checker.getAddDistance()))
-                                insertions.put(checker.getAddDistance(), checker);
-                        }
+                /** insertion feasibility check, compute possible insertions into schedules
+                 * of all {@link RoboTaxi}s, find the insertion with smallest additional distance */
+                NavigableMap<Scalar, InsertionChecker> insertions = new TreeMap<>();
+                for (RoboTaxi taxi : potentialTaxis)
+                    // very long menus are ommitted...
+                    if (taxi.getUnmodifiableViewOfCourses().size() < taxi.getCapacity() * menuHorizon) {
+                        InsertionChecker checker = //
+                                new InsertionChecker(distanceCashed, travelTimeCalculator, taxi, avr, //
+                                        pickupDelayMax, drpoffDelayMax, now);
+                        if (Objects.nonNull(checker.getAddDistance()))
+                            insertions.put(checker.getAddDistance(), checker);
+                    }
 
-                    /** plan update: insert the request into the plan of the {@link RoboTaxi} */
-                    if (Objects.nonNull(insertions.firstEntry()))
-                        insertions.firstEntry().getValue().executeBest(this::addSharedRoboTaxiPickup);
-                }
+                /** plan update: insert the request into the plan of the {@link RoboTaxi} */
+                if (Objects.nonNull(insertions.firstEntry()))
+                    insertions.firstEntry().getValue().executeBest(this::addSharedRoboTaxiPickup);
             }
         }
-
     }
 
     @Override

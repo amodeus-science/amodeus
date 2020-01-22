@@ -21,25 +21,26 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
  * choosing the current {@link VirtualNode} of the {@link RoboTaxi} as well as all
  * {@link VirtualNode}s connected to them. As the search space is continuously increased
  * in the {@link DualSideSearch} that accesses this function, it was decided against
- * implementing a computationally intenisve method in which the path of each {@link RoboTaxi}
+ * implementing a computationally intensive method in which the path of each {@link RoboTaxi}
  * is taken into account. */
 /* package */ enum RoboTaxiPlannedLocations {
     ;
 
-    public static Map<VirtualNode<Link>, Set<RoboTaxi>> of(Collection<RoboTaxi> customerCarrying, //
+    public static Map<VirtualNode<Link>, Set<RoboTaxi>> of(Collection<RoboTaxi> passengerCarrying, //
             VirtualNetwork<Link> virtualNetwork) {
 
-        /** initialize list */
+        /** For each {@link VirtualNode}, the {@link RoboTaxi} which
+         * are going to enter it are stored in this {@link Map} */
         Map<VirtualNode<Link>, Set<RoboTaxi>> locationMap = new HashMap<>();
         for (VirtualNode<Link> virtualNode : virtualNetwork.getVirtualNodes())
             locationMap.put(virtualNode, new HashSet<>());
 
-        /** no potential vehicles for sharing */
-        if (customerCarrying.size() == 0)
+        /** No potential vehicles for sharing --> return empty map */
+        if (passengerCarrying.size() == 0)
             return locationMap;
 
         /** for all {@link RoboTaxi}s add to list */
-        for (RoboTaxi roboTaxi : customerCarrying) {
+        for (RoboTaxi roboTaxi : passengerCarrying) {
             Link loc = roboTaxi.getDivertableLocation();
 
             /** get current location and add */
@@ -52,7 +53,6 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
                     .map(VirtualLink::getTo).collect(Collectors.toList());
             neighbors.stream().map(locationMap::get).forEach(set -> set.add(roboTaxi));
         }
-
         return locationMap;
     }
 }
