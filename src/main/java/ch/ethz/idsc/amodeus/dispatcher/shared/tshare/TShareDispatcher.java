@@ -42,6 +42,7 @@ import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.qty.Quantity;
@@ -65,11 +66,10 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
 
     /** general */
     private final int dispatchPeriod;
-    private final int rebalancePeriod;
     private final Network network;
     private final DistanceFunction distanceFunction;
     private final SharedBipartiteMatchingUtils bipartiteMatchingUtils;
-    private Tensor printVals = Tensors.empty();
+    private Tensor printInfo = Tensors.empty();
 
     /** T-Share specific */
     private final Map<VirtualNode<Link>, GridCell> gridCells = new HashMap<>();
@@ -80,31 +80,27 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
     private final CachedNetworkTimeDistance distanceCashed;
     private final CachedNetworkTimeDistance travelTimeCalculator;
 
-    protected TShareDispatcher(Network network, //
-            Config config, OperatorConfig operatorConfig, //
+    protected TShareDispatcher(Network network, Config config, OperatorConfig operatorConfig, //
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, //
-            MatsimAmodeusDatabase db, //
-            VirtualNetwork<Link> virtualNetwork) {
+            MatsimAmodeusDatabase db, VirtualNetwork<Link> virtualNetwork) {
         super(config, operatorConfig, travelTime, router, eventsManager, virtualNetwork, db);
+        this.network = network;
         SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
-        rebalancePeriod = safeConfig.getInteger("rebalancingPeriod", 1800);
-        this.network = network;
         DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
-        DistanceHeuristics distanceHeuristics = //
-                dispatcherConfig.getDistanceHeuristics(DistanceHeuristics.EUCLIDEAN);
+        DistanceHeuristics distanceHeuristics = dispatcherConfig.getDistanceHeuristics(DistanceHeuristics.EUCLIDEAN);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         distanceFunction = distanceHeuristics.getDistanceFunction(network);
-        distanceCashed = //
-                new CachedNetworkTimeDistance(EasyMinDistPathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0, TimeDistanceProperty.INSTANCE);
-        travelTimeCalculator = //
-                new CachedNetworkTimeDistance(EasyMinTimePathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), 180000.0, TimeDistanceProperty.INSTANCE);
+        distanceCashed = new CachedNetworkTimeDistance(EasyMinDistPathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), //
+                180000.0, TimeDistanceProperty.INSTANCE);
+        travelTimeCalculator = new CachedNetworkTimeDistance(EasyMinTimePathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), //
+                180000.0, TimeDistanceProperty.INSTANCE);
         bipartiteMatchingUtils = new SharedBipartiteMatchingUtils(network);
 
         /** T-Share specific */
         pickupDelayMax = Quantity.of(safeConfig.getInteger("pickupDelayMax", 10 * 60), SI.SECOND);
         drpoffDelayMax = Quantity.of(safeConfig.getInteger("drpoffDelayMax", 30 * 60), SI.SECOND);
-        menuHorizon = safeConfig.getDouble("menuHorizon", 1.5);
+        menuHorizon = safeConfig.getDouble("menuHorizon", 3);
 
         /** initialize grid with T-cells */
         QuadTree<Link> linkTree = FastQuadTree.of(network);
@@ -117,75 +113,73 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
         System.out.println("Ensure that VirtualNetworkCreators.RECTANGULAR is used.");
     }
 
-    @Override
+    @Override // TODO can I swith the order of single-use assignment and ride sharing assignment?
     protected void redispatch(double now) {
         final long round_now = Math.round(now);
         if (round_now % dispatchPeriod == 0) {
 
             /** unit capacity dispatching for all divertable vehicles with zero passengers on board,
              * in this implementation, global bipartite matching is used */
-            Collection<RoboTaxi> divertableAndEmpty = getDivertableRoboTaxis().stream().filter(rt -> (rt.getUnmodifiableViewOfCourses().size() == 0)) //
+            Collection<RoboTaxi> divertableAndEmpty = getDivertableRoboTaxis().stream()//
+                    .filter(rt -> (rt.getUnmodifiableViewOfCourses().size() == 0)) //
                     .collect(Collectors.toList());
-            printVals = bipartiteMatchingUtils.executePickup(this, this::getCurrentPickupTaxi, divertableAndEmpty, //
+            printInfo = bipartiteMatchingUtils.executePickup(this, this::getCurrentPickupTaxi, divertableAndEmpty, //
                     getAVRequests(), distanceFunction, network);
 
             /** update the roboTaxi planned locations */
-            Collection<RoboTaxi> customerCarrying = getDivertableRoboTaxis().stream() //
-                    .filter(rt -> rt.getMenuOnBoardCustomers() >= 1) //
-                    .filter(rt -> (rt.getCapacity() - rt.getMenuOnBoardCustomers()) >= 1) //
-                    .filter(OnMenuRequests::canPickupNewCustomer) //
+            Collection<RoboTaxi> occupiedNotFull = getDivertableRoboTaxis().stream() //
+                    .filter(rt -> rt.getOnBoardPassengers() >= 1) // at least 1 passenger on board
+                    .filter(OnMenuRequests::canPickupAdditionalCustomer) // still capacity left
                     .collect(Collectors.toList());
 
-            Map<VirtualNode<Link>, Set<RoboTaxi>> plannedLocations = //
-                    RoboTaxiPlannedLocations.of(customerCarrying, virtualNetwork);
+            Map<VirtualNode<Link>, Set<RoboTaxi>> plannedLocs = //
+                    RoboTaxiPlannedLocations.of(occupiedNotFull, virtualNetwork);
 
             /** do T-share ridesharing */
             List<AVRequest> sortedRequests = getAVRequests().stream() //
-                    .filter(avr -> !getCurrentPickupAssignements().keySet().contains(avr)) //
-                    .sorted(RequestWaitTimeComparator.INSTANCE) //
+                    .filter(avr -> !getCurrentPickupAssignements().keySet().contains(avr)) // requests are not scheduled to be picked up
+                    .sorted(RequestWaitTimeComparator.INSTANCE) // sort such that earliest submission is first
                     .collect(Collectors.toList());
 
             for (AVRequest avr : sortedRequests) {
 
+                // compute times left until pickup or dropoff window closed
                 Scalar timeLeftForPickup = LatestPickup.timeTo(avr, pickupDelayMax, now);
                 Scalar timeLeftUntilArrival = LatestArrival.timeTo(avr, drpoffDelayMax, travelTimeCalculator, now);
 
-                /** dual side search */
-                Collection<RoboTaxi> potentialTaxis = //
-                        dualSideSearch.apply(avr, plannedLocations, timeLeftForPickup, timeLeftUntilArrival);
+                /** if still available time, find ridesharing opportunity */
+                if (Scalars.lessThan(Quantity.of(0, SI.SECOND), timeLeftForPickup) && //
+                        Scalars.lessThan(Quantity.of(0, SI.SECOND), timeLeftForPickup)) {
 
-                /** insertion feasibility check */
-                NavigableMap<Scalar, InsertionCheck> insertions = new TreeMap<>();
-                for (RoboTaxi taxi : potentialTaxis)
-                    if (taxi.getUnmodifiableViewOfCourses().size() < taxi.getCapacity() * 2 * menuHorizon) {
-                        InsertionCheck check = new InsertionCheck(distanceCashed, travelTimeCalculator, taxi, avr, //
-                                pickupDelayMax, drpoffDelayMax, now);
-                        if (Objects.nonNull(check.getAddDistance()))
-                            insertions.put(check.getAddDistance(), check);
-                    }
+                    /** dual side search */
+                    Collection<RoboTaxi> potentialTaxis = dualSideSearch.apply(avr, plannedLocs, timeLeftForPickup, timeLeftUntilArrival);
 
-                /** plan update */
-                if (Objects.nonNull(insertions.firstEntry())) {
-                    /** insert the request into the plan of the {@link RoboTaxi} */
-                    insertions.firstEntry().getValue().insert(this::addSharedRoboTaxiPickup);
-                    /** remove the {@link RoboTaxi} so that it does not get assigned again in the same round */
-                    RoboTaxi sentTaxi = insertions.firstEntry().getValue().getRoboTaxi();
-                    plannedLocations.values().forEach(rtc -> rtc.remove(sentTaxi));
+                    /** insertion feasibility check, compute possible insertions into schedules
+                     * of all {@link RoboTaxi}s, find the insertion with smallest additional distance */
+                    NavigableMap<Scalar, InsertionChecker> insertions = new TreeMap<>();
+                    for (RoboTaxi taxi : potentialTaxis)
+                        // very long menus are ommitted...
+                        if (taxi.getUnmodifiableViewOfCourses().size() < taxi.getCapacity() * menuHorizon) {
+                            InsertionChecker checker = //
+                                    new InsertionChecker(distanceCashed, travelTimeCalculator, taxi, avr, pickupDelayMax, drpoffDelayMax, now);
+                            if (Objects.nonNull(checker.getAddDistance()))
+                                insertions.put(checker.getAddDistance(), checker);
+                        }
+
+                    /** plan update: insert the request into the plan of the {@link RoboTaxi} */
+                    if (Objects.nonNull(insertions.firstEntry()))
+                        insertions.firstEntry().getValue().executeBest(this::addSharedRoboTaxiPickup);
                 }
             }
         }
 
-        /** dispatching of available {@link RoboTaxi}s to the equator */
-        if (round_now % rebalancePeriod == 0) {
-            /** potentially rebalancing? Possibly rebalancing makes sense, however not stated in paper. */
-        }
     }
 
     @Override
     protected String getInfoLine() {
         return String.format("%s H=%s", //
                 super.getInfoLine(), //
-                printVals.toString() /** This is where Dispatcher@ V... R... MR.. H is printed on console */
+                printInfo.toString() /** This is where Dispatcher@ V... R... MR.. H is printed on console */
         );
     }
 
@@ -208,7 +202,8 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
 
         @Override
         public AVDispatcher createDispatcher(OperatorConfig operatorConfig, AVRouter router, Network network) {
-            return new TShareDispatcher(network, config, operatorConfig, travelTime, router, eventsManager, db, virtualNetworks.get(operatorConfig.getId()));
+            return new TShareDispatcher(network, config, operatorConfig, travelTime, router, eventsManager, //
+                    db, virtualNetworks.get(operatorConfig.getId()));
         }
     }
 }

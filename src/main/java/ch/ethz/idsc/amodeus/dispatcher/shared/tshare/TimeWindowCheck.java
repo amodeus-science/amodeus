@@ -14,14 +14,15 @@ import ch.ethz.idsc.tensor.qty.Quantity;
 
 /* package */ class TimeWindowCheck {
 
-    /** compute expecte arrival times and check compatibility with time windows */
     public static boolean of(double timeNow, List<SharedCourse> newMenu, //
             NetworkTimeDistInterface travelTimeCashed, RoboTaxi roboTaxi, //
             Scalar pickupDelayMax, Scalar drpoffDelayMax) {
-        boolean timeComp = true;
+        boolean timeComp = true;        
         Scalar timePrev = Quantity.of(timeNow, SI.SECOND);
+        
         for (SharedCourse course : newMenu) {
-            Scalar travelTime = travelTimeCashed.travelTime(roboTaxi.getLastKnownLocation(), course.getLink(), timeNow);
+            Scalar travelTime = //
+                    travelTimeCashed.travelTime(roboTaxi.getLastKnownLocation(), course.getLink(), timeNow);
             Scalar timeofCourse = timePrev.add(travelTime);
             if (course.getMealType().equals(SharedMealType.PICKUP)) {
                 Scalar latestPickup = LatestPickup.of(course.getAvRequest(), pickupDelayMax);
@@ -31,7 +32,8 @@ import ch.ethz.idsc.tensor.qty.Quantity;
                 }
             }
             if (course.getMealType().equals(SharedMealType.DROPOFF)) {
-                Scalar latestDropoff = LatestArrival.of(course.getAvRequest(), drpoffDelayMax, travelTimeCashed, timeNow);
+                Scalar latestDropoff = //
+                        LatestArrival.of(course.getAvRequest(), drpoffDelayMax, travelTimeCashed, timeNow);
                 if (Scalars.lessThan(latestDropoff, timeofCourse)) {
                     timeComp = false;
                     break;
