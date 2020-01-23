@@ -9,6 +9,7 @@ import java.util.TreeMap;
 import java.util.function.BiConsumer;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.dispatcher.core.SharedUniversalDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.Compatibility;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.routing.CachedNetworkTimeDistance;
@@ -17,9 +18,29 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-/** Implementation of the "Algorithm 2: Insertion feasibility check" is contained in this class for all
- * possible insertions. */
-/* package */ class InsertionCheck {
+
+
+/** This class is a generalized implementation of the "Algorithm 2: Insertion feasibility check" supplied in
+ * the T-Share publication. The original reference is only for menus with 1 passenger in the taxi and the
+ * addition of 1 other passenger. Here, all insertion permutations are explored, then, of all feasible
+ * permutations, the permutation with the least additional distance is returned, null if none is found. The following
+ * symbols represent the sequence of iterations which are checked:
+ * 
+ * o: existing schedule
+ * +: pickup of new request
+ * -: dropoff of new request
+ * 
+ * checking order:
+ * +oooo-
+ * +ooo-o
+ * +oo-oo
+ * ...
+ * o+ooo-
+ * o+oo-o
+ * o+o-oo
+ * o+-ooo
+ * ... */
+/* package */ class InsertionChecker {
 
     private final RoboTaxi roboTaxi;
     private final AVRequest request;
@@ -27,7 +48,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     private Scalar optimalLength;
     private Scalar originalLength;
 
-    public InsertionCheck(CachedNetworkTimeDistance distance, NetworkTimeDistInterface travelTimeCashed, //
+    public InsertionChecker(CachedNetworkTimeDistance distance, NetworkTimeDistInterface travelTimeCached, //
             RoboTaxi roboTaxi, AVRequest request, Scalar pickupDelayMax, Scalar drpoffDelayMax, double timeNow) {
         this.roboTaxi = roboTaxi;
         this.request = request;
@@ -45,9 +66,9 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         }
 
         /** original length */
-        originalLength = Length.of(roboTaxi, originalMenu, distance, timeNow);
+        originalLength = Length.of(roboTaxi.getDivertableLocation(), originalMenu, distance, timeNow);
 
-        /** add new requests to end of menu */
+        /** create new courses to add to existing menu */
         SharedCourse pickupCourse = SharedCourse.pickupCourse(request);
         SharedCourse drpoffCourse = SharedCourse.dropoffCourse(request);
 
@@ -68,19 +89,19 @@ import ch.ethz.matsim.av.passenger.AVRequest;
                 }
 
                 /** check compatibility with {@link RoboTaxi} capacity for newMenu */
-                boolean capctyComp = Compatibility.of(newMenu).forCapacity(roboTaxi.getCapacity());
-                if (!capctyComp)
+                boolean capacityCompatible = Compatibility.of(newMenu).forCapacity(roboTaxi.getCapacity());
+                if (!capacityCompatible)
                     continue;
 
-                /** compute expecte arrival times and check compatibility with time windows */
-                boolean timeComp = TimeWindowCheck.of(timeNow, newMenu, travelTimeCashed, roboTaxi, //
-                        pickupDelayMax, drpoffDelayMax);
-                if (!timeComp)
+                /** compute expected arrival times and check compatibility with time windows */
+                boolean timeCompatible = //
+                        TimeWindowCheck.of(timeNow, newMenu, travelTimeCached, roboTaxi.getLastKnownLocation(), pickupDelayMax, drpoffDelayMax);
+                if (!timeCompatible)
                     continue;
 
                 /** the line below is computationally expensive and calculates the
                  * path length of the option. */
-                menuOptions.put(Length.of(roboTaxi, newMenu, distance, timeNow), newMenu);
+                menuOptions.put(Length.of(roboTaxi.getDivertableLocation(), newMenu, distance, timeNow), newMenu);
             }
         }
 
@@ -88,28 +109,28 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         if (Objects.nonNull(menuOptions.firstEntry())) {
             optimalMenu = menuOptions.firstEntry().getValue();
             optimalLength = menuOptions.firstEntry().getKey();
+            /** if the routine ran correctly, the number of {@link SharedCourse}s should
+             * be increased by exactly 2 */
             GlobalAssert.that(optimalMenu.size() == originalMenu.size() + 2);
             GlobalAssert.that(Compatibility.of(optimalMenu).forCapacity(roboTaxi.getCapacity()));
         }
     }
 
-    /** @return null if the request cannot be reached before maxPickupDelay or
-     *         the request cannot be dropped of before reaching maxDrpoffDelay. Otherwise
-     *         returns the additional necessary distance to pickup the request. */
+    /** @return {@link Scalar} additional distance when additional request is inserted in
+     *         the optimal configuration, null if no feasible insertion exists */
     public Scalar getAddDistance() {
         if (Objects.nonNull(optimalMenu))
             return optimalLength.subtract(originalLength);
         return null;
     }
 
-    public void insert(BiConsumer<RoboTaxi, AVRequest> addSharedPickup) {
+    /** Function add the request to the optimal menu with the {@link BiConsumer} @param addSharedPickup
+     * supplied by the dispatcher, normally from {@link SharedUniversalDispatcher} */
+    public void executeBest(BiConsumer<RoboTaxi, AVRequest> addSharedPickup) {
         if (Objects.nonNull(optimalMenu)) {
             addSharedPickup.accept(roboTaxi, request);
             roboTaxi.updateMenu(optimalMenu);
         }
     }
 
-    public RoboTaxi getRoboTaxi() {
-        return roboTaxi;
-    }
 }

@@ -2,15 +2,12 @@
 package ch.ethz.idsc.amodeus.dispatcher.shared.tshare;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
 import org.matsim.api.core.v01.network.Link;
-import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.utils.collections.QuadTree;
 
 import ch.ethz.idsc.amodeus.routing.CachedNetworkTimeDistance;
@@ -23,38 +20,51 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.sca.Sign;
 
+/** In AMoDeus a {@link GridCell} is implemented as an augmented version of the {@link VirtualNode}
+ * that is already used in other places to subdivide a road network into separate areas. Each
+ * {@link GridCell} has a number of data structures to determine travel time and distance to
+ * other {@link GridCell}s. */
 /* package */ class GridCell {
 
-    // private final VirtualNetwork<Link> virtualNetwork;
-    private final VirtualNode<Link> myVNode;
-    private final NavigableMap<Scalar, VirtualNode<Link>> temporalSortedMap = new TreeMap<>();
-    private final NavigableMap<Scalar, VirtualNode<Link>> distanceSortedMap = new TreeMap<>();
-    private final NavigableMap<Scalar, List<VirtualNode<Link>>> nodesWithinLessThan = new TreeMap<>();
-    private final Map<VirtualNode<Link>, Scalar> temporalLookupMap = new HashMap<>();
+    /** every {@link GridCell} corresponds do exactly one {@link VirtualNode} */
+    private final VirtualNode<Link> virtualNode;
 
-    public GridCell(VirtualNode<Link> virtualNode, VirtualNetwork<Link> virtualNetwork, Network network, //
-            CachedNetworkTimeDistance minDist, NetworkTimeDistInterface minTime, QuadTree<Link> linkTree, //
-            double now) {
-        this.myVNode = virtualNode;
-        // this.virtualNetwork = virtualNetwork;
-        computeMaps(virtualNetwork, linkTree, minDist, minTime, now);
+    /** {@link NavigableMap} of other {@link GridCell}s ({@link VirtualNode}s) according to freeflow travel time */
+    private final NavigableMap<Scalar, VirtualNode<Link>> temporalSortedMap = new TreeMap<>();
+
+    /** {@link NavigableMap} of other {@link GridCell}s ({@link VirtualNode}s) according to travel distance */
+    private final NavigableMap<Scalar, VirtualNode<Link>> distanceSortedMap = new TreeMap<>();
+
+    /** {@link NavigableMap} used to rapidly access the set of {@link GridCell}s ({@link VirtualNode}s) reachable
+     * within a travel time of less than some {@link Scalar} value */
+    private final NavigableMap<Scalar, List<VirtualNode<Link>>> nodesWithinLessThan = new TreeMap<>();
+
+    /** Construction of a {@link GridCell} requires: a {@link VirtualNode} @param virtualNode in a
+     * {@link VirtualNetwork} @param virtualNetwork that uniquely defines the {@link GridCell},
+     * functions to compute the minimum travel time and distance to other {@link VirtualNode}s,
+     * which are @param minDist and @param minTime, respectively. A {@link QuadTree} @param linkTree to compute
+     * the nearest {@link Link}s */
+    public GridCell(VirtualNode<Link> virtualNode, VirtualNetwork<Link> virtualNetwork, //
+            CachedNetworkTimeDistance minDist, NetworkTimeDistInterface minTime, QuadTree<Link> linkTree) {
+        this.virtualNode = virtualNode;
+        computeMaps(virtualNetwork, linkTree, minDist, minTime);
     }
 
     private void computeMaps(VirtualNetwork<Link> virtualNetwork, QuadTree<Link> links, //
-            CachedNetworkTimeDistance minDist, NetworkTimeDistInterface minTime, double now) {
+            CachedNetworkTimeDistance minDist, NetworkTimeDistInterface minTime) {
+        /** the from link is the link closes to the center of the {@link VirtualNode} */
+        Link gridCellCenterLink = links.getClosest(//
+                virtualNode.getCoord().Get(0).number().doubleValue(), //
+                virtualNode.getCoord().Get(1).number().doubleValue());
         /** calculate distances and travel times to other nodes */
-        for (VirtualNode<Link> toNode : virtualNetwork.getVirtualNodes()) {
-            Link fromLink = links.getClosest(//
-                    myVNode.getCoord().Get(0).number().doubleValue(), //
-                    myVNode.getCoord().Get(1).number().doubleValue());
-            Link toLink = links.getClosest(//
-                    toNode.getCoord().Get(0).number().doubleValue(), //
-                    toNode.getCoord().Get(1).number().doubleValue());
-            Scalar time = minTime.travelTime(fromLink, toLink, now);
-            Scalar distance = minDist.distance(fromLink, toLink, now);
-            temporalSortedMap.put(time, toNode);
-            temporalLookupMap.put(toNode, time);
-            distanceSortedMap.put(distance, toNode);
+        for (VirtualNode<Link> otherGridCell : virtualNetwork.getVirtualNodes()) {
+            Link otherCenterLink = links.getClosest(//
+                    otherGridCell.getCoord().Get(0).number().doubleValue(), //
+                    otherGridCell.getCoord().Get(1).number().doubleValue());
+            Scalar time = minTime.travelTime(gridCellCenterLink, otherCenterLink, 0.0);
+            Scalar distance = minDist.distance(gridCellCenterLink, otherCenterLink, 0.0);
+            temporalSortedMap.put(time, otherGridCell);
+            distanceSortedMap.put(distance, otherGridCell);
         }
 
         /** fill map with n nodes less than time */
@@ -68,47 +78,23 @@ import ch.ethz.idsc.tensor.sca.Sign;
 
     }
 
-    public List<VirtualNode<Link>> getDistNClosest(int n) {
-        return GetSortedClosest.elem(n, distanceSortedMap);
-    }
-
-    public VirtualNode<Link> getDistAt(int n) {
-        GlobalAssert.that(n >= 0);
+    /** @return the {@link VirtualNode} at the @param position from the
+     *         list of other {@link VirtualNode}s sorted according to the distance. */
+    public VirtualNode<Link> getVNodeAt(int position) {
+        GlobalAssert.that(position >= 0);
         int i = 0;
-        VirtualNode<Link> vNodeN = null;
-        for (VirtualNode<Link> vNode : distanceSortedMap.values()) {
-            vNodeN = vNode;
+        for (Entry<Scalar, VirtualNode<Link>> entry : distanceSortedMap.entrySet()) {
+            if (i == position)
+                return entry.getValue();
             ++i;
-            if (i == n)
-                break;
         }
-        return vNodeN;
+        return distanceSortedMap.lastEntry().getValue();
     }
 
-    public List<VirtualNode<Link>> getTimeNClosest(int n) {
-        return GetSortedClosest.elem(n, temporalSortedMap);
-    }
-
+    /** @return {@link List} of all {@link VirtualNode}s reachable within
+     *         the {@link Scalar} @param time */
     public List<VirtualNode<Link>> nodesReachableWithin(Scalar time) {
         return nodesWithinLessThan.lowerEntry(Sign.requirePositiveOrZero(time)).getValue();
-
-        //// NavigableMap<Scalar,List<VirtualNode<Link>>> nodesWithinLessthan = new TreeMap<>();
-        //// return nodesWithinLessthan(time);
-        //
-        // List<VirtualNode<Link>> closeEnough = new ArrayList<>();
-        // int i = 1;
-        // boolean withinLimit = true;
-        // while (withinLimit && i < virtualNetwork.getvNodesCount()) {
-        // closeEnough = getTimeNClosest(i);
-        // if (Scalars.lessEquals(time, timeTo(closeEnough.get(i - 1)))) {
-        // withinLimit = false;
-        // }
-        // ++i;
-        // }
-        // return closeEnough;
     }
 
-    public Scalar timeTo(VirtualNode<Link> virtualNode) {
-        return temporalLookupMap.get(virtualNode);
-    }
 }

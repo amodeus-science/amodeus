@@ -89,7 +89,8 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
                 .collect(Collectors.toList());
     }
 
-    /** @return Map of AVRequests which have an assigned Robotaxi but are not Picked up yet. The value is the corresponding RoboTaxi */
+    /** @return {@link Map} of {@link AVRequest}s which have an assigned {@link RoboTaxi}
+     *         but are not Picked up yet. Associated value is the corresponding {@link RoboTaxi} */
     protected final Map<AVRequest, RoboTaxi> getCurrentPickupAssignements() {
         return requestRegister.getPickupRegister(pendingRequests);
     }
@@ -310,7 +311,7 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
             Optional<SharedCourse> nextCourseOptional = SharedCourseAccess.getStarter(roboTaxi);
             if (nextCourseOptional.isPresent())
                 if (nextCourseOptional.get().getMealType().equals(SharedMealType.REDIRECT))
-                    if (roboTaxi.getMenuOnBoardCustomers() == 0)
+                    if (roboTaxi.getOnBoardPassengers() == 0)
                         /** if a redirect meal is next and no customer on board, this is exactly
                          * a rebalcne drive and should be recorded accordingly. */
                         GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE));

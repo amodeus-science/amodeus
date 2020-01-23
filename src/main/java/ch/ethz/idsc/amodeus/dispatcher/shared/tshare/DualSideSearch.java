@@ -3,67 +3,85 @@ package ch.ethz.idsc.amodeus.dispatcher.shared.tshare;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.matsim.api.core.v01.network.Link;
-import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.util.Intersection;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-/** Implementation of the "Algorithm 1: Dual Side Taxi Searching" */
+/** Implementation of "Algorithm 1: Dual Side Taxi Searching" */
 /* package */ class DualSideSearch {
 
     private final Map<VirtualNode<Link>, GridCell> gridCells;
     private final VirtualNetwork<Link> virtualNetwork;
 
-    // TODO parameter Network network obsolete
-    public DualSideSearch(Map<VirtualNode<Link>, GridCell> gridCells, VirtualNetwork<Link> virtualNetwork, Network network) {
+    public DualSideSearch(Map<VirtualNode<Link>, GridCell> gridCells, VirtualNetwork<Link> virtualNetwork) {
         this.gridCells = gridCells;
         this.virtualNetwork = virtualNetwork;
     }
 
     public Collection<RoboTaxi> apply(AVRequest request, Map<VirtualNode<Link>, Set<RoboTaxi>> plannedLocations, //
-            Scalar latestPickup, Scalar latestArrval) {
+            Scalar timeLeftForPickup, Scalar timeLeftUntilArrival) {
 
-        /** origin and destination cells */
+        /** origin cell = {@link GridCell} of {@link VirtualNode} containing the request origin link */
         GridCell oCell = gridCells.get(virtualNetwork.getVirtualNode(request.getFromLink()));
+        /** destination cell = {@link GridCell} of {@link VirtualNode} containing the request destination link */
         GridCell dCell = gridCells.get(virtualNetwork.getVirtualNode(request.getToLink()));
 
-        Collection<RoboTaxi> oTaxis = new ArrayList<>();
-        Collection<RoboTaxi> dTaxis = new ArrayList<>();
+        /** oCloseCells = cells reachable before latest pickup */
+        Collection<VirtualNode<Link>> oCloseCells = oCell.nodesReachableWithin(timeLeftForPickup);
+        /** dCloseCells = cells reachable before latest arrival */
+        Collection<VirtualNode<Link>> dCloseCells = dCell.nodesReachableWithin(timeLeftUntilArrival);
+
+        /** compute set of potential taxis for ride sharing with dual side search */
+        return dualSideSearch(oCell, dCell, oCloseCells, dCloseCells, plannedLocations);
+    }
+
+    private Collection<RoboTaxi> dualSideSearch(GridCell oCell, GridCell dCell, //
+            Collection<VirtualNode<Link>> oCloseCells, Collection<VirtualNode<Link>> dCloseCells, //
+            Map<VirtualNode<Link>, Set<RoboTaxi>> plannedLocations) {
+
+        HashSet<RoboTaxi> oTaxis = new HashSet<>();
+        HashSet<RoboTaxi> dTaxis = new HashSet<>();
         Collection<RoboTaxi> potentialTaxis = new ArrayList<>();
 
-        Collection<VirtualNode<Link>> oCloseCells = oCell.nodesReachableWithin(latestPickup);
-        Collection<VirtualNode<Link>> dCloseCells = dCell.nodesReachableWithin(latestArrval);
-
+        /** Loop finds potential taxis for which trip insertion is evaluated */
+        int index = 0;
         boolean stop0 = false;
         boolean stopD = false;
-
-        /** Loop finds potential taxis for which trip insertion is evaluated */
-        int i0 = 0;
-        int iD = 0;
         while (potentialTaxis.isEmpty() && (!stop0 || !stopD)) {
-            if (i0 < oCloseCells.size()) {
-                VirtualNode<Link> vNode = oCell.getDistAt(i0);
-                if (oCloseCells.contains(vNode))
+
+            /** iterate neighbors according to closedness, get taxis if
+             * within reachable time for pickup */
+            if (0 < oCloseCells.size()) {
+                VirtualNode<Link> vNode = oCell.getVNodeAt(index);
+                if (oCloseCells.contains(vNode)) {
                     oTaxis.addAll(plannedLocations.get(vNode));
-                ++i0;
+                    oCloseCells.remove(vNode);
+                }
             } else
                 stop0 = true;
-            if (iD < dCloseCells.size()) {
-                VirtualNode<Link> vNode = dCell.getDistAt(iD);
-                if (dCloseCells.contains(vNode))
+            /** iterate neighbors according to closedness, get taxis if
+             * within reachable time for pickup */
+            if (0 < dCloseCells.size()) {
+                VirtualNode<Link> vNode = dCell.getVNodeAt(index);
+                if (dCloseCells.contains(vNode)) {
                     dTaxis.addAll(plannedLocations.get(vNode));
-                ++iD;
+                    dCloseCells.remove(vNode);
+                }
             } else
                 stopD = true;
-            potentialTaxis = Intersection.of(oTaxis, dTaxis);
+            /** compute intersection */
+            potentialTaxis = CollectionUtils.intersection(oTaxis, dTaxis);
+            /** increase index */
+            ++index;
         }
         return potentialTaxis;
     }
