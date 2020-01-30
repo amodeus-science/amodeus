@@ -32,7 +32,6 @@ import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.routing.CachedNetworkTimeDistance;
-import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 import ch.ethz.idsc.amodeus.routing.EasyMinDistPathCalculator;
 import ch.ethz.idsc.amodeus.routing.EasyMinTimePathCalculator;
 import ch.ethz.idsc.amodeus.routing.TimeDistanceProperty;
@@ -65,8 +64,6 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
 
     /** general */
     private final int dispatchPeriod;
-    private final Network network;
-    private final DistanceFunction distanceFunction;
     private final TShareBipartiteMatchingUtils bipartiteMatchingUtils;
     private Tensor printInfo = Tensors.empty();
 
@@ -74,7 +71,6 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
     private final Map<VirtualNode<Link>, GridCell> gridCells = new HashMap<>();
     private final Scalar pickupDelayMax;
     private final Scalar drpoffDelayMax;
-    private final double menuHorizon;
     private final DualSideSearch dualSideSearch;
     private final CachedNetworkTimeDistance distanceCashed;
     private final CachedNetworkTimeDistance travelTimeCalculator;
@@ -83,13 +79,11 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, //
             MatsimAmodeusDatabase db, VirtualNetwork<Link> virtualNetwork) {
         super(config, operatorConfig, travelTime, router, eventsManager, virtualNetwork, db);
-        this.network = network;
         SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
         DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
         DistanceHeuristics distanceHeuristics = dispatcherConfig.getDistanceHeuristics(DistanceHeuristics.EUCLIDEAN);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
-        distanceFunction = distanceHeuristics.getDistanceFunction(network);
         distanceCashed = new CachedNetworkTimeDistance(EasyMinDistPathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), //
                 180000.0, TimeDistanceProperty.INSTANCE);
         travelTimeCalculator = new CachedNetworkTimeDistance(EasyMinTimePathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), //
@@ -99,7 +93,6 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
         /** T-Share specific */
         pickupDelayMax = Quantity.of(safeConfig.getInteger("pickupDelayMax", 10 * 60), SI.SECOND);
         drpoffDelayMax = Quantity.of(safeConfig.getInteger("drpoffDelayMax", 30 * 60), SI.SECOND);
-        menuHorizon = safeConfig.getDouble("menuHorizon", 3);
 
         /** initialize grid with T-cells */
         QuadTree<Link> linkTree = FastQuadTree.of(network);
@@ -128,7 +121,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
                     .filter(rt -> (rt.getUnmodifiableViewOfCourses().size() == 0)) //
                     .collect(Collectors.toList());
             printInfo = bipartiteMatchingUtils.executePickup(this, this::getCurrentPickupTaxi, divertableAndEmpty, //
-                    getUnassignedAVRequests(), distanceCashed, network, now);
+                    getUnassignedAVRequests(), distanceCashed, now);
         }
     }
 
@@ -164,15 +157,13 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
                 /** insertion feasibility check, compute possible insertions into schedules
                  * of all {@link RoboTaxi}s, find the insertion with smallest additional distance */
                 NavigableMap<Scalar, InsertionChecker> insertions = new TreeMap<>();
-                for (RoboTaxi taxi : potentialTaxis)
-                    // very long menus are ommitted...
-                    if (taxi.getUnmodifiableViewOfCourses().size() < taxi.getCapacity() * menuHorizon) {
-                        InsertionChecker checker = //
-                                new InsertionChecker(distanceCashed, travelTimeCalculator, taxi, avr, //
-                                        pickupDelayMax, drpoffDelayMax, now);
-                        if (Objects.nonNull(checker.getAddDistance()))
-                            insertions.put(checker.getAddDistance(), checker);
-                    }
+                for (RoboTaxi taxi : potentialTaxis) {
+                    InsertionChecker checker = //
+                            new InsertionChecker(distanceCashed, travelTimeCalculator, taxi, avr, //
+                                    pickupDelayMax, drpoffDelayMax, now);
+                    if (Objects.nonNull(checker.getAddDistance()))
+                        insertions.put(checker.getAddDistance(), checker);
+                }
 
                 /** plan update: insert the request into the plan of the {@link RoboTaxi} */
                 if (Objects.nonNull(insertions.firstEntry()))
