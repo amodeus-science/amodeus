@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.function.Function;
 
 import org.matsim.api.core.v01.network.Link;
-import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedUniversalDispatcher;
@@ -24,15 +23,14 @@ import ch.ethz.matsim.av.passenger.AVRequest;
             Function<AVRequest, RoboTaxi> getPickupTaxi, //
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
             Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
-            CachedNetworkTimeDistance distanceCashed, Network network, //
-            double now) {
+            CachedNetworkTimeDistance distanceCashed, double now) {
         Tensor infoLine = Tensors.empty();
 
-        Map<RoboTaxi, AVRequest> gbpMatch = //
-                ((new GlobalBipartiteMatching(new CachedDistanceCost(distanceCashed, now))).match(roboTaxis, requests));
+        Map<RoboTaxi, AVRequest> matching = ((new GlobalBipartiteMatching(new CachedDistanceCost(distanceCashed, now)))//
+                .match(roboTaxis, requests));
 
         /** perform dispatching */
-        gbpMatch.forEach(universalDispatcher::addSharedRoboTaxiPickup);
+        matching.forEach(universalDispatcher::addSharedRoboTaxiPickup);
         return infoLine; // TODO always empty?
     }
 
