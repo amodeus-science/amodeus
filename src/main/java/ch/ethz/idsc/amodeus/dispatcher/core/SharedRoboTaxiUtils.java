@@ -34,7 +34,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
     public static RoboTaxiStatus calculateStatusFromMenu(RoboTaxi roboTaxi) {
         Optional<SharedCourse> nextCourseOptional = SharedCourseAccess.getStarter(roboTaxi);
         if (nextCourseOptional.isPresent()) {
-            if (roboTaxi.getMenuOnBoardCustomers() > 0)
+            if (roboTaxi.getOnBoardPassengers() > 0)
                 return RoboTaxiStatus.DRIVEWITHCUSTOMER;
 
             switch (nextCourseOptional.get().getMealType()) {

@@ -269,7 +269,7 @@ public final class RoboTaxi {
         return menu.getCourseList();
     }
 
-    public long getMenuOnBoardCustomers() {
+    public long getOnBoardPassengers() {
         return menu.getMenuOnBoardCustomers();
     }
 
