@@ -1,9 +1,14 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
+import java.util.Optional;
+
+import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
+import org.matsim.contrib.dvrp.schedule.Task;
+import org.matsim.contrib.dvrp.schedule.Task.TaskStatus;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
@@ -25,6 +30,24 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         this.getTimeNow = getTimeNow;
     }
 
+    private Optional<AVPickupTask> getPreviousPickupTask(Schedule schedule, Link link) {
+        int candidateIndex = schedule.getTaskCount() - 1 - 2;
+
+        if (candidateIndex > 0) {
+            Task task = schedule.getTasks().get(candidateIndex);
+
+            if (task.getStatus().equals(TaskStatus.PLANNED)) {
+                if (task instanceof AVPickupTask) {
+                    if (((AVPickupTask) task).getLink() == link) {
+                        return Optional.of((AVPickupTask) task);
+                    }
+                }
+            }
+        }
+
+        return Optional.empty();
+    }
+
     @Override
     void executeWithPath(final VrpPathWithTravelData vrpPathWithTravelData) {
         final Schedule schedule = roboTaxi.getSchedule();
@@ -34,27 +57,33 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         final double endTaskTime = vrpPathWithTravelData.getArrivalTime();
 
         if (endTaskTime < scheduleEndTime) {
-            avStayTask.setEndTime(getTimeNow); // finish the last task now
+            Optional<AVPickupTask> previousPickupTask = getPreviousPickupTask(schedule, currentRequest.getFromLink());
 
-            AVPickupTask pickupTask = new AVPickupTask( //
-                    getTimeNow, // start of pickup
-                    futurePathContainer.getStartTime(), // end of pickup
-                    currentRequest.getFromLink(), // location of driving start
-                    0.0);
-            pickupTask.addRequest(currentRequest); // serving only one request at a time
-            schedule.addTask(pickupTask);
+            if (!previousPickupTask.isPresent()) { // There is no pickup task available yet
+                avStayTask.setEndTime(getTimeNow); // finish the last task now
 
-            // schedule.addTask(new AVDriveTask( //
-            // vrpPathWithTravelData, Arrays.asList(currentRequest)));
-            // ScheduleUtils.makeWhole(robotaxi, endTaskTime, scheduleEndTime, vrpPathWithTravelData.getToLink());
+                AVPickupTask pickupTask = new AVPickupTask( //
+                        getTimeNow, // start of pickup
+                        futurePathContainer.getStartTime(), // end of pickup
+                        currentRequest.getFromLink(), // location of driving start
+                        0.0);
+                pickupTask.addRequest(currentRequest); // serving only one request at a time
+                schedule.addTask(pickupTask);
 
-            GlobalAssert.that(futurePathContainer.getStartTime() < scheduleEndTime);
-            ScheduleUtils.makeWhole(roboTaxi, futurePathContainer.getStartTime(), scheduleEndTime, currentRequest.getFromLink());
+                // schedule.addTask(new AVDriveTask( //
+                // vrpPathWithTravelData, Arrays.asList(currentRequest)));
+                // ScheduleUtils.makeWhole(robotaxi, endTaskTime, scheduleEndTime, vrpPathWithTravelData.getToLink());
 
-            // jan: following computation is mandatory for the internal scoring
-            // // function
-            final double distance = VrpPathUtils.getDistance(vrpPathWithTravelData);
-            currentRequest.getRoute().setDistance(distance);
+                GlobalAssert.that(futurePathContainer.getStartTime() < scheduleEndTime);
+                ScheduleUtils.makeWhole(roboTaxi, futurePathContainer.getStartTime(), scheduleEndTime, currentRequest.getFromLink());
+
+                // jan: following computation is mandatory for the internal scoring
+                // // function
+                final double distance = VrpPathUtils.getDistance(vrpPathWithTravelData);
+                currentRequest.getRoute().setDistance(distance);
+            } else { // There is an old pickup task, so we can append the request there
+                previousPickupTask.get().addRequest(currentRequest);
+            }
         } else
             reportExecutionBypass(endTaskTime - scheduleEndTime);
     }
