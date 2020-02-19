@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
+import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
@@ -22,7 +23,6 @@ import ch.ethz.idsc.amodeus.dispatcher.core.SharedRebalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.Compatibility;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseUtil;
-import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.operator.OperatorConfig;
@@ -38,10 +38,8 @@ import ch.ethz.matsim.av.router.AVRouter;
  * Passenger 4 is less lucky as the {@link RoboTaxi} first visits the city's North pole (northern most link)
  * before passenger 4 is finally dropped of and the procedure starts from beginning. */
 public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
-
     private final int dispatchPeriod;
     private final int rebalancePeriod;
-    private final List<Link> links;
     private final Random randGen = new Random(1234);
     private final Link cityNorthPole;
     private final List<Link> equatorLinks;
@@ -53,11 +51,10 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
         super(config, operatorConfig, travelTime, router, eventsManager, db);
         this.cityNorthPole = getNorthPole(network);
         this.equatorLinks = getEquator(network);
-        SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
-        dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
-        rebalancePeriod = safeConfig.getInteger("rebalancingPeriod", 1800);
-        links = new ArrayList<>(network.getLinks().values());
-        Collections.shuffle(links, randGen);
+        DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
+        dispatchPeriod = dispatcherConfig.getDispatchPeriod(30);
+        rebalancePeriod = dispatcherConfig.getRebalancingPeriod(1800);
+        Collections.shuffle(new ArrayList<>(network.getLinks().values()), randGen);
     }
 
     @Override
