@@ -23,9 +23,9 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     /** Structure for the Track of Wait times and so on */
     private final Map<AVRequest, RequestWrap> requests = new HashMap<>();
     /** unnassigned Requests Sorted in a Navigable Map such that the earliest Request can be found easily */
-    private final TreeMultipleItems<AVRequest> unassignedRequests = new TreeMultipleItems<>(this::getSubmissionTime);
+    private final TreeMultipleItems<AVRequest> unassignedRequests = new TreeMultipleItems<>(r -> r.getSubmissionTime());
     /** All requests submitted in the last hour. This is used for the Rebalancing. */
-    private final TreeMultipleItems<AVRequest> requestsLastHour = new TreeMultipleItems<>(this::getSubmissionTime);
+    private final TreeMultipleItems<AVRequest> requestsLastHour = new TreeMultipleItems<>(r -> r.getSubmissionTime());
     /** All the drive Times for each requests if this request would be served directely with a unit capacity robo taxi */
     private final Map<AVRequest, Double> driveTimesSingle = new HashMap<>();
     /** All the effective Pickupe Times for each Requests. needed for the Constraints */
@@ -92,10 +92,6 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         requests.get(avRequest).putToWaitList();
     }
 
-    public boolean isOnExtreemWaitList(AVRequest avRequest) {
-        return requests.get(avRequest).isOnExtreemWaitList();
-    }
-
     public void addToExtreemWaitList(AVRequest avRequest) {
         requests.get(avRequest).putToExtreemWaitList();
     }
@@ -118,13 +114,9 @@ import ch.ethz.matsim.av.passenger.AVRequest;
                     // TODO does it include the dropoff or not?
                     driveTimes.put(sharedRoutePoint.getAvRequest(), sharedRoutePoint.getEndTime() - thisPickupTimes.get(sharedRoutePoint.getAvRequest()));
                 else
-                    driveTimes.put(sharedRoutePoint.getAvRequest(), sharedRoutePoint.getEndTime() - getPickupTime(sharedRoutePoint.getAvRequest()));
-
+                    driveTimes.put(sharedRoutePoint.getAvRequest(), //
+                            sharedRoutePoint.getEndTime() - requests.get(sharedRoutePoint.getAvRequest()).getPickupTime());
         return driveTimes;
-    }
-
-    public double getPickupTime(AVRequest avRequest) {
-        return requests.get(avRequest).getPickupTime();
     }
 
     public RequestWrap getRequestWrap(AVRequest avRequest) {
@@ -132,7 +124,9 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     }
 
     public double calculateWaitTime(AVRequest avRequest) {
-        return extremWaitListTime.filter(t -> isOnExtreemWaitList(avRequest)).orElse(calculateInternal(avRequest));
+        return extremWaitListTime//
+                .filter(t -> requests.get(avRequest).isOnExtreemWaitList())//
+                .orElse(calculateInternal(avRequest));
     }
 
     private double calculateInternal(AVRequest avRequest) {
@@ -143,7 +137,4 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         return unassignedRequests.getValues();
     }
 
-    private Double getSubmissionTime(AVRequest request) {
-        return request.getSubmissionTime();
-    }
 }
