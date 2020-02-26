@@ -15,8 +15,9 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
+/** This function is used to execute pick-ups for shared roboTaxis, single-use/unit-capacity
+ * roboTaxis are not using this class. */
 /* package */ enum PickupIfOnLastLink {
-    // FIXME Make it clear that this is for sharing taxi only!!!!!
     ;
 
     public static Optional<AVRequest> apply(RoboTaxi roboTaxi, double timeNow, double pickupDurationPerStop, //
@@ -27,15 +28,15 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         // current course on shared menu
         Optional<SharedCourse> currentCourse = SharedCourseAccess.getStarter(roboTaxi);
         GlobalAssert.that(currentCourse.isPresent());
-        
-        
+
         // check of roboTaxi is on last task
-        Schedule schedule = roboTaxi.getSchedule();        
-        if (schedule.getCurrentTask() == Schedules.getLastTask(schedule)) {            
+        Schedule schedule = roboTaxi.getSchedule();
+        if (schedule.getCurrentTask() == Schedules.getLastTask(schedule)) {
 
             AVRequest avRequest = currentCourse.get().getAvRequest();
             GlobalAssert.that(currentCourse.get().getMealType().equals(SharedMealType.PICKUP));
 
+            // roboTaxi has arrived on link of request
             if (avRequest.getFromLink().equals(pickupVehicleLink)) {
                 pickupAndAssignDirective(roboTaxi, avRequest, timeNow, pickupDurationPerStop, futurePathFactory);
                 return Optional.of(avRequest);
