@@ -192,24 +192,28 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
     @Override
     final void executePickups() {
         Map<AVRequest, RoboTaxi> pickupRegisterCopy = new HashMap<>(requestRegister.getPickupRegister(pendingRequests));
-        List<RoboTaxi> pickupUniqueRoboTaxis = pickupRegisterCopy.values().stream() //
+        List<RoboTaxi> uniquePickupTaxis = pickupRegisterCopy.values().stream() //
                 .filter(srt -> SharedRoboTaxiUtils.isNextCourseOfType(srt, SharedMealType.PICKUP)) //
                 .distinct().collect(Collectors.toList());
-        for (RoboTaxi roboTaxi : pickupUniqueRoboTaxis) {
+
+        List<AVRequest> pickingUp = new ArrayList<>();
+        for (RoboTaxi roboTaxi : uniquePickupTaxis) {
             Optional<AVRequest> avRequest = PickupIfOnLastLink.apply(roboTaxi, getTimeNow(), //
                     pickupDurationPerStop, futurePathFactory);
-            if (avRequest.isPresent()) {
-                GlobalAssert.that(pendingRequests.contains(avRequest.get()));
-                // Update the registers
-                boolean checkPendingRemoved = pendingRequests.remove(avRequest.get());
-                GlobalAssert.that(checkPendingRemoved);
-                reqStatuses.put(avRequest.get(), RequestStatus.DRIVING);
-                periodPickedUpRequests.add(avRequest.get());
-                ++total_matchedRequests;
+            if (avRequest.isPresent())
+                pickingUp.add(avRequest.get());
+        }
 
-                GlobalAssert.that(!pendingRequests.contains(avRequest.get()));
-                GlobalAssert.that(requestRegister.contains(roboTaxi, avRequest.get()));
-            }
+        for (AVRequest avRequest : pickingUp) {
+            GlobalAssert.that(pendingRequests.contains(avRequest));
+            // Update the registers
+            boolean checkPendingRemoved = pendingRequests.remove(avRequest);
+            GlobalAssert.that(checkPendingRemoved);
+            reqStatuses.put(avRequest, RequestStatus.DRIVING);
+            periodPickedUpRequests.add(avRequest);
+            ++total_matchedRequests;
+
+            GlobalAssert.that(!pendingRequests.contains(avRequest));
         }
     }
 
