@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +23,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
     public static Optional<AVRequest> apply(RoboTaxi roboTaxi, double timeNow, double pickupDurationPerStop, //
             FuturePathFactory futurePathFactory) {
+
         // link of roboTaxi
         Link pickupVehicleLink = roboTaxi.getDivertableLocation();
 
@@ -44,6 +46,23 @@ import ch.ethz.matsim.av.passenger.AVRequest;
             }
         }
         return Optional.empty();
+    }
+
+    private static List<SharedCourse> pickupNowCoursesOf(RoboTaxi roboTaxi) {
+        // link of roboTaxi
+        Link pickupVehicleLink = roboTaxi.getDivertableLocation();
+
+        // find all courses which are on corrent link and of type PICKUP
+        List<SharedCourse> pickupNowCourses = new ArrayList<>();
+        for (SharedCourse course : roboTaxi.getUnmodifiableViewOfCourses()) {
+            if (course.getLink().equals(pickupVehicleLink)) {
+                if (course.getMealType().equals(SharedMealType.PICKUP)) {
+                    pickupNowCourses.add(course);
+                }
+            }
+        }
+        // return this list
+        return pickupNowCourses;
     }
 
     private static void pickupAndAssignDirective(RoboTaxi roboTaxi, List<AVRequest> commonOriginRequests, //
