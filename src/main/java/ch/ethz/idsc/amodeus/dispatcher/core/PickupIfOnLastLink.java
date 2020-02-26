@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.schedule.Schedule;
@@ -27,31 +28,37 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         // link of roboTaxi
         Link pickupVehicleLink = roboTaxi.getDivertableLocation();
 
-        // current course on shared menu
-        Optional<SharedCourse> currentCourse = SharedCourseAccess.getStarter(roboTaxi);
-        GlobalAssert.that(currentCourse.isPresent());
-
-        List<AVRequest> pickedUpRequests = new ArrayList<>();
+        // // current course on shared menu
+        // Optional<SharedCourse> currentCourse = SharedCourseAccess.getStarter(roboTaxi);
+        // GlobalAssert.that(currentCourse.isPresent());
+        // List<AVRequest> pickedUpRequests = new ArrayList<>();
+        //
+        List<SharedCourse> courses = PickupNowCourses.of(roboTaxi);
+        List<AVRequest> pickupNowReuqests = courses.stream().map(c -> c.getAvRequest())//
+                .collect(Collectors.toList());
 
         // check of roboTaxi is on last task
         Schedule schedule = roboTaxi.getSchedule();
         if (schedule.getCurrentTask() == Schedules.getLastTask(schedule)) {
 
-            AVRequest avRequest = currentCourse.get().getAvRequest();
-            GlobalAssert.that(currentCourse.get().getMealType().equals(SharedMealType.PICKUP));
+//            AVRequest avRequest = currentCourse.get().getAvRequest();
+//            GlobalAssert.that(currentCourse.get().getMealType().equals(SharedMealType.PICKUP));
 
             // roboTaxi has arrived on link of request
-            if (avRequest.getFromLink().equals(pickupVehicleLink)) {
+//            if (avRequest.getFromLink().equals(pickupVehicleLink)) {
 
-                System.err.println("pickup and assign: " + roboTaxi.getId() + "/ " + avRequest.getId());
+//                System.err.println("pickup and assign: " + roboTaxi.getId() + "/ " + avRequest.getId());
 
-                PickupAndAssignDirective.using(roboTaxi, Arrays.asList(avRequest), //
+                PickupAndAssignDirective.using(roboTaxi, pickupNowReuqests, //
                         timeNow, pickupDurationPerStop, futurePathFactory);
-                pickedUpRequests.add(avRequest);
-            }
+//                pickedUpRequests.add(avRequest);
+//            }
+                
+                return pickupNowReuqests;
         }
 
-        return pickedUpRequests;
+        return new ArrayList<>();
+
     }
 
 }

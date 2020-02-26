@@ -12,7 +12,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 /* package */ class PickupNowCourses {
     ;
 
-    private static List<SharedCourse> of(RoboTaxi roboTaxi) {
+    public static List<SharedCourse> of(RoboTaxi roboTaxi) {
         // link of roboTaxi
         Link pickupVehicleLink = roboTaxi.getDivertableLocation();
 
