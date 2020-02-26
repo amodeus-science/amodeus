@@ -21,13 +21,18 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
     public static Optional<AVRequest> apply(RoboTaxi roboTaxi, double timeNow, double pickupDurationPerStop, //
             FuturePathFactory futurePathFactory) {
-        // Same for dropoffs
+        // link of roboTaxi
         Link pickupVehicleLink = roboTaxi.getDivertableLocation();
-        // SHARED note that waiting for last staytask adds a one second staytask before
-        // switching to pickuptask
-        if (roboTaxi.getSchedule().getCurrentTask() == Schedules.getLastTask(roboTaxi.getSchedule())) {
-            Optional<SharedCourse> currentCourse = SharedCourseAccess.getStarter(roboTaxi);
-            GlobalAssert.that(currentCourse.isPresent());
+
+        // current course on shared menu
+        Optional<SharedCourse> currentCourse = SharedCourseAccess.getStarter(roboTaxi);
+        GlobalAssert.that(currentCourse.isPresent());
+        
+        
+        // check of roboTaxi is on last task
+        Schedule schedule = roboTaxi.getSchedule();        
+        if (schedule.getCurrentTask() == Schedules.getLastTask(schedule)) {            
+
             AVRequest avRequest = currentCourse.get().getAvRequest();
             GlobalAssert.that(currentCourse.get().getMealType().equals(SharedMealType.PICKUP));
 
