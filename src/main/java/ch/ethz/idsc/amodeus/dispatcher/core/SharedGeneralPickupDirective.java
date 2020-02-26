@@ -1,7 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
-import java.util.Arrays;
+import java.util.List;
 
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.schedule.Schedule;
@@ -16,15 +16,18 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
  * 1) finish stay task 2) append pickup task 3) append drive task 4) append new stay task */
 /* package */ final class SharedGeneralPickupDirective extends FuturePathDirective {
     final RoboTaxi roboTaxi;
-    final AVRequest currentRequest;
+    final List<AVRequest> sameOriginRequests;
     final double getTimeNow;
 
-    public SharedGeneralPickupDirective(RoboTaxi roboTaxi, AVRequest currentRequest, //
+    public SharedGeneralPickupDirective(RoboTaxi roboTaxi, List<AVRequest> sameOriginRequests, //
             FuturePathContainer futurePathContainer, final double getTimeNow) {
         super(futurePathContainer);
         this.roboTaxi = roboTaxi;
-        this.currentRequest = currentRequest;
+        this.sameOriginRequests = sameOriginRequests;
         this.getTimeNow = getTimeNow;
+
+        // all requests must have same from link
+        GlobalAssert.that(sameOriginRequests.stream().map(AVRequest::getFromLink).distinct().count() == 1);
     }
 
     @Override
@@ -41,23 +44,19 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
             AVPickupTask pickupTask = new AVPickupTask( //
                     getTimeNow, // start of pickup
                     futurePathContainer.getStartTime(), // end of pickup
-                    currentRequest.getFromLink(), // location of driving start
-                    0.0, //
-                    Arrays.asList(currentRequest));
-            // pickupTask.addRequest(currentRequest); // serving only one request at a time
+                    sameOriginRequests.get(0).getFromLink(), // location of driving start
+                    0.0, sameOriginRequests);
             schedule.addTask(pickupTask);
 
-            // schedule.addTask(new AVDriveTask( //
-            // vrpPathWithTravelData, Arrays.asList(currentRequest)));
-            // ScheduleUtils.makeWhole(robotaxi, endTaskTime, scheduleEndTime, vrpPathWithTravelData.getToLink());
-
             GlobalAssert.that(futurePathContainer.getStartTime() < scheduleEndTime);
-            ScheduleUtils.makeWhole(roboTaxi, futurePathContainer.getStartTime(), scheduleEndTime, currentRequest.getFromLink());
+            ScheduleUtils.makeWhole(roboTaxi, futurePathContainer.getStartTime(), scheduleEndTime, //
+                    sameOriginRequests.get(0).getFromLink());
 
             // jan: following computation is mandatory for the internal scoring
             // // function
             final double distance = VrpPathUtils.getDistance(vrpPathWithTravelData);
-            currentRequest.getRoute().setDistance(distance);
+            sameOriginRequests.forEach(r -> r.getRoute().setDistance(distance));// .getRoute().setDistance(distance);
+
         } else
             reportExecutionBypass(endTaskTime - scheduleEndTime);
     }

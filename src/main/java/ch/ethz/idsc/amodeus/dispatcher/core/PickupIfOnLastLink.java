@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import org.matsim.api.core.v01.network.Link;
@@ -18,7 +19,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     // FIXME Make it clear that this is for sharing taxi only!!!!!
     ;
 
-    public static Optional<AVRequest> apply(RoboTaxi roboTaxi, double timeNow, double pickupDurationPerStop, FuturePathFactory futurePathFactory) {
+    public static Optional<AVRequest> apply(RoboTaxi roboTaxi, double timeNow, double pickupDurationPerStop, //
+            FuturePathFactory futurePathFactory) {
         // Same for dropoffs
         Link pickupVehicleLink = roboTaxi.getDivertableLocation();
         // SHARED note that waiting for last staytask adds a one second staytask before
@@ -37,7 +39,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         return Optional.empty();
     }
 
-    private static void pickupAndAssignDirective(RoboTaxi roboTaxi, AVRequest avRequest, double now, double pickupDurationPerStop, FuturePathFactory futurePathFactory) {
+    private static void pickupAndAssignDirective(RoboTaxi roboTaxi, AVRequest avRequest, double now, //
+            double pickupDurationPerStop, FuturePathFactory futurePathFactory) {
         GlobalAssert.that(OnMenuRequests.canPickupAdditionalCustomer(roboTaxi));
         Optional<SharedCourse> currentCourse = SharedCourseAccess.getStarter(roboTaxi);
         GlobalAssert.that(currentCourse.isPresent());
@@ -56,7 +59,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         final double endPickupTime = now + pickupDurationPerStop;
         FuturePathContainer futurePathContainer = //
                 futurePathFactory.createFuturePathContainer(avRequest.getFromLink(), SharedRoboTaxiUtils.getStarterLink(roboTaxi), endPickupTime);
-        roboTaxi.assignDirective(new SharedGeneralPickupDirective(roboTaxi, avRequest, futurePathContainer, now));
+        roboTaxi.assignDirective(new SharedGeneralPickupDirective(roboTaxi, Arrays.asList(avRequest), futurePathContainer, now));
 
         GlobalAssert.that(!roboTaxi.isDivertable());
 
