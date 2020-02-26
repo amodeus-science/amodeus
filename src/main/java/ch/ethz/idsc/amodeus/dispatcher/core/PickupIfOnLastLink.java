@@ -26,7 +26,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
             double pickupDurationPerStop, FuturePathFactory futurePathFactory) {
 
         // link of roboTaxi
-        Link pickupVehicleLink = roboTaxi.getDivertableLocation();
+        // Link pickupVehicleLink = roboTaxi.getDivertableLocation();
 
         // // current course on shared menu
         // Optional<SharedCourse> currentCourse = SharedCourseAccess.getStarter(roboTaxi);
@@ -34,27 +34,27 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         // List<AVRequest> pickedUpRequests = new ArrayList<>();
         //
         List<SharedCourse> courses = PickupNowCourses.of(roboTaxi);
-        List<AVRequest> pickupNowReuqests = courses.stream().map(c -> c.getAvRequest())//
+        List<AVRequest> pickupNowRequests = courses.stream().map(c -> c.getAvRequest())//
                 .collect(Collectors.toList());
 
         // check of roboTaxi is on last task
         Schedule schedule = roboTaxi.getSchedule();
         if (schedule.getCurrentTask() == Schedules.getLastTask(schedule)) {
 
-//            AVRequest avRequest = currentCourse.get().getAvRequest();
-//            GlobalAssert.that(currentCourse.get().getMealType().equals(SharedMealType.PICKUP));
+            // AVRequest avRequest = currentCourse.get().getAvRequest();
+            // GlobalAssert.that(currentCourse.get().getMealType().equals(SharedMealType.PICKUP));
 
             // roboTaxi has arrived on link of request
-//            if (avRequest.getFromLink().equals(pickupVehicleLink)) {
+            // if (avRequest.getFromLink().equals(pickupVehicleLink)) {
 
-//                System.err.println("pickup and assign: " + roboTaxi.getId() + "/ " + avRequest.getId());
+            // System.err.println("pickup and assign: " + roboTaxi.getId() + "/ " + avRequest.getId());
 
-                PickupAndAssignDirective.using(roboTaxi, pickupNowReuqests, //
-                        timeNow, pickupDurationPerStop, futurePathFactory);
-//                pickedUpRequests.add(avRequest);
-//            }
-                
-                return pickupNowReuqests;
+            PickupAndAssignDirective.using(roboTaxi, pickupNowRequests, //
+                    timeNow, pickupDurationPerStop, futurePathFactory);
+            // pickedUpRequests.add(avRequest);
+            // }
+
+            return pickupNowRequests;
         }
 
         return new ArrayList<>();

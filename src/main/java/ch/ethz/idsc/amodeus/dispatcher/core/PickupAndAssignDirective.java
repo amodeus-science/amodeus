@@ -1,7 +1,9 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.matsim.api.core.v01.network.Link;
 
@@ -24,9 +26,31 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         GlobalAssert.that(onBoard + pickupN <= roboTaxi.getCapacity());
 
         // Update the roboTaxi menu // must be done for each request!
-        for (AVRequest request : commonOriginRequests)
-            roboTaxi.pickupNewCustomerOnBoard();
+        // for (AVRequest request : commonOriginRequests)
+        // roboTaxi.pickupNewCustomerOnBoard();
         roboTaxi.setCurrentDriveDestination(commonFromLink);
+
+        
+        System.out.println("before");
+        roboTaxi.getUnmodifiableViewOfCourses().stream().forEach(c->{
+            System.out.println(c);
+        });
+        
+        
+        List<SharedCourse> sharedCourses = roboTaxi.getUnmodifiableViewOfCourses();
+
+        
+        roboTaxi.pickupOf(commonOriginRequests);
+
+
+
+        
+        System.out.println("after");
+        roboTaxi.getUnmodifiableViewOfCourses().stream().forEach(c->{
+            System.out.println(c);
+        });
+        
+        
 
         // Assign Directive
         final double endPickupTime = now + pickupDurationPerStop;

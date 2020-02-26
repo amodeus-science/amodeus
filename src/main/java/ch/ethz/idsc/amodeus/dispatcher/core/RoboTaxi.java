@@ -367,6 +367,12 @@ public final class RoboTaxi {
         GlobalAssert.that(SharedRoboTaxiUtils.getStarterLink(this).equals(getDivertableLocation()));
         setMenu(SharedCourseRemove.starter(menu));
     }
+    
+    /* package */ void pickupOf(List<AVRequest> avrs){
+        for(AVRequest avr : avrs)
+            setMenu(SharedCourseRemove.several(menu, SharedCourse.pickupCourse(avr)));
+    }
+    
 
     /* package */ void dropOffCustomer() {
         checkAbilityToDropOff();
