@@ -196,12 +196,11 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
                 .filter(srt -> SharedRoboTaxiUtils.isNextCourseOfType(srt, SharedMealType.PICKUP)) //
                 .distinct().collect(Collectors.toList());
 
-        List<AVRequest> pickingUp = new ArrayList<>();
+        Set<AVRequest> pickingUp = new HashSet<>();
         for (RoboTaxi roboTaxi : uniquePickupTaxis) {
-            Optional<AVRequest> avRequest = PickupIfOnLastLink.apply(roboTaxi, getTimeNow(), //
+            List<AVRequest> avRequest = PickupIfOnLastLink.apply(roboTaxi, getTimeNow(), //
                     pickupDurationPerStop, futurePathFactory);
-            if (avRequest.isPresent())
-                pickingUp.add(avRequest.get());
+            pickingUp.addAll(avRequest);
         }
 
         for (AVRequest avRequest : pickingUp) {

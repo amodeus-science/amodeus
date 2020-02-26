@@ -1,7 +1,9 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.matsim.api.core.v01.network.Link;
@@ -19,8 +21,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 /* package */ enum PickupIfOnLastLink {
     ;
 
-    public static Optional<AVRequest> apply(RoboTaxi roboTaxi, double timeNow, double pickupDurationPerStop, //
-            FuturePathFactory futurePathFactory) {
+    public static List<AVRequest> apply(RoboTaxi roboTaxi, double timeNow, //
+            double pickupDurationPerStop, FuturePathFactory futurePathFactory) {
 
         // link of roboTaxi
         Link pickupVehicleLink = roboTaxi.getDivertableLocation();
@@ -28,6 +30,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         // current course on shared menu
         Optional<SharedCourse> currentCourse = SharedCourseAccess.getStarter(roboTaxi);
         GlobalAssert.that(currentCourse.isPresent());
+
+        List<AVRequest> pickedUpRequests = new ArrayList<>();
 
         // check of roboTaxi is on last task
         Schedule schedule = roboTaxi.getSchedule();
@@ -38,18 +42,16 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
             // roboTaxi has arrived on link of request
             if (avRequest.getFromLink().equals(pickupVehicleLink)) {
-                
+
                 System.err.println("pickup and assign: " + roboTaxi.getId() + "/ " + avRequest.getId());
-                
+
                 PickupAndAssignDirective.using(roboTaxi, Arrays.asList(avRequest), //
                         timeNow, pickupDurationPerStop, futurePathFactory);
-                return Optional.of(avRequest);
+                pickedUpRequests.add(avRequest);
             }
         }
-        return Optional.empty();
+
+        return pickedUpRequests;
     }
-
-
-
 
 }
