@@ -2,13 +2,13 @@
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
 
-import ch.ethz.idsc.amodeus.dispatcher.shared.OnMenuRequests;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
@@ -38,40 +38,47 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
             // roboTaxi has arrived on link of request
             if (avRequest.getFromLink().equals(pickupVehicleLink)) {
-                pickupAndAssignDirective(roboTaxi, avRequest, timeNow, pickupDurationPerStop, futurePathFactory);
+                pickupAndAssignDirective(roboTaxi, Arrays.asList(avRequest), //
+                        timeNow, pickupDurationPerStop, futurePathFactory);
                 return Optional.of(avRequest);
             }
         }
         return Optional.empty();
     }
 
-    private static void pickupAndAssignDirective(RoboTaxi roboTaxi, AVRequest avRequest, double now, //
-            double pickupDurationPerStop, FuturePathFactory futurePathFactory) {
-        GlobalAssert.that(OnMenuRequests.canPickupAdditionalCustomer(roboTaxi));
+    private static void pickupAndAssignDirective(RoboTaxi roboTaxi, List<AVRequest> commonOriginRequests, //
+            double now, double pickupDurationPerStop, FuturePathFactory futurePathFactory) {
 
-        Optional<SharedCourse> currentCourse = SharedCourseAccess.getStarter(roboTaxi);
-        GlobalAssert.that(currentCourse.isPresent());
-        GlobalAssert.that(currentCourse.get().getMealType().equals(SharedMealType.PICKUP));
-        GlobalAssert.that(currentCourse.get().getCourseId().equals(avRequest.getId().toString()));
-        GlobalAssert.that(currentCourse.get().getLink().equals(avRequest.getFromLink()));
-        GlobalAssert.that(currentCourse.get().getLink().equals(roboTaxi.getDivertableLocation()));
+        // all requests must have same from link
+        GlobalAssert.that(commonOriginRequests.stream().map(AVRequest::getFromLink).distinct().count() == 1);
+        Link commonFromLink = commonOriginRequests.get(0).getFromLink();
 
-        // Update the Robo Taxi
-        roboTaxi.pickupNewCustomerOnBoard();
-        roboTaxi.setCurrentDriveDestination(currentCourse.get().getLink());
+        // ensure that roboTaxi has enough capacity
+        int onBoard = (int) roboTaxi.getOnBoardPassengers();
+        int pickupN = commonOriginRequests.size();
+        GlobalAssert.that(onBoard + pickupN <= roboTaxi.getCapacity());
+
+        // Update the roboTaxi menu // must be done for each request!
+        for (AVRequest request : commonOriginRequests)
+            roboTaxi.pickupNewCustomerOnBoard();
+        roboTaxi.setCurrentDriveDestination(commonFromLink);
 
         // Assign Directive
         final double endPickupTime = now + pickupDurationPerStop;
         FuturePathContainer futurePathContainer = //
-                futurePathFactory.createFuturePathContainer(avRequest.getFromLink(), SharedRoboTaxiUtils.getStarterLink(roboTaxi), endPickupTime);
-        roboTaxi.assignDirective(new SharedGeneralPickupDirective(roboTaxi, Arrays.asList(avRequest), futurePathContainer, now));
+                futurePathFactory.createFuturePathContainer(commonFromLink, //
+                        SharedRoboTaxiUtils.getStarterLink(roboTaxi), endPickupTime);
+        roboTaxi.assignDirective(new SharedGeneralPickupDirective(roboTaxi, commonOriginRequests, //
+                futurePathContainer, now));
 
         GlobalAssert.that(!roboTaxi.isDivertable());
 
-        // After Function Checks
-        GlobalAssert.that(!roboTaxi.getUnmodifiableViewOfCourses().contains(SharedCourse.pickupCourse(avRequest)));
+        // ensure that pickup is not in taxi schedule, drop-off still is
+        for (AVRequest avRequest2 : commonOriginRequests) {
+            GlobalAssert.that(!roboTaxi.getUnmodifiableViewOfCourses().contains(SharedCourse.pickupCourse(avRequest2)));
+            GlobalAssert.that(roboTaxi.getUnmodifiableViewOfCourses().contains(SharedCourse.dropoffCourse(avRequest2)));
+        }
 
-        GlobalAssert.that(roboTaxi.getUnmodifiableViewOfCourses().contains(SharedCourse.dropoffCourse(avRequest)));
     }
 
 }
