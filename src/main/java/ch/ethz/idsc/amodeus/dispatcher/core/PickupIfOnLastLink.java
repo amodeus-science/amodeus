@@ -48,14 +48,13 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     private static void pickupAndAssignDirective(RoboTaxi roboTaxi, AVRequest avRequest, double now, //
             double pickupDurationPerStop, FuturePathFactory futurePathFactory) {
         GlobalAssert.that(OnMenuRequests.canPickupAdditionalCustomer(roboTaxi));
+
         Optional<SharedCourse> currentCourse = SharedCourseAccess.getStarter(roboTaxi);
         GlobalAssert.that(currentCourse.isPresent());
         GlobalAssert.that(currentCourse.get().getMealType().equals(SharedMealType.PICKUP));
         GlobalAssert.that(currentCourse.get().getCourseId().equals(avRequest.getId().toString()));
         GlobalAssert.that(currentCourse.get().getLink().equals(avRequest.getFromLink()));
         GlobalAssert.that(currentCourse.get().getLink().equals(roboTaxi.getDivertableLocation()));
-        final Schedule schedule = roboTaxi.getSchedule();
-        GlobalAssert.that(schedule.getCurrentTask() == Schedules.getLastTask(schedule)); // check that current task is last task in schedule
 
         // Update the Robo Taxi
         roboTaxi.pickupNewCustomerOnBoard();
