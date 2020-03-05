@@ -100,7 +100,7 @@ public class SharedRoboTaxiUtilsTest extends TestCase {
         s.roboTaxi1.pickupNewCustomerOnBoard();
         assertEquals(SharedRoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1), RoboTaxiStatus.DRIVEWITHCUSTOMER);
 
-        assertEquals(s.roboTaxi1.getMenuOnBoardCustomers(), 1);
+        assertEquals(s.roboTaxi1.getOnBoardPassengers(), 1);
         assertEquals(s.roboTaxi1.getUnmodifiableViewOfCourses().size(), numcourses - 1);
         try { // It should not be Possible to have a menu which plans to pick up more customers than capacity
             s.roboTaxi1.moveAVCourseToPrev(SharedCourse.pickupCourse(s.avRequest4));
@@ -139,8 +139,8 @@ public class SharedRoboTaxiUtilsTest extends TestCase {
         } catch (Exception e) {
             // ---
         }
-        assertEquals(s.roboTaxi1.getMenuOnBoardCustomers(), 1);
-        assertTrue(OnMenuRequests.canPickupNewCustomer(s.roboTaxi1));
+        assertEquals(s.roboTaxi1.getOnBoardPassengers(), 1);
+        assertTrue(OnMenuRequests.canPickupAdditionalCustomer(s.roboTaxi1));
 
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.linkUp, 1.0));
         assertTrue(SharedRoboTaxiUtils.isNextCourseOfType(s.roboTaxi1, SharedMealType.REDIRECT));
@@ -149,7 +149,7 @@ public class SharedRoboTaxiUtilsTest extends TestCase {
         s.roboTaxi1.finishRedirection();
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.avRequest1.getFromLink(), 1.0));
         s.roboTaxi1.pickupNewCustomerOnBoard();
-        assertEquals(s.roboTaxi1.getMenuOnBoardCustomers(), 2);
+        assertEquals(s.roboTaxi1.getOnBoardPassengers(), 2);
 
         assertEquals(OnMenuRequests.getOnBoardRequests(s.roboTaxi1.getUnmodifiableViewOfCourses()), //
                 new HashSet<>(Arrays.asList(s.avRequest1, s.avRequest3)));
@@ -160,7 +160,7 @@ public class SharedRoboTaxiUtilsTest extends TestCase {
 
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.avRequest2.getFromLink(), 1.0));
         s.roboTaxi1.pickupNewCustomerOnBoard();
-        assertFalse(OnMenuRequests.canPickupNewCustomer(s.roboTaxi1));
+        assertFalse(OnMenuRequests.canPickupAdditionalCustomer(s.roboTaxi1));
 
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.avRequest1.getToLink(), 1.0));
         s.roboTaxi1.dropOffCustomer();

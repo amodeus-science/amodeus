@@ -1,23 +1,8 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import org.matsim.api.core.v01.events.Event;
-import org.matsim.api.core.v01.network.Link;
-import org.matsim.contrib.dvrp.util.LinkTimePair;
-import org.matsim.core.api.experimental.events.EventsManager;
-import org.matsim.core.config.Config;
-import org.matsim.core.router.util.TravelTime;
-
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
-import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
-import ch.ethz.idsc.amodeus.net.SimulationDistribution;
-import ch.ethz.idsc.amodeus.net.SimulationObject;
-import ch.ethz.idsc.amodeus.net.SimulationObjectCompiler;
-import ch.ethz.idsc.amodeus.net.SimulationObjects;
-import ch.ethz.idsc.amodeus.net.StorageUtils;
+import ch.ethz.idsc.amodeus.net.*;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.operator.OperatorConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
@@ -25,6 +10,15 @@ import ch.ethz.matsim.av.dispatcher.AVVehicleAssignmentEvent;
 import ch.ethz.matsim.av.generator.AVGenerator;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
+import org.matsim.api.core.v01.events.Event;
+import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.util.LinkTimePair;
+import org.matsim.core.api.experimental.events.EventsManager;
+import org.matsim.core.config.Config;
+import org.matsim.core.router.util.TravelTime;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /** This class contains all functionality which is used by both unit capacity
  * dispatchers and shared {@link RoboTaxi} dispatchers. */

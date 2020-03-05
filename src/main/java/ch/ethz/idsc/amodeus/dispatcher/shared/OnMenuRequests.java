@@ -30,14 +30,15 @@ public enum OnMenuRequests {
 
     // ---
 
+    /** @return number of passengers currently in the {@link List}
+     *         of {@link SharedCourse}s @param courses */
     public static long getOnBoardCustomers(List<? extends SharedCourse> courses) {
         return getNumberMealTypes(courses, SharedMealType.DROPOFF) - //
                 getNumberMealTypes(courses, SharedMealType.PICKUP);
     }
 
-    public static boolean canPickupNewCustomer(RoboTaxi roboTaxi) {
-        int onBoard = (int) roboTaxi.getMenuOnBoardCustomers();
-        GlobalAssert.that(onBoard >= 0);
+    public static boolean canPickupAdditionalCustomer(RoboTaxi roboTaxi) {
+        int onBoard = (int) roboTaxi.getOnBoardPassengers();
         return onBoard < roboTaxi.getCapacity();
     }
 

@@ -1,16 +1,14 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.analysis.plot;
 
-import java.awt.Color;
-import java.awt.Font;
-
 import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.plot.DefaultDrawingSupplier;
 import org.jfree.chart.plot.PieLabelLinkStyle;
 import org.jfree.chart.renderer.category.BarRenderer3D;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.chart.renderer.xy.StandardXYBarPainter;
-import org.jfree.ui.RectangleInsets;
+
+import java.awt.*;
 
 public class ChartTheme {
 
@@ -28,7 +26,7 @@ public class ChartTheme {
         standardChartTheme.setPlotBackgroundPaint(Color.WHITE);
         standardChartTheme.setPlotOutlinePaint(Color.BLACK);
         standardChartTheme.setLabelLinkStyle(PieLabelLinkStyle.STANDARD);
-        standardChartTheme.setAxisOffset(new RectangleInsets(4, 4, 4, 4));
+//        standardChartTheme.setAxisOffset(new RectangleInsets(4, 4, 4, 4));
         standardChartTheme.setDomainGridlinePaint(Color.LIGHT_GRAY);
         standardChartTheme.setRangeGridlinePaint(Color.LIGHT_GRAY);
         standardChartTheme.setBaselinePaint(Color.BLACK);
@@ -41,7 +39,7 @@ public class ChartTheme {
         standardChartTheme.setItemLabelPaint(Color.BLACK);
         standardChartTheme.setThermometerPaint(Color.WHITE);
         standardChartTheme.setWallPaint(BarRenderer3D.DEFAULT_WALL_PAINT);
-        standardChartTheme.setErrorIndicatorPaint(Color.RED);
+//        standardChartTheme.setErrorIndicatorPaint(Color.RED);
         return standardChartTheme;
     }
 

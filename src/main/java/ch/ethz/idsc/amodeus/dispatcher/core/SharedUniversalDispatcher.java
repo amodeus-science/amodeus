@@ -89,7 +89,8 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
                 .collect(Collectors.toList());
     }
 
-    /** @return Map of AVRequests which have an assigned Robotaxi but are not Picked up yet. The value is the corresponding RoboTaxi */
+    /** @return {@link Map} of {@link AVRequest}s which have an assigned {@link RoboTaxi}
+     *         but are not Picked up yet. Associated value is the corresponding {@link RoboTaxi} */
     protected final Map<AVRequest, RoboTaxi> getCurrentPickupAssignements() {
         return requestRegister.getPickupRegister(getAVRequests());
     }
@@ -107,7 +108,6 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
                 .collect(Collectors.toList());
         GlobalAssert.that(divertableUnassignedRoboTaxis.stream().allMatch(RoboTaxi::isWithoutCustomer));
         return divertableUnassignedRoboTaxis;
-
     }
 
     // **********************************************************************************************
@@ -164,7 +164,7 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
     @Override
     protected void protectedBeforeStepTasks(){
       pendingRequests.removeIf(avRequest -> {
-            boolean condition = Objects.isNull(avRequest.getPickupTask()) && getTimeNow() - avRequest.getSubmissionTime() > 600 && !requestRegister.contains(avRequest);
+            boolean condition = Objects.isNull(avRequest.getPickupTask()) && getTimeNow() - avRequest.getSubmissionTime() > 6000 && !requestRegister.contains(avRequest);
             if (condition)
                 cancelledRequests.add(avRequest);
             return condition;
@@ -206,24 +206,27 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
     @Override
     final void executePickups() {
         Map<AVRequest, RoboTaxi> pickupRegisterCopy = new HashMap<>(requestRegister.getPickupRegister(getAVRequests()));
-        List<RoboTaxi> pickupUniqueRoboTaxis = pickupRegisterCopy.values().stream() //
+        List<RoboTaxi> uniquePickupTaxis = pickupRegisterCopy.values().stream() //
                 .filter(srt -> SharedRoboTaxiUtils.isNextCourseOfType(srt, SharedMealType.PICKUP)) //
                 .distinct().collect(Collectors.toList());
-        for (RoboTaxi roboTaxi : pickupUniqueRoboTaxis) {
-            Optional<AVRequest> avRequest = //
-                    PickupIfOnLastLink.apply(roboTaxi, getTimeNow(), pickupDurationPerStop, futurePathFactory);
-            if (avRequest.isPresent()) {
-                GlobalAssert.that(pendingRequests.contains(avRequest.get()));
-                // Update the registers
-                boolean checkPendingRemoved = pendingRequests.remove(avRequest.get());
-                GlobalAssert.that(checkPendingRemoved);
-                reqStatuses.put(avRequest.get(), RequestStatus.DRIVING);
-                periodPickedUpRequests.add(avRequest.get());
-                ++total_matchedRequests;
 
-                GlobalAssert.that(!pendingRequests.contains(avRequest.get()));
-                GlobalAssert.that(requestRegister.contains(roboTaxi, avRequest.get()));
-            }
+        Set<AVRequest> pickingUp = new HashSet<>();
+        for (RoboTaxi roboTaxi : uniquePickupTaxis) {
+            List<AVRequest> avRequest = PickupIfOnLastLink.apply(roboTaxi, getTimeNow(), //
+                    pickupDurationPerStop, futurePathFactory);
+            pickingUp.addAll(avRequest);
+        }
+
+        for (AVRequest avRequest : pickingUp) {
+            GlobalAssert.that(pendingRequests.contains(avRequest));
+            // Update the registers
+            boolean checkPendingRemoved = pendingRequests.remove(avRequest);
+            GlobalAssert.that(checkPendingRemoved);
+            reqStatuses.put(avRequest, RequestStatus.DRIVING);
+            periodPickedUpRequests.add(avRequest);
+            ++total_matchedRequests;
+
+            GlobalAssert.that(!pendingRequests.contains(avRequest));
         }
     }
 
@@ -327,15 +330,12 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
             GlobalAssert.that(MaxTwoMoreTasksAfterEndingOne.check(schedule, task, getTimeNow(), SIMTIMESTEP));
             GlobalAssert.that(roboTaxi.getStatus().equals(SharedRoboTaxiUtils.calculateStatusFromMenu(roboTaxi)));
             Optional<SharedCourse> nextCourseOptional = SharedCourseAccess.getStarter(roboTaxi);
-            if (nextCourseOptional.isPresent()) {
-                if (nextCourseOptional.get().getMealType().equals(SharedMealType.REDIRECT)) {
-                    if (roboTaxi.getMenuOnBoardCustomers() == 0) {
+            if (nextCourseOptional.isPresent())
+                if (nextCourseOptional.get().getMealType().equals(SharedMealType.REDIRECT))
+                    if (roboTaxi.getOnBoardPassengers() == 0)
                         /** if a redirect meal is next and no customer on board, this is exactly
                          * a rebalcne drive and should be recorded accordingly. */
                         GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE));
-                    }
-                }
-            }
             /** vice versa, if the {@link RoboTaxiStatus} is on REBALANCEDRIVE, it must
              * be on a redirect task. */
             if (roboTaxi.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE))
