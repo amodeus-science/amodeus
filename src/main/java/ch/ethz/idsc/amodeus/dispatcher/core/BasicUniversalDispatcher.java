@@ -103,7 +103,7 @@ import java.util.stream.Collectors;
     @Override
     protected void protectedBeforeStepTasks(){
         pendingRequests.removeIf(avRequest -> {
-            boolean condition = Objects.isNull(avRequest.getPickupTask()) && getTimeNow() - avRequest.getSubmissionTime() > 600;
+            boolean condition = Objects.isNull(avRequest.getPickupTask()) && getTimeNow() - avRequest.getSubmissionTime() > 600000;
             if (condition)
                 cancelledRequests.add(avRequest);
             return condition;

@@ -164,7 +164,7 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
     @Override
     protected void protectedBeforeStepTasks(){
       pendingRequests.removeIf(avRequest -> {
-            boolean condition = Objects.isNull(avRequest.getPickupTask()) && getTimeNow() - avRequest.getSubmissionTime() > 6000 && !requestRegister.contains(avRequest);
+            boolean condition = Objects.isNull(avRequest.getPickupTask()) && getTimeNow() - avRequest.getSubmissionTime() > 60000 && !requestRegister.contains(avRequest);
             if (condition)
                 cancelledRequests.add(avRequest);
             return condition;
