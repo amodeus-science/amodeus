@@ -79,6 +79,12 @@ public class SharedCourse {
     }
 
     @Override
+    public String toString() {
+        return sharedRoboTaxiMealType.toString() + " of " + avRequest.getId().toString() + //
+                " on " + link.getId().toString() + ", id:" + courseId;
+    }
+
+    @Override
     public boolean equals(Object object) {
         if (object instanceof SharedCourse) {
             SharedCourse sharedAVCourse = (SharedCourse) object;
