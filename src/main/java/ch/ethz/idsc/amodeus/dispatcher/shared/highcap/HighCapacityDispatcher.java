@@ -109,7 +109,6 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
         /** main part of the dispatcher */
         /** Construct RTV graph and use ILP to find optimal assignment */
         if (round_now % dispatchPeriod == 1) {
-            System.out.println(now);
             // remove request that is no longer open in the map
             RequestTracker.removeClosedRequest(requestPool, getAVRequests());
             // remove request that deadline for pick up has passed
