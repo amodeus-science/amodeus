@@ -2,6 +2,7 @@
 package ch.ethz.idsc.amodeus.matsim;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 
 import org.matsim.core.config.ReflectiveConfigGroup;
@@ -32,11 +33,11 @@ public class SafeConfig {
 
     private <T> T get(String key, T alt, Function<String, T> parser) {
         try {
-            return getStrict(key, parser);
+            return getOptional(key, parser).orElse(alt);
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            return alt;
         }
-        return alt;
     }
 
     public int getIntegerStrict(String key) {
@@ -56,7 +57,10 @@ public class SafeConfig {
     }
 
     private <T> T getStrict(String key, Function<String, T> parser) {
-        String string = Objects.requireNonNull(reflectiveConfigGroup.getParams().get(key));
-        return parser.apply(string);
+        return getOptional(key, parser).orElseThrow(NullPointerException::new);
+    }
+
+    private <T> Optional<T> getOptional(String key, Function<String, T> parser) {
+        return Optional.ofNullable(reflectiveConfigGroup.getParams().get(key)).map(parser);
     }
 }
