@@ -11,10 +11,7 @@ public interface AnalysisElement {
     void register(SimulationObject simulationObject);
 
     /** Finishes the analysis after the simulation
-     * Output of the results of this Listener
-     * 
-     * @param relativeDirectory
-     * @throws Exception */
+     * Output of the results of this Listener */
     default void consolidate() {
         // ---
     }
