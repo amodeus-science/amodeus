@@ -5,7 +5,7 @@ Autonomous mobility-on-demand simulation library, version `1.9.2`
 ## IMPORTANT NOTICE
 
 We will soon discuss the next steps of development related to the amodeus library, among other things the future location of the repository.
-If you are regularly using the library and would like to communicate any input, please contact me until April 26, 2020 on clruch at idsc.mavt.ethz.ch.
+If you are regularly using the library and would like to communicate any input or suggestions, please contact me until April 26, 2020 on clruch at idsc.mavt.ethz.ch.
 
 
 ## Purpose
