@@ -137,12 +137,6 @@
 			<id>pt2matsim</id>
 			<url>http://dl.bintray.com/polettif/matsim</url>
 		</repository>
-		<repository>
-			<!-- Geotools is not on Maven central -->
-			<id>osgeo</id>
-			<name>Geotools repository</name>
-			<url>http://download.osgeo.org/webdav/geotools</url>
-		</repository>
 	</repositories>
 
 	<build>
