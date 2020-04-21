@@ -78,8 +78,10 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
         avgOccupancy = Mean.of(occupancyTensor).Get();
 
         /** register Simulation Object for distance analysis */
-        for (VehicleContainer vehicleContainer : simulationObject.vehicles)
-            list.get(vehicleContainer.vehicleIndex).register(simObjIndex, vehicleContainer);
+        // for (VehicleContainer vehicleContainer : simulationObject.vehicles)
+        //     list.get(vehicleContainer.vehicleIndex).register(simObjIndex, vehicleContainer);
+        simulationObject.vehicles.parallelStream().forEach(vehicleContainer -> //
+                list.get(vehicleContainer.vehicleIndex).register(simObjIndex, vehicleContainer));
 
         ++simObjIndex;
     }
