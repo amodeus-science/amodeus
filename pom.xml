@@ -14,7 +14,6 @@
 		<github.global.server>github</github.global.server>
 		<matsim.version>11.0</matsim.version>
 		<av.version>1.0.3-matsim11</av.version>
-		<geotools.version>20.2</geotools.version>
 	</properties>
 
 	<dependencies>
@@ -85,28 +84,6 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- workaround since geotools was moved w.r.t. the used MATSim version (11.0) -->
-		<dependency>
-			<groupId>org.geotools</groupId>
-			<artifactId>gt-main</artifactId>
-			<version>${geotools.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.geotools</groupId>
-			<artifactId>gt-referencing</artifactId>
-			<version>${geotools.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.geotools</groupId>
-			<artifactId>gt-shapefile</artifactId>
-			<version>${geotools.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.geotools</groupId>
-			<artifactId>gt-epsg-hsql</artifactId>
-			<version>${geotools.version}</version>
-			<scope>runtime</scope>
-		</dependency>
 	</dependencies>
 
 	<repositories>
@@ -131,7 +108,7 @@
 		<repository>
 			<id>osgeo</id>
 			<name>Geotools repository</name>
-			<url>http://download.osgeo.org/webdav/geotools</url>
+			<url>https://repo.osgeo.org/repository/release/</url>
 		</repository>
 		<repository>
 			<id>pt2matsim</id>
