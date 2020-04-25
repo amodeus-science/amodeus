@@ -114,6 +114,12 @@ import ch.ethz.idsc.tensor.Tensor;
 
         int year = Calendar.getInstance().get(Calendar.YEAR);
         int month = Calendar.getInstance().get(Calendar.MONTH) + 1; // Month are 0 based, thus it is necessary to add 1
+
+        if (hours > 24) {
+            day = hours / 24;
+            hours = hours - day * 24;
+            day += 1;
+        }
         return new Second(seconds, minutes, hours, day, month, year); // month and year can not be zero
     }
 
