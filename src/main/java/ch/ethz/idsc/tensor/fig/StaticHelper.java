@@ -105,16 +105,16 @@ import ch.ethz.idsc.tensor.Tensor;
     }
 
     // from StaticHelper
-    private static Second toTime(Scalar time) {
+    /* package for testing */ static Second toTime(Scalar time) {
         long timeL = time.number().longValue();
-        int day = 1;
-        int hours = (int) TimeUnit.SECONDS.toHours(timeL);
-        int minutes = (int) (TimeUnit.SECONDS.toMinutes(timeL) - 60.0 * hours);
-        int seconds = (int) (TimeUnit.SECONDS.toSeconds(timeL) - minutes * 60.0 - hours * 3600.0);
+        int days = (int) TimeUnit.SECONDS.toDays(timeL);
+        int hours = (int) (TimeUnit.SECONDS.toHours(timeL) - 24.0 * days);
+        int minutes = (int) (TimeUnit.SECONDS.toMinutes(timeL) - 60.0 * hours - 1440.0 * days);
+        int seconds = (int) (TimeUnit.SECONDS.toSeconds(timeL) - 60.0 * minutes - 3600.0 * hours - 86400.0 * days);
 
         int year = Calendar.getInstance().get(Calendar.YEAR);
         int month = Calendar.getInstance().get(Calendar.MONTH) + 1; // Month are 0 based, thus it is necessary to add 1
-        return new Second(seconds, minutes, hours, day, month, year); // month and year can not be zero
+        return new Second(seconds, minutes, hours, days + 1, month, year); // day, month and year can not be zero
     }
 
 }
