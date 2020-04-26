@@ -76,10 +76,10 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
             MatsimAmodeusDatabase db, ParkingStrategy parkingStrategy, //
             ParkingCapacity avSpatialCapacityAmodeus) {
         super(config, operatorConfig, travelTime, router, eventsManager, db);
+        DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
+        dispatchPeriod = dispatcherConfig.getDispatchPeriod(60);
         SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
-        dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 60);
-        sharingPeriod = safeConfig.getInteger("sharingPeriod", 10); // makes sense to choose this value similar to the
-                                                                    // pickup duration
+        sharingPeriod = safeConfig.getInteger("sharingPeriod", 10); // makes sense to choose this value similar to the pickup duration
         double rMax = safeConfig.getDouble("rMax", 1000.0);
         double phiMax = Pi.in(100).multiply(RealScalar.of(safeConfig.getDouble("phiMaxDeg", 5.0) / 180.0)).number().doubleValue();
         beamExtensionForSharing = new BeamExtensionForSharing(rMax, phiMax);
@@ -88,7 +88,6 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
 
         /** PARKING EXTENSION */
         this.parkingStrategy = parkingStrategy;
-        DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
         DistanceHeuristics distanceHeuristics = //
                 dispatcherConfig.getDistanceHeuristics(DistanceHeuristics.ASTARLANDMARKS);
         this.parkingStrategy.setRuntimeParameters(avSpatialCapacityAmodeus, network, distanceHeuristics.getDistanceFunction(network));

@@ -11,6 +11,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -26,7 +27,6 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedRebalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseUtil;
-import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.routing.EasyMinTimePathCalculator;
 import ch.ethz.matsim.av.config.operator.OperatorConfig;
@@ -55,8 +55,6 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
 
     private final List<Link> links;
     private final Random randGen = new Random(1234);
-    private final double pickupDurationPerStop;
-    private final double dropoffDurationPerStop;
 
     /** pool size (only the requests in this pool will be processed by algorithm) */
     private final int sizeLimit = 1000; // limit the size of valid open request
@@ -88,12 +86,10 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
             MatsimAmodeusDatabase db) {
 
         super(config, operatorConfig, travelTime, router, eventsManager, db);
-        SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
-        dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30); // if want to change value, change in av file, here only for backup
-        rebalancePeriod = safeConfig.getInteger("rebalancingPeriod", 60);// same as above
+        DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
+        dispatchPeriod = dispatcherConfig.getDispatchPeriod(30); // if want to change value, change in av file, here only for backup
+        rebalancePeriod = dispatcherConfig.getRebalancingPeriod(60); // same as above
         capacityOfTaxi = (int) Long.parseLong(operatorConfig.getGeneratorConfig().getParams().getOrDefault("numberOfSeats", String.valueOf(DEFAULTNUMBERSEATS)));
-        pickupDurationPerStop = safeConfig.getInteger("pickupDurationPerStop", 15);
-        dropoffDurationPerStop = safeConfig.getInteger("dropoffDurationPerStop", 10);
 
         links = new ArrayList<>(network.getLinks().values());
         Collections.shuffle(links, randGen);

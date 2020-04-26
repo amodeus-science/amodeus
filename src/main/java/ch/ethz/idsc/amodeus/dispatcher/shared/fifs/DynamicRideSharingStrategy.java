@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -18,7 +19,6 @@ import org.matsim.core.router.util.TravelTime;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-import ch.ethz.idsc.amodeus.analysis.ScenarioParameters;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedRebalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
@@ -55,8 +55,6 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
 
     /** general Dispatcher Settings */
     private final int dispatchPeriod; // [s]
-    private final double dropoffDuration;// [s]
-    private final double pickupDuration;// [s]
 
     /** unassigned Robo Taxis in the Scenario sorted by its coordinates in a Tree Structure */
     private final RoboTaxiHandler roboTaxiHandler;
@@ -94,15 +92,14 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, //
             MatsimAmodeusDatabase db) {
         super(config, operatorConfig, travelTime, router, eventsManager, db);
-        SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
-        dispatchPeriod = safeConfig.getInteger(ScenarioParameters.DISPATCHPERIODSTRING, 300);
-        dropoffDuration = operatorConfig.getTimingConfig().getDropoffDurationPerStop();
-        pickupDuration = operatorConfig.getTimingConfig().getDropoffDurationPerStop();
+        DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
+        dispatchPeriod = dispatcherConfig.getDispatchPeriod(300);
 
-        double maxWaitTime = safeConfig.getInteger(MAXWAITTIMEID, 300);// Normal is 300
-        double maxDriveTimeIncrease = safeConfig.getDouble(MAXDRIVETIMEINCREASEID, 1.2);// Normal is 1.2
-        double maxRemainingTimeIncrease = safeConfig.getDouble(MAXREMAININGTIMEINCREASEID, 1.4);// Normal is 1.4
-        double newTravelTimeIncreaseAllowed = safeConfig.getInteger(MAXABSOLUTETRAVELTIMEINCREASEID, 180); // Normal is 180= (3min);
+        SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
+        double maxWaitTime = safeConfig.getInteger(MAXWAITTIMEID, 300); // normal is 300
+        double maxDriveTimeIncrease = safeConfig.getDouble(MAXDRIVETIMEINCREASEID, 1.2); // normal is 1.2
+        double maxRemainingTimeIncrease = safeConfig.getDouble(MAXREMAININGTIMEINCREASEID, 1.4); // normal is 1.4
+        double newTravelTimeIncreaseAllowed = safeConfig.getInteger(MAXABSOLUTETRAVELTIMEINCREASEID, 180); // normal is 180 (=3min);
 
         roboTaxiHandler = new RoboTaxiHandler(network);
 
@@ -113,7 +110,7 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
         rebalancing = new BlockRebalancing(network, timeDb, MINNUMBERROBOTAXISINBLOCKTOREBALANCE, BINSIZETRAVELDEMAND, dispatchPeriod, REBALANCINGGRIDDISTANCE);
 
         routeValidation = new RouteValidation(maxWaitTime, maxDriveTimeIncrease, maxRemainingTimeIncrease, //
-                dropoffDuration, pickupDuration, newTravelTimeIncreaseAllowed);
+                dropoffDurationPerStop, pickupDurationPerStop, newTravelTimeIncreaseAllowed);
     }
 
     @Override

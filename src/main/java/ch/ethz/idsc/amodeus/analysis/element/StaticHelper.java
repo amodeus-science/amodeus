@@ -2,14 +2,11 @@
 package ch.ethz.idsc.amodeus.analysis.element;
 
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
-import ch.ethz.idsc.amodeus.net.VehicleContainer;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Array;
@@ -21,10 +18,13 @@ import ch.ethz.idsc.tensor.alg.Array;
      *         link {@link RoboTaxiStatus} in the {@link SimulationObject} @param simOjb */
     public static Tensor getNumStatus(SimulationObject simOjb) {
         Tensor numPerStatus = Array.zeros(RoboTaxiStatus.values().length);
-        Map<RoboTaxiStatus, List<VehicleContainer>> helpMap = simOjb.vehicles.stream() //
-                .collect(Collectors.groupingBy(vehicleContainer -> vehicleContainer.roboTaxiStatus));
-        for (Entry<RoboTaxiStatus, List<VehicleContainer>> entry : helpMap.entrySet())
-            numPerStatus.set(RealScalar.of(entry.getValue().size()), entry.getKey().ordinal());
+        // Map<RoboTaxiStatus, List<VehicleContainer>> helpMap = simOjb.vehicles.stream() //
+        //         .collect(Collectors.groupingBy(vehicleContainer -> vehicleContainer.roboTaxiStatus));
+        // for (Entry<RoboTaxiStatus, List<VehicleContainer>> entry : helpMap.entrySet())
+        //     numPerStatus.set(RealScalar.of(entry.getValue().size()), entry.getKey().ordinal());
+        Map<RoboTaxiStatus, Long> map = simOjb.vehicles.stream() //
+                .collect(Collectors.groupingBy(vehicleContainer -> vehicleContainer.roboTaxiStatus, Collectors.counting()));
+        map.forEach((roboTaxiStatus, num) -> numPerStatus.set(RealScalar.of(num), roboTaxiStatus.ordinal()));
         return numPerStatus;
     }
 

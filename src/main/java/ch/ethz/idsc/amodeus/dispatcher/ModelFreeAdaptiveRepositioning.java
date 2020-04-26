@@ -60,10 +60,10 @@ public class ModelFreeAdaptiveRepositioning extends RebalancingDispatcher {
             MatsimAmodeusDatabase db) {
         super(config, operatorConfig, travelTime, router, eventsManager, db);
         this.network = network;
-        SafeConfig safeConfig = SafeConfig.wrap(operatorConfig);
-        dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
         DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
+        dispatchPeriod = dispatcherConfig.getDispatchPeriod(30);
         rebalancingPeriod = dispatcherConfig.getRebalancingPeriod(900);
+        SafeConfig safeConfig = SafeConfig.wrap(operatorConfig);
         assignmentMatcher = new ConfigurableBipartiteMatcher(network, EuclideanDistanceCost.INSTANCE, safeConfig);
         String rebWeight = safeConfig.getString("matchingReb", "HUNGARIAN");
         if (rebWeight.equals("HUNGARIAN")) {

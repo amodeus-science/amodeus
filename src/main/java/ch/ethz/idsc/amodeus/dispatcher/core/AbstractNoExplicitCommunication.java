@@ -16,7 +16,6 @@ import ch.ethz.idsc.amodeus.dispatcher.util.DrivebyRequestStopper;
 import ch.ethz.idsc.amodeus.dispatcher.util.TensorLocation;
 import ch.ethz.idsc.amodeus.dispatcher.util.TreeMaintainer;
 import ch.ethz.idsc.amodeus.dispatcher.util.WeberMaintainer;
-import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.matsim.av.config.operator.OperatorConfig;
@@ -36,8 +35,8 @@ public abstract class AbstractNoExplicitCommunication extends RebalancingDispatc
             OperatorConfig operatorConfig, TravelTime travelTime, //
             AVRouter router, EventsManager eventsManager, MatsimAmodeusDatabase db) {
         super(config, operatorConfig, travelTime, router, eventsManager, db);
-        SafeConfig safeConfig = SafeConfig.wrap(operatorConfig);
-        dispatchPeriod = safeConfig.getInteger("dispatchPeriod", 30);
+        DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
+        dispatchPeriod = dispatcherConfig.getDispatchPeriod(30);
         this.network = network;
         double[] networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
         requestMaintainer = new TreeMaintainer<>(networkBounds, TensorLocation::of);

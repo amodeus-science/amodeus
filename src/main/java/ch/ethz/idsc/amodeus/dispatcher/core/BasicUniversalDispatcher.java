@@ -44,8 +44,8 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
     final Set<AVRequest> pendingRequests = new LinkedHashSet<>();
     final MatsimAmodeusDatabase db;
     final FuturePathFactory futurePathFactory;
-    final double pickupDurationPerStop;
-    final double dropoffDurationPerStop;
+    protected final double pickupDurationPerStop;
+    protected final double dropoffDurationPerStop;
     int total_matchedRequests = 0;
 
     private Map<RoboTaxi, List<Link>> tempLocationTrace = new HashMap<>();
