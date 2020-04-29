@@ -83,7 +83,7 @@ public enum PopulationTimeInterval {
             if (current instanceof Leg) {
                 Leg leg = (Leg) current;
                 Activity prevAct = (Activity) prev;
-                if (clip.isOutside(RealScalar.of(leg.getDepartureTime())) || clip.isOutside(RealScalar.of(prevAct.getEndTime())))
+                if (clip.isOutside(RealScalar.of(leg.getDepartureTime().seconds())) || clip.isOutside(RealScalar.of(prevAct.getEndTime().seconds())))
                     return true;
             }
         }

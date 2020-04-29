@@ -22,7 +22,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     protected final DistanceFunction accDstFctn;
 
     public BipartiteMatcherInternal(Network network) {
-        accDstFctn = new NetworkMinTimeDistanceFunction(network, new FastAStarLandmarksFactory());
+        accDstFctn = new NetworkMinTimeDistanceFunction(network, new FastAStarLandmarksFactory(Runtime.getRuntime().availableProcessors()));
     }
 
     @Override

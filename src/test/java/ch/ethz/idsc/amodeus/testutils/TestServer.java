@@ -13,6 +13,7 @@ import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup.ActivityParams;
+import org.matsim.core.config.groups.QSimConfigGroup.StarttimeInterpretation;
 import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.scenario.ScenarioUtils;
@@ -97,6 +98,9 @@ public class TestServer {
         dvrpConfigGroup.setTravelTimeEstimationAlpha(0.05);
         config = ConfigUtils.loadConfig(configFile.toString(), new AVConfigGroup(), dvrpConfigGroup);
         config.planCalcScore().addActivityParams(new PlanCalcScoreConfigGroup.ActivityParams("activity"));
+        
+        config.qsim().setStartTime(0.0);
+        config.qsim().setSimStarttimeInterpretation(StarttimeInterpretation.onlyUseStarttime);
 
         for (ActivityParams activityParams : config.planCalcScore().getActivityParams())
             // TODO TEST fix this to meaningful values --> Sebastian how should we solve this?

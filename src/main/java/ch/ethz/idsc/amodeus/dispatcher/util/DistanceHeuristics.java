@@ -32,7 +32,7 @@ public enum DistanceHeuristics {
     ASTARLANDMARKS {
         @Override
         public DistanceFunction getDistanceFunction(Network network) {
-            return new NetworkMinTimeDistanceFunction(network, new FastAStarLandmarksFactory());
+            return new NetworkMinTimeDistanceFunction(network, new FastAStarLandmarksFactory(Runtime.getRuntime().availableProcessors()));
         }
     };
 

@@ -3,10 +3,10 @@ package ch.ethz.idsc.amodeus.analysis.element;
 
 import java.io.File;
 
-import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
+import ch.ethz.idsc.amodeus.analysis.plot.AmodeusChartUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -46,7 +46,7 @@ public enum BinnedWaitingTimesImage implements AnalysisExport {
 
         try {
             File fileChart = new File(relativeDirectory, FILE_PNG);
-            ChartUtilities.saveChartAsPNG(fileChart, jFreeChart, WIDTH, HEIGHT);
+            AmodeusChartUtils.saveAsPNG(jFreeChart, fileChart.toString(), WIDTH, HEIGHT);
             GlobalAssert.that(fileChart.isFile());
             System.out.println("Exported " + FILE_PNG);
         } catch (Exception e) {

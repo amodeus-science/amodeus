@@ -83,9 +83,11 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(30);
         DistanceHeuristics distanceHeuristics = dispatcherConfig.getDistanceHeuristics(DistanceHeuristics.EUCLIDEAN);
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
-        distanceCashed = new CachedNetworkTimeDistance(EasyMinDistPathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), //
+        distanceCashed = new CachedNetworkTimeDistance(
+                EasyMinDistPathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory(Runtime.getRuntime().availableProcessors())), //
                 180000.0, TimeDistanceProperty.INSTANCE);
-        travelTimeCalculator = new CachedNetworkTimeDistance(EasyMinTimePathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory()), //
+        travelTimeCalculator = new CachedNetworkTimeDistance(
+                EasyMinTimePathCalculator.prepPathCalculator(network, new FastAStarLandmarksFactory(Runtime.getRuntime().availableProcessors())), //
                 180000.0, TimeDistanceProperty.INSTANCE);
         bipartiteMatchingUtils = new TShareBipartiteMatchingUtils();
 

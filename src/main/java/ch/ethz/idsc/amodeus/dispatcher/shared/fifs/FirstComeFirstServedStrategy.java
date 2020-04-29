@@ -74,7 +74,7 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
         this.unassignedRequests = new TreeMultipleItems<>(AVRequest::getSubmissionTime);
         this.requestsLastHour = new TreeMultipleItems<>(AVRequest::getSubmissionTime);
 
-        FastAStarLandmarksFactory factory = new FastAStarLandmarksFactory();
+        FastAStarLandmarksFactory factory = new FastAStarLandmarksFactory(Runtime.getRuntime().availableProcessors());
         LeastCostPathCalculator calculator = EasyMinTimePathCalculator.prepPathCalculator(network, factory);
         timeDb = new CachedNetworkTimeDistance(calculator, MAXLAGTRAVELTIMECALCULATION, TimeDistanceProperty.INSTANCE);
 

@@ -48,7 +48,7 @@ public class LPMinFlowTest {
         Config config = ConfigUtils.loadConfig(configFile.getAbsolutePath(), avCg);
         GeneratorConfig genConfig = avCg.getOperatorConfigs().values().iterator().next().getGeneratorConfig();
         int numRt = genConfig.getNumberOfVehicles();
-        int endTime = (int) config.qsim().getEndTime();
+        int endTime = (int) config.qsim().getEndTime().seconds();
         Scenario scenario = ScenarioUtils.loadScenario(config);
         network = scenario.getNetwork();
         population = scenario.getPopulation();

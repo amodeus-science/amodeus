@@ -13,9 +13,7 @@ import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
-import org.matsim.core.router.StageActivityTypes;
-import org.matsim.core.router.StageActivityTypesImpl;
-import org.matsim.pt.PtConstants;
+import org.matsim.core.router.TripStructureUtils;
 
 public class NetworkCreatorUtils {
     private static final Logger LOGGER = Logger.getLogger(NetworkCreatorUtils.class);
@@ -32,15 +30,12 @@ public class NetworkCreatorUtils {
         // FOR ALL activities find positions, record in list and store in array
         List<double[]> dataList = new ArrayList<>();
 
-        // TODO MISC Should be provided from outside
-        StageActivityTypes stageActivityTypes = new StageActivityTypesImpl(PtConstants.TRANSIT_ACTIVITY_TYPE);
-
         for (Person person : population.getPersons().values())
             for (Plan plan : person.getPlans())
                 for (PlanElement planElement : plan.getPlanElements())
                     if (planElement instanceof Activity) {
                         Activity activity = (Activity) planElement;
-                        if (!stageActivityTypes.isStageActivity(activity.getType())) {
+                        if (!TripStructureUtils.isStageActivityType(activity.getType())) {
                             Link link = network.getLinks().getOrDefault(activity.getLinkId(), null);
                             if (Objects.nonNull(link)) {
                                 double x = link.getCoord().getX();

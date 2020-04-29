@@ -39,7 +39,7 @@ public enum PersonCreate {
 
         /** leg between activity */
         Leg leg = populationFactory.createLeg("av");
-        leg.setDepartureTime(startActivity.getEndTime());
+        leg.setDepartureTime(startActivity.getEndTime().seconds());
 
         /** assemble */
         plan.addActivity(startActivity);
@@ -48,8 +48,8 @@ public enum PersonCreate {
         person.addPlan(plan);
 
         /** checks */
-        GlobalAssert.that(startActivity.getEndTime() >= 0);
-        GlobalAssert.that(leg.getDepartureTime() >= 0);
+        GlobalAssert.that(startActivity.getEndTime().seconds() >= 0);
+        GlobalAssert.that(leg.getDepartureTime().seconds() >= 0);
         return person;
     }
 }

@@ -16,7 +16,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.events.LinkEnterEvent;
@@ -41,7 +40,6 @@ import org.matsim.core.controler.Controler;
 import org.matsim.core.gbl.MatsimRandom;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.algorithms.TransportModeNetworkFilter;
-import org.matsim.core.population.PopulationUtils;
 
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
@@ -148,13 +146,16 @@ public class StandardMATSimScenarioTest {
         // to
         // handle these cases.
 
-        for (Person person : scenario.getPopulation().getPersons().values())
-            for (Plan plan : person.getPlans()) {
-                Activity trickyActivity = PopulationUtils.createActivityFromCoordAndLinkId("pt interaction", new Coord(5500.0, 5500.0), Id.createLinkId("pt_fwd_5:5"));
+        /* for (Person person : scenario.getPopulation().getPersons().values())
+         * for (Plan plan : person.getPlans()) {
+         * Activity trickyActivity = PopulationUtils.createActivityFromCoordAndLinkId("pt interaction", new Coord(5500.0, 5500.0), Id.createLinkId("pt_fwd_5:5"));
+         * 
+         * plan.getPlanElements().add(PopulationUtils.createLeg("walk"));
+         * plan.getPlanElements().add(trickyActivity);
+         * } */
 
-                plan.getPlanElements().add(PopulationUtils.createLeg("walk"));
-                plan.getPlanElements().add(trickyActivity);
-            }
+        // TODO: Difficult to keep this in as handling of "interaction" activities become much smarter in MATSim now. We would need to
+        // set up a much more realistic test scenario. There is one in the AV package, so we can use that one!
     }
 
     private static void fixInvalidActivityLocations(Network network, Population population) {
@@ -241,7 +242,7 @@ public class StandardMATSimScenarioTest {
         generatorConfig.setType("VehicleToVSGenerator");
         generatorConfig.setNumberOfVehicles(50);
 
-        int endTime = (int) config.qsim().getEndTime();
+        int endTime = (int) config.qsim().getEndTime().seconds();
 
         // Choose a dispatcher
         DispatcherConfig dispatcherConfig = operatorConfig.getDispatcherConfig();

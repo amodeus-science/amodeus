@@ -70,7 +70,7 @@ public class AmodeusDriveTaskTracker implements OnlineDriveTaskTracker {
      * next link, or</li>
      * <li>(b) no diversion possible (the leg ends on the current link)</li>
      * </ul>
-    */
+     */
     @Override
     public LinkTimePair getDiversionPoint() {
         if (vrpDynLeg.canChangeNextLink())
@@ -146,5 +146,10 @@ public class AmodeusDriveTaskTracker implements OnlineDriveTaskTracker {
     @Override
     public VrpPath getPath() {
         return path;
+    }
+
+    @Override
+    public double getCurrentLinkEnterTime() {
+        return linkEnterTime;
     }
 }

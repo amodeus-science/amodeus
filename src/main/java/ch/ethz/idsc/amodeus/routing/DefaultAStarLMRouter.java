@@ -52,7 +52,7 @@ public class DefaultAStarLMRouter implements AVRouter {
         @Override
         public AVRouter createRouter(RouterConfig routerConfig, Network network) {
             return new DefaultAStarLMRouter(DefaultParallelLeastCostPathCalculator.//
-                    create(config.getNumberOfThreads(), new FastAStarLandmarksFactory(), network, //
+                    create(config.getNumberOfThreads(), new FastAStarLandmarksFactory(config), network, //
                             new OnlyTimeDependentTravelDisutilityFixed(travelTime), travelTime));
 
         }
