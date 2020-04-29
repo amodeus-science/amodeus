@@ -1,6 +1,6 @@
 # cd.ethz.idsc.amodeus <a href="https://travis-ci.org/idsc-frazzoli/amodeus"><img src="https://travis-ci.org/idsc-frazzoli/amodeus.svg?branch=master" alt="Build Status"></a>
 
-Autonomous mobility-on-demand simulation library, version `1.9.2`
+Autonomous mobility-on-demand simulation library, version `1.9.3`
 
 ## IMPORTANT NOTICE
 
@@ -83,7 +83,7 @@ Specify `repository` and `dependency` of the amodeus library in the `pom.xml` fi
   <dependency>
     <groupId>ch.ethz.idsc</groupId>
     <artifactId>amodeus</artifactId>
-    <version>1.9.2</version>
+    <version>1.9.3</version>
   </dependency>
 </dependencies>
 ```
