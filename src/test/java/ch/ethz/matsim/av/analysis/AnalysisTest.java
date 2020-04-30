@@ -126,46 +126,20 @@ public class AnalysisTest {
         runRepro("output1");
         runRepro("output2");
 
-        Assert.assertTrue(IOUtils.isEqual( //
-                new FileInputStream(new File("test_output/output1/ITERS/it.0/0.events.xml.gz")), //
-                new FileInputStream(new File("test_output/output2/ITERS/it.0/0.events.xml.gz")) // "
-        ));
+        safeFileAssert("test_output/output1/ITERS/it.0/0.events.xml.gz", "test_output/output2/ITERS/it.0/0.events.xml.gz");
+        safeFileAssert("test_output/output1/ITERS/it.2/2.events.xml.gz", "test_output/output2/ITERS/it.2/2.events.xml.gz");
+        safeFileAssert("test_output/output1/ITERS/it.0/0.av_passenger_rides.csv", "test_output/output2/ITERS/it.0/0.av_passenger_rides.csv");
+        safeFileAssert("test_output/output1/ITERS/it.2/2.av_passenger_rides.csv", "test_output/output2/ITERS/it.2/2.av_passenger_rides.csv");
+        safeFileAssert("test_output/output1/ITERS/it.0/0.av_vehicle_movements.csv", "test_output/output2/ITERS/it.0/0.av_vehicle_movements.csv");
+        safeFileAssert("test_output/output1/ITERS/it.2/2.av_vehicle_movements.csv", "test_output/output2/ITERS/it.2/2.av_vehicle_movements.csv");
+        safeFileAssert("test_output/output1/ITERS/it.0/0.av_vehicle_activities.csv","test_output/output2/ITERS/it.0/0.av_vehicle_activities.csv");
+        safeFileAssert("test_output/output1/ITERS/it.2/2.av_vehicle_activities.csv", "test_output/output2/ITERS/it.2/2.av_vehicle_activities.csv");
+    }
 
-        Assert.assertTrue(IOUtils.isEqual( //
-                new FileInputStream(new File("test_output/output1/ITERS/it.2/2.events.xml.gz")), //
-                new FileInputStream(new File("test_output/output2/ITERS/it.2/2.events.xml.gz")) // "
-        ));
-
-        Assert.assertTrue(IOUtils.isEqual( //
-                new FileInputStream(new File("test_output/output1/ITERS/it.0/0.av_passenger_rides.csv")), //
-                new FileInputStream(new File("test_output/output2/ITERS/it.0/0.av_passenger_rides.csv")) // "
-        ));
-
-        Assert.assertTrue(IOUtils.isEqual( //
-                new FileInputStream(new File("test_output/output1/ITERS/it.2/2.av_passenger_rides.csv")), //
-                new FileInputStream(new File("test_output/output2/ITERS/it.2/2.av_passenger_rides.csv")) // "
-        ));
-
-        Assert.assertTrue(IOUtils.isEqual( //
-                new FileInputStream(new File("test_output/output1/ITERS/it.0/0.av_vehicle_movements.csv")), //
-                new FileInputStream(new File("test_output/output2/ITERS/it.0/0.av_vehicle_movements.csv")) // "
-        ));
-
-        Assert.assertTrue(IOUtils.isEqual( //
-                new FileInputStream(new File("test_output/output1/ITERS/it.2/2.av_vehicle_movements.csv")), //
-                new FileInputStream(new File("test_output/output2/ITERS/it.2/2.av_vehicle_movements.csv")) // "
-        ));
-
-        Assert.assertTrue(IOUtils.isEqual( //
-                new FileInputStream(new File("test_output/output1/ITERS/it.0/0.av_vehicle_activities.csv")), //
-                new FileInputStream(new File("test_output/output2/ITERS/it.0/0.av_vehicle_activities.csv")) // "
-        ));
-
-        Assert.assertTrue(IOUtils.isEqual( //
-                new FileInputStream(new File("test_output/output1/ITERS/it.2/2.av_vehicle_activities.csv")), //
-                new FileInputStream(new File("test_output/output2/ITERS/it.2/2.av_vehicle_activities.csv")) // "
-        ));
-
+    private void safeFileAssert(String pathA, String pathB) throws IOException {
+        try (FileInputStream fia = new FileInputStream(new File(pathA)); FileInputStream fib = new FileInputStream(new File(pathB))) {
+            Assert.assertTrue(IOUtils.isEqual(fia, fib));
+        }
     }
 
     private void runRepro(String path) {
