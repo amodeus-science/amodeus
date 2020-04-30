@@ -88,10 +88,6 @@
 			<name>Geotools repository</name>
 			<url>https://repo.osgeo.org/repository/release/</url>
 		</repository>
-		<repository>
-			<id>pt2matsim</id>
-			<url>http://dl.bintray.com/polettif/matsim</url>
-		</repository>
 	</repositories>
 
 	<build>
