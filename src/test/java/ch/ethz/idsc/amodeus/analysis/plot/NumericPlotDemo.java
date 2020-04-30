@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 
 import ch.ethz.idsc.tensor.RealScalar;
@@ -61,31 +60,31 @@ enum NumericPlotDemo {
         {
             JFreeChart jFreeChart = StackedHistogram.of(visualSet);
             File file = new File(folder, StackedHistogram.class.getSimpleName() + ".png");
-            ChartUtilities.saveChartAsPNG(file, jFreeChart, 500, 300);
+            AmodeusChartUtils.saveAsPNG(jFreeChart, file.toString(), 500, 300);
         }
 
         {
             JFreeChart jFreeChart = Histogram.of(visualSet);
             File file = new File(folder, Histogram.class.getSimpleName() + ".png");
-            ChartUtilities.saveChartAsPNG(file, jFreeChart, 500, 300);
+            AmodeusChartUtils.saveAsPNG(jFreeChart, file.toString(), 500, 300);
         }
 
         {
             JFreeChart jFreeChart = TimedChart.of(visualSet);
             File file = new File(folder, TimedChart.class.getSimpleName() + ".png");
-            ChartUtilities.saveChartAsPNG(file, jFreeChart, 500, 300);
+            AmodeusChartUtils.saveAsPNG(jFreeChart, file.toString(), 500, 300);
         }
 
         {
             JFreeChart jFreeChart = StackedTimedChart.of(visualSet);
             File file = new File(folder, StackedTimedChart.class.getSimpleName() + ".png");
-            ChartUtilities.saveChartAsPNG(file, jFreeChart, 500, 300);
+            AmodeusChartUtils.saveAsPNG(jFreeChart, file.toString(), 500, 300);
         }
 
         {
             JFreeChart jFreeChart = ListPlot.of(visualSet);
             File file = new File(folder, ListPlot.class.getSimpleName() + ".png");
-            ChartUtilities.saveChartAsPNG(file, jFreeChart, 500, 300);
+            AmodeusChartUtils.saveAsPNG(jFreeChart, file.toString(), 500, 300);
         }
 
     }

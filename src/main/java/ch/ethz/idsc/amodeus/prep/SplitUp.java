@@ -35,8 +35,8 @@ import org.matsim.api.core.v01.population.PopulationFactory;
 
                     // copy activity
                     Activity actNew = factory.createActivityFromCoord(actOld.getType(), actOld.getCoord());
-                    actNew.setStartTime(actOld.getStartTime());
-                    actNew.setEndTime(actOld.getEndTime());
+                    actNew.setStartTime(actOld.getStartTime().seconds());
+                    actNew.setEndTime(actOld.getEndTime().seconds());
                     actNew.setLinkId(actOld.getLinkId());
                     actNew.setFacilityId(actOld.getFacilityId());
 
@@ -50,7 +50,7 @@ import org.matsim.api.core.v01.population.PopulationFactory;
                         numReq++;
 
                     Leg legNew = factory.createLeg(leg.getMode());
-                    legNew.setDepartureTime(leg.getDepartureTime());
+                    legNew.setDepartureTime(leg.getDepartureTime().seconds());
                     planShifted.addLeg(legNew);
                 }
             }

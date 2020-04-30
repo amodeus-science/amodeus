@@ -51,9 +51,9 @@ public enum PopulationAVRequests {
                              * MATSim's LegImpl class returns Double.NEGATIVE_INFINITY, in
                              * that case the end time of the previous activity is used
                              * as the departure time. * */
-                            double startTime = leg.getDepartureTime();
+                            double startTime = leg.getDepartureTime().seconds();
                             if (startTime == Double.NEGATIVE_INFINITY)
-                                startTime = Math.max(timeClip.min().number().doubleValue(), ((Activity) planElMins).getEndTime());
+                                startTime = Math.max(timeClip.min().number().doubleValue(), ((Activity) planElMins).getEndTime().seconds());
                             startTime = Math.min(startTime, timeClip.max().number().doubleValue());
                             timeClip.requireInside(RealScalar.of(startTime));
 

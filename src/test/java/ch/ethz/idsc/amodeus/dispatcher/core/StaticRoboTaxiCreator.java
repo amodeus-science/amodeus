@@ -13,10 +13,8 @@ import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
-import org.matsim.vehicles.VehicleCapacity;
-import org.matsim.vehicles.VehicleCapacityImpl;
 import org.matsim.vehicles.VehicleType;
-import org.matsim.vehicles.VehicleTypeImpl;
+import org.matsim.vehicles.VehicleUtils;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
@@ -36,11 +34,8 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     private static final VehicleType vehicleType;
 
     static {
-        vehicleType = new VehicleTypeImpl(Id.create("amodeusType", VehicleType.class));
-
-        VehicleCapacity capacity = new VehicleCapacityImpl();
-        capacity.setSeats(seats);
-        vehicleType.setCapacity(capacity);
+        vehicleType = VehicleUtils.createVehicleType(Id.create("amodeusType", VehicleType.class));
+        vehicleType.getCapacity().setSeats(seats);
     }
 
     /* package */ static final double TASK_END = 10.0;

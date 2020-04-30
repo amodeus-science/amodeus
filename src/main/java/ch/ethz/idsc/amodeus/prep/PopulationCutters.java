@@ -12,7 +12,7 @@ public enum PopulationCutters implements PopulationCutter {
     NETWORKBASED {
         @Override
         public void cut(Population population, Network network, Config config) throws MalformedURLException, IOException {
-            new PopulationCutterNetworkBased(network, (int) config.qsim().getEndTime()).process(population);
+            new PopulationCutterNetworkBased(network, (int) config.qsim().getEndTime().seconds()).process(population);
         }
     },
     NONE {

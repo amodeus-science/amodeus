@@ -59,7 +59,7 @@ public class LPTimeVariantTest {
         Config config = ConfigUtils.loadConfig(configFile.getAbsolutePath(), avCg);
         GeneratorConfig genConfig = avCg.getOperatorConfigs().values().iterator().next().getGeneratorConfig();
         int numRt = genConfig.getNumberOfVehicles();
-        endTime = (int) config.qsim().getEndTime();
+        endTime = (int) config.qsim().getEndTime().seconds();
         Scenario scenario = ScenarioUtils.loadScenario(config);
         network = scenario.getNetwork();
         population = scenario.getPopulation();

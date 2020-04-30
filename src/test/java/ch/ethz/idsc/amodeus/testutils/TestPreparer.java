@@ -50,7 +50,7 @@ public class TestPreparer {
         GeneratorConfig avGeneratorConfig = //
                 avConfigGroup.getOperatorConfigs().values().iterator().next().getGeneratorConfig();
         int numRt = avGeneratorConfig.getNumberOfVehicles();
-        int endTime = (int) config.qsim().getEndTime();
+        int endTime = (int) config.qsim().getEndTime().seconds();
 
         // 1) cut network (and reduce population to new network)
         networkPrepared = scenario.getNetwork();

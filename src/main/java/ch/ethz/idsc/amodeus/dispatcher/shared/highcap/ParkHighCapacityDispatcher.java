@@ -111,7 +111,7 @@ import ch.ethz.matsim.av.router.AVRouter;
         links = new ArrayList<>(network.getLinks().values());
         Collections.shuffle(links, randGen);
 
-        FastAStarLandmarksFactory factory = new FastAStarLandmarksFactory();
+        FastAStarLandmarksFactory factory = new FastAStarLandmarksFactory(Runtime.getRuntime().availableProcessors());
         LeastCostPathCalculator lcpc = EasyMinTimePathCalculator.prepPathCalculator(network, factory);
         ttc = new TravelTimeComputation(lcpc, sizeLimitOfCache);
         rtvGG = new AdvancedRTVGenerator(capacityOfTaxi, pickupDurationPerStop, dropoffDurationPerStop);

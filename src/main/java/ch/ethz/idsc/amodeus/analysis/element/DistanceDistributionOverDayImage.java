@@ -3,10 +3,10 @@ package ch.ethz.idsc.amodeus.analysis.element;
 
 import java.io.File;
 
-import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
+import ch.ethz.idsc.amodeus.analysis.plot.AmodeusChartUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Transpose;
@@ -30,7 +30,8 @@ public enum DistanceDistributionOverDayImage implements AnalysisExport {
         VisualSet visualSet = new VisualSet(colorDataIndexed);
         for (int i = 0; i < 3; i++) {
             Tensor values = i == 0 //
-                    ? distances.get(i).negate() : distances.get(i);
+                    ? distances.get(i).negate()
+                    : distances.get(i);
             values = AnalysisMeanFilter.of(values);
             VisualRow visualRow = visualSet.add(de.time, values);
             visualRow.setLabel(StaticHelper.descriptions()[i]);
@@ -43,7 +44,7 @@ public enum DistanceDistributionOverDayImage implements AnalysisExport {
 
         try {
             File fileChart = new File(relativeDirectory, FILE_PNG);
-            ChartUtilities.saveChartAsPNG(fileChart, chart, WIDTH, HEIGHT);
+            AmodeusChartUtils.saveAsPNG(chart, fileChart.toString(), WIDTH, HEIGHT);
             GlobalAssert.that(fileChart.isFile());
             System.out.println("Exported " + FILE_PNG);
         } catch (Exception e) {

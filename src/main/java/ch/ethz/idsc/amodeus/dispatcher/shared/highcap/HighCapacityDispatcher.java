@@ -11,7 +11,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -23,6 +22,7 @@ import org.matsim.core.router.util.TravelTime;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedRebalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
@@ -94,7 +94,7 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
         links = new ArrayList<>(network.getLinks().values());
         Collections.shuffle(links, randGen);
 
-        FastAStarLandmarksFactory factory = new FastAStarLandmarksFactory();
+        FastAStarLandmarksFactory factory = new FastAStarLandmarksFactory(Runtime.getRuntime().availableProcessors());
         LeastCostPathCalculator lcpc = EasyMinTimePathCalculator.prepPathCalculator(network, factory);
         ttc = new TravelTimeComputation(lcpc, sizeLimitOfCache);
         rtvGG = new AdvancedRTVGenerator(capacityOfTaxi, pickupDurationPerStop, dropoffDurationPerStop);

@@ -3,12 +3,12 @@ package ch.ethz.idsc.amodeus.analysis;
 
 import java.io.File;
 
-import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.amodeus.analysis.element.DistanceElement;
+import ch.ethz.idsc.amodeus.analysis.plot.AmodeusChartUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -40,7 +40,7 @@ public enum StackedDistanceChartImage implements AnalysisExport {
 
         try {
             File fileChart = new File(relativeDirectory, FILE_PNG);
-            ChartUtilities.saveChartAsPNG(fileChart, chart, WIDTH, HEIGHT);
+            AmodeusChartUtils.saveAsPNG(chart, fileChart.toString(), WIDTH, HEIGHT);
             GlobalAssert.that(fileChart.isFile());
             System.out.println("Exported " + FILE_PNG);
         } catch (Exception e) {

@@ -25,7 +25,7 @@ public class ShortestDurationCalculator {
     private final LeastCostPathCalculator leastCostPathCalculator;
 
     public ShortestDurationCalculator(Network network, MatsimAmodeusDatabase db) {
-        leastCostPathCalculator = new FastAStarLandmarksFactory().createPathCalculator(network, //
+        leastCostPathCalculator = new FastAStarLandmarksFactory(Runtime.getRuntime().availableProcessors()).createPathCalculator(network, //
                 new TravelDisutility() { // free speed travel time
                     @Override
                     public double getLinkTravelDisutility(Link link, double time, Person person, Vehicle vehicle) {

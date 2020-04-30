@@ -34,7 +34,7 @@ import ch.ethz.matsim.av.config.operator.GeneratorConfig;
                 Config config = ConfigUtils.loadConfig(scenarioOptions.getSimulationConfigName(), avConfigGroup);
                 GeneratorConfig avGeneratorConfig = avConfigGroup.getOperatorConfigs().values().iterator().next().getGeneratorConfig();
                 int numRt = avGeneratorConfig.getNumberOfVehicles();
-                int endTime = (int) config.qsim().getEndTime();
+                int endTime = (int) config.qsim().getEndTime().seconds();
                 Scenario scenario = ScenarioUtils.loadScenario(config);
 
                 System.out.println("We could load the simulation Scenario");

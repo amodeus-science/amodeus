@@ -83,7 +83,7 @@ public class AmodeusVirtualNetworkModule extends AbstractModule {
 
                     int numberOfVehicles = operatorConfig.getGeneratorConfig().getNumberOfVehicles();
                     virtualNetwork = scenarioOptions.getVirtualNetworkCreator().create(network, population, scenarioOptions, numberOfVehicles, //
-                            (int) mainConfig.qsim().getEndTime());
+                            (int) mainConfig.qsim().getEndTime().seconds());
 
                     VirtualNetworkIO.toByte(virtualNetworkFile, virtualNetwork);
                 } else
@@ -133,7 +133,7 @@ public class AmodeusVirtualNetworkModule extends AbstractModule {
                         int interval = scenarioOptions.getdtTravelData();
 
                         travelData = StaticTravelDataCreator.create(workingDirectory, virtualNetwork, network, population, interval, numberOfVehicles, //
-                                (int) mainConfig.qsim().getEndTime());
+                                (int) mainConfig.qsim().getEndTime().seconds());
                         TravelDataIO.writeStatic(travelDataFile, travelData);
                     } else {
                         logger.info(String.format("Loading TravelData for operator '%s' from '%s'", operatorConfig.getId(), travelDataFile));

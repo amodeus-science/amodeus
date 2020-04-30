@@ -6,10 +6,8 @@ import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 import org.matsim.core.config.Config;
-import org.matsim.vehicles.VehicleCapacity;
-import org.matsim.vehicles.VehicleCapacityImpl;
 import org.matsim.vehicles.VehicleType;
-import org.matsim.vehicles.VehicleTypeImpl;
+import org.matsim.vehicles.VehicleUtils;
 
 import ch.ethz.idsc.amodeus.ArtificialScenarioCreator;
 import ch.ethz.matsim.av.data.AVVehicle;
@@ -25,12 +23,8 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     static final VehicleType vehicleType;
 
     static {
-        vehicleType = new VehicleTypeImpl(Id.create("amodeusType", VehicleType.class));
-
-        VehicleCapacity capacity = new VehicleCapacityImpl();
-        capacity.setSeats(3);
-
-        vehicleType.setCapacity(capacity);
+        vehicleType = VehicleUtils.createVehicleType(Id.create("amodeusType", VehicleType.class));
+        vehicleType.getCapacity().setSeats(3);
     }
 
     public ArtificialSharedScenarioCreator() {

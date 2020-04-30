@@ -5,9 +5,9 @@ import java.io.File;
 import java.io.IOException;
 
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 
+import ch.ethz.idsc.amodeus.analysis.plot.AmodeusChartUtils;
 import ch.ethz.idsc.amodeus.analysis.plot.ChartTheme;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -44,7 +44,7 @@ import ch.ethz.idsc.tensor.pdf.UniformDistribution;
         {
             JFreeChart jFreeChart = ListPlot.of(visualSet);
             File file = HomeDirectory.Pictures(ListPlot.class.getSimpleName() + ".png");
-            ChartUtilities.saveChartAsPNG(file, jFreeChart, 500, 300);
+            AmodeusChartUtils.saveAsPNG(jFreeChart, file.toString(), 500, 300);
         }
 
     }

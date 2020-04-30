@@ -16,10 +16,8 @@ import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.scenario.ScenarioUtils;
-import org.matsim.vehicles.VehicleCapacity;
-import org.matsim.vehicles.VehicleCapacityImpl;
 import org.matsim.vehicles.VehicleType;
-import org.matsim.vehicles.VehicleTypeImpl;
+import org.matsim.vehicles.VehicleUtils;
 
 import ch.ethz.idsc.amodeus.matsim.mod.VehicleToVSGenerator;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
@@ -51,11 +49,8 @@ public class VehicleToVSGeneratorTester {
     private static final VehicleType vehicleType;
 
     static {
-        vehicleType = new VehicleTypeImpl(Id.create("amodeusType", VehicleType.class));
-
-        VehicleCapacity capacity = new VehicleCapacityImpl();
-        capacity.setSeats(4);
-        vehicleType.setCapacity(capacity);
+        vehicleType = VehicleUtils.createVehicleType(Id.create("amodeusType", VehicleType.class));
+        vehicleType.getCapacity().setSeats(4);
     }
 
     @BeforeClass
@@ -69,7 +64,7 @@ public class VehicleToVSGeneratorTester {
         Config config = ConfigUtils.loadConfig(configFile.getAbsolutePath(), avCg);
         GeneratorConfig genConfig = avCg.getOperatorConfigs().values().iterator().next().getGeneratorConfig();
         int numRt = genConfig.getNumberOfVehicles();
-        int endTime = (int) config.qsim().getEndTime();
+        int endTime = (int) config.qsim().getEndTime().seconds();
         Scenario scenario = ScenarioUtils.loadScenario(config);
         network = scenario.getNetwork();
         population = scenario.getPopulation();
