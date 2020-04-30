@@ -52,36 +52,26 @@
 			<version>0.2.1</version>
 		</dependency>
 		<dependency>
-			<groupId>org.matsim</groupId>
-			<artifactId>pt2matsim</artifactId>
-			<version>19.2</version>
-		</dependency>
-		<!-- dependency>- workaround since jaxb api is not part of java 9 ->
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>jaxb-api</artifactId>
-			<version>2.2.8</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.activation</groupId>
-			<artifactId>activation</artifactId>
-			<version>1.1.1</version>
-		</dependency -->
-		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.6</version>
+		</dependency>
 	</dependencies>
 
 	<repositories>
 		<repository>
-			<id>matsim-eth</id>
-			<url>https://dl.bintray.com/matsim-eth/matsim</url>
+			<id>matsim</id>
+			<url>https://dl.bintray.com/matsim/matsim</url>
 		</repository>
 		<repository>
-			<id>matsim-org</id>
-			<url>https://dl.bintray.com/matsim/matsim</url>
+			<id>matsim-snapshot</id>
+			<url>https://oss.jfrog.org/libs-snapshot</url>
 		</repository>
 		<repository>
 			<id>tensor-mvn-repo</id>
@@ -97,10 +87,6 @@
 			<id>osgeo</id>
 			<name>Geotools repository</name>
 			<url>https://repo.osgeo.org/repository/release/</url>
-		</repository>
-		<repository>
-			<id>pt2matsim</id>
-			<url>http://dl.bintray.com/polettif/matsim</url>
 		</repository>
 	</repositories>
 
