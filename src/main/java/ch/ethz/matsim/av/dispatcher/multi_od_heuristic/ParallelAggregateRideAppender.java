@@ -9,7 +9,6 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import org.matsim.api.core.v01.network.Link;
-import org.matsim.contrib.dvrp.path.VrpPath;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.path.VrpPaths;
 import org.matsim.contrib.dvrp.schedule.Schedule;
@@ -23,11 +22,10 @@ import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.multi_od_heuristic.aggregation.AggregatedRequest;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
-import ch.ethz.matsim.av.schedule.AVDriveTask;
-import ch.ethz.matsim.av.schedule.AVDropoffTask;
-import ch.ethz.matsim.av.schedule.AVPickupTask;
-import ch.ethz.matsim.av.schedule.AVStayTask;
-import ch.ethz.matsim.av.schedule.AVTask;
+import ch.ethz.refactoring.schedule.AmodeusDriveTask;
+import ch.ethz.refactoring.schedule.AmodeusDropoffTask;
+import ch.ethz.refactoring.schedule.AmodeusPickupTask;
+import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
 public class ParallelAggregateRideAppender implements AggregateRideAppender {
     final private ParallelLeastCostPathCalculator router;
@@ -81,7 +79,7 @@ public class ParallelAggregateRideAppender implements AggregateRideAppender {
         LinkedList<OrderedRequest> dropoffOrder = new LinkedList<>();
 
         Schedule schedule = vehicle.getSchedule();
-        AVStayTask stayTask = (AVStayTask) Schedules.getLastTask(schedule);
+        AmodeusStayTask stayTask = (AmodeusStayTask) Schedules.getLastTask(schedule);
 
         Link currentLink = stayTask.getLink();
         double currentTime = now;
@@ -171,7 +169,7 @@ public class ParallelAggregateRideAppender implements AggregateRideAppender {
 
     public void schedule(AppendTask appendTask, List<Path> plainPickupPaths, List<Path> plainDropoffPaths) {
         Schedule schedule = appendTask.vehicle.getSchedule();
-        AVStayTask stayTask = (AVStayTask) Schedules.getLastTask(schedule);
+        AmodeusStayTask stayTask = (AmodeusStayTask) Schedules.getLastTask(schedule);
 
         double startTime = 0.0;
         double scheduleEndTime = schedule.getEndTime();
@@ -187,14 +185,22 @@ public class ParallelAggregateRideAppender implements AggregateRideAppender {
         Link currentLink = stayTask.getLink();
         double currentTime = startTime;
 
-        AVTask currentTask = stayTask;
+        Task currentTask = stayTask;
         LinkedList<AVRequest> currentRequests = new LinkedList<>();
 
         LinkedList<VrpPathWithTravelData> paths = new LinkedList<>();
-        LinkedList<AVDriveTask> driveTasks = new LinkedList<>();
+        LinkedList<AmodeusDriveTask> driveTasks = new LinkedList<>();
 
         Iterator<Path> pickupPathIterator = plainPickupPaths.iterator();
         Iterator<Path> dropoffPathIterator = plainDropoffPaths.iterator();
+
+        for (AVRequest customerRequest : appendTask.pickupOrder) {
+            // REFACTOR: We are reconstructing the distances here, while there should already be a planned distance in the route depending on whether we predict it or not.
+            // If we don't predict a distance, the scoring part should be able to cope with that. Certainly, summing up the *actual* driven distance as here, we can also do
+            // (more easily) from the events. What we're interested in actually is the planned distance, which should be passed by the AVTransit event anyways. Need to find
+            // a mechanism for that. Because this will not work anyways with Amodeus dispatchers!
+            customerRequest.getRoute().setDistance(0.0);
+        }
 
         for (AVRequest pickup : appendTask.pickupOrder) {
             Path plainPickupPath = pickupPathIterator.next();
@@ -203,25 +209,28 @@ public class ParallelAggregateRideAppender implements AggregateRideAppender {
                 VrpPathWithTravelData path = VrpPaths.createPath(currentLink, pickup.getFromLink(), currentTime, plainPickupPath, travelTime);
                 paths.add(path);
 
-                AVDriveTask driveTask = new AVDriveTask(path, currentRequests);
+                AmodeusDriveTask driveTask = new AmodeusDriveTask(path, currentRequests);
                 driveTasks.add(driveTask);
                 schedule.addTask(driveTask);
 
                 currentTask = driveTask;
                 currentLink = pickup.getFromLink();
                 currentTime = path.getArrivalTime();
+
+                double driveDistance = VrpPaths.calcDistance(path);
+
+                for (AVRequest customerRequest : currentRequests) {
+                    // REFACTOR
+                    customerRequest.getRoute().setDistance(customerRequest.getRoute().getDistance() + driveDistance);
+                }
             }
 
-            if (currentTask instanceof AVPickupTask) {
-                ((AVPickupTask) currentTask).addRequest(pickup);
+            if (currentTask instanceof AmodeusPickupTask) {
+                ((AmodeusPickupTask) currentTask).addRequest(pickup);
                 currentRequests.add(pickup);
             } else {
-                AVPickupTask pickupTask = new AVPickupTask(
-                        currentTime,
-                        currentTime + timing.getPickupDurationPerStop(),
-                        pickup.getFromLink(), Double.NEGATIVE_INFINITY,
-                        Arrays.asList(pickup)
-                );
+                AmodeusPickupTask pickupTask = new AmodeusPickupTask(currentTime, currentTime + timing.getPickupDurationPerStop(), pickup.getFromLink(), Double.NEGATIVE_INFINITY,
+                        Arrays.asList(pickup));
 
                 schedule.addTask(pickupTask);
                 currentTask = pickupTask;
@@ -237,25 +246,27 @@ public class ParallelAggregateRideAppender implements AggregateRideAppender {
                 VrpPathWithTravelData path = VrpPaths.createPath(currentLink, dropoff.getToLink(), currentTime, plainDropoffPath, travelTime);
                 paths.add(path);
 
-                AVDriveTask driveTask = new AVDriveTask(path, currentRequests);
+                AmodeusDriveTask driveTask = new AmodeusDriveTask(path, currentRequests);
                 driveTasks.add(driveTask);
                 schedule.addTask(driveTask);
 
                 currentTask = driveTask;
                 currentLink = dropoff.getToLink();
                 currentTime = path.getArrivalTime();
+
+                double driveDistance = VrpPaths.calcDistance(path);
+
+                for (AVRequest customerRequest : currentRequests) {
+                    // REFACTOR
+                    customerRequest.getRoute().setDistance(customerRequest.getRoute().getDistance() + driveDistance);
+                }
             }
 
-            if (currentTask instanceof AVDropoffTask) {
-                ((AVDropoffTask) currentTask).addRequest(dropoff);
+            if (currentTask instanceof AmodeusDropoffTask) {
+                ((AmodeusDropoffTask) currentTask).addRequest(dropoff);
                 currentRequests.remove(dropoff);
             } else {
-                AVDropoffTask dropoffTask = new AVDropoffTask(
-                        currentTime,
-                        currentTime + timing.getDropoffDurationPerStop(),
-                        dropoff.getToLink(),
-                        Arrays.asList(dropoff)
-                );
+                AmodeusDropoffTask dropoffTask = new AmodeusDropoffTask(currentTime, currentTime + timing.getDropoffDurationPerStop(), dropoff.getToLink(), Arrays.asList(dropoff));
 
                 schedule.addTask(dropoffTask);
                 currentTask = dropoffTask;
@@ -265,24 +276,7 @@ public class ParallelAggregateRideAppender implements AggregateRideAppender {
         }
 
         if (currentTask.getEndTime() < scheduleEndTime) {
-            schedule.addTask(new AVStayTask(currentTime, scheduleEndTime, currentLink));
-        }
-
-        // Reconstruct travel distances
-        for (AVRequest customerRequest : appendTask.pickupOrder) {
-            double distance = 0.0;
-
-            for (AVDriveTask task : driveTasks) {
-                if (task.getRequests().contains(customerRequest)) {
-                    VrpPath path = task.getPath();
-
-                    for (int i = 0; i < path.getLinkCount(); i++) {
-                        distance += path.getLink(i).getLength();
-                    }
-                }
-            }
-
-            customerRequest.getRoute().setDistance(distance);
+            schedule.addTask(new AmodeusStayTask(currentTime, scheduleEndTime, currentLink));
         }
     }
 
@@ -290,25 +284,25 @@ public class ParallelAggregateRideAppender implements AggregateRideAppender {
         // TODO: This can be made more efficient if one knows which ones have just been added and which ones are still
         // to be processed. Depends mainly on if "update" is called before new tasks are submitted or after ...
 
-    	try {
-    		for (AppendTask task : tasks) {
-        		List<Path> plainPickupTasks = new LinkedList<>();
-        		List<Path> plainDropoffTasks = new LinkedList<>();
-        		
-        		for (Future<Path> future : task.pickupPaths) {
-        			plainPickupTasks.add(future == null ? null : future.get());
-        		}
-        		
-        		for (Future<Path> future : task.dropoffPaths) {
-        			plainDropoffTasks.add(future == null ? null : future.get());
-        		}
-        		
-        		schedule(task, plainPickupTasks, plainDropoffTasks);
-    		}
-    		
-    		tasks.clear();
-    	} catch (ExecutionException | InterruptedException e) {
-    		throw new RuntimeException(e);
-    	}
+        try {
+            for (AppendTask task : tasks) {
+                List<Path> plainPickupTasks = new LinkedList<>();
+                List<Path> plainDropoffTasks = new LinkedList<>();
+
+                for (Future<Path> future : task.pickupPaths) {
+                    plainPickupTasks.add(future == null ? null : future.get());
+                }
+
+                for (Future<Path> future : task.dropoffPaths) {
+                    plainDropoffTasks.add(future == null ? null : future.get());
+                }
+
+                schedule(task, plainPickupTasks, plainDropoffTasks);
+            }
+
+            tasks.clear();
+        } catch (ExecutionException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

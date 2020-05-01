@@ -1,18 +1,18 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
-import ch.ethz.matsim.av.schedule.AVDriveTask;
-import ch.ethz.matsim.av.schedule.AVDropoffTask;
-import ch.ethz.matsim.av.schedule.AVPickupTask;
-import ch.ethz.matsim.av.schedule.AVStayTask;
+import ch.ethz.refactoring.schedule.AmodeusDriveTask;
+import ch.ethz.refactoring.schedule.AmodeusDropoffTask;
+import ch.ethz.refactoring.schedule.AmodeusPickupTask;
+import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
 /* package */ interface RoboTaxiTaskListener {
-    void handle(AVPickupTask avPickupTask);
+    void handle(AmodeusPickupTask avPickupTask);
 
-    void handle(AVDropoffTask avDropoffTask);
+    void handle(AmodeusDropoffTask avDropoffTask);
 
-    void handle(AVDriveTask avDriveTask);
+    void handle(AmodeusDriveTask avDriveTask);
 
-    void handle(AVStayTask avStayTask);
+    void handle(AmodeusStayTask avStayTask);
 
 }

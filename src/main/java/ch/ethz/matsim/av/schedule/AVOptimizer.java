@@ -20,110 +20,109 @@ import com.google.inject.Singleton;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.passenger.AVRequest;
+import ch.ethz.refactoring.schedule.AmodeusDropoffTask;
+import ch.ethz.refactoring.schedule.AmodeusTaskType;
 
 @Singleton
-/**
- * TODO: This whole class should be revised. There have been several iterations
- * for changing it and there are some redundant left-overs. /shoerl, dec 2017
- *
- */
+/** TODO: This whole class should be revised. There have been several iterations
+ * for changing it and there are some redundant left-overs. /shoerl, dec 2017 */
 public class AVOptimizer implements VrpOptimizer, OnlineTrackerListener, MobsimBeforeSimStepListener {
-	private double now;
+    private double now;
 
-	@Inject
-	private EventsManager eventsManager;
+    @Inject
+    private EventsManager eventsManager;
 
-	@Override
-	public void requestSubmitted(Request request) {
-		AVRequest avRequest = (AVRequest) request;
-		AVDispatcher dispatcher = avRequest.getDispatcher();
-		
-		synchronized (dispatcher) {
-			dispatcher.onRequestSubmitted(avRequest);
-		}
-	}
+    @Override
+    public void requestSubmitted(Request request) {
+        AVRequest avRequest = (AVRequest) request;
+        AVDispatcher dispatcher = avRequest.getDispatcher();
 
-	@Override
-	public void nextTask(DvrpVehicle vehicle) {
-		Schedule schedule = vehicle.getSchedule();
-		if (schedule.getStatus() != Schedule.ScheduleStatus.STARTED) {
-			schedule.nextTask();
-			return;
-		}
+        synchronized (dispatcher) {
+            dispatcher.onRequestSubmitted(avRequest);
+        }
+    }
 
-		Task currentTask = schedule.getCurrentTask();
-		currentTask.setEndTime(now);
+    @Override
+    public void nextTask(DvrpVehicle vehicle) {
+        Schedule schedule = vehicle.getSchedule();
+        if (schedule.getStatus() != Schedule.ScheduleStatus.STARTED) {
+            schedule.nextTask();
+            return;
+        }
 
-		List<? extends Task> tasks = schedule.getTasks();
-		int index = currentTask.getTaskIdx() + 1;
-		AVTask nextTask = null;
+        Task currentTask = schedule.getCurrentTask();
+        currentTask.setEndTime(now);
 
-		if (index < tasks.size()) {
-			nextTask = (AVTask) tasks.get(index);
-		} else {
-			throw new IllegalStateException("An AV schedule should never end!");
-		}
+        List<? extends Task> tasks = schedule.getTasks();
+        int index = currentTask.getTaskIdx() + 1;
+        Task nextTask = null;
 
-		double startTime = now;
+        if (index < tasks.size()) {
+            nextTask = tasks.get(index);
+        } else {
+            throw new IllegalStateException("An AV schedule should never end!");
+        }
 
-		AVTask indexTask;
-		while (index < tasks.size()) {
-			indexTask = (AVTask) tasks.get(index);
+        double startTime = now;
 
-			if (indexTask.getAVTaskType() == AVTask.AVTaskType.STAY) {
-				if (indexTask.getEndTime() < startTime)
-					indexTask.setEndTime(startTime);
-			} else {
-				indexTask.setEndTime(indexTask.getEndTime() - indexTask.getBeginTime() + startTime);
-			}
+        Task indexTask;
+        while (index < tasks.size()) {
+            indexTask = tasks.get(index);
 
-			indexTask.setBeginTime(startTime);
-			startTime = indexTask.getEndTime();
-			index++;
-		}
+            if (indexTask.getTaskType() == AmodeusTaskType.STAY) {
+                if (indexTask.getEndTime() < startTime)
+                    indexTask.setEndTime(startTime);
+            } else {
+                indexTask.setEndTime(indexTask.getEndTime() - indexTask.getBeginTime() + startTime);
+            }
 
-		ensureNonFinishingSchedule(schedule);
-		schedule.nextTask();
-		ensureNonFinishingSchedule(schedule);
+            indexTask.setBeginTime(startTime);
+            startTime = indexTask.getEndTime();
+            index++;
+        }
 
-		AVDispatcher dispatcher = ((AVVehicle) vehicle).getDispatcher();
+        ensureNonFinishingSchedule(schedule);
+        schedule.nextTask();
+        ensureNonFinishingSchedule(schedule);
 
-		if (nextTask != null) {
-			synchronized (dispatcher) {
-				dispatcher.onNextTaskStarted((AVVehicle) vehicle);
-			}
-		}
+        AVDispatcher dispatcher = ((AVVehicle) vehicle).getDispatcher();
 
-		if (nextTask != null && nextTask instanceof AVDropoffTask) {
-			processTransitEvent((AVDropoffTask) nextTask);
-		}
-	}
+        if (nextTask != null) {
+            synchronized (dispatcher) {
+                dispatcher.onNextTaskStarted((AVVehicle) vehicle);
+            }
+        }
 
-	private void ensureNonFinishingSchedule(Schedule schedule) {
-		AVTask lastTask = (AVTask) Schedules.getLastTask(schedule);
+        if (nextTask != null && nextTask instanceof AmodeusDropoffTask) {
+            processTransitEvent((AmodeusDropoffTask) nextTask);
+        }
+    }
 
-		if (lastTask.getAVTaskType() != AVTask.AVTaskType.STAY) {
-			throw new IllegalStateException("An AV schedule should always end with a STAY task");
-		}
+    private void ensureNonFinishingSchedule(Schedule schedule) {
+        Task lastTask = Schedules.getLastTask(schedule);
 
-		if (!Double.isInfinite(lastTask.getEndTime())) {
-			throw new IllegalStateException("An AV schedule should always end at time Infinity");
-		}
-	}
+        if (lastTask.getTaskType() != AmodeusTaskType.STAY) {
+            throw new IllegalStateException("An AV schedule should always end with a STAY task");
+        }
 
-	@Override
-	public void notifyMobsimBeforeSimStep(@SuppressWarnings("rawtypes") MobsimBeforeSimStepEvent e) {
-		now = e.getSimulationTime();
-	}
+        if (!Double.isInfinite(lastTask.getEndTime())) {
+            throw new IllegalStateException("An AV schedule should always end at time Infinity");
+        }
+    }
 
-	private void processTransitEvent(AVDropoffTask task) {
-		for (AVRequest request : task.getRequests()) {
-			eventsManager.processEvent(new AVTransitEvent(request, now));
-		}
-	}
+    @Override
+    public void notifyMobsimBeforeSimStep(@SuppressWarnings("rawtypes") MobsimBeforeSimStepEvent e) {
+        now = e.getSimulationTime();
+    }
 
-	@Override
-	public void vehicleEnteredNextLink(DvrpVehicle vehicle, Link nextLink) {
+    private void processTransitEvent(AmodeusDropoffTask task) {
+        for (AVRequest request : task.getRequests()) {
+            eventsManager.processEvent(new AVTransitEvent(request, now));
+        }
+    }
 
-	}
+    @Override
+    public void vehicleEnteredNextLink(DvrpVehicle vehicle, Link nextLink) {
+
+    }
 }

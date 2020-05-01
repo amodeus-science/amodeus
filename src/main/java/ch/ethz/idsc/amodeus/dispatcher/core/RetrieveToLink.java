@@ -11,9 +11,8 @@ import org.matsim.contrib.dvrp.schedule.Task;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.matsim.av.schedule.AVDriveTask;
-import ch.ethz.matsim.av.schedule.AVTask;
-import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
+import ch.ethz.refactoring.schedule.AmodeusDriveTask;
+import ch.ethz.refactoring.schedule.AmodeusTaskType;
 
 /*package*/ enum RetrieveToLink {
     ;
@@ -32,7 +31,6 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
         if (currentCourse.isPresent()) {
             if (roboTaxi.isWithoutDirective()) {
 
-                final AVTask avTask = (AVTask) currentTask;
                 boolean divert = false;
                 // FIRST: We reach the point where the Robo Taxi does not know what to do based on the schedule
                 // We have a current Course but the task is close to the end or already on the last task
@@ -43,9 +41,9 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
                 // SECOND A): IF We are on a Stay Task currently, we should have changed is already in the first step above
 
                 // SECOND B): If We are on a Drive Task currently, we have to see if the planed direction still fits our needs
-                if (avTask.getAVTaskType().equals(AVTaskType.DRIVE)) {
+                if (currentTask.getTaskType().equals(AmodeusTaskType.DRIVE)) {
                     GlobalAssert.that(isSecondLastTask);
-                    Link planedToLink = ((AVDriveTask) avTask).getPath().getToLink();
+                    Link planedToLink = ((AmodeusDriveTask) currentTask).getPath().getToLink();
                     if (!planedToLink.equals(currentCourse.get().getLink()))
                         if (!planedToLink.equals(roboTaxi.getDivertableLocation()))
                             divert = true;
@@ -74,11 +72,11 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
                 GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.STAY));
             } else if (isSecondLastTask) {
                 if (taskEndsNow) { // FIRST b): if we will finish the second last task now then the next status will be stay. As we have nothing to do.
-                    switch (((AVTask) currentTask).getAVTaskType()) {
+                    switch ((AmodeusTaskType) currentTask.getTaskType()) {
                     case DRIVE:
                         // AS there is no task after this one and the currend destinadtion is not the current location we have to divert the robo taxi to the
                         // current location
-                        if (!roboTaxi.getDivertableLocation().equals(((AVDriveTask) currentTask).getPath().getToLink())) {
+                        if (!roboTaxi.getDivertableLocation().equals(((AmodeusDriveTask) currentTask).getPath().getToLink())) {
                             SharedCourse redirectCourse = SharedCourse.redirectCourse(roboTaxi.getDivertableLocation(),
                                     Double.toString(now) + "_currentLink_" + roboTaxi.getId().toString());
                             roboTaxi.addRedirectCourseToMenuAtBegining(redirectCourse);
@@ -89,16 +87,15 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
                         GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.STAY));
                         break;
                     default:
-                        throw new RuntimeException("no can do: " + ((AVTask) currentTask).getAVTaskType());
+                        throw new RuntimeException("no can do: " + currentTask.getTaskType());
                     }
                 } else { // SECOND: if we are on the second last task but it does not end yet then we have to stop the current task if that's possible
                     // Lets consider the Case were we are in a drive Task
-                    final AVTask avTask = (AVTask) currentTask;
-                    if (avTask.getAVTaskType().equals(AVTaskType.DRIVE)) {
-                        AVDriveTask avDriveTask = (AVDriveTask) avTask;
+                    if (currentTask.getTaskType() == AmodeusTaskType.DRIVE) {
+                        AmodeusDriveTask driveTask = (AmodeusDriveTask) currentTask;
                         // AS there is no task after this one and the currend destinadtion is not the current location we have to divert the robo taxi to the
                         // current location
-                        if (!roboTaxi.getDivertableLocation().equals(avDriveTask.getPath().getToLink())) {
+                        if (!roboTaxi.getDivertableLocation().equals(driveTask.getPath().getToLink())) {
                             SharedCourse redirectCourse = SharedCourse.redirectCourse(roboTaxi.getDivertableLocation(),
                                     Double.toString(now) + "_currentLink_" + roboTaxi.getId().toString());
                             roboTaxi.addRedirectCourseToMenuAtBegining(redirectCourse);
@@ -111,7 +108,7 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
                         // a) A dropoff Task already finishes by default with a stay task afterwards. Thus The only reason we reach this part is because we are
                         // in
                         // Dropoff
-                        GlobalAssert.that(avTask.getAVTaskType().equals(AVTaskType.DROPOFF));
+                        GlobalAssert.that(currentTask.getTaskType() == AmodeusTaskType.DROPOFF);
                         GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
                         // b) A stay task should never be the second last Task.
                         // c) A pickup Task always needs to have a next course in the menu. but that we can check as well

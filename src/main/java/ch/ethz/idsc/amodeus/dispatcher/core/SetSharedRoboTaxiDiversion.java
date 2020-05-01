@@ -10,10 +10,10 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.matsim.av.schedule.AVDriveTask;
-import ch.ethz.matsim.av.schedule.AVDropoffTask;
-import ch.ethz.matsim.av.schedule.AVPickupTask;
-import ch.ethz.matsim.av.schedule.AVStayTask;
+import ch.ethz.refactoring.schedule.AmodeusDriveTask;
+import ch.ethz.refactoring.schedule.AmodeusDropoffTask;
+import ch.ethz.refactoring.schedule.AmodeusPickupTask;
+import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
 /* package */ enum SetSharedRoboTaxiDiversion {
     ;
@@ -45,7 +45,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         new RoboTaxiTaskAdapter(task) {
 
             @Override
-            public void handle(AVDriveTask avDriveTask) {
+            public void handle(AmodeusDriveTask avDriveTask) {
                 if (reRoute || !avDriveTask.getPath().getToLink().equals(destination)) { // ignore when vehicle is already going
                     FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer( //
                             sRoboTaxi.getDivertableLocation(), destination, sRoboTaxi.getDivertableTime());
@@ -58,7 +58,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
             }
 
             @Override
-            public void handle(AVStayTask avStayTask) {
+            public void handle(AmodeusStayTask avStayTask) {
                 if (!avStayTask.getLink().equals(destination)) { // ignore request where location == target
                     FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer( //
                             sRoboTaxi.getDivertableLocation(), destination, sRoboTaxi.getDivertableTime());
@@ -84,7 +84,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
             }
 
             @Override
-            public void handle(AVPickupTask avPickupTask) {
+            public void handle(AmodeusPickupTask avPickupTask) {
                 GlobalAssert.that(SharedCourseAccess.hasStarter(sRoboTaxi));
                 Link nextLink = SharedRoboTaxiUtils.getStarterLink(sRoboTaxi);
                 GlobalAssert.that(nextLink == destination);
@@ -92,7 +92,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
             }
 
             @Override
-            public void handle(AVDropoffTask dropOffTask) {
+            public void handle(AmodeusDropoffTask dropOffTask) {
                 GlobalAssert.that(SharedCourseAccess.hasStarter(sRoboTaxi));
                 // THIS Would mean the dropoffs of this time Step did not take place. And thus the menu still has dropof
                 // as next course (in dropof case)

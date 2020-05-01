@@ -21,10 +21,10 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.passenger.AVRequest;
-import ch.ethz.matsim.av.schedule.AVDriveTask;
-import ch.ethz.matsim.av.schedule.AVDropoffTask;
-import ch.ethz.matsim.av.schedule.AVPickupTask;
-import ch.ethz.matsim.av.schedule.AVStayTask;
+import ch.ethz.refactoring.schedule.AmodeusDriveTask;
+import ch.ethz.refactoring.schedule.AmodeusDropoffTask;
+import ch.ethz.refactoring.schedule.AmodeusPickupTask;
+import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
 /* package */ enum StaticRoboTaxiCreator {
     ;
@@ -53,7 +53,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
     private static void setFirstTaskStay(RoboTaxi roboTaxi, Link link) {
         Schedule schedule = roboTaxi.getSchedule();
-        schedule.addTask(new AVStayTask(0.0, Double.POSITIVE_INFINITY, link));
+        schedule.addTask(new AmodeusStayTask(0.0, Double.POSITIVE_INFINITY, link));
         schedule.nextTask();
     }
 
@@ -65,8 +65,8 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
     private static void setFirstPickupTask(RoboTaxi roboTaxi) {
         Schedule schedule = roboTaxi.getSchedule();
-        schedule.addTask(new AVPickupTask(0.0, TASK_END, roboTaxi.getDivertableLocation(), 0.0));
-        schedule.addTask(new AVStayTask(TASK_END, Double.POSITIVE_INFINITY, roboTaxi.getDivertableLocation()));
+        schedule.addTask(new AmodeusPickupTask(0.0, TASK_END, roboTaxi.getDivertableLocation(), 0.0));
+        schedule.addTask(new AmodeusStayTask(TASK_END, Double.POSITIVE_INFINITY, roboTaxi.getDivertableLocation()));
         schedule.nextTask();
     }
 
@@ -78,8 +78,8 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
     private static void setFirstDropoffTask(RoboTaxi roboTaxi) {
         Schedule schedule = roboTaxi.getSchedule();
-        schedule.addTask(new AVDropoffTask(0.0, TASK_END, roboTaxi.getDivertableLocation()));
-        schedule.addTask(new AVStayTask(TASK_END, Double.POSITIVE_INFINITY, roboTaxi.getDivertableLocation()));
+        schedule.addTask(new AmodeusDropoffTask(0.0, TASK_END, roboTaxi.getDivertableLocation()));
+        schedule.addTask(new AmodeusStayTask(TASK_END, Double.POSITIVE_INFINITY, roboTaxi.getDivertableLocation()));
         schedule.nextTask();
     }
 
@@ -92,8 +92,8 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
     private static void setFirstDriveTask(RoboTaxi roboTaxi, VrpPathWithTravelData vrpPathWithTravelData) {
         Schedule schedule = roboTaxi.getSchedule();
-        schedule.addTask(new AVDriveTask(vrpPathWithTravelData));
-        schedule.addTask(new AVStayTask(vrpPathWithTravelData.getArrivalTime(), Double.POSITIVE_INFINITY, vrpPathWithTravelData.getToLink()));
+        schedule.addTask(new AmodeusDriveTask(vrpPathWithTravelData));
+        schedule.addTask(new AmodeusStayTask(vrpPathWithTravelData.getArrivalTime(), Double.POSITIVE_INFINITY, vrpPathWithTravelData.getToLink()));
         schedule.nextTask();
     }
 

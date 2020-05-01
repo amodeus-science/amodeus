@@ -3,12 +3,11 @@ package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import org.matsim.contrib.dvrp.schedule.Task;
 
-import ch.ethz.matsim.av.schedule.AVDriveTask;
-import ch.ethz.matsim.av.schedule.AVDropoffTask;
-import ch.ethz.matsim.av.schedule.AVPickupTask;
-import ch.ethz.matsim.av.schedule.AVStayTask;
-import ch.ethz.matsim.av.schedule.AVTask;
-import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
+import ch.ethz.refactoring.schedule.AmodeusDriveTask;
+import ch.ethz.refactoring.schedule.AmodeusDropoffTask;
+import ch.ethz.refactoring.schedule.AmodeusPickupTask;
+import ch.ethz.refactoring.schedule.AmodeusStayTask;
+import ch.ethz.refactoring.schedule.AmodeusTaskType;
 
 /** An {@link RoboTaxiTaskAdapter} is created using a {@link Task}, which is casted to
  * {@link AVTask} internally. The adapter then invokes the handling function
@@ -17,39 +16,38 @@ import ch.ethz.matsim.av.schedule.AVTask.AVTaskType;
 /* package */ class RoboTaxiTaskAdapter implements RoboTaxiTaskListener {
 
     public RoboTaxiTaskAdapter(Task task) {
-        final AVTask avTask = (AVTask) task;
-        switch (avTask.getAVTaskType()) {
+        switch ((AmodeusTaskType) task.getTaskType()) {
         case PICKUP:
-            handle((AVPickupTask) avTask);
+            handle((AmodeusPickupTask) task);
             break;
         case DROPOFF:
-            handle((AVDropoffTask) avTask);
+            handle((AmodeusDropoffTask) task);
             break;
         case DRIVE:
-            handle((AVDriveTask) avTask);
+            handle((AmodeusDriveTask) task);
             break;
         case STAY:
-            handle((AVStayTask) avTask);
+            handle((AmodeusStayTask) task);
         }
     }
 
     @Override
-    public void handle(AVPickupTask avPickupTask) {
+    public void handle(AmodeusPickupTask avPickupTask) {
         // empty by design
     }
 
     @Override
-    public void handle(AVDropoffTask avDropoffTask) {
+    public void handle(AmodeusDropoffTask avDropoffTask) {
         // empty by design
     }
 
     @Override
-    public void handle(AVDriveTask avDriveTask) {
+    public void handle(AmodeusDriveTask avDriveTask) {
         // empty by design
     }
 
     @Override
-    public void handle(AVStayTask avStayTask) {
+    public void handle(AmodeusStayTask avStayTask) {
         // empty by design
     }
 

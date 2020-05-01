@@ -9,10 +9,10 @@ import org.matsim.contrib.dvrp.schedule.Schedules;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
-import ch.ethz.matsim.av.schedule.AVDriveTask;
-import ch.ethz.matsim.av.schedule.AVDropoffTask;
-import ch.ethz.matsim.av.schedule.AVPickupTask;
-import ch.ethz.matsim.av.schedule.AVStayTask;
+import ch.ethz.refactoring.schedule.AmodeusDriveTask;
+import ch.ethz.refactoring.schedule.AmodeusDropoffTask;
+import ch.ethz.refactoring.schedule.AmodeusPickupTask;
+import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
 /** for vehicles that are in stay task and should pickup a customer at the link:
  * 1) finish stay task 2) append pickup task 3) append drive task 4) append
@@ -35,7 +35,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     @Override
     void executeWithPath(final VrpPathWithTravelData vrpPathWithTravelData) {
         final Schedule schedule = roboTaxi.getSchedule();
-        final AVStayTask avStayTask = (AVStayTask) Schedules.getLastTask(schedule);
+        final AmodeusStayTask avStayTask = (AmodeusStayTask) Schedules.getLastTask(schedule);
         final double scheduleEndTime = avStayTask.getEndTime();
         GlobalAssert.that(scheduleEndTime == schedule.getEndTime());
         final double begDropoffTime = vrpPathWithTravelData.getArrivalTime();
@@ -44,7 +44,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         if (endDropoffTime < scheduleEndTime) {
             avStayTask.setEndTime(getTimeNow); // finish the last task now
 
-            AVPickupTask pickupTask = new AVPickupTask( //
+            AmodeusPickupTask pickupTask = new AmodeusPickupTask( //
                     getTimeNow, // start of pickup
                     futurePathContainer.getStartTime(), // end of pickup
                     avRequest.getFromLink(), // location of driving start
@@ -52,12 +52,12 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
             pickupTask.addRequest(avRequest); // serving only one request at a time
             schedule.addTask(pickupTask);
 
-            schedule.addTask(new AVDriveTask( //
+            schedule.addTask(new AmodeusDriveTask( //
                     vrpPathWithTravelData, Arrays.asList(avRequest)));
 
             // final double endDropoffTime =
             // vrpPathWithTravelData.getArrivalTime() + dropoffDurationPerStop;
-            schedule.addTask(new AVDropoffTask( //
+            schedule.addTask(new AmodeusDropoffTask( //
                     begDropoffTime, // start of dropoff
                     endDropoffTime, // end of dropoff
                     avRequest.getToLink(), // location of dropoff

@@ -37,10 +37,10 @@ import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.generator.AVGenerator;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
-import ch.ethz.matsim.av.schedule.AVDriveTask;
-import ch.ethz.matsim.av.schedule.AVDropoffTask;
-import ch.ethz.matsim.av.schedule.AVPickupTask;
-import ch.ethz.matsim.av.schedule.AVStayTask;
+import ch.ethz.refactoring.schedule.AmodeusDriveTask;
+import ch.ethz.refactoring.schedule.AmodeusDropoffTask;
+import ch.ethz.refactoring.schedule.AmodeusPickupTask;
+import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
 /** purpose of {@link SharedUniversalDispatcher} is to collect and manage
  * {@link AVRequest}s alternative implementation of {@link AVDispatcher};
@@ -426,7 +426,7 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
             Schedule schedule = roboTaxi.getSchedule();
             new RoboTaxiTaskAdapter(schedule.getCurrentTask()) {
                 @Override
-                public void handle(AVDriveTask avDriveTask) {
+                public void handle(AmodeusDriveTask avDriveTask) {
                     TaskTracker taskTracker = avDriveTask.getTaskTracker();
                     AmodeusDriveTaskTracker onlineDriveTaskTracker = (AmodeusDriveTaskTracker) taskTracker;
                     LinkTimePair linkTimePair = onlineDriveTaskTracker.getSafeDiversionPoint();
@@ -435,17 +435,17 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
                 }
 
                 @Override
-                public void handle(AVPickupTask avPickupTask) {
+                public void handle(AmodeusPickupTask avPickupTask) {
                     GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
                 }
 
                 @Override
-                public void handle(AVDropoffTask avDropOffTask) {
+                public void handle(AmodeusDropoffTask avDropOffTask) {
                     GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
                 }
 
                 @Override
-                public void handle(AVStayTask avStayTask) {
+                public void handle(AmodeusStayTask avStayTask) {
                     // for empty vehicles the current task has to be the last task
                     if (ScheduleUtils.isLastTask(schedule, avStayTask) && !requestRegister.contains(roboTaxi) && !periodFulfilledRequests.containsValue(roboTaxi)) {
                         GlobalAssert.that(avStayTask.getBeginTime() <= getTimeNow());

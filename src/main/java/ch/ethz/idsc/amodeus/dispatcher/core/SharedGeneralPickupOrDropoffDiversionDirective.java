@@ -6,8 +6,8 @@ import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.matsim.av.schedule.AVDriveTask;
-import ch.ethz.matsim.av.schedule.AVStayTask;
+import ch.ethz.refactoring.schedule.AmodeusDriveTask;
+import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
 /** for vehicles that are in dropoff or pickup task and new request is assigned.
  * 1) finish pickup or dropoff task 2) append drive task 3) append new stay task */
@@ -27,7 +27,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     @Override
     void executeWithPath(final VrpPathWithTravelData vrpPathWithTravelData) {
         final Schedule schedule = roboTaxi.getSchedule();
-        final AVStayTask avStayTask = (AVStayTask) Schedules.getLastTask(schedule);
+        final AmodeusStayTask avStayTask = (AmodeusStayTask) Schedules.getLastTask(schedule);
         final double scheduleEndTime = avStayTask.getEndTime();
         final double endTaskTime = vrpPathWithTravelData.getArrivalTime();
         GlobalAssert.that(scheduleEndTime == schedule.getEndTime());
@@ -42,7 +42,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
             GlobalAssert.that(counter == 1); // WE make sure that there was only the stay Task at the end removed.
 
             // Add new drive task
-            schedule.addTask(new AVDriveTask( //
+            schedule.addTask(new AmodeusDriveTask( //
                     vrpPathWithTravelData));
 
             ScheduleUtils.makeWhole(roboTaxi, endTaskTime, scheduleEndTime, vrpPathWithTravelData.getToLink());

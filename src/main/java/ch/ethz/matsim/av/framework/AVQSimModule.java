@@ -38,9 +38,9 @@ import ch.ethz.matsim.av.generator.AVGenerator;
 import ch.ethz.matsim.av.passenger.AVRequestCreator;
 import ch.ethz.matsim.av.router.AVRouter;
 import ch.ethz.matsim.av.schedule.AVOptimizer;
-import ch.ethz.matsim.av.schedule.AVStayTask;
 import ch.ethz.matsim.av.vrpagent.AVActionCreator;
 import ch.ethz.matsim.av.vrpagent.AVAgentSource;
+import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
 public class AVQSimModule extends AbstractDvrpModeQSimModule {
 	public final static String COMPONENT_NAME = "AVExtension";
@@ -183,7 +183,7 @@ public class AVQSimModule extends AbstractDvrpModeQSimModule {
 
 		for (List<AVVehicle> vehs : vehicles.values()) {
 			for (AVVehicle vehicle : vehs) {
-				vehicle.getSchedule().addTask(new AVStayTask(vehicle.getServiceBeginTime(), vehicle.getServiceEndTime(),
+				vehicle.getSchedule().addTask(new AmodeusStayTask(vehicle.getServiceBeginTime(), vehicle.getServiceEndTime(),
 						vehicle.getStartLink()));
 				returnVehicles.put(vehicle.getId(), vehicle);
 			}

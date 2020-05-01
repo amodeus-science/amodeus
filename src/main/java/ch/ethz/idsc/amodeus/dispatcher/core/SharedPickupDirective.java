@@ -6,8 +6,8 @@ import org.matsim.contrib.dvrp.schedule.Schedules;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
-import ch.ethz.matsim.av.schedule.AVPickupTask;
-import ch.ethz.matsim.av.schedule.AVStayTask;
+import ch.ethz.refactoring.schedule.AmodeusPickupTask;
+import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
 /** for vehicles that are in dropoff or pickup task and new request is assigned.
  * 1) finish pickup or dropoff task 2) append drive task 3) append new stay task */
@@ -20,7 +20,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     @Override
     public void execute() {
         final Schedule schedule = roboTaxi.getSchedule();
-        final AVStayTask avStayTask = (AVStayTask) Schedules.getLastTask(schedule);
+        final AmodeusStayTask avStayTask = (AmodeusStayTask) Schedules.getLastTask(schedule);
         final double scheduleEndTime = avStayTask.getEndTime();
         final double endTaskTime = getTimeNow + durationOfTask;
         GlobalAssert.that(scheduleEndTime == schedule.getEndTime());
@@ -28,7 +28,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         if (endTaskTime < scheduleEndTime) {
             avStayTask.setEndTime(getTimeNow); // finish the last task now
 
-            AVPickupTask pickupTask = new AVPickupTask( //
+            AmodeusPickupTask pickupTask = new AmodeusPickupTask( //
                     getTimeNow, // start of pickup
                     endTaskTime, // end of pickup
                     avRequest.getFromLink(), // location of driving start
