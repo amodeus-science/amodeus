@@ -244,6 +244,8 @@ public class AVPickupDropoffTest {
 				return new SingleVehicleGeneratorFactory(vehicleCapacity, Id.createLinkId("link1"));
 			}
 		});
+		
+		controller.addOverridingQSimModule(new AVQSimModule());
 
 		controller.configureQSimComponents(AVQSimModule::configureComponents);
 

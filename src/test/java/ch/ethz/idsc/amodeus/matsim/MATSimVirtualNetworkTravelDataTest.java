@@ -46,6 +46,7 @@ import ch.ethz.matsim.av.data.AVOperator;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.framework.AVQSimModule;
 import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
+import ch.ethz.refactoring.AmodeusConfigurator;
 
 public class MATSimVirtualNetworkTravelDataTest {
     @Test
@@ -113,16 +114,8 @@ public class MATSimVirtualNetworkTravelDataTest {
         modeParams.setMarginalUtilityOfTraveling(8.86);
         modeParams.setConstant(0.0);
 
-        Controler controler = new Controler(scenario);
-        controler.addOverridingModule(new DvrpModule());
-        controler.addOverridingModule(new DvrpTravelTimeModule());
-        controler.addOverridingModule(new AVModule(false));
-        controler.addOverridingModule(new AmodeusModule());
-        controler.addOverridingModule(new AmodeusDispatcherModule());
-        controler.addOverridingModule(new AmodeusVehicleGeneratorModule());
-        controler.addOverridingModule(new AmodeusVehicleToVSGeneratorModule());
-        controler.addOverridingModule(new AmodeusDatabaseModule(db));
-        controler.addOverridingModule(new AmodeusVirtualNetworkModule(simOptions));
+        Controler controller = new Controler(scenario);
+        AmodeusConfigurator.configureController(controller, db, simOptions);
 
         // Config
 
@@ -155,9 +148,7 @@ public class MATSimVirtualNetworkTravelDataTest {
         operatorConfig.getParams().put("travelDataPath", "generatedTravelData");
 
         // Run
-        controler.configureQSimComponents(AVQSimModule::configureComponents);
-
-        return controler;
+        return controller;
     }
 
     @AfterClass

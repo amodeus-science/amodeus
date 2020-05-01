@@ -76,6 +76,7 @@ import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.framework.AVQSimModule;
 import ch.ethz.matsim.av.scenario.TestScenarioAnalyzer;
 import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
+import ch.ethz.refactoring.AmodeusConfigurator;
 
 @RunWith(Parameterized.class)
 public class StandardMATSimScenarioTest {
@@ -215,16 +216,9 @@ public class StandardMATSimScenarioTest {
         int j = new Random().nextInt(ParkingStrategies.values().length);
         simOptions.setProperty("parkingCapacityGenerator", ParkingCapacityGenerators.values()[j].name());
 
-        Controler controler = new Controler(scenario);
-        controler.addOverridingModule(new DvrpModule());
-        controler.addOverridingModule(new DvrpTravelTimeModule());
-        controler.addOverridingModule(new AVModule(false));
-        controler.addOverridingModule(new AmodeusModule());
-        controler.addOverridingModule(new AmodeusDispatcherModule());
-        controler.addOverridingModule(new AmodeusVehicleGeneratorModule());
-        controler.addOverridingModule(new AmodeusVehicleToVSGeneratorModule());
-        controler.addOverridingModule(new AmodeusDatabaseModule(db));
-        controler.addOverridingModule(new AmodeusParkingModule(simOptions, new Random()));
+        Controler controller = new Controler(scenario);
+        AmodeusConfigurator.configureController(controller, db, simOptions);
+        controller.addOverridingModule(new AmodeusParkingModule(simOptions, new Random()));
 
         // Make the scenario multimodal
         fixInvalidActivityLocations(scenario.getNetwork(), scenario.getPopulation());
@@ -255,7 +249,7 @@ public class StandardMATSimScenarioTest {
 
         // Set up a virtual network for the LPFBDispatcher
 
-        controler.addOverridingModule(new AbstractModule() {
+        controller.addOverridingModule(new AbstractModule() {
             @Override
             public void install() {
                 // ---
@@ -291,9 +285,9 @@ public class StandardMATSimScenarioTest {
         // Set up test analyzer and run
 
         TestScenarioAnalyzer analyzer = new TestScenarioAnalyzer();
-        controler.addOverridingModule(analyzer);
+        controller.addOverridingModule(analyzer);
 
-        controler.addOverridingModule(new AbstractModule() {
+        controller.addOverridingModule(new AbstractModule() {
             @Override
             public void install() {
                 addEventHandlerBinding().toInstance(new LinkEnterEventHandler() {
@@ -309,8 +303,7 @@ public class StandardMATSimScenarioTest {
             }
         });
 
-        controler.configureQSimComponents(AVQSimModule::configureComponents);
-        controler.run();
+        controller.run();
 
         if (analyzer.numberOfDepartures != analyzer.numberOfArrivals) {
             System.out.println("numberOfDepartures=" + analyzer.numberOfDepartures);

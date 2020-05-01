@@ -7,8 +7,6 @@ import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
-import org.matsim.contrib.dvrp.run.DvrpModule;
-import org.matsim.contrib.dvrp.trafficmonitoring.DvrpTravelTimeModule;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
@@ -18,21 +16,11 @@ import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.scenario.ScenarioUtils;
 
-import com.google.inject.Key;
-import com.google.inject.name.Names;
-
 import ch.ethz.idsc.amodeus.analysis.Analysis;
 import ch.ethz.idsc.amodeus.analysis.service.RequestHistoriesExportFromEvents;
 import ch.ethz.idsc.amodeus.analysis.service.RoboTaxiHistoriesExportFromEvents;
 import ch.ethz.idsc.amodeus.data.LocationSpec;
 import ch.ethz.idsc.amodeus.data.ReferenceFrame;
-import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDatabaseModule;
-import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDispatcherModule;
-import ch.ethz.idsc.amodeus.matsim.mod.AmodeusModule;
-import ch.ethz.idsc.amodeus.matsim.mod.AmodeusVehicleGeneratorModule;
-import ch.ethz.idsc.amodeus.matsim.mod.AmodeusVehicleToVSGeneratorModule;
-import ch.ethz.idsc.amodeus.matsim.mod.AmodeusVirtualNetworkModule;
-import ch.ethz.idsc.amodeus.net.DatabaseModule;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationServer;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
@@ -40,9 +28,8 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.test.AnalysisTestExport;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AVConfigGroup;
-import ch.ethz.matsim.av.framework.AVModule;
-import ch.ethz.matsim.av.framework.AVQSimModule;
 import ch.ethz.matsim.av.framework.AVUtils;
+import ch.ethz.refactoring.AmodeusConfigurator;
 
 public class TestServer {
 
@@ -59,7 +46,7 @@ public class TestServer {
     private Scenario scenario;
     private Network network;
     private Population population;
-    private Controler controler;
+    private Controler controller;
     private AnalysisTestExport ate;
 
     private TestServer() {
@@ -98,7 +85,7 @@ public class TestServer {
         dvrpConfigGroup.setTravelTimeEstimationAlpha(0.05);
         config = ConfigUtils.loadConfig(configFile.toString(), new AVConfigGroup(), dvrpConfigGroup);
         config.planCalcScore().addActivityParams(new PlanCalcScoreConfigGroup.ActivityParams("activity"));
-        
+
         config.qsim().setStartTime(0.0);
         config.qsim().setSimStarttimeInterpretation(StarttimeInterpretation.onlyUseStarttime);
 
@@ -116,7 +103,8 @@ public class TestServer {
         GlobalAssert.that(scenario != null && network != null && population != null);
 
         MatsimAmodeusDatabase db = MatsimAmodeusDatabase.initialize(network, referenceFrame);
-        controler = new Controler(scenario);
+        controller = new Controler(scenario);
+        AmodeusConfigurator.configureController(controller, db, scenarioOptions);
 
         /* TODO regenerate linkSpeedData.bin to depend on current version of LinkSpeedDataContainer, and adapt TestFileHandling or AmodeusProperties accordingly
          * try {
@@ -129,24 +117,7 @@ public class TestServer {
          * System.err.println("Could not load static linkspeed data, running with freespeeds.");
          * } */
 
-        controler.addOverridingModule(new DvrpModule());
-        controler.addOverridingModule(new DvrpTravelTimeModule());
-        controler.addOverridingModule(new AVModule(false));
-        controler.addOverridingModule(new DatabaseModule());
-        controler.addOverridingModule(new AmodeusVehicleGeneratorModule());
-        controler.addOverridingModule(new AmodeusVehicleToVSGeneratorModule());
-        controler.addOverridingModule(new AmodeusDispatcherModule());
-        controler.addOverridingModule(new AmodeusVirtualNetworkModule(scenarioOptions));
-        controler.addOverridingModule(new AmodeusDatabaseModule(db));
-        controler.addOverridingModule(new AbstractModule() {
-            @Override
-            public void install() {
-                bind(Key.get(Network.class, Names.named("dvrp_routing"))).to(Network.class);
-            }
-        });
-        controler.addOverridingModule(new AmodeusModule());
-
-        controler.addOverridingModule(new AbstractModule() {
+        controller.addOverridingModule(new AbstractModule() {
             @Override
             public void install() {
                 AVUtils.registerDispatcherFactory(binder(), "DemoDispatcher", DemoDispatcher.Factory.class);
@@ -154,8 +125,7 @@ public class TestServer {
         });
 
         // run simulation
-        controler.configureQSimComponents(AVQSimModule::configureComponents);
-        controler.run();
+        controller.run();
 
         // close port for visualization
         SimulationServer.INSTANCE.stopAccepting();

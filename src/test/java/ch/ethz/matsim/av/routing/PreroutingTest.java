@@ -53,6 +53,7 @@ public class PreroutingTest {
 		Controler controler = new Controler(scenario);
 		controler.addOverridingModule(new DvrpModule());
 		controler.addOverridingModule(new AVModule());
+		controler.addOverridingQSimModule(new AVQSimModule());
 
 		controler.configureQSimComponents(AVQSimModule::configureComponents);
 
