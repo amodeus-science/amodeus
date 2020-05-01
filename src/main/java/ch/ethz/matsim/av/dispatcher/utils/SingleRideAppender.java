@@ -18,10 +18,10 @@ import ch.ethz.matsim.av.config.operator.TimingConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
-import ch.ethz.matsim.av.schedule.AVDriveTask;
-import ch.ethz.matsim.av.schedule.AVDropoffTask;
-import ch.ethz.matsim.av.schedule.AVPickupTask;
-import ch.ethz.matsim.av.schedule.AVStayTask;
+import ch.ethz.refactoring.schedule.AmodeusDriveTask;
+import ch.ethz.refactoring.schedule.AmodeusDropoffTask;
+import ch.ethz.refactoring.schedule.AmodeusPickupTask;
+import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
 public class SingleRideAppender {
     final private ParallelLeastCostPathCalculator router;
@@ -56,7 +56,7 @@ public class SingleRideAppender {
 
     public void schedule(AVRequest request, AVVehicle vehicle, double now) {
         Schedule schedule = vehicle.getSchedule();
-        AVStayTask stayTask = (AVStayTask) Schedules.getLastTask(schedule);
+        AmodeusStayTask stayTask = (AmodeusStayTask) Schedules.getLastTask(schedule);
 
         Future<Path> pickup = router.calcLeastCostPath(stayTask.getLink().getToNode(), request.getFromLink().getFromNode(), now, null, null);
         Future<Path> dropoff = router.calcLeastCostPath(request.getFromLink().getToNode(), request.getToLink().getFromNode(), now, null, null);
@@ -70,7 +70,7 @@ public class SingleRideAppender {
         double now = task.time;
 
         Schedule schedule = vehicle.getSchedule();
-        AVStayTask stayTask = (AVStayTask) Schedules.getLastTask(schedule);
+        AmodeusStayTask stayTask = (AmodeusStayTask) Schedules.getLastTask(schedule);
 
         double startTime = 0.0;
         double scheduleEndTime = schedule.getEndTime();
@@ -84,13 +84,13 @@ public class SingleRideAppender {
         VrpPathWithTravelData pickupPath = VrpPaths.createPath(stayTask.getLink(), request.getFromLink(), startTime, plainPickupPath, travelTime);
         VrpPathWithTravelData dropoffPath = VrpPaths.createPath(request.getFromLink(), request.getToLink(), pickupPath.getArrivalTime() + timing.getPickupDurationPerStop(), plainDropoffPath, travelTime);
         
-        AVDriveTask pickupDriveTask = new AVDriveTask(pickupPath);
-        AVPickupTask pickupTask = new AVPickupTask(
+        AmodeusDriveTask pickupDriveTask = new AmodeusDriveTask(pickupPath);
+        AmodeusPickupTask pickupTask = new AmodeusPickupTask(
                 pickupPath.getArrivalTime(),
                 pickupPath.getArrivalTime() + timing.getPickupDurationPerStop(),
                 request.getFromLink(), Double.NEGATIVE_INFINITY, Arrays.asList(request));
-        AVDriveTask dropoffDriveTask = new AVDriveTask(dropoffPath, Arrays.asList(request));
-        AVDropoffTask dropoffTask = new AVDropoffTask(
+        AmodeusDriveTask dropoffDriveTask = new AmodeusDriveTask(dropoffPath, Arrays.asList(request));
+        AmodeusDropoffTask dropoffTask = new AmodeusDropoffTask(
                 dropoffPath.getArrivalTime(),
                 dropoffPath.getArrivalTime() + timing.getDropoffDurationPerStop(),
                 request.getToLink(),
@@ -114,7 +114,7 @@ public class SingleRideAppender {
         request.getRoute().setDistance(distance);
 
         if (dropoffTask.getEndTime() < scheduleEndTime) {
-            schedule.addTask(new AVStayTask(dropoffTask.getEndTime(), scheduleEndTime, dropoffTask.getLink()));
+            schedule.addTask(new AmodeusStayTask(dropoffTask.getEndTime(), scheduleEndTime, dropoffTask.getLink()));
         }
     }
 

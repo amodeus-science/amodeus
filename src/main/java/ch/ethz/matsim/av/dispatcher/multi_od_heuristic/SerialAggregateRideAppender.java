@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import org.matsim.api.core.v01.network.Link;
-import org.matsim.contrib.dvrp.path.VrpPath;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.path.VrpPaths;
 import org.matsim.contrib.dvrp.schedule.Schedule;
@@ -18,11 +17,10 @@ import ch.ethz.matsim.av.config.operator.TimingConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.multi_od_heuristic.aggregation.AggregatedRequest;
 import ch.ethz.matsim.av.passenger.AVRequest;
-import ch.ethz.matsim.av.schedule.AVDriveTask;
-import ch.ethz.matsim.av.schedule.AVDropoffTask;
-import ch.ethz.matsim.av.schedule.AVPickupTask;
-import ch.ethz.matsim.av.schedule.AVStayTask;
-import ch.ethz.matsim.av.schedule.AVTask;
+import ch.ethz.refactoring.schedule.AmodeusDriveTask;
+import ch.ethz.refactoring.schedule.AmodeusDropoffTask;
+import ch.ethz.refactoring.schedule.AmodeusPickupTask;
+import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
 public class SerialAggregateRideAppender implements AggregateRideAppender {
     final private LeastCostPathCalculator router;
@@ -39,7 +37,7 @@ public class SerialAggregateRideAppender implements AggregateRideAppender {
 
     public void schedule(AggregatedRequest request, AVVehicle vehicle, double now) {
         Schedule schedule = vehicle.getSchedule();
-        AVStayTask stayTask = (AVStayTask) Schedules.getLastTask(schedule);
+        AmodeusStayTask stayTask = (AmodeusStayTask) Schedules.getLastTask(schedule);
 
         double startTime = 0.0;
         double scheduleEndTime = schedule.getEndTime();
@@ -104,11 +102,11 @@ public class SerialAggregateRideAppender implements AggregateRideAppender {
 
         Link currentLink = stayTask.getLink();
         double currentTime = startTime;
-        AVTask currentTask = stayTask;
+        Task currentTask = stayTask;
         LinkedList<AVRequest> currentRequests = new LinkedList<>();
 
         LinkedList<VrpPathWithTravelData> paths = new LinkedList<>();
-        LinkedList<AVDriveTask> driveTasks = new LinkedList<>();
+        LinkedList<AmodeusDriveTask> driveTasks = new LinkedList<>();
 
         if (stayTask.getStatus() == Task.TaskStatus.STARTED) {
             stayTask.setEndTime(startTime);
@@ -116,38 +114,49 @@ public class SerialAggregateRideAppender implements AggregateRideAppender {
             schedule.removeLastTask();
         }
 
+        for (AVRequest customerRequest : pickupOrder) {
+            // REFACTOR: We are reconstructing the distances here, while there should already be a planned distance in the route depending on whether we predict it or not.
+            // If we don't predict a distance, the scoring part should be able to cope with that. Certainly, summing up the *actual* driven distance as here, we can also do
+            // (more easily) from the events. What we're interested in actually is the planned distance, which should be passed by the AVTransit event anyways. Need to find
+            // a mechanism for that. Because this will not work anyways with Amodeus dispatchers!
+            customerRequest.getRoute().setDistance(0.0);
+        }
+
         for (AVRequest pickup : pickupOrder) {
             if (!pickup.getFromLink().equals(currentLink)) {
                 VrpPathWithTravelData path = VrpPaths.calcAndCreatePath(currentLink, pickup.getFromLink(), currentTime, router, travelTime);
                 paths.add(path);
 
-                AVDriveTask driveTask = new AVDriveTask(path, currentRequests);
+                AmodeusDriveTask driveTask = new AmodeusDriveTask(path, currentRequests);
                 driveTasks.add(driveTask);
                 schedule.addTask(driveTask);
 
                 currentTask = driveTask;
                 currentLink = pickup.getFromLink();
                 currentTime = path.getArrivalTime();
-                //System.err.println("PickupDrive with arrival time: " + String.valueOf(currentTime));
+                // System.err.println("PickupDrive with arrival time: " + String.valueOf(currentTime));
+
+                double driveDistance = VrpPaths.calcDistance(path);
+
+                for (AVRequest customerRequest : currentRequests) {
+                    // REFACTOR
+                    customerRequest.getRoute().setDistance(customerRequest.getRoute().getDistance() + driveDistance);
+                }
             }
 
-            if (currentTask instanceof AVPickupTask) {
-                ((AVPickupTask) currentTask).addRequest(pickup);
+            if (currentTask instanceof AmodeusPickupTask) {
+                ((AmodeusPickupTask) currentTask).addRequest(pickup);
                 currentRequests.add(pickup);
-                //System.err.println("Request added to pickup");
+                // System.err.println("Request added to pickup");
             } else {
-                AVPickupTask pickupTask = new AVPickupTask(
-                        currentTime,
-                        currentTime + timing.getPickupDurationPerStop(),
-                        pickup.getFromLink(), Double.NEGATIVE_INFINITY,
-                        Arrays.asList(pickup)
-                );
+                AmodeusPickupTask pickupTask = new AmodeusPickupTask(currentTime, currentTime + timing.getPickupDurationPerStop(), pickup.getFromLink(), Double.NEGATIVE_INFINITY,
+                        Arrays.asList(pickup));
 
                 schedule.addTask(pickupTask);
                 currentTask = pickupTask;
                 currentRequests.add(pickup);
                 currentTime += timing.getPickupDurationPerStop();
-                //System.err.println("Pickup with finish time: " + String.valueOf(currentTime));
+                // System.err.println("Pickup with finish time: " + String.valueOf(currentTime));
             }
         }
 
@@ -156,55 +165,40 @@ public class SerialAggregateRideAppender implements AggregateRideAppender {
                 VrpPathWithTravelData path = VrpPaths.calcAndCreatePath(currentLink, dropoff.getToLink(), currentTime, router, travelTime);
                 paths.add(path);
 
-                AVDriveTask driveTask = new AVDriveTask(path, currentRequests);
+                AmodeusDriveTask driveTask = new AmodeusDriveTask(path, currentRequests);
                 driveTasks.add(driveTask);
                 schedule.addTask(driveTask);
 
                 currentTask = driveTask;
                 currentLink = dropoff.getToLink();
                 currentTime = path.getArrivalTime();
-                //System.err.println("DropoffDrive with arrival time: " + String.valueOf(currentTime));
+                // System.err.println("DropoffDrive with arrival time: " + String.valueOf(currentTime));
+
+                double driveDistance = VrpPaths.calcDistance(path);
+
+                for (AVRequest customerRequest : currentRequests) {
+                    // REFACTOR
+                    customerRequest.getRoute().setDistance(customerRequest.getRoute().getDistance() + driveDistance);
+                }
             }
 
-            if (currentTask instanceof AVDropoffTask) {
-                ((AVDropoffTask) currentTask).addRequest(dropoff);
+            if (currentTask instanceof AmodeusDropoffTask) {
+                ((AmodeusDropoffTask) currentTask).addRequest(dropoff);
                 currentRequests.remove(dropoff);
-                //System.err.println("Request added to dropoff");
+                // System.err.println("Request added to dropoff");
             } else {
-                AVDropoffTask dropoffTask = new AVDropoffTask(
-                        currentTime,
-                        currentTime + timing.getDropoffDurationPerStop(),
-                        dropoff.getToLink(),
-                        Arrays.asList(dropoff)
-                );
+                AmodeusDropoffTask dropoffTask = new AmodeusDropoffTask(currentTime, currentTime + timing.getDropoffDurationPerStop(), dropoff.getToLink(), Arrays.asList(dropoff));
 
                 schedule.addTask(dropoffTask);
                 currentTask = dropoffTask;
                 currentRequests.remove(dropoff);
                 currentTime += timing.getDropoffDurationPerStop();
-                //System.err.println("Dropoff with finish time: " + String.valueOf(currentTime));
+                // System.err.println("Dropoff with finish time: " + String.valueOf(currentTime));
             }
         }
 
         if (currentTask.getEndTime() < scheduleEndTime) {
-            schedule.addTask(new AVStayTask(currentTime, scheduleEndTime, currentLink));
-        }
-
-        // Reconstruct travel distances
-        for (AVRequest customerRequest : requests) {
-            double distance = 0.0;
-
-            for (AVDriveTask task : driveTasks) {
-                if (task.getRequests().contains(customerRequest)) {
-                    VrpPath path = task.getPath();
-
-                    for (int i = 0; i < path.getLinkCount(); i++) {
-                        distance += path.getLink(i).getLength();
-                    }
-                }
-            }
-
-            customerRequest.getRoute().setDistance(distance);
+            schedule.addTask(new AmodeusStayTask(currentTime, scheduleEndTime, currentLink));
         }
     }
 

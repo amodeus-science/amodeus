@@ -9,8 +9,8 @@ import org.matsim.contrib.dvrp.schedule.Schedules;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
-import ch.ethz.matsim.av.schedule.AVDropoffTask;
-import ch.ethz.matsim.av.schedule.AVStayTask;
+import ch.ethz.refactoring.schedule.AmodeusDropoffTask;
+import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
 /*package*/ class SharedDropoffDirective extends SharedFixedLocationDirective {
 
@@ -21,7 +21,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     @Override
     public void execute() {
         final Schedule schedule = roboTaxi.getSchedule();
-        final AVStayTask avStayTask = (AVStayTask) Schedules.getLastTask(schedule);
+        final AmodeusStayTask avStayTask = (AmodeusStayTask) Schedules.getLastTask(schedule);
         final double scheduleEndTime = avStayTask.getEndTime();
         GlobalAssert.that(scheduleEndTime == schedule.getEndTime());
         GlobalAssert.that(avStayTask.getLink().equals(avRequest.getToLink()));
@@ -30,7 +30,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         if (endTimeDropoff < scheduleEndTime) {
             avStayTask.setEndTime(getTimeNow); // finish the last task now
 
-            schedule.addTask(new AVDropoffTask( //
+            schedule.addTask(new AmodeusDropoffTask( //
                     getTimeNow, // start of dropoff
                     getTimeNow + durationOfTask, // end of dropoff
                     avRequest.getToLink(), // location of dropoff

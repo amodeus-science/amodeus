@@ -10,10 +10,10 @@ import org.matsim.contrib.dvrp.tracker.OnlineDriveTaskTracker;
 import org.matsim.contrib.dvrp.tracker.TaskTracker;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 
-import ch.ethz.matsim.av.schedule.AVDriveTask;
-import ch.ethz.matsim.av.schedule.AVDropoffTask;
-import ch.ethz.matsim.av.schedule.AVPickupTask;
-import ch.ethz.matsim.av.schedule.AVStayTask;
+import ch.ethz.refactoring.schedule.AmodeusDriveTask;
+import ch.ethz.refactoring.schedule.AmodeusDropoffTask;
+import ch.ethz.refactoring.schedule.AmodeusPickupTask;
+import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
 /* package */ class RoboTaxiLocation extends RoboTaxiTaskAdapter {
 
@@ -36,17 +36,17 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     }
 
     @Override
-    public void handle(AVPickupTask avPickupTask) {
+    public void handle(AmodeusPickupTask avPickupTask) {
         link = avPickupTask.getLink();
     }
 
     @Override
-    public void handle(AVDropoffTask avDropoffTask) {
+    public void handle(AmodeusDropoffTask avDropoffTask) {
         link = avDropoffTask.getLink();
     }
 
     @Override
-    public void handle(AVDriveTask avDriveTask) {
+    public void handle(AmodeusDriveTask avDriveTask) {
         TaskTracker taskTracker = avDriveTask.getTaskTracker();
         OnlineDriveTaskTracker onlineDriveTaskTracker = (OnlineDriveTaskTracker) taskTracker;
         // there is a slim chance that function getDiversionPoint() returns null
@@ -56,7 +56,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     }
 
     @Override
-    public void handle(AVStayTask avStayTask) {
+    public void handle(AmodeusStayTask avStayTask) {
         link = avStayTask.getLink();
     }
 }

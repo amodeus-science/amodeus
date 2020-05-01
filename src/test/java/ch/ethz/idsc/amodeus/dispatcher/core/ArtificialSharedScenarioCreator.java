@@ -11,7 +11,7 @@ import org.matsim.vehicles.VehicleUtils;
 
 import ch.ethz.idsc.amodeus.ArtificialScenarioCreator;
 import ch.ethz.matsim.av.data.AVVehicle;
-import ch.ethz.matsim.av.schedule.AVStayTask;
+import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
 /* package */ class ArtificialSharedScenarioCreator extends ArtificialScenarioCreator {
 
@@ -49,7 +49,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
 
     private static void setFirstStayTask(AVVehicle vehicle) {
         Schedule schedule = vehicle.getSchedule();
-        schedule.addTask(new AVStayTask(vehicle.getServiceBeginTime(), vehicle.getServiceEndTime(), vehicle.getStartLink()));
+        schedule.addTask(new AmodeusStayTask(vehicle.getServiceBeginTime(), vehicle.getServiceEndTime(), vehicle.getStartLink()));
         schedule.nextTask();
     }
 }

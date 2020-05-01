@@ -25,10 +25,10 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenuCheck;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.passenger.AVRequest;
-import ch.ethz.matsim.av.schedule.AVDriveTask;
-import ch.ethz.matsim.av.schedule.AVDropoffTask;
-import ch.ethz.matsim.av.schedule.AVPickupTask;
-import ch.ethz.matsim.av.schedule.AVStayTask;
+import ch.ethz.refactoring.schedule.AmodeusDriveTask;
+import ch.ethz.refactoring.schedule.AmodeusDropoffTask;
+import ch.ethz.refactoring.schedule.AmodeusPickupTask;
+import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
 /** RoboTaxi is central class to be used in all dispatchers. Dispatchers control
  * a fleet of RoboTaxis, each is uniquely associated to an AVVehicle object in
@@ -205,7 +205,7 @@ public final class RoboTaxi {
         Task avT = getSchedule().getCurrentTask();
 
         // TODO Who? check why this appears often
-        if (avT instanceof AVStayTask) {
+        if (avT instanceof AmodeusStayTask) {
             // TODO MISC For now, this works, but probably needs fixing somewhere upfront
             // /sh, apr 2018
             if (!usageType.equals(RoboTaxiUsageType.SHARED)) { // for shared this is allowed e.g. when a new course is
@@ -218,11 +218,11 @@ public final class RoboTaxi {
         }
 
         // Added cases when on pickup and dropoff task For shared taxis
-        if (avT instanceof AVDriveTask) {
-            AVDriveTask avDT = (AVDriveTask) avT;
+        if (avT instanceof AmodeusDriveTask) {
+            AmodeusDriveTask avDT = (AmodeusDriveTask) avT;
             return avDT.getPath().getLinkCount() != 1; // TODO seems it is different to the same function in AmodeusDriveTaskTracker
         }
-        if (avT instanceof AVPickupTask || avT instanceof AVDropoffTask)
+        if (avT instanceof AmodeusPickupTask || avT instanceof AmodeusDropoffTask)
             return false;
         throw new IllegalArgumentException("Found Unknown type of AVTASK !!");
     }

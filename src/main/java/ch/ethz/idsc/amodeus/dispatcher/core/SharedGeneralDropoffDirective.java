@@ -11,8 +11,8 @@ import org.matsim.contrib.dvrp.schedule.Schedules;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
-import ch.ethz.matsim.av.schedule.AVDropoffTask;
-import ch.ethz.matsim.av.schedule.AVStayTask;
+import ch.ethz.refactoring.schedule.AmodeusDropoffTask;
+import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
 /** for vehicles that are in stay task and should dropoff a customer at the link:
  * 1) finish stay task 2) append dropoff task 3) if more customers planned append drive task
@@ -35,7 +35,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     @Override
     void executeWithPath(final VrpPathWithTravelData vrpPathWithTravelData) {
         final Schedule schedule = roboTaxi.getSchedule();
-        final AVStayTask avStayTask = (AVStayTask) Schedules.getLastTask(schedule);
+        final AmodeusStayTask avStayTask = (AmodeusStayTask) Schedules.getLastTask(schedule);
         final double scheduleEndTime = avStayTask.getEndTime();
         GlobalAssert.that(scheduleEndTime == schedule.getEndTime());
         final boolean moreRequestsToServe = Objects.nonNull(vrpPathWithTravelData);
@@ -45,7 +45,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         if (endTimeNextTask < scheduleEndTime) {
             avStayTask.setEndTime(getTimeNow); // finish the last task now
 
-            schedule.addTask(new AVDropoffTask( //
+            schedule.addTask(new AmodeusDropoffTask( //
                     getTimeNow, // start of dropoff
                     getTimeNow + dropoffDurationPerStop, // end of dropoff
                     currentRequest.getToLink(), // location of dropoff

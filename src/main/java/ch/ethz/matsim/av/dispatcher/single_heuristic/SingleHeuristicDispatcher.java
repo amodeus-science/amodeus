@@ -9,6 +9,7 @@ import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.router.util.TravelTime;
@@ -26,180 +27,177 @@ import ch.ethz.matsim.av.dispatcher.utils.SingleRideAppender;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.router.AVRouter;
-import ch.ethz.matsim.av.schedule.AVStayTask;
-import ch.ethz.matsim.av.schedule.AVTask;
+import ch.ethz.refactoring.schedule.AmodeusStayTask;
+import ch.ethz.refactoring.schedule.AmodeusTaskType;
 
 public class SingleHeuristicDispatcher implements AVDispatcher {
-	public final static String TYPE = "SingleHeuristic";
-	
-	private boolean reoptimize = true;
-	private double nextReplanningTimestamp = 0.0;
+    public final static String TYPE = "SingleHeuristic";
 
-	final private SingleRideAppender appender;
-	final private Id<AVOperator> operatorId;
-	final private EventsManager eventsManager;
-	final private double replanningInterval;
+    private boolean reoptimize = true;
+    private double nextReplanningTimestamp = 0.0;
 
-	final private List<AVVehicle> availableVehicles = new LinkedList<>();
-	final private List<AVRequest> pendingRequests = new LinkedList<>();
+    final private SingleRideAppender appender;
+    final private Id<AVOperator> operatorId;
+    final private EventsManager eventsManager;
+    final private double replanningInterval;
 
-	final private QuadTree<AVVehicle> availableVehiclesTree;
-	final private QuadTree<AVRequest> pendingRequestsTree;
+    final private List<AVVehicle> availableVehicles = new LinkedList<>();
+    final private List<AVRequest> pendingRequests = new LinkedList<>();
 
-	final private Map<AVVehicle, Link> vehicleLinks = new HashMap<>();
-	final private Map<AVRequest, Link> requestLinks = new HashMap<>();
+    final private QuadTree<AVVehicle> availableVehiclesTree;
+    final private QuadTree<AVRequest> pendingRequestsTree;
 
-	public enum HeuristicMode {
-		OVERSUPPLY, UNDERSUPPLY
-	}
+    final private Map<AVVehicle, Link> vehicleLinks = new HashMap<>();
+    final private Map<AVRequest, Link> requestLinks = new HashMap<>();
 
-	private HeuristicMode mode = HeuristicMode.OVERSUPPLY;
+    public enum HeuristicMode {
+        OVERSUPPLY, UNDERSUPPLY
+    }
 
-	public SingleHeuristicDispatcher(Id<AVOperator> operatorId, EventsManager eventsManager, Network network,
-			SingleRideAppender appender, double replanningInterval) {
-		this.appender = appender;
-		this.operatorId = operatorId;
-		this.eventsManager = eventsManager;
-		this.replanningInterval = replanningInterval;
+    private HeuristicMode mode = HeuristicMode.OVERSUPPLY;
 
-		double[] bounds = NetworkUtils.getBoundingBox(network.getNodes().values()); // minx, miny, maxx, maxy
+    public SingleHeuristicDispatcher(Id<AVOperator> operatorId, EventsManager eventsManager, Network network, SingleRideAppender appender, double replanningInterval) {
+        this.appender = appender;
+        this.operatorId = operatorId;
+        this.eventsManager = eventsManager;
+        this.replanningInterval = replanningInterval;
 
-		availableVehiclesTree = new QuadTree<>(bounds[0], bounds[1], bounds[2], bounds[3]);
-		pendingRequestsTree = new QuadTree<>(bounds[0], bounds[1], bounds[2], bounds[3]);
-	}
+        double[] bounds = NetworkUtils.getBoundingBox(network.getNodes().values()); // minx, miny, maxx, maxy
 
-	@Override
-	public void onRequestSubmitted(AVRequest request) {
-		addRequest(request, request.getFromLink());
-	}
+        availableVehiclesTree = new QuadTree<>(bounds[0], bounds[1], bounds[2], bounds[3]);
+        pendingRequestsTree = new QuadTree<>(bounds[0], bounds[1], bounds[2], bounds[3]);
+    }
 
-	@Override
-	public void onNextTaskStarted(AVVehicle vehicle) {
-		AVTask task = (AVTask) vehicle.getSchedule().getCurrentTask();
-		if (task.getAVTaskType() == AVTask.AVTaskType.STAY) {
-			addVehicle(vehicle, ((AVStayTask) task).getLink());
-		}
-	}
+    @Override
+    public void onRequestSubmitted(AVRequest request) {
+        addRequest(request, request.getFromLink());
+    }
 
-	private void reoptimize(double now) {
-		HeuristicMode updatedMode = availableVehicles.size() > pendingRequests.size() ? HeuristicMode.OVERSUPPLY
-				: HeuristicMode.UNDERSUPPLY;
+    @Override
+    public void onNextTaskStarted(AVVehicle vehicle) {
+        Task task = vehicle.getSchedule().getCurrentTask();
+        if (task.getTaskType() == AmodeusTaskType.STAY) {
+            addVehicle(vehicle, ((AmodeusStayTask) task).getLink());
+        }
+    }
 
-		if (!updatedMode.equals(mode)) {
-			mode = updatedMode;
-			eventsManager.processEvent(new ModeChangeEvent(mode, operatorId, now));
-		}
+    private void reoptimize(double now) {
+        HeuristicMode updatedMode = availableVehicles.size() > pendingRequests.size() ? HeuristicMode.OVERSUPPLY : HeuristicMode.UNDERSUPPLY;
 
-		while (pendingRequests.size() > 0 && availableVehicles.size() > 0) {
-			AVRequest request = null;
-			AVVehicle vehicle = null;
+        if (!updatedMode.equals(mode)) {
+            mode = updatedMode;
+            eventsManager.processEvent(new ModeChangeEvent(mode, operatorId, now));
+        }
 
-			switch (mode) {
-			case OVERSUPPLY:
-				request = findRequest();
-				vehicle = findClosestVehicle(request.getFromLink());
-				break;
-			case UNDERSUPPLY:
-				vehicle = findVehicle();
-				request = findClosestRequest(vehicleLinks.get(vehicle));
-				break;
-			}
+        while (pendingRequests.size() > 0 && availableVehicles.size() > 0) {
+            AVRequest request = null;
+            AVVehicle vehicle = null;
 
-			removeRequest(request);
-			removeVehicle(vehicle);
+            switch (mode) {
+            case OVERSUPPLY:
+                request = findRequest();
+                vehicle = findClosestVehicle(request.getFromLink());
+                break;
+            case UNDERSUPPLY:
+                vehicle = findVehicle();
+                request = findClosestRequest(vehicleLinks.get(vehicle));
+                break;
+            }
 
-			appender.schedule(request, vehicle, now);
-		}
-	}
+            removeRequest(request);
+            removeVehicle(vehicle);
 
-	@Override
-	public void onNextTimestep(double now) {
-		appender.update();
+            appender.schedule(request, vehicle, now);
+        }
+    }
 
-		if (now >= nextReplanningTimestamp) {
-			reoptimize = true;
-			nextReplanningTimestamp = now + replanningInterval;
-		}
+    @Override
+    public void onNextTimestep(double now) {
+        appender.update();
 
-		if (reoptimize) {
-			reoptimize(now);
-			reoptimize = false;
-		}
-	}
+        if (now >= nextReplanningTimestamp) {
+            reoptimize = true;
+            nextReplanningTimestamp = now + replanningInterval;
+        }
 
-	private void addRequest(AVRequest request, Link link) {
-		pendingRequests.add(request);
-		pendingRequestsTree.put(link.getCoord().getX(), link.getCoord().getY(), request);
-		requestLinks.put(request, link);
-		// reoptimize = true;
-	}
+        if (reoptimize) {
+            reoptimize(now);
+            reoptimize = false;
+        }
+    }
 
-	private AVRequest findRequest() {
-		return pendingRequests.get(0);
-	}
+    private void addRequest(AVRequest request, Link link) {
+        pendingRequests.add(request);
+        pendingRequestsTree.put(link.getCoord().getX(), link.getCoord().getY(), request);
+        requestLinks.put(request, link);
+        // reoptimize = true;
+    }
 
-	private AVVehicle findVehicle() {
-		return availableVehicles.get(0);
-	}
+    private AVRequest findRequest() {
+        return pendingRequests.get(0);
+    }
 
-	private AVVehicle findClosestVehicle(Link link) {
-		Coord coord = link.getCoord();
-		return availableVehiclesTree.getClosest(coord.getX(), coord.getY());
-	}
+    private AVVehicle findVehicle() {
+        return availableVehicles.get(0);
+    }
 
-	private AVRequest findClosestRequest(Link link) {
-		Coord coord = link.getCoord();
-		return pendingRequestsTree.getClosest(coord.getX(), coord.getY());
-	}
+    private AVVehicle findClosestVehicle(Link link) {
+        Coord coord = link.getCoord();
+        return availableVehiclesTree.getClosest(coord.getX(), coord.getY());
+    }
 
-	@Override
-	public void addVehicle(AVVehicle vehicle) {
-		eventsManager.processEvent(new AVVehicleAssignmentEvent(vehicle, 0));
-		addVehicle(vehicle, vehicle.getStartLink());
-	}
+    private AVRequest findClosestRequest(Link link) {
+        Coord coord = link.getCoord();
+        return pendingRequestsTree.getClosest(coord.getX(), coord.getY());
+    }
 
-	private void addVehicle(AVVehicle vehicle, Link link) {
-		availableVehicles.add(vehicle);
-		availableVehiclesTree.put(link.getCoord().getX(), link.getCoord().getY(), vehicle);
-		vehicleLinks.put(vehicle, link);
-		// reoptimize = true;
-	}
+    @Override
+    public void addVehicle(AVVehicle vehicle) {
+        eventsManager.processEvent(new AVVehicleAssignmentEvent(vehicle, 0));
+        addVehicle(vehicle, vehicle.getStartLink());
+    }
 
-	private void removeVehicle(AVVehicle vehicle) {
-		if (!availableVehicles.contains(vehicle)) {
-			throw new IllegalStateException();
-		}
+    private void addVehicle(AVVehicle vehicle, Link link) {
+        availableVehicles.add(vehicle);
+        availableVehiclesTree.put(link.getCoord().getX(), link.getCoord().getY(), vehicle);
+        vehicleLinks.put(vehicle, link);
+        // reoptimize = true;
+    }
 
-		availableVehicles.remove(vehicle);
-		Coord coord = vehicleLinks.remove(vehicle).getCoord();
-		availableVehiclesTree.remove(coord.getX(), coord.getY(), vehicle);
-	}
+    private void removeVehicle(AVVehicle vehicle) {
+        if (!availableVehicles.contains(vehicle)) {
+            throw new IllegalStateException();
+        }
 
-	private void removeRequest(AVRequest request) {
-		if (!pendingRequests.contains(request)) {
-			throw new IllegalStateException();
-		}
+        availableVehicles.remove(vehicle);
+        Coord coord = vehicleLinks.remove(vehicle).getCoord();
+        availableVehiclesTree.remove(coord.getX(), coord.getY(), vehicle);
+    }
 
-		pendingRequests.remove(request);
-		Coord coord = requestLinks.remove(request).getCoord();
-		pendingRequestsTree.remove(coord.getX(), coord.getY(), request);
-	}
+    private void removeRequest(AVRequest request) {
+        if (!pendingRequests.contains(request)) {
+            throw new IllegalStateException();
+        }
 
-	static public class Factory implements AVDispatcherFactory {
-		@Inject
-		private EventsManager eventsManager;
+        pendingRequests.remove(request);
+        Coord coord = requestLinks.remove(request).getCoord();
+        pendingRequestsTree.remove(coord.getX(), coord.getY(), request);
+    }
 
-		@Inject
-		@Named(AVModule.AV_MODE)
-		private TravelTime travelTime;
+    static public class Factory implements AVDispatcherFactory {
+        @Inject
+        private EventsManager eventsManager;
 
-		@Override
-		public AVDispatcher createDispatcher(OperatorConfig operatorConfig, AVRouter router, Network network) {
-			double replanningInterval = Double.parseDouble(
-					operatorConfig.getDispatcherConfig().getParams().getOrDefault("replanningInterval", "10.0"));
+        @Inject
+        @Named(AVModule.AV_MODE)
+        private TravelTime travelTime;
 
-			return new SingleHeuristicDispatcher(operatorConfig.getId(), eventsManager, network,
-					new SingleRideAppender(operatorConfig.getTimingConfig(), router, travelTime), replanningInterval);
-		}
-	}
+        @Override
+        public AVDispatcher createDispatcher(OperatorConfig operatorConfig, AVRouter router, Network network) {
+            double replanningInterval = Double.parseDouble(operatorConfig.getDispatcherConfig().getParams().getOrDefault("replanningInterval", "10.0"));
+
+            return new SingleHeuristicDispatcher(operatorConfig.getId(), eventsManager, network, new SingleRideAppender(operatorConfig.getTimingConfig(), router, travelTime),
+                    replanningInterval);
+        }
+    }
 }

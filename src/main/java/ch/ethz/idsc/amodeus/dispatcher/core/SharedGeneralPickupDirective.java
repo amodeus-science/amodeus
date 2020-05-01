@@ -9,8 +9,8 @@ import org.matsim.contrib.dvrp.schedule.Schedules;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.passenger.AVRequest;
-import ch.ethz.matsim.av.schedule.AVPickupTask;
-import ch.ethz.matsim.av.schedule.AVStayTask;
+import ch.ethz.refactoring.schedule.AmodeusPickupTask;
+import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
 /** for vehicles that are in stay task and should pickup a customer at the link:
  * 1) finish stay task 2) append pickup task 3) append drive task 4) append new stay task */
@@ -33,7 +33,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     @Override
     void executeWithPath(final VrpPathWithTravelData vrpPathWithTravelData) {
         final Schedule schedule = roboTaxi.getSchedule();
-        final AVStayTask avStayTask = (AVStayTask) Schedules.getLastTask(schedule);
+        final AmodeusStayTask avStayTask = (AmodeusStayTask) Schedules.getLastTask(schedule);
         final double scheduleEndTime = avStayTask.getEndTime();
         GlobalAssert.that(scheduleEndTime == schedule.getEndTime());
         final double endTaskTime = vrpPathWithTravelData.getArrivalTime();
@@ -41,7 +41,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
         if (endTaskTime < scheduleEndTime) {
             avStayTask.setEndTime(getTimeNow); // finish the last task now
 
-            AVPickupTask pickupTask = new AVPickupTask( //
+            AmodeusPickupTask pickupTask = new AmodeusPickupTask( //
                     getTimeNow, // start of pickup
                     futurePathContainer.getStartTime(), // end of pickup
                     sameOriginRequests.get(0).getFromLink(), // location of driving start

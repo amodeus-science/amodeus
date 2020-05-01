@@ -7,8 +7,8 @@ import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Task;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.matsim.av.schedule.AVDriveTask;
-import ch.ethz.matsim.av.schedule.AVStayTask;
+import ch.ethz.refactoring.schedule.AmodeusDriveTask;
+import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
 /** for vehicles that are in stay task:
  * 1) stop stay task by setting stop time to 'now'
@@ -23,11 +23,11 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     @Override
     void executeWithPath(VrpPathWithTravelData vrpPathWithTravelData) {
         final Schedule schedule = roboTaxi.getSchedule();
-        final AVStayTask avStayTask = (AVStayTask) schedule.getCurrentTask(); // <- implies that task is started
+        final AmodeusStayTask avStayTask = (AmodeusStayTask) schedule.getCurrentTask(); // <- implies that task is started
         final double scheduleEndTime = avStayTask.getEndTime(); // typically 108000.0
         GlobalAssert.that(scheduleEndTime == schedule.getEndTime());
 
-        final AVDriveTask avDriveTask = new AVDriveTask(vrpPathWithTravelData);
+        final AmodeusDriveTask avDriveTask = new AmodeusDriveTask(vrpPathWithTravelData);
         final double endDriveTask = avDriveTask.getEndTime();
 
         if (endDriveTask < scheduleEndTime) {

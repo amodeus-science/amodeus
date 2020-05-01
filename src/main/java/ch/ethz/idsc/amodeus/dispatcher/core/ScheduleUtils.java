@@ -5,7 +5,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Task;
 
-import ch.ethz.matsim.av.schedule.AVStayTask;
+import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
 /* package */ enum ScheduleUtils {
     ;
@@ -30,7 +30,7 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
             RoboTaxi roboTaxi, double taskEndTime, double scheduleEndTime, Link destination) {
         if (taskEndTime < scheduleEndTime) {
             Schedule schedule = roboTaxi.getSchedule();
-            schedule.addTask(new AVStayTask(taskEndTime, scheduleEndTime, destination));
+            schedule.addTask(new AmodeusStayTask(taskEndTime, scheduleEndTime, destination));
         } else
             throw new IllegalArgumentException("taskEndTime " + taskEndTime + " > scheduleEndTime " + scheduleEndTime);
     }

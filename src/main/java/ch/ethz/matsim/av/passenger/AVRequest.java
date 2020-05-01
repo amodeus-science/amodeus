@@ -10,8 +10,8 @@ import ch.ethz.matsim.av.data.AVOperator;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.routing.AVRoute;
-import ch.ethz.matsim.av.schedule.AVDropoffTask;
-import ch.ethz.matsim.av.schedule.AVPickupTask;
+import ch.ethz.refactoring.schedule.AmodeusDropoffTask;
+import ch.ethz.refactoring.schedule.AmodeusPickupTask;
 
 public class AVRequest implements PassengerRequest {
 	final private Id<Request> id;
@@ -24,8 +24,8 @@ public class AVRequest implements PassengerRequest {
 	final private AVDispatcher dispatcher;
 	final private AVRoute route;
 
-	private AVPickupTask pickupTask;
-	private AVDropoffTask dropoffTask;
+	private AmodeusPickupTask pickupTask;
+	private AmodeusDropoffTask dropoffTask;
 
 	public AVRequest(Id<Request> id, Id<Person> passengerId, Link pickupLink, Link dropoffLink, double pickupTime,
 			double submissionTime, AVRoute route, AVOperator operator, AVDispatcher dispatcher) {
@@ -54,19 +54,19 @@ public class AVRequest implements PassengerRequest {
 		return passengerId;
 	}
 
-	public AVPickupTask getPickupTask() {
+	public AmodeusPickupTask getPickupTask() {
 		return pickupTask;
 	}
 
-	public void setPickupTask(AVPickupTask pickupTask) {
+	public void setPickupTask(AmodeusPickupTask pickupTask) {
 		this.pickupTask = pickupTask;
 	}
 
-	public AVDropoffTask getDropoffTask() {
+	public AmodeusDropoffTask getDropoffTask() {
 		return dropoffTask;
 	}
 
-	public void setDropoffTask(AVDropoffTask dropoffTask) {
+	public void setDropoffTask(AmodeusDropoffTask dropoffTask) {
 		this.dropoffTask = dropoffTask;
 	}
 

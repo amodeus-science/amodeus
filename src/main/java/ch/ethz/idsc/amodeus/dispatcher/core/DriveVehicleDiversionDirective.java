@@ -10,8 +10,8 @@ import org.matsim.contrib.dvrp.tracker.TaskTracker;
 
 import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDriveTaskTracker;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.matsim.av.schedule.AVDriveTask;
-import ch.ethz.matsim.av.schedule.AVStayTask;
+import ch.ethz.refactoring.schedule.AmodeusDriveTask;
+import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
 /** for vehicles that are currently driving, but should go to a new destination:
  * 1) change path of current drive task
@@ -26,8 +26,8 @@ import ch.ethz.matsim.av.schedule.AVStayTask;
     @Override
     void executeWithPath(VrpPathWithTravelData vrpPathWithTravelData) {
         final Schedule schedule = roboTaxi.getSchedule();
-        final AVDriveTask avDriveTask = (AVDriveTask) schedule.getCurrentTask(); // <- implies that task is started
-        final AVStayTask avStayTask = (AVStayTask) Schedules.getLastTask(schedule);
+        final AmodeusDriveTask avDriveTask = (AmodeusDriveTask) schedule.getCurrentTask(); // <- implies that task is started
+        final AmodeusStayTask avStayTask = (AmodeusStayTask) Schedules.getLastTask(schedule);
         final double scheduleEndTime = avStayTask.getEndTime();
 
         TaskTracker taskTracker = avDriveTask.getTaskTracker();
