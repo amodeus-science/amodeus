@@ -1,8 +1,12 @@
 package ch.ethz.matsim.av.dynamics;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
 import org.matsim.api.core.v01.Id;
@@ -249,5 +253,10 @@ public class WaitingTimeTest {
 		Assert.assertEquals(123.0, waitingTimes.get(0), 1e-3);
 		Assert.assertEquals(44.6, waitingTimes.get(1), 1e-3);
 		Assert.assertEquals(21.08, waitingTimes.get(2), 1e-3);
+	}
+
+	@AfterClass
+	public static void doYourOneTimeTeardown() throws IOException {
+		FileUtils.deleteDirectory(new File(TestScenarioGenerator.outputDir));
 	}
 }

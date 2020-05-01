@@ -28,13 +28,14 @@ public class TestScenarioGenerator {
     final static double duration = 10 * 3600.0;
     final static double freespeed = 30.0 * 1000.0 / 3600.0;
     final static String defaultMode = TransportMode.walk;
+    public final static String outputDir = "test_output";
 
     static public Scenario generate() {
         return generate(ConfigUtils.createConfig());
     }
 
     static public Scenario generate(Config config) {
-        config.controler().setOutputDirectory("test_output/output");
+        config.controler().setOutputDirectory(outputDir + "/output");
         
         config.controler().setLastIteration(0);
         config.controler().setOverwriteFileSetting(OutputDirectoryHierarchy.OverwriteFileSetting.deleteDirectoryIfExists);
