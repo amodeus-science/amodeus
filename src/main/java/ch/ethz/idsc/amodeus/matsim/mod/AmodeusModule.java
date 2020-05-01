@@ -42,8 +42,6 @@ public class AmodeusModule extends AbstractModule {
          * MATSim commit, that introduced the new TravelTime implementation in DVRP is be380cfc72e1c29d840fcc6b71a4bebeb3e567c1 . */
         addTravelTimeBinding(DvrpTravelTimeModule.DVRP_INITIAL).toInstance(new FreeSpeedTravelTime());
 
-        installQSimModule(new AmodeusQSimModule());
-
         addControlerListenerBinding().toInstance(new WarningListener());
     }
 

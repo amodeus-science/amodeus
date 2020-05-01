@@ -77,6 +77,7 @@ public class AnalysisTest {
         Controler controler = new Controler(scenario);
         controler.addOverridingModule(new DvrpModule());
         controler.addOverridingModule(new AVModule());
+        controler.addOverridingQSimModule(new AVQSimModule());
 
         controler.configureQSimComponents(AVQSimModule::configureComponents);
 
@@ -132,7 +133,7 @@ public class AnalysisTest {
         safeFileAssert("test_output/output1/ITERS/it.2/2.av_passenger_rides.csv", "test_output/output2/ITERS/it.2/2.av_passenger_rides.csv");
         safeFileAssert("test_output/output1/ITERS/it.0/0.av_vehicle_movements.csv", "test_output/output2/ITERS/it.0/0.av_vehicle_movements.csv");
         safeFileAssert("test_output/output1/ITERS/it.2/2.av_vehicle_movements.csv", "test_output/output2/ITERS/it.2/2.av_vehicle_movements.csv");
-        safeFileAssert("test_output/output1/ITERS/it.0/0.av_vehicle_activities.csv","test_output/output2/ITERS/it.0/0.av_vehicle_activities.csv");
+        safeFileAssert("test_output/output1/ITERS/it.0/0.av_vehicle_activities.csv", "test_output/output2/ITERS/it.0/0.av_vehicle_activities.csv");
         safeFileAssert("test_output/output1/ITERS/it.2/2.av_vehicle_activities.csv", "test_output/output2/ITERS/it.2/2.av_vehicle_activities.csv");
     }
 
@@ -178,6 +179,7 @@ public class AnalysisTest {
         Controler controler = new Controler(scenario);
         controler.addOverridingModule(new DvrpModule());
         controler.addOverridingModule(new AVModule());
+        controler.addOverridingQSimModule(new AVQSimModule());
 
         controler.configureQSimComponents(AVQSimModule::configureComponents);
 
