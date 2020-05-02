@@ -22,7 +22,8 @@ public enum TotalJourneyTimeHtml implements HtmlReportElement {
         aRElement.getHTMLGenerator().insertTextLeft(Quantiles.formatAggregates(travelTimeAnalysis.getTotJAggrgte()));
         aRElement.getHTMLGenerator().newLine();
         aRElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + TotalJourneyTimeImage.FILENAME + ".png", 800, 600);
-        // TODO Who? distribution over day image
+
+        // TODO @ChengQi, also distribution over time bins?
         // aRElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + RequestsPerWaitingTimeImage.FILENAME + ".png", 800, 600);
 
         return Collections.singletonMap("", aRElement);

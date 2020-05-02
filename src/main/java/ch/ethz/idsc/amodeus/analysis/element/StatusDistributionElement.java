@@ -45,7 +45,7 @@ public class StatusDistributionElement implements AnalysisElement, TotalValueApp
         // alternative
         //Map<RoboTaxiStatus, Integer> timeStepsPerStatus = Arrays.stream(RoboTaxiStatus.values()).collect(Collectors.toMap(Function.identity(), this::getTimeStepsInStatus));
 
-        @SuppressWarnings("unused") // TODO add to total values or remove entirely
+        @SuppressWarnings("unused") // TODO @joel add to total values or remove entirely
         // double totalDriveTime = timeStepsPerStatus.entrySet().stream() //
         //         .filter(e -> e.getKey().isDriving()) //
         //         .mapToDouble(Entry::getValue) //

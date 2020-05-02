@@ -25,7 +25,7 @@ public enum WaitTimeHtml implements HtmlReportElement {
         aRElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + BinnedWaitingTimesImage.FILE_PNG, 800, 600);
         aRElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + WaitingCustomerExport.FILENAME + ".png", 800, 600);
 
-        // TODO Who? also distribution over time bins?
+        // TODO @ChengQi, also distribution over time bins?
         // aRElement.getHTMLGenerator().insertImg(IMAGE_FOLDER + "/" + RequestsPerWaitingTimeImage.FILENAME + ".png", 800, 600);
         return Collections.singletonMap("", aRElement);
     }

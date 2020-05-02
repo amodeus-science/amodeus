@@ -16,7 +16,6 @@ import ch.ethz.idsc.amodeus.analysis.report.TtlValIdent;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
-import ch.ethz.idsc.amodeus.net.VehicleContainer;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -31,7 +30,8 @@ import ch.ethz.idsc.tensor.sca.InvertUnlessZero;
 import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
 
 public class DistanceElement implements AnalysisElement, TotalValueAppender {
-    public static final Unit TARGET_UNIT = Unit.of("km"); // TODO maybe make customizable
+ // TODO @joel maybe make customizable or assign task to somebody else
+    public static final Unit TARGET_UNIT = Unit.of("km"); 
     // ---
 
     private int simObjIndex = 0; // Index for the Simulation Object which is loaded
