@@ -65,7 +65,7 @@ public class ScenarioPipeLineTest {
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), //
                 workingDirectory.getAbsolutePath());
 
-        // copy LPOptions from other location to ensure no virtual network is created,
+        // copy LPOptions from other location to ensure no travel data object is created,
         // the dispatcher used in this test does not require it.
         File helperDirectory = //
                 new File(Locate.repoFolder(ScenarioPipeLineTest.class, "amodeus"), "resources/helperFiles");
