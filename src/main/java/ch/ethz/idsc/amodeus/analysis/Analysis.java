@@ -165,9 +165,10 @@ public class Analysis {
         analysisElements.add(analysisSummary.getNumberPassengersAnalysis());
 
         analysisExports.add(BinnedWaitingTimesImage.INSTANCE);
-        analysisExports.add(DistanceDistributionOverDayImage.INSTANCE);
-        analysisExports.add(OccupancyDistanceRatiosImage.INSTANCE);
-        analysisExports.add(StackedDistanceChartImage.INSTANCE);
+        // FIXME @joel and clruch fix speed issue and uncomment again
+        // analysisExports.add(DistanceDistributionOverDayImage.INSTANCE);
+        // analysisExports.add(OccupancyDistanceRatiosImage.INSTANCE);
+        // analysisExports.add(StackedDistanceChartImage.INSTANCE);
         analysisExports.add(StatusDistributionImage.INSTANCE);
         analysisExports.add(NumberPassengerStatusDistribution.INSTANCE);
         analysisExports.add(RideSharingDistributionCompositionStack.INSTANCE);
@@ -176,8 +177,9 @@ public class Analysis {
         analysisExports.add(DriveTimeImages.INSTANCE);
         analysisExports.add(TotalJourneyTimeImage.INSTANCE);
 
-        analysisExports.add(DistancesOverDayTable.INSTANCE);
-        analysisExports.add(DistancesRatiosTable.INSTANCE);
+        // FIXME @joel and clruch fix speed issue and uncomment again
+        // analysisExports.add(DistancesOverDayTable.INSTANCE);
+        // analysisExports.add(DistancesRatiosTable.INSTANCE);
         analysisExports.add(WaitingTimesTable.INSTANCE);
         analysisExports.add(StatusDistributionTable.INSTANCE);
         analysisExports.add(new VirtualNetworkExport(scenOptions));
@@ -188,7 +190,8 @@ public class Analysis {
         htmlReport = new HtmlReport(outputDirectory, scenOptions);
         htmlReport.addHtmlReportElement(ScenarioParametersHtml.INSTANCE);
         htmlReport.addHtmlReportElement(SimulationInformationHtml.INSTANCE);
-        htmlReport.addHtmlReportElement(DistanceElementHtml.INSTANCE);
+        // FIXME @joel and clruch fix speed issue and uncomment again
+        // htmlReport.addHtmlReportElement(DistanceElementHtml.INSTANCE);
         htmlReport.addHtmlReportElement(WaitTimeHtml.INSTANCE);
         htmlReport.addHtmlReportElement(DriveTimeHtml.INSTANCE);
         htmlReport.addHtmlReportElement(TotalJourneyTimeHtml.INSTANCE);
