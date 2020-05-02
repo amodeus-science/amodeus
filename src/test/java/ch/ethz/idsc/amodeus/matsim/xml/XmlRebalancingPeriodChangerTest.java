@@ -48,7 +48,7 @@ public class XmlRebalancingPeriodChangerTest {
         ConfigDispatcherChanger.change(configFilePath, "FliegenderHollaender");
         XmlDistanceHeuristicChanger.of(workingDirectory, "Lohegrin22");
 
-        // TODO when less lazy, open and inspect av.xml, write some tests..
+        // TODO @sebhoerl when less lazy, open and inspect av.xml, write some tests..
     }
 
     @AfterClass

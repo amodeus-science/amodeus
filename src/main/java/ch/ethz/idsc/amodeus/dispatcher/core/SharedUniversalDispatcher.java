@@ -48,7 +48,6 @@ import ch.ethz.refactoring.schedule.AmodeusStayTask;
 public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher {
     /** contains all Requests which are not picked Up Yet */
     private final Map<Double, Map<RoboTaxi, AVRequest>> dropOffTimes = new HashMap<>();
-    // TODO Shared might be done with robotaxis only?
     private final RequestRegister requestRegister = new RequestRegister();
     /** contains all Requests which are assigned to a RoboTaxi */
 
@@ -302,7 +301,7 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
     @Override
     protected final void consistencySubCheck() {
 
-        // TODO disable or reduce computational complexity of entire subcheck once API tested for
+        // TODO @clruch disable or reduce computational complexity of entire subcheck once API tested for
         // a longer amount of time.
 
         for (RoboTaxi roboTaxi : getRoboTaxis()) {
@@ -326,7 +325,6 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
 
         for (AVRequest avRequest : requestRegister.getAssignedAvRequests()) {
             GlobalAssert.that(reqStatuses.containsKey(avRequest));
-            // TODO Shared this could be tested in a analysis in the simulation object.
             if (reqStatuses.get(avRequest).equals(RequestStatus.DRIVING))
                 GlobalAssert.that(requestRegister.getAssignedRoboTaxi(avRequest).get().getStatus() //
                         .equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));

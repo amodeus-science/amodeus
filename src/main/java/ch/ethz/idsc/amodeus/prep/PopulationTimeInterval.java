@@ -20,7 +20,7 @@ public enum PopulationTimeInterval {
     /** Removes all persons that have legs with departure time or the end
      * time of its predecessor activity outside the time interval [0,endTime) */
     public static void removeOutside(Population population, int endTime) {
-        Clip timeClip = Clips.positive(endTime - 1); // TODO [0,endTime] -> [startTime,endTime]?
+        Clip timeClip = Clips.positive(endTime - 1); // TODO @joel [0,endTime] -> [startTime,endTime]?
         System.out.println("All people in population  which have activities outside" //
                 + " the time interval [0, " + endTime + ") are removed.");
 
@@ -66,7 +66,7 @@ public enum PopulationTimeInterval {
     }
 
     private static boolean invalidPlan(Clip clip, Plan plan) {
-        // TODO choose better performing option
+        // TODO @joel choose better performing option
         // List<PlanElement> planElements = plan.getPlanElements();
         // return IntStream.range(1, planElements.size()).filter(i -> planElements.get(i - 1) instanceof Leg).anyMatch(i -> {
         // Leg leg = (Leg) planElements.get(i - 1);

@@ -7,7 +7,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-// TODO might be an extension of the Shared Course instead, see the StopInRouteAsCourseExtension
+// TODO @sebhoerl might be an extension of the Shared Course instead, see the StopInRouteAsCourseExtension
 /* package */ class StopInRoute {
     private final double time;
     private final Link stopLink;

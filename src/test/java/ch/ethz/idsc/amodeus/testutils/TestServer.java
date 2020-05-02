@@ -88,7 +88,8 @@ public class TestServer {
         config.qsim().setSimStarttimeInterpretation(StarttimeInterpretation.onlyUseStarttime);
 
         for (ActivityParams activityParams : config.planCalcScore().getActivityParams())
-            // TODO TEST fix this to meaningful values --> Sebastian how should we solve this?
+            // TODO @sebhoerl fix this to meaningful values, remove, or add comment
+            // this was added because there are sometimes problems, is there a more elegant option?
             activityParams.setTypicalDuration(3600.0);
 
         outputdirectory = config.controler().getOutputDirectory();
@@ -103,24 +104,6 @@ public class TestServer {
         MatsimAmodeusDatabase db = MatsimAmodeusDatabase.initialize(network, referenceFrame);
         controller = new Controler(scenario);
         AmodeusConfigurator.configureController(controller, db, scenarioOptions);
-
-        /* TODO regenerate linkSpeedData.bin to depend on current version of LinkSpeedDataContainer, and adapt TestFileHandling or AmodeusProperties accordingly
-         * try {
-         * // load linkSpeedData if possible
-         * File linkSpeedDataFile = new File(scenarioOptions.getLinkSpeedDataName());
-         * System.out.println(linkSpeedDataFile.toString());
-         * LinkSpeedDataContainer lsData = LinkSpeedUtils.loadLinkSpeedData(linkSpeedDataFile);
-         * controler.addOverridingQSimModule(new TrafficDataModule(lsData));
-         * } catch (Exception exception) {
-         * System.err.println("Could not load static linkspeed data, running with freespeeds.");
-         * } */
-
-        // controller.addOverridingModule(new AbstractModule() {
-        // @Override
-        // public void install() {
-        // AVUtils.registerDispatcherFactory(binder(), "DemoDispatcher", DemoDispatcher.Factory.class);
-        // }
-        // });
 
         // run simulation
         controller.run();

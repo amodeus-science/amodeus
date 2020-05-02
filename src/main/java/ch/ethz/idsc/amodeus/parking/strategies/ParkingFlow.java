@@ -72,7 +72,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
                     boolean foundSolution = false;
                     /** attempt to solve without a linear program for small numbers
                      * of units to move */
-                    if (totalUnits < 20) { // TODO find meaningful value, remove magic const.
+                    if (totalUnits < 20) { // TODO @clruch find meaningful value, remove magic const.
                         fastSolver = new SmallRedistributionProblemSolver<>(unitsToMove, freeSpacesToGo, //
                                 distanceFunction::getDistance, l -> l.getId().toString(), //
                                 false, "");

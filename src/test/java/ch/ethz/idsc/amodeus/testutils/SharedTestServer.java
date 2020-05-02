@@ -92,7 +92,8 @@ public class SharedTestServer {
         config.qsim().setSimStarttimeInterpretation(StarttimeInterpretation.onlyUseStarttime);
 
         for (ActivityParams activityParams : config.planCalcScore().getActivityParams())
-            // TODO TEST fix this to meaningful values --> Sebastian how should we solve this?
+            // TODO @sebhoerl fix this to meaningful values, remove, or add comment
+            // this was added because there are sometimes problems, is there a more elegant option?
             activityParams.setTypicalDuration(3600.0);
 
         outputdirectory = config.controler().getOutputDirectory();

@@ -18,7 +18,7 @@ import org.matsim.api.core.v01.network.Link;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.parking.capacities.ParkingCapacity;
 
-// TODO have the number of degrees to search in as a variable 
+// TODO @clruch have the number of degrees to search in as a variable 
 /* package */ class DirectedDiffusionHelper {
 
     private final ParkingCapacity parkingCapacity;

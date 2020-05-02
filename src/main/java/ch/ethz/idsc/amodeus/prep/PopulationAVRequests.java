@@ -18,7 +18,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.sca.Clip;
 import ch.ethz.idsc.tensor.sca.Clips;
 
-// TODO refactor this class
+// TODO @joel refactor this class
 public enum PopulationAVRequests {
     ;
 
@@ -27,7 +27,7 @@ public enum PopulationAVRequests {
      * @return the set of all AV requests in the population */
     public static Set<Request> get(Population population, Network network, int endTime) {
         Set<Request> requests = new HashSet<>();
-        Clip timeClip = Clips.positive(endTime - 1); // TODO make this more properly using the values from the config file.
+        Clip timeClip = Clips.positive(endTime - 1); // TODO @joel make this more properly using the values from the config file.
         // fill based on population file
         for (Person person : population.getPersons().values()) {
             for (Plan plan : person.getPlans()) {

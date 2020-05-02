@@ -17,7 +17,7 @@ import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.ICoordinate;
  * The longitude calculation is the same as in OsmMercator,
  * we inherit it from AbstractTMSTileSource.
  *
- * LONGTERM correct getDistance() method. */
+ * longterm improvement:  correct getDistance() method. */
 class ScanexTileSource extends TMSTileSource {
     private static final String DEFAULT_URL = "http://maps.kosmosnimki.ru";
     private static final int DEFAULT_MAXZOOM = 14;

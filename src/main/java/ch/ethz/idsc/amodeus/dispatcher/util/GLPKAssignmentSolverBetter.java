@@ -14,7 +14,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-// TODO document file..
+// TODO @marcalbert document file..
 public class GLPKAssignmentSolverBetter {
 
     private Tensor cost_matrix;
@@ -131,17 +131,10 @@ public class GLPKAssignmentSolverBetter {
                 last_sol.set(RealScalar.of(prim), i, j);
                 ++var_counter;
             }
-        // if (ret_val == 0) {
-        // PrintSolution.of(lp);
-        // GLPK.glp_write_lp(lp, null, "./target/test/Example");
-        // } else {
-        // System.out.println("The problem could not be solved");
-        // // TODO Throw exception
-        // }
     }
 
     public Scalar getObjectiveVal() {
-        return obj_val; // FIXME Should not be a pointer only a value
+        return (Scalar) obj_val.unmodifiable();
     }
 
     // public void setObjectiveParams(double alpha, double beta, double gamma) {

@@ -155,7 +155,7 @@ public class StandardMATSimScenarioTest {
          * plan.getPlanElements().add(trickyActivity);
          * } */
 
-        // TODO: Difficult to keep this in as handling of "interaction" activities become much smarter in MATSim now. We would need to
+        // TODO @sebhoerl Difficult to keep this in as handling of "interaction" activities become much smarter in MATSim now. We would need to
         // set up a much more realistic test scenario. There is one in the AV package, so we can use that one!
     }
 

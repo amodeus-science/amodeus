@@ -61,7 +61,7 @@ public class PopulationDensityGenerator implements AVGenerator {
 
 				if (!linkList.contains(link))
 					linkList.add(link);
-				sum += 1.0; // TODO This looks strange!
+				sum += 1.0; // TODO @sebhoerl This looks strange!
 			}
 		}
 

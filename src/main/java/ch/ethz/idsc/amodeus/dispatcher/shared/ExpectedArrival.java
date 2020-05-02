@@ -16,7 +16,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.matsim.av.router.AVRouter;
 
-// TODO eventually move out of amodeus to amod
+// TODO @clruch eventually move out of amodeus to amod
 /* package */ enum ExpectedArrival {
     ;
 

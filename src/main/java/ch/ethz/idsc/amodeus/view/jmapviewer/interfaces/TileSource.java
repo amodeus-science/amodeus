@@ -63,8 +63,7 @@ public interface TileSource extends Attributed {
      * @return The size of a single tile in pixels. -1 if default size should be used */
     int getTileSize();
 
-    /** @return default tile size, for this tile source
-     *         LONGTERM @since */
+    /** @return default tile size, for this tile source @since */
     int getDefaultTileSize();
 
     /** Gets the distance using Spherical law of cosines.

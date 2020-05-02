@@ -11,7 +11,7 @@ import junit.framework.TestCase;
 public class TheRequestApocalypseTest extends TestCase {
 
     public void testSimple() throws Exception {
-        // TODO Joel reinstate test
+        // TODO @joel reinstate test
         // /** download a scenario */
         // StaticHelper.setupScenario();
         //
@@ -31,7 +31,7 @@ public class TheRequestApocalypseTest extends TestCase {
         // assertEquals(numReqDes, LegCount.of(population, "av").number().intValue());
 
         /** clean scenario */
-        // TODO Joel clean different way
+        // TODO @joel clean different way
         // CleanAidoScenarios.now();
 
     }

@@ -61,8 +61,7 @@ public final class RoboTaxi {
      * @param divertableLinkTime
      * @param driveDestination
      * @param usageType */
-    // TODO make this package again
-    public RoboTaxi(AVVehicle avVehicle, LinkTimePair divertableLinkTime, Link driveDestination, RoboTaxiUsageType usageType) {
+    /* package */ RoboTaxi(AVVehicle avVehicle, LinkTimePair divertableLinkTime, Link driveDestination, RoboTaxiUsageType usageType) {
         this.avVehicle = avVehicle;
         this.divertableLinkTime = divertableLinkTime;
         this.driveDestination = Objects.requireNonNull(driveDestination);
@@ -161,7 +160,8 @@ public final class RoboTaxi {
      *            package, in dispatcher implementations, status will be adapted
      *            automatically. */
     /* package */ void setStatus(RoboTaxiStatus status) {
-        GlobalAssert.that(!usageType.equals(RoboTaxiUsageType.SHARED)); // TODO which code handles shared taxi status?????
+        // TODO @ChengQi which code handles shared taxi status?????
+        GlobalAssert.that(!usageType.equals(RoboTaxiUsageType.SHARED));
         this.status = Objects.requireNonNull(status);
     }
 
@@ -204,9 +204,9 @@ public final class RoboTaxi {
 
         Task avT = getSchedule().getCurrentTask();
 
-        // TODO Who? check why this appears often
+        // TODO @ChengQi check why this appears often
         if (avT instanceof AmodeusStayTask) {
-            // TODO MISC For now, this works, but probably needs fixing somewhere upfront
+            // TODO @ChengQi For now, this works, but probably needs fixing somewhere upfront
             // /sh, apr 2018
             if (!usageType.equals(RoboTaxiUsageType.SHARED)) { // for shared this is allowed e.g. when a new course is
                                                                // added but the it has not been executed
@@ -220,7 +220,8 @@ public final class RoboTaxi {
         // Added cases when on pickup and dropoff task For shared taxis
         if (avT instanceof AmodeusDriveTask) {
             AmodeusDriveTask avDT = (AmodeusDriveTask) avT;
-            return avDT.getPath().getLinkCount() != 1; // TODO seems it is different to the same function in AmodeusDriveTaskTracker
+            // TODO @clruch seems it is different to the same function in AmodeusDriveTaskTracker
+            return avDT.getPath().getLinkCount() != 1;
         }
         if (avT instanceof AmodeusPickupTask || avT instanceof AmodeusDropoffTask)
             return false;
@@ -333,7 +334,7 @@ public final class RoboTaxi {
     }
 
     /* package */ void addAVRequestToMenu(AVRequest avRequest) {
-        // TODO Lukas, with Claudio, ChengQi, what is the wanted behaviour? shouldn't the
+        // TODO @ChengQi what is the wanted behaviour? shouldn't the
         // dispatcher take care of this? We could bring it into the rebalancing dispatcher,
         // there we can add a function which is called:
         // addAVrequestandRemoveFirstRebalancing(AVrequest)
@@ -367,12 +368,11 @@ public final class RoboTaxi {
         GlobalAssert.that(SharedRoboTaxiUtils.getStarterLink(this).equals(getDivertableLocation()));
         setMenu(SharedCourseRemove.starter(menu));
     }
-    
-    /* package */ void pickupOf(List<AVRequest> avrs){
-        for(AVRequest avr : avrs)
+
+    /* package */ void pickupOf(List<AVRequest> avrs) {
+        for (AVRequest avr : avrs)
             setMenu(SharedCourseRemove.several(menu, SharedCourse.pickupCourse(avr)));
     }
-    
 
     /* package */ void dropOffCustomer() {
         checkAbilityToDropOff();

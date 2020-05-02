@@ -107,7 +107,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
         System.out.println("Ensure that VirtualNetworkCreators.RECTANGULAR is used.");
     }
 
-    @Override // TODO can I swith the order of single-use assignment and ride sharing assignment?
+    @Override
     protected void redispatch(double now) {
         final long round_now = Math.round(now);
         if (round_now % dispatchPeriod == 0) {

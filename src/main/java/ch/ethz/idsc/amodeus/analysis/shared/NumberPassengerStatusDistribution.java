@@ -6,7 +6,6 @@ import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.jfree.chart.JFreeChart;
-import org.matsim.contrib.util.chart.ChartSaveUtils;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.SaveUtils;
@@ -37,7 +36,6 @@ public enum NumberPassengerStatusDistribution implements AnalysisExport {
 
     public static final String TITLE = "statusDistributionNumPassengers";
     public static final String IMAGE_NAME = "statusDistributionNumPassengers.png";
-    // TODO might be done dependent on the Scenario Options
     public static final ScalarTensorFunction COLOR_DATA_GRADIENT_DEFAULT = ColorDataGradients.SUNSET;
     public static final int WIDTH = 1000; /* Width of the image */
     public static final int HEIGHT = 750; /* Height of the image */

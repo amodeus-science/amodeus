@@ -85,7 +85,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     public boolean waitTimesExceeded(SharedAvRoute sharedAvRoute, double now) {
         for (SharedRoutePoint sharedRoutePoint : sharedAvRoute.getRoute())
             if (sharedRoutePoint.getMealType().equals(SharedMealType.PICKUP))
-                // TODO Check this constraint could be that from submission to this time
+                // TODO @ChengQi Check this constraint could be that from submission to this time
                 if (sharedRoutePoint.getArrivalTime() >= now + maxPickupTime)
                     return true;
         return false;

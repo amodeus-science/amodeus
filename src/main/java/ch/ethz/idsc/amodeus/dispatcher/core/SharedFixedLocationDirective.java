@@ -6,7 +6,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 /** for vehicles that are in stay task and should dropoff a customer at the link:
  * 1) finish stay task 2) append dropoff task 3) if more customers planned append drive task
  * 4) append new stay task */
-// TODO check if we could make that possible to use such a directive for pickup and dropoff
+// TODO @sebhoerl check if we could make that possible to use such a directive for pickup and dropoff
 /* package */ abstract class SharedFixedLocationDirective implements DirectiveInterface {
     final RoboTaxi roboTaxi;
     final AVRequest avRequest;

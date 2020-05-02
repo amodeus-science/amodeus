@@ -72,7 +72,7 @@ public abstract class AbstractNoExplicitCommunication extends RebalancingDispatc
         }
 
         /** Save Weber maintainers */
-        if (round_now == 107500) // TODO check hardcoded
+        if (round_now == 107500) // TODO @clruch check hardcoded
             try {
                 WeberMaintainer.saveWeberLocations(weberMaintainers, MultiFileTools.getDefaultWorkingDirectory());
             } catch (Exception ex) {

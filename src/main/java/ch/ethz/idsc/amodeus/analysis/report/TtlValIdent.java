@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public enum TtlValIdent implements TotalValueIdentifier {
-    // TODO Lukas, clean this up such that only the relevant parts are present
     // General, Dispatchers, Generators
     TIMESTAMP("timeStamp"), //
     DISPATCHER("dispatcher"), //

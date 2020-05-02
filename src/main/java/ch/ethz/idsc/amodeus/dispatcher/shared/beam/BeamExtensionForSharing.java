@@ -30,11 +30,11 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.red.VectorAngle;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-// TODO move to an application package and separate from core classes.
+// TODO @ChengQi after checking with Jan, move to an application package and separate from core classes.
 public class BeamExtensionForSharing {
-    // TODO code/api style is bad: lastEmptyTaxis
+    // TODO @ChengQi after checking with Jan, code/api style is bad: lastEmptyTaxis
     private Collection<RoboTaxi> lastEmptyTaxis = new HashSet<>();
-    // TODO code/api style is bad: addedAvRequests
+    // TODO @ChengQi after checking with Jan, code/api style is bad: addedAvRequests
     private final Map<AVRequest, RoboTaxi> addedAvRequests = new HashMap<>();
     private Scalar phiMax;
     private double rMax;
@@ -71,7 +71,7 @@ public class BeamExtensionForSharing {
         Set<RoboTaxi> driveWithCustomerRoboTaxis = allRoboTaxis.stream().filter(rt -> rt.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER)).collect(Collectors.toSet());
 
         for (RoboTaxi roboTaxi : driveWithCustomerRoboTaxis) {
-            AtomicInteger numberAdded = new AtomicInteger(0); // TODO why atomic integer?
+            AtomicInteger numberAdded = new AtomicInteger(0); // TODO @ChengQi why atomic integer?
             GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
             if (lastEmptyTaxis.contains(roboTaxi))
                 /** The RoboTaxi just picked up a customer! Lets see if we find close requests with similar direction */

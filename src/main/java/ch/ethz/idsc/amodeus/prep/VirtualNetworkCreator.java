@@ -11,7 +11,7 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 
 @FunctionalInterface
 public interface VirtualNetworkCreator {
-    // TODO Joel document interface function
+    // TODO @joel document interface function
     /** @param network
      * @param population
      * @param scenarioOptions

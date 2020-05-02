@@ -14,7 +14,7 @@ import org.matsim.contrib.dvrp.schedule.Task;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
-// TODO should this be consistent with schedule?
+// TODO @clruch should this be consistent with schedule?
 /* package */ class RoboTaxiPlan implements Serializable {
 
     /* package */ static RoboTaxiPlan of(Schedule schedule, double time) {

@@ -60,8 +60,8 @@ public class WeberMaintainer {
         findMin();
     }
 
-    /** currently implemented as brute force that checks all the {@link Link}s
-     * TODO use better heuristic e.g. disk around past links
+    /** currently implemented as brute force that checks all the {@link Link}s.
+     * Future extensions might include better heuristic, e.g. disk around past links
      * in the {@link Network} */
     private void findMin() {
         /** calculate values of discrete Weber function for all links */

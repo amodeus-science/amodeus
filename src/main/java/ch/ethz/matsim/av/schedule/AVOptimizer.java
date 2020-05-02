@@ -24,7 +24,7 @@ import ch.ethz.refactoring.schedule.AmodeusDropoffTask;
 import ch.ethz.refactoring.schedule.AmodeusTaskType;
 
 @Singleton
-/** TODO: This whole class should be revised. There have been several iterations
+/** TODO @sebhoerl This whole class should be revised. There have been several iterations
  * for changing it and there are some redundant left-overs. /shoerl, dec 2017 */
 public class AVOptimizer implements VrpOptimizer, OnlineTrackerListener, MobsimBeforeSimStepListener {
     private double now;

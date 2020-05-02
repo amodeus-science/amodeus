@@ -1,5 +1,5 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
-package ch.ethz.idsc.amodeus.lp;
+package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,7 +12,8 @@ import org.junit.Test;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.ArtificialScenarioCreator;
-import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
+import ch.ethz.idsc.amodeus.lp.RedistributionProblemHelper;
+import ch.ethz.idsc.amodeus.lp.RedistributionProblemSolver;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 import ch.ethz.idsc.amodeus.routing.EuclideanDistanceFunction;
 

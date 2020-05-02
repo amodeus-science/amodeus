@@ -45,7 +45,7 @@ public enum VirtualNetworkGet {
      * @return null if file does not exist
      * @throws IOException */
     public static VirtualNetwork<Link> readFromOutputDirectory(Network network, File outputDirectory, ScenarioOptions scenarioOptions) throws IOException {
-        final File virtualnetworkFolder = new File(outputDirectory, "data"); // TODO Joel still hard-coded, search for "data" in project
+        final File virtualnetworkFolder = new File(outputDirectory, "data"); // TODO @joel still hard-coded, search for "data" in project
         final File virtualnetworkFile = new File(virtualnetworkFolder, scenarioOptions.getVirtualNetworkName());
         System.out.println("reading virtual network from" + virtualnetworkFile.getAbsoluteFile());
         try {

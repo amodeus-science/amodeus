@@ -50,12 +50,12 @@ public class TotalValues implements AnalysisReport {
         }
     }
 
-    // TODO check usage -> delete
+    // TODO @marcalbert check usage -> delete
     public Properties loadProperties() throws FileNotFoundException, IOException {
         return loadProperties(dataDirectory);
     }
 
-    // TODO check usage -> delete
+    // TODO @marcalbert check usage -> delete
     public static Properties loadProperties(File dataDirectory) throws FileNotFoundException, IOException {
         Properties properties = new Properties();
         File propertiesFile = new File(dataDirectory, DEFAULT_FILENAME);

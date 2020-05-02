@@ -32,7 +32,7 @@ public enum ExportTaxiTrips {
             stream.forEachOrdered(trip -> {
                 try {
                     bufferedWriter.newLine();
-                    /** TODO similar to {@link TaxiTrip#toString()} despite delimiter, error, and null treatment */
+                    /** TODO @clruch similar to {@link TaxiTrip#toString()} despite delimiter, error, and null treatment */
                     AtomicBoolean exception = new AtomicBoolean(false);
                     String line = Arrays.stream(TaxiTrip.class.getFields()).map(field -> {
                         try {

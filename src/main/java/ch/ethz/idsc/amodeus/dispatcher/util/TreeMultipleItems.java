@@ -71,8 +71,9 @@ public class TreeMultipleItems<T> {
 
     public void removeAllElementsWithValueSmaller(double minValue) {
         if (!tree.isEmpty()) {
-            // TODO make use of already sorted Navigable Map
-            Set<T> toRemoveSet = getTsInOrderOfValue().stream().filter(t -> function.apply(t) <= minValue).collect(Collectors.toSet());
+            // TODO @clruch make use of already sorted Navigable Map
+            Set<T> toRemoveSet = getTsInOrderOfValue().stream()//
+                    .filter(t -> function.apply(t) <= minValue).collect(Collectors.toSet());
             toRemoveSet.forEach(this::remove);
 
             // getTsInOrderOfValue().stream().filter(t -> function.apply(t) <= minValue).distinct().forEachOrdered(this::remove);

@@ -44,7 +44,7 @@ import ch.ethz.idsc.tensor.red.Mean;
 import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.Round;
 
-public class SharedRoboTaxiTest {
+public class SharedScenarioExecutionTest {
     private static final Scalar ZERO_KM = Quantity.of(0, "km");
     // ---
     private static TestPreparer testPreparer;
@@ -53,7 +53,7 @@ public class SharedRoboTaxiTest {
     @BeforeClass
     public static void setUpOnce() throws Exception {
         // copy scenario data into main directory
-        File scenarioDirectory = new File(Locate.repoFolder(SharedRoboTaxiTest.class, "amodeus"), "resources/testScenario");
+        File scenarioDirectory = new File(Locate.repoFolder(SharedScenarioExecutionTest.class, "amodeus"), "resources/testScenario");
         File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         GlobalAssert.that(workingDirectory.isDirectory());
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
@@ -61,7 +61,7 @@ public class SharedRoboTaxiTest {
         // copy LPOptions from other location to ensure no travel data object is created,
         // the dispatcher used in this test does not require it.
         File helperDirectory = //
-                new File(Locate.repoFolder(ScenarioPipeLineTest.class, "amodeus"), "resources/helperFiles");
+                new File(Locate.repoFolder(ScenarioExecutionTest.class, "amodeus"), "resources/helperFiles");
         CopyFiles.now(helperDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath(), //
                 Arrays.asList("LPOptions.properties"), true);
 
@@ -71,10 +71,6 @@ public class SharedRoboTaxiTest {
         // run scenario server
         testServer = SharedTestServer.run(workingDirectory);
 
-        // prepare travel data test
-        // TODO the call VirtualNetworkGet.readDefault below should not be necessary
-        // ... or why is it necessary?
-        // VirtualNetworkGet.readDefault(testPreparer.getPreparedNetwork(), new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault()));
         Map<String, Link> map = new HashMap<>();
         testPreparer.getPreparedNetwork().getLinks().forEach((k, v) -> map.put(k.toString(), v));
     }

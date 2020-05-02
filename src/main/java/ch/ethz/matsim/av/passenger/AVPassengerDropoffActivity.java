@@ -35,7 +35,7 @@ public class AVPassengerDropoffActivity implements DynActivity {
 		if (requests.size() == 0) {
 			throw new IllegalStateException("Received dropoff task without request");
 		} else {
-			// TODO: Not ideal since we go through the requests instead of passing it
+			// TODO @sebhoerl Not ideal since we go through the requests instead of passing it
 			// directly
 			AVRequest firstRequest = requests.iterator().next();
 

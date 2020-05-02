@@ -8,9 +8,7 @@ import ch.ethz.idsc.tensor.sca.Sign;
 public enum PositiveSubVector {
     ;
 
-    // TODO document why this function is useful?
-    /** @param vector
-     * @return */
+    // TODO @marcalbert document this function
     public static Tensor of(Tensor vector) {
         return Tensor.of(vector.flatten(-1) //
                 .map(Scalar.class::cast) //

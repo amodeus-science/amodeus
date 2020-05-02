@@ -9,7 +9,7 @@ import java.util.List;
     /** RebalancingPlanGenerator.of will generate a list of RebalanceTripWithVehicle. It intakes listOfAllRebalanceTripWithVehicle. The
      * way we assign the re-balancing vehicle is according to the paper (see the dispatcher). We do not use LP since we have found other
      * way to reach the same goal. */
-    // TODO need to clarify some questions with the author of the paper, something may need to be changed
+    // TODO @ChengQi need to clarify some questions with the author of the paper, something may need to be changed
 
     public static List<RebalanceTripWithVehicle> of(List<RebalanceTripWithVehicle> listOfAllRebalanceTripWithVehicle) {
         List<RebalanceTripWithVehicle> rebalancePlan = new ArrayList<>();

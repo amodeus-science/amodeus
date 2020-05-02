@@ -30,7 +30,7 @@ public class IDGenerator {
         // find largest integer used in IDs
         List<Integer> foundInts = usedIDs.stream().map(Id::toString).map(this::extractLargestInt).sorted().collect(Collectors.toList());
         largestInteger = Optional.ofNullable(foundInts.get(foundInts.size() - 1)).orElse(1);
-        // TODO confirm return value null and fallback 1 alternatively:
+        // TODO @joel confirm return value null and fallback 1 alternatively:
         // largestInteger = usedIDs.stream().map(Id::toString).mapToInt(this::extractLargestInt).max().orElse(1);
     }
 
@@ -54,7 +54,7 @@ public class IDGenerator {
     /** @param populationExisting
      * @return HashSet<Id<Person>> containing all used IDs in @param populationExisting */
     public Set<Id<Person>> getUsedIDs(Population populationExisting) {
-        // TODO is this necessary?
+        // TODO @joel is this necessary?
         // populationExisting.getPersons() -> Map<Id<Person>>, ? extends Person> hence this always returns the key set, also making the check redundant
         // PopulationImpl seems to be the only place where Population::getPersons() is set
         Set<Id<Person>> usedIDs = populationExisting.getPersons().values().stream().map(Person::getId).collect(Collectors.toSet());
