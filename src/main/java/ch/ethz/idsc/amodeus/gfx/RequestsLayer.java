@@ -236,7 +236,7 @@ public class RequestsLayer extends ViewerLayer {
 
     private static boolean isUnserved(Collection<RequestStatus> statii) {
         boolean unserved = false;
-        for (RequestStatus status : statii) { // TODO does never loop
+        for (RequestStatus status : statii) { // TODO @clruch does never loop
             if (status.isUnserved())
                 unserved = true;
             break;

@@ -298,7 +298,7 @@ public class VirtualNetworkLayer extends ViewerLayer {
     public void updateSettings(ViewerSettings viewerSettings) {
         viewerSettings.drawVNodes = drawVNodes;
         viewerSettings.drawVLinks = drawVLinks;
-        // TODO prescaler
+        // TODO @datahaki resolve or add improved explanation prescaler
         viewerSettings.virtualNodeShader = virtualNodeShader;
         viewerSettings.rescaling = rescaling;
         viewerSettings.colorSchemes = colorSchemes;
@@ -308,7 +308,7 @@ public class VirtualNetworkLayer extends ViewerLayer {
     public void loadSettings(ViewerSettings viewerSettings) {
         drawVNodes = viewerSettings.drawVNodes;
         drawVLinks = viewerSettings.drawVLinks;
-        // TODO prescaler
+        // TODO @datahaki resolve or add improved explanation prescaler
         virtualNodeShader = viewerSettings.virtualNodeShader;
         rescaling = viewerSettings.rescaling;
         colorSchemes = viewerSettings.colorSchemes;

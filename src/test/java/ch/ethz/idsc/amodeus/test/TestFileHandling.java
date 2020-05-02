@@ -13,7 +13,7 @@ import ch.ethz.idsc.tensor.io.DeleteDirectory;
 public enum TestFileHandling {
     ;
 
-    // TODO cleanup
+    // TODO @clruch cleanup
     public static void copyScnearioToMainDirectory(String scenarioDir, String mainDir) throws IOException {
         CopyFiles.now(scenarioDir, mainDir, //
                 Arrays.asList("AmodeusOptions.properties", //

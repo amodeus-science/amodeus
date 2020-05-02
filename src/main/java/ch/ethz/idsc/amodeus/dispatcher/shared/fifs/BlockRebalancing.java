@@ -90,9 +90,6 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
         /** Calculate for each block which vehicles will move to which link based on the results of the
          * calculated rebalancing numbers above */
-        // TODO this was disabled as it fails, but entire class will be removed anyways later and the
-        // functionality should remain identical.
-        // GlobalAssert.that(timeDb.checkTime(now));
         RebalancingDirectives directives = new RebalancingDirectives(new HashMap<>());
         blocks.values().forEach(b -> directives.addOtherDirectives(b.executeRebalance(timeDb, now)));
         return directives;

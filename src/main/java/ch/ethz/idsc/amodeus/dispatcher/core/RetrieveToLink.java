@@ -48,10 +48,10 @@ import ch.ethz.refactoring.schedule.AmodeusTaskType;
                         if (!planedToLink.equals(roboTaxi.getDivertableLocation()))
                             divert = true;
                         else
-                            // TODO 20190901 remove soon if no errors
+                            // TODO @clruch 20190901 remove soon if no errors
                             GlobalAssert.that(roboTaxi.getStatus().equals(SharedRoboTaxiUtils.calculateStatusFromMenu(roboTaxi)));
                     else
-                        // TODO 20190901 remove soon if no errors
+                        // TODO @clruch 20190901 remove soon if no errors
                         GlobalAssert.that(roboTaxi.getStatus().equals(SharedRoboTaxiUtils.calculateStatusFromMenu(roboTaxi)));
                     if (planedToLink.equals(roboTaxi.getDivertableLocation()) && isOnLastTask)
                         GlobalAssert.that(divert); // should be set to true as it is second last task and and finished
@@ -83,7 +83,7 @@ import ch.ethz.refactoring.schedule.AmodeusTaskType;
                             return Optional.of(roboTaxi.getDivertableLocation());
                         }
                     case DROPOFF:
-                        // TODO 20190901 remove soon if no errors
+                        // TODO @clruch 20190901 remove soon if no errors
                         GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.STAY));
                         break;
                     default:
@@ -101,7 +101,7 @@ import ch.ethz.refactoring.schedule.AmodeusTaskType;
                             roboTaxi.addRedirectCourseToMenuAtBegining(redirectCourse);
                             return Optional.of(roboTaxi.getDivertableLocation());
                         }
-                        // TODO 20190901 remove soon if no errors
+                        // TODO @clruch 20190901 remove soon if no errors
                         GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.STAY));
                     } else {
                         // We only do it for Drive Tasks. As:

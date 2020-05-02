@@ -37,7 +37,7 @@ public class ParkingCapacityNetworkDistribution extends ParkingCapacityAbstract 
         // }
         // } catch (Exception ex) {
         // ex.printStackTrace();
-        // // TODO solve more elegantly
+        // // TODO @clruch solve more elegantly
         // }
         // });
         List<Link> linksWithParking = network.getLinks().values().stream().flatMap(link -> {

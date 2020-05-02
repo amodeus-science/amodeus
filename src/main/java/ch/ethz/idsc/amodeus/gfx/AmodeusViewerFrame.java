@@ -79,7 +79,7 @@ public class AmodeusViewerFrame implements Runnable {
      * 
      * @param amodeusComponent
      * @param outputDirectory
-     * @param defaultDirectory TODO Joel document difference to outputDirectory
+     * @param defaultDirectory TODO @joel document difference to outputDirectory
      * @param network */
     public AmodeusViewerFrame(AmodeusComponent amodeusComponent, File outputDirectory, File defaultDirectory, Network network, ScenarioOptions scenarioOptions) {
         this.network = network;

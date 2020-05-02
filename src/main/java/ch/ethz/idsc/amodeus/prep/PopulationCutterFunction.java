@@ -6,8 +6,8 @@ import java.io.IOException;
 import org.matsim.api.core.v01.population.Population;
 
 public interface PopulationCutterFunction {
-    // TODO Lukas document interface
-    // TODO Lukas function should not throw any exception...
+    // TODO @clruch document interface
+    // TODO @clruch function should not throw any exception...
     // ... exceptions can be dealt with internally and passed on as runtime exception
     void process(Population population) throws IOException, Exception;
 

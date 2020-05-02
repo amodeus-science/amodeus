@@ -96,7 +96,7 @@ import ch.ethz.refactoring.schedule.AmodeusStayTask;
                 GlobalAssert.that(SharedCourseAccess.hasStarter(sRoboTaxi));
                 // THIS Would mean the dropoffs of this time Step did not take place. And thus the menu still has dropof
                 // as next course (in dropof case)
-                // TODO Lukas think about how to test this
+                // TODO @clruch think about how to test this
                 // GlobalAssert.that(!dropOffTimes.containsKey(now));
 
                 if (LastTimeStep.check(dropOffTask, now, SharedUniversalDispatcher.SIMTIMESTEP)) {
@@ -112,7 +112,7 @@ import ch.ethz.refactoring.schedule.AmodeusStayTask;
                 // }
             }
 
-            // FIXME very error prone: parameter name is used as variable !!!
+            // FIXME @clruch very error prone: parameter name is used as variable !!!
             private void handlePickupAndDropoff(RoboTaxi sRoboTaxi, Task task, Link nextLink, double now) {
                 boolean isOnLastTask = LastTimeStep.check(task, now, SharedUniversalDispatcher.SIMTIMESTEP);
                 boolean isSecondLastTaskAndEndsNow = (task.getEndTime() == now && ScheduleUtils.isNextToLastTask(schedule, task));

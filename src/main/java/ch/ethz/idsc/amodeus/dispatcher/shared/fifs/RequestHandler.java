@@ -29,7 +29,6 @@ import ch.ethz.matsim.av.passenger.AVRequest;
     /** All the drive Times for each requests if this request would be served directely with a unit capacity robo taxi */
     private final Map<AVRequest, Double> driveTimesSingle = new HashMap<>();
     /** All the effective Pickupe Times for each Requests. needed for the Constraints */
-    private final Map<AVRequest, Double> pickupTimes = new HashMap<>(); // TODO never queried
     /** All the Requests which were Pending in the last time Step */
     private final Set<AVRequest> lastStepPending = new HashSet<>();
 
@@ -63,7 +62,6 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
     public void updatePickupTimes(Collection<AVRequest> avRequests, double now) {
         lastStepPending.stream().filter(r -> !avRequests.contains(r)).forEach(r -> requests.get(r).setPickupTime(now));
-        lastStepPending.stream().filter(r -> !avRequests.contains(r)).forEach(r -> pickupTimes.put(r, now));
         lastStepPending.clear();
         lastStepPending.addAll(avRequests);
     }
@@ -111,7 +109,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
         for (SharedRoutePoint sharedRoutePoint : route.getRoute())
             if (sharedRoutePoint.getMealType().equals(SharedMealType.DROPOFF))
                 if (thisPickupTimes.containsKey(sharedRoutePoint.getAvRequest()))
-                    // TODO does it include the dropoff or not?
+                    // TODO @ChengQi does it include the dropoff or not?
                     driveTimes.put(sharedRoutePoint.getAvRequest(), sharedRoutePoint.getEndTime() - thisPickupTimes.get(sharedRoutePoint.getAvRequest()));
                 else
                     driveTimes.put(sharedRoutePoint.getAvRequest(), //

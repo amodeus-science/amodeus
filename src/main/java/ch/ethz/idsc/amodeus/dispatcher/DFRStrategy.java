@@ -188,7 +188,7 @@ public class DFRStrategy extends PartitionedDispatcher {
 
         totalTimes.append(Quantity.of((System.currentTimeMillis() - time) * 0.001, "s"));
 
-        if (!haveExported && round_now >= 107000) { // TODO check hardcoded
+        if (!haveExported && round_now >= 107000) { // TODO @sebhoerl check hardcoded
             try {
                 Export.of(new File(config.controler().getOutputDirectory() + "/dfrTimes.csv"), feedbackTimes);
                 Export.of(new File(config.controler().getOutputDirectory() + "/totalTimes.csv"), totalTimes);

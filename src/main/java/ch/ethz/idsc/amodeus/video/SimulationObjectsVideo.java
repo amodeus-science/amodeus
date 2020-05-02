@@ -50,7 +50,7 @@ import ch.ethz.idsc.tensor.io.AnimationWriter;
 
         if (first) {
             first = false;
-            // TODO MISC tile loading method is not foolproof
+            // TODO @datahaki, resolve or instruct other person to resolve
             System.out.println("Loading Tiles...");
             Thread.sleep(millis);
             System.out.println("Starting mp4 Video.");

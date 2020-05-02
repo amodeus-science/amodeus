@@ -14,7 +14,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 /** used to create a {@link NavigableMap} containing the entry times to {@link Link}s for a
  * {@link Path} */
-// TODO only used in amodidsc so maybe move in the future (make NetworkPropertyInterface public)
+// TODO @clruch only used in amodidsc so maybe move in the future (make NetworkPropertyInterface public)
 public enum TimeResolvedPathProperty implements NetworkPropertyInterface<NavigableMap<Double, Link>> {
     INSTANCE;
 

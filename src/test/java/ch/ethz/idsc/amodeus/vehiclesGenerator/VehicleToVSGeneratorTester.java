@@ -108,7 +108,7 @@ public class VehicleToVSGeneratorTester {
         assertEquals(operatorConfig.getGeneratorConfig().getNumberOfVehicles(), vehicleToVSGenerator.generateVehicles().size());
     }
 
-    // TODO this test fails after update to MATSim 11, test if this is serious or not. Assumption: no serious implications.
+    // TODO @sebhoerl this test fails after update to MATSim 11, test if this is serious or not. Assumption: no serious implications.
     // @Test
     // public void testEmptyDistribution() {
     // VehicleToVSGenerator vehicleToVSGenerator = new VehicleToVSGenerator(avGeneratorConfig, network, virtualNetwork, travelData000);
@@ -126,7 +126,7 @@ public class VehicleToVSGeneratorTester {
     // assertTrue(Chop.below(0.1).close(counter.divide(RealScalar.of(TRIALS)), distribution));
     // }
 
-    // TODO this test fails after update to MATSim 11, test if this is serious or not. Assumption: no serious implications.
+    // TODO @sebhoerl this test fails after update to MATSim 11, test if this is serious or not. Assumption: no serious implications.
     // @Test
     // public void testPartiallyGivenDistribution() {
     // VehicleToVSGenerator vehicleToVSGenerator = new VehicleToVSGenerator(avGeneratorConfig, network, virtualNetwork, travelData123);

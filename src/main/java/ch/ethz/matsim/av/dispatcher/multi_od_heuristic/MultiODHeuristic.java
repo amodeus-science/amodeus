@@ -122,7 +122,7 @@ public class MultiODHeuristic implements AVDispatcher {
             removeVehicle(vehicle);
             vehicle2Request.put(vehicle, request);
 
-            assignableRequests.remove(request); // TODO: IMPORTANT; otherwise REscheduling is necessary!!!
+            assignableRequests.remove(request); // TODO @sebhoerl IMPORTANT; otherwise REscheduling is necessary!!!
             appender.schedule(request, vehicle, now);
         }
     }

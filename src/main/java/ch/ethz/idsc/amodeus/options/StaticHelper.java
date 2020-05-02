@@ -44,7 +44,8 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
                 properties.load(fileInputStream);
             }
         } else
-            LPOptionsBase.savePropertiesToFile(properties, simOptionsFile); // TODO should this be saveDefault or can it be omitted?
+            // TODO @clruch should this be saveDefault or can it be omitted?
+            LPOptionsBase.savePropertiesToFile(properties, simOptionsFile);
         return properties;
     }
 }

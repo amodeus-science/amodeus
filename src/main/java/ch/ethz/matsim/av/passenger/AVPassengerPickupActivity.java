@@ -45,7 +45,7 @@ public class AVPassengerPickupActivity implements PassengerPickupActivity {
 		if (requests.size() == 0) {
 			throw new IllegalStateException("Received a pickup task without requests");
 		} else {
-			// TODO: Not the best way... we assume that all requests are from the same
+			// TODO @sebhoerl Not the best way... we assume that all requests are from the same
 			// operator with the same parameters
 			AVRequest firstRequest = requests.iterator().next();
 

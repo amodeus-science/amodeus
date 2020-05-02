@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 
     public interface TranslationAdapter {
         String tr(String text, Object... objects);
-        // LONGTERM more i18n functions
+        // more i18n functions
     }
 
     public interface LoggingAdapter {

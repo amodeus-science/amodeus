@@ -55,6 +55,7 @@ import ch.ethz.matsim.av.framework.AVQSimModule;
 import ch.ethz.matsim.av.framework.AVUtils;
 import ch.ethz.matsim.av.generator.AVGenerator;
 
+// TODO shorten this monster @marcalbert, e.g., distribute on several files
 public class AVPickupDropoffTest {
 	private static class TestRequest {
 		private final double departureTime;

@@ -80,20 +80,6 @@ public class SmallRedistributionProblemSolver<T> {
             foundGlobOptimSol = true;
         }
 
-        // DEBUGGING, TODO remove
-        // if (unitsTotal == 1) {
-        // if (!foundGlobOptimSol) {
-        // System.out.println("unitsToMove: ");
-        // unitsToMove.entrySet().forEach(e -> {
-        // System.out.println(getName.apply(e.getKey()) + ", " + e.getValue());
-        // });
-        //
-        // System.out.println("availableDestinations");
-        // availableDestinations.entrySet().forEach(e -> {
-        // System.out.println(getName.apply(e.getKey()) + ", " + e.getValue());
-        // });
-        // }
-        // }
     }
 
     public boolean success() {

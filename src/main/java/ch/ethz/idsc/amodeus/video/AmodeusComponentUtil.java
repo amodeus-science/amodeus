@@ -48,7 +48,7 @@ import ch.ethz.idsc.amodeus.view.jmapviewer.Coordinate;
                 zoomAdjPrev = true;
             } else {
                 prevZoom--;
-                // TODO this looks way to easy now
+                // TODO @joel this looks way to easy now
                 // zoomAdj = (zoomAdjPrev) ? true : false;
                 // zoomAdjPrev = (zoomAdj) ? true : false;
                 zoomAdj = zoomAdjPrev;

@@ -13,6 +13,7 @@ import org.matsim.contrib.dvrp.util.LinkTimePair;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import junit.framework.TestCase;
 
+//TODO @clruch shorten this monster @marcalbert, e.g., distribute on several files
 public class RetrieveToLinkTest extends TestCase {
     public void testStayTask() {
         ArtificialSharedScenarioCreator s = new ArtificialSharedScenarioCreator();
@@ -75,7 +76,7 @@ public class RetrieveToLinkTest extends TestCase {
         assertEquals(RetrieveToLink.forShared(roboTaxi, 0.0).get(), s.linkDepotOut); // case pickup course
 
         StaticRoboTaxiCreator.updateRoboTaxiMenuTo(roboTaxi, Collections.singletonList(SharedCourse.redirectCourse(s.linkDepotOut, "depotRed")));
-        // FIXME the next test should be possible This is a diversion from the stay task to the divertable location
+        // FIXME @ChengQi the next test should be possible This is a diversion from the stay task to the divertable location
         // assertTrue(SharedRoboTaxiDiversionHelper.getToLink(roboTaxi, 0.0).get().equals(s.linkDepotOut)); // case pickup course
         try {
             RetrieveToLink.forShared(roboTaxi, 0.0);
@@ -98,7 +99,7 @@ public class RetrieveToLinkTest extends TestCase {
         assertEquals(RetrieveToLink.forShared(roboTaxi, 0.0).get(), s.linkDepotIn); // case pickup course
 
         StaticRoboTaxiCreator.updateRoboTaxiMenuTo(roboTaxi, Collections.singletonList(SharedCourse.redirectCourse(s.linkDepotIn, "depotRed")));
-        // FIXME This should be empty as it is a redirection to the current location so no diversion is required.
+        // FIXME @ChengQi This should be empty as it is a redirection to the current location so no diversion is required.
         assertTrue(RetrieveToLink.forShared(roboTaxi, 0.0).isPresent()); // case dropoff course
         assertEquals(RetrieveToLink.forShared(roboTaxi, 0.0).get(), s.linkDepotIn); // case pickup course
         StaticRoboTaxiCreator.cleanRTMenu(roboTaxi);

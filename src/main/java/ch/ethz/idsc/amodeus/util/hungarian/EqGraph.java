@@ -2,7 +2,7 @@
 package ch.ethz.idsc.amodeus.util.hungarian;
 
 /** @author Samuel J. Stauber */
-final class EqGraph extends Graph {
+public final class EqGraph extends Graph {
     private final AlternatingTree at;
 
     public EqGraph(double[][] cm, double eps) {

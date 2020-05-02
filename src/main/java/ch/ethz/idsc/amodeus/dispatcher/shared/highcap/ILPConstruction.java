@@ -106,7 +106,6 @@ import ch.ethz.matsim.av.passenger.AVRequest;
                 GLPK.glp_set_obj_coef(lp, i, grossListOfRTVEdges.get(i - 1).getTotalDelay());
 
             // request is ignored part
-            // TODO done. Checking if it will work
             for (int i = numOfRTVEdges + 1; i < numOfVariablesPlus1; i++)
                 GLPK.glp_set_obj_coef(lp, i, requestMatchedLastStep.contains(openRequestList.get(i - numOfRTVEdges - 1)) ? costOfIgnoredReuqestHigh : costOfIgnoredReuqestNormal);
         } catch (GlpkException ex) {

@@ -42,7 +42,7 @@ public enum ImportTaxiTrips {
 
     private static TaxiTrip parseLine(String line) {
         String[] splits = line.split(";");
-        // TODO more elegant? unfortunately necessary as toString()
+        // TODO @clruch, more elegant? unfortunately necessary as toString()
         // of LDT removes last :00 if full hour...
         String dateString = splits[6];
         LocalDateTime ldt = LocalDateTime.parse(dateString, formatLookup.get(dateString.length()));
