@@ -39,8 +39,8 @@ public enum VirtualNetworkPreparer implements VirtualNetworkCreator {
             System.out.println("successfully converted simulation data files from in " + scenarioOptions.getWorkingDirectory());
 
             /** reading the whole travel data */
-            StaticTravelData travelData = StaticTravelDataCreator.create(scenarioOptions.getWorkingDirectory(), virtualNetwork, network, population,
-                    scenarioOptions.getdtTravelData(), numVehicles, endTime);
+            StaticTravelData travelData = StaticTravelDataCreator.create(scenarioOptions.getWorkingDirectory(), //
+                    virtualNetwork, network, population, scenarioOptions.getdtTravelData(), numVehicles, endTime);
 
             File travelDataFile = new File(scenarioOptions.getVirtualNetworkDirectoryName(), scenarioOptions.getTravelDataName());
             TravelDataIO.writeStatic(travelDataFile, travelData);

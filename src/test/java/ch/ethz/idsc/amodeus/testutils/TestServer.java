@@ -12,7 +12,6 @@ import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup.ActivityParams;
 import org.matsim.core.config.groups.QSimConfigGroup.StarttimeInterpretation;
-import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.scenario.ScenarioUtils;
 
@@ -28,7 +27,6 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.test.AnalysisTestExport;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AVConfigGroup;
-import ch.ethz.matsim.av.framework.AVUtils;
 import ch.ethz.refactoring.AmodeusConfigurator;
 
 public class TestServer {
@@ -117,12 +115,12 @@ public class TestServer {
          * System.err.println("Could not load static linkspeed data, running with freespeeds.");
          * } */
 
-        controller.addOverridingModule(new AbstractModule() {
-            @Override
-            public void install() {
-                AVUtils.registerDispatcherFactory(binder(), "DemoDispatcher", DemoDispatcher.Factory.class);
-            }
-        });
+        // controller.addOverridingModule(new AbstractModule() {
+        // @Override
+        // public void install() {
+        // AVUtils.registerDispatcherFactory(binder(), "DemoDispatcher", DemoDispatcher.Factory.class);
+        // }
+        // });
 
         // run simulation
         controller.run();
