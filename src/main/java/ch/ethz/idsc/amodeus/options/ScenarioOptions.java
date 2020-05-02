@@ -19,6 +19,7 @@ import ch.ethz.idsc.amodeus.prep.PopulationCutters;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreators;
 
+// TODO @marcalbert document class
 public class ScenarioOptions {
     private final File workingDirectory;
     protected final Properties properties;

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.zip.GZIPInputStream;
 
+//TODO @marcalbert improve documentation of class
 /** a gz file is a compressed version of another file */
 public enum GZHandler {
     ;

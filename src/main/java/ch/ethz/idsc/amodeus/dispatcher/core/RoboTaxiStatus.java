@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
+//TODO @marcalbert document class
 public enum RoboTaxiStatus {
     DRIVEWITHCUSTOMER(true, "dwc", "with customer"), //
     DRIVETOCUSTOMER(true, "d2c", "pickup"), //
