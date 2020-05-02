@@ -6,11 +6,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.gnu.glpk.GLPK;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -29,6 +29,7 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.testutils.SharedTestServer;
 import ch.ethz.idsc.amodeus.testutils.TestPreparer;
+import ch.ethz.idsc.amodeus.util.io.CopyFiles;
 import ch.ethz.idsc.amodeus.util.io.Locate;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
@@ -51,14 +52,18 @@ public class SharedRoboTaxiTest {
 
     @BeforeClass
     public static void setUpOnce() throws Exception {
-        System.out.print("GLPK version is: ");
-        System.out.println(GLPK.glp_version());
-
         // copy scenario data into main directory
         File scenarioDirectory = new File(Locate.repoFolder(SharedRoboTaxiTest.class, "amodeus"), "resources/testScenario");
         File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         GlobalAssert.that(workingDirectory.isDirectory());
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
+
+        // copy LPOptions from other location to ensure no travel data object is created,
+        // the dispatcher used in this test does not require it.
+        File helperDirectory = //
+                new File(Locate.repoFolder(ScenarioPipeLineTest.class, "amodeus"), "resources/helperFiles");
+        CopyFiles.now(helperDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath(), //
+                Arrays.asList("LPOptions.properties"), true);
 
         // run scenario preparer
         testPreparer = TestPreparer.run(workingDirectory);
@@ -76,8 +81,6 @@ public class SharedRoboTaxiTest {
 
     @Test
     public void testPreparer() throws Exception {
-        System.out.print("GLPK version is: ");
-        System.out.println(GLPK.glp_version());
         System.out.print("Preparer Test:\t");
 
         /** setup of scenario */
@@ -98,10 +101,6 @@ public class SharedRoboTaxiTest {
 
     @Test
     public void testServer() throws Exception {
-        System.out.print("GLPK version is: ");
-        System.out.println(GLPK.glp_version());
-        System.out.print("Server Test:\t");
-
         /** scenario options */
         File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
