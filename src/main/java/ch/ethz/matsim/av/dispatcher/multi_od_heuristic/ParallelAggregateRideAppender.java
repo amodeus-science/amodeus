@@ -27,6 +27,7 @@ import ch.ethz.refactoring.schedule.AmodeusDropoffTask;
 import ch.ethz.refactoring.schedule.AmodeusPickupTask;
 import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
+//TODO shorten this monster @sebhoerl, e.g., distribute on several files
 public class ParallelAggregateRideAppender implements AggregateRideAppender {
     final private ParallelLeastCostPathCalculator router;
     final private TravelTime travelTime;

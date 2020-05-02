@@ -13,6 +13,7 @@ import org.matsim.contrib.dvrp.util.LinkTimePair;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import junit.framework.TestCase;
 
+//TODO shorten this monster @marcalbert, e.g., distribute on several files
 public class RetrieveToLinkTest extends TestCase {
     public void testStayTask() {
         ArtificialSharedScenarioCreator s = new ArtificialSharedScenarioCreator();
