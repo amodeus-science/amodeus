@@ -159,7 +159,8 @@ public class Analysis {
         // default List of Analysis Elements which will be loaded
         analysisElements.add(analysisSummary.getSimulationInformationElement());
         analysisElements.add(analysisSummary.getStatusDistribution());
-        analysisElements.add(analysisSummary.getDistanceElement());
+        // FIXME @joel and clruch fix speed issue and uncomment again
+        // analysisElements.add(analysisSummary.getDistanceElement());
         analysisElements.add(analysisSummary.getTravelTimeAnalysis());
         analysisElements.add(analysisSummary.getNumberPassengersAnalysis());
 

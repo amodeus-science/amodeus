@@ -31,8 +31,7 @@ public class TheRequestApocalypseTest extends TestCase {
         // assertEquals(numReqDes, LegCount.of(population, "av").number().intValue());
 
         /** clean scenario */
-        // TODO @joel clean different way
-        // CleanAidoScenarios.now();
+        // TODO @clruch clean up the scenario
 
     }
 
