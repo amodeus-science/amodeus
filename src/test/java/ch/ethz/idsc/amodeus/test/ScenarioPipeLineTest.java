@@ -6,10 +6,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Objects;
 
-import ch.ethz.idsc.tensor.io.UserName;
-import org.gnu.glpk.GLPK;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -29,6 +28,7 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.testutils.TestPreparer;
 import ch.ethz.idsc.amodeus.testutils.TestServer;
 import ch.ethz.idsc.amodeus.testutils.TestViewer;
+import ch.ethz.idsc.amodeus.util.io.CopyFiles;
 import ch.ethz.idsc.amodeus.util.io.Locate;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
@@ -39,6 +39,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Transpose;
+import ch.ethz.idsc.tensor.io.UserName;
 import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.qty.UnitConvert;
 import ch.ethz.idsc.tensor.red.Mean;
@@ -54,16 +55,22 @@ public class ScenarioPipeLineTest {
 
     @BeforeClass
     public static void setUpOnce() throws Exception {
-        System.out.print("GLPK version is: ");
-        System.out.println(GLPK.glp_version());
+
+        File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
 
         // copy scenario data into main directory
         File scenarioDirectory = //
                 new File(Locate.repoFolder(ScenarioPipeLineTest.class, "amodeus"), "resources/testScenario");
-        File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         GlobalAssert.that(workingDirectory.isDirectory());
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), //
                 workingDirectory.getAbsolutePath());
+
+        // copy LPOptions from other location to ensure no virtual network is created,
+        // the dispatcher used in this test does not require it.
+        File helperDirectory = //
+                new File(Locate.repoFolder(ScenarioPipeLineTest.class, "amodeus"), "resources/helperFiles");
+        CopyFiles.now(helperDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath(), //
+                Arrays.asList("LPOptions.properties"), true);
 
         // run scenario preparer
         testPreparer = TestPreparer.run(workingDirectory);
@@ -78,9 +85,6 @@ public class ScenarioPipeLineTest {
 
     @Test
     public void testPreparer() throws Exception {
-        System.out.print("GLPK version is: ");
-        System.out.println(GLPK.glp_version());
-
         System.out.print("Preparer Test:\t");
 
         // creation of files
@@ -108,9 +112,6 @@ public class ScenarioPipeLineTest {
 
     @Test
     public void testServer() throws Exception {
-        System.out.print("GLPK version is: ");
-        System.out.println(GLPK.glp_version());
-
         System.out.print("Server Test:\t");
 
         // scenario options

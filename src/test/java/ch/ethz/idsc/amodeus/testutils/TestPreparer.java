@@ -62,7 +62,8 @@ public class TestPreparer {
 
         // 3) create virtual Network
         VirtualNetworkPreparer virtualNetworkPreparer = VirtualNetworkPreparer.INSTANCE;
-        VirtualNetwork<Link> virtualNetwork = virtualNetworkPreparer.create(networkPrepared, populationPrepared, scenarioOptions, numRt, endTime);
+        VirtualNetwork<Link> virtualNetwork = //
+                virtualNetworkPreparer.create(networkPrepared, populationPrepared, scenarioOptions, numRt, endTime);
 
         // 4) create TravelData
         /** reading the customer requests */
