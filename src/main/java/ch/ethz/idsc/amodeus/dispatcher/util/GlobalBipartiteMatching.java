@@ -12,6 +12,7 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** perform a global bipartite matching of {@link RoboTaxi} and {@link AVRequest}
  * or {@link Link} using the Hungarian Method */
+//TODO @marcalbert improve documentation of class
 public class GlobalBipartiteMatching extends AbstractRoboTaxiDestMatcher {
 
     protected final GlobalBipartiteCost globalBipartiteCost;

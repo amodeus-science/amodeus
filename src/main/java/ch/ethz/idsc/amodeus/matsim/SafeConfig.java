@@ -7,6 +7,7 @@ import java.util.function.Function;
 
 import org.matsim.core.config.ReflectiveConfigGroup;
 
+//TODO @marcalbert document class
 public class SafeConfig {
     public static SafeConfig wrap(ReflectiveConfigGroup reflectiveConfigGroup) {
         return new SafeConfig(reflectiveConfigGroup);

@@ -13,6 +13,7 @@ import ch.ethz.idsc.amodeus.analysis.element.TravelTimeAnalysis;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 
+//TODO @marcalbert document class
 public class AnalysisSummary implements Serializable {
 
     private final ScenarioParameters scenarioParameters;

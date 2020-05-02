@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Tensor;
 
+//TODO @marcalbert document class
 public class VirtualNode<T> implements Serializable {
     /** index is counting from 0,1,... index is used to assign entries in vectors and matrices */
     private final int index;

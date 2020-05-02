@@ -10,6 +10,7 @@ import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 import ch.ethz.idsc.amodeus.routing.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.routing.NetworkMinTimeDistanceFunction;
 
+//TODO @marcalbert document class
 public enum DistanceHeuristics {
     EUCLIDEAN {
         @Override
