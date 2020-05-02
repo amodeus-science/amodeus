@@ -11,7 +11,7 @@ package ch.ethz.idsc.amodeus.util.hungarian;
  * All entries in the output array are unique.
  * 
  * @author Samuel J. Stauber */
-/* package */ class FastHungarianAlgorithm {
+public class FastHungarianAlgorithm {
     private final EqGraph eq;
 
     public FastHungarianAlgorithm(double[][] costMatrix, double eps) {
