@@ -1,16 +1,22 @@
 package ch.ethz.matsim.av.dispatcher;
 
-import ch.ethz.matsim.av.data.AVVehicle;
-import org.matsim.api.core.v01.events.Event;
-
 import java.util.Map;
 
-public class AVVehicleAssignmentEvent extends Event {
-    final private AVVehicle vehicle;
+import org.matsim.api.core.v01.Id;
+import org.matsim.api.core.v01.events.Event;
+import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 
-    public AVVehicleAssignmentEvent(AVVehicle vehicle, double time) {
+import ch.ethz.matsim.av.data.AVOperator;
+
+public class AVVehicleAssignmentEvent extends Event {
+    private final Id<DvrpVehicle> vehicleId;
+    private final Id<AVOperator> operatorId;
+
+    public AVVehicleAssignmentEvent(Id<AVOperator> operatorId, Id<DvrpVehicle> vehicleId, double time) {
         super(time);
-        this.vehicle = vehicle;
+
+        this.vehicleId = vehicleId;
+        this.operatorId = operatorId;
     }
 
     @Override
@@ -21,8 +27,8 @@ public class AVVehicleAssignmentEvent extends Event {
     @Override
     public Map<String, String> getAttributes() {
         Map<String, String> attr = super.getAttributes();
-        attr.put("vehicle", vehicle.getId().toString());
-        attr.put("operator", vehicle.getOperator().getId().toString());
+        attr.put("vehicle", vehicleId.toString());
+        attr.put("operator", operatorId.toString());
         return attr;
     }
 }

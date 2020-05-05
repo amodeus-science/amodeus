@@ -7,15 +7,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
 
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
+import com.google.inject.TypeLiteral;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import ch.ethz.idsc.amodeus.dispatcher.core.PartitionedDispatcher;
@@ -50,9 +49,7 @@ import ch.ethz.idsc.tensor.io.Export;
 import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.red.Mean;
 import ch.ethz.matsim.av.config.operator.OperatorConfig;
-import ch.ethz.matsim.av.data.AVOperator;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
-import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.router.AVRouter;
 
 /** Implementation of the "DFR algorithm" presented in
@@ -216,39 +213,24 @@ public class DFRStrategy extends PartitionedDispatcher {
     }
 
     public static class Factory implements AVDispatcherFactory {
-        @Inject
-        @Named(AVModule.AV_MODE)
-        private TravelTime travelTime;
-
-        @Inject
-        private EventsManager eventsManager;
-
-        // @Inject
-        // @Named(AVModule.AV_MODE)
-        // private Network network;
-
-        // @Inject(optional = true)
-        // private VirtualNetwork<Link> virtualNetwork;
-
-        @Inject(optional = true)
-        private Map<Id<AVOperator>, VirtualNetwork<Link>> virtualNetworks;
-
-        // @Inject(optional = true)
-        // private TravelData travelData;
-
-        @Inject(optional = true)
-        private Map<Id<AVOperator>, TravelData> travelDatas;
-
-        @Inject
-        private Config config;
-
-        @Inject
-        private MatsimAmodeusDatabase db;
-
         @Override
-        public AVDispatcher createDispatcher(OperatorConfig operatorConfig, AVRouter router, Network network) {
-            return new DFRStrategy(network, virtualNetworks.get(operatorConfig.getId()), config, operatorConfig, travelTime, router, //
-                    eventsManager, travelDatas.get(operatorConfig.getId()), db);
+        public AVDispatcher createDispatcher(InstanceGetter inject) {
+            Config config = inject.get(Config.class);
+            MatsimAmodeusDatabase db = inject.get(MatsimAmodeusDatabase.class);
+            EventsManager eventsManager = inject.get(EventsManager.class);
+
+            OperatorConfig operatorConfig = inject.getModal(OperatorConfig.class);
+            Network network = inject.getModal(Network.class);
+            AVRouter router = inject.getModal(AVRouter.class);
+            TravelTime travelTime = inject.getModal(TravelTime.class);
+
+            VirtualNetwork<Link> virtualNetwork = inject.getModal(new TypeLiteral<VirtualNetwork<Link>>() {
+            });
+
+            TravelData travelData = inject.getModal(TravelData.class);
+
+            return new DFRStrategy(network, virtualNetwork, config, operatorConfig, travelTime, router, //
+                    eventsManager, travelData, db);
         }
     }
 }

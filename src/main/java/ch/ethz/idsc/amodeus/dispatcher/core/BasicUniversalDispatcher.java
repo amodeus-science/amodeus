@@ -96,7 +96,7 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
      * or unit capacity case. */
     protected final void addVehicle(AVVehicle vehicle, RoboTaxiUsageType singleOrShared) {
         RoboTaxi roboTaxi = new RoboTaxi(vehicle, new LinkTimePair(vehicle.getStartLink(), 0.0), vehicle.getStartLink(), singleOrShared);
-        Event event = new AVVehicleAssignmentEvent(vehicle, 0);
+        Event event = new AVVehicleAssignmentEvent(operatorId, vehicle.getId(), 0);
         addRoboTaxi(roboTaxi, event);
         tempLocationTrace.put(roboTaxi, new ArrayList<>());
     }

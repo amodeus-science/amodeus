@@ -23,58 +23,57 @@ import ch.ethz.matsim.av.framework.AVQSimModule;
 import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
 
 public class PreroutingTest {
-	@Test
-	public void testPreRouting() {
-		AVConfigGroup avConfigGroup = new AVConfigGroup();
+    @Test
+    public void testPreRouting() {
+        AVConfigGroup avConfigGroup = new AVConfigGroup();
 
-		AVScoringParameterSet scoringParams = avConfigGroup.getScoringParameters(null);
-		scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
+        AVScoringParameterSet scoringParams = avConfigGroup.getScoringParameters(null);
+        scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
 
-		OperatorConfig operatorConfig = new OperatorConfig();
-		operatorConfig.setPredictRouteTravelTime(true);
-		operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
-		avConfigGroup.addOperator(operatorConfig);
+        OperatorConfig operatorConfig = new OperatorConfig();
+        operatorConfig.setPredictRouteTravelTime(true);
+        operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
+        avConfigGroup.addOperator(operatorConfig);
 
-		Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
-		Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
-		
-		config.plansCalcRoute().setRoutingRandomness(0.0);
+        Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
+        Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
 
-		PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams(AVModule.AV_MODE);
-		modeParams.setMonetaryDistanceRate(0.0);
-		modeParams.setMarginalUtilityOfTraveling(8.86);
-		modeParams.setConstant(0.0);
+        config.plansCalcRoute().setRoutingRandomness(0.0);
 
-		StrategySettings strategySettings = new StrategySettings();
-		strategySettings.setStrategyName("KeepLastSelected");
-		strategySettings.setWeight(1.0);
-		config.strategy().addStrategySettings(strategySettings);
+        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams("av");
+        modeParams.setMonetaryDistanceRate(0.0);
+        modeParams.setMarginalUtilityOfTraveling(8.86);
+        modeParams.setConstant(0.0);
 
-		Controler controler = new Controler(scenario);
-		controler.addOverridingModule(new DvrpModule());
-		controler.addOverridingModule(new AVModule());
-		controler.addOverridingQSimModule(new AVQSimModule());
+        StrategySettings strategySettings = new StrategySettings();
+        strategySettings.setStrategyName("KeepLastSelected");
+        strategySettings.setWeight(1.0);
+        config.strategy().addStrategySettings(strategySettings);
 
-		controler.configureQSimComponents(AVQSimModule::configureComponents);
+        Controler controler = new Controler(scenario);
+        controler.addOverridingModule(new DvrpModule());
+        controler.addOverridingModule(new AVModule());
+        controler.addOverridingQSimModule(new AVQSimModule());
 
-		controler.run();
+        controler.configureQSimComponents(AVQSimModule::configureComponents);
 
-		for (Person person : scenario.getPopulation().getPersons().values()) {
-			Plan plan = person.getSelectedPlan();
+        controler.run();
 
-			for (PlanElement element : plan.getPlanElements()) {
-				if (element instanceof Leg) {
-					Leg leg = (Leg) element;
-					AVRoute route = (AVRoute) leg.getRoute();
+        for (Person person : scenario.getPopulation().getPersons().values()) {
+            Plan plan = person.getSelectedPlan();
 
-					Assert.assertTrue(
-							route.getTravelTime().isDefined() && Double.isFinite(route.getTravelTime().seconds()));
-					Assert.assertTrue(Double.isFinite(route.getDistance()));
-					Assert.assertTrue(Double.isFinite(route.getWaitingTime()));
-					Assert.assertTrue(Double.isFinite(route.getInVehicleTime()));
-					Assert.assertTrue(Double.isFinite(route.getPrice()));
-				}
-			}
-		}
-	}
+            for (PlanElement element : plan.getPlanElements()) {
+                if (element instanceof Leg) {
+                    Leg leg = (Leg) element;
+                    AVRoute route = (AVRoute) leg.getRoute();
+
+                    Assert.assertTrue(route.getTravelTime().isDefined() && Double.isFinite(route.getTravelTime().seconds()));
+                    Assert.assertTrue(Double.isFinite(route.getDistance()));
+                    Assert.assertTrue(Double.isFinite(route.getWaitingTime()));
+                    Assert.assertTrue(Double.isFinite(route.getInVehicleTime()));
+                    Assert.assertTrue(Double.isFinite(route.getPrice()));
+                }
+            }
+        }
+    }
 }

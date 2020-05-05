@@ -48,7 +48,9 @@ public class RunAVExampleTest {
 		Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
 		Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
 
-		PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams(AVModule.AV_MODE);
+		config.controler().setWriteEventsInterval(1);
+		
+		PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams("av"); // TODO: Refactor
 		modeParams.setMonetaryDistanceRate(0.0);
 		modeParams.setMarginalUtilityOfTraveling(8.86);
 		modeParams.setConstant(0.0);
@@ -88,7 +90,7 @@ public class RunAVExampleTest {
 
 		Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
 		Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
-		config.planCalcScore().getOrCreateModeParams(AVModule.AV_MODE);
+		config.planCalcScore().getOrCreateModeParams("av"); // Refactor av
 
 		Controler controler = new Controler(scenario);
 		controler.addOverridingModule(new DvrpModule());
@@ -121,7 +123,7 @@ public class RunAVExampleTest {
 		Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
 		Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
 
-		PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams(AVModule.AV_MODE);
+		PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams("av"); // Refactor av
 		modeParams.setMonetaryDistanceRate(0.0);
 		modeParams.setMarginalUtilityOfTraveling(8.86);
 		modeParams.setConstant(0.0);
@@ -175,7 +177,7 @@ public class RunAVExampleTest {
 		activityParams.setTypicalDuration(1.0);
 		config.planCalcScore().addActivityParams(activityParams);
 
-		PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams(AVModule.AV_MODE);
+		PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams("av"); // Refactor av
 		modeParams.setMonetaryDistanceRate(0.0);
 		modeParams.setMarginalUtilityOfTraveling(8.86);
 		modeParams.setConstant(0.0);
@@ -226,7 +228,7 @@ public class RunAVExampleTest {
 		activityParams.setTypicalDuration(1.0);
 		config.planCalcScore().addActivityParams(activityParams);
 
-		PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams(AVModule.AV_MODE);
+		PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams("av"); // Refactor av
 		modeParams.setMonetaryDistanceRate(0.0);
 		modeParams.setMarginalUtilityOfTraveling(8.86);
 		modeParams.setConstant(0.0);
