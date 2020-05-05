@@ -85,25 +85,20 @@ import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
     }
 
     /* package */ void consolidate() {
-        /** consolidate total distance */
-        double totalUnit = linkTrace.stream()//
-                .mapToDouble(linkId -> db.getOsmLink(linkId).link.getLength()).sum();
-        vehicleTotalDistance = Quantity.of(totalUnit, unit);
-
         /** compute distance at every time step */
         GlobalAssert.that(linkTrace.size() == timeTrace.size());
         NavigableMap<Long, Scalar> distanceAtTime = new TreeMap<Long, Scalar>();
         distanceAtTime.put((long) 0, Quantity.of(0, unit));
         for (int i = 1; i < linkTrace.size(); ++i) {
-            if (linkTrace.get(i - 1) != linkTrace.get(i) || i==linkTrace.size()-1) { // link has changed or last time step
+            if (linkTrace.get(i - 1) != linkTrace.get(i)) { // link has changed
                 Scalar distanceLink = Quantity.of(db.getOsmLink(linkTrace.get(i - 1)).link.getLength(), unit);
                 Scalar distanceBefore = distanceAtTime.lastEntry().getValue();
                 distanceAtTime.put(timeTrace.get(i - 1), distanceBefore.add(distanceLink));
             }
         }
-        
-        System.out.println("vehicleTotalDistance: " + vehicleTotalDistance);
-        System.out.println("distanceAtTime last:  " + distanceAtTime.lastEntry().getValue());
+
+        /** compute total distance */
+        vehicleTotalDistance = distanceAtTime.lastEntry().getValue();
 
     }
 
