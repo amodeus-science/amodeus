@@ -19,7 +19,7 @@ public class RequestHistoriesExportFromEvents implements AnalysisExport {
 
     public RequestHistoriesExportFromEvents(Network network, Config config) {
         this.network = network;
-        eventFile = config.controler().getOutputDirectory() + StaticHelper.FILENAME_MANUAL;
+        eventFile = config.controler().getOutputDirectory() + "/output_events.xml.gz";
     }
 
     @Override
