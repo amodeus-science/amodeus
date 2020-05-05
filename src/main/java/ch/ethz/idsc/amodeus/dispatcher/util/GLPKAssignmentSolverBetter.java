@@ -14,7 +14,10 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-// TODO @marcalbert document file..
+/**
+ * Solves a bipartite matching problem defined by a cost Tensor. This class formulates the problem as a linear program
+ * (with relaxed constraints). Solves the LP using GLPK
+ */
 public class GLPKAssignmentSolverBetter {
 
     private Tensor cost_matrix;
@@ -137,12 +140,12 @@ public class GLPKAssignmentSolverBetter {
         return (Scalar) obj_val.unmodifiable();
     }
 
-    // public void setObjectiveParams(double alpha, double beta, double gamma) {
-    // this.alpha = alpha;
-    // this.beta = beta;
-    // this.gamma = gamma;
-    // }
-
+    /**
+     * Solve Bipartite matching problem defined by @param costMatrix with hot start given by @param lastSol
+     * @param costMatrix
+     * @param lastSol
+     * @return solution to the relaxed linear program formulation of the given bipartite matching problem
+     */
     public Tensor solveAdvanced(Tensor costMatrix, Tensor lastSol) {
         vehicles = Math.abs(costMatrix.get(0).length());
         requests = Math.abs(costMatrix.length());
@@ -172,6 +175,11 @@ public class GLPKAssignmentSolverBetter {
 
     }
 
+    /**
+     * (Pre-)Solve Bipartite matching problem defined by @param costMatrix
+     * @param costMatrix
+     * @return solution to the relaxed linear program formulation of the given bipartite matching problem
+     */
     public Tensor solve(Tensor costMatrix) {
         vehicles = Math.abs(costMatrix.get(0).length());
         requests = Math.abs(costMatrix.length());

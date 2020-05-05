@@ -43,7 +43,6 @@ import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.io.UserName;
 import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.qty.UnitConvert;
-import ch.ethz.idsc.tensor.red.Mean;
 import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.Round;
 
@@ -151,14 +150,6 @@ public class ScenarioExecutionTest {
 
         ScalarAssert scalarAssert = new ScalarAssert();
 
-        /** distance and occupancy ratios */
-        Scalar occupancyRatio = Mean.of(ate.getDistancElement().ratios).Get(0);
-        Scalar distanceRatio = Mean.of(ate.getDistancElement().ratios).Get(1);
-
-        //
-        scalarAssert.add(RationalScalar.of(56, 1125), occupancyRatio);
-        scalarAssert.add((Scalar) RealScalar.of(0.30948).map(Round._5), (Scalar) distanceRatio.map(Round._5));
-
         /** fleet distances */
         assertTrue(Scalars.lessEquals(ZERO_KM, ate.getDistancElement().totalDistance));
         assertTrue(Scalars.lessEquals(ZERO_KM, ate.getDistancElement().totalDistanceWtCst));
@@ -169,11 +160,11 @@ public class ScenarioExecutionTest {
         assertTrue(Scalars.lessEquals(ZERO_KM, (Scalar) s)));
         assertEquals(Total.of(ate.getDistancElement().totalDistancesPerVehicle), ate.getDistancElement().totalDistance);
 
-        scalarAssert.add((Scalar) Quantity.of(2812.02124, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
-        scalarAssert.add((Scalar) Quantity.of(1068.98475, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
-        scalarAssert.add((Scalar) Quantity.of(254.16730, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistancePicku.map(Round._5));
-        scalarAssert.add((Scalar) Quantity.of(1488.86918, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRebal.map(Round._5));
-        scalarAssert.add((Scalar) RealScalar.of(0.38015).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRatio.map(Round._5));
+        scalarAssert.add((Scalar) Quantity.of(2868.91644, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
+        scalarAssert.add((Scalar) Quantity.of(1061.37873, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
+        scalarAssert.add((Scalar) Quantity.of(252.24140, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistancePicku.map(Round._5));
+        scalarAssert.add((Scalar) Quantity.of(1462.29928, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRebal.map(Round._5));
+        scalarAssert.add((Scalar) RealScalar.of(0.36996).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRatio.map(Round._5));
 
         scalarAssert.add((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle), //
                 ate.getDistancElement().totalDistance);
@@ -202,7 +193,8 @@ public class ScenarioExecutionTest {
         scalarAssert.add(Quantity.of(RationalScalar.of(215040, 247), SI.SECOND), ate.getTravelTimeAnalysis().getDrveAggrgte().Get(1));
         scalarAssert.add(Quantity.of(3000, SI.SECOND), ate.getTravelTimeAnalysis().getDrveAggrgte().Get(2));
 
-        /* TODO @sebhoerl Have a look at {AmodeusModule::install}. At some point the travel time calculation in DVRP has been improved.
+        /* TODO @sebhoerl Have a look at {AmodeusModule::install}. At some point the travel time
+         * calculation in DVRP has been improved.
          * Unfortunately, this improvement breaks these tests.
          * The reference numbers here should be adjusted at some point so that the fallback in
          * {AmodeusModule::install} can be removed again.

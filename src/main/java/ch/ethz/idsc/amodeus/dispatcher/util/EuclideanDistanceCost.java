@@ -6,7 +6,9 @@ import org.matsim.api.core.v01.network.Link;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.routing.EuclideanDistanceFunction;
 
-//TODO @marcalbert document class
+/**
+ * Euclidean distance implementation for bipartite matching assignment in dispatcher
+ */
 public enum EuclideanDistanceCost implements GlobalBipartiteCost {
     INSTANCE;
 

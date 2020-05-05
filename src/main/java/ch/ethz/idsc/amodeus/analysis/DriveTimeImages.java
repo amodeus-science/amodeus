@@ -5,7 +5,7 @@ import java.io.File;
 
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.amodeus.analysis.element.TravelTimeAnalysis;
-import ch.ethz.idsc.amodeus.util.math.PositiveSubVector;
+import ch.ethz.idsc.amodeus.util.math.NonNegativeSubVector;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
 public enum DriveTimeImages implements AnalysisExport {
@@ -17,7 +17,7 @@ public enum DriveTimeImages implements AnalysisExport {
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
         TravelTimeAnalysis travelTimeAnalysis = analysisSummary.getTravelTimeAnalysis();
         HistogramReportFigure.of( //
-                PositiveSubVector.of(travelTimeAnalysis.getDriveTimes()), //
+                NonNegativeSubVector.of(travelTimeAnalysis.getDriveTimes()), //
                 travelTimeAnalysis.getDrveAggrgte().Get(2), //
                 colorDataIndexed, //
                 relativeDirectory, //

@@ -5,10 +5,17 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Sign;
 
-public enum PositiveSubVector {
+/**
+ * Non-negative components of a vector
+ */
+public enum NonNegativeSubVector {
     ;
 
-    // TODO @marcalbert document this function
+    /**
+     * Returns the non-negative components of @param vector as a new tensor/vector
+     * @param vector
+     * @return
+     */
     public static Tensor of(Tensor vector) {
         return Tensor.of(vector.flatten(-1) //
                 .map(Scalar.class::cast) //

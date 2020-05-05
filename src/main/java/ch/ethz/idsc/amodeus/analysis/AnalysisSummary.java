@@ -17,7 +17,7 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 public class AnalysisSummary implements Serializable {
 
     private final ScenarioParameters scenarioParameters;
-    private final RequestRobotaxiInformationElement simulationInformationElement = new RequestRobotaxiInformationElement();
+    private final RequestRobotaxiInformationElement reqInfoElement;
     private final StatusDistributionElement statusDistribution = new StatusDistributionElement();
     private final DistanceElement distanceElement;
     private final TravelTimeAnalysis travelTimeAnalysis = new TravelTimeAnalysis();
@@ -30,8 +30,10 @@ public class AnalysisSummary implements Serializable {
     public AnalysisSummary(int numVehicles, int size, MatsimAmodeusDatabase db, //
             ScenarioOptions scenarioOptions) throws IOException {
         Objects.requireNonNull(db);
-        distanceElement = new DistanceElement(numVehicles, size, db);
+        reqInfoElement= new RequestRobotaxiInformationElement();
+        distanceElement = new DistanceElement(numVehicles, size, db,reqInfoElement);
         scenarioParameters = new ScenarioParameters(scenarioOptions);
+
     }
 
     public ScenarioParameters getScenarioParameters() {
@@ -39,7 +41,7 @@ public class AnalysisSummary implements Serializable {
     }
 
     public RequestRobotaxiInformationElement getSimulationInformationElement() {
-        return simulationInformationElement;
+        return reqInfoElement;
     }
 
     public StatusDistributionElement getStatusDistribution() {
