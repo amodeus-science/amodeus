@@ -16,6 +16,7 @@ import ch.ethz.idsc.amodeus.analysis.report.TtlValIdent;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
+import ch.ethz.idsc.amodeus.net.VehicleContainer;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -30,12 +31,12 @@ import ch.ethz.idsc.tensor.sca.InvertUnlessZero;
 import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
 
 public class DistanceElement implements AnalysisElement, TotalValueAppender {
- // TODO @joel maybe make customizable or assign task to somebody else
-    public static final Unit TARGET_UNIT = Unit.of("km"); 
+    // TODO @joel maybe make customizable or assign task to somebody else
+    public static final Unit TARGET_UNIT = Unit.of("km");
     // ---
 
     private int simObjIndex = 0; // Index for the Simulation Object which is loaded
-    private List<VehicleTraceAnalyzer> list = new ArrayList<>();
+    private List<VehicleTraceAnalyzer> traceAnalyzers = new ArrayList<>();
     /** vector for instance {10, 20, ...} */
     public final Tensor time = Tensors.empty();
     /** vector for instance { 0.0, 0.2, 0.1, 0.3, ...} */
@@ -60,7 +61,7 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
     public boolean consolidated = false;
 
     public DistanceElement(int numVehicles, int size, MatsimAmodeusDatabase db) {
-        IntStream.range(0, numVehicles).forEach(i -> list.add(new VehicleTraceAnalyzer(size, db)));
+        IntStream.range(0, numVehicles).forEach(i -> traceAnalyzers.add(new VehicleTraceAnalyzer(size, db)));
     }
 
     @Override
@@ -78,29 +79,35 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
         avgOccupancy = Mean.of(occupancyTensor).Get();
 
         /** register Simulation Object for distance analysis */
-        // for (VehicleContainer vehicleContainer : simulationObject.vehicles)
-        //     list.get(vehicleContainer.vehicleIndex).register(simObjIndex, vehicleContainer);
-        simulationObject.vehicles.parallelStream().forEach(vehicleContainer -> //
-                list.get(vehicleContainer.vehicleIndex).register(simObjIndex, vehicleContainer));
+        for (VehicleContainer vehicleContainer : simulationObject.vehicles) {
+            // if (vehicleContainer.vehicleIndex == 1) {
+            // for (int li : vehicleContainer.linkTrace)
+            // System.out.print(li + ", ");
+            // System.out.println();
+            // }
+            // FIXME solve the very very very bad speed sproblem here! TODO big massive FIXME FIXME
+            traceAnalyzers.get(vehicleContainer.vehicleIndex).register(simObjIndex, vehicleContainer);
+        }
 
         ++simObjIndex;
     }
 
     @Override
     public void consolidate() {
-        list.forEach(VehicleTraceAnalyzer::consolidate);
+
+        traceAnalyzers.forEach(VehicleTraceAnalyzer::consolidate);
 
         ScalarUnaryOperator any2target = UnitConvert.SI().to(TARGET_UNIT);
-        Tensor distTotal = list.stream().map(vs -> vs.stepDistanceTotal).reduce(Tensor::add).get().map(any2target);
-        Tensor distWtCst = list.stream().map(vs -> vs.stepDistanceWithCustomer).reduce(Tensor::add).get().map(any2target);
-        Tensor distPicku = list.stream().map(vs -> vs.stepDistancePickup).reduce(Tensor::add).get().map(any2target);
-        Tensor distRebal = list.stream().map(vs -> vs.stepDistanceRebalance).reduce(Tensor::add).get().map(any2target);
+        Tensor distTotal = traceAnalyzers.stream().map(vs -> vs.stepDistanceTotal).reduce(Tensor::add).get().map(any2target);
+        Tensor distWtCst = traceAnalyzers.stream().map(vs -> vs.stepDistanceWithCustomer).reduce(Tensor::add).get().map(any2target);
+        Tensor distPicku = traceAnalyzers.stream().map(vs -> vs.stepDistancePickup).reduce(Tensor::add).get().map(any2target);
+        Tensor distRebal = traceAnalyzers.stream().map(vs -> vs.stepDistanceRebalance).reduce(Tensor::add).get().map(any2target);
         Tensor distRatio = distTotal.map(InvertUnlessZero.FUNCTION).pmul(distWtCst);
         // ---
         distancesOverDay = Transpose.of(Tensors.of(distTotal, distWtCst, distPicku, distRebal, distRatio));
 
         // total distances driven per vehicle
-        totalDistancesPerVehicle = Tensor.of(list.stream().map(vs -> Total.of(vs.stepDistanceTotal))).map(any2target);
+        totalDistancesPerVehicle = Tensor.of(traceAnalyzers.stream().map(vs -> Total.of(vs.stepDistanceTotal))).map(any2target);
 
         // Total Values For one Day
         totalDistance = totalDistancesPerVehicle.stream().reduce(Tensor::add).get().Get();
@@ -113,9 +120,10 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
         consolidated = true;
     }
 
-    /** @return An unmodifiable List of all the Vehicle Statistics for all Vehicles in the fleet. */
+    /** @return An unmodifiable List of all the Vehicle Statistics for all Vehicles
+     *         in the fleet. */
     public List<VehicleTraceAnalyzer> getVehicleStatistics() {
-        return Collections.unmodifiableList(list);
+        return Collections.unmodifiableList(traceAnalyzers);
     }
 
     @Override // from TotalValueAppender
