@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.VehicleContainer;
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Array;
@@ -54,6 +55,7 @@ import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
     }
 
     public void register(int simObjIndex, VehicleContainer vc, long now) {
+        // recording link and time trace
         for (int linkID : vc.linkTrace) {
             if (linkTrace.size() == 0 || linkTrace.get(linkTrace.size() - 1) != linkID) {
                 linkTrace.add(linkID);
@@ -83,11 +85,26 @@ import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
     }
 
     /* package */ void consolidate() {
+        /** consolidate total distance */
         double totalUnit = linkTrace.stream()//
                 .mapToDouble(linkId -> db.getOsmLink(linkId).link.getLength()).sum();
         vehicleTotalDistance = Quantity.of(totalUnit, unit);
 
-        // consolidate(linkBuffer);
+        /** compute distance at every time step */
+        GlobalAssert.that(linkTrace.size() == timeTrace.size());
+        NavigableMap<Long, Scalar> distanceAtTime = new TreeMap<Long, Scalar>();
+        distanceAtTime.put((long) 0, Quantity.of(0, unit));
+        for (int i = 1; i < linkTrace.size(); ++i) {
+            if (linkTrace.get(i - 1) != linkTrace.get(i) || i==linkTrace.size()-1) { // link has changed or last time step
+                Scalar distanceLink = Quantity.of(db.getOsmLink(linkTrace.get(i - 1)).link.getLength(), unit);
+                Scalar distanceBefore = distanceAtTime.lastEntry().getValue();
+                distanceAtTime.put(timeTrace.get(i - 1), distanceBefore.add(distanceLink));
+            }
+        }
+        
+        System.out.println("vehicleTotalDistance: " + vehicleTotalDistance);
+        System.out.println("distanceAtTime last:  " + distanceAtTime.lastEntry().getValue());
+
     }
 
     private void consolidate(List<Integer> toBeFlushed) {
