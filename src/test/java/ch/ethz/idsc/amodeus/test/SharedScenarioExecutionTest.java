@@ -130,8 +130,8 @@ public class SharedScenarioExecutionTest {
         assertEquals(RealScalar.of(ate.getSimulationInformationElement().vehicleSize()), e));
 
         /** distance and occupancy ratios */
-        Scalar occupancyRatio = Mean.of(ate.getDistancElement().ratios).Get(0);
-        Scalar distanceRatio = Mean.of(ate.getDistancElement().ratios).Get(1);
+        Scalar occupancyRatio = Mean.of(ate.getDistancElement().distanceRatioOverDay).Get(0);
+        Scalar distanceRatio = Mean.of(ate.getDistancElement().distanceRatioOverDay).Get(1);
 
         ScalarAssert scalarAssert = new ScalarAssert();
 

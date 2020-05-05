@@ -49,7 +49,7 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
     /** this contains the distances traveled in each time step with the format of a row being:
      * {total distance, with customer,pickup,rebalance} */
     public Tensor distancesOverDay = Tensors.empty(); // initialized to avoid errors in later steps
-    public Tensor ratios = Tensors.empty();
+    public Tensor distanceRatioOverDay = Tensors.empty();
     public Scalar avgTripDistance;
 
     private final RequestRobotaxiInformationElement requestElement;
@@ -66,10 +66,10 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
         time.append(RealScalar.of(simulationObject.now));
         times.add(simulationObject.now);
 
-        /** Get the Occupancy Ratio per TimeStep */
-        Tensor numStatus = StaticHelper.getNumStatus(simulationObject);
-        Scalar occupancyRatio = numStatus.Get(RoboTaxiStatus.DRIVEWITHCUSTOMER.ordinal()).//
-                divide(RealScalar.of(simulationObject.vehicles.size()));
+        // /** Get the Occupancy Ratio per TimeStep */
+        // Tensor numStatus = StaticHelper.getNumStatus(simulationObject);
+        // Scalar occupancyRatio = numStatus.Get(RoboTaxiStatus.DRIVEWITHCUSTOMER.ordinal()).//
+        // divide(RealScalar.of(simulationObject.vehicles.size()));
 
         /** register Simulation Object for distance analysis */
         for (VehicleContainer vehicleContainer : simulationObject.vehicles) {
@@ -96,7 +96,8 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
                 totalDistanceWtCst.divide(totalDistance) : RealScalar.of(-1);
         // distance per time of day
         distancesOverDay.append(Tensors.vector(0, 0, 0, 0));
-        ratios.append(Tensors.vector(0, 0));
+//      distanceRatioOverDay.append(Tensors.vector(0, 0));
+        distanceRatioOverDay.append(RealScalar.ONE);
         for (int i = 1; i < times.size() - 1; ++i) {
             Long lTime = times.get(i - 1);
             Long uTime = times.get(i);
@@ -109,9 +110,11 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
                     stepDistance.Get(1).divide(stepDistance.Get(0)) : RealScalar.ONE;
             if (Scalars.isZero(distanceRatio))
                 distanceRatio = RealScalar.ZERO; // to remove units
-            ratios.append(Tensors.of(distanceRatio, distanceRatio));
+//            distanceRatioOverDay.append(Tensors.of(distanceRatio, distanceRatio));
+            distanceRatioOverDay.append(distanceRatio);
         }
-        ratios.append(Tensors.vector(0, 0));
+//        distanceRatioOverDay.append(Tensors.vector(0, 0));
+        distanceRatioOverDay.append(RealScalar.ONE);
         distancesOverDay.append(Tensors.vector(0, 0, 0, 0));
         /** average request distance */
         avgTripDistance = requestElement.reqsize() > 0 ? //

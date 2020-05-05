@@ -19,7 +19,7 @@ import ch.ethz.idsc.tensor.io.TableBuilder;
 
         TableBuilder tableBuilder = new TableBuilder();
         for (int index = 0; index < distanceElement.time.length(); ++index)
-            tableBuilder.appendRow(distanceElement.time.Get(index), distanceElement.ratios.get(index));
+            tableBuilder.appendRow(distanceElement.time.Get(index), distanceElement.distanceRatioOverDay.get(index));
 
         try {
             SaveUtils.saveFile(tableBuilder.getTable(), IDENTIFIER, relativeDirectory);

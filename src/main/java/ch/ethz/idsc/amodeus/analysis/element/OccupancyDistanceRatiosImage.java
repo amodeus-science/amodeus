@@ -9,7 +9,9 @@ import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.plot.AmodeusChartUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Dimensions;
+import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.fig.VisualRow;
 import ch.ethz.idsc.tensor.fig.VisualSet;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
@@ -23,11 +25,23 @@ public enum OccupancyDistanceRatiosImage implements AnalysisExport {
     public static final int HEIGHT = 750;
 
     @Override
-    public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
-        DistanceElement de = analysisSummary.getDistanceElement();
-        Tensor ratios = de.ratios.unmodifiable();
+    public void summaryTarget(AnalysisSummary summary, File relDir, ColorDataIndexed colorData) {
+        DistanceElement de = summary.getDistanceElement();
+        StatusDistributionElement sd = summary.getStatusDistribution();
+
+        Tensor distanceRatios = de.distanceRatioOverDay;
+        Tensor occupRatios = Transpose.of(sd.occupancyTensor).get(1);
+
+        Tensor ratios = Transpose.of(Tensors.of(occupRatios,distanceRatios));
+
+        // Tensor ratios = de.distanceRatioOverDay.unmodifiable();
+
         Tensor time = de.time.unmodifiable();
-        compute(ratios, time, colorDataIndexed, relativeDirectory);
+        
+        System.out.println(Dimensions.of(ratios));
+        System.out.println(Dimensions.of(time));
+        
+        compute(ratios, time, colorData, relDir);
     }
 
     /* package */ void compute(Tensor ratios, Tensor time, ColorDataIndexed colorData, File dir) {

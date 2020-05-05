@@ -151,8 +151,8 @@ public class ScenarioExecutionTest {
         ScalarAssert scalarAssert = new ScalarAssert();
 
         /** distance and occupancy ratios */
-        Scalar occupancyRatio = Mean.of(ate.getDistancElement().ratios).Get(0);
-        Scalar distanceRatio = Mean.of(ate.getDistancElement().ratios).Get(1);
+        Scalar occupancyRatio = Mean.of(ate.getDistancElement().distanceRatioOverDay).Get(0);
+        Scalar distanceRatio = Mean.of(ate.getDistancElement().distanceRatioOverDay).Get(1);
 
         //
         scalarAssert.add(RationalScalar.of(56, 1125), occupancyRatio);
