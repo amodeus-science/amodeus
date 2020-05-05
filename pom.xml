@@ -29,7 +29,7 @@
 		<dependency>
 			<groupId>ch.ethz.idsc</groupId>
 			<artifactId>tensor</artifactId>
-			<version>0.8.1</version>
+			<version>0.8.4</version>
 		</dependency>
 		<dependency>
 			<groupId>de.lmu.ifi.dbs.elki</groupId>
@@ -67,7 +67,7 @@
 	<repositories>
 		<repository>
 			<id>tensor-mvn-repo</id>
-			<url>https://raw.github.com/idsc-frazzoli/tensor/mvn-repo/</url>
+			<url>https://raw.github.com/amodeus-science/tensor/mvn-repo/</url>
 		</repository>
 		<repository>
 			<id>XypronRelease</id>
@@ -139,7 +139,7 @@
 						<include>**/*</include>
 					</includes>
 					<repositoryName>amodeus</repositoryName>
-					<repositoryOwner>idsc-frazzoli</repositoryOwner>
+					<repositoryOwner>amodeus-science</repositoryOwner>
 				</configuration>
 				<executions>
 					<execution>
