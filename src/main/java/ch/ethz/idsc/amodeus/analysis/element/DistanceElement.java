@@ -96,7 +96,7 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
             Long uTime = times.get(i);
             Tensor stepDistance = Tensors.vector(0, 0, 0, 0);
             for (VehicleTraceAnalyzer tA : traceAnalyzers) {
-                stepDistance = stepDistance.add(tA.distanceAtStep(lTime, uTime));
+                stepDistance = stepDistance.add(tA.labeledIntervalDistance(lTime, uTime));
             }
             distancesOverDay.append(stepDistance);
             Scalar distanceRatio = !Scalars.isZero(stepDistance.Get(0)) ? //

@@ -2,34 +2,26 @@
 package ch.ethz.idsc.amodeus.analysis.element;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.Objects;
-import java.util.Set;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.VehicleContainer;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.qty.Unit;
-import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
 
+// TODO the linkTrace and timeTrace lists could be partially emptied during the register 
+// steps to save memory, this should be done in the long-term
 /* package */ class VehicleTraceAnalyzer {
     private final MatsimAmodeusDatabase db;
     private final Unit unit;
@@ -107,10 +99,8 @@ import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
 
     /** @return at time step {@link Long} @param time1 encoded
      *         as {total distance, with customer,pickup,rebalance} */
-    /* package */ Tensor distanceAtStep(Long time1, Long time2) {
-
+    /* package */ Tensor labeledIntervalDistance(Long time1, Long time2) {
         Scalar distance = distanceInInterval(time1, time2);
-
         RoboTaxiStatus status = statusAtTime.floorEntry(time1).getValue();
         if (status.equals(RoboTaxiStatus.DRIVEWITHCUSTOMER))
             return Tensors.of(distance, distance, RealScalar.ZERO, RealScalar.ZERO);
