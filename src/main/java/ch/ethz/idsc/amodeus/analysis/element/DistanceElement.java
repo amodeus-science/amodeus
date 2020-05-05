@@ -4,10 +4,8 @@ package ch.ethz.idsc.amodeus.analysis.element;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.IntStream;
 
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
@@ -17,6 +15,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.net.VehicleContainer;
+import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
@@ -25,25 +24,20 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.qty.Unit;
 import ch.ethz.idsc.tensor.qty.UnitConvert;
-import ch.ethz.idsc.tensor.red.Mean;
 import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
 
 public class DistanceElement implements AnalysisElement, TotalValueAppender {
     // TODO @joel maybe make customizable or assign task to somebody else
     public static final Unit TARGET_UNIT = Unit.of("km");
-    // ---
 
+    // ---
     private int simObjIndex = 0; // Index for the Simulation Object which is loaded
     private List<VehicleTraceAnalyzer> traceAnalyzers = new ArrayList<>();
+
     /** vector for instance {10, 20, ...} */
     public final Tensor time = Tensors.empty();
-
     private final List<Long> times = new ArrayList<>();
-
-    /** vector for instance { 0.0, 0.2, 0.1, 0.3, ...} */
-    public final Tensor occupancyTensor = Tensors.empty();
-    public final Set<Integer> requestIndices = new HashSet<>();
 
     /** fields assigned in compile */
     public Tensor totalDistancesPerVehicle = RealScalar.of(-1); // initialized to avoid errors in later steps
@@ -56,13 +50,14 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
      * {total distance, with customer,pickup,rebalance} */
     public Tensor distancesOverDay = Tensors.empty(); // initialized to avoid errors in later steps
     public Tensor ratios = Tensors.empty();
+    public Scalar avgTripDistance;
 
-    // open TODO check all below...
-    private Scalar avgTripDistance = RealScalar.of(-1); // initialized to avoid errors in later steps
-    public Scalar avgOccupancy = RealScalar.of(-1); // initialized to avoid errors in later steps
+    private final RequestRobotaxiInformationElement requestElement;
 
-    public DistanceElement(int numVehicles, int size, MatsimAmodeusDatabase db) {
+    public DistanceElement(int numVehicles, int size, MatsimAmodeusDatabase db, //
+            RequestRobotaxiInformationElement requestElement) {
         IntStream.range(0, numVehicles).forEach(i -> traceAnalyzers.add(new VehicleTraceAnalyzer(size, db)));
+        this.requestElement = requestElement;
     }
 
     @Override
@@ -70,13 +65,12 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
         /** Get the TimeStep */
         time.append(RealScalar.of(simulationObject.now));
         times.add(simulationObject.now);
-        simulationObject.requests.forEach(requestContainer -> requestIndices.add(requestContainer.requestIndex));
+
         /** Get the Occupancy Ratio per TimeStep */
         Tensor numStatus = StaticHelper.getNumStatus(simulationObject);
         Scalar occupancyRatio = numStatus.Get(RoboTaxiStatus.DRIVEWITHCUSTOMER.ordinal()).//
                 divide(RealScalar.of(simulationObject.vehicles.size()));
-        occupancyTensor.append(occupancyRatio);
-        avgOccupancy = Mean.of(occupancyTensor).Get();
+
         /** register Simulation Object for distance analysis */
         for (VehicleContainer vehicleContainer : simulationObject.vehicles) {
             traceAnalyzers.get(vehicleContainer.vehicleIndex)//
@@ -119,6 +113,9 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
         }
         ratios.append(Tensors.vector(0, 0));
         distancesOverDay.append(Tensors.vector(0, 0, 0, 0));
+        /** average request distance */
+        avgTripDistance = requestElement.reqsize() > 0 ? //
+                totalDistanceWtCst.divide(RationalScalar.of(requestElement.reqsize(), 1)) : RealScalar.ZERO;
     }
 
     /** @return An unmodifiable List of all the Vehicle Statistics for all Vehicles
@@ -135,7 +132,6 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
         map.put(TtlValIdent.TOTALROBOTAXIDISTANCEWTCST, String.valueOf(totalDistanceWtCst));
         map.put(TtlValIdent.TOTALROBOTAXIDISTANCEREB, String.valueOf(totalDistanceRebal));
         map.put(TtlValIdent.DISTANCERATIO, String.valueOf(totalDistanceRatio));
-        map.put(TtlValIdent.OCCUPANCYRATIO, String.valueOf(avgOccupancy));
         map.put(TtlValIdent.AVGTRIPDISTANCE, String.valueOf(avgTripDistance));
         return map;
     }
