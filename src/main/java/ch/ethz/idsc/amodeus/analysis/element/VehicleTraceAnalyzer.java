@@ -55,9 +55,10 @@ import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
 
     public void register(int simObjIndex, VehicleContainer vc, long now) {
         for (int linkID : vc.linkTrace) {
-            if (linkTrace.size() == 0 || linkTrace.get(linkTrace.size()-1) != linkID)
+            if (linkTrace.size() == 0 || linkTrace.get(linkTrace.size() - 1) != linkID) {
                 linkTrace.add(linkID);
                 timeTrace.add(now);
+            }
         }
 
         // System.out.println(linkTrace);
