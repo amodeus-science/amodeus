@@ -21,13 +21,9 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.alg.Join;
-import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.qty.Unit;
 import ch.ethz.idsc.tensor.qty.UnitConvert;
 import ch.ethz.idsc.tensor.red.Mean;
-import ch.ethz.idsc.tensor.red.Total;
-import ch.ethz.idsc.tensor.sca.InvertUnlessZero;
 import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
 
 public class DistanceElement implements AnalysisElement, TotalValueAppender {
@@ -44,15 +40,15 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
     public final Set<Integer> requestIndices = new HashSet<>();
 
     /** fields assigned in compile */
-    public Tensor totalDistancesPerVehicle;
-    public Tensor distancesOverDay;
-    public Scalar totalDistance;
-    public Scalar totalDistanceWtCst;
-    public Scalar totalDistancePicku;
-    public Scalar totalDistanceRebal;
-    public Scalar totalDistanceRatio;
-    private Scalar avgTripDistance;
-    public Scalar avgOccupancy;
+    public Tensor totalDistancesPerVehicle = RealScalar.of(-1); // FIXME
+    public Tensor distancesOverDay = RealScalar.of(-1);// FIXME
+    public Scalar totalDistance = RealScalar.of(-1);// FIXME
+    public Scalar totalDistanceWtCst = RealScalar.of(-1);// FIXME
+    public Scalar totalDistancePicku = RealScalar.of(-1);// FIXME
+    public Scalar totalDistanceRebal = RealScalar.of(-1);// FIXME
+    public Scalar totalDistanceRatio = RealScalar.of(-1);// FIXME
+    private Scalar avgTripDistance = RealScalar.of(-1);// FIXME
+    public Scalar avgOccupancy = RealScalar.of(-1);// FIXME
 
     /** distRatio */
     public Tensor ratios;
@@ -80,13 +76,9 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
 
         /** register Simulation Object for distance analysis */
         for (VehicleContainer vehicleContainer : simulationObject.vehicles) {
-            // if (vehicleContainer.vehicleIndex == 1) {
-            // for (int li : vehicleContainer.linkTrace)
-            // System.out.print(li + ", ");
-            // System.out.println();
-            // }
             // FIXME solve the very very very bad speed sproblem here! TODO big massive FIXME FIXME
-            traceAnalyzers.get(vehicleContainer.vehicleIndex).register(simObjIndex, vehicleContainer);
+            traceAnalyzers.get(vehicleContainer.vehicleIndex)//
+                    .register(simObjIndex, vehicleContainer, simulationObject.now);
         }
 
         ++simObjIndex;
@@ -94,30 +86,36 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
 
     @Override
     public void consolidate() {
+        ScalarUnaryOperator any2target = UnitConvert.SI().to(TARGET_UNIT);
 
         traceAnalyzers.forEach(VehicleTraceAnalyzer::consolidate);
 
-        ScalarUnaryOperator any2target = UnitConvert.SI().to(TARGET_UNIT);
-        Tensor distTotal = traceAnalyzers.stream().map(vs -> vs.stepDistanceTotal).reduce(Tensor::add).get().map(any2target);
-        Tensor distWtCst = traceAnalyzers.stream().map(vs -> vs.stepDistanceWithCustomer).reduce(Tensor::add).get().map(any2target);
-        Tensor distPicku = traceAnalyzers.stream().map(vs -> vs.stepDistancePickup).reduce(Tensor::add).get().map(any2target);
-        Tensor distRebal = traceAnalyzers.stream().map(vs -> vs.stepDistanceRebalance).reduce(Tensor::add).get().map(any2target);
-        Tensor distRatio = distTotal.map(InvertUnlessZero.FUNCTION).pmul(distWtCst);
-        // ---
-        distancesOverDay = Transpose.of(Tensors.of(distTotal, distWtCst, distPicku, distRebal, distRatio));
+        totalDistance = (Scalar) traceAnalyzers.stream()//
+                .map(ta -> (Tensor) ta.vehicleTotalDistance).reduce(Tensor::add).get().map(any2target);
 
-        // total distances driven per vehicle
-        totalDistancesPerVehicle = Tensor.of(traceAnalyzers.stream().map(vs -> Total.of(vs.stepDistanceTotal))).map(any2target);
-
-        // Total Values For one Day
-        totalDistance = totalDistancesPerVehicle.stream().reduce(Tensor::add).get().Get();
-        totalDistanceWtCst = distWtCst.stream().reduce(Tensor::add).get().Get();
-        totalDistancePicku = distPicku.stream().reduce(Tensor::add).get().Get();
-        totalDistanceRebal = distRebal.stream().reduce(Tensor::add).get().Get();
-        totalDistanceRatio = totalDistanceWtCst.divide(totalDistance);
-        avgTripDistance = totalDistanceWtCst.divide(RealScalar.of(requestIndices.size()));
-        ratios = Transpose.of(Join.of(Tensors.of(occupancyTensor), Tensors.of(distRatio)));
-        consolidated = true;
+        // traceAnalyzers.forEach(VehicleTraceAnalyzer::consolidate);
+        //
+        // ScalarUnaryOperator any2target = UnitConvert.SI().to(TARGET_UNIT);
+        // Tensor distTotal = traceAnalyzers.stream().map(vs -> vs.stepDistanceTotal).reduce(Tensor::add).get().map(any2target);
+        // Tensor distWtCst = traceAnalyzers.stream().map(vs -> vs.stepDistanceWithCustomer).reduce(Tensor::add).get().map(any2target);
+        // Tensor distPicku = traceAnalyzers.stream().map(vs -> vs.stepDistancePickup).reduce(Tensor::add).get().map(any2target);
+        // Tensor distRebal = traceAnalyzers.stream().map(vs -> vs.stepDistanceRebalance).reduce(Tensor::add).get().map(any2target);
+        // Tensor distRatio = distTotal.map(InvertUnlessZero.FUNCTION).pmul(distWtCst);
+        // // ---
+        // distancesOverDay = Transpose.of(Tensors.of(distTotal, distWtCst, distPicku, distRebal, distRatio));
+        //
+        // // total distances driven per vehicle
+        // totalDistancesPerVehicle = Tensor.of(traceAnalyzers.stream().map(vs -> Total.of(vs.stepDistanceTotal))).map(any2target);
+        //
+        // // Total Values For one Day
+        // totalDistance = totalDistancesPerVehicle.stream().reduce(Tensor::add).get().Get();
+        // totalDistanceWtCst = distWtCst.stream().reduce(Tensor::add).get().Get();
+        // totalDistancePicku = distPicku.stream().reduce(Tensor::add).get().Get();
+        // totalDistanceRebal = distRebal.stream().reduce(Tensor::add).get().Get();
+        // totalDistanceRatio = totalDistanceWtCst.divide(totalDistance);
+        // avgTripDistance = totalDistanceWtCst.divide(RealScalar.of(requestIndices.size()));
+        // ratios = Transpose.of(Join.of(Tensors.of(occupancyTensor), Tensors.of(distRatio)));
+        // consolidated = true;
     }
 
     /** @return An unmodifiable List of all the Vehicle Statistics for all Vehicles
