@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.Objects;
 import java.util.Set;
@@ -18,8 +19,10 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.VehicleContainer;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
@@ -112,8 +115,8 @@ import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
      *         as {total distance, with customer,pickup,rebalance} */
     /* package */ Tensor distanceAtStep(Long time1, Long time2) {
 
-        Scalar distance = distanceFromTo(time1, time2);
-        
+        Scalar distance = distanceInInterval(time1, time2);
+
         RoboTaxiStatus status = statusAtTime.floorEntry(time1).getValue();
         if (status.equals(RoboTaxiStatus.DRIVEWITHCUSTOMER))
             return Tensors.of(distance, distance, RealScalar.ZERO, RealScalar.ZERO);
@@ -123,64 +126,23 @@ import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
             return Tensors.of(distance, RealScalar.ZERO, RealScalar.ZERO, distance);
         return Tensors.of(distance, RealScalar.ZERO, RealScalar.ZERO, RealScalar.ZERO);
     }
-    
-    private Scalar distanceFromTo(Long timeLow, Long timeHigh) {
-        
-        Scalar distanceBefore = distanceAtTime.lowerEntry(timeLow).getValue();
-        Scalar distanceAfter = Objects.nonNull(distanceAtTime.ceilingEntry(timeHigh)) ? //
-                distanceAtTime.ceilingEntry(timeHigh).getValue() : //
-                    distanceBefore;
-                
-                
-                
-        
-        return distanceAfter.subtract(distanceBefore);
-        
-        
-//        return Quantity.of(1, "ft");
-        
-//        // TODO with linear implementation instead of floor
-//        Scalar distanceBefore = distanceAtTime.floorEntry(distanceAtTime.lowerKey(time1)).getValue();
-//        Scalar distanceAfter = distanceAtTime.ceilingEntry(time1).getValue();
-//        Scalar distance = distanceAfter.subtract(distanceBefore);
-        
-    }
-    
 
-    private void consolidate(List<Integer> toBeFlushed) {
+    /* package */ Scalar distanceInInterval(Long timeLow, Long timeHigh) {
+        // get lower and ceiling entry
+        Entry<Long, Scalar> entryLower = distanceAtTime.lowerEntry(timeLow);
+        Entry<Long, Scalar> entryHigher = Objects.nonNull(distanceAtTime.ceilingEntry(timeHigh)) ? //
+                distanceAtTime.ceilingEntry(timeHigh) : //
+                entryLower;
 
-        // for (int linkIdx : toBeFlushed) {
-        // final double distance = db.getOsmLink(linkIdx).link.getLength();
-        //
-        // Set<Integer> relevantObj = linkToObj.get(linkIdx).stream().filter(obj -> objStatus.get(obj).isDriving()).collect(Collectors.toSet());
-        // final Scalar part = Quantity.of(distance / relevantObj.size(), unit);
-        // for (int obj : relevantObj) {
-        // addDistanceAt(obj, objStatus.get(obj), part);
-        // linkToObj.get(linkIdx).remove(obj);
-        // }
-        // }
-        // linkBuffer.clear();
-    }
+        // compute distance at timeLow and timeHigh with linear interpolation
+        Scalar dLow = VehicleTraceHelper.distanceAt(timeLow, entryLower, entryHigher);
+        Scalar dHigh = VehicleTraceHelper.distanceAt(timeHigh, entryLower, entryHigher);
 
-    private void addDistanceAt(int index, RoboTaxiStatus status, Scalar distance) {
-        // if (index < stepDistanceTotal.length()) {
-        // switch (status) {
-        // case DRIVEWITHCUSTOMER:
-        // stepDistanceWithCustomer.set(distance::add, index);
-        // stepDistanceTotal.set(distance::add, index); // applies to all three
-        // break;
-        // case DRIVETOCUSTOMER:
-        // stepDistancePickup.set(distance::add, index);
-        // stepDistanceTotal.set(distance::add, index); // applies to all three
-        // break;
-        // case REBALANCEDRIVE:
-        // stepDistanceRebalance.set(distance::add, index);
-        // stepDistanceTotal.set(distance::add, index); // applies to all three
-        // break;
-        // default:
-        // break;
-        // }
-        // }
+        GlobalAssert.that(Scalars.lessEquals(dLow, vehicleTotalDistance));
+        GlobalAssert.that(Scalars.lessEquals(dHigh, vehicleTotalDistance));
+
+        // return the difference
+        return dHigh.subtract(dLow);
     }
 }
 
