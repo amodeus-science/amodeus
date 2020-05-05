@@ -63,8 +63,8 @@ public class ShortestDurationCalculator {
 
     public Path computePath(Tensor pickupLoc, Tensor dropoffLoc) {
         return computePath( //
-                fastLinkLookup.getLinkFromWGS84(TensorCoords.toCoord(pickupLoc)), //
-                fastLinkLookup.getLinkFromWGS84(TensorCoords.toCoord(dropoffLoc)));
+                fastLinkLookup.linkFromWGS84(TensorCoords.toCoord(pickupLoc)), //
+                fastLinkLookup.linkFromWGS84(TensorCoords.toCoord(dropoffLoc)));
     }
 
     /** function is used in amodtaxi
