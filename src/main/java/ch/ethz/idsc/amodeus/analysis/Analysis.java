@@ -143,9 +143,6 @@ public class Analysis {
         dataDirectory = new File(outputDirectory, DATAFOLDERNAME);
         dataDirectory.mkdir();
 
-        // load coordinate system
-        // MatsimStaticDatabase db = MatsimStaticDatabase.initialize(network, referenceFrame);
-
         // load simulation data
         StorageUtils storageUtils = new StorageUtils(outputDirectory);
         storageUtils.printStorageProperties();
@@ -159,16 +156,14 @@ public class Analysis {
         // default List of Analysis Elements which will be loaded
         analysisElements.add(analysisSummary.getSimulationInformationElement());
         analysisElements.add(analysisSummary.getStatusDistribution());
-        // FIXME @joel and clruch fix speed issue and uncomment again
-        // analysisElements.add(analysisSummary.getDistanceElement());
+        analysisElements.add(analysisSummary.getDistanceElement());
         analysisElements.add(analysisSummary.getTravelTimeAnalysis());
         analysisElements.add(analysisSummary.getNumberPassengersAnalysis());
 
         analysisExports.add(BinnedWaitingTimesImage.INSTANCE);
-        // FIXME @joel and clruch fix speed issue and uncomment again
-        // analysisExports.add(DistanceDistributionOverDayImage.INSTANCE);
-        // analysisExports.add(OccupancyDistanceRatiosImage.INSTANCE);
-        // analysisExports.add(StackedDistanceChartImage.INSTANCE);
+        analysisExports.add(DistanceDistributionOverDayImage.INSTANCE);
+        analysisExports.add(OccupancyDistanceRatiosImage.INSTANCE);
+        analysisExports.add(StackedDistanceChartImage.INSTANCE);
         analysisExports.add(StatusDistributionImage.INSTANCE);
         analysisExports.add(NumberPassengerStatusDistribution.INSTANCE);
         analysisExports.add(RideSharingDistributionCompositionStack.INSTANCE);
@@ -177,9 +172,8 @@ public class Analysis {
         analysisExports.add(DriveTimeImages.INSTANCE);
         analysisExports.add(TotalJourneyTimeImage.INSTANCE);
 
-        // FIXME @joel and clruch fix speed issue and uncomment again
-        // analysisExports.add(DistancesOverDayTable.INSTANCE);
-        // analysisExports.add(DistancesRatiosTable.INSTANCE);
+        analysisExports.add(DistancesOverDayTable.INSTANCE);
+        analysisExports.add(DistancesRatiosTable.INSTANCE);
         analysisExports.add(WaitingTimesTable.INSTANCE);
         analysisExports.add(StatusDistributionTable.INSTANCE);
         analysisExports.add(new VirtualNetworkExport(scenOptions));
@@ -190,8 +184,7 @@ public class Analysis {
         htmlReport = new HtmlReport(outputDirectory, scenOptions);
         htmlReport.addHtmlReportElement(ScenarioParametersHtml.INSTANCE);
         htmlReport.addHtmlReportElement(SimulationInformationHtml.INSTANCE);
-        // FIXME @joel and clruch fix speed issue and uncomment again
-        // htmlReport.addHtmlReportElement(DistanceElementHtml.INSTANCE);
+        htmlReport.addHtmlReportElement(DistanceElementHtml.INSTANCE);
         htmlReport.addHtmlReportElement(WaitTimeHtml.INSTANCE);
         htmlReport.addHtmlReportElement(DriveTimeHtml.INSTANCE);
         htmlReport.addHtmlReportElement(TotalJourneyTimeHtml.INSTANCE);
