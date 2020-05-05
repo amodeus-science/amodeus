@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -17,8 +18,10 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.VehicleContainer;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.qty.Unit;
@@ -34,6 +37,8 @@ import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
 
     // --
     /* package */ Scalar vehicleTotalDistance;
+    /* package */ NavigableMap<Long, Scalar> distanceAtTime;
+    /* package */ NavigableMap<Long, RoboTaxiStatus> statusAtTime = new TreeMap<Long, RoboTaxiStatus>();
 
     // public final Tensor stepDistanceTotal;
     // public final Tensor stepDistanceWithCustomer;
@@ -63,6 +68,9 @@ import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
             }
         }
 
+        // recording status at time
+        statusAtTime.put(now, vc.roboTaxiStatus);
+
         // System.out.println(linkTrace);
         // if (!linkBuffer.isEmpty())
         // if (linkBuffer.getLast() == vc.linkTrace[0])
@@ -87,7 +95,7 @@ import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
     /* package */ void consolidate() {
         /** compute distance at every time step */
         GlobalAssert.that(linkTrace.size() == timeTrace.size());
-        NavigableMap<Long, Scalar> distanceAtTime = new TreeMap<Long, Scalar>();
+        distanceAtTime = new TreeMap<Long, Scalar>();
         distanceAtTime.put((long) 0, Quantity.of(0, unit));
         for (int i = 1; i < linkTrace.size(); ++i) {
             if (linkTrace.get(i - 1) != linkTrace.get(i)) { // link has changed
@@ -96,11 +104,48 @@ import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
                 distanceAtTime.put(timeTrace.get(i - 1), distanceBefore.add(distanceLink));
             }
         }
-
         /** compute total distance */
         vehicleTotalDistance = distanceAtTime.lastEntry().getValue();
-
     }
+
+    /** @return at time step {@link Long} @param time1 encoded
+     *         as {total distance, with customer,pickup,rebalance} */
+    /* package */ Tensor distanceAtStep(Long time1, Long time2) {
+
+        Scalar distance = distanceFromTo(time1, time2);
+        
+        RoboTaxiStatus status = statusAtTime.floorEntry(time1).getValue();
+        if (status.equals(RoboTaxiStatus.DRIVEWITHCUSTOMER))
+            return Tensors.of(distance, distance, RealScalar.ZERO, RealScalar.ZERO);
+        if (status.equals(RoboTaxiStatus.DRIVETOCUSTOMER))
+            return Tensors.of(distance, RealScalar.ZERO, distance, RealScalar.ZERO);
+        if (status.equals(RoboTaxiStatus.REBALANCEDRIVE))
+            return Tensors.of(distance, RealScalar.ZERO, RealScalar.ZERO, distance);
+        return Tensors.of(distance, RealScalar.ZERO, RealScalar.ZERO, RealScalar.ZERO);
+    }
+    
+    private Scalar distanceFromTo(Long timeLow, Long timeHigh) {
+        
+        Scalar distanceBefore = distanceAtTime.lowerEntry(timeLow).getValue();
+        Scalar distanceAfter = Objects.nonNull(distanceAtTime.ceilingEntry(timeHigh)) ? //
+                distanceAtTime.ceilingEntry(timeHigh).getValue() : //
+                    distanceBefore;
+                
+                
+                
+        
+        return distanceAfter.subtract(distanceBefore);
+        
+        
+//        return Quantity.of(1, "ft");
+        
+//        // TODO with linear implementation instead of floor
+//        Scalar distanceBefore = distanceAtTime.floorEntry(distanceAtTime.lowerKey(time1)).getValue();
+//        Scalar distanceAfter = distanceAtTime.ceilingEntry(time1).getValue();
+//        Scalar distance = distanceAfter.subtract(distanceBefore);
+        
+    }
+    
 
     private void consolidate(List<Integer> toBeFlushed) {
 

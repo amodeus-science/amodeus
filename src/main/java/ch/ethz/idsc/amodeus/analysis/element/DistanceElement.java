@@ -36,6 +36,9 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
     private List<VehicleTraceAnalyzer> traceAnalyzers = new ArrayList<>();
     /** vector for instance {10, 20, ...} */
     public final Tensor time = Tensors.empty();
+
+    private final List<Long> times = new ArrayList<>();
+
     /** vector for instance { 0.0, 0.2, 0.1, 0.3, ...} */
     public final Tensor occupancyTensor = Tensors.empty();
     public final Set<Integer> requestIndices = new HashSet<>();
@@ -46,8 +49,9 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
     public Scalar totalDistance = RealScalar.of(-1); // initialized to avoid errors in later steps
 
     // open
-    public Tensor distancesOverDay = RealScalar.of(-1); // initialized to avoid errors in later steps
-    
+    // TODO document what is in here...
+    public Tensor distancesOverDay = Tensors.empty(); // initialized to avoid errors in later steps
+
     public Scalar totalDistanceWtCst = RealScalar.of(-1); // initialized to avoid errors in later steps
     public Scalar totalDistancePicku = RealScalar.of(-1); // initialized to avoid errors in later steps
     public Scalar totalDistanceRebal = RealScalar.of(-1); // initialized to avoid errors in later steps
@@ -71,6 +75,7 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
 
         /** Get the TimeStep */
         time.append(RealScalar.of(simulationObject.now));
+        times.add(simulationObject.now);
         simulationObject.requests.forEach(requestContainer -> requestIndices.add(requestContainer.requestIndex));
 
         /** Get the Occupancy Ratio per TimeStep */
@@ -101,33 +106,18 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
         totalDistancesPerVehicle = Tensor.of(traceAnalyzers.stream().map(vs -> vs.vehicleTotalDistance)).map(any2target);
         // total distance
         totalDistance = Total.ofVector(totalDistancesPerVehicle);//
-
-
-        
-        
-        
-        // traceAnalyzers.forEach(VehicleTraceAnalyzer::consolidate);
-        //
-        // ScalarUnaryOperator any2target = UnitConvert.SI().to(TARGET_UNIT);
-        // Tensor distTotal = traceAnalyzers.stream().map(vs -> vs.stepDistanceTotal).reduce(Tensor::add).get().map(any2target);
-        // Tensor distWtCst = traceAnalyzers.stream().map(vs -> vs.stepDistanceWithCustomer).reduce(Tensor::add).get().map(any2target);
-        // Tensor distPicku = traceAnalyzers.stream().map(vs -> vs.stepDistancePickup).reduce(Tensor::add).get().map(any2target);
-        // Tensor distRebal = traceAnalyzers.stream().map(vs -> vs.stepDistanceRebalance).reduce(Tensor::add).get().map(any2target);
-        // Tensor distRatio = distTotal.map(InvertUnlessZero.FUNCTION).pmul(distWtCst);
-        // // ---
-        // distancesOverDay = Transpose.of(Tensors.of(distTotal, distWtCst, distPicku, distRebal, distRatio));
-        //
-
-        //
-        // // Total Values For one Day
-        // totalDistance = totalDistancesPerVehicle.stream().reduce(Tensor::add).get().Get();
-        // totalDistanceWtCst = distWtCst.stream().reduce(Tensor::add).get().Get();
-        // totalDistancePicku = distPicku.stream().reduce(Tensor::add).get().Get();
-        // totalDistanceRebal = distRebal.stream().reduce(Tensor::add).get().Get();
-        // totalDistanceRatio = totalDistanceWtCst.divide(totalDistance);
-        // avgTripDistance = totalDistanceWtCst.divide(RealScalar.of(requestIndices.size()));
-        // ratios = Transpose.of(Join.of(Tensors.of(occupancyTensor), Tensors.of(distRatio)));
-        // consolidated = true;
+        // distance per time of day
+        distancesOverDay.append(Tensors.vector(0, 0, 0, 0));
+        for (int i = 1; i < times.size() - 1; ++i) {
+            Long lTime = times.get(i - 1);
+            Long uTime = times.get(i);
+            Tensor stepDistance = Tensors.vector(0,0,0,0);
+            for (VehicleTraceAnalyzer tA : traceAnalyzers) {
+                stepDistance = stepDistance.add(tA.distanceAtStep(lTime, uTime));
+            }
+            distancesOverDay.append(stepDistance);
+        }
+        distancesOverDay.append(Tensors.vector(0, 0, 0, 0));
     }
 
     /** @return An unmodifiable List of all the Vehicle Statistics for all Vehicles

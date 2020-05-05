@@ -143,9 +143,6 @@ public class Analysis {
         dataDirectory = new File(outputDirectory, DATAFOLDERNAME);
         dataDirectory.mkdir();
 
-        // load coordinate system
-        // MatsimStaticDatabase db = MatsimStaticDatabase.initialize(network, referenceFrame);
-
         // load simulation data
         StorageUtils storageUtils = new StorageUtils(outputDirectory);
         storageUtils.printStorageProperties();
@@ -165,9 +162,9 @@ public class Analysis {
 
         analysisExports.add(BinnedWaitingTimesImage.INSTANCE);
         // FIXME @joel add again
-        // analysisExports.add(DistanceDistributionOverDayImage.INSTANCE);
+        analysisExports.add(DistanceDistributionOverDayImage.INSTANCE);
         // analysisExports.add(OccupancyDistanceRatiosImage.INSTANCE);
-        // analysisExports.add(StackedDistanceChartImage.INSTANCE);
+        analysisExports.add(StackedDistanceChartImage.INSTANCE);
         analysisExports.add(StatusDistributionImage.INSTANCE);
         analysisExports.add(NumberPassengerStatusDistribution.INSTANCE);
         analysisExports.add(RideSharingDistributionCompositionStack.INSTANCE);
@@ -176,8 +173,8 @@ public class Analysis {
         analysisExports.add(DriveTimeImages.INSTANCE);
         analysisExports.add(TotalJourneyTimeImage.INSTANCE);
 
+        analysisExports.add(DistancesOverDayTable.INSTANCE);
         // FIXME @joel add again
-        // analysisExports.add(DistancesOverDayTable.INSTANCE);
         // analysisExports.add(DistancesRatiosTable.INSTANCE);
         analysisExports.add(WaitingTimesTable.INSTANCE);
         analysisExports.add(StatusDistributionTable.INSTANCE);
