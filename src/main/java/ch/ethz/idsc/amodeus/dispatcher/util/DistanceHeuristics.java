@@ -10,7 +10,19 @@ import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 import ch.ethz.idsc.amodeus.routing.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.routing.NetworkMinTimeDistanceFunction;
 
-//TODO @marcalbert document class
+/**
+ * Enum of various methods to compute distances between two points on a network - used in the dispatching logic
+ *
+ * EUCLIDEAN - euclidean distance function
+ * DIJKSTRA - computes the shortest paths in terms of free flow travel times according to Dijkstra's algorithm
+ * ASTAR - computes the shortest paths in terms of free flow travel times using an AStar algorithm with euclidean
+ *         lower bounds
+ * ASTARLANDMARKS - computes the shortest paths in terms of free flow travel times using an AStar algorithm with lower
+ *  bounds computed using known (euclidean) distances to Landmarks and the triangle inequality
+ *
+ *  //todo @clruch In AStar and ASTARLANDMARKS is this correct? Euclidean distances are not valid lower bounds on travel
+ *  //todo @clruch I am missing a few pieces of the code, that's why I am asking - not sure I fully understand.
+ */
 public enum DistanceHeuristics {
     EUCLIDEAN {
         @Override
