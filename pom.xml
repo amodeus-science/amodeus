@@ -66,14 +66,6 @@
 
 	<repositories>
 		<repository>
-			<id>matsim</id>
-			<url>https://dl.bintray.com/matsim/matsim</url>
-		</repository>
-		<repository>
-			<id>matsim-snapshot</id>
-			<url>https://oss.jfrog.org/libs-snapshot</url>
-		</repository>
-		<repository>
 			<id>tensor-mvn-repo</id>
 			<url>https://raw.github.com/idsc-frazzoli/tensor/mvn-repo/</url>
 		</repository>
@@ -87,6 +79,10 @@
 			<id>osgeo</id>
 			<name>Geotools repository</name>
 			<url>https://repo.osgeo.org/repository/release/</url>
+		</repository>
+		<repository>
+			<id>matsim-snapshot</id>
+			<url>https://oss.jfrog.org/libs-snapshot</url>
 		</repository>
 	</repositories>
 
