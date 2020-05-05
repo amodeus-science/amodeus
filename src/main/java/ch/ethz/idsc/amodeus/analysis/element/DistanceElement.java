@@ -47,10 +47,12 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
 
     // open
     public Tensor distancesOverDay = RealScalar.of(-1); // initialized to avoid errors in later steps
+    
     public Scalar totalDistanceWtCst = RealScalar.of(-1); // initialized to avoid errors in later steps
     public Scalar totalDistancePicku = RealScalar.of(-1); // initialized to avoid errors in later steps
     public Scalar totalDistanceRebal = RealScalar.of(-1); // initialized to avoid errors in later steps
     public Scalar totalDistanceRatio = RealScalar.of(-1); // initialized to avoid errors in later steps
+
     private Scalar avgTripDistance = RealScalar.of(-1); // initialized to avoid errors in later steps
     public Scalar avgOccupancy = RealScalar.of(-1); // initialized to avoid errors in later steps
 
