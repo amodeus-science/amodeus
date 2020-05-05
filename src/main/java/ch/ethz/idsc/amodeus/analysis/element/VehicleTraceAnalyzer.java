@@ -4,10 +4,13 @@ package ch.ethz.idsc.amodeus.analysis.element;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
@@ -26,6 +29,7 @@ import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
 
     // --
     private final List<Integer> linkTrace = new ArrayList<>();
+    private final List<Long> timeTrace = new ArrayList<>();
 
     // --
     /* package */ Scalar vehicleTotalDistance;
@@ -50,11 +54,10 @@ import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
     }
 
     public void register(int simObjIndex, VehicleContainer vc, long now) {
-        // System.out.println("register...");
         for (int linkID : vc.linkTrace) {
-            // System.out.print(linkID + ", ");
-            if (linkTrace.size() == 0 || linkTrace.get(linkTrace.size() - 1) != linkID)
+            if (linkTrace.size() == 0 || linkTrace.get(linkTrace.size()-1) != linkID)
                 linkTrace.add(linkID);
+                timeTrace.add(now);
         }
 
         // System.out.println(linkTrace);
@@ -80,15 +83,13 @@ import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
 
     /* package */ void consolidate() {
         double totalUnit = linkTrace.stream()//
-                .mapToDouble(linkId -> db.getOsmLink(linkId).link.getLength()).sum();        
+                .mapToDouble(linkId -> db.getOsmLink(linkId).link.getLength()).sum();
         vehicleTotalDistance = Quantity.of(totalUnit, unit);
-        
+
         // consolidate(linkBuffer);
     }
 
     private void consolidate(List<Integer> toBeFlushed) {
-
-
 
         // for (int linkIdx : toBeFlushed) {
         // final double distance = db.getOsmLink(linkIdx).link.getLength();
