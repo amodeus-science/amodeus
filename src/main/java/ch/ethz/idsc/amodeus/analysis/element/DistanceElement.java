@@ -24,6 +24,7 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.qty.Unit;
 import ch.ethz.idsc.tensor.qty.UnitConvert;
 import ch.ethz.idsc.tensor.red.Mean;
+import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
 
 public class DistanceElement implements AnalysisElement, TotalValueAppender {
@@ -40,15 +41,18 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
     public final Set<Integer> requestIndices = new HashSet<>();
 
     /** fields assigned in compile */
-    public Tensor totalDistancesPerVehicle = RealScalar.of(-1); // FIXME
-    public Tensor distancesOverDay = RealScalar.of(-1);// FIXME
-    public Scalar totalDistance = RealScalar.of(-1);// FIXME
-    public Scalar totalDistanceWtCst = RealScalar.of(-1);// FIXME
-    public Scalar totalDistancePicku = RealScalar.of(-1);// FIXME
-    public Scalar totalDistanceRebal = RealScalar.of(-1);// FIXME
-    public Scalar totalDistanceRatio = RealScalar.of(-1);// FIXME
-    private Scalar avgTripDistance = RealScalar.of(-1);// FIXME
-    public Scalar avgOccupancy = RealScalar.of(-1);// FIXME
+    // done
+    public Tensor totalDistancesPerVehicle = RealScalar.of(-1); // initialized to avoid errors in later steps
+    public Scalar totalDistance = RealScalar.of(-1); // initialized to avoid errors in later steps
+
+    // open
+    public Tensor distancesOverDay = RealScalar.of(-1); // initialized to avoid errors in later steps
+    public Scalar totalDistanceWtCst = RealScalar.of(-1); // initialized to avoid errors in later steps
+    public Scalar totalDistancePicku = RealScalar.of(-1); // initialized to avoid errors in later steps
+    public Scalar totalDistanceRebal = RealScalar.of(-1); // initialized to avoid errors in later steps
+    public Scalar totalDistanceRatio = RealScalar.of(-1); // initialized to avoid errors in later steps
+    private Scalar avgTripDistance = RealScalar.of(-1); // initialized to avoid errors in later steps
+    public Scalar avgOccupancy = RealScalar.of(-1); // initialized to avoid errors in later steps
 
     /** distRatio */
     public Tensor ratios;
@@ -86,13 +90,20 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
 
     @Override
     public void consolidate() {
+        /** preparing steps */
         ScalarUnaryOperator any2target = UnitConvert.SI().to(TARGET_UNIT);
-
         traceAnalyzers.forEach(VehicleTraceAnalyzer::consolidate);
 
-        totalDistance = (Scalar) traceAnalyzers.stream()//
-                .map(ta -> (Tensor) ta.vehicleTotalDistance).reduce(Tensor::add).get().map(any2target);
+        /** calculation of values */
+        // total distances driven per vehicle
+        totalDistancesPerVehicle = Tensor.of(traceAnalyzers.stream().map(vs -> vs.vehicleTotalDistance)).map(any2target);
+        // total distance
+        totalDistance = Total.ofVector(totalDistancesPerVehicle);//
 
+
+        
+        
+        
         // traceAnalyzers.forEach(VehicleTraceAnalyzer::consolidate);
         //
         // ScalarUnaryOperator any2target = UnitConvert.SI().to(TARGET_UNIT);
@@ -104,8 +115,7 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
         // // ---
         // distancesOverDay = Transpose.of(Tensors.of(distTotal, distWtCst, distPicku, distRebal, distRatio));
         //
-        // // total distances driven per vehicle
-        // totalDistancesPerVehicle = Tensor.of(traceAnalyzers.stream().map(vs -> Total.of(vs.stepDistanceTotal))).map(any2target);
+
         //
         // // Total Values For one Day
         // totalDistance = totalDistancesPerVehicle.stream().reduce(Tensor::add).get().Get();
