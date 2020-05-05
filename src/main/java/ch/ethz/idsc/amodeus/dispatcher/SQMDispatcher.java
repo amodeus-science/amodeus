@@ -126,7 +126,7 @@ public class SQMDispatcher extends PartitionedDispatcher {
      * @author fluric */
     private List<Link> assignNodesToNearestLinks(Collection<VirtualNode<Link>> nodes) {
         return nodes.stream().map(VirtualNode::getCoord).map(TensorCoords::toCoord) // get the center coordinate
-                .mapToInt(fastLinkLookup::getLinkIndexFromXY).mapToObj(db::getOsmLink).map(osml -> osml.link) // find the closest link
+                .mapToInt(fastLinkLookup::indexFromLocal).mapToObj(db::getOsmLink).map(osml -> osml.link) // find the closest link
                 .collect(Collectors.toList());
     }
 
