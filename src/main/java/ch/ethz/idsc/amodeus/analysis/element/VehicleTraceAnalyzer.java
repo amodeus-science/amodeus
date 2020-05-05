@@ -46,26 +46,12 @@ import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
     /* package */ NavigableMap<Long, Scalar> distanceAtTime;
     /* package */ NavigableMap<Long, RoboTaxiStatus> statusAtTime = new TreeMap<Long, RoboTaxiStatus>();
 
-    // public final Tensor stepDistanceTotal;
-    // public final Tensor stepDistanceWithCustomer;
-    // public final Tensor stepDistancePickup;
-    // public final Tensor stepDistanceRebalance;
-    //
-    // private final LinkedList<Integer> linkBuffer = new LinkedList<>();
-    // private final Map<Integer, Set<Integer>> linkToObj = new HashMap<>();
-    // private final Map<Integer, RoboTaxiStatus> objStatus = new HashMap<>();
-
     public VehicleTraceAnalyzer(int stepsMax, MatsimAmodeusDatabase db) {
         this.db = db;
         unit = db.referenceFrame.unit();
         vehicleCustomerDist = Quantity.of(0, unit);
         vehiclePickupDist = Quantity.of(0, unit);
         vehicleRebalancedist = Quantity.of(0, unit);
-        // ScalarUnaryOperator applyUnit = s -> Quantity.of(s, unit);
-        // stepDistanceTotal = Array.zeros(stepsMax).map(applyUnit);
-        // stepDistanceWithCustomer = Array.zeros(stepsMax).map(applyUnit);
-        // stepDistancePickup = Array.zeros(stepsMax).map(applyUnit);
-        // stepDistanceRebalance = Array.zeros(stepsMax).map(applyUnit);
     }
 
     public void register(int simObjIndex, VehicleContainer vc, long now) {
@@ -80,25 +66,6 @@ import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
         // recording status at time
         statusAtTime.put(now, vc.roboTaxiStatus);
 
-        // System.out.println(linkTrace);
-        // if (!linkBuffer.isEmpty())
-        // if (linkBuffer.getLast() == vc.linkTrace[0])
-        // consolidate(linkBuffer.subList(0, linkBuffer.size() - 1)); // do not process last link in buffer if still relevant
-        // else
-        // consolidate(); // process all links in buffer
-        //
-        // // fill buffer
-        // for (int idx : vc.linkTrace)
-        // linkBuffer.addLast(idx);
-        //
-        // // update list of simObjects for each relevant link
-        // linkToObj.entrySet().removeIf(e -> !linkBuffer.contains(e.getKey()));
-        // linkBuffer.forEach(idx -> linkToObj.computeIfAbsent(idx, i -> new HashSet<>()).add(simObjIndex));
-        //
-        // // update relevant statuses
-        // Set<Integer> allObjs = linkToObj.values().stream().flatMap(Set::stream).collect(Collectors.toSet());
-        // objStatus.entrySet().removeIf(e -> !allObjs.contains(e.getKey()));
-        // objStatus.put(simObjIndex, vc.roboTaxiStatus);
     }
 
     /* package */ void consolidate() {

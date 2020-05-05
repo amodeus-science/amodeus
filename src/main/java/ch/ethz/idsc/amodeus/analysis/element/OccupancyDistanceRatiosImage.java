@@ -28,19 +28,11 @@ public enum OccupancyDistanceRatiosImage implements AnalysisExport {
     public void summaryTarget(AnalysisSummary summary, File relDir, ColorDataIndexed colorData) {
         DistanceElement de = summary.getDistanceElement();
         StatusDistributionElement sd = summary.getStatusDistribution();
-
         Tensor distanceRatios = de.distanceRatioOverDay;
         Tensor occupRatios = Transpose.of(sd.occupancyTensor).get(1);
-
+        // put together
         Tensor ratios = Transpose.of(Tensors.of(occupRatios,distanceRatios));
-
-        // Tensor ratios = de.distanceRatioOverDay.unmodifiable();
-
-        Tensor time = de.time.unmodifiable();
-        
-        System.out.println(Dimensions.of(ratios));
-        System.out.println(Dimensions.of(time));
-        
+        Tensor time = de.time.unmodifiable();        
         compute(ratios, time, colorData, relDir);
     }
 
