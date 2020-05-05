@@ -9,7 +9,7 @@ import org.matsim.core.utils.collections.QuadTree;
 public enum FastQuadTree {
     ;
 
-    /** @param network
+    /** @param network {@link Network}
      * @return {@link QuadTree} with {@link Link}s in {@link Network} */
     public static QuadTree<Link> of(Network network) {
         double[] networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
