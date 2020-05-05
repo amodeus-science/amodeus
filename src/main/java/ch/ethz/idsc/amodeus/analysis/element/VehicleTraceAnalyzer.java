@@ -40,6 +40,9 @@ import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
 
     // --
     /* package */ Scalar vehicleTotalDistance;
+    /* package */ Scalar vehicleCustomerDistance;
+    /* package */ Scalar vehiclePickupDistance;
+    /* package */ Scalar vehicleRebalancedistance;
     /* package */ NavigableMap<Long, Scalar> distanceAtTime;
     /* package */ NavigableMap<Long, RoboTaxiStatus> statusAtTime = new TreeMap<Long, RoboTaxiStatus>();
 
@@ -55,6 +58,9 @@ import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
     public VehicleTraceAnalyzer(int stepsMax, MatsimAmodeusDatabase db) {
         this.db = db;
         unit = db.referenceFrame.unit();
+        vehicleCustomerDistance = Quantity.of(0, unit);
+        vehiclePickupDistance = Quantity.of(0, unit);
+        vehicleRebalancedistance = Quantity.of(0, unit);
         // ScalarUnaryOperator applyUnit = s -> Quantity.of(s, unit);
         // stepDistanceTotal = Array.zeros(stepsMax).map(applyUnit);
         // stepDistanceWithCustomer = Array.zeros(stepsMax).map(applyUnit);
@@ -107,8 +113,29 @@ import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
                 distanceAtTime.put(timeTrace.get(i - 1), distanceBefore.add(distanceLink));
             }
         }
-        /** compute total distance */
+        /** compute total distances */
         vehicleTotalDistance = distanceAtTime.lastEntry().getValue();
+        Entry<Long, Scalar> prevEntry = null;
+        for (Entry<Long, Scalar> entry : distanceAtTime.entrySet()) {
+            if (Objects.nonNull(prevEntry)) {
+                Scalar dist = entry.getValue().subtract(prevEntry.getValue());
+                RoboTaxiStatus status = statusAtTime.get(entry.getKey());
+                switch (status) {
+                case DRIVEWITHCUSTOMER:
+                    vehicleCustomerDistance = vehicleCustomerDistance.add(dist);
+                    break;
+                case DRIVETOCUSTOMER:
+                    vehiclePickupDistance = vehiclePickupDistance.add(dist);
+                    break;
+                case REBALANCEDRIVE:
+                    vehicleRebalancedistance = vehicleRebalancedistance.add(dist);
+                    break;
+                default:
+                    break;
+                }
+            }
+            prevEntry = entry;
+        }        
     }
 
     /** @return at time step {@link Long} @param time1 encoded

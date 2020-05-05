@@ -19,8 +19,10 @@ import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.net.VehicleContainer;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.qty.Unit;
 import ch.ethz.idsc.tensor.qty.UnitConvert;
 import ch.ethz.idsc.tensor.red.Mean;
@@ -47,15 +49,19 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
     // done
     public Tensor totalDistancesPerVehicle = RealScalar.of(-1); // initialized to avoid errors in later steps
     public Scalar totalDistance = RealScalar.of(-1); // initialized to avoid errors in later steps
-
-    // open
-    // TODO document what is in here...
-    public Tensor distancesOverDay = Tensors.empty(); // initialized to avoid errors in later steps
-
     public Scalar totalDistanceWtCst = RealScalar.of(-1); // initialized to avoid errors in later steps
     public Scalar totalDistancePicku = RealScalar.of(-1); // initialized to avoid errors in later steps
     public Scalar totalDistanceRebal = RealScalar.of(-1); // initialized to avoid errors in later steps
+    // this contains the distances traveled in each time step with the format of a row being:
+    // {total distance, with customer,pickup,rebalance} 
+    public Tensor distancesOverDay = Tensors.empty(); // initialized to avoid errors in later steps
     public Scalar totalDistanceRatio = RealScalar.of(-1); // initialized to avoid errors in later steps
+
+    // open
+    // TODO document what is in here...
+
+
+
 
     private Scalar avgTripDistance = RealScalar.of(-1); // initialized to avoid errors in later steps
     public Scalar avgOccupancy = RealScalar.of(-1); // initialized to avoid errors in later steps
@@ -103,9 +109,15 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
 
         /** calculation of values */
         // total distances driven per vehicle
-        totalDistancesPerVehicle = Tensor.of(traceAnalyzers.stream().map(vs -> vs.vehicleTotalDistance)).map(any2target);
-        // total distance
-        totalDistance = Total.ofVector(totalDistancesPerVehicle);//
+        totalDistancesPerVehicle = Tensor.of(traceAnalyzers.stream().map(vs -> vs.vehicleTotalDistance)).map(any2target);                
+        // total distances
+        totalDistance = Total.ofVector(totalDistancesPerVehicle);
+        totalDistanceWtCst = (Scalar) Total.of(Tensor.of(traceAnalyzers.stream().map(vs -> vs.vehicleCustomerDistance)).map(any2target));
+        totalDistancePicku = (Scalar) Total.of(Tensor.of(traceAnalyzers.stream().map(vs -> vs.vehiclePickupDistance)).map(any2target));
+        totalDistanceRebal = (Scalar) Total.of(Tensor.of(traceAnalyzers.stream().map(vs -> vs.vehicleRebalancedistance)).map(any2target));
+        totalDistanceRatio = Scalars.lessThan(Quantity.of(0, TARGET_UNIT), totalDistance) ? //
+                totalDistanceWtCst.divide(totalDistance) : RealScalar.of(-1);
+        
         // distance per time of day
         distancesOverDay.append(Tensors.vector(0, 0, 0, 0));
         for (int i = 1; i < times.size() - 1; ++i) {
