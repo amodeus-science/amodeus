@@ -14,6 +14,7 @@ import ch.ethz.idsc.tensor.Tensor;
  * a given coordinate in WGS84 format. The function first transforms the
  * coordinate in WGS84 coordinates to the local coordinate system (in m)
  * and then searches the closest link in the network to the coordinate. */
+@Deprecated
 public class ClosestLinkSelect {
 
     private final MatsimAmodeusDatabase db;
