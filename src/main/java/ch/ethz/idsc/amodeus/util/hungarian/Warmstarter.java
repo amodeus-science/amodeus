@@ -11,7 +11,11 @@ import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** @author Samuel J. Stauber */
-// TODO @marcalbert codument class
+
+/**
+ * This class provides a means to warm start the Hungarian algorithm with the objective of improving the convergence
+ * time of the algorithm.
+ */
 public class Warmstarter {
     private static final int UNASSIGNED = -1;
     private static final double EPS = 1e-8;
