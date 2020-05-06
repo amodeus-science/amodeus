@@ -19,16 +19,28 @@ import ch.ethz.idsc.amodeus.prep.PopulationCutters;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreators;
 
-// TODO @marcalbert document class
+/**
+ * This class contains the various scenario parameter options that are required to setup a simulation scenario
+ */
 public class ScenarioOptions {
     private final File workingDirectory;
     protected final Properties properties;
 
+    /**
+     * Specify a working directory and a set of scenarios to fall back to, to use as default settings
+     * @param workingDirectory
+     * @param fallbackDefault
+     * @throws IOException
+     */
     public ScenarioOptions(File workingDirectory, Properties fallbackDefault) throws IOException {
         this.workingDirectory = workingDirectory;
         this.properties = StaticHelper.loadOrCreateScenarioOptions(workingDirectory, fallbackDefault);
     }
 
+    /**
+     * Returns the scenario working directory
+     * @return
+     */
     public File getWorkingDirectory() {
         return workingDirectory;
     }
@@ -39,10 +51,19 @@ public class ScenarioOptions {
         properties.setProperty(key, value);
     }
 
+    /**
+     * Save the current scenario option object to the working directory. Overwrite it if it exsists.
+     */
     public void saveAndOverwriteAmodeusOptions() {
         ScenarioOptionsBase.savePropertiesToDirectory(workingDirectory, properties);
     }
 
+    /**
+     * Save the scenario properties to a folder
+     * @param folder
+     * @param header - header string stored with the scenario properties (can be used to comment/discriminate scenario
+     *               options)
+     */
     public void saveToFolder(File folder, String header) {
         File file = new File(folder, ScenarioOptionsBase.OPTIONSFILENAME);
         ScenarioOptionsBase.savePropertiesToFileWithHeader(properties, file, header);
