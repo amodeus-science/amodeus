@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.renderer.category.BarRenderer;
@@ -149,9 +150,9 @@ public class Analysis {
         storageSupplier = new StorageSupplier(storageUtils.getFirstAvailableIteration());
         size = storageSupplier.size();
         System.out.println("Found files: " + size);
-        int numVehicles = storageSupplier.getSimulationObject(1).vehicles.size();
+        Set<Integer> vehicleIndices = storageSupplier.getSimulationObject(1).vehicles.stream().map(vc -> vc.vehicleIndex).collect(Collectors.toSet());
 
-        analysisSummary = new AnalysisSummary(numVehicles, size, db, scenarioOptions);
+        analysisSummary = new AnalysisSummary(vehicleIndices, size, db, scenarioOptions);
 
         // default List of Analysis Elements which will be loaded
         analysisElements.add(analysisSummary.getSimulationInformationElement());

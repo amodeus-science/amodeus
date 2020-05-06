@@ -2,11 +2,13 @@
 package ch.ethz.idsc.amodeus.analysis.element;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.IntStream;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifier;
@@ -32,7 +34,7 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
 
     // ---
     private int simObjIndex = 0; // Index for the Simulation Object which is loaded
-    private List<VehicleTraceAnalyzer> traceAnalyzers = new ArrayList<>();
+    private final Map<Integer, VehicleTraceAnalyzer> traceAnalyzers;
 
     /** vector for instance {10, 20, ...} */
     public final Tensor time = Tensors.empty();
@@ -53,9 +55,9 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
 
     private final RequestRobotaxiInformationElement requestElement;
 
-    public DistanceElement(int numVehicles, int size, MatsimAmodeusDatabase db, //
+    public DistanceElement(Set<Integer> vehicleIndices, int size, MatsimAmodeusDatabase db, //
             RequestRobotaxiInformationElement requestElement) {
-        IntStream.range(0, numVehicles).forEach(i -> traceAnalyzers.add(new VehicleTraceAnalyzer(size, db)));
+        traceAnalyzers = vehicleIndices.stream().collect(Collectors.toMap(Function.identity(), i -> new VehicleTraceAnalyzer(size, db)));
         this.requestElement = requestElement;
     }
 
@@ -66,26 +68,26 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
         times.add(simulationObject.now);
 
         /** register Simulation Object for distance analysis */
-        for (VehicleContainer vehicleContainer : simulationObject.vehicles) {
-            traceAnalyzers.get(vehicleContainer.vehicleIndex)//
+        for (VehicleContainer vehicleContainer : simulationObject.vehicles)
+            traceAnalyzers.get(vehicleContainer.vehicleIndex) //
                     .register(simObjIndex, vehicleContainer, simulationObject.now);
-        }
         ++simObjIndex;
     }
 
     @Override // from AnalysisElement
     public void consolidate() {
+        final Collection<VehicleTraceAnalyzer> allVehicleTraceAnalyzers = traceAnalyzers.values();
         /** preparing steps */
         ScalarUnaryOperator any2target = UnitConvert.SI().to(TARGET_UNIT);
-        traceAnalyzers.forEach(VehicleTraceAnalyzer::consolidate);
+        allVehicleTraceAnalyzers.forEach(VehicleTraceAnalyzer::consolidate);
         /** calculation of values */
         // total distances driven per vehicle
-        totalDistancesPerVehicle = Tensor.of(traceAnalyzers.stream().map(vs -> vs.vehicleTotalDistance)).map(any2target);
+        totalDistancesPerVehicle = Tensor.of(allVehicleTraceAnalyzers.stream().map(vs -> vs.vehicleTotalDistance)).map(any2target);
         // total distances
         totalDistance = Total.ofVector(totalDistancesPerVehicle);
-        totalDistanceWtCst = (Scalar) Total.of(Tensor.of(traceAnalyzers.stream().map(vs -> vs.vehicleCustomerDist)).map(any2target));
-        totalDistancePicku = (Scalar) Total.of(Tensor.of(traceAnalyzers.stream().map(vs -> vs.vehiclePickupDist)).map(any2target));
-        totalDistanceRebal = (Scalar) Total.of(Tensor.of(traceAnalyzers.stream().map(vs -> vs.vehicleRebalancedist)).map(any2target));
+        totalDistanceWtCst = (Scalar) Total.of(Tensor.of(allVehicleTraceAnalyzers.stream().map(vs -> vs.vehicleCustomerDist)).map(any2target));
+        totalDistancePicku = (Scalar) Total.of(Tensor.of(allVehicleTraceAnalyzers.stream().map(vs -> vs.vehiclePickupDist)).map(any2target));
+        totalDistanceRebal = (Scalar) Total.of(Tensor.of(allVehicleTraceAnalyzers.stream().map(vs -> vs.vehicleRebalancedist)).map(any2target));
         totalDistanceRatio = Scalars.lessThan(Quantity.of(0, TARGET_UNIT), totalDistance) ? //
                 totalDistanceWtCst.divide(totalDistance) : RealScalar.of(-1);
         // distance per time of day
@@ -95,7 +97,7 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
             Long lTime = times.get(i - 1);
             Long uTime = times.get(i);
             Tensor stepDistance = Tensors.vector(0, 0, 0, 0);
-            for (VehicleTraceAnalyzer tA : traceAnalyzers) {
+            for (VehicleTraceAnalyzer tA : allVehicleTraceAnalyzers) {
                 stepDistance = stepDistance.add(tA.labeledIntervalDistance(lTime, uTime));
             }
             distancesOverDay.append(stepDistance);
@@ -115,7 +117,7 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
     /** @return An unmodifiable List of all the Vehicle Statistics for all Vehicles
      *         in the fleet. */
     public List<VehicleTraceAnalyzer> getVehicleStatistics() {
-        return Collections.unmodifiableList(traceAnalyzers);
+        return List.copyOf(traceAnalyzers.values());
     }
 
     @Override // from TotalValueAppender
