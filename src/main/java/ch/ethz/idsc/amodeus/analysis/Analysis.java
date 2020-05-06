@@ -152,7 +152,7 @@ public class Analysis {
         System.out.println("Found files: " + size);
         Set<Integer> vehicleIndices = storageSupplier.getSimulationObject(1).vehicles.stream().map(vc -> vc.vehicleIndex).collect(Collectors.toSet());
 
-        analysisSummary = new AnalysisSummary(vehicleIndices, size, db, scenarioOptions);
+        analysisSummary = new AnalysisSummary(vehicleIndices, db, scenarioOptions);
 
         // default List of Analysis Elements which will be loaded
         analysisElements.add(analysisSummary.getSimulationInformationElement());

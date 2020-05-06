@@ -24,12 +24,11 @@ public class AnalysisSummary implements Serializable {
     private final NumberPassengersAnalysis numberPassengersAnalysis = new NumberPassengersAnalysis();
 
     /** @param vehicleIndices
-     * @param size
      * @param db non-null  */
-    public AnalysisSummary(Set<Integer> vehicleIndices, int size, MatsimAmodeusDatabase db, ScenarioOptions scenarioOptions) {
+    public AnalysisSummary(Set<Integer> vehicleIndices, MatsimAmodeusDatabase db, ScenarioOptions scenarioOptions) {
         Objects.requireNonNull(db);
         reqInfoElement = new RequestRobotaxiInformationElement();
-        distanceElement = new DistanceElement(vehicleIndices, size, db, reqInfoElement);
+        distanceElement = new DistanceElement(vehicleIndices, db, reqInfoElement);
         scenarioParameters = new ScenarioParameters(scenarioOptions);
     }
 

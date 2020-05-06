@@ -33,7 +33,6 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
     public static final Unit TARGET_UNIT = Unit.of("km");
 
     // ---
-    private int simObjIndex = 0; // Index for the Simulation Object which is loaded
     private final Map<Integer, VehicleTraceAnalyzer> traceAnalyzers;
 
     /** vector for instance {10, 20, ...} */
@@ -55,9 +54,9 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
 
     private final RequestRobotaxiInformationElement requestElement;
 
-    public DistanceElement(Set<Integer> vehicleIndices, int size, MatsimAmodeusDatabase db, //
+    public DistanceElement(Set<Integer> vehicleIndices, MatsimAmodeusDatabase db, //
             RequestRobotaxiInformationElement requestElement) {
-        traceAnalyzers = vehicleIndices.stream().collect(Collectors.toMap(Function.identity(), i -> new VehicleTraceAnalyzer(size, db)));
+        traceAnalyzers = vehicleIndices.stream().collect(Collectors.toMap(Function.identity(), i -> new VehicleTraceAnalyzer(db)));
         this.requestElement = requestElement;
     }
 
@@ -70,8 +69,7 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
         /** register Simulation Object for distance analysis */
         for (VehicleContainer vehicleContainer : simulationObject.vehicles)
             traceAnalyzers.get(vehicleContainer.vehicleIndex) //
-                    .register(simObjIndex, vehicleContainer, simulationObject.now);
-        ++simObjIndex;
+                    .register(vehicleContainer, simulationObject.now);
     }
 
     @Override // from AnalysisElement

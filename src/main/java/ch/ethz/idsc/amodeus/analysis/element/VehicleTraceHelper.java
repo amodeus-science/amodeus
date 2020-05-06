@@ -4,7 +4,6 @@ package ch.ethz.idsc.amodeus.analysis.element;
 import java.util.Map.Entry;
 
 import ch.ethz.idsc.tensor.RationalScalar;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 
 /* package */ enum VehicleTraceHelper {
@@ -16,9 +15,9 @@ import ch.ethz.idsc.tensor.Scalar;
      * @param pairLow
      * @param pairHigh */
     public static Scalar distanceAt(Long time, Entry<Long, Scalar> pairLow, Entry<Long, Scalar> pairHigh) {
-        Long dt = pairHigh.getKey() - pairLow.getKey();
+        long dt = pairHigh.getKey() - pairLow.getKey();
         if (dt == 0)
-            return pairLow.getValue().multiply(RealScalar.ZERO);
+            return pairLow.getValue().zero();
         Scalar dD = pairHigh.getValue().subtract(pairLow.getValue());
         Scalar dAdd = dD.multiply(RationalScalar.of(time - pairLow.getKey(), dt));
         return pairLow.getValue().add(dAdd);
