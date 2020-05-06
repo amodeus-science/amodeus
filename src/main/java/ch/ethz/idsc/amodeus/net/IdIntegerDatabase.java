@@ -4,6 +4,7 @@ package ch.ethz.idsc.amodeus.net;
 import java.util.HashMap;
 import java.util.Map;
 
+@Deprecated
 public class IdIntegerDatabase {
     private final Map<String, Integer> map = new HashMap<>();
 
