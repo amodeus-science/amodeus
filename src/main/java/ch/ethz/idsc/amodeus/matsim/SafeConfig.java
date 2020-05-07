@@ -7,7 +7,8 @@ import java.util.function.Function;
 
 import org.matsim.core.config.ReflectiveConfigGroup;
 
-//TODO @marcalbert document class
+/** A SafeConfig provides a means to access config parameters (query by string key)
+ * and convert them to specified types. */
 public class SafeConfig {
     public static SafeConfig wrap(ReflectiveConfigGroup reflectiveConfigGroup) {
         return new SafeConfig(reflectiveConfigGroup);

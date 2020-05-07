@@ -7,9 +7,11 @@ import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
 @FunctionalInterface
-//TODO @marcalbert document class
+/** Functional interface that can be used to define (custom)
+ * simulation analyses and how they are exported */
 public interface AnalysisExport {
     /** @param analysisSummary
-     * @param relativeDirectory for instance "output/001/data" */
+     * @param relativeDirectory relative directory for "output/001/data" where the simulation snapshots are stored
+     * @param colorDataIndexed */
     void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed);
 }

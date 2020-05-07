@@ -2,7 +2,8 @@
 package ch.ethz.idsc.amodeus.analysis.report;
 
 @FunctionalInterface
-//TODO @marcalbert improve documentation of class
+/** Functional interface used in Analysis to identify (as string) parameters
+ * analyzed in the simulation analysis components */
 public interface TotalValueIdentifier {
     /** @return string key in map that stores values of total quantities in analysis */
     String getIdentifier();
