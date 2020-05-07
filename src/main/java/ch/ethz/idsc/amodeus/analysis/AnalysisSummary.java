@@ -13,7 +13,7 @@ import ch.ethz.idsc.amodeus.analysis.element.TravelTimeAnalysis;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 
-//TODO @marcalbert document class
+/** Analysis summary, builds and contains various default analysis elements */
 public class AnalysisSummary implements Serializable {
 
     private final ScenarioParameters scenarioParameters;
@@ -23,8 +23,11 @@ public class AnalysisSummary implements Serializable {
     private final TravelTimeAnalysis travelTimeAnalysis = new TravelTimeAnalysis();
     private final NumberPassengersAnalysis numberPassengersAnalysis = new NumberPassengersAnalysis();
 
-    /** @param vehicleIndices
-     * @param db non-null  */
+    /** @param numVehicles - number of vehicles
+     * @param size - not used as of now
+     * @param db - amodeus database, default analysis elements will be computed based on the snapshot information therein
+     * @param scenarioOptions - scenario options
+     * @throws IOException */
     public AnalysisSummary(Set<Integer> vehicleIndices, MatsimAmodeusDatabase db, ScenarioOptions scenarioOptions) {
         Objects.requireNonNull(db);
         reqInfoElement = new RequestRobotaxiInformationElement();
