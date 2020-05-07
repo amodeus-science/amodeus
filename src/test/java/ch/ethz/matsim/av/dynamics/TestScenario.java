@@ -1,5 +1,6 @@
 package ch.ethz.matsim.av.dynamics;
 
+import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AVConfigGroup;
 import ch.ethz.matsim.av.config.AVScoringParameterSet;
 import ch.ethz.matsim.av.config.operator.OperatorConfig;
@@ -24,6 +25,7 @@ import org.matsim.api.core.v01.population.*;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
 import org.matsim.contrib.dvrp.run.DvrpModule;
+import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.contrib.dvrp.trafficmonitoring.DvrpTravelTimeModule;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
@@ -175,10 +177,18 @@ public class TestScenario {
         }
 
         @Override
-        public AVGenerator createGenerator(OperatorConfig operatorConfig, Network network, VehicleType vehicleType) {
-            Link link = network.getLinks().get(linkId);
-            return new SingleVehicleGenerator(link, capacity);
+        public AVGenerator createGenerator(InstanceGetter inject) {
+            GlobalAssert.that(false);
+            // TODO @sebastian this was inserted as otherwise there were errors
+            // the old version below was commented out
+            return null;
         }
+
+        // @Override
+        // public AVGenerator createGenerator(OperatorConfig operatorConfig, Network network, VehicleType vehicleType) {
+        // Link link = network.getLinks().get(linkId);
+        // return new SingleVehicleGenerator(link, capacity);
+        // }
     }
 
     static public AVConfigGroup createConfig() {
