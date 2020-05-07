@@ -13,7 +13,9 @@ import ch.ethz.idsc.amodeus.analysis.element.TravelTimeAnalysis;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 
-//TODO @marcalbert document class
+/**
+ * Analysis summary, builds and contains various default analysis elements
+ */
 public class AnalysisSummary implements Serializable {
 
     private final ScenarioParameters scenarioParameters;
@@ -23,9 +25,22 @@ public class AnalysisSummary implements Serializable {
     private final TravelTimeAnalysis travelTimeAnalysis = new TravelTimeAnalysis();
     private final NumberPassengersAnalysis numberPassengersAnalysis = new NumberPassengersAnalysis();
 
-    /** @param vehicleIndices
-     * @param db non-null  */
-    public AnalysisSummary(Set<Integer> vehicleIndices, MatsimAmodeusDatabase db, ScenarioOptions scenarioOptions) {
+//<<<<<<< HEAD
+//    /** @param vehicleIndices
+//     * @param db non-null  */
+//    public AnalysisSummary(Set<Integer> vehicleIndices, MatsimAmodeusDatabase db, ScenarioOptions scenarioOptions) {
+//=======
+    /**
+     *
+     * @param numVehicles - number of vehicles
+     * @param size - not used as of now
+     * @param db - amodeus database, default analysis elements will be computed based on the snapshot information therein
+     * @param scenarioOptions - scenario options
+     * @throws IOException
+     */
+    public AnalysisSummary(int numVehicles, int size, MatsimAmodeusDatabase db, //
+            ScenarioOptions scenarioOptions) throws IOException {
+//>>>>>>> 0c1b40efbde69c0d071a46b27af03506fd09a4ca
         Objects.requireNonNull(db);
         reqInfoElement = new RequestRobotaxiInformationElement();
         distanceElement = new DistanceElement(vehicleIndices, db, reqInfoElement);
