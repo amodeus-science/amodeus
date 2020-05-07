@@ -1,14 +1,14 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.net;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NavigableMap;
-import java.util.TreeMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
@@ -27,63 +27,69 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 public class MatsimAmodeusDatabase {
 
     public static MatsimAmodeusDatabase initialize(Network network, ReferenceFrame referenceFrame) {
-        NavigableMap<String, OsmLink> linkMap = new TreeMap<>();
         CoordinateTransformation coords_toWGS84 = referenceFrame.coords_toWGS84();
-        for (Link link : network.getLinks().values()) {
-            OsmLink osmLink = new OsmLink(link, //
-                    coords_toWGS84.transform(link.getFromNode().getCoord()), //
-                    coords_toWGS84.transform(link.getToNode().getCoord()) //
-            );
-            linkMap.put(link.getId().toString(), osmLink);
-        }
-        return new MatsimAmodeusDatabase(referenceFrame, linkMap);
+        List<OsmLink> osmLinks = network.getLinks().values().stream().sorted(Comparator.comparing(link -> link.getId().toString())).map(link -> //
+                new OsmLink(link, //
+                        coords_toWGS84.transform(link.getFromNode().getCoord()), //
+                        coords_toWGS84.transform(link.getToNode().getCoord()) //
+                )).collect(Collectors.toList());
+        return new MatsimAmodeusDatabase(referenceFrame, osmLinks);
     }
 
     /** rapid lookup from MATSIM side */
-    private final Map<Link, Integer> linkIntegerMap = new HashMap<>();
-    private final Map<Id<Link>, Integer> linkIdIntegerMap = new HashMap<>();
+    private final Map<Link, Integer> linkIntegerMap; // TODO remove once no longer needed
+    // private final Map<Id<Link>, Integer> linkIdIntegerMap = new HashMap<>();
+    private final Map<Integer, OsmLink> integerOsmLinkMap;
     public final ReferenceFrame referenceFrame;
 
     /** rapid lookup from Viewer */
-    private final List<OsmLink> list;
+    private final List<OsmLink> osmLinks;
 
-    private final IdIntegerDatabase requestIdIntegerDatabase = new IdIntegerDatabase();
-    private final IdIntegerDatabase vehicleIdIntegerDatabase = new IdIntegerDatabase();
+    // private final IdIntegerDatabase requestIdIntegerDatabase = new IdIntegerDatabase();
+    // private final IdIntegerDatabase vehicleIdIntegerDatabase = new IdIntegerDatabase();
 
     private Integer iteration;
 
     private MatsimAmodeusDatabase( //
             ReferenceFrame referenceFrame, //
-            NavigableMap<String, OsmLink> linkMap) {
+            List<OsmLink> osmLinks) {
         this.referenceFrame = referenceFrame;
-        list = new ArrayList<>(linkMap.values());
+        this.osmLinks = osmLinks;
+        /*
         int index = 0;
-        for (OsmLink osmLink : list) {
+        for (OsmLink osmLink : this.osmLinks) {
             linkIntegerMap.put(osmLink.link, index);
             linkIdIntegerMap.put(osmLink.link.getId(), index);
             ++index;
         }
+        */
+        linkIntegerMap = this.osmLinks.stream().map(osmLink -> osmLink.link).collect(Collectors.toMap(Function.identity(), link -> link.getId().index()));
+        integerOsmLinkMap = this.osmLinks.stream().collect(Collectors.toMap(osmLink -> osmLink.link.getId().index(), Function.identity()));
     }
 
     public int getLinkIndex(Link link) {
         // Previously this worked by link instance. Now av package uses a subnetwork internally for each dispatcher.
         // This leads to the Link objects being different, but their ID is the same in the general network and in
         // the subnetworks.
-        return linkIdIntegerMap.get(link.getId());
+        // return linkIdIntegerMap.get(link.getId()); // TODO remove
+        return link.getId().index();
     }
 
     /** @return unmodifiable map that assigns a link to
-     *         the corresponding index of the OsmLink in list */
+     *         the corresponding index of the OsmLink in osmLinks
+     * @deprecated use {@link Link#getId()} and {@link Id#index()} instead */
+    @Deprecated
     public Map<Link, Integer> getLinkIntegerMap() {
         return Collections.unmodifiableMap(linkIntegerMap);
     }
 
     public OsmLink getOsmLink(int index) {
-        return list.get(index);
+        // return osmLinks.get(index); // TODO remove
+        return integerOsmLinkMap.get(index);
     }
 
     public Collection<OsmLink> getOsmLinks() {
-        return Collections.unmodifiableCollection(list);
+        return Collections.unmodifiableCollection(osmLinks);
     }
 
     public Coord getCenter() {
@@ -96,15 +102,21 @@ public class MatsimAmodeusDatabase {
     }
 
     public int getOsmLinksSize() {
-        return list.size();
+        return osmLinks.size();
     }
 
+    /** @deprecated use {@link AVRequest#getId()} and {@link Id#index()} instead */
+    @Deprecated
     public int getRequestIndex(AVRequest avRequest) {
-        return requestIdIntegerDatabase.getId(avRequest.getId().toString());
+        // return requestIdIntegerDatabase.getId(avRequest.getId().toString()); // TODO remove
+        return avRequest.getId().index();
     }
 
+    /** @deprecated use {@link AVRequest#getId()} and {@link Id#index()} instead */
+    @Deprecated
     public int getVehicleIndex(RoboTaxi roboTaxi) {
-        return vehicleIdIntegerDatabase.getId(roboTaxi.getId().toString());
+        // return vehicleIdIntegerDatabase.getId(roboTaxi.getId().toString()); // TODO remove
+        return roboTaxi.getId().index();
     }
 
     void setIteration(Integer iteration) {

@@ -1,9 +1,9 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.analysis;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.Set;
 
 import ch.ethz.idsc.amodeus.analysis.element.DistanceElement;
 import ch.ethz.idsc.amodeus.analysis.element.NumberPassengersAnalysis;
@@ -23,17 +23,13 @@ public class AnalysisSummary implements Serializable {
     private final TravelTimeAnalysis travelTimeAnalysis = new TravelTimeAnalysis();
     private final NumberPassengersAnalysis numberPassengersAnalysis = new NumberPassengersAnalysis();
 
-    /** @param numVehicles
-     * @param size
-     * @param db non-null
-     * @throws IOException */
-    public AnalysisSummary(int numVehicles, int size, MatsimAmodeusDatabase db, //
-            ScenarioOptions scenarioOptions) throws IOException {
+    /** @param vehicleIndices
+     * @param db non-null  */
+    public AnalysisSummary(Set<Integer> vehicleIndices, MatsimAmodeusDatabase db, ScenarioOptions scenarioOptions) {
         Objects.requireNonNull(db);
-        reqInfoElement= new RequestRobotaxiInformationElement();
-        distanceElement = new DistanceElement(numVehicles, size, db,reqInfoElement);
+        reqInfoElement = new RequestRobotaxiInformationElement();
+        distanceElement = new DistanceElement(vehicleIndices, db, reqInfoElement);
         scenarioParameters = new ScenarioParameters(scenarioOptions);
-
     }
 
     public ScenarioParameters getScenarioParameters() {
