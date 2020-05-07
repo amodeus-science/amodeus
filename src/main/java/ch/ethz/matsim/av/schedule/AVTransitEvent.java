@@ -11,76 +11,74 @@ import ch.ethz.matsim.av.data.AVOperator;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 public class AVTransitEvent extends Event implements HasPersonId {
-	static public final String TYPE = "AVTransit";
-	
-	final private AVRequest request;
+    static public final String TYPE = "AVTransit";
 
-	final private Id<Person> personId;
-	final private Id<AVOperator> operatorId;
-	final private double distance;
-	final private double price;
+    final private AVRequest request;
 
-	public AVTransitEvent(AVRequest request, double time) {
-		this(request.getPassengerId(), request.getOperator().getId(), request.getRoute().getDistance(), Double.NaN,
-				time, request);
-	}
+    final private Id<Person> personId;
+    final private Id<AVOperator> operatorId;
+    final private double distance;
+    final private double price;
 
-	public AVTransitEvent(Id<Person> personId, Id<AVOperator> operatorId, double distance, double price, double time) {
-		this(personId, operatorId, distance, price, time, null);
-	}
+    public AVTransitEvent(AVRequest request, double time) {
+        this(request.getPassengerId(), request.getOperatorId(), request.getRoute().getDistance(), Double.NaN, time, request);
+    }
 
-	private AVTransitEvent(Id<Person> personId, Id<AVOperator> operatorId, double distance, double price, double time,
-			AVRequest request) {
-		super(time);
+    public AVTransitEvent(Id<Person> personId, Id<AVOperator> operatorId, double distance, double price, double time) {
+        this(personId, operatorId, distance, price, time, null);
+    }
 
-		this.request = request;
-		this.personId = personId;
-		this.operatorId = operatorId;
-		this.distance = distance;
-		this.price = price;
-	}
+    private AVTransitEvent(Id<Person> personId, Id<AVOperator> operatorId, double distance, double price, double time, AVRequest request) {
+        super(time);
 
-	public AVRequest getRequest() {
-		if (request == null) {
-			throw new IllegalStateException();
-		}
+        this.request = request;
+        this.personId = personId;
+        this.operatorId = operatorId;
+        this.distance = distance;
+        this.price = price;
+    }
 
-		return request;
-	}
+    public AVRequest getRequest() {
+        if (request == null) {
+            throw new IllegalStateException();
+        }
 
-	@Override
-	public Map<String, String> getAttributes() {
-		Map<String, String> attr = super.getAttributes();
-		attr.put("person", personId.toString());
-		attr.put("operator", operatorId.toString());
-		attr.put("distance", String.valueOf(distance));
+        return request;
+    }
 
-		if (!Double.isNaN(price)) {
-			attr.put("price", String.valueOf(price));
-		}
+    @Override
+    public Map<String, String> getAttributes() {
+        Map<String, String> attr = super.getAttributes();
+        attr.put("person", personId.toString());
+        attr.put("operator", operatorId.toString());
+        attr.put("distance", String.valueOf(distance));
 
-		return attr;
-	}
+        if (!Double.isNaN(price)) {
+            attr.put("price", String.valueOf(price));
+        }
 
-	@Override
-	public Id<Person> getPersonId() {
-		return personId;
-	}
+        return attr;
+    }
 
-	public double getDistance() {
-		return distance;
-	}
+    @Override
+    public Id<Person> getPersonId() {
+        return personId;
+    }
 
-	public Id<AVOperator> getOperatorId() {
-		return operatorId;
-	}
+    public double getDistance() {
+        return distance;
+    }
 
-	public double getPrice() {
-		return price;
-	}
+    public Id<AVOperator> getOperatorId() {
+        return operatorId;
+    }
 
-	@Override
-	public String getEventType() {
-		return TYPE;
-	}
+    public double getPrice() {
+        return price;
+    }
+
+    @Override
+    public String getEventType() {
+        return TYPE;
+    }
 }

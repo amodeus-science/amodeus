@@ -12,8 +12,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
-import org.matsim.contrib.dvrp.run.DvrpModule;
-import org.matsim.contrib.dvrp.trafficmonitoring.DvrpTravelTimeModule;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
@@ -22,12 +20,6 @@ import org.matsim.core.gbl.MatsimRandom;
 
 import ch.ethz.idsc.amodeus.data.LocationSpec;
 import ch.ethz.idsc.amodeus.data.ReferenceFrame;
-import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDatabaseModule;
-import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDispatcherModule;
-import ch.ethz.idsc.amodeus.matsim.mod.AmodeusModule;
-import ch.ethz.idsc.amodeus.matsim.mod.AmodeusVehicleGeneratorModule;
-import ch.ethz.idsc.amodeus.matsim.mod.AmodeusVehicleToVSGeneratorModule;
-import ch.ethz.idsc.amodeus.matsim.mod.AmodeusVirtualNetworkModule;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.options.LPOptions;
 import ch.ethz.idsc.amodeus.options.LPOptionsBase;
@@ -43,8 +35,6 @@ import ch.ethz.matsim.av.config.operator.DispatcherConfig;
 import ch.ethz.matsim.av.config.operator.GeneratorConfig;
 import ch.ethz.matsim.av.config.operator.OperatorConfig;
 import ch.ethz.matsim.av.data.AVOperator;
-import ch.ethz.matsim.av.framework.AVModule;
-import ch.ethz.matsim.av.framework.AVQSimModule;
 import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
 import ch.ethz.refactoring.AmodeusConfigurator;
 
@@ -109,7 +99,7 @@ public class MATSimVirtualNetworkTravelDataTest {
         ReferenceFrame referenceFrame = locationSpec.referenceFrame();
         MatsimAmodeusDatabase db = MatsimAmodeusDatabase.initialize(scenario.getNetwork(), referenceFrame);
 
-        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams(AVModule.AV_MODE);
+        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams("av");
         modeParams.setMonetaryDistanceRate(0.0);
         modeParams.setMarginalUtilityOfTraveling(8.86);
         modeParams.setConstant(0.0);

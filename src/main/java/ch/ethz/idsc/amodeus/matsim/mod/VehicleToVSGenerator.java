@@ -4,16 +4,15 @@ package ch.ethz.idsc.amodeus.matsim.mod;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
-import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
+import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.vehicles.VehicleType;
 
-import com.google.inject.Inject;
+import com.google.inject.TypeLiteral;
 
 import ch.ethz.idsc.amodeus.traveldata.TravelData;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
@@ -28,7 +27,6 @@ import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.Floor;
 import ch.ethz.idsc.tensor.sca.Sign;
 import ch.ethz.matsim.av.config.operator.OperatorConfig;
-import ch.ethz.matsim.av.data.AVOperator;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.generator.AVGenerator;
 import ch.ethz.matsim.av.generator.AVUtils;
@@ -114,15 +112,16 @@ public class VehicleToVSGenerator implements AVGenerator {
     }
 
     public static class Factory implements AVGenerator.AVGeneratorFactory {
-        @Inject
-        private Map<Id<AVOperator>, TravelData> travelDatas;
-
-        @Inject
-        private Map<Id<AVOperator>, VirtualNetwork<Link>> virtualNetworks;
-
         @Override
-        public AVGenerator createGenerator(OperatorConfig operatorConfig, Network network, VehicleType vehicleType) {
-            return new VehicleToVSGenerator(operatorConfig, virtualNetworks.get(operatorConfig.getId()), travelDatas.get(operatorConfig.getId()), vehicleType);
+        public AVGenerator createGenerator(InstanceGetter inject) {
+            OperatorConfig operatorConfig = inject.getModal(OperatorConfig.class);
+            VehicleType vehicleType = inject.getModal(VehicleType.class);
+
+            VirtualNetwork<Link> virtualNetwork = inject.getModal(new TypeLiteral<VirtualNetwork<Link>>() {
+            });
+            TravelData travelData = inject.getModal(TravelData.class);
+
+            return new VehicleToVSGenerator(operatorConfig, virtualNetwork, travelData, vehicleType);
         }
     }
 }

@@ -8,12 +8,10 @@ import java.util.Random;
 
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
-
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherUtils;
@@ -23,7 +21,6 @@ import ch.ethz.idsc.amodeus.dispatcher.util.DrivebyRequestStopper;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.matsim.av.config.operator.OperatorConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
-import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.router.AVRouter;
 
 /** Dispatcher sends vehicles to random links in the network and lets them pickup
@@ -75,21 +72,17 @@ public class DriveByDispatcher extends RebalancingDispatcher {
     }
 
     public static class Factory implements AVDispatcherFactory {
-        @Inject
-        @Named(AVModule.AV_MODE)
-        private TravelTime travelTime;
-
-        @Inject
-        private EventsManager eventsManager;
-
-        @Inject
-        private Config config;
-
-        @Inject
-        private MatsimAmodeusDatabase db;
-
         @Override
-        public AVDispatcher createDispatcher(OperatorConfig operatorConfig, AVRouter router, Network network) {
+        public AVDispatcher createDispatcher(InstanceGetter inject) {
+            Config config = inject.get(Config.class);
+            MatsimAmodeusDatabase db = inject.get(MatsimAmodeusDatabase.class);
+            EventsManager eventsManager = inject.get(EventsManager.class);
+
+            OperatorConfig operatorConfig = inject.getModal(OperatorConfig.class);
+            Network network = inject.getModal(Network.class);
+            AVRouter router = inject.getModal(AVRouter.class);
+            TravelTime travelTime = inject.getModal(TravelTime.class);
+
             return new DriveByDispatcher(config, operatorConfig, travelTime, router, eventsManager, network, db);
         }
     }

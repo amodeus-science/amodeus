@@ -14,7 +14,6 @@ import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.mobsim.framework.events.MobsimBeforeSimStepEvent;
 import org.matsim.core.mobsim.framework.listeners.MobsimBeforeSimStepListener;
 
-import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import ch.ethz.matsim.av.data.AVVehicle;
@@ -29,13 +28,17 @@ import ch.ethz.refactoring.schedule.AmodeusTaskType;
 public class AVOptimizer implements VrpOptimizer, OnlineTrackerListener, MobsimBeforeSimStepListener {
     private double now;
 
-    @Inject
     private EventsManager eventsManager;
+    private AVDispatcher dispatcher;
+
+    public AVOptimizer(AVDispatcher dispatcher, EventsManager eventsManager) {
+        this.eventsManager = eventsManager;
+        this.dispatcher = dispatcher;
+    }
 
     @Override
     public void requestSubmitted(Request request) {
         AVRequest avRequest = (AVRequest) request;
-        AVDispatcher dispatcher = avRequest.getDispatcher();
 
         synchronized (dispatcher) {
             dispatcher.onRequestSubmitted(avRequest);
@@ -84,8 +87,6 @@ public class AVOptimizer implements VrpOptimizer, OnlineTrackerListener, MobsimB
         ensureNonFinishingSchedule(schedule);
         schedule.nextTask();
         ensureNonFinishingSchedule(schedule);
-
-        AVDispatcher dispatcher = ((AVVehicle) vehicle).getDispatcher();
 
         if (nextTask != null) {
             synchronized (dispatcher) {

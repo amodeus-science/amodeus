@@ -1,12 +1,11 @@
 package ch.ethz.matsim.av.router;
 
-import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.dvrp.run.ModalProviders;
 
-import ch.ethz.matsim.av.config.operator.RouterConfig;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
 public interface AVRouter extends ParallelLeastCostPathCalculator {
-	interface Factory {
-		AVRouter createRouter(RouterConfig routerConfig, Network network);
-	}
+    interface Factory {
+        AVRouter createRouter(ModalProviders.InstanceGetter inject);
+    }
 }

@@ -1,17 +1,9 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.matsim.mod;
 
-import org.matsim.contrib.dvrp.vrpagent.VrpLegFactory;
 import org.matsim.core.mobsim.qsim.AbstractQSimModule;
-import org.matsim.core.mobsim.qsim.QSim;
-
-import com.google.inject.AbstractModule;
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
-import com.google.inject.util.Modules;
 
 import ch.ethz.matsim.av.framework.AVQSimModule;
-import ch.ethz.matsim.av.schedule.AVOptimizer;
 
 public class AmodeusQSimModule extends AbstractQSimModule {
     @Override
@@ -21,17 +13,24 @@ public class AmodeusQSimModule extends AbstractQSimModule {
          * one is used which adds IDSC tracking functionality to the dynamic vehicle
          * legs. */
 
-        install(Modules.override(new AVQSimModule()).with(new AbstractModule() {
-            @Override
-            protected void configure() {
-                // ---
-            }
+        install(new AVQSimModule());
 
-            @Provides
-            @Singleton
-            VrpLegFactory provideLegCreator(AVOptimizer avOptimizer, QSim qsim) {
-                return TrackingHelper.createLegCreatorWithIDSCTracking(avOptimizer, qsim.getSimTimer());
-            }
-        }));
+        // TODO: Can be removed!'
+        /* install(Modules.override(new AVQSimModule()).with(new AbstractModule() {
+         * 
+         * @Override
+         * protected void configure() {
+         * for (OperatorConfig operatorConfig : AVConfigGroup.getOrCreate(getConfig()).getOperatorConfigs().values()) {
+         * // TODO: Fix this one we have no modes!
+         * 
+         * bind(DvrpModes.key(VrpLegFactory.class, "av")).toProvider(ModalProviders.createProvider("av", getter -> {
+         * QSim qsim = getter.get(QSim.class);
+         * AVOptimizer optimizer = getter.getModal(AVOptimizer.class);
+         * 
+         * return TrackingHelper.createLegCreatorWithIDSCTracking(optimizer, qsim.getSimTimer());
+         * }));
+         * }
+         * }
+         * })); */
     }
 }

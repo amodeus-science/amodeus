@@ -10,8 +10,6 @@ import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueIdentifier;
 import ch.ethz.idsc.amodeus.analysis.report.TtlValIdent;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
-import ch.ethz.idsc.tensor.RealScalar;
-import ch.ethz.idsc.tensor.Scalar;
 
 public class RequestRobotaxiInformationElement implements AnalysisElement, TotalValueAppender {
     private final Set<Integer> requestIndices = new HashSet<>();
@@ -19,8 +17,8 @@ public class RequestRobotaxiInformationElement implements AnalysisElement, Total
 
     @Override
     public void register(SimulationObject simulationObject) {
-        simulationObject.requests.stream().forEach(r -> requestIndices.add(r.requestIndex));
-        simulationObject.vehicles.stream().forEach(v -> vehicleIndices.add(v.vehicleIndex));
+        simulationObject.requests.forEach(r -> requestIndices.add(r.requestIndex));
+        simulationObject.vehicles.forEach(v -> vehicleIndices.add(v.vehicleIndex));
     }
 
     public int vehicleSize() {

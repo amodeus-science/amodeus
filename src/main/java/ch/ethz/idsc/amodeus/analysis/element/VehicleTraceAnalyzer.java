@@ -38,7 +38,7 @@ import ch.ethz.idsc.tensor.qty.Unit;
     /* package */ NavigableMap<Long, Scalar> distanceAtTime;
     /* package */ NavigableMap<Long, RoboTaxiStatus> statusAtTime = new TreeMap<Long, RoboTaxiStatus>();
 
-    public VehicleTraceAnalyzer(int stepsMax, MatsimAmodeusDatabase db) {
+    public VehicleTraceAnalyzer(MatsimAmodeusDatabase db) {
         this.db = db;
         unit = db.referenceFrame.unit();
         vehicleCustomerDist = Quantity.of(0, unit);
@@ -46,18 +46,16 @@ import ch.ethz.idsc.tensor.qty.Unit;
         vehicleRebalancedist = Quantity.of(0, unit);
     }
 
-    public void register(int simObjIndex, VehicleContainer vc, long now) {
+    public void register(VehicleContainer vc, long now) {
         // recording link and time trace
-        for (int linkID : vc.linkTrace) {
+        for (int linkID : vc.linkTrace)
             if (linkTrace.size() == 0 || linkTrace.get(linkTrace.size() - 1) != linkID) {
                 linkTrace.add(linkID);
                 timeTrace.add(now);
             }
-        }
 
         // recording status at time
         statusAtTime.put(now, vc.roboTaxiStatus);
-
     }
 
     /* package */ void consolidate() {
@@ -65,13 +63,13 @@ import ch.ethz.idsc.tensor.qty.Unit;
         GlobalAssert.that(linkTrace.size() == timeTrace.size());
         distanceAtTime = new TreeMap<Long, Scalar>();
         distanceAtTime.put((long) 0, Quantity.of(0, unit));
-        for (int i = 1; i < linkTrace.size(); ++i) {
+        for (int i = 1; i < linkTrace.size(); ++i)
             if (linkTrace.get(i - 1) != linkTrace.get(i)) { // link has changed
                 Scalar distanceLink = Quantity.of(db.getOsmLink(linkTrace.get(i - 1)).link.getLength(), unit);
                 Scalar distanceBefore = distanceAtTime.lastEntry().getValue();
                 distanceAtTime.put(timeTrace.get(i - 1), distanceBefore.add(distanceLink));
             }
-        }
+
         /** compute total distances */
         vehicleTotalDistance = distanceAtTime.lastEntry().getValue();
         Entry<Long, Scalar> prevEntry = null;
