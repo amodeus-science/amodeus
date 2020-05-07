@@ -61,7 +61,7 @@ public class TestScenarioGenerator {
         Scenario scenario = generate(config);
 
         scenario.getPopulation().getPersons().values().forEach(person -> {
-            person.getSelectedPlan().getPlanElements().stream().filter(Leg.class::isInstance).forEach(leg -> ((Leg)leg).setMode(AVModule.AV_MODE));
+            person.getSelectedPlan().getPlanElements().stream().filter(Leg.class::isInstance).forEach(leg -> ((Leg)leg).setMode("av")); // Refactor av
         });
 
         return scenario;

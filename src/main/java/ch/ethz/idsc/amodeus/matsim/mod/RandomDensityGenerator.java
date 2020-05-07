@@ -10,6 +10,7 @@ import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
+import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.gbl.MatsimRandom;
 import org.matsim.vehicles.VehicleType;
 
@@ -57,7 +58,11 @@ public class RandomDensityGenerator implements AVGenerator {
 
     public static class Factory implements AVGenerator.AVGeneratorFactory {
         @Override
-        public AVGenerator createGenerator(OperatorConfig operatorConfig, Network network, VehicleType vehicleType) {
+        public AVGenerator createGenerator(InstanceGetter inject) {
+            OperatorConfig operatorConfig = inject.getModal(OperatorConfig.class);
+            Network network = inject.getModal(Network.class);
+            VehicleType vehicleType = inject.getModal(VehicleType.class);
+
             return new RandomDensityGenerator(operatorConfig, network, vehicleType);
         }
     }

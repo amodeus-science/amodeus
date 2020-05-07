@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Random;
 
 import org.junit.AfterClass;
@@ -30,8 +29,8 @@ import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
-import org.matsim.contrib.dvrp.run.DvrpModule;
-import org.matsim.contrib.dvrp.trafficmonitoring.DvrpTravelTimeModule;
+import org.matsim.contrib.dvrp.run.DvrpModes;
+import org.matsim.contrib.dvrp.run.ModalProviders;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
@@ -41,16 +40,10 @@ import org.matsim.core.gbl.MatsimRandom;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.algorithms.TransportModeNetworkFilter;
 
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
+import com.google.inject.TypeLiteral;
 
 import ch.ethz.idsc.amodeus.data.LocationSpec;
 import ch.ethz.idsc.amodeus.data.ReferenceFrame;
-import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDatabaseModule;
-import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDispatcherModule;
-import ch.ethz.idsc.amodeus.matsim.mod.AmodeusModule;
-import ch.ethz.idsc.amodeus.matsim.mod.AmodeusVehicleGeneratorModule;
-import ch.ethz.idsc.amodeus.matsim.mod.AmodeusVehicleToVSGeneratorModule;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.options.LPOptions;
 import ch.ethz.idsc.amodeus.options.LPOptionsBase;
@@ -72,8 +65,6 @@ import ch.ethz.matsim.av.config.operator.DispatcherConfig;
 import ch.ethz.matsim.av.config.operator.GeneratorConfig;
 import ch.ethz.matsim.av.config.operator.OperatorConfig;
 import ch.ethz.matsim.av.data.AVOperator;
-import ch.ethz.matsim.av.framework.AVModule;
-import ch.ethz.matsim.av.framework.AVQSimModule;
 import ch.ethz.matsim.av.scenario.TestScenarioAnalyzer;
 import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
 import ch.ethz.refactoring.AmodeusConfigurator;
@@ -206,7 +197,7 @@ public class StandardMATSimScenarioTest {
         ReferenceFrame referenceFrame = locationSpec.referenceFrame();
         MatsimAmodeusDatabase db = MatsimAmodeusDatabase.initialize(scenario.getNetwork(), referenceFrame);
 
-        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams(AVModule.AV_MODE);
+        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams("av");
         modeParams.setMonetaryDistanceRate(0.0);
         modeParams.setMarginalUtilityOfTraveling(8.86);
         modeParams.setConstant(0.0);
@@ -252,33 +243,32 @@ public class StandardMATSimScenarioTest {
         controller.addOverridingModule(new AbstractModule() {
             @Override
             public void install() {
-                // ---
-            }
+                // TODO: This is not modalized now!
 
-            @Provides
-            @Singleton
-            public Map<Id<AVOperator>, VirtualNetwork<Link>> provideVirtualNetworks(Map<Id<AVOperator>, Network> networks) {
-                // Since we have no virtual netowrk saved in the working directory for our test
-                // scenario, we need to provide a custom one for the LPFB dispatcher
+                bind(DvrpModes.key(new TypeLiteral<VirtualNetwork<Link>>() {
+                }, "av")).toProvider(ModalProviders.createProvider("av", getter -> {
+                    Network network = getter.getModal(Network.class);
+                    return MatsimKMeansVirtualNetworkCreator.createVirtualNetwork(scenario.getPopulation(), network, 2, true);
+                }));
 
-                return Collections.singletonMap(AVOperator.createId("test"),
-                        MatsimKMeansVirtualNetworkCreator.createVirtualNetwork(scenario.getPopulation(), networks.get(AVOperator.createId("test")), 2, true));
-            }
+                bind(DvrpModes.key(new TypeLiteral<TravelData>() {
+                }, "av")).toProvider(ModalProviders.createProvider("av", getter -> {
+                    try {
+                        LPOptions lpOptions = new LPOptions(simOptions.getWorkingDirectory(), LPOptionsBase.getDefault());
+                        lpOptions.setProperty(LPOptionsBase.LPSOLVER, "timeInvariant");
+                        lpOptions.saveAndOverwriteLPOptions();
 
-            @Provides
-            @Singleton
-            public Map<Id<AVOperator>, TravelData> provideTravelDatas(Map<Id<AVOperator>, VirtualNetwork<Link>> virtualNetworks, Map<Id<AVOperator>, Network> networks,
-                    Population population) throws Exception {
-                // Same as for the virtual network: For the LPFF dispatcher we need travel
-                // data, which we generate on the fly here.
+                        VirtualNetwork<Link> virtualNetwork = getter.getModal(new TypeLiteral<VirtualNetwork<Link>>() {
+                        });
+                        Network network = getter.getModal(Network.class);
+                        Population population = getter.get(Population.class);
 
-                LPOptions lpOptions = new LPOptions(simOptions.getWorkingDirectory(), LPOptionsBase.getDefault());
-                lpOptions.setProperty(LPOptionsBase.LPSOLVER, "timeInvariant");
-                lpOptions.saveAndOverwriteLPOptions();
-                TravelData travelData = StaticTravelDataCreator.create(simOptions.getWorkingDirectory(), virtualNetworks.get(AVOperator.createId("test")),
-                        networks.get(AVOperator.createId("test")), population, simOptions.getdtTravelData(), generatorConfig.getNumberOfVehicles(), endTime);
-
-                return Collections.singletonMap(AVOperator.createId("test"), travelData);
+                        return StaticTravelDataCreator.create(simOptions.getWorkingDirectory(), virtualNetwork, network, population, simOptions.getdtTravelData(),
+                                generatorConfig.getNumberOfVehicles(), endTime);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }));
             }
         });
 

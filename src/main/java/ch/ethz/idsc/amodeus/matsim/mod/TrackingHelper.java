@@ -10,9 +10,10 @@ import org.matsim.contrib.dvrp.vrpagent.VrpLeg;
 import org.matsim.contrib.dvrp.vrpagent.VrpLegFactory;
 import org.matsim.core.mobsim.framework.MobsimTimer;
 
-/* package */enum TrackingHelper {
+// TODO: This can be factored out!
+public enum TrackingHelper {
     ;
-    static VrpLegFactory createLegCreatorWithIDSCTracking(OnlineTrackerListener optimizer, MobsimTimer timer) {
+    public static VrpLegFactory createLegCreatorWithIDSCTracking(OnlineTrackerListener optimizer, MobsimTimer timer) {
         return new VrpLegFactory() {
             @Override
             public VrpLeg create(DvrpVehicle vehicle) {

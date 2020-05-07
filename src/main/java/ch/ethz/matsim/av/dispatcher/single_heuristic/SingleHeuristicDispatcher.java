@@ -9,14 +9,12 @@ import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.router.util.TravelTime;
 import org.matsim.core.utils.collections.QuadTree;
-
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
 
 import ch.ethz.matsim.av.config.operator.OperatorConfig;
 import ch.ethz.matsim.av.data.AVOperator;
@@ -24,7 +22,6 @@ import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.dispatcher.AVVehicleAssignmentEvent;
 import ch.ethz.matsim.av.dispatcher.utils.SingleRideAppender;
-import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.router.AVRouter;
 import ch.ethz.refactoring.schedule.AmodeusStayTask;
@@ -153,7 +150,7 @@ public class SingleHeuristicDispatcher implements AVDispatcher {
 
     @Override
     public void addVehicle(AVVehicle vehicle) {
-        eventsManager.processEvent(new AVVehicleAssignmentEvent(vehicle, 0));
+        eventsManager.processEvent(new AVVehicleAssignmentEvent(operatorId, vehicle.getId(), 0));
         addVehicle(vehicle, vehicle.getStartLink());
     }
 
@@ -185,15 +182,14 @@ public class SingleHeuristicDispatcher implements AVDispatcher {
     }
 
     static public class Factory implements AVDispatcherFactory {
-        @Inject
-        private EventsManager eventsManager;
-
-        @Inject
-        @Named(AVModule.AV_MODE)
-        private TravelTime travelTime;
-
         @Override
-        public AVDispatcher createDispatcher(OperatorConfig operatorConfig, AVRouter router, Network network) {
+        public AVDispatcher createDispatcher(InstanceGetter inject) {
+            EventsManager eventsManager = inject.get(EventsManager.class);
+            TravelTime travelTime = inject.getModal(TravelTime.class);
+            OperatorConfig operatorConfig = inject.getModal(OperatorConfig.class);
+            AVRouter router = inject.getModal(AVRouter.class);
+            Network network = inject.getModal(Network.class);
+
             double replanningInterval = Double.parseDouble(operatorConfig.getDispatcherConfig().getParams().getOrDefault("replanningInterval", "10.0"));
 
             return new SingleHeuristicDispatcher(operatorConfig.getId(), eventsManager, network, new SingleRideAppender(operatorConfig.getTimingConfig(), router, travelTime),

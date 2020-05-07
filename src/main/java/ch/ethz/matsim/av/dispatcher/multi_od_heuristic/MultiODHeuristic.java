@@ -9,14 +9,12 @@ import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.router.util.TravelTime;
 import org.matsim.core.utils.collections.QuadTree;
-
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
 
 import ch.ethz.matsim.av.config.operator.DispatcherConfig;
 import ch.ethz.matsim.av.config.operator.OperatorConfig;
@@ -28,7 +26,6 @@ import ch.ethz.matsim.av.dispatcher.multi_od_heuristic.aggregation.AggregatedReq
 import ch.ethz.matsim.av.dispatcher.multi_od_heuristic.aggregation.AggregationEvent;
 import ch.ethz.matsim.av.dispatcher.single_heuristic.ModeChangeEvent;
 import ch.ethz.matsim.av.dispatcher.single_heuristic.SingleHeuristicDispatcher;
-import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.router.AVRouter;
 import ch.ethz.refactoring.schedule.AmodeusStayTask;
@@ -205,7 +202,7 @@ public class MultiODHeuristic implements AVDispatcher {
     @Override
     public void addVehicle(AVVehicle vehicle) {
         addVehicle(vehicle, vehicle.getStartLink());
-        eventsManager.processEvent(new AVVehicleAssignmentEvent(vehicle, 0));
+        eventsManager.processEvent(new AVVehicleAssignmentEvent(operatorId, vehicle.getId(), 0));
     }
 
     private void addVehicle(AVVehicle vehicle, Link link) {
@@ -227,16 +224,16 @@ public class MultiODHeuristic implements AVDispatcher {
         pendingRequestsTree.remove(coord.getX(), coord.getY(), request);
     }
 
+    // TODO: Effectively, this can become a provider now ...
     static public class Factory implements AVDispatcherFactory {
-        @Inject
-        private EventsManager eventsManager;
-
-        @Inject
-        @Named(AVModule.AV_MODE)
-        private TravelTime travelTime;
-
         @Override
-        public AVDispatcher createDispatcher(OperatorConfig operatorConfig, AVRouter parallelRouter, Network network) {
+        public AVDispatcher createDispatcher(InstanceGetter inject) {
+            EventsManager eventsManager = inject.get(EventsManager.class);
+            TravelTime travelTime = inject.getModal(TravelTime.class);
+            OperatorConfig operatorConfig = inject.getModal(OperatorConfig.class);
+            Network network = inject.getModal(Network.class);
+            AVRouter parallelRouter = inject.getModal(AVRouter.class);
+
             DispatcherConfig dispatcherConfig = operatorConfig.getDispatcherConfig();
 
             double replanningInterval = Double.parseDouble(dispatcherConfig.getParams().getOrDefault("replanningInterval", "10.0"));

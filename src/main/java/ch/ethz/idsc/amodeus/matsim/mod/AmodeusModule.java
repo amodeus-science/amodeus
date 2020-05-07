@@ -11,6 +11,8 @@ import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.PlanElement;
+import org.matsim.contrib.dvrp.run.DvrpModes;
+import org.matsim.contrib.dvrp.run.ModalProviders;
 import org.matsim.contrib.dvrp.trafficmonitoring.DvrpTravelTimeModule;
 import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.events.StartupEvent;
@@ -19,17 +21,14 @@ import org.matsim.core.trafficmonitoring.FreeSpeedTravelTime;
 import org.matsim.vehicles.VehicleType;
 import org.matsim.vehicles.Vehicles;
 
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
+import com.google.inject.Inject;
 
 import ch.ethz.matsim.av.config.AVConfigGroup;
 import ch.ethz.matsim.av.config.operator.GeneratorConfig;
 import ch.ethz.matsim.av.config.operator.OperatorConfig;
-import ch.ethz.matsim.av.data.AVOperator;
-import ch.ethz.matsim.av.framework.AVModule;
 
 public class AmodeusModule extends AbstractModule {
-    private final Logger logger = Logger.getLogger(AmodeusModule.class);
+    private final static Logger logger = Logger.getLogger(AmodeusModule.class);
 
     @Override
     public void install() {
@@ -43,28 +42,19 @@ public class AmodeusModule extends AbstractModule {
         addTravelTimeBinding(DvrpTravelTimeModule.DVRP_INITIAL).toInstance(new FreeSpeedTravelTime());
 
         addControlerListenerBinding().toInstance(new WarningListener());
-    }
 
-    @Provides
-    @Singleton
-    public Map<Id<AVOperator>, VehicleType> provideVehicleTypes(AVConfigGroup config, Vehicles vehicles) {
-        /* This provides overwrites the standard way how the av package determines vehicle types. By default
-         * it uses the 'vehicleType' attribute of each operator to look up a certain predefined vehicle type
-         * from MATSim / from the MATSim vehicles input file. If the vehicle type cannot be found, the standard
-         * MATSim vehicle type is returned. Here, we now add another layer on top for Amodeus: If the 'numberOfSeats'
-         * attribute is set for a generator, we create a new 'amodeusVehicleType:N' on the fly with N seats. */
+        // Update vehicle types by Amodeus configuration
 
-        Map<Id<AVOperator>, VehicleType> vehicleTypes = new AVModule().provideVehicleTypes(config, vehicles);
-        Map<Integer, VehicleType> amodeusTypes = new HashMap<>();
-
-        for (OperatorConfig operatorConfig : config.getOperatorConfigs().values()) {
+        for (OperatorConfig operatorConfig : AVConfigGroup.getOrCreate(getConfig()).getOperatorConfigs().values()) {
             GeneratorConfig generatorConfig = operatorConfig.getGeneratorConfig();
 
             String vehicleTypeName = generatorConfig.getVehicleType();
             String numberOfSeatsParameter = generatorConfig.getParams().get("numberOfSeats");
 
+            Map<Integer, VehicleType> amodeusTypes = new HashMap<>();
+
             if (Objects.nonNull(numberOfSeatsParameter)) {
-                if (Objects.nonNull(vehicleTypeName))
+                if (Objects.nonNull(vehicleTypeName)) {
                     throw new IllegalStateException(String.format( //
                             "Both vehicleType and numberOfSeats are set for operator %s. This is amiguous. "
                                     + "Option one is to define 'numberOfSeats' alone. In this case Amodeus will create an internal "
@@ -72,16 +62,34 @@ public class AmodeusModule extends AbstractModule {
                                     + "define a 'vehicleType' alone and register it through the possible ways that MATSim prvoides "
                                     + "(either manually adding a VehicleType to the Vehicles container after loeading the scenario, or providing a vehicles.xml.gz file).",
                             operatorConfig.getId()));
-                int numberOfSeats = Integer.parseInt(numberOfSeatsParameter);
-                if (!amodeusTypes.containsKey(numberOfSeats)) {
-                    logger.info(String.format("Creating an on-the-fly vehicle type for Amodeus with %d seats", numberOfSeats));
-                    VehicleType vehicleType = vehicles.getFactory().createVehicleType(Id.create(String.format("amodeus:%d", numberOfSeats), VehicleType.class));
-                    amodeusTypes.put(numberOfSeats, vehicleType);
                 }
-                vehicleTypes.put(operatorConfig.getId(), amodeusTypes.get(numberOfSeats));
+
+                // TODO: Adjust when we have actual modes instead of operators!
+                bind(DvrpModes.key(VehicleType.class, "av")).toProvider(new VehicleTypeProvider("av"));
             }
         }
-        return vehicleTypes;
+    }
+
+    static private class VehicleTypeProvider extends ModalProviders.AbstractProvider<VehicleType> {
+        @Inject
+        Vehicles vehicles;
+
+        VehicleTypeProvider(String mode) {
+            super(mode);
+        }
+
+        @Override
+        public VehicleType get() {
+            OperatorConfig operatorConfig = getModalInstance(OperatorConfig.class);
+            GeneratorConfig generatorConfig = operatorConfig.getGeneratorConfig();
+
+            String numberOfSeatsParameter = generatorConfig.getParams().get("numberOfSeats");
+            int numberOfSeats = Integer.parseInt(numberOfSeatsParameter);
+
+            logger.info(String.format("Creating an on-the-fly vehicle type for Amodeus operator '%s' with %d seats", operatorConfig.getId().toString(), numberOfSeats));
+
+            return vehicles.getFactory().createVehicleType(Id.create(String.format("amodeus:%s:%d", operatorConfig.getId().toString(), numberOfSeats), VehicleType.class));
+        }
     }
 
     private class WarningListener implements StartupListener {
