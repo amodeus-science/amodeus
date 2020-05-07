@@ -14,7 +14,8 @@ public enum AnalysisMeanFilter {
 
     public static Tensor of(Tensor values) {
         return FILTER_ON //
-                ? MeanFilter.of(values, FILTER_SIZE) : values;
+                ? MeanFilter.of(values, FILTER_SIZE)
+                : values;
     }
 
 }

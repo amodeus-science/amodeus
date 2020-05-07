@@ -16,6 +16,7 @@ public class TilesLayer extends ViewerLayer {
 
     enum Blend {
         Dark(0), Light(255);
+
         final int rgb;
 
         Blend(int rgb) {

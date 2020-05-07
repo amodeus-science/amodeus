@@ -14,27 +14,26 @@ import ch.ethz.matsim.av.config.AVConfigGroup;
 import ch.ethz.matsim.av.config.AVScoringParameterSet;
 
 public class AVSubpopulationScoringParameters {
-	private final AVConfigGroup config;
-	private final String subpopulationAttributeName;
+    private final AVConfigGroup config;
+    private final String subpopulationAttributeName;
 
-	private final Map<String, AVScoringParameters> cache = new HashMap<>();
+    private final Map<String, AVScoringParameters> cache = new HashMap<>();
 
-	@Inject
-	AVSubpopulationScoringParameters(PlansConfigGroup plansConfigGroup, AVConfigGroup config, Population population) {
-		this.config = config;
-		this.subpopulationAttributeName = plansConfigGroup.getSubpopulationAttributeName();
-	}
+    @Inject
+    AVSubpopulationScoringParameters(PlansConfigGroup plansConfigGroup, AVConfigGroup config, Population population) {
+        this.config = config;
+        this.subpopulationAttributeName = plansConfigGroup.getSubpopulationAttributeName();
+    }
 
-	public AVScoringParameters getScoringParameters(Person person) {
-		final String subpopulation = (String) PopulationUtils.getPersonAttribute(person, subpopulationAttributeName);
+    public AVScoringParameters getScoringParameters(Person person) {
+        final String subpopulation = (String) PopulationUtils.getPersonAttribute(person, subpopulationAttributeName);
 
-		if (!cache.containsKey(subpopulation)) {
-			AVScoringParameterSet configParameters = config.getScoringParameters(subpopulation);
-			AVScoringParameters simulationParameters = new AVScoringParameters(
-					configParameters.getMarginalUtilityOfWaitingTime() / 3600.0, configParameters.getStuckUtility());
-			cache.put(subpopulation, simulationParameters);
-		}
+        if (!cache.containsKey(subpopulation)) {
+            AVScoringParameterSet configParameters = config.getScoringParameters(subpopulation);
+            AVScoringParameters simulationParameters = new AVScoringParameters(configParameters.getMarginalUtilityOfWaitingTime() / 3600.0, configParameters.getStuckUtility());
+            cache.put(subpopulation, simulationParameters);
+        }
 
-		return cache.get(subpopulation);
-	}
+        return cache.get(subpopulation);
+    }
 }

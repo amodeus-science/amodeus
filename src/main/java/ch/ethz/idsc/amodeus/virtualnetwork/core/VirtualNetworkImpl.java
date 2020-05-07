@@ -117,10 +117,9 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     }
 
     private void fillLinkVNodeMap(Map<String, T> map) {
-        networkElements = networkElementsSerializable.entrySet().stream()
-                .collect(Collectors.toMap( //
-                        e -> map.get(e.getKey()), //
-                        Map.Entry::getValue));
+        networkElements = networkElementsSerializable.entrySet().stream().collect(Collectors.toMap( //
+                e -> map.get(e.getKey()), //
+                Map.Entry::getValue));
         checkConsistency();
     }
 

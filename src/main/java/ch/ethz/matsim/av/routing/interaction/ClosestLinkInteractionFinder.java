@@ -10,37 +10,37 @@ import com.google.inject.Singleton;
 import ch.ethz.matsim.av.config.operator.OperatorConfig;
 
 public class ClosestLinkInteractionFinder implements AVInteractionFinder {
-	static public final String TYPE = "ClosestLink";
+    static public final String TYPE = "ClosestLink";
 
-	private final Network network;
+    private final Network network;
 
-	public ClosestLinkInteractionFinder(Network network) {
-		this.network = network;
-	}
+    public ClosestLinkInteractionFinder(Network network) {
+        this.network = network;
+    }
 
-	@Override
-	public Facility findPickupFacility(Facility fromFacility, double departureTime) {
-		return findFacility(fromFacility);
-	}
+    @Override
+    public Facility findPickupFacility(Facility fromFacility, double departureTime) {
+        return findFacility(fromFacility);
+    }
 
-	@Override
-	public Facility findDropoffFacility(Facility toFacility, double departureTime) {
-		return findFacility(toFacility);
-	}
+    @Override
+    public Facility findDropoffFacility(Facility toFacility, double departureTime) {
+        return findFacility(toFacility);
+    }
 
-	private Facility findFacility(Facility baseFacility) {
-		if (baseFacility.getCoord() == null) {
-			throw new IllegalStateException("Trying to find closest interaction facility, but not coords are given.");
-		}
+    private Facility findFacility(Facility baseFacility) {
+        if (baseFacility.getCoord() == null) {
+            throw new IllegalStateException("Trying to find closest interaction facility, but not coords are given.");
+        }
 
-		return new LinkWrapperFacility(NetworkUtils.getNearestLink(network, baseFacility.getCoord()));
-	}
+        return new LinkWrapperFacility(NetworkUtils.getNearestLink(network, baseFacility.getCoord()));
+    }
 
-	@Singleton
-	public static class Factory implements AVInteractionFinderFactory {
-		@Override
-		public AVInteractionFinder createInteractionFinder(OperatorConfig operatorConfig, Network network) {
-			return new ClosestLinkInteractionFinder(network);
-		}
-	}
+    @Singleton
+    public static class Factory implements AVInteractionFinderFactory {
+        @Override
+        public AVInteractionFinder createInteractionFinder(OperatorConfig operatorConfig, Network network) {
+            return new ClosestLinkInteractionFinder(network);
+        }
+    }
 }

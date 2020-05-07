@@ -17,6 +17,7 @@ public enum Magnitude implements ScalarUnaryOperator {
     // ---
     VELOCITY(SI.VELOCITY), //
     ;
+
     // ---
     private final ScalarUnaryOperator scalarUnaryOperator;
 

@@ -1,15 +1,13 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
-/**
- * RoboTaxiStatus describes the various states in which a Robotaxi can be found in.
+/** RoboTaxiStatus describes the various states in which a Robotaxi can be found in.
  *
  * DRIVEWITHCUSTOMER - at least one passenger on board
  * DRIVETOCUSTOMER - no passenger on board, on the way to pick-up a passenger
  * REBALANCEDRIVE - on a rebalancing mission
  * STAY - RoboTaxi is out of missions, available with no task outstanding
- * OFFSERVICE - off service, cannot be assigned a any task
- */
+ * OFFSERVICE - off service, cannot be assigned a any task */
 public enum RoboTaxiStatus {
     DRIVEWITHCUSTOMER(true, "dwc", "with customer"), //
     DRIVETOCUSTOMER(true, "d2c", "pickup"), //

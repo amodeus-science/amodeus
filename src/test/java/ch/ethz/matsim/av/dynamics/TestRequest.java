@@ -1,17 +1,14 @@
 package ch.ethz.matsim.av.dynamics;
 
-/**
- * Creates a new TestRequest
- */
+/** Creates a new TestRequest */
 public class TestRequest {
     public final double departureTime;
     public final double delayTime;
 
-    /**
-     * Constructor
+    /** Constructor
+     * 
      * @param departureTime
-     * @param delayTime
-     */
+     * @param delayTime */
     public TestRequest(double departureTime, double delayTime) {
         this.departureTime = departureTime;
         this.delayTime = delayTime;

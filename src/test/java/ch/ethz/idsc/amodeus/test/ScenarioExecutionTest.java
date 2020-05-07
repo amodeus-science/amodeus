@@ -130,7 +130,8 @@ public class ScenarioExecutionTest {
         assertTrue(new File(simobj, "0108000/0108000.bin").exists());
     }
 
-    @Test @Ignore // TODO: Unignore this! (DistanceElement issue)
+    @Test
+    @Ignore // TODO: Unignore this! (DistanceElement issue)
     public void testAnalysis() throws Exception {
         System.out.print("Analysis Test:\t");
 

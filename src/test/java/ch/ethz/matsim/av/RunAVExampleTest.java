@@ -32,223 +32,223 @@ import ch.ethz.matsim.av.scenario.TestScenarioAnalyzer;
 import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
 
 public class RunAVExampleTest {
-	@Test
-	public void testAVExample() {
-		AVConfigGroup avConfigGroup = new AVConfigGroup();
+    @Test
+    public void testAVExample() {
+        AVConfigGroup avConfigGroup = new AVConfigGroup();
 
-		AVScoringParameterSet scoringParams = avConfigGroup.getScoringParameters(null);
-		scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
+        AVScoringParameterSet scoringParams = avConfigGroup.getScoringParameters(null);
+        scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
 
-		OperatorConfig operatorConfig = new OperatorConfig();
-		operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
-		operatorConfig.getPricingConfig().setPricePerKm(0.48);
-		operatorConfig.getPricingConfig().setSpatialBillingInterval(1000.0);
-		avConfigGroup.addOperator(operatorConfig);
+        OperatorConfig operatorConfig = new OperatorConfig();
+        operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
+        operatorConfig.getPricingConfig().setPricePerKm(0.48);
+        operatorConfig.getPricingConfig().setSpatialBillingInterval(1000.0);
+        avConfigGroup.addOperator(operatorConfig);
 
-		Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
-		Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
+        Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
+        Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
 
-		config.controler().setWriteEventsInterval(1);
-		
-		PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams("av"); // TODO: Refactor
-		modeParams.setMonetaryDistanceRate(0.0);
-		modeParams.setMarginalUtilityOfTraveling(8.86);
-		modeParams.setConstant(0.0);
-		
-		config.controler().setLastIteration(2);
-		
-		StrategySettings strategySettings = new StrategySettings();
-		strategySettings.setStrategyName("KeepLastSelected");
-		strategySettings.setWeight(1.0);
-		config.strategy().addStrategySettings(strategySettings);
+        config.controler().setWriteEventsInterval(1);
 
-		Controler controler = new Controler(scenario);
-		controler.addOverridingModule(new DvrpModule());
-		controler.addOverridingModule(new AVModule());
-		controler.addOverridingQSimModule(new AVQSimModule());
+        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams("av"); // TODO: Refactor
+        modeParams.setMonetaryDistanceRate(0.0);
+        modeParams.setMarginalUtilityOfTraveling(8.86);
+        modeParams.setConstant(0.0);
 
-		controler.configureQSimComponents(AVQSimModule::configureComponents);
+        config.controler().setLastIteration(2);
 
-		TestScenarioAnalyzer analyzer = new TestScenarioAnalyzer();
-		controler.addOverridingModule(analyzer);
+        StrategySettings strategySettings = new StrategySettings();
+        strategySettings.setStrategyName("KeepLastSelected");
+        strategySettings.setWeight(1.0);
+        config.strategy().addStrategySettings(strategySettings);
 
-		controler.run();
+        Controler controler = new Controler(scenario);
+        controler.addOverridingModule(new DvrpModule());
+        controler.addOverridingModule(new AVModule());
+        controler.addOverridingQSimModule(new AVQSimModule());
 
-		Assert.assertEquals(0, analyzer.numberOfDepartures - analyzer.numberOfArrivals);
-	}
+        controler.configureQSimComponents(AVQSimModule::configureComponents);
 
-	@Test
-	public void testStuckScoring() {
-		AVConfigGroup avConfigGroup = new AVConfigGroup();
+        TestScenarioAnalyzer analyzer = new TestScenarioAnalyzer();
+        controler.addOverridingModule(analyzer);
 
-		AVScoringParameterSet scoringParams = avConfigGroup.getScoringParameters(null);
-		scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
+        controler.run();
 
-		OperatorConfig operatorConfig = new OperatorConfig();
-		operatorConfig.getGeneratorConfig().setNumberOfVehicles(0);
-		avConfigGroup.addOperator(operatorConfig);
+        Assert.assertEquals(0, analyzer.numberOfDepartures - analyzer.numberOfArrivals);
+    }
 
-		Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
-		Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
-		config.planCalcScore().getOrCreateModeParams("av"); // Refactor av
+    @Test
+    public void testStuckScoring() {
+        AVConfigGroup avConfigGroup = new AVConfigGroup();
 
-		Controler controler = new Controler(scenario);
-		controler.addOverridingModule(new DvrpModule());
-		controler.addOverridingModule(new AVModule());
-		controler.addOverridingQSimModule(new AVQSimModule());
+        AVScoringParameterSet scoringParams = avConfigGroup.getScoringParameters(null);
+        scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
 
-		controler.configureQSimComponents(AVQSimModule::configureComponents);
+        OperatorConfig operatorConfig = new OperatorConfig();
+        operatorConfig.getGeneratorConfig().setNumberOfVehicles(0);
+        avConfigGroup.addOperator(operatorConfig);
 
-		controler.run();
+        Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
+        Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
+        config.planCalcScore().getOrCreateModeParams("av"); // Refactor av
 
-		for (Person person : scenario.getPopulation().getPersons().values()) {
-			Assert.assertEquals(-1000.0, person.getSelectedPlan().getScore(), 1e-6);
-		}
-	}
+        Controler controler = new Controler(scenario);
+        controler.addOverridingModule(new DvrpModule());
+        controler.addOverridingModule(new AVModule());
+        controler.addOverridingQSimModule(new AVQSimModule());
 
-	@Test
-	public void testMultiOD() {
-		AVConfigGroup avConfigGroup = new AVConfigGroup();
+        controler.configureQSimComponents(AVQSimModule::configureComponents);
 
-		AVScoringParameterSet scoringParams = avConfigGroup.getScoringParameters(null);
-		scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
+        controler.run();
 
-		OperatorConfig operatorConfig = new OperatorConfig();
-		operatorConfig.getDispatcherConfig().setType(MultiODHeuristic.TYPE);
-		operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
-		operatorConfig.getPricingConfig().setPricePerKm(0.48);
-		operatorConfig.getPricingConfig().setSpatialBillingInterval(1000.0);
-		avConfigGroup.addOperator(operatorConfig);
+        for (Person person : scenario.getPopulation().getPersons().values()) {
+            Assert.assertEquals(-1000.0, person.getSelectedPlan().getScore(), 1e-6);
+        }
+    }
 
-		Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
-		Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
+    @Test
+    public void testMultiOD() {
+        AVConfigGroup avConfigGroup = new AVConfigGroup();
 
-		PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams("av"); // Refactor av
-		modeParams.setMonetaryDistanceRate(0.0);
-		modeParams.setMarginalUtilityOfTraveling(8.86);
-		modeParams.setConstant(0.0);
+        AVScoringParameterSet scoringParams = avConfigGroup.getScoringParameters(null);
+        scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
 
-		Controler controler = new Controler(scenario);
-		controler.addOverridingModule(new DvrpModule());
-		controler.addOverridingModule(new AVModule());
-		controler.addOverridingQSimModule(new AVQSimModule());
+        OperatorConfig operatorConfig = new OperatorConfig();
+        operatorConfig.getDispatcherConfig().setType(MultiODHeuristic.TYPE);
+        operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
+        operatorConfig.getPricingConfig().setPricePerKm(0.48);
+        operatorConfig.getPricingConfig().setSpatialBillingInterval(1000.0);
+        avConfigGroup.addOperator(operatorConfig);
 
-		controler.configureQSimComponents(AVQSimModule::configureComponents);
+        Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
+        Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
 
-		TestScenarioAnalyzer analyzer = new TestScenarioAnalyzer();
-		controler.addOverridingModule(analyzer);
+        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams("av"); // Refactor av
+        modeParams.setMonetaryDistanceRate(0.0);
+        modeParams.setMarginalUtilityOfTraveling(8.86);
+        modeParams.setConstant(0.0);
 
-		controler.run();
+        Controler controler = new Controler(scenario);
+        controler.addOverridingModule(new DvrpModule());
+        controler.addOverridingModule(new AVModule());
+        controler.addOverridingQSimModule(new AVQSimModule());
 
-		Assert.assertEquals(0, analyzer.numberOfDepartures - analyzer.numberOfArrivals);
-	}
+        controler.configureQSimComponents(AVQSimModule::configureComponents);
 
-	@Test
-	public void testAVExampleWithAccessEgress() {
-		AVConfigGroup avConfigGroup = new AVConfigGroup();
+        TestScenarioAnalyzer analyzer = new TestScenarioAnalyzer();
+        controler.addOverridingModule(analyzer);
 
-		AVScoringParameterSet scoringParams = avConfigGroup.getScoringParameters(null);
-		scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
+        controler.run();
 
-		OperatorConfig operatorConfig = new OperatorConfig();
-		operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
-		operatorConfig.getPricingConfig().setPricePerKm(0.48);
-		operatorConfig.getPricingConfig().setSpatialBillingInterval(1000.0);
-		avConfigGroup.addOperator(operatorConfig);
+        Assert.assertEquals(0, analyzer.numberOfDepartures - analyzer.numberOfArrivals);
+    }
 
-		avConfigGroup.setUseAccessAgress(true);
+    @Test
+    public void testAVExampleWithAccessEgress() {
+        AVConfigGroup avConfigGroup = new AVConfigGroup();
 
-		Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
-		Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
+        AVScoringParameterSet scoringParams = avConfigGroup.getScoringParameters(null);
+        scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
 
-		Iterator<? extends Person> iterator = scenario.getPopulation().getPersons().values().iterator();
-		for (int i = 0; i < 3; i++) {
-			Person person = iterator.next();
+        OperatorConfig operatorConfig = new OperatorConfig();
+        operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
+        operatorConfig.getPricingConfig().setPricePerKm(0.48);
+        operatorConfig.getPricingConfig().setSpatialBillingInterval(1000.0);
+        avConfigGroup.addOperator(operatorConfig);
 
-			for (PlanElement element : person.getSelectedPlan().getPlanElements()) {
-				if (element instanceof Activity) {
-					Activity activity = (Activity) element;
-					activity.setCoord(CoordUtils.plus(activity.getCoord(), new Coord(5.0, 5.0)));
-				}
-			}
-		}
+        avConfigGroup.setUseAccessAgress(true);
 
-		ActivityParams activityParams = new ActivityParams("av interaction");
-		activityParams.setTypicalDuration(1.0);
-		config.planCalcScore().addActivityParams(activityParams);
+        Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
+        Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
 
-		PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams("av"); // Refactor av
-		modeParams.setMonetaryDistanceRate(0.0);
-		modeParams.setMarginalUtilityOfTraveling(8.86);
-		modeParams.setConstant(0.0);
+        Iterator<? extends Person> iterator = scenario.getPopulation().getPersons().values().iterator();
+        for (int i = 0; i < 3; i++) {
+            Person person = iterator.next();
 
-		Controler controler = new Controler(scenario);
-		controler.addOverridingModule(new DvrpModule());
-		controler.addOverridingModule(new AVModule());
-		controler.addOverridingQSimModule(new AVQSimModule());
+            for (PlanElement element : person.getSelectedPlan().getPlanElements()) {
+                if (element instanceof Activity) {
+                    Activity activity = (Activity) element;
+                    activity.setCoord(CoordUtils.plus(activity.getCoord(), new Coord(5.0, 5.0)));
+                }
+            }
+        }
 
-		controler.configureQSimComponents(AVQSimModule::configureComponents);
+        ActivityParams activityParams = new ActivityParams("av interaction");
+        activityParams.setTypicalDuration(1.0);
+        config.planCalcScore().addActivityParams(activityParams);
 
-		TestScenarioAnalyzer analyzer = new TestScenarioAnalyzer();
-		controler.addOverridingModule(analyzer);
+        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams("av"); // Refactor av
+        modeParams.setMonetaryDistanceRate(0.0);
+        modeParams.setMarginalUtilityOfTraveling(8.86);
+        modeParams.setConstant(0.0);
 
-		controler.run();
+        Controler controler = new Controler(scenario);
+        controler.addOverridingModule(new DvrpModule());
+        controler.addOverridingModule(new AVModule());
+        controler.addOverridingQSimModule(new AVQSimModule());
 
-		Assert.assertEquals(0, analyzer.numberOfDepartures - analyzer.numberOfArrivals);
-		Assert.assertEquals(6, analyzer.numberOfInteractionActivities);
-	}
+        controler.configureQSimComponents(AVQSimModule::configureComponents);
 
-	@Test
-	public void testAVExampleWithAccessEgressAttribute() {
-		AVConfigGroup avConfigGroup = new AVConfigGroup();
+        TestScenarioAnalyzer analyzer = new TestScenarioAnalyzer();
+        controler.addOverridingModule(analyzer);
 
-		AVScoringParameterSet scoringParams = avConfigGroup.getScoringParameters(null);
-		scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
+        controler.run();
 
-		OperatorConfig operatorConfig = new OperatorConfig();
-		operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
-		operatorConfig.getPricingConfig().setPricePerKm(0.48);
-		operatorConfig.getPricingConfig().setSpatialBillingInterval(1000.0);
-		operatorConfig.getInteractionFinderConfig().setType(LinkAttributeInteractionFinder.TYPE);
-		operatorConfig.getInteractionFinderConfig().getParams().put("allowedLinkAttribute", "avflag");
-		avConfigGroup.addOperator(operatorConfig);
+        Assert.assertEquals(0, analyzer.numberOfDepartures - analyzer.numberOfArrivals);
+        Assert.assertEquals(6, analyzer.numberOfInteractionActivities);
+    }
 
-		avConfigGroup.setUseAccessAgress(true);
+    @Test
+    public void testAVExampleWithAccessEgressAttribute() {
+        AVConfigGroup avConfigGroup = new AVConfigGroup();
 
-		Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
-		Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
+        AVScoringParameterSet scoringParams = avConfigGroup.getScoringParameters(null);
+        scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
 
-		for (Link link : scenario.getNetwork().getLinks().values()) {
-			if (link.getFromNode().getCoord().getX() == 5000.0) {
-				link.getAttributes().putAttribute("avflag", true);
-			}
-		}
+        OperatorConfig operatorConfig = new OperatorConfig();
+        operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
+        operatorConfig.getPricingConfig().setPricePerKm(0.48);
+        operatorConfig.getPricingConfig().setSpatialBillingInterval(1000.0);
+        operatorConfig.getInteractionFinderConfig().setType(LinkAttributeInteractionFinder.TYPE);
+        operatorConfig.getInteractionFinderConfig().getParams().put("allowedLinkAttribute", "avflag");
+        avConfigGroup.addOperator(operatorConfig);
 
-		ActivityParams activityParams = new ActivityParams("av interaction");
-		activityParams.setTypicalDuration(1.0);
-		config.planCalcScore().addActivityParams(activityParams);
+        avConfigGroup.setUseAccessAgress(true);
 
-		PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams("av"); // Refactor av
-		modeParams.setMonetaryDistanceRate(0.0);
-		modeParams.setMarginalUtilityOfTraveling(8.86);
-		modeParams.setConstant(0.0);
+        Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
+        Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
 
-		config.qsim().setEndTime(40.0 * 3600.0);
-		config.qsim().setSimStarttimeInterpretation(StarttimeInterpretation.onlyUseStarttime);
+        for (Link link : scenario.getNetwork().getLinks().values()) {
+            if (link.getFromNode().getCoord().getX() == 5000.0) {
+                link.getAttributes().putAttribute("avflag", true);
+            }
+        }
 
-		Controler controler = new Controler(scenario);
-		controler.addOverridingModule(new DvrpModule());
-		controler.addOverridingModule(new AVModule());
-		controler.addOverridingQSimModule(new AVQSimModule());
+        ActivityParams activityParams = new ActivityParams("av interaction");
+        activityParams.setTypicalDuration(1.0);
+        config.planCalcScore().addActivityParams(activityParams);
 
-		controler.configureQSimComponents(AVQSimModule::configureComponents);
+        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams("av"); // Refactor av
+        modeParams.setMonetaryDistanceRate(0.0);
+        modeParams.setMarginalUtilityOfTraveling(8.86);
+        modeParams.setConstant(0.0);
 
-		TestScenarioAnalyzer analyzer = new TestScenarioAnalyzer();
-		controler.addOverridingModule(analyzer);
+        config.qsim().setEndTime(40.0 * 3600.0);
+        config.qsim().setSimStarttimeInterpretation(StarttimeInterpretation.onlyUseStarttime);
 
-		controler.run();
+        Controler controler = new Controler(scenario);
+        controler.addOverridingModule(new DvrpModule());
+        controler.addOverridingModule(new AVModule());
+        controler.addOverridingQSimModule(new AVQSimModule());
 
-		Assert.assertEquals(0, analyzer.numberOfDepartures - analyzer.numberOfArrivals);
-		Assert.assertEquals(163, analyzer.numberOfInteractionActivities);
-	}
+        controler.configureQSimComponents(AVQSimModule::configureComponents);
+
+        TestScenarioAnalyzer analyzer = new TestScenarioAnalyzer();
+        controler.addOverridingModule(analyzer);
+
+        controler.run();
+
+        Assert.assertEquals(0, analyzer.numberOfDepartures - analyzer.numberOfArrivals);
+        Assert.assertEquals(163, analyzer.numberOfInteractionActivities);
+    }
 }

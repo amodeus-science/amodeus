@@ -10,39 +10,38 @@ import org.matsim.core.controler.AbstractModule;
 
 import ch.ethz.matsim.av.routing.AVRoutingModule;
 
-public class TestScenarioAnalyzer extends AbstractModule
-		implements PersonDepartureEventHandler, PersonArrivalEventHandler, ActivityStartEventHandler {
-	public long numberOfDepartures;
-	public long numberOfArrivals;
-	public long numberOfInteractionActivities;
+public class TestScenarioAnalyzer extends AbstractModule implements PersonDepartureEventHandler, PersonArrivalEventHandler, ActivityStartEventHandler {
+    public long numberOfDepartures;
+    public long numberOfArrivals;
+    public long numberOfInteractionActivities;
 
-	@Override
-	public void handleEvent(PersonArrivalEvent event) {
-		if (event.getLegMode().equals("av")) {
-			numberOfArrivals++;
-		}
-	}
+    @Override
+    public void handleEvent(PersonArrivalEvent event) {
+        if (event.getLegMode().equals("av")) {
+            numberOfArrivals++;
+        }
+    }
 
-	@Override
-	public void handleEvent(PersonDepartureEvent event) {
-		if (event.getLegMode().equals("av")) {
-			numberOfDepartures++;
-		}
-	}
+    @Override
+    public void handleEvent(PersonDepartureEvent event) {
+        if (event.getLegMode().equals("av")) {
+            numberOfDepartures++;
+        }
+    }
 
-	@Override
-	public void reset(int iteration) {
-	}
+    @Override
+    public void reset(int iteration) {
+    }
 
-	@Override
-	public void install() {
-		addEventHandlerBinding().toInstance(this);
-	}
+    @Override
+    public void install() {
+        addEventHandlerBinding().toInstance(this);
+    }
 
-	@Override
-	public void handleEvent(ActivityStartEvent event) {
-		if (event.getActType().equals(AVRoutingModule.INTERACTION_ACTIVITY_TYPE)) {
-			numberOfInteractionActivities++;
-		}
-	}
+    @Override
+    public void handleEvent(ActivityStartEvent event) {
+        if (event.getActType().equals(AVRoutingModule.INTERACTION_ACTIVITY_TYPE)) {
+            numberOfInteractionActivities++;
+        }
+    }
 }

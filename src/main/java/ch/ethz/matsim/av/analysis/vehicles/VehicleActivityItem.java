@@ -7,13 +7,13 @@ import org.matsim.vehicles.Vehicle;
 import ch.ethz.matsim.av.data.AVOperator;
 
 public class VehicleActivityItem {
-	public Id<AVOperator> operatorId;
-	public Id<Vehicle> vehicleId;
+    public Id<AVOperator> operatorId;
+    public Id<Vehicle> vehicleId;
 
-	public Link link;
+    public Link link;
 
-	public double startTime = Double.NaN;
-	public double endTime = Double.NaN;
+    public double startTime = Double.NaN;
+    public double endTime = Double.NaN;
 
-	public String type;
+    public String type;
 }

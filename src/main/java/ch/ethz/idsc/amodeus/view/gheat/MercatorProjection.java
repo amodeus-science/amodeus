@@ -28,6 +28,7 @@ package ch.ethz.idsc.amodeus.view.gheat;
 
 /* package */ enum MercatorProjection implements Projections {
     INSTANCE;
+
     // ---
     private static final double MinLatitude = -85.05112878;
     private static final double MaxLatitude = 85.05112878;

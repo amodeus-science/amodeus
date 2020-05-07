@@ -27,151 +27,150 @@ import ch.ethz.matsim.av.analysis.PassengerTracker;
 import ch.ethz.matsim.av.data.AVOperator;
 import ch.ethz.matsim.av.generator.AVUtils;
 
-public class VehicleAnalysisListener implements PersonDepartureEventHandler, PersonArrivalEventHandler,
-		ActivityStartEventHandler, ActivityEndEventHandler, LinkEnterEventHandler, PersonEntersVehicleEventHandler,
-		PersonLeavesVehicleEventHandler {
-	private final LinkFinder linkFinder;
-	private final PassengerTracker passengers = new PassengerTracker();
+public class VehicleAnalysisListener implements PersonDepartureEventHandler, PersonArrivalEventHandler, ActivityStartEventHandler, ActivityEndEventHandler, LinkEnterEventHandler,
+        PersonEntersVehicleEventHandler, PersonLeavesVehicleEventHandler {
+    private final LinkFinder linkFinder;
+    private final PassengerTracker passengers = new PassengerTracker();
 
-	private final List<VehicleMovementItem> movements = new LinkedList<>();
-	private final List<VehicleActivityItem> activities = new LinkedList<>();
+    private final List<VehicleMovementItem> movements = new LinkedList<>();
+    private final List<VehicleActivityItem> activities = new LinkedList<>();
 
-	private final Map<Id<Vehicle>, VehicleMovementItem> currentMovements = new HashMap<>();
-	private final Map<Id<Vehicle>, VehicleActivityItem> currentActivities = new HashMap<>();
+    private final Map<Id<Vehicle>, VehicleMovementItem> currentMovements = new HashMap<>();
+    private final Map<Id<Vehicle>, VehicleActivityItem> currentActivities = new HashMap<>();
 
-	public VehicleAnalysisListener(LinkFinder linkFinder) {
-		this.linkFinder = linkFinder;
-	}
+    public VehicleAnalysisListener(LinkFinder linkFinder) {
+        this.linkFinder = linkFinder;
+    }
 
-	@Override
-	public void handleEvent(PersonDepartureEvent event) {
-		if (event.getPersonId().toString().startsWith("av:")) {
-			Id<AVOperator> operatorId = AVUtils.getOperatorId(event.getPersonId());
-			Id<Vehicle> vehicleId = Id.createVehicleId(event.getPersonId());
+    @Override
+    public void handleEvent(PersonDepartureEvent event) {
+        if (event.getPersonId().toString().startsWith("av:")) {
+            Id<AVOperator> operatorId = AVUtils.getOperatorId(event.getPersonId());
+            Id<Vehicle> vehicleId = Id.createVehicleId(event.getPersonId());
 
-			VehicleMovementItem movement = new VehicleMovementItem();
-			movements.add(movement);
+            VehicleMovementItem movement = new VehicleMovementItem();
+            movements.add(movement);
 
-			movement.operatorId = operatorId;
-			movement.vehicleId = vehicleId;
+            movement.operatorId = operatorId;
+            movement.vehicleId = vehicleId;
 
-			movement.originLink = linkFinder.getLink(event.getLinkId());
-			movement.departureTime = event.getTime();
+            movement.originLink = linkFinder.getLink(event.getLinkId());
+            movement.departureTime = event.getTime();
 
-			currentMovements.put(vehicleId, movement);
-		}
-	}
+            currentMovements.put(vehicleId, movement);
+        }
+    }
 
-	@Override
-	public void handleEvent(LinkEnterEvent event) {
-		if (event.getVehicleId().toString().startsWith("av:")) {
-			VehicleMovementItem movement = currentMovements.get(event.getVehicleId());
+    @Override
+    public void handleEvent(LinkEnterEvent event) {
+        if (event.getVehicleId().toString().startsWith("av:")) {
+            VehicleMovementItem movement = currentMovements.get(event.getVehicleId());
 
-			if (movement == null) {
-				throw new IllegalStateException("Found link enter event without departure");
-			}
+            if (movement == null) {
+                throw new IllegalStateException("Found link enter event without departure");
+            }
 
-			movement.distance += linkFinder.getDistance(event.getLinkId());
-		}
-	}
+            movement.distance += linkFinder.getDistance(event.getLinkId());
+        }
+    }
 
-	@Override
-	public void handleEvent(PersonEntersVehicleEvent event) {
-		if (!event.getPersonId().toString().startsWith("av:")) {
-			if (event.getVehicleId().toString().startsWith("av:")) {
-				passengers.addPassenger(event.getVehicleId(), event.getPersonId());
-			}
-		}
-	}
+    @Override
+    public void handleEvent(PersonEntersVehicleEvent event) {
+        if (!event.getPersonId().toString().startsWith("av:")) {
+            if (event.getVehicleId().toString().startsWith("av:")) {
+                passengers.addPassenger(event.getVehicleId(), event.getPersonId());
+            }
+        }
+    }
 
-	@Override
-	public void handleEvent(PersonLeavesVehicleEvent event) {
-		if (!event.getPersonId().toString().startsWith("av:")) {
-			if (event.getVehicleId().toString().startsWith("av:")) {
-				passengers.removePassenger(event.getVehicleId(), event.getPersonId());
-			}
-		}
-	}
+    @Override
+    public void handleEvent(PersonLeavesVehicleEvent event) {
+        if (!event.getPersonId().toString().startsWith("av:")) {
+            if (event.getVehicleId().toString().startsWith("av:")) {
+                passengers.removePassenger(event.getVehicleId(), event.getPersonId());
+            }
+        }
+    }
 
-	@Override
-	public void handleEvent(PersonArrivalEvent event) {
-		if (event.getPersonId().toString().startsWith("av:")) {
-			Id<Vehicle> vehicleId = Id.createVehicleId(event.getPersonId());
+    @Override
+    public void handleEvent(PersonArrivalEvent event) {
+        if (event.getPersonId().toString().startsWith("av:")) {
+            Id<Vehicle> vehicleId = Id.createVehicleId(event.getPersonId());
 
-			VehicleMovementItem movement = currentMovements.remove(vehicleId);
+            VehicleMovementItem movement = currentMovements.remove(vehicleId);
 
-			if (movement == null) {
-				throw new IllegalStateException("Found arrival without departure");
-			}
+            if (movement == null) {
+                throw new IllegalStateException("Found arrival without departure");
+            }
 
-			movement.destinationLink = linkFinder.getLink(event.getLinkId());
-			movement.arrivalTime = event.getTime();
+            movement.destinationLink = linkFinder.getLink(event.getLinkId());
+            movement.arrivalTime = event.getTime();
 
-			movement.numberOfPassengers = passengers.getNumberOfPassengers(vehicleId);
-		}
-	}
+            movement.numberOfPassengers = passengers.getNumberOfPassengers(vehicleId);
+        }
+    }
 
-	@Override
-	public void handleEvent(ActivityStartEvent event) {
-		if (event.getPersonId().toString().startsWith("av:")) {
-			Id<AVOperator> operatorId = AVUtils.getOperatorId(event.getPersonId());
-			Id<Vehicle> vehicleId = Id.createVehicleId(event.getPersonId());
+    @Override
+    public void handleEvent(ActivityStartEvent event) {
+        if (event.getPersonId().toString().startsWith("av:")) {
+            Id<AVOperator> operatorId = AVUtils.getOperatorId(event.getPersonId());
+            Id<Vehicle> vehicleId = Id.createVehicleId(event.getPersonId());
 
-			VehicleActivityItem activity = new VehicleActivityItem();
-			activities.add(activity);
+            VehicleActivityItem activity = new VehicleActivityItem();
+            activities.add(activity);
 
-			activity.operatorId = operatorId;
-			activity.vehicleId = vehicleId;
+            activity.operatorId = operatorId;
+            activity.vehicleId = vehicleId;
 
-			activity.link = linkFinder.getLink(event.getLinkId());
-			activity.type = event.getActType();
+            activity.link = linkFinder.getLink(event.getLinkId());
+            activity.type = event.getActType();
 
-			activity.startTime = event.getTime();
+            activity.startTime = event.getTime();
 
-			currentActivities.put(vehicleId, activity);
-		}
-	}
+            currentActivities.put(vehicleId, activity);
+        }
+    }
 
-	@Override
-	public void handleEvent(ActivityEndEvent event) {
-		if (event.getPersonId().toString().startsWith("av:")) {
-			Id<AVOperator> operatorId = AVUtils.getOperatorId(event.getPersonId());
-			Id<Vehicle> vehicleId = Id.createVehicleId(event.getPersonId());
+    @Override
+    public void handleEvent(ActivityEndEvent event) {
+        if (event.getPersonId().toString().startsWith("av:")) {
+            Id<AVOperator> operatorId = AVUtils.getOperatorId(event.getPersonId());
+            Id<Vehicle> vehicleId = Id.createVehicleId(event.getPersonId());
 
-			VehicleActivityItem activity = currentActivities.remove(vehicleId);
-			boolean isStarted = activity != null;
+            VehicleActivityItem activity = currentActivities.remove(vehicleId);
+            boolean isStarted = activity != null;
 
-			if (!isStarted) {
-				activity = new VehicleActivityItem();
-				activities.add(activity);
-			}
+            if (!isStarted) {
+                activity = new VehicleActivityItem();
+                activities.add(activity);
+            }
 
-			activity.operatorId = operatorId;
-			activity.vehicleId = vehicleId;
+            activity.operatorId = operatorId;
+            activity.vehicleId = vehicleId;
 
-			activity.link = linkFinder.getLink(event.getLinkId());
-			activity.type = event.getActType();
+            activity.link = linkFinder.getLink(event.getLinkId());
+            activity.type = event.getActType();
 
-			activity.endTime = event.getTime();
-		}
-	}
+            activity.endTime = event.getTime();
+        }
+    }
 
-	@Override
-	public void reset(int iteration) {
-		passengers.clear();
+    @Override
+    public void reset(int iteration) {
+        passengers.clear();
 
-		currentActivities.clear();
-		currentMovements.clear();
+        currentActivities.clear();
+        currentMovements.clear();
 
-		activities.clear();
-		movements.clear();
-	}
+        activities.clear();
+        movements.clear();
+    }
 
-	public List<VehicleActivityItem> getActivities() {
-		return activities;
-	}
+    public List<VehicleActivityItem> getActivities() {
+        return activities;
+    }
 
-	public List<VehicleMovementItem> getMovements() {
-		return movements;
-	}
+    public List<VehicleMovementItem> getMovements() {
+        return movements;
+    }
 }

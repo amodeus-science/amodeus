@@ -10,23 +10,22 @@ import org.matsim.core.router.util.LeastCostPathCalculator.Path;
 import org.matsim.vehicles.Vehicle;
 
 public class SerialLeastCostPathCalculator implements ParallelLeastCostPathCalculator {
-	final private LeastCostPathCalculator delegate;
+    final private LeastCostPathCalculator delegate;
 
-	public SerialLeastCostPathCalculator(LeastCostPathCalculator delegate) {
-		this.delegate = delegate;
-	}
+    public SerialLeastCostPathCalculator(LeastCostPathCalculator delegate) {
+        this.delegate = delegate;
+    }
 
-	@Override
-	public void close() {
-	}
+    @Override
+    public void close() {
+    }
 
-	@Override
-	public Future<Path> calcLeastCostPath(Node fromNode, Node toNode, double starttime, Person person,
-			Vehicle vehicle) {
-		return ConcurrentUtils.constantFuture(delegate.calcLeastCostPath(fromNode, toNode, starttime, person, vehicle));
-	}
+    @Override
+    public Future<Path> calcLeastCostPath(Node fromNode, Node toNode, double starttime, Person person, Vehicle vehicle) {
+        return ConcurrentUtils.constantFuture(delegate.calcLeastCostPath(fromNode, toNode, starttime, person, vehicle));
+    }
 
-	/*@Override
-	public void update() {
-	}*/
+    /* @Override
+     * public void update() {
+     * } */
 }

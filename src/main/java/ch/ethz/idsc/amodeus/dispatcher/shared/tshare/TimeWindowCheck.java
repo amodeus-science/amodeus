@@ -18,9 +18,9 @@ import ch.ethz.idsc.tensor.qty.Quantity;
     /** @return true if the {@link List}<{@linkSharedCourse}> @param newMenu does not
      *         violate the maximum pickup and drop-off delays tolerated specified in
      *         the {@link Scalar} values @param pickupDelayMax and @param drpoffDelayMax,
-     *         for the domputation the current time @param timeNow, 
+     *         for the domputation the current time @param timeNow,
      *         the {@link NetworkTimeDistInterface} @param travelTimeCashed and
-     *         a {@link List}  @param startLocation are needed */
+     *         a {@link List} @param startLocation are needed */
     public static boolean of(double timeNow, List<SharedCourse> newMenu, //
             NetworkTimeDistInterface travelTimeCashed, Link startLocation, //
             Scalar pickupDelayMax, Scalar drpoffDelayMax) {

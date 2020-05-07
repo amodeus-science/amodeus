@@ -14,31 +14,26 @@ import ch.ethz.matsim.av.waiting_time.link_attribute.LinkWaitingTimeData;
 
 @Singleton
 public class StandardWaitingTimeFactory implements WaitingTimeFactory {
-	@Override
-	public WaitingTime createWaitingTime(OperatorConfig operatorConfig, Network network) {
-		WaitingTimeConfig waitingTimeConfig = operatorConfig.getWaitingTimeConfig();
+    @Override
+    public WaitingTime createWaitingTime(OperatorConfig operatorConfig, Network network) {
+        WaitingTimeConfig waitingTimeConfig = operatorConfig.getWaitingTimeConfig();
 
-		if (waitingTimeConfig.getEstimationAlpha() > 0.0) {
-			LinkWaitingTimeData linkWaitingTimeData = LinkWaitingTimeData.createEmpty();
+        if (waitingTimeConfig.getEstimationAlpha() > 0.0) {
+            LinkWaitingTimeData linkWaitingTimeData = LinkWaitingTimeData.createEmpty();
 
-			if (waitingTimeConfig.getConstantWaitingTimeLinkAttribute() != null) {
-				linkWaitingTimeData = LinkWaitingTimeData.create(network,
-						waitingTimeConfig.getConstantWaitingTimeLinkAttribute());
-			}
+            if (waitingTimeConfig.getConstantWaitingTimeLinkAttribute() != null) {
+                linkWaitingTimeData = LinkWaitingTimeData.create(network, waitingTimeConfig.getConstantWaitingTimeLinkAttribute());
+            }
 
-			LinkGroupDefinition linkGroupDefinition = LinkGroupDefinition.create(network,
-					waitingTimeConfig.getEstimationLinkAttribute());
+            LinkGroupDefinition linkGroupDefinition = LinkGroupDefinition.create(network, waitingTimeConfig.getEstimationLinkAttribute());
 
-			return new DynamicWaitingTime(linkGroupDefinition, linkWaitingTimeData,
-					waitingTimeConfig.getDefaultWaitingTime(), waitingTimeConfig.getEstimationStartTime(),
-					waitingTimeConfig.getEstimationEndTime(), waitingTimeConfig.getEstimationInterval(),
-					waitingTimeConfig.getEstimationAlpha());
-		} else if (waitingTimeConfig.getConstantWaitingTimeLinkAttribute() != null) {
-			LinkWaitingTimeData linkWaitingTimeData = LinkWaitingTimeData.create(network,
-					waitingTimeConfig.getConstantWaitingTimeLinkAttribute());
-			return new LinkAttributeWaitingTime(waitingTimeConfig.getDefaultWaitingTime(), linkWaitingTimeData);
-		} else {
-			return new ConstantWaitingTime(waitingTimeConfig.getDefaultWaitingTime());
-		}
-	}
+            return new DynamicWaitingTime(linkGroupDefinition, linkWaitingTimeData, waitingTimeConfig.getDefaultWaitingTime(), waitingTimeConfig.getEstimationStartTime(),
+                    waitingTimeConfig.getEstimationEndTime(), waitingTimeConfig.getEstimationInterval(), waitingTimeConfig.getEstimationAlpha());
+        } else if (waitingTimeConfig.getConstantWaitingTimeLinkAttribute() != null) {
+            LinkWaitingTimeData linkWaitingTimeData = LinkWaitingTimeData.create(network, waitingTimeConfig.getConstantWaitingTimeLinkAttribute());
+            return new LinkAttributeWaitingTime(waitingTimeConfig.getDefaultWaitingTime(), linkWaitingTimeData);
+        } else {
+            return new ConstantWaitingTime(waitingTimeConfig.getDefaultWaitingTime());
+        }
+    }
 }

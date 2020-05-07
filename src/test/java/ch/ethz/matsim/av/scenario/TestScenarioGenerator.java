@@ -36,7 +36,7 @@ public class TestScenarioGenerator {
 
     static public Scenario generate(Config config) {
         config.controler().setOutputDirectory(outputDir + "/output");
-        
+
         config.controler().setLastIteration(0);
         config.controler().setOverwriteFileSetting(OutputDirectoryHierarchy.OverwriteFileSetting.deleteDirectoryIfExists);
         config.controler().setWriteEventsInterval(-1);
@@ -61,7 +61,7 @@ public class TestScenarioGenerator {
         Scenario scenario = generate(config);
 
         scenario.getPopulation().getPersons().values().forEach(person -> {
-            person.getSelectedPlan().getPlanElements().stream().filter(Leg.class::isInstance).forEach(leg -> ((Leg)leg).setMode("av")); // Refactor av
+            person.getSelectedPlan().getPlanElements().stream().filter(Leg.class::isInstance).forEach(leg -> ((Leg) leg).setMode("av")); // Refactor av
         });
 
         return scenario;

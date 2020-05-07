@@ -20,6 +20,7 @@ public enum ContentType {
     VIDEO_MP4("video/mp4"), //
     VIDEO_WEBM("video/webm"), //
     ;
+
     private final String expression;
 
     ContentType(String expression) {

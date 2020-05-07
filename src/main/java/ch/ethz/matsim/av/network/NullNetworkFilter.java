@@ -6,8 +6,8 @@ import org.matsim.api.core.v01.network.Link;
 import ch.ethz.matsim.av.data.AVOperator;
 
 public class NullNetworkFilter implements AVNetworkFilter {
-	@Override
-	public boolean isAllowed(Id<AVOperator> operatorId, Link link) {
-		return true;
-	}
+    @Override
+    public boolean isAllowed(Id<AVOperator> operatorId, Link link) {
+        return true;
+    }
 }

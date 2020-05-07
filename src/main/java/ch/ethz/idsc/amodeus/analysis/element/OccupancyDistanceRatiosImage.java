@@ -31,8 +31,8 @@ public enum OccupancyDistanceRatiosImage implements AnalysisExport {
         Tensor distanceRatios = de.distanceRatioOverDay;
         Tensor occupRatios = Transpose.of(sd.occupancyTensor).get(1);
         // put together
-        Tensor ratios = Transpose.of(Tensors.of(occupRatios,distanceRatios));
-        Tensor time = de.time.unmodifiable();        
+        Tensor ratios = Transpose.of(Tensors.of(occupRatios, distanceRatios));
+        Tensor time = de.time.unmodifiable();
         compute(ratios, time, colorData, relDir);
     }
 

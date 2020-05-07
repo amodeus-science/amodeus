@@ -29,10 +29,10 @@ public class MatsimAmodeusDatabase {
     public static MatsimAmodeusDatabase initialize(Network network, ReferenceFrame referenceFrame) {
         CoordinateTransformation coords_toWGS84 = referenceFrame.coords_toWGS84();
         List<OsmLink> osmLinks = network.getLinks().values().stream().sorted(Comparator.comparing(link -> link.getId().toString())).map(link -> //
-                new OsmLink(link, //
-                        coords_toWGS84.transform(link.getFromNode().getCoord()), //
-                        coords_toWGS84.transform(link.getToNode().getCoord()) //
-                )).collect(Collectors.toList());
+        new OsmLink(link, //
+                coords_toWGS84.transform(link.getFromNode().getCoord()), //
+                coords_toWGS84.transform(link.getToNode().getCoord()) //
+        )).collect(Collectors.toList());
         return new MatsimAmodeusDatabase(referenceFrame, osmLinks);
     }
 
@@ -55,14 +55,12 @@ public class MatsimAmodeusDatabase {
             List<OsmLink> osmLinks) {
         this.referenceFrame = referenceFrame;
         this.osmLinks = osmLinks;
-        /*
-        int index = 0;
-        for (OsmLink osmLink : this.osmLinks) {
-            linkIntegerMap.put(osmLink.link, index);
-            linkIdIntegerMap.put(osmLink.link.getId(), index);
-            ++index;
-        }
-        */
+        /* int index = 0;
+         * for (OsmLink osmLink : this.osmLinks) {
+         * linkIntegerMap.put(osmLink.link, index);
+         * linkIdIntegerMap.put(osmLink.link.getId(), index);
+         * ++index;
+         * } */
         linkIntegerMap = this.osmLinks.stream().map(osmLink -> osmLink.link).collect(Collectors.toMap(Function.identity(), link -> link.getId().index()));
         integerOsmLinkMap = this.osmLinks.stream().collect(Collectors.toMap(osmLink -> osmLink.link.getId().index(), Function.identity()));
     }

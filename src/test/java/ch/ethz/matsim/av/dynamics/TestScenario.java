@@ -41,206 +41,203 @@ import org.matsim.vehicles.VehicleUtils;
 
 import java.util.*;
 
-/**
- * TestScenario is used to create a various elements of a test scenario. This is used in various av.dynamics tests.
- */
+/** TestScenario is used to create a various elements of a test scenario. This is used in various av.dynamics tests. */
 public class TestScenario {
 
-	static public Scenario createScenario(AVConfigGroup avConfig, Collection<TestRequest> requests) {
-		DvrpConfigGroup dvrpConfigGroup = new DvrpConfigGroup();
-		dvrpConfigGroup.setMobsimMode("car");
-		dvrpConfigGroup.setNetworkModes(ImmutableSet.of("av"));
+    static public Scenario createScenario(AVConfigGroup avConfig, Collection<TestRequest> requests) {
+        DvrpConfigGroup dvrpConfigGroup = new DvrpConfigGroup();
+        dvrpConfigGroup.setMobsimMode("car");
+        dvrpConfigGroup.setNetworkModes(ImmutableSet.of("av"));
 
-		Config config = ConfigUtils.createConfig(avConfig, dvrpConfigGroup);
+        Config config = ConfigUtils.createConfig(avConfig, dvrpConfigGroup);
 
-		config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
-		config.controler().setLastIteration(0);
-		config.qsim().setSimStarttimeInterpretation(StarttimeInterpretation.onlyUseStarttime);
+        config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
+        config.controler().setLastIteration(0);
+        config.qsim().setSimStarttimeInterpretation(StarttimeInterpretation.onlyUseStarttime);
 
-		config.qsim().setFlowCapFactor(1000.0);
-		config.qsim().setEndTime(10 * 3600.0);
+        config.qsim().setFlowCapFactor(1000.0);
+        config.qsim().setEndTime(10 * 3600.0);
 
-		ModeParams modeParams = new ModeParams("av");
-		config.planCalcScore().addModeParams(modeParams);
+        ModeParams modeParams = new ModeParams("av");
+        config.planCalcScore().addModeParams(modeParams);
 
-		ActivityParams activityParams = new ActivityParams("av interaction");
-		activityParams.setTypicalDuration(1.0);
-		activityParams.setScoringThisActivityAtAll(false);
-		config.planCalcScore().addActivityParams(activityParams);
+        ActivityParams activityParams = new ActivityParams("av interaction");
+        activityParams.setTypicalDuration(1.0);
+        activityParams.setScoringThisActivityAtAll(false);
+        config.planCalcScore().addActivityParams(activityParams);
 
-		activityParams = new ActivityParams("generic");
-		activityParams.setTypicalDuration(1.0);
-		activityParams.setScoringThisActivityAtAll(false);
-		config.planCalcScore().addActivityParams(activityParams);
+        activityParams = new ActivityParams("generic");
+        activityParams.setTypicalDuration(1.0);
+        activityParams.setScoringThisActivityAtAll(false);
+        config.planCalcScore().addActivityParams(activityParams);
 
-		config.plansCalcRoute().getModeRoutingParams().get("walk").setTeleportedModeSpeed(1.0);
-		config.plansCalcRoute().getModeRoutingParams().get("walk").setBeelineDistanceFactor(1.0);
+        config.plansCalcRoute().getModeRoutingParams().get("walk").setTeleportedModeSpeed(1.0);
+        config.plansCalcRoute().getModeRoutingParams().get("walk").setBeelineDistanceFactor(1.0);
 
-		Scenario scenario = ScenarioUtils.createScenario(config);
+        Scenario scenario = ScenarioUtils.createScenario(config);
 
-		Network network = scenario.getNetwork();
-		NetworkFactory networkFactory = network.getFactory();
+        Network network = scenario.getNetwork();
+        NetworkFactory networkFactory = network.getFactory();
 
-		Node node1 = networkFactory.createNode(Id.createNodeId("node1"), new Coord(0.0, 0.0));
-		Node node2 = networkFactory.createNode(Id.createNodeId("node2"), new Coord(10000.0, 0.0));
-		Node node3 = networkFactory.createNode(Id.createNodeId("node3"), new Coord(20000.0, 0.0));
-		Node node4 = networkFactory.createNode(Id.createNodeId("node4"), new Coord(30000.0, 0.0));
+        Node node1 = networkFactory.createNode(Id.createNodeId("node1"), new Coord(0.0, 0.0));
+        Node node2 = networkFactory.createNode(Id.createNodeId("node2"), new Coord(10000.0, 0.0));
+        Node node3 = networkFactory.createNode(Id.createNodeId("node3"), new Coord(20000.0, 0.0));
+        Node node4 = networkFactory.createNode(Id.createNodeId("node4"), new Coord(30000.0, 0.0));
 
-		Link link1 = networkFactory.createLink(Id.createLinkId("link1"), node1, node2);
-		Link link2 = networkFactory.createLink(Id.createLinkId("link2"), node2, node3);
-		Link link3 = networkFactory.createLink(Id.createLinkId("link3"), node3, node4);
-		Link link1r = networkFactory.createLink(Id.createLinkId("link1r"), node2, node1);
-		Link link2r = networkFactory.createLink(Id.createLinkId("link2r"), node3, node2);
-		Link link3r = networkFactory.createLink(Id.createLinkId("link3r"), node4, node3);
+        Link link1 = networkFactory.createLink(Id.createLinkId("link1"), node1, node2);
+        Link link2 = networkFactory.createLink(Id.createLinkId("link2"), node2, node3);
+        Link link3 = networkFactory.createLink(Id.createLinkId("link3"), node3, node4);
+        Link link1r = networkFactory.createLink(Id.createLinkId("link1r"), node2, node1);
+        Link link2r = networkFactory.createLink(Id.createLinkId("link2r"), node3, node2);
+        Link link3r = networkFactory.createLink(Id.createLinkId("link3r"), node4, node3);
 
-		link1.setAllowedModes(Collections.singleton("av"));
-		link2.setAllowedModes(Collections.singleton("av"));
-		link3.setAllowedModes(Collections.singleton("av"));
-		link1r.setAllowedModes(Collections.singleton("av"));
-		link2r.setAllowedModes(Collections.singleton("av"));
-		link3r.setAllowedModes(Collections.singleton("av"));
+        link1.setAllowedModes(Collections.singleton("av"));
+        link2.setAllowedModes(Collections.singleton("av"));
+        link3.setAllowedModes(Collections.singleton("av"));
+        link1r.setAllowedModes(Collections.singleton("av"));
+        link2r.setAllowedModes(Collections.singleton("av"));
+        link3r.setAllowedModes(Collections.singleton("av"));
 
-		link1.setFreespeed(10.0);
-		link2.setFreespeed(10.0);
-		link3.setFreespeed(10.0);
-		link1r.setFreespeed(10.0);
-		link2r.setFreespeed(10.0);
-		link3r.setFreespeed(10.0);
+        link1.setFreespeed(10.0);
+        link2.setFreespeed(10.0);
+        link3.setFreespeed(10.0);
+        link1r.setFreespeed(10.0);
+        link2r.setFreespeed(10.0);
+        link3r.setFreespeed(10.0);
 
-		network.addNode(node1);
-		network.addNode(node2);
-		network.addNode(node3);
-		network.addNode(node4);
+        network.addNode(node1);
+        network.addNode(node2);
+        network.addNode(node3);
+        network.addNode(node4);
 
-		network.addLink(link1);
-		network.addLink(link2);
-		network.addLink(link3);
-		network.addLink(link1r);
-		network.addLink(link2r);
-		network.addLink(link3r);
+        network.addLink(link1);
+        network.addLink(link2);
+        network.addLink(link3);
+        network.addLink(link1r);
+        network.addLink(link2r);
+        network.addLink(link3r);
 
-		Population population = scenario.getPopulation();
-		PopulationFactory populationFactory = population.getFactory();
-		int personIndex = 0;
+        Population population = scenario.getPopulation();
+        PopulationFactory populationFactory = population.getFactory();
+        int personIndex = 0;
 
-		for (TestRequest request : requests) {
-			Person person = populationFactory.createPerson(Id.createPersonId(personIndex++));
-			population.addPerson(person);
+        for (TestRequest request : requests) {
+            Person person = populationFactory.createPerson(Id.createPersonId(personIndex++));
+            population.addPerson(person);
 
-			Plan plan = populationFactory.createPlan();
-			person.addPlan(plan);
+            Plan plan = populationFactory.createPlan();
+            person.addPlan(plan);
 
-			Coord startCoord = link1.getToNode().getCoord();
-			startCoord = CoordUtils.plus(startCoord, new Coord(-request.delayTime, 0.0));
+            Coord startCoord = link1.getToNode().getCoord();
+            startCoord = CoordUtils.plus(startCoord, new Coord(-request.delayTime, 0.0));
 
-			Activity firstActivity = populationFactory.createActivityFromLinkId("generic", link1.getId());
-			firstActivity.setCoord(startCoord);
-			firstActivity.setEndTime(request.departureTime);
-			plan.addActivity(firstActivity);
+            Activity firstActivity = populationFactory.createActivityFromLinkId("generic", link1.getId());
+            firstActivity.setCoord(startCoord);
+            firstActivity.setEndTime(request.departureTime);
+            plan.addActivity(firstActivity);
 
-			Leg leg = populationFactory.createLeg("av");
-			plan.addLeg(leg);
+            Leg leg = populationFactory.createLeg("av");
+            plan.addLeg(leg);
 
-			Activity secondActivity = populationFactory.createActivityFromLinkId("generic", link3.getId());
-			secondActivity.setCoord(link2.getCoord());
-			plan.addActivity(secondActivity);
-		}
+            Activity secondActivity = populationFactory.createActivityFromLinkId("generic", link3.getId());
+            secondActivity.setCoord(link2.getCoord());
+            plan.addActivity(secondActivity);
+        }
 
-		return scenario;
-	}
+        return scenario;
+    }
 
-	static public class SingleVehicleGenerator implements AVGenerator {
-		private final int capacity;
-		private final Link link;
+    static public class SingleVehicleGenerator implements AVGenerator {
+        private final int capacity;
+        private final Link link;
 
-		public SingleVehicleGenerator(Link link, int capacity) {
-			this.link = link;
-			this.capacity = capacity;
-		}
+        public SingleVehicleGenerator(Link link, int capacity) {
+            this.link = link;
+            this.capacity = capacity;
+        }
 
-		@Override
-		public List<AVVehicle> generateVehicles() {
-			VehicleType vehicleType = VehicleUtils.getDefaultVehicleType();
-			vehicleType.getCapacity().setSeats(capacity);
+        @Override
+        public List<AVVehicle> generateVehicles() {
+            VehicleType vehicleType = VehicleUtils.getDefaultVehicleType();
+            vehicleType.getCapacity().setSeats(capacity);
 
-			return Collections.singletonList(new AVVehicle(Id.create("vehicle", DvrpVehicle.class), link, 0.0,
-					Double.POSITIVE_INFINITY, vehicleType));
-		}
-	}
+            return Collections.singletonList(new AVVehicle(Id.create("vehicle", DvrpVehicle.class), link, 0.0, Double.POSITIVE_INFINITY, vehicleType));
+        }
+    }
 
-	static public class SingleVehicleGeneratorFactory implements AVGenerator.AVGeneratorFactory {
-		private final int capacity;
-		private final Id<Link> linkId;
+    static public class SingleVehicleGeneratorFactory implements AVGenerator.AVGeneratorFactory {
+        private final int capacity;
+        private final Id<Link> linkId;
 
-		public SingleVehicleGeneratorFactory(int capacity, Id<Link> linkId) {
-			this.capacity = capacity;
-			this.linkId = linkId;
-		}
+        public SingleVehicleGeneratorFactory(int capacity, Id<Link> linkId) {
+            this.capacity = capacity;
+            this.linkId = linkId;
+        }
 
-		@Override
-		public AVGenerator createGenerator(OperatorConfig operatorConfig, Network network, VehicleType vehicleType) {
-			Link link = network.getLinks().get(linkId);
-			return new SingleVehicleGenerator(link, capacity);
-		}
-	}
+        @Override
+        public AVGenerator createGenerator(OperatorConfig operatorConfig, Network network, VehicleType vehicleType) {
+            Link link = network.getLinks().get(linkId);
+            return new SingleVehicleGenerator(link, capacity);
+        }
+    }
 
-	static public AVConfigGroup createConfig() {
-		AVConfigGroup config = new AVConfigGroup();
+    static public AVConfigGroup createConfig() {
+        AVConfigGroup config = new AVConfigGroup();
 
-		AVScoringParameterSet scoringParams = config.getScoringParameters(null);
-		scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
+        AVScoringParameterSet scoringParams = config.getScoringParameters(null);
+        scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
 
-		OperatorConfig operatorConfig = new OperatorConfig();
-		operatorConfig.getDispatcherConfig().setType(MultiODHeuristic.TYPE);
-		operatorConfig.getGeneratorConfig().setType("Single");
-		config.addOperator(operatorConfig);
+        OperatorConfig operatorConfig = new OperatorConfig();
+        operatorConfig.getDispatcherConfig().setType(MultiODHeuristic.TYPE);
+        operatorConfig.getGeneratorConfig().setType("Single");
+        config.addOperator(operatorConfig);
 
-		operatorConfig.getTimingConfig().setPickupDurationPerPassenger(0.0);
-		operatorConfig.getTimingConfig().setPickupDurationPerStop(0.0);
-		operatorConfig.getTimingConfig().setDropoffDurationPerPassenger(0.0);
-		operatorConfig.getTimingConfig().setDropoffDurationPerStop(0.0);
+        operatorConfig.getTimingConfig().setPickupDurationPerPassenger(0.0);
+        operatorConfig.getTimingConfig().setPickupDurationPerStop(0.0);
+        operatorConfig.getTimingConfig().setDropoffDurationPerPassenger(0.0);
+        operatorConfig.getTimingConfig().setDropoffDurationPerStop(0.0);
 
-		config.setUseAccessAgress(true);
+        config.setUseAccessAgress(true);
 
-		return config;
-	}
+        return config;
+    }
 
-	static public Controler createController(Scenario scenario, EventHandler handler, int vehicleCapacity) {
-		Controler controller = new Controler(scenario);
+    static public Controler createController(Scenario scenario, EventHandler handler, int vehicleCapacity) {
+        Controler controller = new Controler(scenario);
 
-		controller.addOverridingModule(new DvrpModule());
-		controller.addOverridingModule(new DvrpTravelTimeModule());
-		controller.addOverridingModule(new AVModule());
+        controller.addOverridingModule(new DvrpModule());
+        controller.addOverridingModule(new DvrpTravelTimeModule());
+        controller.addOverridingModule(new AVModule());
 
-		controller.addOverridingModule(new AbstractModule() {
-			@Override
-			public void install() {
-				AVUtils.registerGeneratorFactory(binder(), "Single", SingleVehicleGeneratorFactory.class);
-				addEventHandlerBinding().toInstance(handler);
-			}
+        controller.addOverridingModule(new AbstractModule() {
+            @Override
+            public void install() {
+                AVUtils.registerGeneratorFactory(binder(), "Single", SingleVehicleGeneratorFactory.class);
+                addEventHandlerBinding().toInstance(handler);
+            }
 
-			@Provides
-			public SingleVehicleGeneratorFactory provideFactory() {
-				return new SingleVehicleGeneratorFactory(vehicleCapacity, Id.createLinkId("link1"));
-			}
-		});
-		
-		controller.addOverridingQSimModule(new AVQSimModule());
+            @Provides
+            public SingleVehicleGeneratorFactory provideFactory() {
+                return new SingleVehicleGeneratorFactory(vehicleCapacity, Id.createLinkId("link1"));
+            }
+        });
 
-		controller.configureQSimComponents(AVQSimModule::configureComponents);
+        controller.addOverridingQSimModule(new AVQSimModule());
 
-		return controller;
-	}
+        controller.configureQSimComponents(AVQSimModule::configureComponents);
 
-	public static class ArrivalListener implements PersonArrivalEventHandler {
-		public List<Double> times = new LinkedList<>();
+        return controller;
+    }
 
-		@Override
-		public void handleEvent(PersonArrivalEvent event) {
-			if (!event.getPersonId().toString().equals("vehicle") && event.getLegMode().equals("av")) {
-				times.add(event.getTime());
-			}
-		}
-	}
+    public static class ArrivalListener implements PersonArrivalEventHandler {
+        public List<Double> times = new LinkedList<>();
+
+        @Override
+        public void handleEvent(PersonArrivalEvent event) {
+            if (!event.getPersonId().toString().equals("vehicle") && event.getLegMode().equals("av")) {
+                times.add(event.getTime());
+            }
+        }
+    }
 
 }

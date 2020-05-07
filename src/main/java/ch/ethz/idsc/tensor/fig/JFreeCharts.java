@@ -27,7 +27,8 @@ import ch.ethz.idsc.tensor.Scalar;
                 PlotOrientation.VERTICAL, visualSet.hasLegend(), true, false);
 
         BarRenderer barRenderer = stacked //
-                ? new StackedBarRenderer() : new BarRenderer();
+                ? new StackedBarRenderer()
+                : new BarRenderer();
         barRenderer.setDrawBarOutline(true);
         formatLines(visualSet, barRenderer);
         jFreeChart.getCategoryPlot().setRenderer(barRenderer);

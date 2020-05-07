@@ -8,6 +8,7 @@ import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
 
 public enum UnitStringScalar implements ScalarUnaryOperator {
     FUNCTION;
+
     // ---
     private static final Scalar EMPTY = StringScalar.of("\"\"");
 

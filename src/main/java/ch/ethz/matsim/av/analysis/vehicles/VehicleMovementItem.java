@@ -7,15 +7,15 @@ import org.matsim.vehicles.Vehicle;
 import ch.ethz.matsim.av.data.AVOperator;
 
 public class VehicleMovementItem {
-	public Id<AVOperator> operatorId;
-	public Id<Vehicle> vehicleId;
+    public Id<AVOperator> operatorId;
+    public Id<Vehicle> vehicleId;
 
-	public Link originLink;
-	public Link destinationLink;
+    public Link originLink;
+    public Link destinationLink;
 
-	public double departureTime = Double.NaN;
-	public double arrivalTime = Double.NaN;
+    public double departureTime = Double.NaN;
+    public double arrivalTime = Double.NaN;
 
-	public double distance = 0;
-	public int numberOfPassengers = 0;
+    public double distance = 0;
+    public int numberOfPassengers = 0;
 }

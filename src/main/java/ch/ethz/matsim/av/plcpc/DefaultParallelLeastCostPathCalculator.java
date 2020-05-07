@@ -20,42 +20,40 @@ import org.matsim.core.router.util.TravelTime;
 import org.matsim.vehicles.Vehicle;
 
 public class DefaultParallelLeastCostPathCalculator implements ParallelLeastCostPathCalculator {
-	final private BlockingQueue<LeastCostPathCalculator> calculators = new LinkedBlockingQueue<>();
-	final private ExecutorService executor;
+    final private BlockingQueue<LeastCostPathCalculator> calculators = new LinkedBlockingQueue<>();
+    final private ExecutorService executor;
 
-	public DefaultParallelLeastCostPathCalculator(Collection<LeastCostPathCalculator> calculators) {
-		this.calculators.addAll(calculators);
-		this.executor = Executors.newFixedThreadPool(calculators.size());
-	}
+    public DefaultParallelLeastCostPathCalculator(Collection<LeastCostPathCalculator> calculators) {
+        this.calculators.addAll(calculators);
+        this.executor = Executors.newFixedThreadPool(calculators.size());
+    }
 
-	@Override
-	public Future<Path> calcLeastCostPath(Node fromNode, Node toNode, double starttime, Person person,
-			Vehicle vehicle) {
-		Future<Path> future = executor.submit(() -> {
-			LeastCostPathCalculator calculator = calculators.take();
-			Path path = calculator.calcLeastCostPath(fromNode, toNode, starttime, person, vehicle);
-			calculators.put(calculator);
-			return path;
-		});
+    @Override
+    public Future<Path> calcLeastCostPath(Node fromNode, Node toNode, double starttime, Person person, Vehicle vehicle) {
+        Future<Path> future = executor.submit(() -> {
+            LeastCostPathCalculator calculator = calculators.take();
+            Path path = calculator.calcLeastCostPath(fromNode, toNode, starttime, person, vehicle);
+            calculators.put(calculator);
+            return path;
+        });
 
-		// futures.add(future);
-		return future;
-	}
+        // futures.add(future);
+        return future;
+    }
 
-	@Override
-	public void close() {
-		executor.shutdownNow();
-	}
+    @Override
+    public void close() {
+        executor.shutdownNow();
+    }
 
-	static public DefaultParallelLeastCostPathCalculator create(int numberOfInstances,
-			LeastCostPathCalculatorFactory factory, Network network, TravelDisutility travelDisutility,
-			TravelTime travelTime) {
-		List<LeastCostPathCalculator> instances = new LinkedList<>();
+    static public DefaultParallelLeastCostPathCalculator create(int numberOfInstances, LeastCostPathCalculatorFactory factory, Network network, TravelDisutility travelDisutility,
+            TravelTime travelTime) {
+        List<LeastCostPathCalculator> instances = new LinkedList<>();
 
-		for (int i = 0; i < numberOfInstances; i++) {
-			instances.add(factory.createPathCalculator(network, travelDisutility, travelTime));
-		}
+        for (int i = 0; i < numberOfInstances; i++) {
+            instances.add(factory.createPathCalculator(network, travelDisutility, travelTime));
+        }
 
-		return new DefaultParallelLeastCostPathCalculator(instances);
-	}
+        return new DefaultParallelLeastCostPathCalculator(instances);
+    }
 }

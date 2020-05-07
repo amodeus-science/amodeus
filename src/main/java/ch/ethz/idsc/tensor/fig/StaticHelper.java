@@ -48,7 +48,8 @@ import ch.ethz.idsc.tensor.Tensor;
         CategoryTableXYDataset categoryTableXYDataset = new CategoryTableXYDataset();
         for (VisualRow visualRow : visualSet.visualRows()) {
             String label = visualRow.getLabelString().isEmpty() //
-                    ? String.valueOf(categoryTableXYDataset.getSeriesCount()) : visualRow.getLabelString();
+                    ? String.valueOf(categoryTableXYDataset.getSeriesCount())
+                    : visualRow.getLabelString();
             for (Tensor point : visualRow.points())
                 categoryTableXYDataset.add( //
                         point.Get(0).number().doubleValue(), //

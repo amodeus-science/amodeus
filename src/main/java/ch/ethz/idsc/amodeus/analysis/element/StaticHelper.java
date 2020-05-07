@@ -19,9 +19,9 @@ import ch.ethz.idsc.tensor.alg.Array;
     public static Tensor getNumStatus(SimulationObject simOjb) {
         Tensor numPerStatus = Array.zeros(RoboTaxiStatus.values().length);
         // Map<RoboTaxiStatus, List<VehicleContainer>> helpMap = simOjb.vehicles.stream() //
-        //         .collect(Collectors.groupingBy(vehicleContainer -> vehicleContainer.roboTaxiStatus));
+        // .collect(Collectors.groupingBy(vehicleContainer -> vehicleContainer.roboTaxiStatus));
         // for (Entry<RoboTaxiStatus, List<VehicleContainer>> entry : helpMap.entrySet())
-        //     numPerStatus.set(RealScalar.of(entry.getValue().size()), entry.getKey().ordinal());
+        // numPerStatus.set(RealScalar.of(entry.getValue().size()), entry.getKey().ordinal());
         Map<RoboTaxiStatus, Long> map = simOjb.vehicles.stream() //
                 .collect(Collectors.groupingBy(vehicleContainer -> vehicleContainer.roboTaxiStatus, Collectors.counting()));
         map.forEach((roboTaxiStatus, num) -> numPerStatus.set(RealScalar.of(num), roboTaxiStatus.ordinal()));

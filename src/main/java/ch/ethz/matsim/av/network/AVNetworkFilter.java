@@ -6,5 +6,5 @@ import org.matsim.api.core.v01.network.Link;
 import ch.ethz.matsim.av.data.AVOperator;
 
 public interface AVNetworkFilter {
-	boolean isAllowed(Id<AVOperator> operatorId, Link link);
+    boolean isAllowed(Id<AVOperator> operatorId, Link link);
 }

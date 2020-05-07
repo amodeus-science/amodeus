@@ -28,116 +28,115 @@ public class ConfigTest {
     public static void doYourOneTimeTeardown() throws IOException {
         FileUtils.deleteDirectory(new File("test_output"));
     }
-    
-	@Test
-	public void testReadWrite() {
-		{
-			AVConfigGroup configGroup = new AVConfigGroup();
-			Config config = ConfigUtils.createConfig(configGroup);
 
-			OperatorConfig operator1 = new OperatorConfig();
-			operator1.setId(AVOperator.createId("id_abc"));
-			operator1.getDispatcherConfig().setType("disp_abc");
-			operator1.getGeneratorConfig().setType("gen_abc");
-			operator1.getGeneratorConfig().setNumberOfVehicles(5);
-			operator1.getTimingConfig().setPickupDurationPerPassenger(123.0);
-			configGroup.addOperator(operator1);
+    @Test
+    public void testReadWrite() {
+        {
+            AVConfigGroup configGroup = new AVConfigGroup();
+            Config config = ConfigUtils.createConfig(configGroup);
 
-			OperatorConfig operator2 = new OperatorConfig();
-			operator2.setId(AVOperator.createId("id_uvw"));
-			operator2.getDispatcherConfig().setType("disp_uvw");
-			operator2.getGeneratorConfig().setType("gen_uvw");
-			operator2.getGeneratorConfig().setNumberOfVehicles(15);
-			operator2.getTimingConfig().setPickupDurationPerPassenger(789.0);
-			configGroup.addOperator(operator2);
+            OperatorConfig operator1 = new OperatorConfig();
+            operator1.setId(AVOperator.createId("id_abc"));
+            operator1.getDispatcherConfig().setType("disp_abc");
+            operator1.getGeneratorConfig().setType("gen_abc");
+            operator1.getGeneratorConfig().setNumberOfVehicles(5);
+            operator1.getTimingConfig().setPickupDurationPerPassenger(123.0);
+            configGroup.addOperator(operator1);
 
-			configGroup.clearScoringParameters();
+            OperatorConfig operator2 = new OperatorConfig();
+            operator2.setId(AVOperator.createId("id_uvw"));
+            operator2.getDispatcherConfig().setType("disp_uvw");
+            operator2.getGeneratorConfig().setType("gen_uvw");
+            operator2.getGeneratorConfig().setNumberOfVehicles(15);
+            operator2.getTimingConfig().setPickupDurationPerPassenger(789.0);
+            configGroup.addOperator(operator2);
 
-			AVScoringParameterSet params1 = new AVScoringParameterSet();
-			params1.setSubpopulation(null);
-			params1.setMarginalUtilityOfWaitingTime(1.0);
-			configGroup.addScoringParameters(params1);
+            configGroup.clearScoringParameters();
 
-			AVScoringParameterSet params2 = new AVScoringParameterSet();
-			params2.setSubpopulation("xyz");
-			params2.setMarginalUtilityOfWaitingTime(15.0);
-			configGroup.addScoringParameters(params2);
+            AVScoringParameterSet params1 = new AVScoringParameterSet();
+            params1.setSubpopulation(null);
+            params1.setMarginalUtilityOfWaitingTime(1.0);
+            configGroup.addScoringParameters(params1);
 
-			new ConfigWriter(config).write("test_output/test_config.xml");
-		}
+            AVScoringParameterSet params2 = new AVScoringParameterSet();
+            params2.setSubpopulation("xyz");
+            params2.setMarginalUtilityOfWaitingTime(15.0);
+            configGroup.addScoringParameters(params2);
 
-		{
-			AVConfigGroup configGroup = new AVConfigGroup();
-			ConfigUtils.loadConfig("test_output/test_config.xml", configGroup);
+            new ConfigWriter(config).write("test_output/test_config.xml");
+        }
 
-			OperatorConfig operator1 = configGroup.getOperatorConfig(AVOperator.createId("id_abc"));
-			Assert.assertEquals(AVOperator.createId("id_abc"), operator1.getId());
-			Assert.assertEquals("disp_abc", operator1.getDispatcherConfig().getType());
-			Assert.assertEquals("gen_abc", operator1.getGeneratorConfig().getType());
-			Assert.assertEquals(5, operator1.getGeneratorConfig().getNumberOfVehicles());
-			Assert.assertEquals(123.0, operator1.getTimingConfig().getPickupDurationPerPassenger(), 1e-3);
+        {
+            AVConfigGroup configGroup = new AVConfigGroup();
+            ConfigUtils.loadConfig("test_output/test_config.xml", configGroup);
 
-			OperatorConfig operator2 = configGroup.getOperatorConfig(AVOperator.createId("id_uvw"));
-			Assert.assertEquals(AVOperator.createId("id_uvw"), operator2.getId());
-			Assert.assertEquals("disp_uvw", operator2.getDispatcherConfig().getType());
-			Assert.assertEquals("gen_uvw", operator2.getGeneratorConfig().getType());
-			Assert.assertEquals(15, operator2.getGeneratorConfig().getNumberOfVehicles());
-			Assert.assertEquals(789.0, operator2.getTimingConfig().getPickupDurationPerPassenger(), 1e-3);
+            OperatorConfig operator1 = configGroup.getOperatorConfig(AVOperator.createId("id_abc"));
+            Assert.assertEquals(AVOperator.createId("id_abc"), operator1.getId());
+            Assert.assertEquals("disp_abc", operator1.getDispatcherConfig().getType());
+            Assert.assertEquals("gen_abc", operator1.getGeneratorConfig().getType());
+            Assert.assertEquals(5, operator1.getGeneratorConfig().getNumberOfVehicles());
+            Assert.assertEquals(123.0, operator1.getTimingConfig().getPickupDurationPerPassenger(), 1e-3);
 
-			AVScoringParameterSet params1 = configGroup.getScoringParameters(null);
-			Assert.assertEquals(1.0, params1.getMarginalUtilityOfWaitingTime(), 1e-2);
+            OperatorConfig operator2 = configGroup.getOperatorConfig(AVOperator.createId("id_uvw"));
+            Assert.assertEquals(AVOperator.createId("id_uvw"), operator2.getId());
+            Assert.assertEquals("disp_uvw", operator2.getDispatcherConfig().getType());
+            Assert.assertEquals("gen_uvw", operator2.getGeneratorConfig().getType());
+            Assert.assertEquals(15, operator2.getGeneratorConfig().getNumberOfVehicles());
+            Assert.assertEquals(789.0, operator2.getTimingConfig().getPickupDurationPerPassenger(), 1e-3);
 
-			AVScoringParameterSet params2 = configGroup.getScoringParameters("xyz");
-			Assert.assertEquals(15.0, params2.getMarginalUtilityOfWaitingTime(), 1e-2);
-		}
-	}
+            AVScoringParameterSet params1 = configGroup.getScoringParameters(null);
+            Assert.assertEquals(1.0, params1.getMarginalUtilityOfWaitingTime(), 1e-2);
 
-	@Test
-	public void testDuplication() throws IOException {
-		// The way the config was set up previously loading and saving the config file
-		// would duplicate operators etc. This test makes sure this does not happen
-		// anymore.
+            AVScoringParameterSet params2 = configGroup.getScoringParameters("xyz");
+            Assert.assertEquals(15.0, params2.getMarginalUtilityOfWaitingTime(), 1e-2);
+        }
+    }
 
-		AVConfigGroup configGroup = new AVConfigGroup();
-		Config config = ConfigUtils.createConfig(configGroup);
+    @Test
+    public void testDuplication() throws IOException {
+        // The way the config was set up previously loading and saving the config file
+        // would duplicate operators etc. This test makes sure this does not happen
+        // anymore.
 
-		OperatorConfig operator1 = new OperatorConfig();
-		operator1.setId(AVOperator.createId("id_abc"));
-		operator1.getDispatcherConfig().setType("disp_abc");
-		operator1.getGeneratorConfig().setType("gen_abc");
-		operator1.getGeneratorConfig().setNumberOfVehicles(5);
-		operator1.getTimingConfig().setPickupDurationPerPassenger(123.0);
-		configGroup.addOperator(operator1);
+        AVConfigGroup configGroup = new AVConfigGroup();
+        Config config = ConfigUtils.createConfig(configGroup);
 
-		new ConfigWriter(config).write("test_output/test_config1.xml");
+        OperatorConfig operator1 = new OperatorConfig();
+        operator1.setId(AVOperator.createId("id_abc"));
+        operator1.getDispatcherConfig().setType("disp_abc");
+        operator1.getGeneratorConfig().setType("gen_abc");
+        operator1.getGeneratorConfig().setNumberOfVehicles(5);
+        operator1.getTimingConfig().setPickupDurationPerPassenger(123.0);
+        configGroup.addOperator(operator1);
 
-		Config config2 = ConfigUtils.loadConfig("test_output/test_config1.xml", new AVConfigGroup());
-		new ConfigWriter(config2).write("test_output/test_config2.xml");
+        new ConfigWriter(config).write("test_output/test_config1.xml");
 
-		Config config3 = ConfigUtils.loadConfig("test_output/test_config2.xml", new AVConfigGroup());
-		new ConfigWriter(config3).write("test_output/test_config3.xml");
+        Config config2 = ConfigUtils.loadConfig("test_output/test_config1.xml", new AVConfigGroup());
+        new ConfigWriter(config2).write("test_output/test_config2.xml");
 
-		BufferedReader reader = new BufferedReader(
-				new InputStreamReader(new FileInputStream(new File("test_output/test_config3.xml"))));
+        Config config3 = ConfigUtils.loadConfig("test_output/test_config2.xml", new AVConfigGroup());
+        new ConfigWriter(config3).write("test_output/test_config3.xml");
 
-		String line = null;
-		
-		int numberOfOperators = 0;
-		int numberOfDispatchers = 0;
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(new File("test_output/test_config3.xml"))));
 
-		while ((line = reader.readLine()) != null) {
-			if (line.contains("parameterset") && line.contains("operator")) {
-				numberOfOperators++;
-			}
-			
-			if (line.contains("parameterset") && line.contains("dispatcher")) {
-				numberOfDispatchers++;
-			}
-		}
+        String line = null;
 
-		reader.close();
+        int numberOfOperators = 0;
+        int numberOfDispatchers = 0;
 
-		Assert.assertEquals(1, numberOfOperators);
-		Assert.assertEquals(1, numberOfDispatchers);
-	}
+        while ((line = reader.readLine()) != null) {
+            if (line.contains("parameterset") && line.contains("operator")) {
+                numberOfOperators++;
+            }
+
+            if (line.contains("parameterset") && line.contains("dispatcher")) {
+                numberOfDispatchers++;
+            }
+        }
+
+        reader.close();
+
+        Assert.assertEquals(1, numberOfOperators);
+        Assert.assertEquals(1, numberOfDispatchers);
+    }
 }

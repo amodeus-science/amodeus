@@ -38,7 +38,7 @@ public class AmodeusConfigurator {
 
         controller.addOverridingQSimModule(new AmodeusQSimModule());
         controller.configureQSimComponents(AVQSimModule::configureComponents);
-        
+
         controller.addOverridingModule(new AbstractModule() { // REFACTOR ? Not sure if this si still needed
             @Override
             public void install() {

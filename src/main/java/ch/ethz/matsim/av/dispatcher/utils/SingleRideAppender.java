@@ -82,19 +82,15 @@ public class SingleRideAppender {
         }
 
         VrpPathWithTravelData pickupPath = VrpPaths.createPath(stayTask.getLink(), request.getFromLink(), startTime, plainPickupPath, travelTime);
-        VrpPathWithTravelData dropoffPath = VrpPaths.createPath(request.getFromLink(), request.getToLink(), pickupPath.getArrivalTime() + timing.getPickupDurationPerStop(), plainDropoffPath, travelTime);
-        
+        VrpPathWithTravelData dropoffPath = VrpPaths.createPath(request.getFromLink(), request.getToLink(), pickupPath.getArrivalTime() + timing.getPickupDurationPerStop(),
+                plainDropoffPath, travelTime);
+
         AmodeusDriveTask pickupDriveTask = new AmodeusDriveTask(pickupPath);
-        AmodeusPickupTask pickupTask = new AmodeusPickupTask(
-                pickupPath.getArrivalTime(),
-                pickupPath.getArrivalTime() + timing.getPickupDurationPerStop(),
-                request.getFromLink(), Double.NEGATIVE_INFINITY, Arrays.asList(request));
+        AmodeusPickupTask pickupTask = new AmodeusPickupTask(pickupPath.getArrivalTime(), pickupPath.getArrivalTime() + timing.getPickupDurationPerStop(), request.getFromLink(),
+                Double.NEGATIVE_INFINITY, Arrays.asList(request));
         AmodeusDriveTask dropoffDriveTask = new AmodeusDriveTask(dropoffPath, Arrays.asList(request));
-        AmodeusDropoffTask dropoffTask = new AmodeusDropoffTask(
-                dropoffPath.getArrivalTime(),
-                dropoffPath.getArrivalTime() + timing.getDropoffDurationPerStop(),
-                request.getToLink(),
-                Arrays.asList(request));
+        AmodeusDropoffTask dropoffTask = new AmodeusDropoffTask(dropoffPath.getArrivalTime(), dropoffPath.getArrivalTime() + timing.getDropoffDurationPerStop(),
+                request.getToLink(), Arrays.asList(request));
 
         if (stayTask.getStatus() == Task.TaskStatus.STARTED) {
             stayTask.setEndTime(startTime);
@@ -119,14 +115,14 @@ public class SingleRideAppender {
     }
 
     public void update() {
-    	try {
-	    	for (AppendTask task : tasks) {
-	    		schedule(task, task.pickup.get(), task.dropoff.get());
-	    	}
-    	} catch (ExecutionException | InterruptedException e) {
-    		throw new RuntimeException(e);
-    	}
-    	
-    	tasks.clear();
+        try {
+            for (AppendTask task : tasks) {
+                schedule(task, task.pickup.get(), task.dropoff.get());
+            }
+        } catch (ExecutionException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        tasks.clear();
     }
 }

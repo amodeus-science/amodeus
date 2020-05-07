@@ -6,11 +6,11 @@ import org.matsim.facilities.Facility;
 import ch.ethz.matsim.av.config.operator.OperatorConfig;
 
 public interface AVInteractionFinder {
-	Facility findPickupFacility(Facility fromFacility, double departureTime);
+    Facility findPickupFacility(Facility fromFacility, double departureTime);
 
-	Facility findDropoffFacility(Facility toFacility, double departureTime);
+    Facility findDropoffFacility(Facility toFacility, double departureTime);
 
-	interface AVInteractionFinderFactory {
-		AVInteractionFinder createInteractionFinder(OperatorConfig operatorConfig, Network network);
-	}
+    interface AVInteractionFinderFactory {
+        AVInteractionFinder createInteractionFinder(OperatorConfig operatorConfig, Network network);
+    }
 }

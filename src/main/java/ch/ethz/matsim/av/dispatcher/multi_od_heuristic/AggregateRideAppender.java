@@ -5,5 +5,6 @@ import ch.ethz.matsim.av.dispatcher.multi_od_heuristic.aggregation.AggregatedReq
 
 public interface AggregateRideAppender {
     void schedule(AggregatedRequest request, AVVehicle vehicle, double now);
+
     void update();
 }

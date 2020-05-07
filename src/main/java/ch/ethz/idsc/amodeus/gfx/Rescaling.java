@@ -73,6 +73,7 @@ enum Rank implements TensorUnaryOperator {
     MAX(NormalizeUnlessZero.with(Norm.INFINITY)), //
     /** ranking */
     RANK(Rank.INSTANCE);
+
     // ---
     private final TensorUnaryOperator tensorUnaryOperator;
 
