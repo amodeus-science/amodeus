@@ -11,5 +11,6 @@ notifications:
   email: false
 
 script:
+  - git clone https://github.com/amodeus-science/tensor.git && cd tensor && mvn install -DskipTests=True
   - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -Dmaven.test.redirectTestOutputToFile -Dmatsim.preferLocalDtds=true
   - mvn test -B -Dmaven.test.redirectTestOutputToFile -Dmatsim.preferLocalDtds=true
