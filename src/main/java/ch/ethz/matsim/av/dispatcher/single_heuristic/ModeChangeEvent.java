@@ -1,10 +1,11 @@
 package ch.ethz.matsim.av.dispatcher.single_heuristic;
 
-import ch.ethz.matsim.av.data.AVOperator;
+import java.util.Map;
+
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.events.Event;
 
-import java.util.Map;
+import ch.ethz.matsim.av.data.AVOperator;
 
 public class ModeChangeEvent extends Event {
     final private SingleHeuristicDispatcher.HeuristicMode mode;

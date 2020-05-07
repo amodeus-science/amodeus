@@ -1,11 +1,11 @@
 package ch.ethz.matsim.av.dispatcher.multi_od_heuristic.aggregation;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.multi_od_heuristic.TravelTimeEstimator;
 import ch.ethz.matsim.av.passenger.AVRequest;
-
-import java.util.Collection;
-import java.util.LinkedList;
 
 public class AggregatedRequest {
     final private AVRequest master;

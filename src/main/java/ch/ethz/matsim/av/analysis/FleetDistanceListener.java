@@ -14,7 +14,6 @@ import org.matsim.api.core.v01.events.handler.LinkEnterEventHandler;
 import org.matsim.api.core.v01.events.handler.PersonEntersVehicleEventHandler;
 import org.matsim.api.core.v01.events.handler.PersonLeavesVehicleEventHandler;
 
-import ch.ethz.matsim.av.analysis.FleetDistanceListener.OperatorData;
 import ch.ethz.matsim.av.data.AVOperator;
 import ch.ethz.matsim.av.generator.AVUtils;
 

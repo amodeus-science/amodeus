@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ch.ethz.idsc.amodeus.util.geo.FastQuadTree;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
@@ -16,6 +15,7 @@ import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.utils.collections.QuadTree;
 
 import ch.ethz.idsc.amodeus.dispatcher.util.TensorLocation;
+import ch.ethz.idsc.amodeus.util.geo.FastQuadTree;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.util.network.NodeAdjacencyMap;
 import ch.ethz.idsc.amodeus.virtualnetwork.CentroidVirtualNetworkCreator;

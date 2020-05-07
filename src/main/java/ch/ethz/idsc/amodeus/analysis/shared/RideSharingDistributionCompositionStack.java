@@ -6,7 +6,6 @@ import java.util.stream.IntStream;
 
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
-import org.matsim.contrib.util.chart.ChartSaveUtils;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;

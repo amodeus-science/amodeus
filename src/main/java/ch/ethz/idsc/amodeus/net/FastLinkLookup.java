@@ -1,12 +1,12 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.net;
 
-import ch.ethz.idsc.amodeus.util.geo.FastQuadTree;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.utils.collections.QuadTree;
 
+import ch.ethz.idsc.amodeus.util.geo.FastQuadTree;
 import ch.ethz.idsc.tensor.Tensor;
 
 public class FastLinkLookup {

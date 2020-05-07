@@ -3,10 +3,11 @@ package ch.ethz.idsc.tensor.fig;
 import java.util.Calendar;
 import java.util.Random;
 
+import org.jfree.data.time.Second;
+
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import junit.framework.TestCase;
-import org.jfree.data.time.Second;
 
 public class StaticHelperTest extends TestCase {
     public void testToTime() {
