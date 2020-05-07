@@ -18,7 +18,6 @@ import org.matsim.core.controler.Controler;
 import org.matsim.core.scenario.ScenarioUtils;
 
 import ch.ethz.idsc.amodeus.analysis.Analysis;
-import ch.ethz.idsc.amodeus.analysis.element.NumberPassengersAnalysis;
 import ch.ethz.idsc.amodeus.data.LocationSpec;
 import ch.ethz.idsc.amodeus.data.ReferenceFrame;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
@@ -40,15 +39,7 @@ public class SharedTestServer {
     private File workingDirectory;
     private ScenarioOptions scenarioOptions;
     private File configFile;
-    private ReferenceFrame referenceFrame;
-    private Config config;
-    private String outputdirectory;
-    private Scenario scenario;
-    private Network network;
-    private Population population;
-    private Controler controller;
     private AnalysisTestExport ate;
-    private NumberPassengersAnalysis npa = new NumberPassengersAnalysis();
 
     private SharedTestServer(File workingDirectory) throws Exception {
         this.workingDirectory = workingDirectory;
@@ -71,7 +62,7 @@ public class SharedTestServer {
 
         LocationSpec locationSpec = scenarioOptions.getLocationSpec();
 
-        referenceFrame = locationSpec.referenceFrame();
+        ReferenceFrame referenceFrame = locationSpec.referenceFrame();
 
         // open server port for clients to connect to
         SimulationServer.INSTANCE.startAcceptingNonBlocking();
@@ -85,7 +76,7 @@ public class SharedTestServer {
 
         DvrpConfigGroup dvrpConfigGroup = new DvrpConfigGroup();
         dvrpConfigGroup.setTravelTimeEstimationAlpha(0.05);
-        config = ConfigUtils.loadConfig(configFile.toString(), new AVConfigGroup(), dvrpConfigGroup);
+        Config config = ConfigUtils.loadConfig(configFile.toString(), new AVConfigGroup(), dvrpConfigGroup);
         config.planCalcScore().addActivityParams(new PlanCalcScoreConfigGroup.ActivityParams("activity"));
 
         config.qsim().setStartTime(0.0);
@@ -96,17 +87,17 @@ public class SharedTestServer {
             // this was added because there are sometimes problems, is there a more elegant option?
             activityParams.setTypicalDuration(3600.0);
 
-        outputdirectory = config.controler().getOutputDirectory();
+        String outputdirectory = config.controler().getOutputDirectory();
         System.out.println("outputdirectory = " + outputdirectory);
 
         // load scenario for simulation
-        scenario = ScenarioUtils.loadScenario(config);
-        network = scenario.getNetwork();
-        population = scenario.getPopulation();
-        GlobalAssert.that(Objects.nonNull(scenario) && Objects.nonNull(network) && Objects.nonNull(population));
+        Scenario scenario = ScenarioUtils.loadScenario(config);
+        Network network = scenario.getNetwork();
+        Population population = scenario.getPopulation();
+        GlobalAssert.that(Objects.nonNull(network) && Objects.nonNull(population));
 
         MatsimAmodeusDatabase db = MatsimAmodeusDatabase.initialize(network, referenceFrame);
-        controller = new Controler(scenario);
+        Controler controller = new Controler(scenario);
         AmodeusConfigurator.configureController(controller, db, scenarioOptions);
 
         // run simulation
@@ -116,7 +107,6 @@ public class SharedTestServer {
         SimulationServer.INSTANCE.stopAccepting();
 
         Analysis analysis = Analysis.setup(scenarioOptions, new File(workingDirectory, "output/001"), network, db);
-        analysis.addAnalysisElement(npa);
         ate = new AnalysisTestExport();
         analysis.addAnalysisExport(ate);
         analysis.run();
@@ -124,10 +114,6 @@ public class SharedTestServer {
 
     public AnalysisTestExport getAnalysisTestExport() {
         return ate;
-    }
-
-    public NumberPassengersAnalysis numberPassengersAnalysis() {
-        return npa;
     }
 
     public File getConfigFile() {

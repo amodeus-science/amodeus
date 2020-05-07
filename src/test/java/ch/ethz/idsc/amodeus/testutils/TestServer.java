@@ -2,6 +2,7 @@
 package ch.ethz.idsc.amodeus.testutils;
 
 import java.io.File;
+import java.util.Objects;
 
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Network;
@@ -38,13 +39,6 @@ public class TestServer {
     private File workingDirectory;
     private ScenarioOptions scenarioOptions;
     private File configFile;
-    private ReferenceFrame referenceFrame;
-    private Config config;
-    private String outputdirectory;
-    private Scenario scenario;
-    private Network network;
-    private Population population;
-    private Controler controller;
     private AnalysisTestExport ate;
 
     private TestServer() {
@@ -67,7 +61,7 @@ public class TestServer {
 
         LocationSpec locationSpec = scenarioOptions.getLocationSpec();
 
-        referenceFrame = locationSpec.referenceFrame();
+        ReferenceFrame referenceFrame = locationSpec.referenceFrame();
 
         // open server port for clients to connect to
         SimulationServer.INSTANCE.startAcceptingNonBlocking();
@@ -81,7 +75,7 @@ public class TestServer {
 
         DvrpConfigGroup dvrpConfigGroup = new DvrpConfigGroup();
         dvrpConfigGroup.setTravelTimeEstimationAlpha(0.05);
-        config = ConfigUtils.loadConfig(configFile.toString(), new AVConfigGroup(), dvrpConfigGroup);
+        Config config = ConfigUtils.loadConfig(configFile.toString(), new AVConfigGroup(), dvrpConfigGroup);
         config.planCalcScore().addActivityParams(new PlanCalcScoreConfigGroup.ActivityParams("activity"));
 
         config.qsim().setStartTime(0.0);
@@ -92,17 +86,17 @@ public class TestServer {
             // this was added because there are sometimes problems, is there a more elegant option?
             activityParams.setTypicalDuration(3600.0);
 
-        outputdirectory = config.controler().getOutputDirectory();
+        String outputdirectory = config.controler().getOutputDirectory();
         System.out.println("outputdirectory = " + outputdirectory);
 
         // load scenario for simulation
-        scenario = ScenarioUtils.loadScenario(config);
-        network = scenario.getNetwork();
-        population = scenario.getPopulation();
-        GlobalAssert.that(scenario != null && network != null && population != null);
+        Scenario scenario = ScenarioUtils.loadScenario(config);
+        Network network = scenario.getNetwork();
+        Population population = scenario.getPopulation();
+        GlobalAssert.that(Objects.nonNull(network) && Objects.nonNull(population));
 
         MatsimAmodeusDatabase db = MatsimAmodeusDatabase.initialize(network, referenceFrame);
-        controller = new Controler(scenario);
+        Controler controller = new Controler(scenario);
         AmodeusConfigurator.configureController(controller, db, scenarioOptions);
 
         // run simulation
