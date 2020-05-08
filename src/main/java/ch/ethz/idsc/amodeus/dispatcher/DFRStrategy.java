@@ -48,7 +48,7 @@ import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.io.Export;
 import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.red.Mean;
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.router.AVRouter;
 
@@ -79,7 +79,7 @@ public class DFRStrategy extends PartitionedDispatcher {
     private boolean haveExported = false;
 
     private DFRStrategy(Network network, VirtualNetwork<Link> virtualNetwork, Config config, //
-            OperatorConfig operatorConfig, TravelTime travelTime, //
+            AmodeusModeConfig operatorConfig, TravelTime travelTime, //
             AVRouter router, EventsManager eventsManager, TravelData travelData, //
             MatsimAmodeusDatabase db) {
         super(config, operatorConfig, travelTime, router, eventsManager, virtualNetwork, db);
@@ -219,7 +219,7 @@ public class DFRStrategy extends PartitionedDispatcher {
             MatsimAmodeusDatabase db = inject.get(MatsimAmodeusDatabase.class);
             EventsManager eventsManager = inject.get(EventsManager.class);
 
-            OperatorConfig operatorConfig = inject.getModal(OperatorConfig.class);
+            AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
             Network network = inject.getModal(Network.class);
             AVRouter router = inject.getModal(AVRouter.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);

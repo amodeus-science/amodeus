@@ -10,7 +10,6 @@ import org.matsim.contrib.dvrp.optimizer.Request;
 import org.matsim.core.config.Config;
 import org.matsim.core.network.NetworkUtils;
 
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 public class ArtificialScenarioCreator {
@@ -97,15 +96,15 @@ public class ArtificialScenarioCreator {
         network.addLink(linkDepotIn);
         network.addLink(linkDepotOut);
 
-        avRequest1 = new AVRequest(Id.create("p1", Request.class), null, linkUp, linkDown, 0.0, 0.0, null, "av", OperatorConfig.DEFAULT_OPERATOR_ID);
-        avRequest2 = new AVRequest(Id.create("p2", Request.class), null, linkRight, linkLeft, 0.0, 0.0, null, "av", OperatorConfig.DEFAULT_OPERATOR_ID);
-        avRequest3 = new AVRequest(Id.create("p3", Request.class), null, linkRight, linkUp, 0.0, 0.0, null, "av", OperatorConfig.DEFAULT_OPERATOR_ID);
-        avRequest4 = new AVRequest(Id.create("p4", Request.class), null, linkRight, linkDown, 0.0, 0.0, null, "av", OperatorConfig.DEFAULT_OPERATOR_ID);
-        avRequest5 = new AVRequest(Id.create("p5", Request.class), null, linkUp, linkRight, 0.0, 0.0, null, "av", OperatorConfig.DEFAULT_OPERATOR_ID);
-        avRequest6 = new AVRequest(Id.create("p6", Request.class), null, linkUp, linkLeft, 0.0, 0.0, null, "av", OperatorConfig.DEFAULT_OPERATOR_ID);
-        avRequest7 = new AVRequest(Id.create("p7", Request.class), null, linkRight, linkLeft, 0.0, 0.0, null, "av", OperatorConfig.DEFAULT_OPERATOR_ID);
-        avRequestDepotOut = new AVRequest(Id.create("depotRequestOut", Request.class), null, linkDepotOut, linkDepotOut, 0.0, 0.0, null, "av", OperatorConfig.DEFAULT_OPERATOR_ID);
-        avRequestDepotIn = new AVRequest(Id.create("depotRequestIn", Request.class), null, linkDepotIn, linkDepotIn, 0.0, 0.0, null, "av", OperatorConfig.DEFAULT_OPERATOR_ID);
+        avRequest1 = new AVRequest(Id.create("p1", Request.class), null, linkUp, linkDown, 0.0, 0.0, null, "av");
+        avRequest2 = new AVRequest(Id.create("p2", Request.class), null, linkRight, linkLeft, 0.0, 0.0, null, "av");
+        avRequest3 = new AVRequest(Id.create("p3", Request.class), null, linkRight, linkUp, 0.0, 0.0, null, "av");
+        avRequest4 = new AVRequest(Id.create("p4", Request.class), null, linkRight, linkDown, 0.0, 0.0, null, "av");
+        avRequest5 = new AVRequest(Id.create("p5", Request.class), null, linkUp, linkRight, 0.0, 0.0, null, "av");
+        avRequest6 = new AVRequest(Id.create("p6", Request.class), null, linkUp, linkLeft, 0.0, 0.0, null, "av");
+        avRequest7 = new AVRequest(Id.create("p7", Request.class), null, linkRight, linkLeft, 0.0, 0.0, null, "av");
+        avRequestDepotOut = new AVRequest(Id.create("depotRequestOut", Request.class), null, linkDepotOut, linkDepotOut, 0.0, 0.0, null, "av");
+        avRequestDepotIn = new AVRequest(Id.create("depotRequestIn", Request.class), null, linkDepotIn, linkDepotIn, 0.0, 0.0, null, "av");
 
     }
 }

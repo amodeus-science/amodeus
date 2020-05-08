@@ -26,16 +26,13 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 
-import ch.ethz.matsim.av.config.AVConfigGroup;
-import ch.ethz.matsim.av.config.operator.InteractionFinderConfig;
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
-import ch.ethz.matsim.av.data.AVOperator;
-import ch.ethz.matsim.av.data.AVOperatorFactory;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
+import ch.ethz.matsim.av.config.modal.InteractionFinderConfig;
 import ch.ethz.matsim.av.financial.PriceCalculator;
+import ch.ethz.matsim.av.financial.StaticPriceCalculator;
 import ch.ethz.matsim.av.framework.registry.RouterRegistry;
 import ch.ethz.matsim.av.network.AVNetworkFilter;
 import ch.ethz.matsim.av.network.AVNetworkProvider;
-import ch.ethz.matsim.av.replanning.AVOperatorChoiceStrategy;
 import ch.ethz.matsim.av.router.AVRouter;
 import ch.ethz.matsim.av.router.AVRouterShutdownListener;
 import ch.ethz.matsim.av.routing.AVRoute;
@@ -43,22 +40,22 @@ import ch.ethz.matsim.av.routing.AVRouteFactory;
 import ch.ethz.matsim.av.routing.AVRoutingModule;
 import ch.ethz.matsim.av.routing.interaction.AVInteractionFinder;
 import ch.ethz.matsim.av.waiting_time.WaitingTime;
-import ch.ethz.matsim.av.waiting_time.WaitingTimeModeModule;
+import ch.ethz.matsim.av.waiting_time.WaitingTimeEstimationModule;
 
 public class AVModeModule extends AbstractDvrpModeModule {
-    private final Id<AVOperator> operatorId;
+    private final AmodeusModeConfig modeConfig;
 
-    public AVModeModule(Id<AVOperator> operatorId, String mode) {
-        super(mode);
-        this.operatorId = operatorId;
+    public AVModeModule(AmodeusModeConfig modeConfig) {
+        super(modeConfig.getMode());
+        this.modeConfig = modeConfig;
     }
 
     @Override
     public void install() {
         DvrpModes.registerDvrpMode(binder(), getMode());
 
-        // Operator (TODO: remove)
-        bindModal(AVOperator.class).toProvider(new OperatorProvider(operatorId, getMode())).in(Singleton.class);
+        // Provide configuration to modal injectors
+        bindModal(AmodeusModeConfig.class).toInstance(modeConfig);
 
         // Network
         bindModal(Network.class).toProvider(new NetworkProvider(getMode())).in(Singleton.class);
@@ -74,23 +71,23 @@ public class AVModeModule extends AbstractDvrpModeModule {
         bindModal(VehicleType.class).toProvider(new VehicleTypeProvider(getMode())).in(Singleton.class);
         bindModal(TravelTime.class).to(Key.get(TravelTime.class, Names.named(DvrpTravelTimeModule.DVRP_ESTIMATED)));
 
-        install(new WaitingTimeModeModule(operatorId, getMode()));
-
-        AVConfigGroup config = AVConfigGroup.getOrCreate(getConfig());
-        bindModal(OperatorConfig.class).toInstance(config.getOperatorConfig(operatorId));
-
         bindModal(AVRouterShutdownListener.class).toProvider(modalProvider(getter -> {
             return new AVRouterShutdownListener(getter.getModal(AVRouter.class));
         })).in(Singleton.class);
         addControlerListenerBinding().to(modalKey(AVRouterShutdownListener.class));
 
         bindModal(AVRouter.class).toProvider(modalProvider(getter -> {
-            OperatorConfig operatorConfig = getter.getModal(OperatorConfig.class);
+            AmodeusModeConfig operatorConfig = getter.getModal(AmodeusModeConfig.class);
             String routerName = operatorConfig.getRouterConfig().getType();
 
             AVRouter.Factory factory = getter.get(RouterRegistry.class).get(routerName);
             return factory.createRouter(getter);
         })).in(Singleton.class);
+
+        // Waiting time estimation
+        install(new WaitingTimeEstimationModule(modeConfig));
+
+        bindModal(PriceCalculator.class).toProvider(new PriceCalculatorProider(modeConfig));
     }
 
     @Provides
@@ -103,9 +100,6 @@ public class AVModeModule extends AbstractDvrpModeModule {
 
     static private class NetworkProvider extends ModalProviders.AbstractProvider<Network> {
         @Inject
-        AVConfigGroup config;
-
-        @Inject
         AVNetworkFilter customFilter; // TODO: Make modal
 
         @Inject
@@ -117,22 +111,19 @@ public class AVModeModule extends AbstractDvrpModeModule {
 
         @Override
         public Network get() {
-            OperatorConfig operatorConfig = getModalInstance(OperatorConfig.class);
+            AmodeusModeConfig modeConfig = getModalInstance(AmodeusModeConfig.class);
 
-            String allowedLinkMode = config.getAllowedLinkMode(); // TODO: Make modal (or implicit)
-            String allowedLinkAttribute = operatorConfig.getAllowedLinkAttribute();
+            String allowedLinkMode = modeConfig.getAllowedLinkMode(); // TODO: Make modal (or implicit)
+            String allowedLinkAttribute = modeConfig.getAllowedLinkAttribute();
 
-            boolean cleanNetwork = operatorConfig.getCleanNetwork();
+            boolean cleanNetwork = modeConfig.getCleanNetwork();
             AVNetworkProvider provider = new AVNetworkProvider(allowedLinkMode, allowedLinkAttribute, cleanNetwork);
 
-            return provider.apply(operatorConfig.getId(), fullNetwork, customFilter);
+            return provider.apply(getMode(), fullNetwork, customFilter);
         }
     };
 
     static private class RoutingModuleProvider extends ModalProviders.AbstractProvider<AVRoutingModule> {
-        @Inject
-        AVOperatorChoiceStrategy choiceStrategy;
-
         @Inject
         AVRouteFactory routeFactory;
 
@@ -144,14 +135,8 @@ public class AVModeModule extends AbstractDvrpModeModule {
         RoutingModule walkRoutingModule;
 
         @Inject
-        AVConfigGroup config;
-
-        @Inject
         @Named("car")
         Provider<RoutingModule> roadRoutingModuleProvider;
-
-        @Inject
-        PriceCalculator priceCalculator; // TODO: Make modal.
 
         RoutingModuleProvider(String mode) {
             super(mode);
@@ -159,36 +144,16 @@ public class AVModeModule extends AbstractDvrpModeModule {
 
         @Override
         public AVRoutingModule get() {
-            OperatorConfig operatorConfig = getModalInstance(OperatorConfig.class);
-            boolean predictRoute = operatorConfig.getPredictRouteTravelTime() || operatorConfig.getPredictRoutePrice();
-            boolean useAccessEgress = config.getUseAccessEgress();
+            AmodeusModeConfig modeConfig = getModalInstance(AmodeusModeConfig.class);
+            boolean predictRoute = modeConfig.getPredictRouteTravelTime() || modeConfig.getPredictRoutePrice();
+            boolean useAccessEgress = modeConfig.getUseAccessEgress();
 
             AVInteractionFinder interactionFinder = getModalInstance(AVInteractionFinder.class);
             WaitingTime waitingTime = getModalInstance(WaitingTime.class);
+            PriceCalculator priceCalculator = getModalInstance(PriceCalculator.class);
 
-            return new AVRoutingModule(choiceStrategy, routeFactory, interactionFinder, waitingTime, populationFactory, walkRoutingModule, useAccessEgress, predictRoute,
+            return new AVRoutingModule(routeFactory, interactionFinder, waitingTime, populationFactory, walkRoutingModule, useAccessEgress, predictRoute,
                     predictRoute ? roadRoutingModuleProvider.get() : null, priceCalculator, getMode());
-        }
-    };
-
-    // TODO: I doubt that we really need this provider here. Remove operators -> modes.
-    static private class OperatorProvider extends ModalProviders.AbstractProvider<AVOperator> {
-        @Inject
-        AVOperatorFactory factory;
-
-        @Inject
-        AVConfigGroup config;
-
-        private final Id<AVOperator> operatorId;
-
-        OperatorProvider(Id<AVOperator> operatorId, String mode) {
-            super(mode);
-            this.operatorId = operatorId;
-        }
-
-        @Override
-        public AVOperator get() {
-            return factory.createOperator(operatorId, config.getOperatorConfig(operatorId));
         }
     };
 
@@ -202,9 +167,9 @@ public class AVModeModule extends AbstractDvrpModeModule {
 
         @Override
         public AVInteractionFinder get() {
-            OperatorConfig operatorConfig = getModalInstance(OperatorConfig.class);
+            AmodeusModeConfig modeConfig = getModalInstance(AmodeusModeConfig.class);
 
-            InteractionFinderConfig interactionConfig = operatorConfig.getInteractionFinderConfig();
+            InteractionFinderConfig interactionConfig = modeConfig.getInteractionFinderConfig();
             AVInteractionFinder.AVInteractionFinderFactory factory = factories.get(interactionConfig.getType());
 
             if (factory == null) {
@@ -212,7 +177,7 @@ public class AVModeModule extends AbstractDvrpModeModule {
             }
 
             Network network = getModalInstance(Network.class);
-            return factory.createInteractionFinder(operatorConfig, network);
+            return factory.createInteractionFinder(modeConfig, network);
         }
     };
 
@@ -226,7 +191,7 @@ public class AVModeModule extends AbstractDvrpModeModule {
 
         @Override
         public VehicleType get() {
-            OperatorConfig operatorConfig = getModalInstance(OperatorConfig.class);
+            AmodeusModeConfig operatorConfig = getModalInstance(AmodeusModeConfig.class);
 
             String vehicleTypeName = operatorConfig.getGeneratorConfig().getVehicleType();
             VehicleType vehicleType = null;
@@ -237,11 +202,23 @@ public class AVModeModule extends AbstractDvrpModeModule {
                 vehicleType = vehicles.getVehicleTypes().get(Id.create(vehicleTypeName, VehicleType.class));
 
                 if (vehicleType == null) {
-                    throw new IllegalStateException(String.format("VehicleType '%s' does not exist for operator '%s'", vehicleType, operatorConfig.getId()));
+                    throw new IllegalStateException(String.format("VehicleType '%s' does not exist for mode '%s'", vehicleType, getMode()));
                 }
             }
 
             return vehicleType;
+        }
+    }
+
+    static class PriceCalculatorProider extends ModalProviders.AbstractProvider<PriceCalculator> {
+        PriceCalculatorProider(AmodeusModeConfig modeConfig) {
+            super(modeConfig.getMode());
+        }
+
+        @Override
+        public PriceCalculator get() {
+            AmodeusModeConfig modeConfig = getModalInstance(AmodeusModeConfig.class);
+            return new StaticPriceCalculator(modeConfig.getPricingConfig());
         }
     }
 }

@@ -1,8 +1,6 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.matsim.mod;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 import org.apache.log4j.Logger;
@@ -23,9 +21,9 @@ import org.matsim.vehicles.Vehicles;
 
 import com.google.inject.Inject;
 
-import ch.ethz.matsim.av.config.AVConfigGroup;
-import ch.ethz.matsim.av.config.operator.GeneratorConfig;
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
+import ch.ethz.matsim.av.config.AmodeusConfigGroup;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
+import ch.ethz.matsim.av.config.modal.GeneratorConfig;
 
 public class AmodeusModule extends AbstractModule {
     private final static Logger logger = Logger.getLogger(AmodeusModule.class);
@@ -45,23 +43,21 @@ public class AmodeusModule extends AbstractModule {
 
         // Update vehicle types by Amodeus configuration
 
-        for (OperatorConfig operatorConfig : AVConfigGroup.getOrCreate(getConfig()).getOperatorConfigs().values()) {
+        for (AmodeusModeConfig operatorConfig : AmodeusConfigGroup.get(getConfig()).getModes().values()) {
             GeneratorConfig generatorConfig = operatorConfig.getGeneratorConfig();
 
             String vehicleTypeName = generatorConfig.getVehicleType();
             String numberOfSeatsParameter = generatorConfig.getParams().get("numberOfSeats");
 
-            Map<Integer, VehicleType> amodeusTypes = new HashMap<>();
-
             if (Objects.nonNull(numberOfSeatsParameter)) {
                 if (Objects.nonNull(vehicleTypeName)) {
                     throw new IllegalStateException(String.format( //
-                            "Both vehicleType and numberOfSeats are set for operator %s. This is amiguous. "
+                            "Both vehicleType and numberOfSeats are set for mode %s. This is amiguous. "
                                     + "Option one is to define 'numberOfSeats' alone. In this case Amodeus will create an internal "
                                     + "vehicle type with the specified number of seats automatically. Option two is to explicitly "
                                     + "define a 'vehicleType' alone and register it through the possible ways that MATSim prvoides "
                                     + "(either manually adding a VehicleType to the Vehicles container after loeading the scenario, or providing a vehicles.xml.gz file).",
-                            operatorConfig.getId()));
+                            operatorConfig.getMode()));
                 }
 
                 // TODO: Adjust when we have actual modes instead of operators!
@@ -80,15 +76,15 @@ public class AmodeusModule extends AbstractModule {
 
         @Override
         public VehicleType get() {
-            OperatorConfig operatorConfig = getModalInstance(OperatorConfig.class);
+            AmodeusModeConfig operatorConfig = getModalInstance(AmodeusModeConfig.class);
             GeneratorConfig generatorConfig = operatorConfig.getGeneratorConfig();
 
             String numberOfSeatsParameter = generatorConfig.getParams().get("numberOfSeats");
             int numberOfSeats = Integer.parseInt(numberOfSeatsParameter);
 
-            logger.info(String.format("Creating an on-the-fly vehicle type for Amodeus operator '%s' with %d seats", operatorConfig.getId().toString(), numberOfSeats));
+            logger.info(String.format("Creating an on-the-fly vehicle type for Amodeus mode '%s' with %d seats", operatorConfig.getMode(), numberOfSeats));
 
-            return vehicles.getFactory().createVehicleType(Id.create(String.format("amodeus:%s:%d", operatorConfig.getId().toString(), numberOfSeats), VehicleType.class));
+            return vehicles.getFactory().createVehicleType(Id.create(String.format("amodeus:%s:%d", operatorConfig.getMode(), numberOfSeats), VehicleType.class));
         }
     }
 

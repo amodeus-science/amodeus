@@ -45,10 +45,10 @@ import org.matsim.vehicles.VehicleUtils;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 
-import ch.ethz.matsim.av.config.AVConfigGroup;
 import ch.ethz.matsim.av.config.AVScoringParameterSet;
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
-import ch.ethz.matsim.av.config.operator.TimingConfig;
+import ch.ethz.matsim.av.config.AmodeusConfigGroup;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
+import ch.ethz.matsim.av.config.modal.TimingConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.multi_od_heuristic.MultiODHeuristic;
 import ch.ethz.matsim.av.framework.AVModule;
@@ -68,7 +68,7 @@ public class AVPickupDropoffTest {
         }
     }
 
-    static private Scenario createScenario(AVConfigGroup avConfig, Collection<TestRequest> requests) {
+    static private Scenario createScenario(AmodeusConfigGroup avConfig, Collection<TestRequest> requests) {
         DvrpConfigGroup dvrpConfigGroup = new DvrpConfigGroup();
         dvrpConfigGroup.setMobsimMode("car");
         dvrpConfigGroup.setNetworkModes(ImmutableSet.of("av"));
@@ -205,23 +205,23 @@ public class AVPickupDropoffTest {
         }
     }
 
-    static private AVConfigGroup createConfig() {
-        AVConfigGroup config = new AVConfigGroup();
+    static private AmodeusConfigGroup createConfig() {
+        AmodeusConfigGroup config = new AmodeusConfigGroup();
 
-        AVScoringParameterSet scoringParams = config.getScoringParameters(null);
-        scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
-
-        OperatorConfig operatorConfig = new OperatorConfig();
+        AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
         operatorConfig.getDispatcherConfig().setType(MultiODHeuristic.TYPE);
         operatorConfig.getGeneratorConfig().setType("Single");
-        config.addOperator(operatorConfig);
+        config.addMode(operatorConfig);
+
+        AVScoringParameterSet scoringParams = operatorConfig.getScoringParameters(null);
+        scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
 
         operatorConfig.getTimingConfig().setPickupDurationPerPassenger(0.0);
         operatorConfig.getTimingConfig().setPickupDurationPerStop(0.0);
         operatorConfig.getTimingConfig().setDropoffDurationPerPassenger(0.0);
         operatorConfig.getTimingConfig().setDropoffDurationPerStop(0.0);
 
-        config.setUseAccessAgress(true);
+        operatorConfig.setUseAccessAgress(true);
 
         return config;
     }
@@ -248,7 +248,7 @@ public class AVPickupDropoffTest {
 
         controller.addOverridingQSimModule(new AVQSimModule());
 
-        controller.configureQSimComponents(AVQSimModule::configureComponents);
+        controller.configureQSimComponents(AVQSimModule.activateModes("av"));
 
         return controller;
     }
@@ -267,7 +267,7 @@ public class AVPickupDropoffTest {
     @Test
     public void testNoPickupTime() {
         { // One agent, no pickup time
-            AVConfigGroup config = createConfig();
+            AmodeusConfigGroup config = createConfig();
             Scenario scenario = createScenario(config, Arrays.asList(new TestRequest(0.0, 0.0)));
 
             ArrivalListener listener = new ArrivalListener();
@@ -279,7 +279,7 @@ public class AVPickupDropoffTest {
         }
 
         { // Three agents, no pickup time
-            AVConfigGroup config = createConfig();
+            AmodeusConfigGroup config = createConfig();
             Scenario scenario = createScenario(config, Arrays.asList( //
                     new TestRequest(0.0, 0.0), //
                     new TestRequest(0.0, 0.0), //
@@ -300,8 +300,8 @@ public class AVPickupDropoffTest {
     @Test
     public void testPickupTimePerStop() {
         { // One agent, 15s pickup time per stop
-            AVConfigGroup config = createConfig();
-            OperatorConfig operatorConfig = config.getOperatorConfigs().values().iterator().next();
+            AmodeusConfigGroup config = createConfig();
+            AmodeusModeConfig operatorConfig = config.getModes().values().iterator().next();
             TimingConfig timingConfig = operatorConfig.getTimingConfig();
             timingConfig.setPickupDurationPerStop(15.0);
 
@@ -316,8 +316,8 @@ public class AVPickupDropoffTest {
         }
 
         { // Three agents, 15s pickup time per stop
-            AVConfigGroup config = createConfig();
-            OperatorConfig operatorConfig = config.getOperatorConfigs().values().iterator().next();
+            AmodeusConfigGroup config = createConfig();
+            AmodeusModeConfig operatorConfig = config.getModes().values().iterator().next();
             TimingConfig timingConfig = operatorConfig.getTimingConfig();
             timingConfig.setPickupDurationPerStop(15.0);
 
@@ -341,8 +341,8 @@ public class AVPickupDropoffTest {
     @Test
     public void testPickupTimePerPerson() {
         { // One agent, 15s pickup time per person
-            AVConfigGroup config = createConfig();
-            OperatorConfig operatorConfig = config.getOperatorConfigs().values().iterator().next();
+            AmodeusConfigGroup config = createConfig();
+            AmodeusModeConfig operatorConfig = config.getModes().values().iterator().next();
             TimingConfig timingConfig = operatorConfig.getTimingConfig();
             timingConfig.setPickupDurationPerPassenger(15.0);
 
@@ -357,8 +357,8 @@ public class AVPickupDropoffTest {
         }
 
         { // Three agents, 15s pickup time per person
-            AVConfigGroup config = createConfig();
-            OperatorConfig operatorConfig = config.getOperatorConfigs().values().iterator().next();
+            AmodeusConfigGroup config = createConfig();
+            AmodeusModeConfig operatorConfig = config.getModes().values().iterator().next();
             TimingConfig timingConfig = operatorConfig.getTimingConfig();
             timingConfig.setPickupDurationPerPassenger(15.0);
 
@@ -381,7 +381,7 @@ public class AVPickupDropoffTest {
 
     @Test
     public void testWaitEmptyForPerson() {
-        AVConfigGroup config = createConfig();
+        AmodeusConfigGroup config = createConfig();
         Scenario scenario = createScenario(config, Arrays.asList(new TestRequest(0.0, 100.0)));
 
         ArrivalListener listener = new ArrivalListener();
@@ -395,7 +395,7 @@ public class AVPickupDropoffTest {
     @Test
     public void testDropoffTime() {
         { // Three agents, no dropoff time
-            AVConfigGroup config = createConfig();
+            AmodeusConfigGroup config = createConfig();
             Scenario scenario = createScenario(config, Arrays.asList( //
                     new TestRequest(0.0, 0.0), //
                     new TestRequest(0.0, 0.0), //
@@ -413,8 +413,8 @@ public class AVPickupDropoffTest {
         }
 
         { // Three agents, 15s dropoff time per stop
-            AVConfigGroup config = createConfig();
-            OperatorConfig operatorConfig = config.getOperatorConfigs().values().iterator().next();
+            AmodeusConfigGroup config = createConfig();
+            AmodeusModeConfig operatorConfig = config.getModes().values().iterator().next();
             TimingConfig timingConfig = operatorConfig.getTimingConfig();
             timingConfig.setDropoffDurationPerStop(15.0);
 
@@ -435,8 +435,8 @@ public class AVPickupDropoffTest {
         }
 
         { // Three agents, 15s dropoff time per passenger
-            AVConfigGroup config = createConfig();
-            OperatorConfig operatorConfig = config.getOperatorConfigs().values().iterator().next();
+            AmodeusConfigGroup config = createConfig();
+            AmodeusModeConfig operatorConfig = config.getModes().values().iterator().next();
             TimingConfig timingConfig = operatorConfig.getTimingConfig();
             timingConfig.setDropoffDurationPerPassenger(15.0);
 

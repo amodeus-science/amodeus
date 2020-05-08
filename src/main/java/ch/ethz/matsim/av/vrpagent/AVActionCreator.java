@@ -8,7 +8,7 @@ import org.matsim.contrib.dvrp.vrpagent.VrpLegFactory;
 import org.matsim.contrib.dynagent.DynAction;
 import org.matsim.contrib.dynagent.DynAgent;
 
-import ch.ethz.matsim.av.config.operator.TimingConfig;
+import ch.ethz.matsim.av.config.modal.TimingConfig;
 import ch.ethz.matsim.av.passenger.AVPassengerDropoffActivity;
 import ch.ethz.matsim.av.passenger.AVPassengerPickupActivity;
 import ch.ethz.refactoring.schedule.AmodeusDropoffTask;

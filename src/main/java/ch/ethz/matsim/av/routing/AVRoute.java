@@ -13,26 +13,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import ch.ethz.matsim.av.data.AVOperator;
-
 public class AVRoute extends AbstractRoute {
     final static String AV_ROUTE = "av";
 
-    private Id<AVOperator> operatorId;
     private double waitingTime;
     private double inVehicleTime;
     private double price;
 
     public AVRoute(Id<Link> startLinkId, Id<Link> endLinkId) {
         super(startLinkId, endLinkId);
-    }
-
-    public Id<AVOperator> getOperatorId() {
-        return operatorId;
-    }
-
-    public void setOperatorId(Id<AVOperator> operatorId) {
-        this.operatorId = operatorId;
     }
 
     public double getWaitingTime() {
@@ -60,12 +49,10 @@ public class AVRoute extends AbstractRoute {
     }
 
     private void interpretAttributes(Map<String, Object> attributes) {
-        String operatorId = (String) attributes.get("operatorId");
         Double waitingTime = (Double) attributes.get("waitingTime");
         Double inVehicleTime = (Double) attributes.get("inVehicleTime");
         Double price = (Double) attributes.get("price");
 
-        this.operatorId = Id.create(operatorId, AVOperator.class);
         this.waitingTime = waitingTime;
         this.inVehicleTime = inVehicleTime;
         this.price = price;
@@ -73,7 +60,6 @@ public class AVRoute extends AbstractRoute {
 
     private Map<String, Object> buildAttributes() {
         Map<String, Object> attributes = new HashMap<>();
-        attributes.put("operatorId", operatorId.toString());
         attributes.put("waitingTime", waitingTime);
         attributes.put("inVehicleTime", inVehicleTime);
         attributes.put("price", price);

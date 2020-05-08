@@ -20,7 +20,7 @@ import org.matsim.api.core.v01.population.Person;
 
 import ch.ethz.matsim.av.analysis.LinkFinder;
 import ch.ethz.matsim.av.analysis.PassengerTracker;
-import ch.ethz.matsim.av.generator.AVUtils;
+import ch.ethz.matsim.av.generator.AmodeusIdentifiers;
 
 public class PassengerAnalysisListener
         implements PersonDepartureEventHandler, PersonArrivalEventHandler, LinkEnterEventHandler, PersonEntersVehicleEventHandler, PersonLeavesVehicleEventHandler {
@@ -78,7 +78,7 @@ public class PassengerAnalysisListener
                     throw new IllegalStateException("Found vehicle enter event without departure");
                 }
 
-                ride.operatorId = AVUtils.getOperatorId(event.getVehicleId());
+                ride.mode = AmodeusIdentifiers.getMode(event.getVehicleId());
                 ride.vehicleId = event.getVehicleId();
 
                 ride.waitingTime = event.getTime() - ride.departureTime;

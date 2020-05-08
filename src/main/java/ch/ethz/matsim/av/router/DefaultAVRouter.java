@@ -13,7 +13,7 @@ import org.matsim.core.router.util.LeastCostPathCalculator.Path;
 import org.matsim.core.router.util.TravelTime;
 import org.matsim.vehicles.Vehicle;
 
-import ch.ethz.matsim.av.config.AVConfigGroup;
+import ch.ethz.matsim.av.config.AmodeusConfigGroup;
 import ch.ethz.matsim.av.plcpc.DefaultParallelLeastCostPathCalculator;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
@@ -43,7 +43,7 @@ public class DefaultAVRouter implements AVRouter {
         public AVRouter createRouter(InstanceGetter inject) {
             Network network = inject.getModal(Network.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);
-            AVConfigGroup config = inject.get(AVConfigGroup.class);
+            AmodeusConfigGroup config = inject.get(AmodeusConfigGroup.class);
 
             return new DefaultAVRouter(DefaultParallelLeastCostPathCalculator.create((int) config.getNumberOfParallelRouters(), new DijkstraFactory(), network,
                     new OnlyTimeDependentTravelDisutility(travelTime), travelTime));

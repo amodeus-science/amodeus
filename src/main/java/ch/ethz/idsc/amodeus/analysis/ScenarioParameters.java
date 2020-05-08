@@ -26,10 +26,10 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkGet;
 import ch.ethz.idsc.tensor.io.UserName;
-import ch.ethz.matsim.av.config.AVConfigGroup;
-import ch.ethz.matsim.av.config.operator.DispatcherConfig;
-import ch.ethz.matsim.av.config.operator.GeneratorConfig;
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
+import ch.ethz.matsim.av.config.AmodeusConfigGroup;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
+import ch.ethz.matsim.av.config.modal.DispatcherConfig;
+import ch.ethz.matsim.av.config.modal.GeneratorConfig;
 
 public class ScenarioParameters implements TotalValueAppender, Serializable {
     public static final int UNDEFINED_INT = -1;
@@ -57,10 +57,15 @@ public class ScenarioParameters implements TotalValueAppender, Serializable {
     public ScenarioParameters(ScenarioOptions scenOptions) {
         System.out.println("scenOptions.getSimulationConfigName: " + scenOptions.getSimulationConfigName());
 
-        AVConfigGroup avConfigGroup = new AVConfigGroup();
+        AmodeusConfigGroup avConfigGroup = new AmodeusConfigGroup();
         Config config = ConfigUtils.loadConfig(scenOptions.getSimulationConfigName(), avConfigGroup);
 
-        OperatorConfig operatorConfig = avConfigGroup.getOperatorConfigs().values().iterator().next();
+        // TODO: This assumes that there is only one mode registered for Amodeus. There are two ways to go
+        // forward. Either we need to put in a check somewhere that when Amodeus is used with ScenarioOptions
+        // that there is really only one mode registered. Alternatives are to make he ScenarioOptions multimodal
+        // or to put all ScenarioOptions into the AmodeusModeConfig. This will happen anyways (for the MATSim
+        // users, but I would keep a fallback to the ScenarioOptions file anyways).
+        AmodeusModeConfig operatorConfig = avConfigGroup.getModes().values().iterator().next();
         DispatcherConfig dispatcherConfig = operatorConfig.getDispatcherConfig();
         SafeConfig safeConfig = SafeConfig.wrap(dispatcherConfig);
         GeneratorConfig generatorConfig = operatorConfig.getGeneratorConfig();

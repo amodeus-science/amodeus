@@ -23,8 +23,8 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;
 import ch.ethz.idsc.amodeus.util.io.Locate;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
-import ch.ethz.matsim.av.config.AVConfigGroup;
-import ch.ethz.matsim.av.config.operator.GeneratorConfig;
+import ch.ethz.matsim.av.config.AmodeusConfigGroup;
+import ch.ethz.matsim.av.config.modal.GeneratorConfig;
 
 public class KMeansVirtualNetworkCreatorTest {
 
@@ -40,9 +40,9 @@ public class KMeansVirtualNetworkCreatorTest {
         ScenarioOptions scenarioOptions = new ScenarioOptions(scenarioDirectory, ScenarioOptionsBase.getDefault());
         File configFile = new File(scenarioOptions.getPreparerConfigName());
 
-        AVConfigGroup avCg = new AVConfigGroup();
+        AmodeusConfigGroup avCg = new AmodeusConfigGroup();
         Config config = ConfigUtils.loadConfig(configFile.getAbsolutePath(), avCg);
-        GeneratorConfig genConfig = avCg.getOperatorConfigs().values().iterator().next().getGeneratorConfig();
+        GeneratorConfig genConfig = avCg.getModes().values().iterator().next().getGeneratorConfig();
         int numRt = genConfig.getNumberOfVehicles();
         int endTime = (int) config.qsim().getEndTime().seconds();
         Scenario scenario = ScenarioUtils.loadScenario(config);

@@ -6,7 +6,6 @@ import org.matsim.api.core.v01.population.Person;
 import org.matsim.contrib.dvrp.optimizer.Request;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
-import ch.ethz.matsim.av.data.AVOperator;
 import ch.ethz.matsim.av.routing.AVRoute;
 import ch.ethz.refactoring.schedule.AmodeusDropoffTask;
 import ch.ethz.refactoring.schedule.AmodeusPickupTask;
@@ -24,12 +23,10 @@ public class AVRequest implements PassengerRequest {
     private AmodeusDropoffTask dropoffTask;
 
     private final String mode;
-    private final Id<AVOperator> operatorId;
 
     // TODO: Can we remove Dispatcher and Operator from here?
     // And the tasks.
-    public AVRequest(Id<Request> id, Id<Person> passengerId, Link pickupLink, Link dropoffLink, double pickupTime, double submissionTime, AVRoute route, String mode,
-            Id<AVOperator> operatorId) {
+    public AVRequest(Id<Request> id, Id<Person> passengerId, Link pickupLink, Link dropoffLink, double pickupTime, double submissionTime, AVRoute route, String mode) {
         this.id = id;
         this.passengerId = passengerId;
         this.pickupLink = pickupLink;
@@ -37,7 +34,6 @@ public class AVRequest implements PassengerRequest {
         this.route = route;
         this.submissionTime = submissionTime;
         this.mode = mode;
-        this.operatorId = operatorId;
     }
 
     @Override
@@ -93,9 +89,5 @@ public class AVRequest implements PassengerRequest {
     @Override
     public String getMode() {
         return mode;
-    }
-
-    public Id<AVOperator> getOperatorId() {
-        return operatorId;
     }
 }

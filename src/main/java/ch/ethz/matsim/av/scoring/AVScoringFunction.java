@@ -1,6 +1,7 @@
 package ch.ethz.matsim.av.scoring;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.events.Event;
@@ -9,27 +10,23 @@ import org.matsim.api.core.v01.events.PersonEntersVehicleEvent;
 import org.matsim.core.scoring.SumScoringFunction;
 import org.matsim.core.scoring.functions.ScoringParameters;
 
-import ch.ethz.matsim.av.financial.PriceCalculator;
 import ch.ethz.matsim.av.schedule.AVTransitEvent;
 
 public class AVScoringFunction implements SumScoringFunction.ArbitraryEventScoring {
     final static Logger log = Logger.getLogger(AVScoringFunction.class);
 
-    private final PriceCalculator priceCalculator;
-
     private AVScoringTrip scoringTrip = null;
     private double score = 0.0;
 
     private final ScoringParameters standardParameters;
-    private final AVScoringParameters avParameters;
+    private final Map<String, AVScoringParameters> avParameters;
 
-    private final List<String> modes;
+    private final Collection<String> modes;
 
-    public AVScoringFunction(List<String> modes, ScoringParameters standardParameters, AVScoringParameters avParameters, PriceCalculator priceCalculator) {
+    public AVScoringFunction(Collection<String> modes, ScoringParameters standardParameters, Map<String, AVScoringParameters> avParameters) {
         this.modes = modes;
         this.standardParameters = standardParameters;
         this.avParameters = avParameters;
-        this.priceCalculator = priceCalculator; // TODO: Move(d?) this to routing already!
     }
 
     private double getMarginalUtilityOfMoney() {
@@ -40,13 +37,22 @@ public class AVScoringFunction implements SumScoringFunction.ArbitraryEventScori
         return standardParameters.modeParams.get(mode).marginalUtilityOfTraveling_s;
     }
 
-    private double getMarginalUtilityOfWaiting(String mode) {
-        // TODO: Make this mode-dependent!
-        return avParameters.marginalUtilityOfWaiting_s;
+    private AVScoringParameters getModeParameters(String mode) {
+        AVScoringParameters parameters = avParameters.get(mode);
+
+        if (parameters != null) {
+            return parameters;
+        }
+
+        throw new IllegalStateException("No scoring parameters in AMoDeus defined for mode: " + mode);
     }
 
-    private double getStuckUtility() {
-        return avParameters.stuckUtility;
+    private double getMarginalUtilityOfWaiting(String mode) {
+        return getModeParameters(mode).marginalUtilityOfWaiting_s;
+    }
+
+    private double getStuckUtility(String mode) {
+        return getModeParameters(mode).stuckUtility;
     }
 
     @Override
@@ -93,18 +99,13 @@ public class AVScoringFunction implements SumScoringFunction.ArbitraryEventScori
     static int noPricingWarningCount = 100;
 
     private double computePricingScoring(AVScoringTrip trip) {
-        if (!Double.isNaN(trip.getPrice())) {
-            return -trip.getPrice() * getMarginalUtilityOfMoney();
-        } else {
-            double price = priceCalculator.calculatePrice(trip.getOperatorId(), trip.getDistance(), trip.getInVehicleTravelTime());
-            return -price * getMarginalUtilityOfMoney();
-        }
+        return -trip.getPrice() * getMarginalUtilityOfMoney();
     }
 
     @Override
     public void finish() {
         if (scoringTrip != null) {
-            score += getStuckUtility();
+            score += getStuckUtility(scoringTrip.getMode());
         }
     }
 

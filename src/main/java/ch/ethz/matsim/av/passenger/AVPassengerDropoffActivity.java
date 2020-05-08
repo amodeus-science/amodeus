@@ -9,7 +9,7 @@ import org.matsim.contrib.dvrp.schedule.StayTask;
 import org.matsim.contrib.dynagent.DynActivity;
 import org.matsim.contrib.dynagent.DynAgent;
 
-import ch.ethz.matsim.av.config.operator.TimingConfig;
+import ch.ethz.matsim.av.config.modal.TimingConfig;
 
 public class AVPassengerDropoffActivity implements DynActivity {
     private final PassengerEngine passengerEngine;

@@ -31,7 +31,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.opt.Pi;
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.router.AVRouter;
@@ -68,7 +68,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
     private final double[] networkBounds;
 
     protected RestrictedLinkCapacityDispatcher(Network network, //
-            Config config, OperatorConfig operatorConfig, //
+            Config config, AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, //
             MatsimAmodeusDatabase db, ParkingStrategy parkingStrategy, //
             ParkingCapacity avSpatialCapacityAmodeus) {
@@ -177,7 +177,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
             MatsimAmodeusDatabase db = inject.get(MatsimAmodeusDatabase.class);
 
             Network network = inject.getModal(Network.class);
-            OperatorConfig operatorConfig = inject.getModal(OperatorConfig.class);
+            AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);
             AVRouter router = inject.getModal(AVRouter.class);
 

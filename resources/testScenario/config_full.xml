@@ -2,9 +2,9 @@
 <!DOCTYPE config SYSTEM "http://www.matsim.org/files/dtd/config_v2.dtd">
 
 <config>
-    <module name="av">
-    	<parameterset type="operator">
-    		<param name="id" value="op1" />
+    <module name="amodeus">
+    	<parameterset type="mode">
+    		<param name="mode" value="av" />
 
     		<parameterset type="generator">
     			<param name="type" value="PopulationDensity" />

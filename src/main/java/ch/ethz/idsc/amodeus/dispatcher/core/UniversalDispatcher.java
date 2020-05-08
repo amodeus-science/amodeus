@@ -26,7 +26,7 @@ import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDriveTaskTracker;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationObjectCompiler;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.generator.AVGenerator;
@@ -47,7 +47,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
     private final Set<AVRequest> periodAssignedRequests = new HashSet<>();
     private final Set<AVRequest> periodPickedUpRequests = new HashSet<>();
 
-    protected UniversalDispatcher(Config config, OperatorConfig operatorConfig, //
+    protected UniversalDispatcher(Config config, AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, //
             EventsManager eventsManager, MatsimAmodeusDatabase db) {
         super(eventsManager, config, operatorConfig, travelTime, //

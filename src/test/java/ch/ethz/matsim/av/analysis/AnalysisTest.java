@@ -22,9 +22,9 @@ import org.matsim.core.config.groups.StrategyConfigGroup.StrategySettings;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.utils.io.IOUtils;
 
-import ch.ethz.matsim.av.config.AVConfigGroup;
 import ch.ethz.matsim.av.config.AVScoringParameterSet;
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
+import ch.ethz.matsim.av.config.AmodeusConfigGroup;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.framework.AVQSimModule;
 import ch.ethz.matsim.av.scenario.TestScenarioAnalyzer;
@@ -43,20 +43,20 @@ public class AnalysisTest {
 
     @Test
     public void testAVExample() {
-        AVConfigGroup avConfigGroup = new AVConfigGroup();
+        AmodeusConfigGroup avConfigGroup = new AmodeusConfigGroup();
 
         avConfigGroup.setPassengerAnalysisInterval(2);
         avConfigGroup.setVehicleAnalysisInterval(2);
         avConfigGroup.setEnableDistanceAnalysis(true);
 
-        AVScoringParameterSet scoringParams = avConfigGroup.getScoringParameters(null);
-        scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
-
-        OperatorConfig operatorConfig = new OperatorConfig();
+        AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
         operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
         operatorConfig.getPricingConfig().setPricePerKm(0.48);
         operatorConfig.getPricingConfig().setSpatialBillingInterval(1000.0);
-        avConfigGroup.addOperator(operatorConfig);
+        avConfigGroup.addMode(operatorConfig);
+
+        AVScoringParameterSet scoringParams = operatorConfig.getScoringParameters(null);
+        scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
 
         Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
         Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
@@ -79,26 +79,26 @@ public class AnalysisTest {
         controler.addOverridingModule(new AVModule());
         controler.addOverridingQSimModule(new AVQSimModule());
 
-        controler.configureQSimComponents(AVQSimModule::configureComponents);
+        controler.configureQSimComponents(AVQSimModule.activateModes(avConfigGroup));
 
         TestScenarioAnalyzer analyzer = new TestScenarioAnalyzer();
         controler.addOverridingModule(analyzer);
 
         controler.run();
 
-        Assert.assertEquals(4, countLines("test_output/output/distance_default.csv"));
+        Assert.assertEquals(4, countLines("test_output/output/distance_av.csv"));
 
-        Assert.assertEquals(101, countLines("test_output/output/ITERS/it.0/0.av_passenger_rides.csv"));
-        Assert.assertEquals(501, countLines("test_output/output/ITERS/it.0/0.av_vehicle_activities.csv"));
-        Assert.assertEquals(201, countLines("test_output/output/ITERS/it.0/0.av_vehicle_movements.csv"));
+        Assert.assertEquals(101, countLines("test_output/output/ITERS/it.0/0.amodeus_passenger_rides.csv"));
+        Assert.assertEquals(501, countLines("test_output/output/ITERS/it.0/0.amodeus_vehicle_activities.csv"));
+        Assert.assertEquals(201, countLines("test_output/output/ITERS/it.0/0.amodeus_vehicle_movements.csv"));
 
-        Assert.assertEquals(101, countLines("test_output/output/ITERS/it.1/1.av_passenger_rides.csv"));
-        Assert.assertEquals(501, countLines("test_output/output/ITERS/it.1/1.av_vehicle_activities.csv"));
-        Assert.assertEquals(201, countLines("test_output/output/ITERS/it.1/1.av_vehicle_movements.csv"));
+        Assert.assertEquals(101, countLines("test_output/output/ITERS/it.1/1.amodeus_passenger_rides.csv"));
+        Assert.assertEquals(501, countLines("test_output/output/ITERS/it.1/1.amodeus_vehicle_activities.csv"));
+        Assert.assertEquals(201, countLines("test_output/output/ITERS/it.1/1.amodeus_vehicle_movements.csv"));
 
-        Assert.assertEquals(101, countLines("test_output/output/ITERS/it.2/2.av_passenger_rides.csv"));
-        Assert.assertEquals(501, countLines("test_output/output/ITERS/it.2/2.av_vehicle_activities.csv"));
-        Assert.assertEquals(201, countLines("test_output/output/ITERS/it.2/2.av_vehicle_movements.csv"));
+        Assert.assertEquals(101, countLines("test_output/output/ITERS/it.2/2.amodeus_passenger_rides.csv"));
+        Assert.assertEquals(501, countLines("test_output/output/ITERS/it.2/2.amodeus_vehicle_activities.csv"));
+        Assert.assertEquals(201, countLines("test_output/output/ITERS/it.2/2.amodeus_vehicle_movements.csv"));
     }
 
     private int countLines(String path) {
@@ -129,12 +129,12 @@ public class AnalysisTest {
 
         safeFileAssert("test_output/output1/ITERS/it.0/0.events.xml.gz", "test_output/output2/ITERS/it.0/0.events.xml.gz");
         safeFileAssert("test_output/output1/ITERS/it.2/2.events.xml.gz", "test_output/output2/ITERS/it.2/2.events.xml.gz");
-        safeFileAssert("test_output/output1/ITERS/it.0/0.av_passenger_rides.csv", "test_output/output2/ITERS/it.0/0.av_passenger_rides.csv");
-        safeFileAssert("test_output/output1/ITERS/it.2/2.av_passenger_rides.csv", "test_output/output2/ITERS/it.2/2.av_passenger_rides.csv");
-        safeFileAssert("test_output/output1/ITERS/it.0/0.av_vehicle_movements.csv", "test_output/output2/ITERS/it.0/0.av_vehicle_movements.csv");
-        safeFileAssert("test_output/output1/ITERS/it.2/2.av_vehicle_movements.csv", "test_output/output2/ITERS/it.2/2.av_vehicle_movements.csv");
-        safeFileAssert("test_output/output1/ITERS/it.0/0.av_vehicle_activities.csv", "test_output/output2/ITERS/it.0/0.av_vehicle_activities.csv");
-        safeFileAssert("test_output/output1/ITERS/it.2/2.av_vehicle_activities.csv", "test_output/output2/ITERS/it.2/2.av_vehicle_activities.csv");
+        safeFileAssert("test_output/output1/ITERS/it.0/0.amodeus_passenger_rides.csv", "test_output/output2/ITERS/it.0/0.amodeus_passenger_rides.csv");
+        safeFileAssert("test_output/output1/ITERS/it.2/2.amodeus_passenger_rides.csv", "test_output/output2/ITERS/it.2/2.amodeus_passenger_rides.csv");
+        safeFileAssert("test_output/output1/ITERS/it.0/0.amodeus_vehicle_movements.csv", "test_output/output2/ITERS/it.0/0.amodeus_vehicle_movements.csv");
+        safeFileAssert("test_output/output1/ITERS/it.2/2.amodeus_vehicle_movements.csv", "test_output/output2/ITERS/it.2/2.amodeus_vehicle_movements.csv");
+        safeFileAssert("test_output/output1/ITERS/it.0/0.amodeus_vehicle_activities.csv", "test_output/output2/ITERS/it.0/0.amodeus_vehicle_activities.csv");
+        safeFileAssert("test_output/output1/ITERS/it.2/2.amodeus_vehicle_activities.csv", "test_output/output2/ITERS/it.2/2.amodeus_vehicle_activities.csv");
     }
 
     private void safeFileAssert(String pathA, String pathB) throws IOException {
@@ -144,20 +144,20 @@ public class AnalysisTest {
     }
 
     private void runRepro(String path) {
-        AVConfigGroup avConfigGroup = new AVConfigGroup();
+        AmodeusConfigGroup avConfigGroup = new AmodeusConfigGroup();
 
         avConfigGroup.setPassengerAnalysisInterval(2);
         avConfigGroup.setVehicleAnalysisInterval(2);
         avConfigGroup.setEnableDistanceAnalysis(true);
 
-        AVScoringParameterSet scoringParams = avConfigGroup.getScoringParameters(null);
-        scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
-
-        OperatorConfig operatorConfig = new OperatorConfig();
+        AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
         operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
         operatorConfig.getPricingConfig().setPricePerKm(0.48);
         operatorConfig.getPricingConfig().setSpatialBillingInterval(1000.0);
-        avConfigGroup.addOperator(operatorConfig);
+        avConfigGroup.addMode(operatorConfig);
+
+        AVScoringParameterSet scoringParams = operatorConfig.getScoringParameters(null);
+        scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
 
         Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
         Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
@@ -181,25 +181,25 @@ public class AnalysisTest {
         controler.addOverridingModule(new AVModule());
         controler.addOverridingQSimModule(new AVQSimModule());
 
-        controler.configureQSimComponents(AVQSimModule::configureComponents);
+        controler.configureQSimComponents(AVQSimModule.activateModes(avConfigGroup));
 
         TestScenarioAnalyzer analyzer = new TestScenarioAnalyzer();
         controler.addOverridingModule(analyzer);
 
         controler.run();
 
-        Assert.assertEquals(4, countLines("test_output/" + path + "/distance_default.csv"));
+        Assert.assertEquals(4, countLines("test_output/" + path + "/distance_av.csv"));
 
-        Assert.assertEquals(101, countLines("test_output/" + path + "/ITERS/it.0/0.av_passenger_rides.csv"));
-        Assert.assertEquals(501, countLines("test_output/" + path + "/ITERS/it.0/0.av_vehicle_activities.csv"));
-        Assert.assertEquals(201, countLines("test_output/" + path + "/ITERS/it.0/0.av_vehicle_movements.csv"));
+        Assert.assertEquals(101, countLines("test_output/" + path + "/ITERS/it.0/0.amodeus_passenger_rides.csv"));
+        Assert.assertEquals(501, countLines("test_output/" + path + "/ITERS/it.0/0.amodeus_vehicle_activities.csv"));
+        Assert.assertEquals(201, countLines("test_output/" + path + "/ITERS/it.0/0.amodeus_vehicle_movements.csv"));
 
-        Assert.assertEquals(101, countLines("test_output/" + path + "/ITERS/it.1/1.av_passenger_rides.csv"));
-        Assert.assertEquals(501, countLines("test_output/" + path + "/ITERS/it.1/1.av_vehicle_activities.csv"));
-        Assert.assertEquals(201, countLines("test_output/" + path + "/ITERS/it.1/1.av_vehicle_movements.csv"));
+        Assert.assertEquals(101, countLines("test_output/" + path + "/ITERS/it.1/1.amodeus_passenger_rides.csv"));
+        Assert.assertEquals(501, countLines("test_output/" + path + "/ITERS/it.1/1.amodeus_vehicle_activities.csv"));
+        Assert.assertEquals(201, countLines("test_output/" + path + "/ITERS/it.1/1.amodeus_vehicle_movements.csv"));
 
-        Assert.assertEquals(101, countLines("test_output/" + path + "/ITERS/it.2/2.av_passenger_rides.csv"));
-        Assert.assertEquals(501, countLines("test_output/" + path + "/ITERS/it.2/2.av_vehicle_activities.csv"));
-        Assert.assertEquals(201, countLines("test_output/" + path + "/ITERS/it.2/2.av_vehicle_movements.csv"));
+        Assert.assertEquals(101, countLines("test_output/" + path + "/ITERS/it.2/2.amodeus_passenger_rides.csv"));
+        Assert.assertEquals(501, countLines("test_output/" + path + "/ITERS/it.2/2.amodeus_vehicle_activities.csv"));
+        Assert.assertEquals(201, countLines("test_output/" + path + "/ITERS/it.2/2.amodeus_vehicle_movements.csv"));
     }
 }

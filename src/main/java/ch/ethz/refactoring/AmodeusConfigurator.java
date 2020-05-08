@@ -19,6 +19,7 @@ import ch.ethz.idsc.amodeus.matsim.mod.AmodeusVirtualNetworkModule;
 import ch.ethz.idsc.amodeus.net.DatabaseModule;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
+import ch.ethz.matsim.av.config.AmodeusConfigGroup;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.framework.AVQSimModule;
 
@@ -37,7 +38,7 @@ public class AmodeusConfigurator {
         controller.addOverridingModule(new AmodeusRouterModule());
 
         controller.addOverridingQSimModule(new AmodeusQSimModule());
-        controller.configureQSimComponents(AVQSimModule::configureComponents);
+        controller.configureQSimComponents(AVQSimModule.activateModes(AmodeusConfigGroup.get(controller.getConfig())));
 
         controller.addOverridingModule(new AbstractModule() { // REFACTOR ? Not sure if this si still needed
             @Override

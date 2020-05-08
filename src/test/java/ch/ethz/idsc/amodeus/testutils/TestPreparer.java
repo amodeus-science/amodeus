@@ -22,8 +22,8 @@ import ch.ethz.idsc.amodeus.traveldata.StaticTravelData;
 import ch.ethz.idsc.amodeus.traveldata.StaticTravelDataCreator;
 import ch.ethz.idsc.amodeus.traveldata.TravelDataIO;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
-import ch.ethz.matsim.av.config.AVConfigGroup;
-import ch.ethz.matsim.av.config.operator.GeneratorConfig;
+import ch.ethz.matsim.av.config.AmodeusConfigGroup;
+import ch.ethz.matsim.av.config.modal.GeneratorConfig;
 
 public class TestPreparer {
 
@@ -44,11 +44,11 @@ public class TestPreparer {
         // load Settings from IDSC Options
         File configFile = new File(scenarioOptions.getPreparerConfigName());
 
-        AVConfigGroup avConfigGroup = new AVConfigGroup();
+        AmodeusConfigGroup avConfigGroup = new AmodeusConfigGroup();
         Config config = ConfigUtils.loadConfig(configFile.getAbsolutePath(), avConfigGroup);
         Scenario scenario = ScenarioUtils.loadScenario(config);
         GeneratorConfig avGeneratorConfig = //
-                avConfigGroup.getOperatorConfigs().values().iterator().next().getGeneratorConfig();
+                avConfigGroup.getModes().values().iterator().next().getGeneratorConfig();
         int numRt = avGeneratorConfig.getNumberOfVehicles();
         int endTime = (int) config.qsim().getEndTime().seconds();
 
