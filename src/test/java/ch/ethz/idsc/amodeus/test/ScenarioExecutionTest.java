@@ -75,7 +75,7 @@ public class ScenarioExecutionTest {
         testPreparer = TestPreparer.run(workingDirectory);
 
         // run scenario server
-        testServer = TestServer.run().on(workingDirectory);
+        testServer = TestServer.run(workingDirectory);
 
         // run scenario viewer
         if (!UserName.is("travis"))

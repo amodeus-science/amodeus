@@ -32,29 +32,25 @@ import ch.ethz.refactoring.AmodeusConfigurator;
 
 public class TestServer {
 
-    public static TestServer run() {
-        return new TestServer();
+    public static TestServer run(File workingDirectory) throws Exception {
+        TestServer testServer = new TestServer(workingDirectory);
+        testServer.simulate();
+        return testServer;
     }
 
-    private File workingDirectory;
-    private ScenarioOptions scenarioOptions;
+    private final File workingDirectory;
     private File configFile;
     private AnalysisTestExport ate;
+    protected final ScenarioOptions scenarioOptions;
 
-    private TestServer() {
-        // ---
-    }
-
-    public TestServer on(File workingDirectory) throws Exception {
+    protected TestServer(File workingDirectory) throws Exception {
         this.workingDirectory = workingDirectory;
         System.out.println(workingDirectory);
         GlobalAssert.that(workingDirectory.isDirectory());
         scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
-        simulate();
-        return this;
     }
 
-    private void simulate() throws Exception {
+    protected void simulate() throws Exception {
         boolean waitForClients = scenarioOptions.getBoolean("waitForClients");
         configFile = new File(scenarioOptions.getSimulationConfigName());
         StaticHelper.setup();
