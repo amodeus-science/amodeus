@@ -6,15 +6,14 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
 import java.util.Objects;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
-import org.matsim.api.core.v01.network.Link;
+import org.junit.runners.MethodSorters;
 import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.analysis.AnalysisConstants;
@@ -43,10 +42,10 @@ import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.Round;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING) // junit 5 would provide more elegant solution
 public class SharedScenarioExecutionTest {
     private static final Scalar ZERO_KM = Quantity.of(0, "km");
     // ---
-    private static TestPreparer testPreparer;
     private static SharedTestServer testServer;
 
     @BeforeClass
@@ -62,21 +61,17 @@ public class SharedScenarioExecutionTest {
         File helperDirectory = //
                 new File(Locate.repoFolder(ScenarioExecutionTest.class, "amodeus"), "resources/helperFiles");
         CopyFiles.now(helperDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath(), //
-                Arrays.asList("LPOptions.properties"), true);
+                Collections.singletonList("LPOptions.properties"), true);
 
-        // run scenario preparer
-        testPreparer = TestPreparer.run(workingDirectory);
-
-        // run scenario server
-        testServer = SharedTestServer.run(workingDirectory);
-
-        Map<String, Link> map = new HashMap<>();
-        testPreparer.getPreparedNetwork().getLinks().forEach((k, v) -> map.put(k.toString(), v));
+        testServer = new SharedTestServer(workingDirectory);
     }
 
     @Test
-    public void testPreparer() throws Exception {
+    public void testA_Preparer() throws Exception {
         System.out.print("Preparer Test:\t");
+
+        // run scenario preparer
+        TestPreparer testPreparer = TestPreparer.run(testServer.getWorkingDirectory());
 
         /** setup of scenario */
         File preparedPopulationFile = new File("preparedPopulation.xml");
@@ -95,7 +90,12 @@ public class SharedScenarioExecutionTest {
     }
 
     @Test
-    public void testServer() throws Exception {
+    public void testB_Server() throws Exception {
+        System.out.print("Server Test:\t");
+
+        // run scenario server
+        testServer.simulate();
+
         /** scenario options */
         File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
@@ -112,7 +112,7 @@ public class SharedScenarioExecutionTest {
     }
 
     @Test
-    public void testAnalysis() throws Exception {
+    public void testC_Analysis() throws Exception {
         System.out.print("Analysis Test:\t");
 
         AnalysisTestExport ate = testServer.getAnalysisTestExport();
