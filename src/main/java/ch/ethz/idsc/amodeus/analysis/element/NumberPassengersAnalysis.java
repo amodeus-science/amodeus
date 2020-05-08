@@ -1,9 +1,11 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.analysis.element;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import ch.ethz.idsc.amodeus.analysis.report.TotalValueAppender;
@@ -33,6 +35,11 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
 
     /** Helper members */
     private final Map<Integer, Integer> sharedOthersMap = new HashMap<>();
+    private final List<Integer> vehicleIndices;
+
+    public NumberPassengersAnalysis(Set<Integer> vehicleIndices) {
+        this.vehicleIndices = new ArrayList<>(vehicleIndices);
+    }
 
     @Override
     public void register(SimulationObject simulationObject) {
@@ -47,7 +54,7 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
         for (VehicleContainer vehicleContainer : simulationObject.vehicles) {
             int numberPassenger = (map.containsKey(vehicleContainer.vehicleIndex)) ? //
                     map.get(vehicleContainer.vehicleIndex).size() : 0;
-            numberPassengers.set(RealScalar.of(numberPassenger), vehicleContainer.vehicleIndex);
+            numberPassengers.set(RealScalar.of(numberPassenger), vehicleIndices.indexOf(vehicleContainer.vehicleIndex));
         }
         Tensor numPassenger = BinCounts.of(numberPassengers);
         passengerDistribution.append(numPassenger);

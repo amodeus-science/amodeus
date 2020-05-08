@@ -13,7 +13,6 @@ import java.util.Objects;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
@@ -113,7 +112,6 @@ public class SharedScenarioExecutionTest {
     }
 
     @Test
-    @Ignore // TODO: Unignore this! (DistanceElement issue)
     public void testAnalysis() throws Exception {
         System.out.print("Analysis Test:\t");
 
@@ -136,13 +134,13 @@ public class SharedScenarioExecutionTest {
         assertTrue(Scalars.lessEquals(ZERO_KM, ate.getDistancElement().totalDistance));
         scalarAssert.add((Scalar) Quantity.of(1360.62140, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
         assertTrue(Scalars.lessEquals(ZERO_KM, ate.getDistancElement().totalDistanceWtCst));
-        scalarAssert.add((Scalar) Quantity.of(1061.15682, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
+        scalarAssert.add((Scalar) Quantity.of(1060.97575, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
         assertTrue(Scalars.lessEquals(ZERO_KM, ate.getDistancElement().totalDistancePicku));
         scalarAssert.add((Scalar) Quantity.of(272.65257, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistancePicku.map(Round._5));
         assertTrue(Scalars.lessEquals(ZERO_KM, ate.getDistancElement().totalDistanceRebal));
         scalarAssert.add((Scalar) Quantity.of(0.00000, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRebal.map(Round._5));
         assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistanceRatio));
-        scalarAssert.add((Scalar) RealScalar.of(0.77991).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRatio.map(Round._5));
+        scalarAssert.add((Scalar) RealScalar.of(0.77977).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRatio.map(Round._5));
         scalarAssert.consolidate();
 
         ate.getDistancElement().totalDistancesPerVehicle.flatten(-1).forEach(s -> //
@@ -163,7 +161,7 @@ public class SharedScenarioExecutionTest {
         assertTrue(Scalars.lessEquals(Quantity.of(0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1)));
 
         /** number of passengers */
-        NumberPassengersAnalysis npa = testServer.numberPassengersAnalysis();
+        NumberPassengersAnalysis npa = ate.getNumberPassengersAnalysis();
         assertEquals(Total.of(npa.getSharedOthersDistribution()).Get().number().intValue(), npa.getSharedOthersPerRequest().length());
 
         /** presence of plot files */
