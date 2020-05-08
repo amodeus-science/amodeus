@@ -22,7 +22,7 @@ public class AnalysisSummary implements Serializable {
     private final StatusDistributionElement statusDistribution = new StatusDistributionElement();
     private final DistanceElement distanceElement;
     private final TravelTimeAnalysis travelTimeAnalysis = new TravelTimeAnalysis();
-    private final NumberPassengersAnalysis numberPassengersAnalysis = new NumberPassengersAnalysis();
+    private final NumberPassengersAnalysis numberPassengersAnalysis;
 
     /** @param numVehicles - number of vehicles
      * @param size - not used as of now
@@ -34,6 +34,7 @@ public class AnalysisSummary implements Serializable {
         reqInfoElement = new RequestRobotaxiInformationElement();
         distanceElement = new DistanceElement(vehicleIndices, db, reqInfoElement);
         scenarioParameters = new ScenarioParameters(scenarioOptions);
+        numberPassengersAnalysis = new NumberPassengersAnalysis(vehicleIndices);
     }
 
     public ScenarioParameters getScenarioParameters() {

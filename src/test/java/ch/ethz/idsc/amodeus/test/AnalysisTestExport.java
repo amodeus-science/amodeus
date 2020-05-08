@@ -6,6 +6,7 @@ import java.io.File;
 import ch.ethz.idsc.amodeus.analysis.AnalysisSummary;
 import ch.ethz.idsc.amodeus.analysis.element.AnalysisExport;
 import ch.ethz.idsc.amodeus.analysis.element.DistanceElement;
+import ch.ethz.idsc.amodeus.analysis.element.NumberPassengersAnalysis;
 import ch.ethz.idsc.amodeus.analysis.element.RequestRobotaxiInformationElement;
 import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionElement;
 import ch.ethz.idsc.amodeus.analysis.element.TravelTimeAnalysis;
@@ -17,6 +18,7 @@ public class AnalysisTestExport implements AnalysisExport {
     private StatusDistributionElement statusDistribution;
     private DistanceElement distanceElement;
     private TravelTimeAnalysis travelTimeAnalysis;
+    private NumberPassengersAnalysis numberPassengersAnalysis;
 
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
@@ -24,6 +26,7 @@ public class AnalysisTestExport implements AnalysisExport {
         statusDistribution = analysisSummary.getStatusDistribution();
         distanceElement = analysisSummary.getDistanceElement();
         travelTimeAnalysis = analysisSummary.getTravelTimeAnalysis();
+        numberPassengersAnalysis = analysisSummary.getNumberPassengersAnalysis();
     }
 
     public RequestRobotaxiInformationElement getSimulationInformationElement() {
@@ -42,4 +45,7 @@ public class AnalysisTestExport implements AnalysisExport {
         return travelTimeAnalysis;
     }
 
+    public NumberPassengersAnalysis getNumberPassengersAnalysis() {
+        return numberPassengersAnalysis;
+    }
 }
