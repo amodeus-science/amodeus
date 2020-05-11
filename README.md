@@ -1,4 +1,4 @@
-# cd.ethz.idsc.amodeus <a href="https://travis-ci.org/idsc-frazzoli/amodeus"><img src="https://travis-ci.org/idsc-frazzoli/amodeus.svg?branch=master" alt="Build Status"></a>
+# cd.ethz.idsc.amodeus <a href="https://travis-ci.org/amodeus-science/amodeus"><img src="https://travis-ci.org/amodeus-science/amodeus.svg?branch=master" alt="Build Status"></a>
 
 Autonomous mobility-on-demand simulation library, version `1.9.3`
 
@@ -13,7 +13,7 @@ Please let us know if you'd like to contribute!
 This repository is a library that allows the simulation of autonomous mobility-on-demand (AMoD) system including their fleet management algorithms in the multi-agent transportation simulation environment MATSim.
 
 Try it, orchestrate your own fleet of amod-taxis!
-To get started, install and run [amod](https://github.com/idsc-frazzoli/amod).
+To get started, install and run [amod](https://github.com/amodeus-science/amod).
 Here is a [visualization](https://www.youtube.com/watch?v=QkFtIQQSHto).
 
 Our website is [amodeus.science](https://www.amodeus.science/).
