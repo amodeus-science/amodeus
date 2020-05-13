@@ -8,25 +8,19 @@ import org.matsim.api.core.v01.population.Person;
 import org.matsim.core.router.util.TravelTime;
 import org.matsim.vehicles.Vehicle;
 
-import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
-
 public class LSDataTravelTime implements TravelTime {
-
     private final LinkSpeedDataContainer lsData;
-    private final MatsimAmodeusDatabase db;
 
     // TODO @clruch see if can be converted into 1 class together with
     // ch.ethz.idsc.amodeus.linkspeed.AmodeusLinkSpeedCalculator
-    public LSDataTravelTime(LinkSpeedDataContainer lsData, MatsimAmodeusDatabase db) {
+    public LSDataTravelTime(LinkSpeedDataContainer lsData) {
         this.lsData = Objects.requireNonNull(lsData);
-        this.db = Objects.requireNonNull(db);
     }
 
     @Override
     public double getLinkTravelTime(Link link, double time, Person person, Vehicle vehicle) {
-        Integer linkID = LinkIndex.fromLink(db, link);
         double speed = link.getFreespeed();
-        LinkSpeedTimeSeries timeSeries = lsData.getLinkMap().get(linkID);
+        LinkSpeedTimeSeries timeSeries = lsData.get(link);
         if (Objects.nonNull(timeSeries))
             speed = timeSeries.getSpeedsFloor((int) time);
         return link.getLength() / speed;
