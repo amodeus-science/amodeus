@@ -1,7 +1,12 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.gfx;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.util.LinkedList;
@@ -22,14 +27,10 @@ import ch.ethz.idsc.amodeus.util.nd.NdCluster;
 import ch.ethz.idsc.amodeus.util.nd.NdEntry;
 import ch.ethz.idsc.amodeus.util.nd.NdMap;
 import ch.ethz.idsc.amodeus.util.nd.NdTreeMap;
-import ch.ethz.idsc.amodeus.view.jmapviewer.Coordinate;
-import ch.ethz.idsc.amodeus.view.jmapviewer.JMapViewer;
-import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.ICoordinate;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.sca.ArcTan;
-import org.matsim.api.core.v01.Coord;
 
 /* package */ class Street {
     final OsmLink osmLink;
@@ -67,8 +68,8 @@ public class LinkLayer extends ViewerLayer {
         super(amodeusComponent);
     }
 
-    @Override protected void paint(Graphics2D graphics, SimulationObject ref) {
-
+    @Override
+    protected void paint(Graphics2D graphics, SimulationObject ref) {
         if (drawLinks) {
             List<Street> list = new LinkedList<>();
             Dimension dimension = amodeusComponent.getSize();
@@ -130,7 +131,8 @@ public class LinkLayer extends ViewerLayer {
         }
     }
 
-    @Override protected void hud(Graphics2D graphics, SimulationObject ref) {
+    @Override
+    protected void hud(Graphics2D graphics, SimulationObject ref) {
         if (drawLinks) {
             if (0 < count)
                 amodeusComponent.append("%5d/%5d streets", count, amodeusComponent.db.getOsmLinksSize());
@@ -150,7 +152,8 @@ public class LinkLayer extends ViewerLayer {
         amodeusComponent.repaint();
     }
 
-    @Override protected void createPanel(RowPanel rowPanel) {
+    @Override
+    protected void createPanel(RowPanel rowPanel) {
         {
             final JCheckBox jCheckBox = new JCheckBox("streets");
             jCheckBox.setToolTipText("each link as thin line");
@@ -170,7 +173,8 @@ public class LinkLayer extends ViewerLayer {
             rowPanel.add(jTextArea);
         }
         LazyMouseListener lazyMouseListener = new LazyMouseListener() {
-            @Override public void lazyClicked(MouseEvent mouseEvent) {
+            @Override
+            public void lazyClicked(MouseEvent mouseEvent) {
                 // get mouse position on screen
                 Point location = mouseEvent.getLocationOnScreen();
 
@@ -189,12 +193,14 @@ public class LinkLayer extends ViewerLayer {
         lazyMouse.addListenersTo(amodeusComponent);
     }
 
-    @Override public void updateSettings(ViewerSettings settings) {
+    @Override
+    public void updateSettings(ViewerSettings settings) {
         settings.drawLinks = drawLinks;
         settings.drawLabel = drawLabel;
     }
 
-    @Override public void loadSettings(ViewerSettings settings) {
+    @Override
+    public void loadSettings(ViewerSettings settings) {
         setDrawLinks(settings.drawLinks);
         setDrawLabel(settings.drawLabel);
     }
