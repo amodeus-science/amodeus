@@ -3,7 +3,6 @@ package ch.ethz.idsc.amodeus.linkspeed;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Objects;
 import java.util.concurrent.Future;
 
 import org.matsim.api.core.v01.network.Network;
@@ -18,7 +17,6 @@ import org.matsim.core.router.util.TravelTime;
 import org.matsim.vehicles.Vehicle;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.matsim.av.plcpc.DefaultParallelLeastCostPathCalculator;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
@@ -53,11 +51,9 @@ public class TaxiTravelTimeRouter implements AVRouter {
         @Override
         public AVRouter createRouter(InstanceGetter inject) {
             GlobalConfigGroup config = inject.get(GlobalConfigGroup.class);
-            MatsimAmodeusDatabase db = inject.get(MatsimAmodeusDatabase.class);
             Network network = inject.getModal(Network.class);
 
-            Objects.requireNonNull(db);
-            TravelTime travelTime = new LSDataTravelTime(lsData, db);
+            TravelTime travelTime = new LSDataTravelTime(lsData);
 
             return new TaxiTravelTimeRouter(DefaultParallelLeastCostPathCalculator.create(config.getNumberOfThreads(), //
                     new DijkstraFactory(), network, new OnlyTimeDependentTravelDisutility(travelTime), travelTime));
