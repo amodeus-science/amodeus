@@ -42,7 +42,6 @@ import org.matsim.vehicles.VehicleUtils;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AVScoringParameterSet;
 import ch.ethz.matsim.av.config.AmodeusConfigGroup;
 import ch.ethz.matsim.av.config.AmodeusModeConfig;
@@ -188,17 +187,9 @@ public class TestScenario {
 
         @Override
         public AVGenerator createGenerator(InstanceGetter inject) {
-            GlobalAssert.that(false);
-            // TODO @sebastian this was inserted as otherwise there were errors
-            // the old version below was commented out
-            return null;
+            Link link = inject.getModal(Network.class).getLinks().get(linkId);
+            return new SingleVehicleGenerator(link, capacity);
         }
-
-        // @Override
-        // public AVGenerator createGenerator(OperatorConfig operatorConfig, Network network, VehicleType vehicleType) {
-        // Link link = network.getLinks().get(linkId);
-        // return new SingleVehicleGenerator(link, capacity);
-        // }
     }
 
     static public AmodeusConfigGroup createConfig() {
@@ -254,9 +245,8 @@ public class TestScenario {
 
         @Override
         public void handleEvent(PersonArrivalEvent event) {
-            if (!event.getPersonId().toString().equals("vehicle") && event.getLegMode().equals("av")) {
+            if (!event.getPersonId().toString().equals("vehicle") && event.getLegMode().equals("av"))
                 times.add(event.getTime());
-            }
         }
     }
 

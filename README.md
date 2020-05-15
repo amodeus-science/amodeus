@@ -1,19 +1,19 @@
-# cd.ethz.idsc.amodeus <a href="https://travis-ci.org/idsc-frazzoli/amodeus"><img src="https://travis-ci.org/idsc-frazzoli/amodeus.svg?branch=master" alt="Build Status"></a>
+# cd.ethz.idsc.amodeus <a href="https://travis-ci.org/amodeus-science/amodeus"><img src="https://travis-ci.org/amodeus-science/amodeus.svg?branch=master" alt="Build Status"></a>
 
 Autonomous mobility-on-demand simulation library, version `1.9.3`
 
-## IMPORTANT NOTICE
+## Admins
 
-We will soon discuss the next steps of development related to the amodeus library, among other things the future location of the repository.
-If you are regularly using the library and would like to communicate any input or suggestions, please contact me until April 26, 2020 on clruch at idsc.mavt.ethz.ch.
+AMoDeus is jointly maintained and further developed by the Admins Christian Fluri (ETH Zürich), Joel Gächter (ETH Zürich), Sebastian Hörl (ETH  Zürich), Claudio Ruch, Jan Hakenberg, ChengQi Lu (TU Berlin), and Marc Albert (nuTonomy). 
 
+Please let us know if you'd like to contribute!
 
 ## Purpose
 
 This repository is a library that allows the simulation of autonomous mobility-on-demand (AMoD) system including their fleet management algorithms in the multi-agent transportation simulation environment MATSim.
 
 Try it, orchestrate your own fleet of amod-taxis!
-To get started, install and run [amod](https://github.com/idsc-frazzoli/amod).
+To get started, install and run [amod](https://github.com/amodeus-science/amod).
 Here is a [visualization](https://www.youtube.com/watch?v=QkFtIQQSHto).
 
 Our website is [amodeus.science](https://www.amodeus.science/).
@@ -88,6 +88,21 @@ Specify `repository` and `dependency` of the amodeus library in the `pom.xml` fi
 </dependencies>
 ```
 The source code is attached to every release.
+
+## Literature
+
+AMoDeus was originally introduced in the paper 
+* *AMoDeus, a simulation- based testbed for autonomous mobility-on-demand systems* by Ruch, C., Hörl, S., Frazzoli, E., in 21st International Conference on Intelligent Transportation Systems (ITSC), pages 3639–3644, 2018.
+
+Since then, the library has been used for various scientific contributions, including:
+
+* *Quantifying the efficiency of ride sharing* by Ruch, C., Lu, C., Sieber, L., and Frazzoli, in IEEE Transactions on Intelligent Transportation Systems, 10.1109/TITS.2020.2990202, 2020
+* *Improved public transportation in rural areas with self-driving cars: A study on the operation of Swiss train lines.* by Sieber, L., Ruch, C., Hörl, S., Axhausen, K.W., and Frazzoli, E. in Transportation Research Part A: Policy and Practice, 134:35–51, 2020
+* *Fleet operational policies for automated mobility: A simulation assessment for Zurich* by Hörl, S., Ruch, C., Becker, F., Frazzoli, E., and Axhausen, K, in Transportation Research Part C: Emerging Technologies, 102:20–31, 2019
+* *Learning to operate a fleet of cars* by Fluri, C., Ruch, C. Zilly, J., and Frazzoli, E., . In 2019 IEEE Intelligent Transportation Systems Conference (ITSC), pages 2292–2298. IEEE, 2019
+* *Imbalance in mobility-on-demand systems: A stochastic model and distributed control approach* by Albert, M., Ruch, C., and Frazzoli, E. in ACM Transactions on Spatial Algorithms and Systems (TSAS), 5(2):13, 2019
+* *Scalable model predictive control for autonomous mobility-on-demand systems* by Carron, A., Seccamonte, F., Ruch, C., Frazzoli, E., and Zeilinger, M., in IEEE Transactions on Control Systems Technology, pages 1–10, 2019
+* *The value of coordination in one-way mobility-on-demand systems* by Ruch, C., Richards, S., and Frazzoli, in IEEE Transactions on Network Science and Engineering, 10.1109/TNSE.2019.2912078, 2019
 
 
 ## Misc

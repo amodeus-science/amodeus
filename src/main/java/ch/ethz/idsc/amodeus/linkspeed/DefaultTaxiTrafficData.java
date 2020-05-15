@@ -7,23 +7,17 @@ import org.matsim.api.core.v01.network.Link;
 
 import com.google.inject.Singleton;
 
-import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
-
 @Singleton
 public class DefaultTaxiTrafficData implements TaxiTrafficData {
-
     private final LinkSpeedDataContainer lsData;
-    private final MatsimAmodeusDatabase db;
 
-    public DefaultTaxiTrafficData(LinkSpeedDataContainer lsData, MatsimAmodeusDatabase db) {
-        this.db = db;
+    public DefaultTaxiTrafficData(LinkSpeedDataContainer lsData) {
         this.lsData = Objects.requireNonNull(lsData);
     }
 
     @Override
     public double getTrafficSpeed(Link link, double now) {
-        Integer index = db.getLinkIndex(link);
-        LinkSpeedTimeSeries series = lsData.getLinkMap().get(index);
+        LinkSpeedTimeSeries series = lsData.get(link);
         Double speed = link.getFreespeed();
         if (Objects.nonNull(series)) {
             Double trafficSpeed = series.getSpeedsFloor((int) now);

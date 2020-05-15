@@ -12,17 +12,17 @@ import ch.ethz.matsim.av.config.AmodeusConfigGroup;
 
 public class SharedTestServer extends TestServer {
 
-    public static SharedTestServer run(File workingDirectory) throws Exception {
-        SharedTestServer testServer = new SharedTestServer(workingDirectory);
-        testServer.simulate();
-        return testServer;
+    public SharedTestServer(File workingDirectory) throws Exception {
+        super(workingDirectory);
     }
 
-    private SharedTestServer(File workingDirectory) throws Exception {
-        super(workingDirectory);
+    @Override
+    public void simulate() throws Exception {
+        // change dispatcher
         Config config = ConfigUtils.loadConfig(scenarioOptions.getSimulationConfigName(), new DvrpConfigGroup(), new AmodeusConfigGroup());
         AmodeusConfigGroup.get(config).getModes().values()//
                 .iterator().next().getDispatcherConfig().setType("TShareDispatcher");
         new ConfigWriter(config).write(scenarioOptions.getSimulationConfigName());
+        super.simulate();
     }
 }

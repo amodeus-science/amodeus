@@ -31,28 +31,21 @@ import ch.ethz.matsim.av.config.AmodeusConfigGroup;
 import ch.ethz.refactoring.AmodeusConfigurator;
 
 public class TestServer {
-
-    public static TestServer run(File workingDirectory) throws Exception {
-        TestServer testServer = new TestServer(workingDirectory);
-        testServer.simulate();
-        return testServer;
-    }
-
     private final File workingDirectory;
-    private File configFile;
-    private AnalysisTestExport ate;
+    private final File configFile;
+    private final AnalysisTestExport ate = new AnalysisTestExport();
     protected final ScenarioOptions scenarioOptions;
 
-    protected TestServer(File workingDirectory) throws Exception {
+    public TestServer(File workingDirectory) throws Exception {
         this.workingDirectory = workingDirectory;
         System.out.println(workingDirectory);
         GlobalAssert.that(workingDirectory.isDirectory());
         scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
+        configFile = new File(scenarioOptions.getSimulationConfigName());
     }
 
-    protected void simulate() throws Exception {
+    public void simulate() throws Exception {
         boolean waitForClients = scenarioOptions.getBoolean("waitForClients");
-        configFile = new File(scenarioOptions.getSimulationConfigName());
         StaticHelper.setup();
 
         LocationSpec locationSpec = scenarioOptions.getLocationSpec();
@@ -102,11 +95,14 @@ public class TestServer {
         SimulationServer.INSTANCE.stopAccepting();
 
         Analysis analysis = Analysis.setup(scenarioOptions, new File(workingDirectory, "output/001"), network, db);
-        ate = new AnalysisTestExport();
         analysis.addAnalysisExport(ate);
         analysis.addAnalysisExport(new RoboTaxiHistoriesExportFromEvents(network, config));
         analysis.addAnalysisExport(new RequestHistoriesExportFromEvents(network, config));
         analysis.run();
+    }
+
+    public File getWorkingDirectory() {
+        return workingDirectory;
     }
 
     public AnalysisTestExport getAnalysisTestExport() {
@@ -115,9 +111,5 @@ public class TestServer {
 
     public File getConfigFile() {
         return configFile;
-    }
-
-    public ScenarioOptions getScenarioOptions() {
-        return scenarioOptions;
     }
 }

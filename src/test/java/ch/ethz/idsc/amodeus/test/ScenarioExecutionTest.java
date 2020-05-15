@@ -6,12 +6,14 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Objects;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
 
@@ -45,16 +47,14 @@ import ch.ethz.idsc.tensor.qty.UnitConvert;
 import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.Round;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING) // junit 5 would provide more elegant solution
 public class ScenarioExecutionTest {
     private static final Scalar ZERO_KM = Quantity.of(0, "km");
     // ---
-    private static TestPreparer testPreparer;
     private static TestServer testServer;
-    private static TestViewer testViewer;
 
     @BeforeClass
     public static void setUpOnce() throws Exception {
-
         File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
 
         // copy scenario data into main directory
@@ -69,22 +69,17 @@ public class ScenarioExecutionTest {
         File helperDirectory = //
                 new File(Locate.repoFolder(ScenarioExecutionTest.class, "amodeus"), "resources/helperFiles");
         CopyFiles.now(helperDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath(), //
-                Arrays.asList("LPOptions.properties"), true);
+                Collections.singletonList("LPOptions.properties"), true);
 
-        // run scenario preparer
-        testPreparer = TestPreparer.run(workingDirectory);
-
-        // run scenario server
-        testServer = TestServer.run(workingDirectory);
-
-        // run scenario viewer
-        if (!UserName.is("travis"))
-            testViewer = TestViewer.run(workingDirectory);
+        testServer = new TestServer(workingDirectory);
     }
 
     @Test
-    public void testPreparer() throws Exception {
+    public void testA_Preparer() throws Exception {
         System.out.print("Preparer Test:\t");
+
+        // run scenario preparer
+        TestPreparer testPreparer = TestPreparer.run(testServer.getWorkingDirectory());
 
         // creation of files
         File preparedPopulationFile = new File("preparedPopulation.xml");
@@ -110,8 +105,11 @@ public class ScenarioExecutionTest {
     }
 
     @Test
-    public void testServer() throws Exception {
+    public void testB_Server() throws Exception {
         System.out.print("Server Test:\t");
+
+        // run scenario server
+        testServer.simulate();
 
         // scenario options
         File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
@@ -130,7 +128,7 @@ public class ScenarioExecutionTest {
     }
 
     @Test
-    public void testAnalysis() throws Exception {
+    public void testC_Analysis() {
         System.out.print("Analysis Test:\t");
 
         AnalysisTestExport ate = testServer.getAnalysisTestExport();
@@ -231,8 +229,11 @@ public class ScenarioExecutionTest {
     }
 
     @Test
-    public void testViewer() {
+    public void testD_Viewer() throws IOException {
         if (!UserName.is("travis")) {
+            // run scenario viewer
+            TestViewer testViewer = TestViewer.run(testServer.getWorkingDirectory());
+
             System.out.println("Viewer Test:");
 
             assertEquals(9, testViewer.getAmodeusComponent().viewerLayers.size());
