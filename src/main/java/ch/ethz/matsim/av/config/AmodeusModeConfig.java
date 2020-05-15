@@ -73,39 +73,26 @@ public class AmodeusModeConfig extends ReflectiveConfigGroup implements Modal {
 
     @Override
     public ConfigGroup createParameterSet(String type) {
-        if (type.equals(AmodeusPricingConfig.GROUP_NAME)) {
+        switch (type) {
+        case AmodeusPricingConfig.GROUP_NAME:
             return pricingConfig;
-        }
-
-        if (type.equals(AmodeusWaitingTimeEstimationConfig.GROUP_NAME)) {
+        case AmodeusWaitingTimeEstimationConfig.GROUP_NAME:
             return waitingTimeEstimationConfig;
-        }
-
-        if (type.equals(GeneratorConfig.GROUP_NAME)) {
+        case GeneratorConfig.GROUP_NAME:
             return generatorConfig;
-        }
-
-        if (type.equals(DispatcherConfig.GROUP_NAME)) {
+        case DispatcherConfig.GROUP_NAME:
             return dispatcherConfig;
-        }
-
-        if (type.equals(RouterConfig.GROUP_NAME)) {
+        case RouterConfig.GROUP_NAME:
             return routerConfig;
-        }
-
-        if (type.equals(InteractionFinderConfig.GROUP_NAME)) {
+        case InteractionFinderConfig.GROUP_NAME:
             return interactionFinderConfig;
-        }
-
-        if (type.equals(TimingConfig.GROUP_NAME)) {
+        case TimingConfig.GROUP_NAME:
             return timingConfig;
-        }
-
-        if (type.equals(AVScoringParameterSet.GROUP_NAME)) {
+        case AVScoringParameterSet.GROUP_NAME:
             return new AVScoringParameterSet();
+        default:
+            throw new IllegalStateException("AmodeusModeConfig does not support parameter set type: " + type);
         }
-
-        throw new IllegalStateException("AmodeusModeConfig does not support parameter set type: " + type);
     }
 
     @Override
