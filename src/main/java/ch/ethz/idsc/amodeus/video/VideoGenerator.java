@@ -136,7 +136,7 @@ public class VideoGenerator implements Runnable {
         int count = 0;
         int base = 1;
         try (SimulationObjectsVideo simulationObjectsVideo = new SimulationObjectsVideo( //
-                String.format("%s_%s.mp4", java.time.LocalDate.now(), network.getName()), // TODO @joel meaningful naming
+                String.format("%s_%s.mp4", java.time.LocalDate.now(), network.getName()), //
                 resolution, viewerConfig.settings.fps, amodeusComponent //
         )) {
             simulationObjectsVideo.millis = 20000;

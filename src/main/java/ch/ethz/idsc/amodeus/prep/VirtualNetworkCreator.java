@@ -11,10 +11,11 @@ import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 
 @FunctionalInterface
 public interface VirtualNetworkCreator {
-    // TODO @joel document interface function
-    /** @param network
-     * @param population
-     * @param scenarioOptions
+    /** creates a {@link VirtualNetwork} based on the given parameters
+     *
+     * @param network {@link Network}
+     * @param population {@link Population}
+     * @param scenarioOptions {@link ScenarioOptions}
      * @param numRoboTaxis
      * @param endTime of simulation for {@link TravelData}
      * @return virtual network */

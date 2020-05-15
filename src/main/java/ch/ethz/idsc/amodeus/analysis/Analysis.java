@@ -76,9 +76,9 @@ public class Analysis {
         return new Analysis(scenarioOptions, outputDirectory, network, db);
     }
 
-    // List of Analysis Elements which will be loaded
-    private final static String DATAFOLDERNAME = "data";
+    public final static String DATAFOLDERNAME = "data";
     // ---
+    // List of Analysis Elements which will be loaded
     private final List<AnalysisElement> analysisElements = new LinkedList<>();
     private final List<AnalysisExport> analysisExports = new LinkedList<>();
     private final List<AnalysisReport> analysisReports = new LinkedList<>();
