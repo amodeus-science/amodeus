@@ -8,6 +8,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import ch.ethz.idsc.amodeus.analysis.element.DistanceElement;
+import ch.ethz.idsc.tensor.qty.Unit;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
@@ -268,4 +270,11 @@ public class Analysis {
         }
     }
 
+    public void setDistanceUnit(String unit) {
+        DistanceElement.setDistanceUnit(unit);
+    }
+
+    public void setDistanceUnit(Unit unit) {
+        DistanceElement.setDistanceUnit(unit);
+    }
 }
