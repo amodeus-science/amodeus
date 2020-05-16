@@ -56,61 +56,59 @@ import ch.ethz.idsc.tensor.sca.ArcTan;
 }
 
 public class LinkLayer extends ViewerLayer {
-    // ---
-    ICoordinate lastCoord;
     private static final Color LINKCOLOR = new Color(153, 153, 102, 64);
-    private boolean drawLinks;
+    // ---
     public int linkLimit = 8192;
+    private boolean drawLinks;
     private boolean drawLabel;
+    private boolean drawCoordinates;
     private final JTextArea jTextArea = new JTextArea(2, 10);
     private int count = 0;
+    private ICoordinate lastCoord;
 
     public LinkLayer(AmodeusComponent amodeusComponent) {
         super(amodeusComponent);
     }
 
-    @Override protected void paint(Graphics2D graphics, SimulationObject ref) {
-        // draw links
+    @Override
+    protected void paint(Graphics2D graphics, SimulationObject ref) {
         if (drawLinks) {
-            drawLinks(graphics);
-            // --- draw labels
-            if (drawLabel) {
-                drawLabel(graphics);
-            }
-            // --- draw location where mouse clicked
-            if (Objects.nonNull(lastCoord)) {
-                drawLastCoord(graphics);
-            }
+            Dimension dimension = amodeusComponent.getSize();
+            NdMap<Street> map = new NdTreeMap<>(Array.zeros(2), Tensors.vector(dimension.width, dimension.height), 12, 8);
+            // draw links
+            drawLinks(map, graphics);
+            // draw labels
+            if (drawLabel && Objects.nonNull(lastCoord))
+                drawLabel(map, graphics);
+            else
+                jTextArea.setText("");
         }
+        // draw location where mouse clicked
+        if (drawCoordinates && Objects.nonNull(lastCoord))
+            drawLastCoord(graphics);
     }
 
-    /**
-     * Draw last coordinate of where mouse clicked onto graphics object
+    /** Draw last coordinate of where mouse clicked onto graphics object
      *
-     * @param graphics Graphics2D object on which the last coord will be drawn/highlighted
-     */
+     * @param graphics Graphics2D object on which the last coord will be drawn/highlighted */
     private void drawLastCoord(Graphics2D graphics) {
         Point p = amodeusComponent.getMapPosition(lastCoord.getLat(), lastCoord.getLon());
         if (Objects.nonNull(p)) {
-            graphics.setColor(Color.ORANGE);
-            graphics.fillRect(p.x - 1, p.y - 1, 3, 3);
             graphics.setColor(Color.WHITE);
+            graphics.fillRect(p.x - 1, p.y - 1, 3, 3);
             graphics.drawString(String.format("[lng=%.6f, lat=%.6f]", lastCoord.getLon(), lastCoord.getLat()), p.x + 10, p.y - 10);
         }
     }
 
-    /**
-     * Draw links onto graphics object
+    /** Draw links onto graphics object
      *
-     * @param graphics Graphics2D object on which the links are drawn
-     */
-    private void drawLinks(Graphics2D graphics) {
+     * @param map to find closest streets
+     * @param graphics Graphics2D object on which the links are drawn */
+    private void drawLinks(NdMap<Street> map, Graphics2D graphics) {
         List<Street> list = new LinkedList<>();
-        Dimension dimension = amodeusComponent.getSize();
-        NdMap<Street> map = new NdTreeMap<>(Array.zeros(2), Tensors.vector(dimension.width, dimension.height), 12, 8);
         for (OsmLink osmLink : amodeusComponent.db.getOsmLinks()) {
             Point p1 = amodeusComponent.getMapPosition(osmLink.getCoordFrom());
-            if (p1 != null) {
+            if (Objects.nonNull(p1)) {
                 Point p2 = amodeusComponent.getMapPositionAlways(osmLink.getCoordTo());
                 Street street = new Street(osmLink);
                 street.p1 = p1;
@@ -135,13 +133,12 @@ public class LinkLayer extends ViewerLayer {
         count = list.size();
     }
 
-    /**
-     * Draw labels onto graphics object
+    /** Draw labels onto graphics object
      *
-     * @param graphics Graphics2D object on which the labels are to be drawn
-     */
-    private void drawLabel(Graphics2D graphics) {
-        final Point point = amodeusComponent.amodeusComponentMouse.getPoint();
+     * @param map to find closest streets
+     * @param graphics Graphics2D object on which the labels are to be drawn */
+    private void drawLabel(NdMap<Street> map, Graphics2D graphics) {
+        final Point point = amodeusComponent.getMapPosition(lastCoord.getLat(), lastCoord.getLon());
         if (Objects.nonNull(point)) {
             Tensor center = Tensors.vector(point.x, point.y);
             NdCluster<Street> cluster = map.buildCluster(NdCenterInterface.euclidean(center), 2);
@@ -170,7 +167,8 @@ public class LinkLayer extends ViewerLayer {
 
     }
 
-    @Override protected void hud(Graphics2D graphics, SimulationObject ref) {
+    @Override
+    protected void hud(Graphics2D graphics, SimulationObject ref) {
         if (drawLinks) {
             if (0 < count)
                 amodeusComponent.append("%5d/%5d streets", count, amodeusComponent.db.getOsmLinksSize());
@@ -185,12 +183,18 @@ public class LinkLayer extends ViewerLayer {
         amodeusComponent.repaint();
     }
 
-    public void setDrawLabel(boolean links) {
-        drawLabel = links;
+    public void setDrawLabel(boolean label) {
+        drawLabel = label;
         amodeusComponent.repaint();
     }
 
-    @Override protected void createPanel(RowPanel rowPanel) {
+    public void setDrawCoordinates(boolean coords) {
+        drawCoordinates = coords;
+        amodeusComponent.repaint();
+    }
+
+    @Override
+    protected void createPanel(RowPanel rowPanel) {
         {
             final JCheckBox jCheckBox = new JCheckBox("streets");
             jCheckBox.setToolTipText("each link as thin line");
@@ -206,11 +210,18 @@ public class LinkLayer extends ViewerLayer {
             rowPanel.add(jCheckBox);
         }
         {
-
             rowPanel.add(jTextArea);
         }
+        {
+            final JCheckBox jCheckBox = new JCheckBox("click coordinates");
+            jCheckBox.setToolTipText("longitude and latitude of click position");
+            jCheckBox.setSelected(drawCoordinates);
+            jCheckBox.addActionListener(event -> setDrawCoordinates(jCheckBox.isSelected()));
+            rowPanel.add(jCheckBox);
+        }
         LazyMouseListener lazyMouseListener = new LazyMouseListener() {
-            @Override public void lazyClicked(MouseEvent mouseEvent) {
+            @Override
+            public void lazyClicked(MouseEvent mouseEvent) {
                 // set last coordinate
                 lastCoord = amodeusComponent.getPosition(mouseEvent.getPoint());
             }
@@ -219,13 +230,17 @@ public class LinkLayer extends ViewerLayer {
         lazyMouse.addListenersTo(amodeusComponent);
     }
 
-    @Override public void updateSettings(ViewerSettings settings) {
+    @Override
+    public void updateSettings(ViewerSettings settings) {
         settings.drawLinks = drawLinks;
         settings.drawLabel = drawLabel;
+        settings.drawCoordinates = drawCoordinates;
     }
 
-    @Override public void loadSettings(ViewerSettings settings) {
+    @Override
+    public void loadSettings(ViewerSettings settings) {
         setDrawLinks(settings.drawLinks);
         setDrawLabel(settings.drawLabel);
+        setDrawCoordinates(settings.drawCoordinates);
     }
 }

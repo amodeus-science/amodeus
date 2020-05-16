@@ -50,6 +50,7 @@ public class ViewerSettings implements Serializable {
     // LinkLayer
     public boolean drawLinks = true;
     public boolean drawLabel = true; // is this really needed in the video?
+    public boolean drawCoordinates = true;
 
     // LoadLayer
     public boolean drawLoad = false;
