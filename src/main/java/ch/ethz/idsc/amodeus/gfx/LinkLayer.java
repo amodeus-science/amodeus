@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.util.LinkedList;
@@ -27,10 +28,15 @@ import ch.ethz.idsc.amodeus.util.nd.NdCluster;
 import ch.ethz.idsc.amodeus.util.nd.NdEntry;
 import ch.ethz.idsc.amodeus.util.nd.NdMap;
 import ch.ethz.idsc.amodeus.util.nd.NdTreeMap;
+import ch.ethz.idsc.amodeus.view.jmapviewer.Coordinate;
+import ch.ethz.idsc.amodeus.view.jmapviewer.JMapViewer;
+import ch.ethz.idsc.amodeus.view.jmapviewer.interfaces.ICoordinate;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.sca.ArcTan;
+import org.jgrapht.Graph;
+import org.matsim.api.core.v01.Coord;
 
 /* package */ class Street {
     final OsmLink osmLink;
@@ -57,6 +63,7 @@ import ch.ethz.idsc.tensor.sca.ArcTan;
 
 public class LinkLayer extends ViewerLayer {
     // ---
+    private ICoordinate lastCoord;
     private static final Color LINKCOLOR = new Color(153, 153, 102, 64);
     private boolean drawLinks;
     public int linkLimit = 8192;
@@ -68,71 +75,108 @@ public class LinkLayer extends ViewerLayer {
         super(amodeusComponent);
     }
 
-    @Override
-    protected void paint(Graphics2D graphics, SimulationObject ref) {
+    @Override protected void paint(Graphics2D graphics, SimulationObject ref) {
+        // draw links
         if (drawLinks) {
-            List<Street> list = new LinkedList<>();
-            Dimension dimension = amodeusComponent.getSize();
-            NdMap<Street> map = new NdTreeMap<>(Array.zeros(2), Tensors.vector(dimension.width, dimension.height), 12, 8);
-            for (OsmLink osmLink : amodeusComponent.db.getOsmLinks()) {
-                Point p1 = amodeusComponent.getMapPosition(osmLink.getCoordFrom());
-                if (p1 != null) {
-                    Point p2 = amodeusComponent.getMapPositionAlways(osmLink.getCoordTo());
-                    Street street = new Street(osmLink);
-                    street.p1 = p1;
-                    street.p2 = p2;
-                    list.add(street);
-                    if (linkLimit < list.size()) {
-                        list.clear();
-                        break;
-                    }
-                }
-            }
-            graphics.setColor(LINKCOLOR);
-            for (Street street : list) {
-                Point p1 = street.p1;
-                Point p2 = street.p2;
-                if (p1.equals(p2))
-                    graphics.drawOval(p1.x - 1, p1.y - 1, 3, 3);
-                else
-                    graphics.drawLine(p1.x, p1.y, p2.x, p2.y);
-                map.add(street.getLocation(), street);
-            }
-            count = list.size();
-            // ---
+            drawLinks(graphics);
+            // --- draw labels
             if (drawLabel) {
-                final Point point = amodeusComponent.amodeusComponentMouse.getPoint();
-                if (Objects.nonNull(point)) {
-                    Tensor center = Tensors.vector(point.x, point.y);
-                    NdCluster<Street> cluster = map.buildCluster(NdCenterInterface.euclidean(center), 2);
-                    graphics.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
-                    GraphicsUtil.setQualityHigh(graphics);
-                    for (NdEntry<Street> entry : cluster.collection()) {
-                        Street street = entry.value();
-                        double theta = street.angle();
-                        Point p1 = street.p1;
-                        Point p2 = street.p2;
-                        graphics.setColor(Color.RED);
-                        graphics.drawLine(p1.x, p1.y, p2.x, p2.y);
-                        graphics.setColor(Color.WHITE);
-                        graphics.fillRect(p1.x - 1, p1.y - 1, 3, 3);
-                        graphics.fillRect(p2.x - 1, p2.y - 1, 3, 3);
-                        AffineTransform saveAT = graphics.getTransform();
-                        graphics.rotate(theta, p1.x, p1.y);
-                        graphics.drawString( //
-                                "\u2192 " + street.osmLink.link.getId().toString() + " \u2192", //
-                                p1.x + 10, p1.y + 10);
-                        graphics.setTransform(saveAT);
-                        jTextArea.setText(street.osmLink.link.getId().toString());
-                    }
-                    GraphicsUtil.setQualityDefault(graphics);
-                }
+                drawLabel(graphics);
+            }
+            // --- draw location where mouse clicked
+            if (Objects.nonNull(lastCoord)) {
+                drawLastCoord(graphics);
             }
         }
     }
 
-    @Override
-    protected void hud(Graphics2D graphics, SimulationObject ref) {
+    /**
+     * Draw last coordinate of where mouse clicked onto graphics object
+     *
+     * @param graphics Graphics2D object on which the last coord will be drawn/highlighted
+     */
+    private void drawLastCoord(Graphics2D graphics) {
+        Point p = amodeusComponent.getMapPosition(lastCoord.getLat(), lastCoord.getLon());
+        if (Objects.nonNull(p)) {
+            graphics.setColor(Color.ORANGE);
+            graphics.fillRect(p.x - 1, p.y - 1, 3, 3);
+            graphics.setColor(Color.WHITE);
+            graphics.drawString(String.format("[lng=%.6f, lat=%.6f]", lastCoord.getLon(), lastCoord.getLat()), p.x + 10, p.y - 10);
+        }
+    }
+
+    /**
+     * Draw links onto graphics object
+     *
+     * @param graphics Graphics2D object on which the links are drawn
+     */
+    private void drawLinks(Graphics2D graphics) {
+        List<Street> list = new LinkedList<>();
+        Dimension dimension = amodeusComponent.getSize();
+        NdMap<Street> map = new NdTreeMap<>(Array.zeros(2), Tensors.vector(dimension.width, dimension.height), 12, 8);
+        for (OsmLink osmLink : amodeusComponent.db.getOsmLinks()) {
+            Point p1 = amodeusComponent.getMapPosition(osmLink.getCoordFrom());
+            if (p1 != null) {
+                Point p2 = amodeusComponent.getMapPositionAlways(osmLink.getCoordTo());
+                Street street = new Street(osmLink);
+                street.p1 = p1;
+                street.p2 = p2;
+                list.add(street);
+                if (linkLimit < list.size()) {
+                    list.clear();
+                    break;
+                }
+            }
+        }
+        graphics.setColor(LINKCOLOR);
+        for (Street street : list) {
+            Point p1 = street.p1;
+            Point p2 = street.p2;
+            if (p1.equals(p2))
+                graphics.drawOval(p1.x - 1, p1.y - 1, 3, 3);
+            else
+                graphics.drawLine(p1.x, p1.y, p2.x, p2.y);
+            map.add(street.getLocation(), street);
+        }
+        count = list.size();
+    }
+
+    /**
+     * Draw labels onto graphics object
+     *
+     * @param graphics Graphics2D object on which the labels are to be drawn
+     */
+    private void drawLabel(Graphics2D graphics) {
+        final Point point = amodeusComponent.amodeusComponentMouse.getPoint();
+        if (Objects.nonNull(point)) {
+            Tensor center = Tensors.vector(point.x, point.y);
+            NdCluster<Street> cluster = map.buildCluster(NdCenterInterface.euclidean(center), 2);
+            graphics.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
+            GraphicsUtil.setQualityHigh(graphics);
+            for (NdEntry<Street> entry : cluster.collection()) {
+                Street street = entry.value();
+                double theta = street.angle();
+                Point p1 = street.p1;
+                Point p2 = street.p2;
+                graphics.setColor(Color.RED);
+                graphics.drawLine(p1.x, p1.y, p2.x, p2.y);
+                graphics.setColor(Color.WHITE);
+                graphics.fillRect(p1.x - 1, p1.y - 1, 3, 3);
+                graphics.fillRect(p2.x - 1, p2.y - 1, 3, 3);
+                AffineTransform saveAT = graphics.getTransform();
+                graphics.rotate(theta, p1.x, p1.y);
+                graphics.drawString( //
+                        "\u2192 " + street.osmLink.link.getId().toString() + " \u2192", //
+                        p1.x + 10, p1.y + 10);
+                graphics.setTransform(saveAT);
+                jTextArea.setText(street.osmLink.link.getId().toString());
+            }
+            GraphicsUtil.setQualityDefault(graphics);
+        }
+
+    }
+
+    @Override protected void hud(Graphics2D graphics, SimulationObject ref) {
         if (drawLinks) {
             if (0 < count)
                 amodeusComponent.append("%5d/%5d streets", count, amodeusComponent.db.getOsmLinksSize());
@@ -152,8 +196,7 @@ public class LinkLayer extends ViewerLayer {
         amodeusComponent.repaint();
     }
 
-    @Override
-    protected void createPanel(RowPanel rowPanel) {
+    @Override protected void createPanel(RowPanel rowPanel) {
         {
             final JCheckBox jCheckBox = new JCheckBox("streets");
             jCheckBox.setToolTipText("each link as thin line");
@@ -173,34 +216,21 @@ public class LinkLayer extends ViewerLayer {
             rowPanel.add(jTextArea);
         }
         LazyMouseListener lazyMouseListener = new LazyMouseListener() {
-            @Override
-            public void lazyClicked(MouseEvent mouseEvent) {
-                // get mouse position on screen
-                Point location = mouseEvent.getLocationOnScreen();
-
-                // draw oval
-                Graphics graphics = amodeusComponent.getGraphics();
-                graphics.drawOval(location.x - 1, location.y - 1, 3, 3);
-
-                // fill oval
-                Color oldColor = graphics.getColor();
-                graphics.setColor(Color.ORANGE);
-                graphics.fillOval(location.x - 1, location.y - 1, 3, 3);
-                graphics.setColor(oldColor);
+            @Override public void lazyClicked(MouseEvent mouseEvent) {
+                // set last coordinates
+                lastCoord = amodeusComponent.getPosition(mouseEvent.getPoint());
             }
         };
         LazyMouse lazyMouse = new LazyMouse(lazyMouseListener);
         lazyMouse.addListenersTo(amodeusComponent);
     }
 
-    @Override
-    public void updateSettings(ViewerSettings settings) {
+    @Override public void updateSettings(ViewerSettings settings) {
         settings.drawLinks = drawLinks;
         settings.drawLabel = drawLabel;
     }
 
-    @Override
-    public void loadSettings(ViewerSettings settings) {
+    @Override public void loadSettings(ViewerSettings settings) {
         setDrawLinks(settings.drawLinks);
         setDrawLabel(settings.drawLabel);
     }
