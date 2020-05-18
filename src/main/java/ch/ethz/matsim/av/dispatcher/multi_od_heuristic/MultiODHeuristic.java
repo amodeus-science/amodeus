@@ -222,7 +222,6 @@ public class MultiODHeuristic implements AVDispatcher {
         pendingRequestsTree.remove(coord.getX(), coord.getY(), request);
     }
 
-    // TODO: Effectively, this can become a provider now ...
     static public class Factory implements AVDispatcherFactory {
         @Override
         public AVDispatcher createDispatcher(InstanceGetter inject) {
