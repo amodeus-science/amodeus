@@ -10,6 +10,7 @@ import org.matsim.contrib.dvrp.passenger.PassengerEngine;
 import org.matsim.contrib.dvrp.passenger.PassengerEngineQSimModule;
 import org.matsim.contrib.dvrp.passenger.PassengerRequestCreator;
 import org.matsim.contrib.dvrp.run.AbstractDvrpModeQSimModule;
+import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
 import org.matsim.contrib.dvrp.run.DvrpModes;
 import org.matsim.contrib.dvrp.run.ModalProviders;
 import org.matsim.contrib.dvrp.vrpagent.VrpAgentLogic.DynActionCreator;
@@ -20,7 +21,6 @@ import org.matsim.core.mobsim.qsim.QSim;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Singleton;
 
-import ch.ethz.idsc.amodeus.matsim.mod.TrackingHelper;
 import ch.ethz.matsim.av.config.AmodeusModeConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
@@ -97,12 +97,12 @@ public class AVQSimModeModule extends AbstractDvrpModeQSimModule {
         addModalQSimComponentBinding().to(modalKey(AVOptimizer.class));
         bindModal(VrpOptimizer.class).to(DvrpModes.key(AVOptimizer.class, getMode())).in(Singleton.class);
 
-        // TODO: Can we replace this?
         bindModal(VrpLegFactory.class).toProvider(modalProvider(getter -> {
             AVOptimizer optimizer = getter.getModal(AVOptimizer.class);
             QSim qsim = getter.get(QSim.class);
+            DvrpConfigGroup dvrpConfig = getter.get(DvrpConfigGroup.class);
 
-            return TrackingHelper.createLegCreatorWithIDSCTracking(optimizer, qsim.getSimTimer());
+            return vehicle -> VrpLegFactory.createWithOnlineTracker(dvrpConfig.getMobsimMode(), vehicle, optimizer, qsim.getSimTimer());
         })).in(Singleton.class);
     }
 

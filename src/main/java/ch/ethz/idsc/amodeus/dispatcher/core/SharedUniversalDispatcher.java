@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Task;
-import org.matsim.contrib.dvrp.tracker.TaskTracker;
+import org.matsim.contrib.dvrp.tracker.OnlineDriveTaskTracker;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
@@ -27,7 +27,6 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseUtil;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
-import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDriveTaskTracker;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationObjectCompiler;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
@@ -425,9 +424,8 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
             new RoboTaxiTaskAdapter(schedule.getCurrentTask()) {
                 @Override
                 public void handle(AmodeusDriveTask avDriveTask) {
-                    TaskTracker taskTracker = avDriveTask.getTaskTracker();
-                    AmodeusDriveTaskTracker onlineDriveTaskTracker = (AmodeusDriveTaskTracker) taskTracker;
-                    LinkTimePair linkTimePair = onlineDriveTaskTracker.getSafeDiversionPoint();
+                    OnlineDriveTaskTracker taskTracker = (OnlineDriveTaskTracker) avDriveTask.getTaskTracker();
+                    LinkTimePair linkTimePair = Objects.requireNonNull(taskTracker.getDiversionPoint());
                     roboTaxi.setDivertableLinkTime(linkTimePair); // contains null check
                     roboTaxi.setCurrentDriveDestination(avDriveTask.getPath().getToLink());
                 }
