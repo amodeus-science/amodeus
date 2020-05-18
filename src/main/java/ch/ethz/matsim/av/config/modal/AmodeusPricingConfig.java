@@ -1,8 +1,8 @@
-package ch.ethz.matsim.av.config.operator;
+package ch.ethz.matsim.av.config.modal;
 
 import org.matsim.core.config.ReflectiveConfigGroup;
 
-public class PricingConfig extends ReflectiveConfigGroup {
+public class AmodeusPricingConfig extends ReflectiveConfigGroup {
     static public final String GROUP_NAME = "pricing";
 
     static public final String PRICE_PER_KM = "pricePerKm";
@@ -19,12 +19,12 @@ public class PricingConfig extends ReflectiveConfigGroup {
     private double temporalBillingInterval = 1.0;
     private double spatialBillingInterval = 1.0;
 
-    public PricingConfig() {
+    public AmodeusPricingConfig() {
         super(GROUP_NAME);
     }
 
-    public static PricingConfig createDefault() {
-        return new PricingConfig();
+    public static AmodeusPricingConfig createDefault() {
+        return new AmodeusPricingConfig();
     }
 
     @StringGetter(PRICE_PER_KM)

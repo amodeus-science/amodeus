@@ -46,4 +46,8 @@ public class AVScoringParameterSet extends ReflectiveConfigGroup {
     public void setSubpopulation(String subpopulation) {
         this.subpopulation = subpopulation;
     }
+    
+    static public AVScoringParameterSet createDefault() {
+        return new AVScoringParameterSet();
+    }
 }

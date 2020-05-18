@@ -1,9 +1,9 @@
-package ch.ethz.matsim.av.config.operator;
+package ch.ethz.matsim.av.config.modal;
 
 import org.matsim.core.config.ReflectiveConfigGroup;
 import org.matsim.core.utils.misc.Time;
 
-public class WaitingTimeConfig extends ReflectiveConfigGroup {
+public class AmodeusWaitingTimeEstimationConfig extends ReflectiveConfigGroup {
     static public final String GROUP_NAME = "waitingTime";
 
     public final static String ESTIMATION_START_TIME = "estimationStartTime";
@@ -24,7 +24,7 @@ public class WaitingTimeConfig extends ReflectiveConfigGroup {
     private String constantWaitingTimeLinkAttribute;
     private double defaultWaitingTime = 300.0;
 
-    public WaitingTimeConfig() {
+    public AmodeusWaitingTimeEstimationConfig() {
         super(GROUP_NAME, true);
     }
 

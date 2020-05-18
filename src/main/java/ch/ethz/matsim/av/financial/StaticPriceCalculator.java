@@ -1,32 +1,25 @@
 package ch.ethz.matsim.av.financial;
 
-import java.util.Map;
-
-import org.matsim.api.core.v01.Id;
-
-import ch.ethz.matsim.av.config.operator.PricingConfig;
-import ch.ethz.matsim.av.data.AVOperator;
+import ch.ethz.matsim.av.config.modal.AmodeusPricingConfig;
 
 public class StaticPriceCalculator implements PriceCalculator {
-    private final Map<Id<AVOperator>, PricingConfig> pricingConfigs;
+    private final AmodeusPricingConfig pricingConfig;
 
-    public StaticPriceCalculator(Map<Id<AVOperator>, PricingConfig> pricingConfigs) {
-        this.pricingConfigs = pricingConfigs;
+    public StaticPriceCalculator(AmodeusPricingConfig pricingConfig) {
+        this.pricingConfig = pricingConfig;
     }
 
     @Override
-    public double calculatePrice(Id<AVOperator> operatorId, double travelDistance_m, double traveTime_s) {
-        PricingConfig priceStructure = pricingConfigs.get(operatorId);
+    public double calculatePrice(double travelDistance_m, double traveTime_s) {
+        double billableDistance = Math.max(1, Math.ceil(travelDistance_m / pricingConfig.getSpatialBillingInterval())) * pricingConfig.getSpatialBillingInterval();
 
-        double billableDistance = Math.max(1, Math.ceil(travelDistance_m / priceStructure.getSpatialBillingInterval())) * priceStructure.getSpatialBillingInterval();
-
-        double billableTravelTime = Math.max(1, Math.ceil(traveTime_s / priceStructure.getTemporalBillingInterval())) * priceStructure.getTemporalBillingInterval();
+        double billableTravelTime = Math.max(1, Math.ceil(traveTime_s / pricingConfig.getTemporalBillingInterval())) * pricingConfig.getTemporalBillingInterval();
 
         double price = 0.0;
 
-        price += (billableDistance / 1000.0) * priceStructure.getPricePerKm();
-        price += (billableTravelTime / 60.0) * priceStructure.getPricePerMin();
-        price += priceStructure.getPricePerTrip();
+        price += (billableDistance / 1000.0) * pricingConfig.getPricePerKm();
+        price += (billableTravelTime / 60.0) * pricingConfig.getPricePerMin();
+        price += pricingConfig.getPricePerTrip();
 
         return price;
     }

@@ -13,7 +13,7 @@ import org.matsim.core.router.util.TravelTime;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
@@ -26,7 +26,7 @@ public abstract class PartitionedDispatcher extends RebalancingDispatcher {
 
     protected PartitionedDispatcher( //
             Config config, //
-            OperatorConfig operatorConfig, //
+            AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, //
             ParallelLeastCostPathCalculator router, //
             EventsManager eventsManager, //

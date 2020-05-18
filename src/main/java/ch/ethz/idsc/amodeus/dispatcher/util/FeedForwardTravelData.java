@@ -20,8 +20,8 @@ import ch.ethz.idsc.amodeus.traveldata.StaticTravelData;
 import ch.ethz.idsc.amodeus.traveldata.TravelDataIO;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.matsim.av.config.AVConfigGroup;
-import ch.ethz.matsim.av.config.operator.GeneratorConfig;
+import ch.ethz.matsim.av.config.AmodeusConfigGroup;
+import ch.ethz.matsim.av.config.modal.GeneratorConfig;
 
 /* package */ enum FeedForwardTravelData {
     ;
@@ -30,9 +30,11 @@ import ch.ethz.matsim.av.config.operator.GeneratorConfig;
         if (!travelData.getLPName().equals(lpCreator.name())) {
             try {
                 /** MATSim config */
-                AVConfigGroup avConfigGroup = new AVConfigGroup();
+                AmodeusConfigGroup avConfigGroup = new AmodeusConfigGroup();
                 Config config = ConfigUtils.loadConfig(scenarioOptions.getSimulationConfigName(), avConfigGroup);
-                GeneratorConfig avGeneratorConfig = avConfigGroup.getOperatorConfigs().values().iterator().next().getGeneratorConfig();
+
+                // TODO: Attention, this assumes that there is only one mode defined for Amodeus!
+                GeneratorConfig avGeneratorConfig = avConfigGroup.getModes().values().iterator().next().getGeneratorConfig();
                 int numRt = avGeneratorConfig.getNumberOfVehicles();
                 int endTime = (int) config.qsim().getEndTime().seconds();
                 Scenario scenario = ScenarioUtils.loadScenario(config);

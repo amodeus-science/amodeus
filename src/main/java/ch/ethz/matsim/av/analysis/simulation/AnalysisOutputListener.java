@@ -23,13 +23,13 @@ import ch.ethz.matsim.av.analysis.passengers.PassengerAnalysisListener;
 import ch.ethz.matsim.av.analysis.passengers.PassengerAnalysisWriter;
 import ch.ethz.matsim.av.analysis.vehicles.VehicleAnalysisListener;
 import ch.ethz.matsim.av.analysis.vehicles.VehicleAnalysisWriter;
-import ch.ethz.matsim.av.config.AVConfigGroup;
+import ch.ethz.matsim.av.config.AmodeusConfigGroup;
 
 @Singleton
 public class AnalysisOutputListener implements IterationStartsListener, IterationEndsListener, ShutdownListener {
-    private static final String PASSENGER_RIDES_FILE_NAME = "av_passenger_rides.csv";
-    private static final String VEHICLE_MOVEMENTS_FILE_NAME = "av_vehicle_movements.csv";
-    private static final String VEHICLE_ACTIVITIES_FILE_NAME = "av_vehicle_activities.csv";
+    private static final String PASSENGER_RIDES_FILE_NAME = "amodeus_passenger_rides.csv";
+    private static final String VEHICLE_MOVEMENTS_FILE_NAME = "amodeus_vehicle_movements.csv";
+    private static final String VEHICLE_ACTIVITIES_FILE_NAME = "amodeus_vehicle_activities.csv";
 
     private final OutputDirectoryHierarchy outputDirectory;
     private final int lastIteration;
@@ -49,7 +49,7 @@ public class AnalysisOutputListener implements IterationStartsListener, Iteratio
     private DistanceAnalysisWriter distanceAnalysisWriter;
 
     @Inject
-    public AnalysisOutputListener(AVConfigGroup config, ControlerConfigGroup controllerConfig, OutputDirectoryHierarchy outputDirectory, Network network) {
+    public AnalysisOutputListener(AmodeusConfigGroup config, ControlerConfigGroup controllerConfig, OutputDirectoryHierarchy outputDirectory, Network network) {
         this.outputDirectory = outputDirectory;
         this.lastIteration = controllerConfig.getLastIteration();
 
@@ -62,8 +62,8 @@ public class AnalysisOutputListener implements IterationStartsListener, Iteratio
         this.passengerAnalysisListener = new PassengerAnalysisListener(linkFinder);
         this.vehicleAnalysisListener = new VehicleAnalysisListener(linkFinder);
 
-        this.fleetDistanceListener = new FleetDistanceListener(config.getOperatorConfigs().keySet(), linkFinder);
-        this.distanceAnalysisWriter = new DistanceAnalysisWriter(outputDirectory, config.getOperatorConfigs().keySet());
+        this.fleetDistanceListener = new FleetDistanceListener(config.getModes().keySet(), linkFinder);
+        this.distanceAnalysisWriter = new DistanceAnalysisWriter(outputDirectory, config.getModes().keySet());
     }
 
     @Override

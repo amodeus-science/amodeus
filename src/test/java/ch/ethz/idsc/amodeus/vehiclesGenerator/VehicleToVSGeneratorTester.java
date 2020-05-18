@@ -29,10 +29,9 @@ import ch.ethz.idsc.amodeus.util.io.Locate;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
-import ch.ethz.matsim.av.config.AVConfigGroup;
-import ch.ethz.matsim.av.config.operator.GeneratorConfig;
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
-import ch.ethz.matsim.av.data.AVOperator;
+import ch.ethz.matsim.av.config.AmodeusConfigGroup;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
+import ch.ethz.matsim.av.config.modal.GeneratorConfig;
 
 public class VehicleToVSGeneratorTester {
     private static final int TRIALS = 50;
@@ -44,7 +43,7 @@ public class VehicleToVSGeneratorTester {
     private static TravelData travelData000;
     private static TravelData travelData123;
     private static TravelData travelData334;
-    private static OperatorConfig operatorConfig;
+    private static AmodeusModeConfig operatorConfig;
 
     private static final VehicleType vehicleType;
 
@@ -60,9 +59,9 @@ public class VehicleToVSGeneratorTester {
         File scenarioDirectory = new File(Locate.repoFolder(VehicleToVSGenerator.class, "amodeus"), "resources/testScenario");
         scenarioOptions = new ScenarioOptions(scenarioDirectory, ScenarioOptionsBase.getDefault());
         File configFile = new File(scenarioOptions.getPreparerConfigName());
-        AVConfigGroup avCg = new AVConfigGroup();
+        AmodeusConfigGroup avCg = new AmodeusConfigGroup();
         Config config = ConfigUtils.loadConfig(configFile.getAbsolutePath(), avCg);
-        GeneratorConfig genConfig = avCg.getOperatorConfigs().values().iterator().next().getGeneratorConfig();
+        GeneratorConfig genConfig = avCg.getModes().values().iterator().next().getGeneratorConfig();
         int numRt = genConfig.getNumberOfVehicles();
         int endTime = (int) config.qsim().getEndTime().seconds();
         Scenario scenario = ScenarioUtils.loadScenario(config);
@@ -73,8 +72,7 @@ public class VehicleToVSGeneratorTester {
         virtualNetwork = virtualNetworkCreator.create(network, population, scenarioOptions, numRt, endTime);
 
         /** creating dummy config with 10 vehicles */
-        operatorConfig = new OperatorConfig();
-        operatorConfig.setId(Id.create("id", AVOperator.class));
+        operatorConfig = new AmodeusModeConfig("av");
 
         GeneratorConfig avGeneratorConfig = operatorConfig.getGeneratorConfig();
         avGeneratorConfig.setType("strategy");

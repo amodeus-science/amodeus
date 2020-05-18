@@ -7,7 +7,8 @@ import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.ConfigWriter;
-import ch.ethz.matsim.av.config.AVConfigGroup;
+
+import ch.ethz.matsim.av.config.AmodeusConfigGroup;
 
 public class SharedTestServer extends TestServer {
 
@@ -18,8 +19,8 @@ public class SharedTestServer extends TestServer {
     @Override
     public void simulate() throws Exception {
         // change dispatcher
-        Config config = ConfigUtils.loadConfig(scenarioOptions.getSimulationConfigName(), new DvrpConfigGroup(), new AVConfigGroup());
-        AVConfigGroup.getOrCreate(config).getOperatorConfigs().values()//
+        Config config = ConfigUtils.loadConfig(scenarioOptions.getSimulationConfigName(), new DvrpConfigGroup(), new AmodeusConfigGroup());
+        AmodeusConfigGroup.get(config).getModes().values()//
                 .iterator().next().getDispatcherConfig().setType("TShareDispatcher");
         new ConfigWriter(config).write(scenarioOptions.getSimulationConfigName());
         super.simulate();

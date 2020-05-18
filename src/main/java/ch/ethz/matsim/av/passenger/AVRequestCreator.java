@@ -9,16 +9,13 @@ import org.matsim.contrib.dvrp.optimizer.Request;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.passenger.PassengerRequestCreator;
 
-import ch.ethz.matsim.av.data.AVOperator;
 import ch.ethz.matsim.av.routing.AVRoute;
 
 public class AVRequestCreator implements PassengerRequestCreator {
-    private final Id<AVOperator> operatorId;
     private final Network network;
     private final String mode;
 
-    public AVRequestCreator(Id<AVOperator> operatorId, Network network, String mode) {
-        this.operatorId = operatorId;
+    public AVRequestCreator(String mode, Network network) {
         this.network = network;
         this.mode = mode;
     }
@@ -36,13 +33,13 @@ public class AVRequestCreator implements PassengerRequestCreator {
         Link operatorDropoffLink = network.getLinks().get(dropoffLink.getId());
 
         if (operatorPickupLink == null) {
-            throw new IllegalStateException(String.format("Pickup link does not exist in network of operator %s: %s", operatorId, pickupLink.getId()));
+            throw new IllegalStateException(String.format("Pickup link does not exist in network of AMoDeus mode %s: %s", mode, pickupLink.getId()));
         }
 
         if (operatorDropoffLink == null) {
-            throw new IllegalStateException(String.format("Dropoff link does not exist in network of operator %s: %s", operatorId, dropoffLink.getId()));
+            throw new IllegalStateException(String.format("Dropoff link does not exist in network of AMoDeus mode %s: %s", mode, dropoffLink.getId()));
         }
 
-        return new AVRequest(id, passengerId, operatorPickupLink, operatorDropoffLink, departureTime, submissionTime, avRoute, mode, operatorId);
+        return new AVRequest(id, passengerId, operatorPickupLink, operatorDropoffLink, departureTime, submissionTime, avRoute, mode);
     }
 }

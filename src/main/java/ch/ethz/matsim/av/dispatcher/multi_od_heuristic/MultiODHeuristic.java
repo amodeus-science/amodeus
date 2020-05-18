@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.matsim.api.core.v01.Coord;
-import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
@@ -16,9 +15,8 @@ import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.router.util.TravelTime;
 import org.matsim.core.utils.collections.QuadTree;
 
-import ch.ethz.matsim.av.config.operator.DispatcherConfig;
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
-import ch.ethz.matsim.av.data.AVOperator;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
+import ch.ethz.matsim.av.config.modal.DispatcherConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.dispatcher.AVVehicleAssignmentEvent;
@@ -37,7 +35,7 @@ public class MultiODHeuristic implements AVDispatcher {
     private boolean reoptimize = true;
     private double nextReplanningTimestamp = 0.0;
 
-    final private Id<AVOperator> operatorId;
+    final private String mode;
     final private EventsManager eventsManager;
     final private double replanningInterval;
     final private long numberOfSeats;
@@ -54,14 +52,14 @@ public class MultiODHeuristic implements AVDispatcher {
 
     final private Map<AVVehicle, AggregatedRequest> vehicle2Request = new HashMap<>();
 
-    private SingleHeuristicDispatcher.HeuristicMode mode = SingleHeuristicDispatcher.HeuristicMode.OVERSUPPLY;
+    private SingleHeuristicDispatcher.HeuristicMode dispatcherMode = SingleHeuristicDispatcher.HeuristicMode.OVERSUPPLY;
 
     final private AggregateRideAppender appender;
     final private FactorTravelTimeEstimator estimator;
 
-    public MultiODHeuristic(Id<AVOperator> operatorId, EventsManager eventsManager, Network network, AggregateRideAppender appender, FactorTravelTimeEstimator estimator,
+    public MultiODHeuristic(String mode, EventsManager eventsManager, Network network, AggregateRideAppender appender, FactorTravelTimeEstimator estimator,
             double replanningInterval, long numberOfSeats) {
-        this.operatorId = operatorId;
+        this.mode = mode;
         this.eventsManager = eventsManager;
         this.appender = appender;
         this.estimator = estimator;
@@ -95,16 +93,16 @@ public class MultiODHeuristic implements AVDispatcher {
         SingleHeuristicDispatcher.HeuristicMode updatedMode = availableVehicles.size() > pendingRequests.size() ? SingleHeuristicDispatcher.HeuristicMode.OVERSUPPLY
                 : SingleHeuristicDispatcher.HeuristicMode.UNDERSUPPLY;
 
-        if (!updatedMode.equals(mode)) {
-            mode = updatedMode;
-            eventsManager.processEvent(new ModeChangeEvent(mode, operatorId, now));
+        if (!updatedMode.equals(dispatcherMode)) {
+            dispatcherMode = updatedMode;
+            eventsManager.processEvent(new ModeChangeEvent(dispatcherMode, mode, now));
         }
 
         while (pendingRequests.size() > 0 && availableVehicles.size() > 0) {
             AggregatedRequest request = null;
             AVVehicle vehicle = null;
 
-            switch (mode) {
+            switch (dispatcherMode) {
             case OVERSUPPLY:
                 request = findRequest();
                 vehicle = findClosestVehicle(request.getMasterRequest().getFromLink());
@@ -202,7 +200,7 @@ public class MultiODHeuristic implements AVDispatcher {
     @Override
     public void addVehicle(AVVehicle vehicle) {
         addVehicle(vehicle, vehicle.getStartLink());
-        eventsManager.processEvent(new AVVehicleAssignmentEvent(operatorId, vehicle.getId(), 0));
+        eventsManager.processEvent(new AVVehicleAssignmentEvent(mode, vehicle.getId(), 0));
     }
 
     private void addVehicle(AVVehicle vehicle, Link link) {
@@ -230,7 +228,7 @@ public class MultiODHeuristic implements AVDispatcher {
         public AVDispatcher createDispatcher(InstanceGetter inject) {
             EventsManager eventsManager = inject.get(EventsManager.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);
-            OperatorConfig operatorConfig = inject.getModal(OperatorConfig.class);
+            AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
             Network network = inject.getModal(Network.class);
             AVRouter parallelRouter = inject.getModal(AVRouter.class);
 
@@ -242,7 +240,7 @@ public class MultiODHeuristic implements AVDispatcher {
 
             FactorTravelTimeEstimator estimator = new FactorTravelTimeEstimator(threshold);
 
-            return new MultiODHeuristic(operatorConfig.getId(), eventsManager, network,
+            return new MultiODHeuristic(operatorConfig.getMode(), eventsManager, network,
                     new ParallelAggregateRideAppender(operatorConfig.getTimingConfig(), parallelRouter, travelTime, estimator), estimator, replanningInterval, numberOfSeats);
         }
     }

@@ -5,11 +5,10 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.vehicles.Vehicle;
 
-import ch.ethz.matsim.av.data.AVOperator;
-
 public class PassengerRideItem {
+    public String mode;
+
     public Id<Person> personId;
-    public Id<AVOperator> operatorId;
     public Id<Vehicle> vehicleId;
 
     public Link originLink;

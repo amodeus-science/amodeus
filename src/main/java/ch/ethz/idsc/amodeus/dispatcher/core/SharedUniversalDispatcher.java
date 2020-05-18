@@ -31,7 +31,7 @@ import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDriveTaskTracker;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationObjectCompiler;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.generator.AVGenerator;
@@ -71,7 +71,7 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
     /* package */ static final double SIMTIMESTEP = 1.0;// This is used in the Shared Universal Dispatcher to see if a task will end in the next timestep.
     private Double lastTime = null;
 
-    protected SharedUniversalDispatcher(Config config, OperatorConfig operatorConfig, //
+    protected SharedUniversalDispatcher(Config config, AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, //
             EventsManager eventsManager, MatsimAmodeusDatabase db) {
         super(eventsManager, config, operatorConfig, travelTime, //

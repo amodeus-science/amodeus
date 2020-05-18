@@ -17,29 +17,27 @@ import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.facilities.ActivityFacilities;
 import org.matsim.vehicles.VehicleType;
 
-import ch.ethz.matsim.av.config.operator.GeneratorConfig;
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
-import ch.ethz.matsim.av.data.AVOperator;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
+import ch.ethz.matsim.av.config.modal.GeneratorConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
 
 public class PopulationDensityGenerator implements AVGenerator {
     static public final String TYPE = "PopulationDensity";
 
+    private final String mode;
     private final int randomSeed;
     private final long numberOfVehicles;
     private final VehicleType vehicleType;
 
-    private final Id<AVOperator> operatorId;
-
     private List<Link> linkList = new LinkedList<>();
     private Map<Link, Double> cumulativeDensity = new HashMap<>();
 
-    public PopulationDensityGenerator(Id<AVOperator> operatorId, int numberOfVehicles, Network network, Population population, ActivityFacilities facilities, int randomSeed,
+    public PopulationDensityGenerator(String mode, int numberOfVehicles, Network network, Population population, ActivityFacilities facilities, int randomSeed,
             VehicleType vehicleType) {
         this.randomSeed = randomSeed;
         this.numberOfVehicles = numberOfVehicles;
         this.vehicleType = vehicleType;
-        this.operatorId = operatorId;
+        this.mode = mode;
 
         // Determine density
         double sum = 0.0;
@@ -92,7 +90,7 @@ public class PopulationDensityGenerator implements AVGenerator {
                 }
             }
 
-            Id<DvrpVehicle> id = AVUtils.createId(operatorId, generatedNumberOfVehicles);
+            Id<DvrpVehicle> id = AmodeusIdentifiers.createVehicleId(mode, generatedNumberOfVehicles);
             vehicles.add(new AVVehicle(id, selectedLink, 0.0, Double.POSITIVE_INFINITY, vehicleType));
         }
 
@@ -102,17 +100,17 @@ public class PopulationDensityGenerator implements AVGenerator {
     static public class Factory implements AVGenerator.AVGeneratorFactory {
         @Override
         public AVGenerator createGenerator(InstanceGetter inject) {
-            OperatorConfig operatorConfig = inject.getModal(OperatorConfig.class);
+            AmodeusModeConfig modeConfig = inject.getModal(AmodeusModeConfig.class);
             VehicleType vehicleType = inject.getModal(VehicleType.class);
             Network network = inject.getModal(Network.class);
 
             Population population = inject.get(Population.class);
             ActivityFacilities facilities = inject.get(ActivityFacilities.class);
 
-            GeneratorConfig generatorConfig = operatorConfig.getGeneratorConfig();
+            GeneratorConfig generatorConfig = modeConfig.getGeneratorConfig();
             int randomSeed = Integer.parseInt(generatorConfig.getParams().getOrDefault("randomSeed", "1234"));
 
-            return new PopulationDensityGenerator(operatorConfig.getId(), generatorConfig.getNumberOfVehicles(), network, population, facilities, randomSeed, vehicleType);
+            return new PopulationDensityGenerator(modeConfig.getMode(), generatorConfig.getNumberOfVehicles(), network, population, facilities, randomSeed, vehicleType);
         }
     }
 }

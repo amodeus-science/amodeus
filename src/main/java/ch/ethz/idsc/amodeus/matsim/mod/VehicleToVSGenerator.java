@@ -26,10 +26,10 @@ import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.Floor;
 import ch.ethz.idsc.tensor.sca.Sign;
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.generator.AVGenerator;
-import ch.ethz.matsim.av.generator.AVUtils;
+import ch.ethz.matsim.av.generator.AmodeusIdentifiers;
 
 /** class generates {@link AVVehicle}s. It takes the required minimal initial vehicle numbers from
  * {@link TravelData}. In each virtual station it places the required number of vehicles.
@@ -46,11 +46,11 @@ public class VehicleToVSGenerator implements AVGenerator {
     private final Tensor vehicleDistribution;
     private final Random random;
     private final VehicleType vehicleType;
-    private final OperatorConfig operatorConfig;
+    private final AmodeusModeConfig operatorConfig;
     // ---
     protected Tensor placedVehicles;
 
-    public VehicleToVSGenerator(OperatorConfig operatorConfig, //
+    public VehicleToVSGenerator(AmodeusModeConfig operatorConfig, //
             VirtualNetwork<Link> virtualNetwork, //
             TravelData travelData, VehicleType vehicleType) {
         this.operatorConfig = operatorConfig;
@@ -84,7 +84,7 @@ public class VehicleToVSGenerator implements AVGenerator {
             Link linkGen = getNextLink(virtualNetwork.getVirtualNode(vNodeIndex));
             /** update placedVehicles */
             placedVehicles.set(RealScalar.ONE::add, vNodeIndex);
-            Id<DvrpVehicle> id = AVUtils.createId(operatorConfig.getId(), generatedNumberOfVehicles);
+            Id<DvrpVehicle> id = AmodeusIdentifiers.createVehicleId(operatorConfig.getMode(), generatedNumberOfVehicles);
             vehicles.add(new AVVehicle(id, linkGen, 0.0, Double.POSITIVE_INFINITY, vehicleType));
         }
         return vehicles;
@@ -114,7 +114,7 @@ public class VehicleToVSGenerator implements AVGenerator {
     public static class Factory implements AVGenerator.AVGeneratorFactory {
         @Override
         public AVGenerator createGenerator(InstanceGetter inject) {
-            OperatorConfig operatorConfig = inject.getModal(OperatorConfig.class);
+            AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
             VehicleType vehicleType = inject.getModal(VehicleType.class);
 
             VirtualNetwork<Link> virtualNetwork = inject.getModal(new TypeLiteral<VirtualNetwork<Link>>() {

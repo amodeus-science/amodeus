@@ -24,8 +24,8 @@ import ch.ethz.idsc.amodeus.util.io.Locate;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
-import ch.ethz.matsim.av.config.AVConfigGroup;
-import ch.ethz.matsim.av.config.operator.GeneratorConfig;
+import ch.ethz.matsim.av.config.AmodeusConfigGroup;
+import ch.ethz.matsim.av.config.modal.GeneratorConfig;
 
 public class LPMinFlowTest {
     private static VirtualNetwork<Link> virtualNetwork2;
@@ -44,9 +44,9 @@ public class LPMinFlowTest {
         scenarioOptions = new ScenarioOptions(scenarioDirectory, ScenarioOptionsBase.getDefault());
         File configFile = new File(scenarioOptions.getPreparerConfigName());
         System.out.println("configFile: " + configFile.getAbsolutePath());
-        AVConfigGroup avCg = new AVConfigGroup();
+        AmodeusConfigGroup avCg = new AmodeusConfigGroup();
         Config config = ConfigUtils.loadConfig(configFile.getAbsolutePath(), avCg);
-        GeneratorConfig genConfig = avCg.getOperatorConfigs().values().iterator().next().getGeneratorConfig();
+        GeneratorConfig genConfig = avCg.getModes().values().iterator().next().getGeneratorConfig();
         int numRt = genConfig.getNumberOfVehicles();
         int endTime = (int) config.qsim().getEndTime().seconds();
         Scenario scenario = ScenarioUtils.loadScenario(config);

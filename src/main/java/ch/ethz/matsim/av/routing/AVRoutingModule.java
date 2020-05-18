@@ -3,7 +3,6 @@ package ch.ethz.matsim.av.routing;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
@@ -13,16 +12,13 @@ import org.matsim.core.router.RoutingModule;
 import org.matsim.core.utils.geometry.CoordUtils;
 import org.matsim.facilities.Facility;
 
-import ch.ethz.matsim.av.data.AVOperator;
 import ch.ethz.matsim.av.financial.PriceCalculator;
-import ch.ethz.matsim.av.replanning.AVOperatorChoiceStrategy;
 import ch.ethz.matsim.av.routing.interaction.AVInteractionFinder;
 import ch.ethz.matsim.av.waiting_time.WaitingTime;
 
 public class AVRoutingModule implements RoutingModule {
     static final public String INTERACTION_ACTIVITY_TYPE = "av interaction";
 
-    private final AVOperatorChoiceStrategy choiceStrategy;
     private final AVRouteFactory routeFactory;
     private final RoutingModule walkRoutingModule;
     private final PopulationFactory populationFactory;
@@ -36,10 +32,8 @@ public class AVRoutingModule implements RoutingModule {
 
     private final String mode;
 
-    public AVRoutingModule(AVOperatorChoiceStrategy choiceStrategy, AVRouteFactory routeFactory, AVInteractionFinder interactionFinder, WaitingTime waitingTime,
-            PopulationFactory populationFactory, RoutingModule walkRoutingModule, boolean useAccessEgress, boolean predictRoute, RoutingModule roadRoutingModule,
-            PriceCalculator priceCalculator, String mode) {
-        this.choiceStrategy = choiceStrategy;
+    public AVRoutingModule(AVRouteFactory routeFactory, AVInteractionFinder interactionFinder, WaitingTime waitingTime, PopulationFactory populationFactory,
+            RoutingModule walkRoutingModule, boolean useAccessEgress, boolean predictRoute, RoutingModule roadRoutingModule, PriceCalculator priceCalculator, String mode) {
         this.routeFactory = routeFactory;
         this.interactionFinder = interactionFinder;
         this.waitingTime = waitingTime;
@@ -54,11 +48,6 @@ public class AVRoutingModule implements RoutingModule {
 
     @Override
     public List<? extends PlanElement> calcRoute(Facility fromFacility, Facility toFacility, double departureTime, Person person) {
-        Id<AVOperator> operatorId = choiceStrategy.chooseRandomOperator();
-        return calcRoute(fromFacility, toFacility, departureTime, person, operatorId);
-    }
-
-    public List<? extends PlanElement> calcRoute(Facility fromFacility, Facility toFacility, double departureTime, Person person, Id<AVOperator> operatorId) {
         Facility pickupFacility = interactionFinder.findPickupFacility(fromFacility, departureTime);
         Facility dropoffFacility = interactionFinder.findDropoffFacility(toFacility, departureTime);
 
@@ -105,7 +94,7 @@ public class AVRoutingModule implements RoutingModule {
         // something like that
         double vehicleDistance = Double.NaN;
         double vehicleTravelTime = Double.NaN;
-        double price = Double.NaN;
+        double price = 0.0;
 
         if (predictRoute) {
             List<? extends PlanElement> transitElements = roadRoutingModule.calcRoute(pickupFacility, dropoffFacility, vehicleDepartureTime, null);
@@ -117,14 +106,13 @@ public class AVRoutingModule implements RoutingModule {
             Leg leg = (Leg) transitElements.get(0);
             vehicleDistance = leg.getRoute().getDistance();
             vehicleTravelTime = leg.getRoute().getTravelTime().seconds();
-            price = priceCalculator.calculatePrice(operatorId, vehicleDistance, vehicleTravelTime);
+            price = priceCalculator.calculatePrice(vehicleDistance, vehicleTravelTime);
         }
 
         double totalTravelTime = vehicleTravelTime + vehicleWaitingTime;
 
         // Build Route and Leg
         AVRoute route = routeFactory.createRoute(pickupFacility.getLinkId(), dropoffFacility.getLinkId());
-        route.setOperatorId(operatorId);
         route.setDistance(vehicleDistance);
 
         if (Double.isFinite(totalTravelTime)) {

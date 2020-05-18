@@ -6,34 +6,39 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.matsim.api.core.v01.population.Person;
-import org.matsim.api.core.v01.population.Population;
-import org.matsim.core.config.groups.PlansConfigGroup;
 import org.matsim.core.population.PopulationUtils;
 
-import ch.ethz.matsim.av.config.AVConfigGroup;
 import ch.ethz.matsim.av.config.AVScoringParameterSet;
+import ch.ethz.matsim.av.config.AmodeusConfigGroup;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
 
 public class AVSubpopulationScoringParameters {
-    private final AVConfigGroup config;
-    private final String subpopulationAttributeName;
-
-    private final Map<String, AVScoringParameters> cache = new HashMap<>();
+    private final Map<String, Map<String, AVScoringParameters>> cache = new HashMap<>();
 
     @Inject
-    AVSubpopulationScoringParameters(PlansConfigGroup plansConfigGroup, AVConfigGroup config, Population population) {
-        this.config = config;
-        this.subpopulationAttributeName = plansConfigGroup.getSubpopulationAttributeName();
+    AVSubpopulationScoringParameters(AmodeusConfigGroup config) {
+        for (AmodeusModeConfig modeConfig : config.getModes().values()) {
+            for (AVScoringParameterSet set : modeConfig.getScoringParameters()) {
+                Map<String, AVScoringParameters> subpopulationParameters = cache.get(set.getSubpopulation());
+
+                if (subpopulationParameters == null) {
+                    subpopulationParameters = new HashMap<>();
+                    cache.put(set.getSubpopulation(), subpopulationParameters);
+                }
+
+                subpopulationParameters.put(modeConfig.getMode(), AVScoringParameters.fromParameterSet(set));
+            }
+        }
     }
 
-    public AVScoringParameters getScoringParameters(Person person) {
-        final String subpopulation = (String) PopulationUtils.getPersonAttribute(person, subpopulationAttributeName);
+    public Map<String, AVScoringParameters> getScoringParameters(Person person) {
+        String subpopulation = PopulationUtils.getSubpopulation(person);
+        Map<String, AVScoringParameters> subpopulationParameters = cache.get(subpopulation);
 
-        if (!cache.containsKey(subpopulation)) {
-            AVScoringParameterSet configParameters = config.getScoringParameters(subpopulation);
-            AVScoringParameters simulationParameters = new AVScoringParameters(configParameters.getMarginalUtilityOfWaitingTime() / 3600.0, configParameters.getStuckUtility());
-            cache.put(subpopulation, simulationParameters);
+        if (subpopulationParameters != null) {
+            return subpopulationParameters;
         }
 
-        return cache.get(subpopulation);
+        throw new IllegalStateException(String.format("No scoring parameters defined in AMoDeus for subpopulation %s", subpopulation));
     }
 }

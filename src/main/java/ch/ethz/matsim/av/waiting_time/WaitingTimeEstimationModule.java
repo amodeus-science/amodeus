@@ -1,6 +1,5 @@
 package ch.ethz.matsim.av.waiting_time;
 
-import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.dvrp.run.AbstractDvrpModeModule;
 import org.matsim.contrib.dvrp.run.ModalProviders;
@@ -8,23 +7,22 @@ import org.matsim.contrib.dvrp.run.ModalProviders;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import ch.ethz.matsim.av.config.AVConfigGroup;
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
-import ch.ethz.matsim.av.data.AVOperator;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
+import ch.ethz.matsim.av.config.modal.AmodeusWaitingTimeEstimationConfig;
 
-public class WaitingTimeModeModule extends AbstractDvrpModeModule {
-    private final Id<AVOperator> operatorId;
+public class WaitingTimeEstimationModule extends AbstractDvrpModeModule {
+    private final AmodeusModeConfig modeConfig;
 
-    public WaitingTimeModeModule(Id<AVOperator> operatorId, String mode) {
-        super(mode);
-        this.operatorId = operatorId;
+    public WaitingTimeEstimationModule(AmodeusModeConfig modeConfig) {
+        super(modeConfig.getMode());
+        this.modeConfig = modeConfig;
     }
 
     @Override
     public void install() {
-        OperatorConfig operatorConfig = AVConfigGroup.getOrCreate(getConfig()).getOperatorConfig(operatorId);
+        AmodeusWaitingTimeEstimationConfig waitingTimeConfig = modeConfig.getWaitingTimeEstimationConfig();
 
-        if (operatorConfig.getWaitingTimeConfig().getEstimationAlpha() > 0.0) {
+        if (waitingTimeConfig.getEstimationAlpha() > 0.0) {
             bindModal(WaitingTimeCollector.class).toProvider(new WaitingTimeCollectorProvider(getMode())).in(Singleton.class);
             bindModal(WaitingTimeListener.class).toProvider(new WaitingTimeListenerProvider(getMode())).in(Singleton.class);
 
@@ -46,8 +44,8 @@ public class WaitingTimeModeModule extends AbstractDvrpModeModule {
         @Override
         public WaitingTime get() {
             Network network = getModalInstance(Network.class);
-            OperatorConfig operatorConfig = getModalInstance(OperatorConfig.class);
-            return factory.createWaitingTime(operatorConfig, network);
+            AmodeusModeConfig modeConfig = getModalInstance(AmodeusModeConfig.class);
+            return factory.createWaitingTime(modeConfig, network);
         }
     };
 

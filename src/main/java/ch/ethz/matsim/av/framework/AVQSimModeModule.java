@@ -23,7 +23,7 @@ import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
 
 import ch.ethz.idsc.amodeus.matsim.mod.TrackingHelper;
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
 import ch.ethz.matsim.av.data.AVData;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
@@ -38,8 +38,11 @@ import ch.ethz.matsim.av.vrpagent.AVAgentSource;
 import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
 public class AVQSimModeModule extends AbstractDvrpModeQSimModule {
-    protected AVQSimModeModule(String mode) {
-        super(mode);
+    private final AmodeusModeConfig modeConfig;
+
+    protected AVQSimModeModule(AmodeusModeConfig modeConfig) {
+        super(modeConfig.getMode());
+        this.modeConfig = modeConfig;
     }
 
     @Override
@@ -47,16 +50,14 @@ public class AVQSimModeModule extends AbstractDvrpModeQSimModule {
         install(new PassengerEngineQSimModule(getMode()));
 
         bindModal(PassengerRequestCreator.class).toProvider(modalProvider(getter -> {
-            OperatorConfig operatorConfig = getter.getModal(OperatorConfig.class);
             Network network = getter.getModal(Network.class);
-
-            return new AVRequestCreator(operatorConfig.getId(), network, getMode());
+            return new AVRequestCreator(getMode(), network);
         })).in(Singleton.class);
 
         bindModal(DynActionCreator.class).toProvider(modalProvider(getter -> {
             PassengerEngine passengerEngine = getter.getModal(PassengerEngine.class);
             VrpLegFactory legFactory = getter.getModal(VrpLegFactory.class);
-            OperatorConfig operatorConfig = getter.getModal(OperatorConfig.class);
+            AmodeusModeConfig operatorConfig = getter.getModal(AmodeusModeConfig.class);
 
             return new AVActionCreator(passengerEngine, legFactory, operatorConfig.getTimingConfig());
         })).in(Singleton.class);
@@ -83,7 +84,7 @@ public class AVQSimModeModule extends AbstractDvrpModeQSimModule {
         }).toProvider(new VehiclesProvider(getMode())).in(Singleton.class);
 
         bindModal(AVDispatcher.class).toProvider(modalProvider(getter -> {
-            OperatorConfig operatorConfig = getter.getModal(OperatorConfig.class);
+            AmodeusModeConfig operatorConfig = getter.getModal(AmodeusModeConfig.class);
             String dispatcherName = operatorConfig.getDispatcherConfig().getType();
 
             AVDispatcher dispatcher = getter.get(DispatcherRegistry.class).get(dispatcherName).createDispatcher(getter);
@@ -96,7 +97,7 @@ public class AVQSimModeModule extends AbstractDvrpModeQSimModule {
         })).in(Singleton.class);
 
         bindModal(AVGenerator.class).toProvider(modalProvider(getter -> {
-            OperatorConfig operatorConfig = getter.getModal(OperatorConfig.class);
+            AmodeusModeConfig operatorConfig = getter.getModal(AmodeusModeConfig.class);
             String generatorName = operatorConfig.getGeneratorConfig().getType();
 
             return getter.get(GeneratorRegistry.class).get(generatorName).createGenerator(getter);

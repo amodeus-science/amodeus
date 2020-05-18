@@ -30,11 +30,10 @@ import ch.ethz.idsc.amodeus.util.io.Locate;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkGet;
-import ch.ethz.matsim.av.config.AVConfigGroup;
-import ch.ethz.matsim.av.config.operator.DispatcherConfig;
-import ch.ethz.matsim.av.config.operator.GeneratorConfig;
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
-import ch.ethz.matsim.av.data.AVOperator;
+import ch.ethz.matsim.av.config.AmodeusConfigGroup;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
+import ch.ethz.matsim.av.config.modal.DispatcherConfig;
+import ch.ethz.matsim.av.config.modal.GeneratorConfig;
 import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
 import ch.ethz.refactoring.AmodeusConfigurator;
 
@@ -47,8 +46,8 @@ public class MATSimVirtualNetworkTravelDataTest {
         for (int i = 0; i < 2; i++) {
             Controler controler = prepare();
 
-            AVConfigGroup.getOrCreate(controler.getConfig()).getOperatorConfigs().values().iterator().next().getParams().put("regenerateVirtualNetwork", "false");
-            AVConfigGroup.getOrCreate(controler.getConfig()).getOperatorConfigs().values().iterator().next().getParams().put("regenerateTravelData", "false");
+            AmodeusConfigGroup.get(controler.getConfig()).getModes().values().iterator().next().getParams().put("regenerateVirtualNetwork", "false");
+            AmodeusConfigGroup.get(controler.getConfig()).getModes().values().iterator().next().getParams().put("regenerateTravelData", "false");
 
             controler.run();
 
@@ -91,7 +90,7 @@ public class MATSimVirtualNetworkTravelDataTest {
         MatsimRandom.reset();
 
         // Set up
-        Config config = ConfigUtils.createConfig(new AVConfigGroup(), new DvrpConfigGroup());
+        Config config = ConfigUtils.createConfig(new AmodeusConfigGroup(), new DvrpConfigGroup());
         Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
 
         ScenarioOptions simOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
@@ -104,17 +103,13 @@ public class MATSimVirtualNetworkTravelDataTest {
         modeParams.setMarginalUtilityOfTraveling(8.86);
         modeParams.setConstant(0.0);
 
-        Controler controller = new Controler(scenario);
-        AmodeusConfigurator.configureController(controller, db, simOptions);
-
         // Config
 
-        AVConfigGroup avConfig = AVConfigGroup.getOrCreate(config);
-        avConfig.setAllowedLinkMode("car");
+        AmodeusConfigGroup avConfig = AmodeusConfigGroup.get(config);
 
-        OperatorConfig operatorConfig = new OperatorConfig();
-        operatorConfig.setId(AVOperator.createId("test"));
-        avConfig.addOperator(operatorConfig);
+        AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
+        operatorConfig.setAllowedLinkMode("car");
+        avConfig.addMode(operatorConfig);
 
         GeneratorConfig generatorConfig = operatorConfig.getGeneratorConfig();
         generatorConfig.setType("VehicleToVSGenerator");
@@ -136,6 +131,10 @@ public class MATSimVirtualNetworkTravelDataTest {
         // Set up paths
         operatorConfig.getParams().put("virtualNetworkPath", "generatedVirtualNetwork");
         operatorConfig.getParams().put("travelDataPath", "generatedTravelData");
+
+        // Controller
+        Controler controller = new Controler(scenario);
+        AmodeusConfigurator.configureController(controller, db, simOptions);
 
         // Run
         return controller;

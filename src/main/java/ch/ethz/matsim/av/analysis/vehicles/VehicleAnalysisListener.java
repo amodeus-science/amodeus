@@ -24,8 +24,7 @@ import org.matsim.vehicles.Vehicle;
 
 import ch.ethz.matsim.av.analysis.LinkFinder;
 import ch.ethz.matsim.av.analysis.PassengerTracker;
-import ch.ethz.matsim.av.data.AVOperator;
-import ch.ethz.matsim.av.generator.AVUtils;
+import ch.ethz.matsim.av.generator.AmodeusIdentifiers;
 
 public class VehicleAnalysisListener implements PersonDepartureEventHandler, PersonArrivalEventHandler, ActivityStartEventHandler, ActivityEndEventHandler, LinkEnterEventHandler,
         PersonEntersVehicleEventHandler, PersonLeavesVehicleEventHandler {
@@ -44,14 +43,14 @@ public class VehicleAnalysisListener implements PersonDepartureEventHandler, Per
 
     @Override
     public void handleEvent(PersonDepartureEvent event) {
-        if (event.getPersonId().toString().startsWith("av:")) {
-            Id<AVOperator> operatorId = AVUtils.getOperatorId(event.getPersonId());
+        if (AmodeusIdentifiers.isValid(event.getPersonId())) {
+            String mode = AmodeusIdentifiers.getMode(event.getPersonId());
             Id<Vehicle> vehicleId = Id.createVehicleId(event.getPersonId());
 
             VehicleMovementItem movement = new VehicleMovementItem();
             movements.add(movement);
 
-            movement.operatorId = operatorId;
+            movement.mode = mode;
             movement.vehicleId = vehicleId;
 
             movement.originLink = linkFinder.getLink(event.getLinkId());
@@ -63,7 +62,7 @@ public class VehicleAnalysisListener implements PersonDepartureEventHandler, Per
 
     @Override
     public void handleEvent(LinkEnterEvent event) {
-        if (event.getVehicleId().toString().startsWith("av:")) {
+        if (AmodeusIdentifiers.isValid(event.getVehicleId())) {
             VehicleMovementItem movement = currentMovements.get(event.getVehicleId());
 
             if (movement == null) {
@@ -76,7 +75,7 @@ public class VehicleAnalysisListener implements PersonDepartureEventHandler, Per
 
     @Override
     public void handleEvent(PersonEntersVehicleEvent event) {
-        if (!event.getPersonId().toString().startsWith("av:")) {
+        if (!AmodeusIdentifiers.isValid(event.getPersonId())) {
             if (event.getVehicleId().toString().startsWith("av:")) {
                 passengers.addPassenger(event.getVehicleId(), event.getPersonId());
             }
@@ -85,7 +84,7 @@ public class VehicleAnalysisListener implements PersonDepartureEventHandler, Per
 
     @Override
     public void handleEvent(PersonLeavesVehicleEvent event) {
-        if (!event.getPersonId().toString().startsWith("av:")) {
+        if (!AmodeusIdentifiers.isValid(event.getPersonId())) {
             if (event.getVehicleId().toString().startsWith("av:")) {
                 passengers.removePassenger(event.getVehicleId(), event.getPersonId());
             }
@@ -94,7 +93,7 @@ public class VehicleAnalysisListener implements PersonDepartureEventHandler, Per
 
     @Override
     public void handleEvent(PersonArrivalEvent event) {
-        if (event.getPersonId().toString().startsWith("av:")) {
+        if (AmodeusIdentifiers.isValid(event.getPersonId())) {
             Id<Vehicle> vehicleId = Id.createVehicleId(event.getPersonId());
 
             VehicleMovementItem movement = currentMovements.remove(vehicleId);
@@ -112,14 +111,14 @@ public class VehicleAnalysisListener implements PersonDepartureEventHandler, Per
 
     @Override
     public void handleEvent(ActivityStartEvent event) {
-        if (event.getPersonId().toString().startsWith("av:")) {
-            Id<AVOperator> operatorId = AVUtils.getOperatorId(event.getPersonId());
+        if (AmodeusIdentifiers.isValid(event.getPersonId())) {
+            String mode = AmodeusIdentifiers.getMode(event.getPersonId());
             Id<Vehicle> vehicleId = Id.createVehicleId(event.getPersonId());
 
             VehicleActivityItem activity = new VehicleActivityItem();
             activities.add(activity);
 
-            activity.operatorId = operatorId;
+            activity.mode = mode;
             activity.vehicleId = vehicleId;
 
             activity.link = linkFinder.getLink(event.getLinkId());
@@ -133,8 +132,8 @@ public class VehicleAnalysisListener implements PersonDepartureEventHandler, Per
 
     @Override
     public void handleEvent(ActivityEndEvent event) {
-        if (event.getPersonId().toString().startsWith("av:")) {
-            Id<AVOperator> operatorId = AVUtils.getOperatorId(event.getPersonId());
+        if (AmodeusIdentifiers.isValid(event.getPersonId())) {
+            String mode = AmodeusIdentifiers.getMode(event.getPersonId());
             Id<Vehicle> vehicleId = Id.createVehicleId(event.getPersonId());
 
             VehicleActivityItem activity = currentActivities.remove(vehicleId);
@@ -145,7 +144,7 @@ public class VehicleAnalysisListener implements PersonDepartureEventHandler, Per
                 activities.add(activity);
             }
 
-            activity.operatorId = operatorId;
+            activity.mode = mode;
             activity.vehicleId = vehicleId;
 
             activity.link = linkFinder.getLink(event.getLinkId());

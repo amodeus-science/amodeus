@@ -1,4 +1,4 @@
-package ch.ethz.matsim.av.config.operator;
+package ch.ethz.matsim.av.config.modal;
 
 import org.matsim.core.config.ReflectiveConfigGroup;
 

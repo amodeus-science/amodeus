@@ -28,7 +28,7 @@ import ch.ethz.idsc.amodeus.net.SimulationObjectCompiler;
 import ch.ethz.idsc.amodeus.net.SimulationObjects;
 import ch.ethz.idsc.amodeus.net.StorageUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.AVVehicleAssignmentEvent;
 import ch.ethz.matsim.av.generator.AVGenerator;
@@ -47,11 +47,12 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
     protected final double pickupDurationPerStop;
     protected final double dropoffDurationPerStop;
     int total_matchedRequests = 0;
+    private final String dispatcherMode;
 
     private Map<RoboTaxi, List<Link>> tempLocationTrace = new HashMap<>();
 
     public BasicUniversalDispatcher(EventsManager eventsManager, Config config, //
-            OperatorConfig operatorConfig, //
+            AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, //
             MatsimAmodeusDatabase db) {
         super(eventsManager, config, operatorConfig);
@@ -61,6 +62,7 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
         dropoffDurationPerStop = operatorConfig.getTimingConfig().getDropoffDurationPerStop();
         SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
         publishPeriod = safeConfig.getInteger("publishPeriod", 10);
+        dispatcherMode = operatorConfig.getMode();
     }
 
     /** @return {@Collection} of all {@AVRequests} which are currently open.
@@ -96,7 +98,7 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
      * or unit capacity case. */
     protected final void addVehicle(AVVehicle vehicle, RoboTaxiUsageType singleOrShared) {
         RoboTaxi roboTaxi = new RoboTaxi(vehicle, new LinkTimePair(vehicle.getStartLink(), 0.0), vehicle.getStartLink(), singleOrShared);
-        Event event = new AVVehicleAssignmentEvent(operatorId, vehicle.getId(), 0);
+        Event event = new AVVehicleAssignmentEvent(dispatcherMode, vehicle.getId(), 0);
         addRoboTaxi(roboTaxi, event);
         tempLocationTrace.put(roboTaxi, new ArrayList<>());
     }

@@ -2,30 +2,32 @@
 package ch.ethz.idsc.amodeus.analysis.service;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.api.experimental.events.EventsManager;
-import org.matsim.core.events.EventsReaderXMLv1;
 import org.matsim.core.events.EventsUtils;
+import org.matsim.core.events.MatsimEventsReader;
 
-import ch.ethz.matsim.av.schedule.AVTransitEventMapper;
+import ch.ethz.matsim.av.analysis.LinkFinder;
+import ch.ethz.matsim.av.analysis.passengers.PassengerAnalysisListener;
+import ch.ethz.matsim.av.analysis.passengers.PassengerAnalysisWriter;
 
 public enum ConvertAVServicesFromEvents {
     ;
 
-    public static void write(Network network, String outputPath, String eventsPath) {
-        AVServiceWriter writer = new AVServiceWriter(new File(outputPath));
-        AVServiceListener listener = new AVServiceListener(network, writer);
+    public static void write(Network network, String outputPath, String eventsPath) throws IOException {
+        System.out.println("Read File from " + eventsPath);
+
+        LinkFinder linkFinder = new LinkFinder(network);
+        PassengerAnalysisListener listener = new PassengerAnalysisListener(linkFinder);
 
         EventsManager eventsManager = EventsUtils.createEventsManager();
         eventsManager.addHandler(listener);
+        new MatsimEventsReader(eventsManager).readFile(eventsPath);
 
-        EventsReaderXMLv1 reader = new EventsReaderXMLv1(eventsManager);
-        reader.addCustomEventMapper("AVTransit", new AVTransitEventMapper());
-        System.out.println("Read File from " + eventsPath);
-        reader.readFile(eventsPath);
+        new PassengerAnalysisWriter(listener).writeRides(new File(outputPath));
 
-        writer.close();
         System.out.println("Exported " + outputPath);
     }
 }

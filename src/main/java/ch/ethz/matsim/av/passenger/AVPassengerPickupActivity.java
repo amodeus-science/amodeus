@@ -10,7 +10,7 @@ import org.matsim.contrib.dvrp.schedule.StayTask;
 import org.matsim.contrib.dynagent.DynAgent;
 import org.matsim.core.mobsim.framework.MobsimPassengerAgent;
 
-import ch.ethz.matsim.av.config.operator.TimingConfig;
+import ch.ethz.matsim.av.config.modal.TimingConfig;
 
 public class AVPassengerPickupActivity implements PassengerPickupActivity {
     private final DvrpVehicle vehicle;
