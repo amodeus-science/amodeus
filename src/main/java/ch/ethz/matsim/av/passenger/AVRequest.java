@@ -19,8 +19,6 @@ public class AVRequest implements PassengerRequest {
 
     private final String mode;
 
-    // TODO: Can we remove Dispatcher and Operator from here?
-    // And the tasks.
     public AVRequest(Id<Request> id, Id<Person> passengerId, Link pickupLink, Link dropoffLink, double pickupTime, double submissionTime, AVRoute route, String mode) {
         this.id = id;
         this.passengerId = passengerId;

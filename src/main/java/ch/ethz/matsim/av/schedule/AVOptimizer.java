@@ -114,6 +114,7 @@ public class AVOptimizer implements VrpOptimizer, OnlineTrackerListener, MobsimB
     @Override
     public void notifyMobsimBeforeSimStep(@SuppressWarnings("rawtypes") MobsimBeforeSimStepEvent e) {
         now = e.getSimulationTime();
+        dispatcher.onNextTimestep(now);
     }
 
     private void processTransitEvent(AmodeusDropoffTask task) {

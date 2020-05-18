@@ -13,6 +13,7 @@ import org.matsim.contrib.dvrp.passenger.PassengerEngine;
 import org.matsim.contrib.dvrp.passenger.PassengerEngineQSimModule;
 import org.matsim.contrib.dvrp.passenger.PassengerRequestCreator;
 import org.matsim.contrib.dvrp.run.AbstractDvrpModeQSimModule;
+import org.matsim.contrib.dvrp.run.DvrpModes;
 import org.matsim.contrib.dvrp.run.ModalProviders;
 import org.matsim.contrib.dvrp.vrpagent.VrpAgentLogic.DynActionCreator;
 import org.matsim.contrib.dvrp.vrpagent.VrpLegFactory;
@@ -27,7 +28,6 @@ import ch.ethz.matsim.av.config.AmodeusModeConfig;
 import ch.ethz.matsim.av.data.AVData;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
-import ch.ethz.matsim.av.dispatcher.AVDispatchmentListener;
 import ch.ethz.matsim.av.framework.registry.DispatcherRegistry;
 import ch.ethz.matsim.av.framework.registry.GeneratorRegistry;
 import ch.ethz.matsim.av.generator.AVGenerator;
@@ -71,11 +71,6 @@ public class AVQSimModeModule extends AbstractDvrpModeQSimModule {
             return new AVAgentSource(actionCreator, fleet, optimizer, qsim);
         })).in(Singleton.class);
 
-        bindModal(AVDispatchmentListener.class).toProvider(modalProvider(getter -> {
-            return new AVDispatchmentListener(getter.getModal(AVDispatcher.class));
-        })).in(Singleton.class);
-
-        addModalQSimComponentBinding().to(modalKey(AVDispatchmentListener.class));
         addModalQSimComponentBinding().to(modalKey(AVAgentSource.class));
 
         // TODO: I think these two can be combined by refactoring AVData, Fleet and those classes
@@ -114,9 +109,7 @@ public class AVQSimModeModule extends AbstractDvrpModeQSimModule {
             return new AVOptimizer(dispatcher, eventsManager);
         })).in(Singleton.class);
         addModalQSimComponentBinding().to(modalKey(AVOptimizer.class));
-
-        // TODO: Ugly, can we skip this?
-        bindModal(VrpOptimizer.class).to(modalKey(AVOptimizer.class)).in(Singleton.class);
+        bindModal(VrpOptimizer.class).to(DvrpModes.key(AVOptimizer.class, getMode())).in(Singleton.class);
 
         // TODO: Can we replace this?
         bindModal(VrpLegFactory.class).toProvider(modalProvider(getter -> {
@@ -124,15 +117,6 @@ public class AVQSimModeModule extends AbstractDvrpModeQSimModule {
             QSim qsim = getter.get(QSim.class);
 
             return TrackingHelper.createLegCreatorWithIDSCTracking(optimizer, qsim.getSimTimer());
-
-            /* return new VrpLegFactory() {
-             * 
-             * @Override
-             * public VrpLeg create(DvrpVehicle vehicle) {
-             * //return VrpLegFactory.createWithOnlineTracker(TransportMode.car, vehicle, optimizer, qsim.getSimTimer());
-             * return TrackingHelper.createLegCreatorWithIDSCTracking(optimizer, qsim.getSimTimer());
-             * }
-             * }; */
         })).in(Singleton.class);
     }
 
