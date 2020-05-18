@@ -57,8 +57,6 @@ public class AVScoringFunction implements SumScoringFunction.ArbitraryEventScori
 
     @Override
     public void handleEvent(Event event) {
-        // TODO: Validate here that we do not switch modes in between
-
         if (event instanceof PersonDepartureEvent) {
             String mode = ((PersonDepartureEvent) event).getLegMode();
 

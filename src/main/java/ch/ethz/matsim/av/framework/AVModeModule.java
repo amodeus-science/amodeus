@@ -11,7 +11,6 @@ import org.matsim.contrib.dvrp.run.AbstractDvrpModeModule;
 import org.matsim.contrib.dvrp.run.DvrpModes;
 import org.matsim.contrib.dvrp.run.ModalProviders;
 import org.matsim.contrib.dvrp.trafficmonitoring.DvrpTravelTimeModule;
-import org.matsim.core.population.routes.RouteFactories;
 import org.matsim.core.router.RoutingModule;
 import org.matsim.core.router.util.TravelTime;
 import org.matsim.vehicles.VehicleType;
@@ -21,7 +20,6 @@ import org.matsim.vehicles.Vehicles;
 import com.google.inject.Inject;
 import com.google.inject.Key;
 import com.google.inject.Provider;
-import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
@@ -35,7 +33,6 @@ import ch.ethz.matsim.av.network.AVNetworkFilter;
 import ch.ethz.matsim.av.network.AVNetworkProvider;
 import ch.ethz.matsim.av.router.AVRouter;
 import ch.ethz.matsim.av.router.AVRouterShutdownListener;
-import ch.ethz.matsim.av.routing.AVRoute;
 import ch.ethz.matsim.av.routing.AVRouteFactory;
 import ch.ethz.matsim.av.routing.AVRoutingModule;
 import ch.ethz.matsim.av.routing.interaction.AVInteractionFinder;
@@ -88,14 +85,6 @@ public class AVModeModule extends AbstractDvrpModeModule {
         install(new WaitingTimeEstimationModule(modeConfig));
 
         bindModal(PriceCalculator.class).toProvider(new PriceCalculatorProider(modeConfig));
-    }
-
-    @Provides
-    RouteFactories provideRouteFactories(AVRouteFactory routeFactory) {
-        // TODO: Is there a smarter way now?
-        RouteFactories factories = new RouteFactories();
-        factories.setRouteFactory(AVRoute.class, routeFactory);
-        return factories;
     }
 
     static private class NetworkProvider extends ModalProviders.AbstractProvider<Network> {
