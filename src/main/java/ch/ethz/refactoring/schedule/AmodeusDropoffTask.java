@@ -20,8 +20,6 @@ public class AmodeusDropoffTask extends StayTask {
         super(AmodeusTaskType.DROPOFF, beginTime, endTime, link);
 
         this.requests.addAll(requests);
-        for (AVRequest request : requests)
-            request.setDropoffTask(this);
     }
 
     public Set<AVRequest> getRequests() {
@@ -30,6 +28,5 @@ public class AmodeusDropoffTask extends StayTask {
 
     public void addRequest(AVRequest request) {
         requests.add(request);
-        request.setDropoffTask(this); // REFACTOR
     }
 }

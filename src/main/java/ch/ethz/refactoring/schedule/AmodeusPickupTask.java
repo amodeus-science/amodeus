@@ -22,13 +22,10 @@ public class AmodeusPickupTask extends StayTask {
         this(beginTime, endTime, link, earliestDepartureTime);
 
         this.requests.addAll(requests);
-        for (AVRequest request : requests)
-            request.setPickupTask(this);
     }
 
     public void addRequest(AVRequest request) {
         requests.add(request);
-        request.setPickupTask(this);
     }
 
     public Set<AVRequest> getRequests() {

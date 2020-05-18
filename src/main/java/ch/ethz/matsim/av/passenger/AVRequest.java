@@ -7,8 +7,6 @@ import org.matsim.contrib.dvrp.optimizer.Request;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.matsim.av.routing.AVRoute;
-import ch.ethz.refactoring.schedule.AmodeusDropoffTask;
-import ch.ethz.refactoring.schedule.AmodeusPickupTask;
 
 public class AVRequest implements PassengerRequest {
     final private Id<Request> id;
@@ -18,9 +16,6 @@ public class AVRequest implements PassengerRequest {
     final private Link dropoffLink;
     final private Id<Person> passengerId;
     final private AVRoute route;
-
-    private AmodeusPickupTask pickupTask;
-    private AmodeusDropoffTask dropoffTask;
 
     private final String mode;
 
@@ -49,22 +44,6 @@ public class AVRequest implements PassengerRequest {
     @Override
     public Id<Person> getPassengerId() {
         return passengerId;
-    }
-
-    public AmodeusPickupTask getPickupTask() {
-        return pickupTask;
-    }
-
-    public void setPickupTask(AmodeusPickupTask pickupTask) {
-        this.pickupTask = pickupTask;
-    }
-
-    public AmodeusDropoffTask getDropoffTask() {
-        return dropoffTask;
-    }
-
-    public void setDropoffTask(AmodeusDropoffTask dropoffTask) {
-        this.dropoffTask = dropoffTask;
     }
 
     public AVRoute getRoute() {
