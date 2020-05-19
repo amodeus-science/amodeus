@@ -21,21 +21,17 @@ public class AmodeusModeConfig extends ReflectiveConfigGroup implements Modal {
     static public final String MODE = "mode";
 
     static public final String ROUTER_TYPE = "routerType";
-    static public final String ALLOWED_LINK_ATTRIBUTE = "allowedLinkAttribute";
-    static public final String CLEAN_NETWORK = "cleanNetwork";
     static public final String PREDICT_ROUTE_TRAVEL_TIME = "predictRouteTravelTime";
     static public final String PREDICT_ROUTE_PRICE = "predictRoutePrice";
-    static final public String ALLOWED_LINK_MODE = "allowedLinkMode";
+    static final public String USE_MODE_FILTERED_SUBNETWORK = "useModeFilteredSubnetwork";
     static final public String USE_ACCESS_EGRESS = "useAccessEgress";
 
     private String mode = "av";
 
-    private String allowedLinkAttribute = null;
-    private boolean cleanNetwork = false;
     private boolean predictRouteTravelTime = false;
     private boolean predictRoutePrice = false;
     private boolean useAccessEgress = false;
-    private String allowedLinkMode = null;
+    private boolean useModeFilteredSubnetwork = false;
 
     private AmodeusPricingConfig pricingConfig = new AmodeusPricingConfig();
     private AmodeusWaitingTimeEstimationConfig waitingTimeEstimationConfig = new AmodeusWaitingTimeEstimationConfig();
@@ -222,16 +218,6 @@ public class AmodeusModeConfig extends ReflectiveConfigGroup implements Modal {
 
     // Getters and setters
 
-    @StringGetter(ALLOWED_LINK_ATTRIBUTE)
-    public String getAllowedLinkAttribute() {
-        return allowedLinkAttribute;
-    }
-
-    @StringSetter(ALLOWED_LINK_ATTRIBUTE)
-    public void setAllowedLinkAttribute(String allowedLinkAttribute) {
-        this.allowedLinkAttribute = allowedLinkAttribute;
-    }
-
     @StringGetter(PREDICT_ROUTE_TRAVEL_TIME)
     public boolean getPredictRouteTravelTime() {
         return predictRouteTravelTime;
@@ -252,14 +238,14 @@ public class AmodeusModeConfig extends ReflectiveConfigGroup implements Modal {
         this.predictRoutePrice = predictRoutePrice;
     }
 
-    @StringGetter(CLEAN_NETWORK)
-    public boolean getCleanNetwork() {
-        return cleanNetwork;
+    @StringGetter(USE_MODE_FILTERED_SUBNETWORK)
+    public boolean getUseModeFilteredSubnetwork() {
+        return useModeFilteredSubnetwork;
     }
 
-    @StringSetter(CLEAN_NETWORK)
-    public void setCleanNetwork(boolean cleanNetwork) {
-        this.cleanNetwork = cleanNetwork;
+    @StringSetter(USE_MODE_FILTERED_SUBNETWORK)
+    public void setUseModeFilteredSubnetwork(boolean useModeFilteredSubnetwork) {
+        this.useModeFilteredSubnetwork = useModeFilteredSubnetwork;
     }
 
     @StringGetter(USE_ACCESS_EGRESS)
@@ -270,16 +256,6 @@ public class AmodeusModeConfig extends ReflectiveConfigGroup implements Modal {
     @StringSetter(USE_ACCESS_EGRESS)
     public void setUseAccessAgress(boolean useAccessEgress) {
         this.useAccessEgress = useAccessEgress;
-    }
-
-    @StringGetter(ALLOWED_LINK_MODE)
-    public String getAllowedLinkMode() {
-        return allowedLinkMode;
-    }
-
-    @StringSetter(ALLOWED_LINK_MODE)
-    public void setAllowedLinkMode(String allowedLinkMode) {
-        this.allowedLinkMode = allowedLinkMode;
     }
 
     @StringGetter(MODE)

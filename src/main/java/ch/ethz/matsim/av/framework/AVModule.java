@@ -22,8 +22,6 @@ import ch.ethz.matsim.av.framework.registry.GeneratorRegistry;
 import ch.ethz.matsim.av.framework.registry.RouterRegistry;
 import ch.ethz.matsim.av.generator.AVGenerator;
 import ch.ethz.matsim.av.generator.PopulationDensityGenerator;
-import ch.ethz.matsim.av.network.AVNetworkFilter;
-import ch.ethz.matsim.av.network.NullNetworkFilter;
 import ch.ethz.matsim.av.router.AVRouter;
 import ch.ethz.matsim.av.router.DefaultAVRouter;
 import ch.ethz.matsim.av.routing.AVRouteFactory;
@@ -50,7 +48,6 @@ public class AVModule extends AbstractModule {
         addControlerListenerBinding().to(AnalysisOutputListener.class);
 
         bind(AVSubpopulationScoringParameters.class);
-        bind(AVNetworkFilter.class).to(NullNetworkFilter.class);
 
         for (AmodeusModeConfig modeConfig : AmodeusConfigGroup.get(getConfig()).getModes().values()) {
             install(new AVModeModule(modeConfig));
@@ -58,12 +55,6 @@ public class AVModule extends AbstractModule {
 
         bind(StandardWaitingTimeFactory.class);
         bind(WaitingTimeFactory.class).to(StandardWaitingTimeFactory.class);
-    }
-
-    @Provides
-    @Singleton
-    public NullNetworkFilter provideNullNetworkFilter() {
-        return new NullNetworkFilter();
     }
 
     @Provides

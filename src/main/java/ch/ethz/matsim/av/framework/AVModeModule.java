@@ -7,6 +7,7 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.PopulationFactory;
 import org.matsim.contrib.dvrp.passenger.DefaultPassengerRequestValidator;
 import org.matsim.contrib.dvrp.passenger.PassengerRequestValidator;
+import org.matsim.contrib.dvrp.router.DvrpModeRoutingNetworkModule;
 import org.matsim.contrib.dvrp.run.AbstractDvrpModeModule;
 import org.matsim.contrib.dvrp.run.DvrpModes;
 import org.matsim.contrib.dvrp.run.ModalProviders;
@@ -29,8 +30,6 @@ import ch.ethz.matsim.av.config.modal.InteractionFinderConfig;
 import ch.ethz.matsim.av.financial.PriceCalculator;
 import ch.ethz.matsim.av.financial.StaticPriceCalculator;
 import ch.ethz.matsim.av.framework.registry.RouterRegistry;
-import ch.ethz.matsim.av.network.AVNetworkFilter;
-import ch.ethz.matsim.av.network.AVNetworkProvider;
 import ch.ethz.matsim.av.router.AVRouter;
 import ch.ethz.matsim.av.router.AVRouterShutdownListener;
 import ch.ethz.matsim.av.routing.AVRouteFactory;
@@ -55,7 +54,7 @@ public class AVModeModule extends AbstractDvrpModeModule {
         bindModal(AmodeusModeConfig.class).toInstance(modeConfig);
 
         // Network
-        bindModal(Network.class).toProvider(new NetworkProvider(getMode())).in(Singleton.class);
+        install(new DvrpModeRoutingNetworkModule(getMode(), modeConfig.getUseModeFilteredSubnetwork()));
 
         // Routing module
         bindModal(AVRoutingModule.class).toProvider(new RoutingModuleProvider(getMode()));
@@ -86,31 +85,6 @@ public class AVModeModule extends AbstractDvrpModeModule {
 
         bindModal(PriceCalculator.class).toProvider(new PriceCalculatorProider(modeConfig));
     }
-
-    static private class NetworkProvider extends ModalProviders.AbstractProvider<Network> {
-        @Inject
-        AVNetworkFilter customFilter; // TODO: Make modal
-
-        @Inject
-        Network fullNetwork;
-
-        NetworkProvider(String mode) {
-            super(mode);
-        }
-
-        @Override
-        public Network get() {
-            AmodeusModeConfig modeConfig = getModalInstance(AmodeusModeConfig.class);
-
-            String allowedLinkMode = modeConfig.getAllowedLinkMode(); // TODO: Make modal (or implicit)
-            String allowedLinkAttribute = modeConfig.getAllowedLinkAttribute();
-
-            boolean cleanNetwork = modeConfig.getCleanNetwork();
-            AVNetworkProvider provider = new AVNetworkProvider(allowedLinkMode, allowedLinkAttribute, cleanNetwork);
-
-            return provider.apply(getMode(), fullNetwork, customFilter);
-        }
-    };
 
     static private class RoutingModuleProvider extends ModalProviders.AbstractProvider<AVRoutingModule> {
         @Inject

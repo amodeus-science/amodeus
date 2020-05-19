@@ -123,7 +123,6 @@ public class AVQSimModeModule extends AbstractDvrpModeQSimModule {
             }
 
             for (AVVehicle vehicle : vehicles) {
-                // TODO: Can we avoid this by setting up AVOptimizer more sensibly?
                 vehicle.getSchedule().addTask(new AmodeusStayTask(vehicle.getServiceBeginTime(), vehicle.getServiceEndTime(), vehicle.getStartLink()));
             }
 
