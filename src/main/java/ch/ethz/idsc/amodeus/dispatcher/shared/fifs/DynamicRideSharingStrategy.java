@@ -26,7 +26,7 @@ import ch.ethz.idsc.amodeus.routing.CachedNetworkTimeDistance;
 import ch.ethz.idsc.amodeus.routing.EasyMinTimePathCalculator;
 import ch.ethz.idsc.amodeus.routing.TimeDistanceProperty;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.router.AVRouter;
@@ -85,7 +85,7 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
     private static final double MAXLAGTRAVELTIMECALCULATION = 180000.0;
 
     protected DynamicRideSharingStrategy(Network network, //
-            Config config, OperatorConfig operatorConfig, //
+            Config config, AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, //
             MatsimAmodeusDatabase db) {
         super(config, operatorConfig, travelTime, router, eventsManager, db);
@@ -189,7 +189,7 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
             MatsimAmodeusDatabase db = inject.get(MatsimAmodeusDatabase.class);
             EventsManager eventsManager = inject.get(EventsManager.class);
 
-            OperatorConfig operatorConfig = inject.getModal(OperatorConfig.class);
+            AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
             Network network = inject.getModal(Network.class);
             AVRouter router = inject.getModal(AVRouter.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);

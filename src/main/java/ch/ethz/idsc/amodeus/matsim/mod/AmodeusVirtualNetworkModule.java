@@ -29,8 +29,8 @@ import ch.ethz.idsc.amodeus.traveldata.TravelDataIO;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkGet;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkIO;
-import ch.ethz.matsim.av.config.AVConfigGroup;
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
+import ch.ethz.matsim.av.config.AmodeusConfigGroup;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
 
 /** provides the {@link VirtualNetwork} and {@link TravelData} and therefore {@link VirtualNetworkPreparer} has to be run in the Preparer */
 public class AmodeusVirtualNetworkModule extends AbstractModule {
@@ -58,9 +58,9 @@ public class AmodeusVirtualNetworkModule extends AbstractModule {
         @Override
         public VirtualNetwork<Link> get() {
             try {
-                OperatorConfig operatorConfig = getModalInstance(OperatorConfig.class);
+                AmodeusModeConfig operatorConfig = getModalInstance(AmodeusModeConfig.class);
 
-                logger.info(String.format("Loading VirtualNetwork for operator '%s' from ScenarioOptions:", operatorConfig.getId()));
+                logger.info(String.format("Loading VirtualNetwork for mode '%s' from ScenarioOptions:", operatorConfig.getMode()));
                 logger.info(String.format("  - creator: ", scenarioOptions.getVirtualNetworkCreator().getClass().getSimpleName()));
                 logger.info(String.format("  - name: ", scenarioOptions.getVirtualNetworkName()));
 
@@ -89,7 +89,7 @@ public class AmodeusVirtualNetworkModule extends AbstractModule {
         @Override
         public VirtualNetwork<Link> get() {
             try {
-                OperatorConfig operatorConfig = getModalInstance(OperatorConfig.class);
+                AmodeusModeConfig operatorConfig = getModalInstance(AmodeusModeConfig.class);
                 Network network = getModalInstance(Network.class);
 
                 String virtualNetworkPath = operatorConfig.getParams().get("virtualNetworkPath");
@@ -101,7 +101,7 @@ public class AmodeusVirtualNetworkModule extends AbstractModule {
                 boolean regenerateVirtualNetwork = Boolean.parseBoolean(regenerateVirtualNetworkParameter);
 
                 if (!virtualNetworkFile.exists() || regenerateVirtualNetwork) {
-                    logger.info(String.format("Regenerating VirtualNetwork for operator '%s' at '%s'", operatorConfig.getId(), virtualNetworkFile));
+                    logger.info(String.format("Regenerating VirtualNetwork for mode '%s' at '%s'", operatorConfig.getMode(), virtualNetworkFile));
                     logger.info("Currently we use information from ScenarioOptions for that. Later on this should be moved to a specific config module.");
                     logger.info(String.format("Using VirtualNetworkCreator: %s", scenarioOptions.getVirtualNetworkCreator().getClass().getSimpleName()));
 
@@ -112,7 +112,7 @@ public class AmodeusVirtualNetworkModule extends AbstractModule {
                     VirtualNetworkIO.toByte(virtualNetworkFile, virtualNetwork);
                 }
 
-                logger.info(String.format("Loading VirtualNetwork for operator '%s' from '%s'", operatorConfig.getId(), virtualNetworkFile));
+                logger.info(String.format("Loading VirtualNetwork for operator '%s' from '%s'", operatorConfig.getMode(), virtualNetworkFile));
                 return VirtualNetworkGet.readFile(network, virtualNetworkFile);
             } catch (IOException | ClassNotFoundException | DataFormatException e) {
                 throw new RuntimeException(e);
@@ -121,7 +121,7 @@ public class AmodeusVirtualNetworkModule extends AbstractModule {
     }
 
     public void installVirtualNetworks() {
-        for (OperatorConfig operatorConfig : AVConfigGroup.getOrCreate(getConfig()).getOperatorConfigs().values()) {
+        for (AmodeusModeConfig operatorConfig : AmodeusConfigGroup.get(getConfig()).getModes().values()) {
             // TODO: Make this a proper option!
             String virtualNetworkPath = operatorConfig.getParams().get("virtualNetworkPath");
 
@@ -150,9 +150,9 @@ public class AmodeusVirtualNetworkModule extends AbstractModule {
 
         @Override
         public TravelData get() {
-            OperatorConfig operatorConfig = getModalInstance(OperatorConfig.class);
+            AmodeusModeConfig operatorConfig = getModalInstance(AmodeusModeConfig.class);
 
-            logger.info(String.format("Loading TravelData for operator '%s' from ScenarioOptions:", operatorConfig.getId()));
+            logger.info(String.format("Loading TravelData for mode '%s' from ScenarioOptions:", operatorConfig.getMode()));
             logger.info(String.format("  - name: ", scenarioOptions.getTravelDataName()));
 
             VirtualNetwork<Link> virtualNetwork = getModalInstance(new TypeLiteral<VirtualNetwork<Link>>() {
@@ -179,7 +179,7 @@ public class AmodeusVirtualNetworkModule extends AbstractModule {
         @Override
         public TravelData get() {
             try {
-                OperatorConfig operatorConfig = getModalInstance(OperatorConfig.class);
+                AmodeusModeConfig operatorConfig = getModalInstance(AmodeusModeConfig.class);
                 VirtualNetwork<Link> virtualNetwork = getModalInstance(new TypeLiteral<VirtualNetwork<Link>>() {
                 });
                 Network network = getModalInstance(Network.class);
@@ -194,7 +194,7 @@ public class AmodeusVirtualNetworkModule extends AbstractModule {
                 boolean regenerateTravelData = Boolean.parseBoolean(regenerateTravelDataParameter);
 
                 if (!travelDataFile.exists() || regenerateTravelData) {
-                    logger.info(String.format("Regenerating TravelData for operator '%s' at '%s'", operatorConfig.getId(), travelDataFile));
+                    logger.info(String.format("Regenerating TravelData for mode '%s' at '%s'", operatorConfig.getMode(), travelDataFile));
                     logger.info("Currently we use information from ScenarioOptions for that. Later on this should be moved to a specific config module.");
                     logger.info("Using StaticTravelDataCreator");
 
@@ -207,7 +207,7 @@ public class AmodeusVirtualNetworkModule extends AbstractModule {
                     TravelDataIO.writeStatic(travelDataFile, travelData);
                 }
 
-                logger.info(String.format("Loading TravelData for operator '%s' from '%s'", operatorConfig.getId(), travelDataFile));
+                logger.info(String.format("Loading TravelData for mode '%s' from '%s'", operatorConfig.getMode(), travelDataFile));
                 return TravelDataGet.readFile(virtualNetwork, travelDataFile);
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -216,7 +216,7 @@ public class AmodeusVirtualNetworkModule extends AbstractModule {
     }
 
     public void installTravelDatas() {
-        for (OperatorConfig operatorConfig : AVConfigGroup.getOrCreate(getConfig()).getOperatorConfigs().values()) {
+        for (AmodeusModeConfig operatorConfig : AmodeusConfigGroup.get(getConfig()).getModes().values()) {
             String travelDataPath = operatorConfig.getParams().get("travelDataPath");
 
             if (travelDataPath == null) {

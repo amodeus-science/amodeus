@@ -14,10 +14,10 @@ import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.gbl.MatsimRandom;
 import org.matsim.vehicles.VehicleType;
 
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.generator.AVGenerator;
-import ch.ethz.matsim.av.generator.AVUtils;
+import ch.ethz.matsim.av.generator.AmodeusIdentifiers;
 
 /** class generates {@link AVVehicle}s and places them at a random link.
  * each link is equally likely.
@@ -29,9 +29,9 @@ public class RandomDensityGenerator implements AVGenerator {
     // ---
     private final Network network;
     private final VehicleType vehicleType;
-    private final OperatorConfig operatorConfig;
+    private final AmodeusModeConfig operatorConfig;
 
-    public RandomDensityGenerator(OperatorConfig operatorConfig, Network network, VehicleType vehicleType) {
+    public RandomDensityGenerator(AmodeusModeConfig operatorConfig, Network network, VehicleType vehicleType) {
         this.network = Objects.requireNonNull(network);
         this.operatorConfig = operatorConfig;
         this.vehicleType = vehicleType;
@@ -49,7 +49,7 @@ public class RandomDensityGenerator implements AVGenerator {
             Link link = network.getLinks().values().stream().skip(elemRand).findFirst().get();
             LOGGER.info("car placed at link " + link);
 
-            Id<DvrpVehicle> id = AVUtils.createId(operatorConfig.getId(), generatedVehicles);
+            Id<DvrpVehicle> id = AmodeusIdentifiers.createVehicleId(operatorConfig.getMode(), generatedVehicles);
             AVVehicle vehicle = new AVVehicle(id, link, 0.0, Double.POSITIVE_INFINITY, vehicleType);
             vehicles.add(vehicle);
         }
@@ -59,7 +59,7 @@ public class RandomDensityGenerator implements AVGenerator {
     public static class Factory implements AVGenerator.AVGeneratorFactory {
         @Override
         public AVGenerator createGenerator(InstanceGetter inject) {
-            OperatorConfig operatorConfig = inject.getModal(OperatorConfig.class);
+            AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
             Network network = inject.getModal(Network.class);
             VehicleType vehicleType = inject.getModal(VehicleType.class);
 

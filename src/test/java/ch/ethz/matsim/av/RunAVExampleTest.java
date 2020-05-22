@@ -21,9 +21,9 @@ import org.matsim.core.config.groups.StrategyConfigGroup.StrategySettings;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.utils.geometry.CoordUtils;
 
-import ch.ethz.matsim.av.config.AVConfigGroup;
 import ch.ethz.matsim.av.config.AVScoringParameterSet;
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
+import ch.ethz.matsim.av.config.AmodeusConfigGroup;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
 import ch.ethz.matsim.av.dispatcher.multi_od_heuristic.MultiODHeuristic;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.framework.AVQSimModule;
@@ -34,16 +34,16 @@ import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
 public class RunAVExampleTest {
     @Test
     public void testAVExample() {
-        AVConfigGroup avConfigGroup = new AVConfigGroup();
+        AmodeusConfigGroup avConfigGroup = new AmodeusConfigGroup();
 
-        AVScoringParameterSet scoringParams = avConfigGroup.getScoringParameters(null);
-        scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
-
-        OperatorConfig operatorConfig = new OperatorConfig();
+        AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
         operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
         operatorConfig.getPricingConfig().setPricePerKm(0.48);
         operatorConfig.getPricingConfig().setSpatialBillingInterval(1000.0);
-        avConfigGroup.addOperator(operatorConfig);
+        avConfigGroup.addMode(operatorConfig);
+
+        AVScoringParameterSet scoringParams = operatorConfig.getScoringParameters(null);
+        scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
 
         Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
         Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
@@ -67,7 +67,7 @@ public class RunAVExampleTest {
         controler.addOverridingModule(new AVModule());
         controler.addOverridingQSimModule(new AVQSimModule());
 
-        controler.configureQSimComponents(AVQSimModule::configureComponents);
+        controler.configureQSimComponents(AVQSimModule.activateModes(avConfigGroup));
 
         TestScenarioAnalyzer analyzer = new TestScenarioAnalyzer();
         controler.addOverridingModule(analyzer);
@@ -79,14 +79,14 @@ public class RunAVExampleTest {
 
     @Test
     public void testStuckScoring() {
-        AVConfigGroup avConfigGroup = new AVConfigGroup();
+        AmodeusConfigGroup avConfigGroup = new AmodeusConfigGroup();
 
-        AVScoringParameterSet scoringParams = avConfigGroup.getScoringParameters(null);
-        scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
-
-        OperatorConfig operatorConfig = new OperatorConfig();
+        AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
         operatorConfig.getGeneratorConfig().setNumberOfVehicles(0);
-        avConfigGroup.addOperator(operatorConfig);
+        avConfigGroup.addMode(operatorConfig);
+
+        AVScoringParameterSet scoringParams = operatorConfig.getScoringParameters(null);
+        scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
 
         Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
         Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
@@ -97,7 +97,7 @@ public class RunAVExampleTest {
         controler.addOverridingModule(new AVModule());
         controler.addOverridingQSimModule(new AVQSimModule());
 
-        controler.configureQSimComponents(AVQSimModule::configureComponents);
+        controler.configureQSimComponents(AVQSimModule.activateModes(avConfigGroup));
 
         controler.run();
 
@@ -108,17 +108,17 @@ public class RunAVExampleTest {
 
     @Test
     public void testMultiOD() {
-        AVConfigGroup avConfigGroup = new AVConfigGroup();
+        AmodeusConfigGroup avConfigGroup = new AmodeusConfigGroup();
 
-        AVScoringParameterSet scoringParams = avConfigGroup.getScoringParameters(null);
-        scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
-
-        OperatorConfig operatorConfig = new OperatorConfig();
+        AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
         operatorConfig.getDispatcherConfig().setType(MultiODHeuristic.TYPE);
         operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
         operatorConfig.getPricingConfig().setPricePerKm(0.48);
         operatorConfig.getPricingConfig().setSpatialBillingInterval(1000.0);
-        avConfigGroup.addOperator(operatorConfig);
+        avConfigGroup.addMode(operatorConfig);
+
+        AVScoringParameterSet scoringParams = operatorConfig.getScoringParameters(null);
+        scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
 
         Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
         Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
@@ -133,7 +133,7 @@ public class RunAVExampleTest {
         controler.addOverridingModule(new AVModule());
         controler.addOverridingQSimModule(new AVQSimModule());
 
-        controler.configureQSimComponents(AVQSimModule::configureComponents);
+        controler.configureQSimComponents(AVQSimModule.activateModes(avConfigGroup));
 
         TestScenarioAnalyzer analyzer = new TestScenarioAnalyzer();
         controler.addOverridingModule(analyzer);
@@ -145,18 +145,18 @@ public class RunAVExampleTest {
 
     @Test
     public void testAVExampleWithAccessEgress() {
-        AVConfigGroup avConfigGroup = new AVConfigGroup();
+        AmodeusConfigGroup avConfigGroup = new AmodeusConfigGroup();
 
-        AVScoringParameterSet scoringParams = avConfigGroup.getScoringParameters(null);
-        scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
-
-        OperatorConfig operatorConfig = new OperatorConfig();
+        AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
         operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
         operatorConfig.getPricingConfig().setPricePerKm(0.48);
         operatorConfig.getPricingConfig().setSpatialBillingInterval(1000.0);
-        avConfigGroup.addOperator(operatorConfig);
+        avConfigGroup.addMode(operatorConfig);
 
-        avConfigGroup.setUseAccessAgress(true);
+        AVScoringParameterSet scoringParams = operatorConfig.getScoringParameters(null);
+        scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
+
+        operatorConfig.setUseAccessAgress(true);
 
         Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
         Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
@@ -187,7 +187,7 @@ public class RunAVExampleTest {
         controler.addOverridingModule(new AVModule());
         controler.addOverridingQSimModule(new AVQSimModule());
 
-        controler.configureQSimComponents(AVQSimModule::configureComponents);
+        controler.configureQSimComponents(AVQSimModule.activateModes(avConfigGroup));
 
         TestScenarioAnalyzer analyzer = new TestScenarioAnalyzer();
         controler.addOverridingModule(analyzer);
@@ -200,20 +200,20 @@ public class RunAVExampleTest {
 
     @Test
     public void testAVExampleWithAccessEgressAttribute() {
-        AVConfigGroup avConfigGroup = new AVConfigGroup();
+        AmodeusConfigGroup avConfigGroup = new AmodeusConfigGroup();
 
-        AVScoringParameterSet scoringParams = avConfigGroup.getScoringParameters(null);
-        scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
-
-        OperatorConfig operatorConfig = new OperatorConfig();
+        AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
         operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
         operatorConfig.getPricingConfig().setPricePerKm(0.48);
         operatorConfig.getPricingConfig().setSpatialBillingInterval(1000.0);
         operatorConfig.getInteractionFinderConfig().setType(LinkAttributeInteractionFinder.TYPE);
         operatorConfig.getInteractionFinderConfig().getParams().put("allowedLinkAttribute", "avflag");
-        avConfigGroup.addOperator(operatorConfig);
+        avConfigGroup.addMode(operatorConfig);
 
-        avConfigGroup.setUseAccessAgress(true);
+        AVScoringParameterSet scoringParams = operatorConfig.getScoringParameters(null);
+        scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
+
+        operatorConfig.setUseAccessAgress(true);
 
         Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
         Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
@@ -241,7 +241,7 @@ public class RunAVExampleTest {
         controler.addOverridingModule(new AVModule());
         controler.addOverridingQSimModule(new AVQSimModule());
 
-        controler.configureQSimComponents(AVQSimModule::configureComponents);
+        controler.configureQSimComponents(AVQSimModule.activateModes(avConfigGroup));
 
         TestScenarioAnalyzer analyzer = new TestScenarioAnalyzer();
         controler.addOverridingModule(analyzer);

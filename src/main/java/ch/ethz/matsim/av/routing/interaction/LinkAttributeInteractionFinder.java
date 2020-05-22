@@ -6,8 +6,8 @@ import org.matsim.facilities.Facility;
 
 import com.google.inject.Singleton;
 
-import ch.ethz.matsim.av.config.operator.InteractionFinderConfig;
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
+import ch.ethz.matsim.av.config.modal.InteractionFinderConfig;
 
 public class LinkAttributeInteractionFinder implements AVInteractionFinder {
     public final static String TYPE = "LinkAttribute";
@@ -35,14 +35,14 @@ public class LinkAttributeInteractionFinder implements AVInteractionFinder {
     @Singleton
     public static class Factory implements AVInteractionFinderFactory {
         @Override
-        public AVInteractionFinder createInteractionFinder(OperatorConfig operatorConfig, Network network) {
+        public AVInteractionFinder createInteractionFinder(AmodeusModeConfig operatorConfig, Network network) {
             InteractionFinderConfig interactionConfig = operatorConfig.getInteractionFinderConfig();
 
             String attributeName = interactionConfig.getParams().getOrDefault("allowedLinkAttribute", "avAccessEgress");
             InteractionLinkData data = InteractionLinkData.fromAttribute(attributeName, network);
 
             if (data.getNumberOfLinks() == 0) {
-                throw new IllegalStateException("Did not find any interaction point for operator: " + operatorConfig.getId());
+                throw new IllegalStateException("Did not find any interaction point for mode: " + operatorConfig.getMode());
             }
 
             return new LinkAttributeInteractionFinder(data);

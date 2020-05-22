@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.matsim.api.core.v01.Coord;
-import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
@@ -16,8 +15,7 @@ import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.router.util.TravelTime;
 import org.matsim.core.utils.collections.QuadTree;
 
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
-import ch.ethz.matsim.av.data.AVOperator;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.dispatcher.AVVehicleAssignmentEvent;
@@ -34,7 +32,7 @@ public class SingleHeuristicDispatcher implements AVDispatcher {
     private double nextReplanningTimestamp = 0.0;
 
     final private SingleRideAppender appender;
-    final private Id<AVOperator> operatorId;
+    final private String mode;
     final private EventsManager eventsManager;
     final private double replanningInterval;
 
@@ -51,11 +49,11 @@ public class SingleHeuristicDispatcher implements AVDispatcher {
         OVERSUPPLY, UNDERSUPPLY
     }
 
-    private HeuristicMode mode = HeuristicMode.OVERSUPPLY;
+    private HeuristicMode dispatcherMode = HeuristicMode.OVERSUPPLY;
 
-    public SingleHeuristicDispatcher(Id<AVOperator> operatorId, EventsManager eventsManager, Network network, SingleRideAppender appender, double replanningInterval) {
+    public SingleHeuristicDispatcher(String mode, EventsManager eventsManager, Network network, SingleRideAppender appender, double replanningInterval) {
         this.appender = appender;
-        this.operatorId = operatorId;
+        this.mode = mode;
         this.eventsManager = eventsManager;
         this.replanningInterval = replanningInterval;
 
@@ -81,16 +79,16 @@ public class SingleHeuristicDispatcher implements AVDispatcher {
     private void reoptimize(double now) {
         HeuristicMode updatedMode = availableVehicles.size() > pendingRequests.size() ? HeuristicMode.OVERSUPPLY : HeuristicMode.UNDERSUPPLY;
 
-        if (!updatedMode.equals(mode)) {
-            mode = updatedMode;
-            eventsManager.processEvent(new ModeChangeEvent(mode, operatorId, now));
+        if (!updatedMode.equals(dispatcherMode)) {
+            dispatcherMode = updatedMode;
+            eventsManager.processEvent(new ModeChangeEvent(dispatcherMode, mode, now));
         }
 
         while (pendingRequests.size() > 0 && availableVehicles.size() > 0) {
             AVRequest request = null;
             AVVehicle vehicle = null;
 
-            switch (mode) {
+            switch (dispatcherMode) {
             case OVERSUPPLY:
                 request = findRequest();
                 vehicle = findClosestVehicle(request.getFromLink());
@@ -150,7 +148,7 @@ public class SingleHeuristicDispatcher implements AVDispatcher {
 
     @Override
     public void addVehicle(AVVehicle vehicle) {
-        eventsManager.processEvent(new AVVehicleAssignmentEvent(operatorId, vehicle.getId(), 0));
+        eventsManager.processEvent(new AVVehicleAssignmentEvent(mode, vehicle.getId(), 0));
         addVehicle(vehicle, vehicle.getStartLink());
     }
 
@@ -186,13 +184,13 @@ public class SingleHeuristicDispatcher implements AVDispatcher {
         public AVDispatcher createDispatcher(InstanceGetter inject) {
             EventsManager eventsManager = inject.get(EventsManager.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);
-            OperatorConfig operatorConfig = inject.getModal(OperatorConfig.class);
+            AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
             AVRouter router = inject.getModal(AVRouter.class);
             Network network = inject.getModal(Network.class);
 
             double replanningInterval = Double.parseDouble(operatorConfig.getDispatcherConfig().getParams().getOrDefault("replanningInterval", "10.0"));
 
-            return new SingleHeuristicDispatcher(operatorConfig.getId(), eventsManager, network, new SingleRideAppender(operatorConfig.getTimingConfig(), router, travelTime),
+            return new SingleHeuristicDispatcher(operatorConfig.getMode(), eventsManager, network, new SingleRideAppender(operatorConfig.getTimingConfig(), router, travelTime),
                     replanningInterval);
         }
     }

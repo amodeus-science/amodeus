@@ -1,5 +1,6 @@
 package ch.ethz.refactoring;
 
+import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.dvrp.run.DvrpModule;
 import org.matsim.contrib.dvrp.trafficmonitoring.DvrpTravelTimeModule;
@@ -19,12 +20,28 @@ import ch.ethz.idsc.amodeus.matsim.mod.AmodeusVirtualNetworkModule;
 import ch.ethz.idsc.amodeus.net.DatabaseModule;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
+import ch.ethz.matsim.av.config.AmodeusConfigGroup;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.framework.AVQSimModule;
 
 public class AmodeusConfigurator {
+    private final static Logger logger = Logger.getLogger(AmodeusConfigurator.class);
+
+    static public final String configurationChangedMessage = "" + //
+            "Attention! The configuration of Amodeus has changed after a major refactoring and simplification " + //
+            "of the project structure. In the MATSim configuration file there is no more 'av' module, but now a " + //
+            "'amodeus' module. This module is not anymore divided into 'operators', but rather 'modes'. This is " + //
+            "relevant for full MATSim simulation in which multiple AMoD modes should be simulated with different " + //
+            "control policies, pricing schemes, etc. Have a look at resources/testScenario/config_full.xml for " + //
+            "an example.";
+
     /** Configures a MATSim controller for a standard use case of AMoDeus. */
     static public void configureController(Controler controller, MatsimAmodeusDatabase db, ScenarioOptions scenarioOptions) {
+        if (controller.getConfig().getModules().containsKey("av")) {
+            logger.warn(configurationChangedMessage);
+            throw new RuntimeException();
+        }
+
         controller.addOverridingModule(new DvrpModule());
         controller.addOverridingModule(new DvrpTravelTimeModule());
         controller.addOverridingModule(new AVModule());
@@ -37,7 +54,7 @@ public class AmodeusConfigurator {
         controller.addOverridingModule(new AmodeusRouterModule());
 
         controller.addOverridingQSimModule(new AmodeusQSimModule());
-        controller.configureQSimComponents(AVQSimModule::configureComponents);
+        controller.configureQSimComponents(AVQSimModule.activateModes(AmodeusConfigGroup.get(controller.getConfig())));
 
         controller.addOverridingModule(new AbstractModule() { // REFACTOR ? Not sure if this si still needed
             @Override

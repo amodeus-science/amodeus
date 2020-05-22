@@ -3,14 +3,12 @@ package ch.ethz.matsim.av.dispatcher.single_fifo;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import org.matsim.api.core.v01.Id;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.router.util.TravelTime;
 
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
-import ch.ethz.matsim.av.data.AVOperator;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.dispatcher.AVVehicleAssignmentEvent;
@@ -28,14 +26,14 @@ public class SingleFIFODispatcher implements AVDispatcher {
 
     final private EventsManager eventsManager;
 
-    private final Id<AVOperator> operatorId;
+    private final String mode;
 
     private boolean reoptimize = false;
 
-    public SingleFIFODispatcher(Id<AVOperator> operatorId, EventsManager eventsManager, SingleRideAppender appender) {
+    public SingleFIFODispatcher(String mode, EventsManager eventsManager, SingleRideAppender appender) {
         this.appender = appender;
         this.eventsManager = eventsManager;
-        this.operatorId = operatorId;
+        this.mode = mode;
     }
 
     @Override
@@ -55,7 +53,7 @@ public class SingleFIFODispatcher implements AVDispatcher {
     @Override
     public void addVehicle(AVVehicle vehicle) {
         availableVehicles.add(vehicle);
-        eventsManager.processEvent(new AVVehicleAssignmentEvent(operatorId, vehicle.getId(), 0));
+        eventsManager.processEvent(new AVVehicleAssignmentEvent(mode, vehicle.getId(), 0));
     }
 
     private void reoptimize(double now) {
@@ -80,10 +78,10 @@ public class SingleFIFODispatcher implements AVDispatcher {
         public AVDispatcher createDispatcher(InstanceGetter inject) {
             EventsManager eventsManager = inject.get(EventsManager.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);
-            OperatorConfig operatorConfig = inject.getModal(OperatorConfig.class);
+            AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
             AVRouter router = inject.getModal(AVRouter.class);
 
-            return new SingleFIFODispatcher(operatorConfig.getId(), eventsManager, new SingleRideAppender(operatorConfig.getTimingConfig(), router, travelTime));
+            return new SingleFIFODispatcher(operatorConfig.getMode(), eventsManager, new SingleRideAppender(operatorConfig.getTimingConfig(), router, travelTime));
         }
     }
 }

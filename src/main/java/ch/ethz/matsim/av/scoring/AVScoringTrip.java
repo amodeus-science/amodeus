@@ -1,10 +1,8 @@
 package ch.ethz.matsim.av.scoring;
 
-import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.events.PersonDepartureEvent;
 import org.matsim.api.core.v01.events.PersonEntersVehicleEvent;
 
-import ch.ethz.matsim.av.data.AVOperator;
 import ch.ethz.matsim.av.schedule.AVTransitEvent;
 
 public class AVScoringTrip {
@@ -14,14 +12,13 @@ public class AVScoringTrip {
 
     private Stage stage = Stage.NONE;
 
-    private Id<AVOperator> operatorId = null;
+    private String mode = null;
     private double distance = Double.NaN;
 
     private double departureTime = Double.NaN;
     private double inVehicleTravelTime = Double.NaN;
     private double waitingTime = Double.NaN;
     private double price = Double.NaN;
-    private String mode = null;
 
     public void processDeparture(String mode, PersonDepartureEvent event) {
         if (!stage.equals(Stage.NONE))
@@ -44,18 +41,18 @@ public class AVScoringTrip {
         if (!stage.equals(Stage.TRANSIT))
             throw new IllegalStateException();
 
+        if (!mode.equals(event.getMode()))
+            throw new IllegalStateException();
+
         inVehicleTravelTime = event.getTime() - departureTime - waitingTime;
         distance = event.getRequest().getRoute().getDistance();
-        operatorId = event.getRequest().getOperatorId();
         price = event.getPrice();
 
         stage = Stage.FINISHED;
     }
 
-    public Id<AVOperator> getOperatorId() {
-        if (!stage.equals(Stage.FINISHED))
-            throw new IllegalStateException();
-        return operatorId;
+    public String getMode() {
+        return mode;
     }
 
     public double getDistance() {
@@ -92,10 +89,6 @@ public class AVScoringTrip {
         if (!stage.equals(Stage.FINISHED))
             throw new IllegalStateException();
         return price;
-    }
-
-    public String getMode() {
-        return mode;
     }
 
     public boolean isFinished() {

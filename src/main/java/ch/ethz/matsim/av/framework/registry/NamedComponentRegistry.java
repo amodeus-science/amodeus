@@ -3,6 +3,7 @@ package ch.ethz.matsim.av.framework.registry;
 import java.util.HashMap;
 import java.util.Map;
 
+/** This class is basically just a helper, because currently the ModalProviders getter does not have a getter for TypeLiterals. */
 public class NamedComponentRegistry<T> {
     private final String subject;
     private final Map<String, T> components = new HashMap<>();

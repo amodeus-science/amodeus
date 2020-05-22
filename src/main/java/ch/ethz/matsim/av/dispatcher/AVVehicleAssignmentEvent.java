@@ -6,17 +6,15 @@ import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.events.Event;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 
-import ch.ethz.matsim.av.data.AVOperator;
-
 public class AVVehicleAssignmentEvent extends Event {
     private final Id<DvrpVehicle> vehicleId;
-    private final Id<AVOperator> operatorId;
+    private final String mode;
 
-    public AVVehicleAssignmentEvent(Id<AVOperator> operatorId, Id<DvrpVehicle> vehicleId, double time) {
+    public AVVehicleAssignmentEvent(String mode, Id<DvrpVehicle> vehicleId, double time) {
         super(time);
 
         this.vehicleId = vehicleId;
-        this.operatorId = operatorId;
+        this.mode = mode;
     }
 
     @Override
@@ -28,7 +26,7 @@ public class AVVehicleAssignmentEvent extends Event {
     public Map<String, String> getAttributes() {
         Map<String, String> attr = super.getAttributes();
         attr.put("vehicle", vehicleId.toString());
-        attr.put("operator", operatorId.toString());
+        attr.put("mode", mode);
         return attr;
     }
 }

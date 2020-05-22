@@ -18,7 +18,7 @@ import ch.ethz.idsc.amodeus.dispatcher.util.TreeMaintainer;
 import ch.ethz.idsc.amodeus.dispatcher.util.WeberMaintainer;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.router.AVRouter;
 
@@ -32,7 +32,7 @@ public abstract class AbstractNoExplicitCommunication extends RebalancingDispatc
     protected final TreeMaintainer<AVRequest> requestMaintainer;
 
     protected AbstractNoExplicitCommunication(Network network, Config config, //
-            OperatorConfig operatorConfig, TravelTime travelTime, //
+            AmodeusModeConfig operatorConfig, TravelTime travelTime, //
             AVRouter router, EventsManager eventsManager, MatsimAmodeusDatabase db) {
         super(config, operatorConfig, travelTime, router, eventsManager, db);
         DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());

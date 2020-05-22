@@ -10,24 +10,22 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.matsim.api.core.v01.Id;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
 
 import ch.ethz.matsim.av.analysis.FleetDistanceListener;
-import ch.ethz.matsim.av.analysis.FleetDistanceListener.OperatorData;
-import ch.ethz.matsim.av.data.AVOperator;
+import ch.ethz.matsim.av.analysis.FleetDistanceListener.ModeData;
 
 public class DistanceAnalysisWriter implements Closeable {
-    private final Collection<Id<AVOperator>> operatorIds;
+    private final Collection<String> modes;
 
-    private Map<Id<AVOperator>, BufferedWriter> writers;
-    private Map<Id<AVOperator>, File> paths = new HashMap<>();
+    private Map<String, BufferedWriter> writers;
+    private Map<String, File> paths = new HashMap<>();
 
-    public DistanceAnalysisWriter(OutputDirectoryHierarchy outputDirectory, Collection<Id<AVOperator>> operatorIds) {
-        this.operatorIds = operatorIds;
+    public DistanceAnalysisWriter(OutputDirectoryHierarchy outputDirectory, Collection<String> modes) {
+        this.modes = modes;
 
-        for (Id<AVOperator> operatorId : operatorIds) {
-            paths.put(operatorId, new File(outputDirectory.getOutputFilename("distance_" + operatorId + ".csv")));
+        for (String mode : modes) {
+            paths.put(mode, new File(outputDirectory.getOutputFilename("distance_" + mode + ".csv")));
         }
     }
 
@@ -35,9 +33,9 @@ public class DistanceAnalysisWriter implements Closeable {
         if (writers == null) {
             writers = new HashMap<>();
 
-            for (Id<AVOperator> operatorId : operatorIds) {
+            for (String mode : modes) {
                 @SuppressWarnings("resource")
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(paths.get(operatorId))));
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(paths.get(mode))));
 
                 writer.write(String.join(";", new String[] { "occupied_distance", //
                         "empty_distance", //
@@ -45,13 +43,13 @@ public class DistanceAnalysisWriter implements Closeable {
                 }) + "\n");
                 writer.flush();
 
-                writers.put(operatorId, writer);
+                writers.put(mode, writer);
             }
         }
 
-        for (Id<AVOperator> operatorId : operatorIds) {
-            BufferedWriter writer = writers.get(operatorId);
-            OperatorData data = listener.getData(operatorId);
+        for (String mode : modes) {
+            BufferedWriter writer = writers.get(mode);
+            ModeData data = listener.getData(mode);
 
             writer.write(String.join(";", new String[] { String.valueOf(data.occupiedDistance_m), //
                     String.valueOf(data.emptyDistance_m), //
@@ -64,8 +62,8 @@ public class DistanceAnalysisWriter implements Closeable {
     @Override
     public void close() throws IOException {
         if (writers != null) {
-            for (Id<AVOperator> operatorId : operatorIds) {
-                writers.get(operatorId).close();
+            for (String mode : modes) {
+                writers.get(mode).close();
             }
         }
     }

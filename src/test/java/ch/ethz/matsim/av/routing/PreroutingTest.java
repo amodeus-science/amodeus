@@ -15,9 +15,9 @@ import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
 import org.matsim.core.config.groups.StrategyConfigGroup.StrategySettings;
 import org.matsim.core.controler.Controler;
 
-import ch.ethz.matsim.av.config.AVConfigGroup;
 import ch.ethz.matsim.av.config.AVScoringParameterSet;
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
+import ch.ethz.matsim.av.config.AmodeusConfigGroup;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.framework.AVQSimModule;
 import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
@@ -25,15 +25,17 @@ import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
 public class PreroutingTest {
     @Test
     public void testPreRouting() {
-        AVConfigGroup avConfigGroup = new AVConfigGroup();
+        AmodeusConfigGroup avConfigGroup = new AmodeusConfigGroup();
 
-        AVScoringParameterSet scoringParams = avConfigGroup.getScoringParameters(null);
-        scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
-
-        OperatorConfig operatorConfig = new OperatorConfig();
+        AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
         operatorConfig.setPredictRouteTravelTime(true);
         operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
-        avConfigGroup.addOperator(operatorConfig);
+        avConfigGroup.addMode(operatorConfig);
+
+        AVScoringParameterSet scoringParams = operatorConfig.getScoringParameters(null);
+        scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
+        
+        operatorConfig.getPricingConfig().setPricePerKm(1.0);
 
         Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
         Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
@@ -55,7 +57,7 @@ public class PreroutingTest {
         controler.addOverridingModule(new AVModule());
         controler.addOverridingQSimModule(new AVQSimModule());
 
-        controler.configureQSimComponents(AVQSimModule::configureComponents);
+        controler.configureQSimComponents(AVQSimModule.activateModes(avConfigGroup));
 
         controler.run();
 
@@ -72,6 +74,7 @@ public class PreroutingTest {
                     Assert.assertTrue(Double.isFinite(route.getWaitingTime()));
                     Assert.assertTrue(Double.isFinite(route.getInVehicleTime()));
                     Assert.assertTrue(Double.isFinite(route.getPrice()));
+                    Assert.assertTrue(route.getPrice() > 0.0);
                 }
             }
         }

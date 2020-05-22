@@ -16,8 +16,7 @@ import org.matsim.core.controler.listener.AfterMobsimListener;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import ch.ethz.matsim.av.data.AVOperator;
-import ch.ethz.matsim.av.generator.AVUtils;
+import ch.ethz.matsim.av.generator.AmodeusIdentifiers;
 
 @Singleton
 public class WaitingTimeListener implements PersonDepartureEventHandler, PersonEntersVehicleEventHandler, AfterMobsimListener {
@@ -41,12 +40,8 @@ public class WaitingTimeListener implements PersonDepartureEventHandler, PersonE
 
     @Override
     public void handleEvent(PersonEntersVehicleEvent enterEvent) {
-        if (enterEvent.getVehicleId().toString().startsWith("av:")) {
-            if (!enterEvent.getPersonId().toString().startsWith("av:")) {
-                // TODO: Refactor
-
-                Id<AVOperator> operatorId = AVUtils.getOperatorId(enterEvent.getVehicleId());
-
+        if (AmodeusIdentifiers.isValid(enterEvent.getVehicleId())) {
+            if (!AmodeusIdentifiers.isValid(enterEvent.getPersonId())) {
                 if (collector != null) {
                     PersonDepartureEvent departureEvent = departureEvents.remove(enterEvent.getPersonId());
 

@@ -42,9 +42,9 @@ import org.matsim.vehicles.VehicleUtils;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 
-import ch.ethz.matsim.av.config.AVConfigGroup;
 import ch.ethz.matsim.av.config.AVScoringParameterSet;
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
+import ch.ethz.matsim.av.config.AmodeusConfigGroup;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.multi_od_heuristic.MultiODHeuristic;
 import ch.ethz.matsim.av.framework.AVModule;
@@ -55,7 +55,7 @@ import ch.ethz.matsim.av.generator.AVGenerator;
 /** TestScenario is used to create a various elements of a test scenario. This is used in various av.dynamics tests. */
 public class TestScenario {
 
-    static public Scenario createScenario(AVConfigGroup avConfig, Collection<TestRequest> requests) {
+    static public Scenario createScenario(AmodeusConfigGroup avConfig, Collection<TestRequest> requests) {
         DvrpConfigGroup dvrpConfigGroup = new DvrpConfigGroup();
         dvrpConfigGroup.setMobsimMode("car");
         dvrpConfigGroup.setNetworkModes(ImmutableSet.of("av"));
@@ -192,23 +192,23 @@ public class TestScenario {
         }
     }
 
-    static public AVConfigGroup createConfig() {
-        AVConfigGroup config = new AVConfigGroup();
+    static public AmodeusConfigGroup createConfig() {
+        AmodeusConfigGroup config = new AmodeusConfigGroup();
 
-        AVScoringParameterSet scoringParams = config.getScoringParameters(null);
-        scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
-
-        OperatorConfig operatorConfig = new OperatorConfig();
+        AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
         operatorConfig.getDispatcherConfig().setType(MultiODHeuristic.TYPE);
         operatorConfig.getGeneratorConfig().setType("Single");
-        config.addOperator(operatorConfig);
+        config.addMode(operatorConfig);
+
+        AVScoringParameterSet scoringParams = operatorConfig.getScoringParameters(null);
+        scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
 
         operatorConfig.getTimingConfig().setPickupDurationPerPassenger(0.0);
         operatorConfig.getTimingConfig().setPickupDurationPerStop(0.0);
         operatorConfig.getTimingConfig().setDropoffDurationPerPassenger(0.0);
         operatorConfig.getTimingConfig().setDropoffDurationPerStop(0.0);
 
-        config.setUseAccessAgress(true);
+        operatorConfig.setUseAccessAgress(true);
 
         return config;
     }
@@ -235,7 +235,7 @@ public class TestScenario {
 
         controller.addOverridingQSimModule(new AVQSimModule());
 
-        controller.configureQSimComponents(AVQSimModule::configureComponents);
+        controller.configureQSimComponents(AVQSimModule.activateModes("av"));
 
         return controller;
     }

@@ -27,7 +27,7 @@ import ch.ethz.idsc.amodeus.net.TensorCoords;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.router.AVRouter;
@@ -52,7 +52,7 @@ public class SQMDispatcher extends PartitionedDispatcher {
     private final List<Link> virtualCenters;
     private final FastLinkLookup fastLinkLookup;
 
-    protected SQMDispatcher(Config config, OperatorConfig operatorConfig, //
+    protected SQMDispatcher(Config config, AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, AVRouter router, //
             EventsManager eventsManager, Network network, //
             VirtualNetwork<Link> virtualNetwork, MatsimAmodeusDatabase db) {
@@ -137,7 +137,7 @@ public class SQMDispatcher extends PartitionedDispatcher {
             MatsimAmodeusDatabase db = inject.get(MatsimAmodeusDatabase.class);
             EventsManager eventsManager = inject.get(EventsManager.class);
 
-            OperatorConfig operatorConfig = inject.getModal(OperatorConfig.class);
+            AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
             Network network = inject.getModal(Network.class);
             AVRouter router = inject.getModal(AVRouter.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);

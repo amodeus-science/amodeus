@@ -3,10 +3,9 @@ package ch.ethz.matsim.av.analysis;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
-import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.events.LinkEnterEvent;
 import org.matsim.api.core.v01.events.PersonEntersVehicleEvent;
 import org.matsim.api.core.v01.events.PersonLeavesVehicleEvent;
@@ -14,35 +13,34 @@ import org.matsim.api.core.v01.events.handler.LinkEnterEventHandler;
 import org.matsim.api.core.v01.events.handler.PersonEntersVehicleEventHandler;
 import org.matsim.api.core.v01.events.handler.PersonLeavesVehicleEventHandler;
 
-import ch.ethz.matsim.av.data.AVOperator;
-import ch.ethz.matsim.av.generator.AVUtils;
+import ch.ethz.matsim.av.generator.AmodeusIdentifiers;
 
 public class FleetDistanceListener implements PersonEntersVehicleEventHandler, PersonLeavesVehicleEventHandler, LinkEnterEventHandler {
     private final LinkFinder linkFinder;
     private final PassengerTracker passengers = new PassengerTracker();
-    private final Map<Id<AVOperator>, OperatorData> data = new HashMap<>();
+    private final Map<String, ModeData> data = new HashMap<>();
 
-    static public class OperatorData {
+    static public class ModeData {
         public double occupiedDistance_m;
         public double emptyDistance_m;
         public double passengerDistance_m;
     }
 
-    public FleetDistanceListener(Collection<Id<AVOperator>> operatorIds, LinkFinder linkFinder) {
+    public FleetDistanceListener(Collection<String> modes, LinkFinder linkFinder) {
         this.linkFinder = linkFinder;
 
-        for (Id<AVOperator> operatorId : operatorIds) {
-            data.put(operatorId, new OperatorData());
+        for (String mode : modes) {
+            data.put(mode, new ModeData());
         }
     }
 
     @Override
     public void handleEvent(PersonEntersVehicleEvent event) {
-        if (!event.getPersonId().toString().startsWith("av:")) {
-            if (event.getVehicleId().toString().startsWith("av:")) {
-                Id<AVOperator> operatorId = AVUtils.getOperatorId(event.getVehicleId());
+        if (!AmodeusIdentifiers.isValid(event.getPersonId())) {
+            if (AmodeusIdentifiers.isValid(event.getVehicleId())) {
+                String mode = AmodeusIdentifiers.getMode(event.getVehicleId());
 
-                if (data.containsKey(operatorId)) {
+                if (data.containsKey(mode)) {
                     passengers.addPassenger(event.getVehicleId(), event.getPersonId());
                 }
             }
@@ -51,11 +49,11 @@ public class FleetDistanceListener implements PersonEntersVehicleEventHandler, P
 
     @Override
     public void handleEvent(PersonLeavesVehicleEvent event) {
-        if (!event.getPersonId().toString().startsWith("av:")) {
-            if (event.getVehicleId().toString().startsWith("av:")) {
-                Id<AVOperator> operatorId = AVUtils.getOperatorId(event.getVehicleId());
+        if (!AmodeusIdentifiers.isValid(event.getPersonId())) {
+            if (AmodeusIdentifiers.isValid(event.getVehicleId())) {
+                String mode = AmodeusIdentifiers.getMode(event.getVehicleId());
 
-                if (data.containsKey(operatorId)) {
+                if (data.containsKey(mode)) {
                     passengers.removePassenger(event.getVehicleId(), event.getPersonId());
                 }
             }
@@ -64,9 +62,9 @@ public class FleetDistanceListener implements PersonEntersVehicleEventHandler, P
 
     @Override
     public void handleEvent(LinkEnterEvent event) {
-        if (event.getVehicleId().toString().startsWith("av:")) {
-            Id<AVOperator> operatorId = AVUtils.getOperatorId(event.getVehicleId());
-            OperatorData operator = data.get(operatorId);
+        if (AmodeusIdentifiers.isValid(event.getVehicleId())) {
+            String mode = AmodeusIdentifiers.getMode(event.getVehicleId());
+            ModeData operator = data.get(mode);
 
             if (operator != null) {
                 double linkLength = linkFinder.getDistance(event.getLinkId());
@@ -83,22 +81,20 @@ public class FleetDistanceListener implements PersonEntersVehicleEventHandler, P
         }
     }
 
-    public Map<Id<AVOperator>, OperatorData> getData() {
+    public Map<String, ModeData> getData() {
         return Collections.unmodifiableMap(data);
     }
 
-    public OperatorData getData(Id<AVOperator> operatorId) {
-        return data.get(operatorId);
+    public ModeData getData(String mode) {
+        return data.get(mode);
     }
 
     @Override
     public void reset(int iteration) {
         passengers.clear();
 
-        Set<Id<AVOperator>> operatorIds = data.keySet();
-
-        for (Id<AVOperator> operatorId : operatorIds) {
-            data.put(operatorId, new OperatorData());
+        for (String mode : new HashSet<>(data.keySet())) {
+            data.put(mode, new ModeData());
         }
     }
 }

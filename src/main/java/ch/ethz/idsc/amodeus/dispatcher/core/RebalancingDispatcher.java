@@ -11,14 +11,14 @@ import org.matsim.core.router.util.TravelTime;
 
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
 /** class for wich all Dispatchers performing rebalancing, i.e., replacement of empty vehicles should be derived */
 public abstract class RebalancingDispatcher extends UniversalDispatcher {
 
-    protected RebalancingDispatcher(Config config, OperatorConfig operatorConfig, TravelTime travelTime, //
+    protected RebalancingDispatcher(Config config, AmodeusModeConfig operatorConfig, TravelTime travelTime, //
             ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, EventsManager eventsManager, //
             MatsimAmodeusDatabase db) {
         super(config, operatorConfig, travelTime, parallelLeastCostPathCalculator, eventsManager, db);

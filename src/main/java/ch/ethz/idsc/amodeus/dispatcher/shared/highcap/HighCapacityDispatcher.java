@@ -27,7 +27,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseUtil;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.routing.EasyMinTimePathCalculator;
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.router.AVRouter;
@@ -78,7 +78,7 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
     private Map<AVRequest, RequestKeyInfo> requestKeyInfoMap = new HashMap<>();
 
     public HighCapacityDispatcher(Network network, //
-            Config config, OperatorConfig operatorConfig, //
+            Config config, AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, //
             MatsimAmodeusDatabase db) {
 
@@ -227,7 +227,7 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
             MatsimAmodeusDatabase db = inject.get(MatsimAmodeusDatabase.class);
             EventsManager eventsManager = inject.get(EventsManager.class);
 
-            OperatorConfig operatorConfig = inject.getModal(OperatorConfig.class);
+            AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
             Network network = inject.getModal(Network.class);
             AVRouter router = inject.getModal(AVRouter.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);

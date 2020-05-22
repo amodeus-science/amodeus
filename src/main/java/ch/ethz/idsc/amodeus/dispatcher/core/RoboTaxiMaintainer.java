@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.events.Event;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.schedule.Schedule;
@@ -16,8 +15,7 @@ import org.matsim.core.config.Config;
 
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.StorageUtils;
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
-import ch.ethz.matsim.av.data.AVOperator;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
@@ -34,15 +32,13 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
     private Double private_now = null;
     public InfoLine infoLine = null;
     private final StorageUtils storageUtils;
-    protected Id<AVOperator> operatorId;
 
-    RoboTaxiMaintainer(EventsManager eventsManager, Config config, OperatorConfig operatorConfig) {
+    RoboTaxiMaintainer(EventsManager eventsManager, Config config, AmodeusModeConfig operatorConfig) {
         SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
         this.eventsManager = eventsManager;
         this.infoLine = new InfoLine(safeConfig.getInteger("infoLinePeriod", 10));
         String outputdirectory = config.controler().getOutputDirectory();
         this.storageUtils = new StorageUtils(new File(outputdirectory));
-        this.operatorId = operatorConfig.getId();
     }
 
     /** @return time of current re-dispatching iteration step

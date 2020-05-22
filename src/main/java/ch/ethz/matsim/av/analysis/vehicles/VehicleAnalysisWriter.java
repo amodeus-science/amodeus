@@ -37,7 +37,7 @@ public class VehicleAnalysisWriter {
 
         for (VehicleMovementItem movement : listener.getMovements()) {
             writer.write(String.join(";", new String[] { //
-                    String.valueOf(movement.operatorId), //
+                    String.valueOf(movement.mode), //
                     String.valueOf(movement.vehicleId), //
 
                     String.valueOf(movement.originLink.getId()), //
@@ -78,7 +78,7 @@ public class VehicleAnalysisWriter {
 
         for (VehicleActivityItem activity : listener.getActivities()) {
             writer.write(String.join(";", new String[] { //
-                    String.valueOf(activity.operatorId), //
+                    String.valueOf(activity.mode), //
                     String.valueOf(activity.vehicleId), //
 
                     String.valueOf(activity.link.getId()), //

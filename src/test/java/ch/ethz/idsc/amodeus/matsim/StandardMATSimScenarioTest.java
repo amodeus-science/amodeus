@@ -60,11 +60,11 @@ import ch.ethz.idsc.amodeus.util.io.Locate;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
-import ch.ethz.matsim.av.config.AVConfigGroup;
-import ch.ethz.matsim.av.config.operator.DispatcherConfig;
-import ch.ethz.matsim.av.config.operator.GeneratorConfig;
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
-import ch.ethz.matsim.av.data.AVOperator;
+import ch.ethz.matsim.av.config.AmodeusConfigGroup;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
+import ch.ethz.matsim.av.config.modal.DispatcherConfig;
+import ch.ethz.matsim.av.config.modal.GeneratorConfig;
+import ch.ethz.matsim.av.framework.AVQSimModule;
 import ch.ethz.matsim.av.scenario.TestScenarioAnalyzer;
 import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
 import ch.ethz.refactoring.AmodeusConfigurator;
@@ -188,7 +188,7 @@ public class StandardMATSimScenarioTest {
         MatsimRandom.reset();
 
         // Set up
-        Config config = ConfigUtils.createConfig(new AVConfigGroup(), new DvrpConfigGroup());
+        Config config = ConfigUtils.createConfig(new AmodeusConfigGroup(), new DvrpConfigGroup());
         Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
 
         File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
@@ -216,12 +216,11 @@ public class StandardMATSimScenarioTest {
         makeMultimodal(scenario);
 
         // Config
-        AVConfigGroup avConfig = AVConfigGroup.getOrCreate(config);
-        avConfig.setAllowedLinkMode("car");
+        AmodeusConfigGroup avConfig = AmodeusConfigGroup.get(config);
 
-        OperatorConfig operatorConfig = new OperatorConfig();
-        operatorConfig.setId(AVOperator.createId("test"));
-        avConfig.addOperator(operatorConfig);
+        AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
+        operatorConfig.setAllowedLinkMode("car");
+        avConfig.addMode(operatorConfig);
 
         GeneratorConfig generatorConfig = operatorConfig.getGeneratorConfig();
         generatorConfig.setType("VehicleToVSGenerator");
@@ -292,6 +291,8 @@ public class StandardMATSimScenarioTest {
                 });
             }
         });
+
+        controller.configureQSimComponents(AVQSimModule.activateModes(avConfig));
 
         controller.run();
 

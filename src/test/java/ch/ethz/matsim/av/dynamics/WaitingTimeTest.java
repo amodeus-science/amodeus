@@ -27,31 +27,31 @@ import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.events.IterationEndsEvent;
 import org.matsim.core.controler.listener.IterationEndsListener;
 
-import ch.ethz.matsim.av.config.AVConfigGroup;
 import ch.ethz.matsim.av.config.AVScoringParameterSet;
-import ch.ethz.matsim.av.config.operator.OperatorConfig;
+import ch.ethz.matsim.av.config.AmodeusConfigGroup;
+import ch.ethz.matsim.av.config.AmodeusModeConfig;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.framework.AVQSimModule;
 import ch.ethz.matsim.av.routing.AVRoute;
 import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
 
 public class WaitingTimeTest {
-    static AVConfigGroup createConfig() {
-        AVConfigGroup avConfigGroup = new AVConfigGroup();
+    static AmodeusConfigGroup createConfig() {
+        AmodeusConfigGroup avConfigGroup = new AmodeusConfigGroup();
 
-        AVScoringParameterSet scoringParams = avConfigGroup.getScoringParameters(null);
-        scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
-
-        OperatorConfig operatorConfig = new OperatorConfig();
+        AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
         operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
         operatorConfig.getPricingConfig().setPricePerKm(0.48);
         operatorConfig.getPricingConfig().setSpatialBillingInterval(1000.0);
-        avConfigGroup.addOperator(operatorConfig);
+        avConfigGroup.addMode(operatorConfig);
+
+        AVScoringParameterSet scoringParams = operatorConfig.getScoringParameters(null);
+        scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
 
         return avConfigGroup;
     }
 
-    static Controler createController(AVConfigGroup avConfigGroup) {
+    static Controler createController(AmodeusConfigGroup avConfigGroup) {
         Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
         Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
 
@@ -65,17 +65,17 @@ public class WaitingTimeTest {
         controler.addOverridingModule(new AVModule());
         controler.addOverridingQSimModule(new AVQSimModule());
 
-        controler.configureQSimComponents(AVQSimModule::configureComponents);
+        controler.configureQSimComponents(AVQSimModule.activateModes("av"));
 
         return controler;
     }
 
     @Test
     public void testConstantWaitingTime() {
-        AVConfigGroup config = createConfig();
-        OperatorConfig operatorConfig = config.getOperatorConfigs().get(OperatorConfig.DEFAULT_OPERATOR_ID);
+        AmodeusConfigGroup config = createConfig();
+        AmodeusModeConfig operatorConfig = config.getModes().get("av");
 
-        operatorConfig.getWaitingTimeConfig().setDefaultWaitingTime(123.0);
+        operatorConfig.getWaitingTimeEstimationConfig().setDefaultWaitingTime(123.0);
 
         Controler controller = createController(config);
         controller.run();
@@ -103,11 +103,11 @@ public class WaitingTimeTest {
 
     @Test
     public void testAttributeWaitingTime() {
-        AVConfigGroup config = createConfig();
-        OperatorConfig operatorConfig = config.getOperatorConfigs().get(OperatorConfig.DEFAULT_OPERATOR_ID);
+        AmodeusConfigGroup config = createConfig();
+        AmodeusModeConfig operatorConfig = config.getModes().get("av");
 
-        operatorConfig.getWaitingTimeConfig().setDefaultWaitingTime(123.0);
-        operatorConfig.getWaitingTimeConfig().setConstantWaitingTimeLinkAttribute("avWaitingTime");
+        operatorConfig.getWaitingTimeEstimationConfig().setDefaultWaitingTime(123.0);
+        operatorConfig.getWaitingTimeEstimationConfig().setConstantWaitingTimeLinkAttribute("avWaitingTime");
 
         Controler controller = createController(config);
 
@@ -147,13 +147,13 @@ public class WaitingTimeTest {
 
     @Test
     public void testDynamicWaitingTime() {
-        AVConfigGroup config = createConfig();
-        OperatorConfig operatorConfig = config.getOperatorConfigs().get(OperatorConfig.DEFAULT_OPERATOR_ID);
+        AmodeusConfigGroup config = createConfig();
+        AmodeusModeConfig operatorConfig = config.getModes().get("av");
 
-        operatorConfig.getWaitingTimeConfig().setDefaultWaitingTime(123.0);
-        operatorConfig.getWaitingTimeConfig().setConstantWaitingTimeLinkAttribute("avWaitingTime");
-        operatorConfig.getWaitingTimeConfig().setEstimationLinkAttribute("avGroup");
-        operatorConfig.getWaitingTimeConfig().setEstimationAlpha(0.7);
+        operatorConfig.getWaitingTimeEstimationConfig().setDefaultWaitingTime(123.0);
+        operatorConfig.getWaitingTimeEstimationConfig().setConstantWaitingTimeLinkAttribute("avWaitingTime");
+        operatorConfig.getWaitingTimeEstimationConfig().setEstimationLinkAttribute("avGroup");
+        operatorConfig.getWaitingTimeEstimationConfig().setEstimationAlpha(0.7);
 
         Controler controller = createController(config);
 
@@ -203,12 +203,12 @@ public class WaitingTimeTest {
 
     @Test
     public void testDynamicWaitingTimeWithoutConstantAttribute() {
-        AVConfigGroup config = createConfig();
-        OperatorConfig operatorConfig = config.getOperatorConfigs().get(OperatorConfig.DEFAULT_OPERATOR_ID);
+        AmodeusConfigGroup config = createConfig();
+        AmodeusModeConfig operatorConfig = config.getModes().get("av");
 
-        operatorConfig.getWaitingTimeConfig().setDefaultWaitingTime(123.0);
-        operatorConfig.getWaitingTimeConfig().setEstimationLinkAttribute("avGroup");
-        operatorConfig.getWaitingTimeConfig().setEstimationAlpha(0.7);
+        operatorConfig.getWaitingTimeEstimationConfig().setDefaultWaitingTime(123.0);
+        operatorConfig.getWaitingTimeEstimationConfig().setEstimationLinkAttribute("avGroup");
+        operatorConfig.getWaitingTimeEstimationConfig().setEstimationAlpha(0.7);
 
         Controler controller = createController(config);
 

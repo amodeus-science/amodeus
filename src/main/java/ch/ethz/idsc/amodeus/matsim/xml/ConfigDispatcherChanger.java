@@ -7,7 +7,7 @@ import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.ConfigWriter;
 
-import ch.ethz.matsim.av.config.AVConfigGroup;
+import ch.ethz.matsim.av.config.AmodeusConfigGroup;
 
 public enum ConfigDispatcherChanger {
     ;
@@ -16,8 +16,8 @@ public enum ConfigDispatcherChanger {
      * new value @param newDipsatcher */
     public static void change(String configPath, String newDipsatcher) {
         File configFile = new File(configPath);
-        Config config = ConfigUtils.loadConfig(configFile.toString(), new AVConfigGroup());
-        AVConfigGroup.getOrCreate(config).getOperatorConfigs().values().iterator().next()//
+        Config config = ConfigUtils.loadConfig(configFile.toString(), new AmodeusConfigGroup());
+        AmodeusConfigGroup.get(config).getModes().values().iterator().next()//
                 .getDispatcherConfig().setType(newDipsatcher);
         new ConfigWriter(config).write(configFile.toString());
     }
