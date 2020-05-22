@@ -138,11 +138,11 @@ public class AmodeusViewerFrame implements Runnable {
         // find the maximal folder depth of the simulation objects relative to the working directory
         currentMaxDepth = SimulationFolderUtils.getMaxDepth(outputDirectory, SIMOBJ) - 1;
         if (currentMaxDepth < 0) {
-            System.out.println("ERROR: no simulation objects found in this working directory!");
+            System.err.println("ERROR: no simulation objects found in this working directory!");
             throw new RuntimeException();
         }
         if (currentMaxDepth > MAXDIRECTORYDEPTH) {
-            System.out.println("ERROR: simulation objects found that are too depth in folder structur!");
+            System.err.println("ERROR: simulation objects found that are too deep in folder structure!");
             throw new RuntimeException();
         }
 
