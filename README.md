@@ -96,7 +96,7 @@ AMoDeus was originally introduced in the paper
 
 Since then, the library has been used for various scientific contributions, including:
 
-* *Quantifying the efficiency of ride sharing* by Ruch, C., Lu, C., Sieber, L., and Frazzoli, in IEEE Transactions on Intelligent Transportation Systems, 10.1109/TITS.2020.2990202, 2020
+* *Quantifying the efficiency of ride sharing* by Ruch, C., Lu, C., Sieber, L., and Frazzoli, in IEEE Transactions on Intelligent Transportation Systems, [10.1109/TITS.2020.2990202](https://ieeexplore.ieee.org/document/9089254), 2020
 * *Improved public transportation in rural areas with self-driving cars: A study on the operation of Swiss train lines.* by Sieber, L., Ruch, C., Hörl, S., Axhausen, K.W., and Frazzoli, E. in Transportation Research Part A: Policy and Practice, 134:35–51, 2020
 * *Fleet operational policies for automated mobility: A simulation assessment for Zurich* by Hörl, S., Ruch, C., Becker, F., Frazzoli, E., and Axhausen, K, in Transportation Research Part C: Emerging Technologies, 102:20–31, 2019
 * *Learning to operate a fleet of cars* by Fluri, C., Ruch, C. Zilly, J., and Frazzoli, E., . In 2019 IEEE Intelligent Transportation Systems Conference (ITSC), pages 2292–2298. IEEE, 2019
