@@ -4,9 +4,9 @@ Autonomous mobility-on-demand simulation library, version `1.9.3`
 
 ## Admins
 
-AMoDeus is jointly maintained and further developed by the Admins Christian Fluri (ETH Zürich), Joel Gächter (ETH Zürich), Sebastian Hörl (ETH  Zürich), Claudio Ruch, Jan Hakenberg, ChengQi Lu (TU Berlin), and Marc Albert (nuTonomy). 
+AMoDeus is jointly maintained and further developed by the Admins Christian Fluri (ETH Zürich), Joel Gächter (ETH Zürich), Sebastian Hörl (ETH  Zürich), Claudio Ruch, Jan Hakenberg, ChengQi Lu (TU Berlin), and Marc Albert (nuTonomy). There is a Slack channel where stakeholders of the library meet and exchange.
 
-Please let us know if you'd like to contribute!
+Please let us know if you'd like to contribute to the code or join the Slack channel!
 
 ## Purpose
 
