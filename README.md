@@ -92,7 +92,7 @@ The source code is attached to every release.
 ## Literature
 
 AMoDeus was originally introduced in the paper 
-* *AMoDeus, a simulation- based testbed for autonomous mobility-on-demand systems* by Ruch, C., Hörl, S., Frazzoli, E., in 21st International Conference on Intelligent Transportation Systems (ITSC), pages 3639–3644, 2018.
+* *AMoDeus, a simulation- based testbed for autonomous mobility-on-demand systems* by Ruch, C., Hörl, S., Frazzoli, E., in [21st International Conference on Intelligent Transportation Systems (ITSC), pages 3639–3644](https://ieeexplore.ieee.org/abstract/document/8569961?casa_token=pTSPwvis80sAAAAA:Hkw25pq0BrDFbz7_d_JatPPmP8qqjH3Pha7_bNhYrCM4bdAsTAm-eSBl7zvIcWJiwNz11gmtNjo), 2018.
 
 Since then, the library has been used for various scientific contributions, including:
 
