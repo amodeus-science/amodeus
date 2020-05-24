@@ -5,7 +5,6 @@ import java.util.Set;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.passenger.PassengerEngine;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
-import org.matsim.contrib.dvrp.schedule.StayTask;
 import org.matsim.contrib.dynagent.DynActivity;
 import org.matsim.contrib.dynagent.DynAgent;
 
@@ -18,8 +17,8 @@ public class AVPassengerDropoffActivity implements DynActivity {
     private final String activityType;
     private final double endTime;
 
-    public AVPassengerDropoffActivity(PassengerEngine passengerEngine, DynAgent driver, DvrpVehicle vehicle, StayTask dropoffTask, Set<AVRequest> requests, String activityType,
-            TimingConfig timingConfig) {
+    public AVPassengerDropoffActivity(PassengerEngine passengerEngine, DynAgent driver, DvrpVehicle vehicle, double beginTime, double endTime, Set<AVRequest> requests,
+            String activityType, TimingConfig timingConfig) {
         this.activityType = activityType;
 
         this.passengerEngine = passengerEngine;
@@ -34,7 +33,7 @@ public class AVPassengerDropoffActivity implements DynActivity {
         double dropoffTimePerPassenger = timingConfig.getDropoffDurationPerPassenger();
         double dropoffTimePerStop = timingConfig.getDropoffDurationPerStop();
 
-        endTime = Math.max(dropoffTask.getEndTime(), dropoffTask.getBeginTime() + dropoffTimePerStop + requests.size() * dropoffTimePerPassenger);
+        this.endTime = Math.max(endTime, beginTime + dropoffTimePerStop + requests.size() * dropoffTimePerPassenger);
     }
 
     @Override

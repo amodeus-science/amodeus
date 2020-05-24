@@ -1,6 +1,6 @@
 package ch.ethz.matsim.av.scoring;
 
-import ch.ethz.matsim.av.config.AVScoringParameterSet;
+import ch.ethz.matsim.av.config.modal.AmodeusScoringConfig;
 
 public final class AVScoringParameters {
     public final double marginalUtilityOfWaiting_s;
@@ -11,7 +11,7 @@ public final class AVScoringParameters {
         this.stuckUtility = stuckUtility;
     }
 
-    static AVScoringParameters fromParameterSet(AVScoringParameterSet set) {
+    static AVScoringParameters fromParameterSet(AmodeusScoringConfig set) {
         return new AVScoringParameters(set.getMarginalUtilityOfWaitingTime() / 3600.0, set.getStuckUtility());
     }
 }

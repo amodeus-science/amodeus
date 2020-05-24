@@ -8,7 +8,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import ch.ethz.matsim.av.config.AmodeusModeConfig;
-import ch.ethz.matsim.av.config.modal.AmodeusWaitingTimeEstimationConfig;
+import ch.ethz.matsim.av.config.modal.WaitingTimeConfig;
 
 public class WaitingTimeEstimationModule extends AbstractDvrpModeModule {
     private final AmodeusModeConfig modeConfig;
@@ -20,7 +20,7 @@ public class WaitingTimeEstimationModule extends AbstractDvrpModeModule {
 
     @Override
     public void install() {
-        AmodeusWaitingTimeEstimationConfig waitingTimeConfig = modeConfig.getWaitingTimeEstimationConfig();
+        WaitingTimeConfig waitingTimeConfig = modeConfig.getWaitingTimeEstimationConfig();
 
         if (waitingTimeConfig.getEstimationAlpha() > 0.0) {
             bindModal(WaitingTimeCollector.class).toProvider(new WaitingTimeCollectorProvider(getMode())).in(Singleton.class);

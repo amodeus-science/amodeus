@@ -1,11 +1,11 @@
 package ch.ethz.matsim.av.financial;
 
-import ch.ethz.matsim.av.config.modal.AmodeusPricingConfig;
+import ch.ethz.matsim.av.config.modal.PricingConfig;
 
 public class StaticPriceCalculator implements PriceCalculator {
-    private final AmodeusPricingConfig pricingConfig;
+    private final PricingConfig pricingConfig;
 
-    public StaticPriceCalculator(AmodeusPricingConfig pricingConfig) {
+    public StaticPriceCalculator(PricingConfig pricingConfig) {
         this.pricingConfig = pricingConfig;
     }
 

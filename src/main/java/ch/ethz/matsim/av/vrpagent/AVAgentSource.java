@@ -17,8 +17,7 @@ import org.matsim.vehicles.VehiclesFactory;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.schedule.AVOptimizer;
 
-/** Mostly copy & paste from DVRP VrpAgentSouce, but we want vehicle types per
- * operator */
+/** Copy & paste from VrpAgentSource, but we want vehicle types per operator **/
 public class AVAgentSource implements AgentSource {
     private final DynActionCreator nextActionCreator;
     private final Fleet fleet;

@@ -122,7 +122,7 @@ public class AVModeModule extends AbstractDvrpModeModule {
 
     static private class InteractionFinderProvider extends ModalProviders.AbstractProvider<AVInteractionFinder> {
         @Inject
-        Map<String, AVInteractionFinder.AVInteractionFinderFactory> factories; // TODO: Can this become a multibinder?
+        Map<String, AVInteractionFinder.AVInteractionFinderFactory> factories;
 
         InteractionFinderProvider(String mode) {
             super(mode);

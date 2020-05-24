@@ -42,9 +42,9 @@ import org.matsim.vehicles.VehicleUtils;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 
-import ch.ethz.matsim.av.config.AVScoringParameterSet;
 import ch.ethz.matsim.av.config.AmodeusConfigGroup;
 import ch.ethz.matsim.av.config.AmodeusModeConfig;
+import ch.ethz.matsim.av.config.modal.AmodeusScoringConfig;
 import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.multi_od_heuristic.MultiODHeuristic;
 import ch.ethz.matsim.av.framework.AVModule;
@@ -200,7 +200,7 @@ public class TestScenario {
         operatorConfig.getGeneratorConfig().setType("Single");
         config.addMode(operatorConfig);
 
-        AVScoringParameterSet scoringParams = operatorConfig.getScoringParameters(null);
+        AmodeusScoringConfig scoringParams = operatorConfig.getScoringParameters(null);
         scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
 
         operatorConfig.getTimingConfig().setPickupDurationPerPassenger(0.0);

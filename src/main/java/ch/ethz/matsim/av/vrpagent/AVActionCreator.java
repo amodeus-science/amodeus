@@ -38,10 +38,11 @@ public class AVActionCreator implements VrpAgentLogic.DynActionCreator {
         switch ((AmodeusTaskType) task.getTaskType()) {
         case PICKUP:
             AmodeusPickupTask mpt = (AmodeusPickupTask) task;
-            return new AVPassengerPickupActivity(passengerEngine, dynAgent, vehicle, mpt, mpt.getRequests(), PICKUP_ACTIVITY_TYPE, mpt.getEarliestDepartureTime(), timingConfig);
+            return new AVPassengerPickupActivity(passengerEngine, dynAgent, vehicle, mpt.getRequests(), PICKUP_ACTIVITY_TYPE, mpt.getBeginTime(), mpt.getEarliestDepartureTime(),
+                    timingConfig);
         case DROPOFF:
             AmodeusDropoffTask mdt = (AmodeusDropoffTask) task;
-            return new AVPassengerDropoffActivity(passengerEngine, dynAgent, vehicle, mdt, mdt.getRequests(), DROPOFF_ACTIVITY_TYPE, timingConfig);
+            return new AVPassengerDropoffActivity(passengerEngine, dynAgent, vehicle, mdt.getBeginTime(), mdt.getEndTime(), mdt.getRequests(), DROPOFF_ACTIVITY_TYPE, timingConfig);
         case DRIVE:
             return legFactory.create(vehicle);
         case STAY:

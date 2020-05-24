@@ -22,9 +22,9 @@ import org.matsim.core.config.groups.StrategyConfigGroup.StrategySettings;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.utils.io.IOUtils;
 
-import ch.ethz.matsim.av.config.AVScoringParameterSet;
 import ch.ethz.matsim.av.config.AmodeusConfigGroup;
 import ch.ethz.matsim.av.config.AmodeusModeConfig;
+import ch.ethz.matsim.av.config.modal.AmodeusScoringConfig;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.framework.AVQSimModule;
 import ch.ethz.matsim.av.scenario.TestScenarioAnalyzer;
@@ -55,7 +55,7 @@ public class AnalysisTest {
         operatorConfig.getPricingConfig().setSpatialBillingInterval(1000.0);
         avConfigGroup.addMode(operatorConfig);
 
-        AVScoringParameterSet scoringParams = operatorConfig.getScoringParameters(null);
+        AmodeusScoringConfig scoringParams = operatorConfig.getScoringParameters(null);
         scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
 
         Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
@@ -156,7 +156,7 @@ public class AnalysisTest {
         operatorConfig.getPricingConfig().setSpatialBillingInterval(1000.0);
         avConfigGroup.addMode(operatorConfig);
 
-        AVScoringParameterSet scoringParams = operatorConfig.getScoringParameters(null);
+        AmodeusScoringConfig scoringParams = operatorConfig.getScoringParameters(null);
         scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
 
         Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());

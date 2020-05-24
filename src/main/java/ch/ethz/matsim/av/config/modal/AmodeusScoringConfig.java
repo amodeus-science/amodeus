@@ -1,8 +1,8 @@
-package ch.ethz.matsim.av.config;
+package ch.ethz.matsim.av.config.modal;
 
 import org.matsim.core.config.ReflectiveConfigGroup;
 
-public class AVScoringParameterSet extends ReflectiveConfigGroup {
+public class AmodeusScoringConfig extends ReflectiveConfigGroup {
     static public final String GROUP_NAME = "scoring";
 
     static public final String SUBPOPULATION = "subpopulation";
@@ -13,7 +13,7 @@ public class AVScoringParameterSet extends ReflectiveConfigGroup {
     private double stuckUtility = -1000.0;
     private double marginalUtilityOfWaiting = -1.0;
 
-    public AVScoringParameterSet() {
+    public AmodeusScoringConfig() {
         super(GROUP_NAME);
     }
 
@@ -45,9 +45,5 @@ public class AVScoringParameterSet extends ReflectiveConfigGroup {
     @StringSetter(SUBPOPULATION)
     public void setSubpopulation(String subpopulation) {
         this.subpopulation = subpopulation;
-    }
-    
-    static public AVScoringParameterSet createDefault() {
-        return new AVScoringParameterSet();
     }
 }

@@ -27,7 +27,6 @@ import ch.ethz.refactoring.schedule.AmodeusDropoffTask;
 import ch.ethz.refactoring.schedule.AmodeusPickupTask;
 import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
-//TODO @sebhoerl shorten this monster, e.g., distribute on several files
 public class ParallelAggregateRideAppender implements AggregateRideAppender {
     final private ParallelLeastCostPathCalculator router;
     final private TravelTime travelTime;
@@ -282,9 +281,6 @@ public class ParallelAggregateRideAppender implements AggregateRideAppender {
     }
 
     public void update() {
-        // TODO @sebhoerl This can be made more efficient if one knows which ones have just been added and which ones are still
-        // to be processed. Depends mainly on if "update" is called before new tasks are submitted or after ...
-
         try {
             for (AppendTask task : tasks) {
                 List<Path> plainPickupTasks = new LinkedList<>();

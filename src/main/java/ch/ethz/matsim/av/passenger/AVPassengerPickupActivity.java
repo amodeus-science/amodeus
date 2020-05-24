@@ -6,7 +6,6 @@ import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.passenger.PassengerEngine;
 import org.matsim.contrib.dvrp.passenger.PassengerPickupActivity;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
-import org.matsim.contrib.dvrp.schedule.StayTask;
 import org.matsim.contrib.dynagent.DynAgent;
 import org.matsim.core.mobsim.framework.MobsimPassengerAgent;
 
@@ -27,7 +26,7 @@ public class AVPassengerPickupActivity implements PassengerPickupActivity {
 
     private final double latestDepartureTime;
 
-    public AVPassengerPickupActivity(PassengerEngine passengerEngine, DynAgent driver, DvrpVehicle vehicle, StayTask pickupTask, Set<AVRequest> requests, String activityType,
+    public AVPassengerPickupActivity(PassengerEngine passengerEngine, DynAgent driver, DvrpVehicle vehicle, Set<AVRequest> requests, String activityType, double beginTime,
             double latestDepartureTime, TimingConfig timingConfig) {
         this.activityType = activityType;
         this.latestDepartureTime = latestDepartureTime;
@@ -45,10 +44,8 @@ public class AVPassengerPickupActivity implements PassengerPickupActivity {
         this.pickupDurationPerPassenger = timingConfig.getPickupDurationPerPassenger();
         double pickupDurationPerStop = timingConfig.getPickupDurationPerStop();
 
-        double now = pickupTask.getBeginTime();
-
         for (PassengerRequest request : requests) {
-            if (passengerEngine.pickUpPassenger(this, driver, request, pickupTask.getBeginTime())) {
+            if (passengerEngine.pickUpPassenger(this, driver, request, beginTime)) {
                 arrivedPassengers++;
             }
 
@@ -57,10 +54,10 @@ public class AVPassengerPickupActivity implements PassengerPickupActivity {
             }
         }
 
-        latestDepartureTime = Math.max(latestDepartureTime, now + pickupDurationPerStop);
-        endTime = now + pickupDurationPerStop;
+        latestDepartureTime = Math.max(latestDepartureTime, beginTime + pickupDurationPerStop);
+        endTime = beginTime + pickupDurationPerStop;
 
-        updateEndTime(now);
+        updateEndTime(beginTime);
     }
 
     private void updateEndTime(double now) {
@@ -126,7 +123,7 @@ public class AVPassengerPickupActivity implements PassengerPickupActivity {
         if (passengerEngine.pickUpPassenger(this, driver, request, now)) {
             arrivedPassengers++;
         } else {
-            throw new IllegalStateException("The ch.ethz.matsim.av.passenger is not on the link or not available for departure!");
+            throw new IllegalStateException("The passenger is not on the link or not available for departure!");
         }
 
         updateEndTime(now);

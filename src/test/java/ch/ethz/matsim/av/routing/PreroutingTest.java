@@ -15,9 +15,9 @@ import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
 import org.matsim.core.config.groups.StrategyConfigGroup.StrategySettings;
 import org.matsim.core.controler.Controler;
 
-import ch.ethz.matsim.av.config.AVScoringParameterSet;
 import ch.ethz.matsim.av.config.AmodeusConfigGroup;
 import ch.ethz.matsim.av.config.AmodeusModeConfig;
+import ch.ethz.matsim.av.config.modal.AmodeusScoringConfig;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.framework.AVQSimModule;
 import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
@@ -32,7 +32,7 @@ public class PreroutingTest {
         operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
         avConfigGroup.addMode(operatorConfig);
 
-        AVScoringParameterSet scoringParams = operatorConfig.getScoringParameters(null);
+        AmodeusScoringConfig scoringParams = operatorConfig.getScoringParameters(null);
         scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
         
         operatorConfig.getPricingConfig().setPricePerKm(1.0);
