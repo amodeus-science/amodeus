@@ -4,11 +4,12 @@ import org.matsim.contrib.dynagent.FirstLastSimStepDynActivity;
 
 import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
-public class AVStayActivity extends FirstLastSimStepDynActivity {
+public class AmodeusStayActivity extends FirstLastSimStepDynActivity {
+    public static final String STAY_ACTIVITY_TYPE = "idle";
     final private AmodeusStayTask stayTask;
 
-    public AVStayActivity(AmodeusStayTask stayTask) {
-        super(stayTask.getTaskType().toString());
+    public AmodeusStayActivity(AmodeusStayTask stayTask) {
+        super(STAY_ACTIVITY_TYPE);
         this.stayTask = stayTask;
     }
 

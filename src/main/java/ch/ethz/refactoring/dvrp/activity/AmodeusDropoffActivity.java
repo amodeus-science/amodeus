@@ -12,15 +12,9 @@ import org.matsim.contrib.dynagent.FirstLastSimStepDynActivity;
 
 import ch.ethz.matsim.av.passenger.AVRequest;
 
-/** In theory, we could use MultiPassengerPickupActivity from DVRP here. However,
- * that class only either waits until a
- * predefined end time. Here, the intention was that leaving takes a certain amount of
- * time per passenger. However, this is not the case yet, but should be implemented and
- * then we should check if we can move this to DVRP!
- * 
- * TODO: Per-agent dropoff time */
-public class AVPassengerDropoffActivity extends FirstLastSimStepDynActivity {
-    public static final String ACTIVITY_TYPE = "AVDropoff";
+/** TODO: Can be replaced with MultiPassengerDropoffActivity? */
+public class AmodeusDropoffActivity extends FirstLastSimStepDynActivity {
+    public static final String ACTIVITY_TYPE = "dropoff";
 
     private final PassengerEngine passengerEngine;
     private final DynAgent driver;
@@ -28,7 +22,7 @@ public class AVPassengerDropoffActivity extends FirstLastSimStepDynActivity {
     private final Map<Id<Request>, AVRequest> requests;
     private final double endTime;
 
-    public AVPassengerDropoffActivity(PassengerEngine passengerEngine, DynAgent driver, DvrpVehicle vehicle, Map<Id<Request>, AVRequest> requests, double endTime) {
+    public AmodeusDropoffActivity(PassengerEngine passengerEngine, DynAgent driver, DvrpVehicle vehicle, Map<Id<Request>, AVRequest> requests, double endTime) {
         super(ACTIVITY_TYPE);
 
         this.passengerEngine = passengerEngine;

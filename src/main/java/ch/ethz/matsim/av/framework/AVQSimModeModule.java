@@ -30,7 +30,7 @@ import ch.ethz.matsim.av.generator.AVGenerator;
 import ch.ethz.matsim.av.passenger.AVRequestCreator;
 import ch.ethz.matsim.av.schedule.AVOptimizer;
 import ch.ethz.matsim.av.vrpagent.AVAgentSource;
-import ch.ethz.refactoring.dvrp.activity.AVActionCreator;
+import ch.ethz.refactoring.dvrp.activity.AmodeusActionCreator;
 import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
 public class AVQSimModeModule extends AbstractDvrpModeQSimModule {
@@ -52,7 +52,7 @@ public class AVQSimModeModule extends AbstractDvrpModeQSimModule {
             VrpLegFactory legFactory = getter.getModal(VrpLegFactory.class);
             AmodeusModeConfig operatorConfig = getter.getModal(AmodeusModeConfig.class);
 
-            return new AVActionCreator(passengerEngine, legFactory, operatorConfig.getTimingConfig());
+            return new AmodeusActionCreator(passengerEngine, legFactory, operatorConfig.getTimingConfig());
         })).in(Singleton.class);
 
         bindModal(AVAgentSource.class).toProvider(modalProvider(getter -> {

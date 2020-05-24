@@ -18,8 +18,8 @@ import ch.ethz.matsim.av.passenger.AVRequest;
  * that class only either waits until all passengers have entered or until a
  * predefined end time. Here, entering actually takes a certain amount of time
  * *per passenger*. Need to check whether we can move this into DVRP. */
-public class AVPassengerPickupActivity extends FirstLastSimStepDynActivity implements PassengerPickupActivity {
-    public static final String ACTIVITY_TYPE = "AVPickup";
+public class AmodeusPickupActivity extends FirstLastSimStepDynActivity implements PassengerPickupActivity {
+    public static final String ACTIVITY_TYPE = "pickup";
 
     private final PassengerEngine passengerEngine;
     private final DynAgent driver;
@@ -32,7 +32,7 @@ public class AVPassengerPickupActivity extends FirstLastSimStepDynActivity imple
 
     private int insidePassengers = 0;
 
-    public AVPassengerPickupActivity(PassengerEngine passengerEngine, DynAgent driver, DvrpVehicle vehicle, Map<Id<Request>, AVRequest> requests, double expectedEndTime,
+    public AmodeusPickupActivity(PassengerEngine passengerEngine, DynAgent driver, DvrpVehicle vehicle, Map<Id<Request>, AVRequest> requests, double expectedEndTime,
             double durationPerPassenger) {
         super(ACTIVITY_TYPE);
 
