@@ -1,112 +1,79 @@
 package ch.ethz.matsim.av.passenger;
 
-import java.util.Set;
+import java.util.Map;
 
+import org.matsim.api.core.v01.Id;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
+import org.matsim.contrib.dvrp.optimizer.Request;
 import org.matsim.contrib.dvrp.passenger.PassengerEngine;
 import org.matsim.contrib.dvrp.passenger.PassengerPickupActivity;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dynagent.DynAgent;
+import org.matsim.contrib.dynagent.FirstLastSimStepDynActivity;
 import org.matsim.core.mobsim.framework.MobsimPassengerAgent;
 
-import ch.ethz.matsim.av.config.modal.TimingConfig;
+/** In theory, we could use MultiPassengerPickupActivity from DVRP here. However,
+ * that class only either waits until all passengers have entered or until a
+ * predefined end time. Here, entering actually takes a certain amount of time
+ * *per passenger*. Need to check whether we can move this into DVRP. */
+public class AVPassengerPickupActivity extends FirstLastSimStepDynActivity implements PassengerPickupActivity {
+    public static final String ACTIVITY_TYPE = "AVPickup";
 
-public class AVPassengerPickupActivity implements PassengerPickupActivity {
-    private final DvrpVehicle vehicle;
     private final PassengerEngine passengerEngine;
     private final DynAgent driver;
-    private final Set<AVRequest> requests;
-    private final double pickupDurationPerPassenger;
-    private final String activityType;
 
-    private double endTime = 0.0;
+    private final Map<Id<Request>, AVRequest> requests;
+    private final double durationPerPassenger;
 
-    private int arrivedPassengers = 0;
-    private int enteredPassengers = 0;
+    private final double expectedEndTime;
+    private double passengerEndTime = Double.NEGATIVE_INFINITY;
 
-    private final double latestDepartureTime;
+    private int insidePassengers = 0;
 
-    public AVPassengerPickupActivity(PassengerEngine passengerEngine, DynAgent driver, DvrpVehicle vehicle, Set<AVRequest> requests, String activityType, double beginTime,
-            double latestDepartureTime, TimingConfig timingConfig) {
-        this.activityType = activityType;
-        this.latestDepartureTime = latestDepartureTime;
+    public AVPassengerPickupActivity(PassengerEngine passengerEngine, DynAgent driver, DvrpVehicle vehicle, Map<Id<Request>, AVRequest> requests, double expectedEndTime,
+            double durationPerPassenger) {
+        super(ACTIVITY_TYPE);
 
-        if (requests.size() > vehicle.getCapacity()) {
-            // Number of requests exceeds number of seats
-            throw new IllegalStateException();
-        }
+        this.expectedEndTime = expectedEndTime;
+        this.durationPerPassenger = durationPerPassenger;
 
         this.passengerEngine = passengerEngine;
         this.driver = driver;
+
         this.requests = requests;
-        this.vehicle = vehicle;
 
-        this.pickupDurationPerPassenger = timingConfig.getPickupDurationPerPassenger();
-        double pickupDurationPerStop = timingConfig.getPickupDurationPerStop();
-
-        for (PassengerRequest request : requests) {
-            if (passengerEngine.pickUpPassenger(this, driver, request, beginTime)) {
-                arrivedPassengers++;
-            }
-
-            if (request.getEarliestStartTime() > latestDepartureTime) {
-                latestDepartureTime = request.getEarliestStartTime();
-            }
-        }
-
-        latestDepartureTime = Math.max(latestDepartureTime, beginTime + pickupDurationPerStop);
-        endTime = beginTime + pickupDurationPerStop;
-
-        updateEndTime(beginTime);
-    }
-
-    private void updateEndTime(double now) {
-        if (enteredPassengers < arrivedPassengers) {
-            // We still need to wait a bit, because people are entering
-
-            int enteringPassengers = arrivedPassengers - enteredPassengers;
-            enteredPassengers = arrivedPassengers;
-
-            if (pickupDurationPerPassenger > 0.0) {
-                endTime = Math.max(endTime, now + enteringPassengers * pickupDurationPerPassenger);
-                return;
-            }
-        }
-
-        if (enteredPassengers < requests.size()) {
-            // We still need to wait, because some people have not arrived
-
-            if (endTime == now) {
-                endTime += 1.0;
-            }
-        } else {
-            // All passengers have arrived and are in the vehicle
-
-            if (enteredPassengers == vehicle.getCapacity()) {
-                // Vehicle is full, let's depart whenever planned (we consider pickup time that
-                // has been added before!)
-                // Therefore no endTime = now !
-            } else if (now < latestDepartureTime) {
-                // Vehicle is not full and latest departure time is not reached
-                endTime += 1.0;
-            }
+        if (requests.size() > vehicle.getCapacity()) {
+            throw new IllegalStateException("Number of requests exceeds number of seats");
         }
     }
 
     @Override
-    public double getEndTime() {
-        return endTime;
+    protected void beforeFirstStep(double now) {
+        for (AVRequest request : requests.values()) {
+            tryPerformPickup(request, now);
+        }
+    }
+
+    private boolean tryPerformPickup(PassengerRequest request, double now) {
+        if (passengerEngine.pickUpPassenger(this, driver, request, now)) {
+            insidePassengers++;
+            passengerEndTime = Math.max(passengerEndTime, now) + durationPerPassenger;
+            return true;
+        }
+
+        return false;
     }
 
     @Override
-    public void doSimStep(double now) {
-        updateEndTime(now);
+    public boolean isLastStep(double now) {
+        return now >= expectedEndTime && now >= passengerEndTime && insidePassengers == requests.size();
     }
 
     private PassengerRequest getRequestForPassenger(MobsimPassengerAgent passenger) {
-        for (PassengerRequest request : requests) {
-            if (passenger.getId().equals(request.getPassengerId()))
+        for (PassengerRequest request : requests.values()) {
+            if (passenger.getId().equals(request.getPassengerId())) {
                 return request;
+            }
         }
 
         return null;
@@ -120,17 +87,8 @@ public class AVPassengerPickupActivity implements PassengerPickupActivity {
             throw new IllegalArgumentException("I am waiting for different passengers!");
         }
 
-        if (passengerEngine.pickUpPassenger(this, driver, request, now)) {
-            arrivedPassengers++;
-        } else {
-            throw new IllegalStateException("The passenger is not on the link or not available for departure!");
+        if (!tryPerformPickup(request, now)) {
+            throw new IllegalStateException();
         }
-
-        updateEndTime(now);
-    }
-
-    @Override
-    public String getActivityType() {
-        return activityType;
     }
 }

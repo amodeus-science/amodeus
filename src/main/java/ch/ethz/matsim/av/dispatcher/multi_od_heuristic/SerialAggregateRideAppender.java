@@ -1,6 +1,5 @@
 package ch.ethz.matsim.av.dispatcher.multi_od_heuristic;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -149,13 +148,13 @@ public class SerialAggregateRideAppender implements AggregateRideAppender {
                 currentRequests.add(pickup);
                 // System.err.println("Request added to pickup");
             } else {
-                AmodeusPickupTask pickupTask = new AmodeusPickupTask(currentTime, currentTime + timing.getPickupDurationPerStop(), pickup.getFromLink(), Double.NEGATIVE_INFINITY,
-                        Arrays.asList(pickup));
+                AmodeusPickupTask pickupTask = new AmodeusPickupTask(currentTime, currentTime + timing.getMinimumPickupDurationPerStop(), pickup.getFromLink(), Double.NEGATIVE_INFINITY);
+                pickupTask.addRequest(pickup);
 
                 schedule.addTask(pickupTask);
                 currentTask = pickupTask;
                 currentRequests.add(pickup);
-                currentTime += timing.getPickupDurationPerStop();
+                currentTime += timing.getMinimumPickupDurationPerStop();
                 // System.err.println("Pickup with finish time: " + String.valueOf(currentTime));
             }
         }
@@ -187,12 +186,13 @@ public class SerialAggregateRideAppender implements AggregateRideAppender {
                 currentRequests.remove(dropoff);
                 // System.err.println("Request added to dropoff");
             } else {
-                AmodeusDropoffTask dropoffTask = new AmodeusDropoffTask(currentTime, currentTime + timing.getDropoffDurationPerStop(), dropoff.getToLink(), Arrays.asList(dropoff));
+                AmodeusDropoffTask dropoffTask = new AmodeusDropoffTask(currentTime, currentTime + timing.getMinimumDropoffDurationPerStop(), dropoff.getToLink());
+                dropoffTask.addRequest(dropoff);
 
                 schedule.addTask(dropoffTask);
                 currentTask = dropoffTask;
                 currentRequests.remove(dropoff);
-                currentTime += timing.getDropoffDurationPerStop();
+                currentTime += timing.getMinimumDropoffDurationPerStop();
                 // System.err.println("Dropoff with finish time: " + String.valueOf(currentTime));
             }
         }

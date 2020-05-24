@@ -1,32 +1,27 @@
 package ch.ethz.refactoring.schedule;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.optimizer.Request;
 import org.matsim.contrib.dvrp.schedule.StayTask;
 
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 public class AmodeusDropoffTask extends StayTask {
-    private final Set<AVRequest> requests = new HashSet<>();
+    private final Map<Id<Request>, AVRequest> requests = new HashMap<>();
 
     public AmodeusDropoffTask(double beginTime, double endTime, Link link) {
         super(AmodeusTaskType.DROPOFF, beginTime, endTime, link);
     }
 
-    public AmodeusDropoffTask(double beginTime, double endTime, Link link, Collection<AVRequest> requests) {
-        super(AmodeusTaskType.DROPOFF, beginTime, endTime, link);
-
-        this.requests.addAll(requests);
-    }
-
-    public Set<AVRequest> getRequests() {
-        return requests;
-    }
-
     public void addRequest(AVRequest request) {
-        requests.add(request);
+        requests.put(request.getId(), request);
+    }
+
+    public Map<Id<Request>, AVRequest> getRequests() {
+        return requests;
     }
 }

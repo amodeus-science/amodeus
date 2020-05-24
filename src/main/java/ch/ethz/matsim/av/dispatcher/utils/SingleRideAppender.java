@@ -82,15 +82,17 @@ public class SingleRideAppender {
         }
 
         VrpPathWithTravelData pickupPath = VrpPaths.createPath(stayTask.getLink(), request.getFromLink(), startTime, plainPickupPath, travelTime);
-        VrpPathWithTravelData dropoffPath = VrpPaths.createPath(request.getFromLink(), request.getToLink(), pickupPath.getArrivalTime() + timing.getPickupDurationPerStop(),
+        VrpPathWithTravelData dropoffPath = VrpPaths.createPath(request.getFromLink(), request.getToLink(), pickupPath.getArrivalTime() + timing.getMinimumPickupDurationPerStop(),
                 plainDropoffPath, travelTime);
 
         AmodeusDriveTask pickupDriveTask = new AmodeusDriveTask(pickupPath);
-        AmodeusPickupTask pickupTask = new AmodeusPickupTask(pickupPath.getArrivalTime(), pickupPath.getArrivalTime() + timing.getPickupDurationPerStop(), request.getFromLink(),
-                Double.NEGATIVE_INFINITY, Arrays.asList(request));
+        AmodeusPickupTask pickupTask = new AmodeusPickupTask(pickupPath.getArrivalTime(), pickupPath.getArrivalTime() + timing.getMinimumPickupDurationPerStop(), request.getFromLink(),
+                Double.NEGATIVE_INFINITY);
+        pickupTask.addRequest(request);
         AmodeusDriveTask dropoffDriveTask = new AmodeusDriveTask(dropoffPath, Arrays.asList(request));
-        AmodeusDropoffTask dropoffTask = new AmodeusDropoffTask(dropoffPath.getArrivalTime(), dropoffPath.getArrivalTime() + timing.getDropoffDurationPerStop(),
-                request.getToLink(), Arrays.asList(request));
+        AmodeusDropoffTask dropoffTask = new AmodeusDropoffTask(dropoffPath.getArrivalTime(), dropoffPath.getArrivalTime() + timing.getMinimumDropoffDurationPerStop(),
+                request.getToLink());
+        dropoffTask.addRequest(request);
 
         if (stayTask.getStatus() == Task.TaskStatus.STARTED) {
             stayTask.setEndTime(startTime);

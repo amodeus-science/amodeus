@@ -1,16 +1,17 @@
 package ch.ethz.refactoring.schedule;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.optimizer.Request;
 import org.matsim.contrib.dvrp.schedule.StayTask;
 
 import ch.ethz.matsim.av.passenger.AVRequest;
 
 public class AmodeusPickupTask extends StayTask {
-    final private Set<AVRequest> requests = new HashSet<>();
+    private final Map<Id<Request>, AVRequest> requests = new HashMap<>();
     private final double earliestDepartureTime;
 
     public AmodeusPickupTask(double beginTime, double endTime, Link link, double earliestDepartureTime) {
@@ -18,17 +19,11 @@ public class AmodeusPickupTask extends StayTask {
         this.earliestDepartureTime = earliestDepartureTime;
     }
 
-    public AmodeusPickupTask(double beginTime, double endTime, Link link, double earliestDepartureTime, Collection<AVRequest> requests) {
-        this(beginTime, endTime, link, earliestDepartureTime);
-
-        this.requests.addAll(requests);
-    }
-
     public void addRequest(AVRequest request) {
-        requests.add(request);
+        requests.put(request.getId(), request);
     }
 
-    public Set<AVRequest> getRequests() {
+    public Map<Id<Request>, AVRequest> getRequests() {
         return requests;
     }
 

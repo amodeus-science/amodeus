@@ -17,8 +17,6 @@ import ch.ethz.refactoring.schedule.AmodeusStayTask;
 import ch.ethz.refactoring.schedule.AmodeusTaskType;
 
 public class AVActionCreator implements VrpAgentLogic.DynActionCreator {
-    public static final String PICKUP_ACTIVITY_TYPE = "AVPickup";
-    public static final String DROPOFF_ACTIVITY_TYPE = "AVDropoff";
     public static final String STAY_ACTIVITY_TYPE = "AVStay";
 
     private final PassengerEngine passengerEngine;
@@ -38,11 +36,16 @@ public class AVActionCreator implements VrpAgentLogic.DynActionCreator {
         switch ((AmodeusTaskType) task.getTaskType()) {
         case PICKUP:
             AmodeusPickupTask mpt = (AmodeusPickupTask) task;
-            return new AVPassengerPickupActivity(passengerEngine, dynAgent, vehicle, mpt.getRequests(), PICKUP_ACTIVITY_TYPE, mpt.getBeginTime(), mpt.getEarliestDepartureTime(),
-                    timingConfig);
+
+            double expectedEndTime = now + timingConfig.getMinimumPickupDurationPerStop();
+            double durationPerPassenger = timingConfig.getPickupDurationPerPassenger();
+
+            return new AVPassengerPickupActivity(passengerEngine, dynAgent, vehicle, mpt.getRequests(), expectedEndTime, durationPerPassenger);
         case DROPOFF:
             AmodeusDropoffTask mdt = (AmodeusDropoffTask) task;
-            return new AVPassengerDropoffActivity(passengerEngine, dynAgent, vehicle, mdt.getBeginTime(), mdt.getEndTime(), mdt.getRequests(), DROPOFF_ACTIVITY_TYPE, timingConfig);
+            double endTime = now + Math.max(timingConfig.getMinimumDropoffDurationPerStop(), mdt.getRequests().size() * timingConfig.getDropoffDurationPerPassenger());
+
+            return new AVPassengerDropoffActivity(passengerEngine, dynAgent, vehicle, mdt.getRequests(), endTime);
         case DRIVE:
             return legFactory.create(vehicle);
         case STAY:

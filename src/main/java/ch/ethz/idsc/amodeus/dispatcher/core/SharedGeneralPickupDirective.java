@@ -45,7 +45,8 @@ import ch.ethz.refactoring.schedule.AmodeusStayTask;
                     getTimeNow, // start of pickup
                     futurePathContainer.getStartTime(), // end of pickup
                     sameOriginRequests.get(0).getFromLink(), // location of driving start
-                    0.0, sameOriginRequests);
+                    0.0);
+            sameOriginRequests.forEach(pickupTask::addRequest);
             schedule.addTask(pickupTask);
 
             GlobalAssert.that(futurePathContainer.getStartTime() < scheduleEndTime);

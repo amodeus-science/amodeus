@@ -204,9 +204,9 @@ public class TestScenario {
         scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
 
         operatorConfig.getTimingConfig().setPickupDurationPerPassenger(0.0);
-        operatorConfig.getTimingConfig().setPickupDurationPerStop(0.0);
+        operatorConfig.getTimingConfig().setMinimumPickupDurationPerStop(0.0);
         operatorConfig.getTimingConfig().setDropoffDurationPerPassenger(0.0);
-        operatorConfig.getTimingConfig().setDropoffDurationPerStop(0.0);
+        operatorConfig.getTimingConfig().setMinimumDropoffDurationPerStop(0.0);
 
         operatorConfig.setUseAccessAgress(true);
 

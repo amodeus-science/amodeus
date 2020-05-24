@@ -1,6 +1,5 @@
 package ch.ethz.matsim.av.dispatcher.multi_od_heuristic;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -103,7 +102,7 @@ public class ParallelAggregateRideAppender implements AggregateRideAppender {
             currentTime += shortestTravelTime + timing.getDropoffDurationPerPassenger();
 
             if (!currentLink.equals(closestRequest.getFromLink())) {
-                currentTime += timing.getDropoffDurationPerStop();
+                currentTime += timing.getMinimumDropoffDurationPerStop();
             }
 
             currentLink = closestRequest.getFromLink();
@@ -128,7 +127,7 @@ public class ParallelAggregateRideAppender implements AggregateRideAppender {
             currentTime += shortestTravelTime + timing.getDropoffDurationPerPassenger();
 
             if (!currentLink.equals(closestRequest.getToLink())) {
-                currentTime += timing.getDropoffDurationPerStop();
+                currentTime += timing.getMinimumDropoffDurationPerStop();
             }
 
             currentLink = closestRequest.getToLink();
@@ -229,13 +228,13 @@ public class ParallelAggregateRideAppender implements AggregateRideAppender {
                 ((AmodeusPickupTask) currentTask).addRequest(pickup);
                 currentRequests.add(pickup);
             } else {
-                AmodeusPickupTask pickupTask = new AmodeusPickupTask(currentTime, currentTime + timing.getPickupDurationPerStop(), pickup.getFromLink(), Double.NEGATIVE_INFINITY,
-                        Arrays.asList(pickup));
+                AmodeusPickupTask pickupTask = new AmodeusPickupTask(currentTime, currentTime + timing.getMinimumPickupDurationPerStop(), pickup.getFromLink(), Double.NEGATIVE_INFINITY);
+                pickupTask.addRequest(pickup);
 
                 schedule.addTask(pickupTask);
                 currentTask = pickupTask;
                 currentRequests.add(pickup);
-                currentTime += timing.getPickupDurationPerStop();
+                currentTime += timing.getMinimumPickupDurationPerStop();
             }
         }
 
@@ -266,12 +265,13 @@ public class ParallelAggregateRideAppender implements AggregateRideAppender {
                 ((AmodeusDropoffTask) currentTask).addRequest(dropoff);
                 currentRequests.remove(dropoff);
             } else {
-                AmodeusDropoffTask dropoffTask = new AmodeusDropoffTask(currentTime, currentTime + timing.getDropoffDurationPerStop(), dropoff.getToLink(), Arrays.asList(dropoff));
+                AmodeusDropoffTask dropoffTask = new AmodeusDropoffTask(currentTime, currentTime + timing.getMinimumDropoffDurationPerStop(), dropoff.getToLink());
+                dropoffTask.addRequest(dropoff);
 
                 schedule.addTask(dropoffTask);
                 currentTask = dropoffTask;
                 currentRequests.remove(dropoff);
-                currentTime += timing.getDropoffDurationPerStop();
+                currentTime += timing.getMinimumDropoffDurationPerStop();
             }
         }
 

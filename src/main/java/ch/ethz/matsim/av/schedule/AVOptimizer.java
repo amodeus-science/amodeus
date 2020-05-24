@@ -105,7 +105,7 @@ public class AVOptimizer implements VrpOptimizer, OnlineTrackerListener, MobsimB
     }
 
     private void processTransitEvent(AmodeusDropoffTask task) {
-        for (AVRequest request : task.getRequests()) {
+        for (AVRequest request : task.getRequests().values()) {
             eventsManager.processEvent(new AVTransitEvent(request, now));
         }
     }
