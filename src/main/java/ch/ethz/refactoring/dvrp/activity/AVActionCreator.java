@@ -1,4 +1,4 @@
-package ch.ethz.matsim.av.vrpagent;
+package ch.ethz.refactoring.dvrp.activity;
 
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.passenger.PassengerEngine;
@@ -9,8 +9,6 @@ import org.matsim.contrib.dynagent.DynAction;
 import org.matsim.contrib.dynagent.DynAgent;
 
 import ch.ethz.matsim.av.config.modal.TimingConfig;
-import ch.ethz.matsim.av.passenger.AVPassengerDropoffActivity;
-import ch.ethz.matsim.av.passenger.AVPassengerPickupActivity;
 import ch.ethz.refactoring.schedule.AmodeusDropoffTask;
 import ch.ethz.refactoring.schedule.AmodeusPickupTask;
 import ch.ethz.refactoring.schedule.AmodeusStayTask;

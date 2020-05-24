@@ -29,8 +29,8 @@ import ch.ethz.matsim.av.framework.registry.GeneratorRegistry;
 import ch.ethz.matsim.av.generator.AVGenerator;
 import ch.ethz.matsim.av.passenger.AVRequestCreator;
 import ch.ethz.matsim.av.schedule.AVOptimizer;
-import ch.ethz.matsim.av.vrpagent.AVActionCreator;
 import ch.ethz.matsim.av.vrpagent.AVAgentSource;
+import ch.ethz.refactoring.dvrp.activity.AVActionCreator;
 import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
 public class AVQSimModeModule extends AbstractDvrpModeQSimModule {

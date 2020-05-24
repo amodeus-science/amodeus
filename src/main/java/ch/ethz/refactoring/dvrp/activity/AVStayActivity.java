@@ -1,4 +1,4 @@
-package ch.ethz.matsim.av.vrpagent;
+package ch.ethz.refactoring.dvrp.activity;
 
 import org.matsim.contrib.dynagent.FirstLastSimStepDynActivity;
 

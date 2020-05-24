@@ -1,4 +1,4 @@
-package ch.ethz.matsim.av.passenger;
+package ch.ethz.refactoring.dvrp.activity;
 
 import java.util.Map;
 
@@ -11,6 +11,8 @@ import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dynagent.DynAgent;
 import org.matsim.contrib.dynagent.FirstLastSimStepDynActivity;
 import org.matsim.core.mobsim.framework.MobsimPassengerAgent;
+
+import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** In theory, we could use MultiPassengerPickupActivity from DVRP here. However,
  * that class only either waits until all passengers have entered or until a
