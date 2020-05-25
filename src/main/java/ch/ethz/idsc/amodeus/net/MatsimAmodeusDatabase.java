@@ -36,16 +36,11 @@ public class MatsimAmodeusDatabase {
     }
 
     /** rapid lookup from MATSIM side */
-    private final Map<Link, Integer> linkIntegerMap; // TODO remove once no longer needed
-    // private final Map<Id<Link>, Integer> linkIdIntegerMap = new HashMap<>();
     private final Map<Integer, OsmLink> integerOsmLinkMap;
     public final ReferenceFrame referenceFrame;
 
     /** rapid lookup from Viewer */
     private final List<OsmLink> osmLinks;
-
-    // private final IdIntegerDatabase requestIdIntegerDatabase = new IdIntegerDatabase();
-    // private final IdIntegerDatabase vehicleIdIntegerDatabase = new IdIntegerDatabase();
 
     private Integer iteration;
 
@@ -54,13 +49,6 @@ public class MatsimAmodeusDatabase {
             List<OsmLink> osmLinks) {
         this.referenceFrame = referenceFrame;
         this.osmLinks = osmLinks;
-        /* int index = 0;
-         * for (OsmLink osmLink : this.osmLinks) {
-         * linkIntegerMap.put(osmLink.link, index);
-         * linkIdIntegerMap.put(osmLink.link.getId(), index);
-         * ++index;
-         * } */
-        linkIntegerMap = this.osmLinks.stream().map(osmLink -> osmLink.link).collect(Collectors.toMap(Function.identity(), link -> link.getId().index()));
         integerOsmLinkMap = this.osmLinks.stream().collect(Collectors.toMap(osmLink -> osmLink.link.getId().index(), Function.identity()));
     }
 
@@ -70,14 +58,6 @@ public class MatsimAmodeusDatabase {
         // the subnetworks.
         // return linkIdIntegerMap.get(link.getId()); // TODO remove
         return link.getId().index();
-    }
-
-    /** @return unmodifiable map that assigns a link to
-     *         the corresponding index of the OsmLink in osmLinks
-     * @deprecated use {@link Link#getId()} and {@link Id#index()} instead */
-    @Deprecated
-    public Map<Link, Integer> getLinkIntegerMap() {
-        return Collections.unmodifiableMap(linkIntegerMap);
     }
 
     public OsmLink getOsmLink(int index) {
