@@ -10,14 +10,13 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
 enum RequestContainerCompiler {
     ;
-    /** @param avRequest
-     * @param db
-     * @param requestStatus
+
+    /** @param avRequest {@link AVRequest}
+     * @param requestStatus {@link RequestStatus}
      * @return {@link RequestContainer} with information for storage and later viewing in
      *         {@link SimulationObject} */
     public static RequestContainer compile( //
             AVRequest avRequest, //
-            MatsimAmodeusDatabase db, //
             RequestStatus requestStatus) {
         GlobalAssert.that(Objects.nonNull(avRequest));
 

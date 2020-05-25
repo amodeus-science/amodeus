@@ -14,11 +14,11 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     ;
 
     /** @return a {@link VehicleContainer} that is used to save the result to the disk for current
-     *         or later processing, e.g., in the {@link ScenarioViewer}. The information is taken from the
-     *         {@link RoboTaxi} @param roboTaxi, the {@link List} {@linkLink} @param linkTrace contains all
-     *         {@link Link}s passed since the last {@link SimulationObject} was saved, passed to the
-     *         {@link VehicleObject} as int indexes according to the @param db */
-    public static VehicleContainer compile(RoboTaxi roboTaxi, List<Link> linkTrace, MatsimAmodeusDatabase db) {
+     *         or later processing, e.g., in amod's the ScenarioViewer. The information is taken from the
+     *         @param roboTaxi {@link RoboTaxi}, and the
+     *         @param linkTrace {@link List<Link>} containing all {@link Link}s passed since the last
+     *         {@link SimulationObject} was saved */
+    public static VehicleContainer compile(RoboTaxi roboTaxi, List<Link> linkTrace) {
         VehicleContainer vc = new VehicleContainer();
         vc.vehicleIndex = roboTaxi.getId().index();
         GlobalAssert.that(!linkTrace.isEmpty());
@@ -28,5 +28,4 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         vc.destinationLinkIndex = Objects.requireNonNull(toLink).getId().index();
         return vc;
     }
-
 }

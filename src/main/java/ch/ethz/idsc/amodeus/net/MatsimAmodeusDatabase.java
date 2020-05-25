@@ -54,7 +54,6 @@ public class MatsimAmodeusDatabase {
     }
 
     public OsmLink getOsmLink(int index) {
-        // return osmLinks.get(index); // TODO remove
         return integerOsmLinkMap.get(index);
     }
 
