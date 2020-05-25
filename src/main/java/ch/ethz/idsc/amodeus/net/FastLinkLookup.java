@@ -33,7 +33,7 @@ public class FastLinkLookup {
     }
 
     public int indexFromWGS84(Coord wgs84location) {
-        return db.getLinkIndex(linkFromWGS84(wgs84location));
+        return linkFromWGS84(wgs84location).getId().index();
     }
 
     public int indexFromLocal(Tensor local) {
@@ -41,7 +41,7 @@ public class FastLinkLookup {
     }
 
     public int indexFromLocal(Coord local) {
-        return db.getLinkIndex(linkFromLocal(local));
+        return linkFromLocal(local).getId().index();
     }
 
     // link getters

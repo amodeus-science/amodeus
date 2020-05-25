@@ -49,12 +49,8 @@ public class MatsimAmodeusDatabase {
         integerOsmLinkMap = this.osmLinks.stream().collect(Collectors.toMap(osmLink -> osmLink.link.getId().index(), Function.identity()));
     }
 
-    public int getLinkIndex(Link link) {
-        // Previously this worked by link instance. Now av package uses a subnetwork internally for each dispatcher.
-        // This leads to the Link objects being different, but their ID is the same in the general network and in
-        // the subnetworks.
-        // return linkIdIntegerMap.get(link.getId()); // TODO remove
-        return link.getId().index();
+    public OsmLink getOsmLink(Link link) {
+        return getOsmLink(link.getId().index());
     }
 
     public OsmLink getOsmLink(int index) {

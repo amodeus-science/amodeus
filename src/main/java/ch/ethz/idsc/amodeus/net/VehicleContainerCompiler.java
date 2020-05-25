@@ -4,6 +4,7 @@ package ch.ethz.idsc.amodeus.net;
 import java.util.List;
 import java.util.Objects;
 
+import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
@@ -21,10 +22,10 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         VehicleContainer vc = new VehicleContainer();
         vc.vehicleIndex = roboTaxi.getId().index();
         GlobalAssert.that(!linkTrace.isEmpty());
-        vc.linkTrace = linkTrace.stream().mapToInt(db::getLinkIndex).toArray();
+        vc.linkTrace = linkTrace.stream().map(Link::getId).mapToInt(Id::index).toArray();
         vc.roboTaxiStatus = roboTaxi.getStatus();
         Link toLink = roboTaxi.getCurrentDriveDestination();
-        vc.destinationLinkIndex = db.getLinkIndex(Objects.requireNonNull(toLink));
+        vc.destinationLinkIndex = Objects.requireNonNull(toLink).getId().index();
         return vc;
     }
 
