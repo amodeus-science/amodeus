@@ -48,9 +48,6 @@ import ch.ethz.idsc.amodeus.view.jmapviewer.Coordinate;
                 zoomAdjPrev = true;
             } else {
                 prevZoom--;
-                // TODO @joel this looks way to easy now
-                // zoomAdj = (zoomAdjPrev) ? true : false;
-                // zoomAdjPrev = (zoomAdj) ? true : false;
                 zoomAdj = zoomAdjPrev;
             }
             amodeusComponent.setDisplayPosition(ccc, new Coordinate(center.getY(), center.getX()), prevZoom);

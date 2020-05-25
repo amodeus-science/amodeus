@@ -16,12 +16,14 @@ import ch.ethz.idsc.amodeus.analysis.report.TtlValIdent;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.net.VehicleContainer;
+import ch.ethz.idsc.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.qty.CompatibleUnitQ;
 import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.qty.Unit;
 import ch.ethz.idsc.tensor.qty.UnitConvert;
@@ -29,8 +31,7 @@ import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
 
 public class DistanceElement implements AnalysisElement, TotalValueAppender {
-    // TODO @joel maybe make customizable or assign task to somebody else
-    public static final Unit TARGET_UNIT = Unit.of("km");
+    private static Unit TARGET_UNIT = Unit.of("km");
 
     // ---
     private final Map<Integer, VehicleTraceAnalyzer> traceAnalyzers;
@@ -128,5 +129,20 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
         map.put(TtlValIdent.DISTANCERATIO, String.valueOf(totalDistanceRatio));
         map.put(TtlValIdent.AVGTRIPDISTANCE, String.valueOf(avgTripDistance));
         return map;
+    }
+
+    public static void setDistanceUnit(String unit) {
+        setDistanceUnit(Unit.of(unit));
+    }
+
+    public static void setDistanceUnit(Unit unit) {
+        if (CompatibleUnitQ.SI().with(SI.METER).test(Quantity.of(1, unit)))
+            TARGET_UNIT = unit;
+        else
+            System.err.println("Unit " + unit + " is not a compatible distance unit!");
+    }
+
+    public static Unit getDistanceUnit() {
+        return TARGET_UNIT;
     }
 }

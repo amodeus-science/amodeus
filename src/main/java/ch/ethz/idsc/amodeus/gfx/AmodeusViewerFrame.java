@@ -38,7 +38,6 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.util.gui.RowPanel;
 import ch.ethz.idsc.amodeus.util.gui.SpinnerLabel;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
-import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.view.jmapviewer.Coordinate;
 import ch.ethz.idsc.amodeus.view.jmapviewer.JMapViewer;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkGet;
@@ -78,8 +77,8 @@ public class AmodeusViewerFrame implements Runnable {
     /** Constructs the {@code Demo}.
      * 
      * @param amodeusComponent
-     * @param outputDirectory
-     * @param defaultDirectory TODO @joel document difference to outputDirectory
+     * @param outputDirectory where simulation outputs are stored
+     * @param defaultDirectory output at which spinner labels initially point
      * @param network */
     public AmodeusViewerFrame(AmodeusComponent amodeusComponent, File outputDirectory, File defaultDirectory, Network network, ScenarioOptions scenarioOptions) {
         this.network = network;
@@ -139,12 +138,12 @@ public class AmodeusViewerFrame implements Runnable {
         // find the maximal folder depth of the simulation objects relative to the working directory
         currentMaxDepth = SimulationFolderUtils.getMaxDepth(outputDirectory, SIMOBJ) - 1;
         if (currentMaxDepth < 0) {
-            System.out.println("ERROR: no simulation objects found in this working directory!");
-            GlobalAssert.that(false);
+            System.err.println("ERROR: no simulation objects found in this working directory!");
+            throw new RuntimeException();
         }
         if (currentMaxDepth > MAXDIRECTORYDEPTH) {
-            System.out.println("ERROR: simulation objects found that are too depth in folder structur!");
-            GlobalAssert.that(false);
+            System.err.println("ERROR: simulation objects found that are too deep in folder structure!");
+            throw new RuntimeException();
         }
 
         for (int i = 0; i < currentMaxDepth; i++) {

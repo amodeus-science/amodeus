@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.zip.DataFormatException;
 
+import ch.ethz.idsc.amodeus.analysis.Analysis;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
@@ -45,7 +46,7 @@ public enum VirtualNetworkGet {
      * @return null if file does not exist
      * @throws IOException */
     public static VirtualNetwork<Link> readFromOutputDirectory(Network network, File outputDirectory, ScenarioOptions scenarioOptions) throws IOException {
-        final File virtualnetworkFolder = new File(outputDirectory, "data"); // TODO @joel still hard-coded, search for "data" in project
+        final File virtualnetworkFolder = new File(outputDirectory, Analysis.DATAFOLDERNAME);
         final File virtualnetworkFile = new File(virtualnetworkFolder, scenarioOptions.getVirtualNetworkName());
         System.out.println("reading virtual network from" + virtualnetworkFile.getAbsoluteFile());
         try {
