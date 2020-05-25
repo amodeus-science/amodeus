@@ -3,13 +3,13 @@ package ch.ethz.matsim.av.dispatcher.single_fifo;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.router.util.TravelTime;
 
 import ch.ethz.matsim.av.config.AmodeusModeConfig;
-import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.dispatcher.AVVehicleAssignmentEvent;
 import ch.ethz.matsim.av.dispatcher.utils.SingleRideAppender;
@@ -21,7 +21,7 @@ public class SingleFIFODispatcher implements AVDispatcher {
     static public final String TYPE = "SingleFIFO";
 
     final private SingleRideAppender appender;
-    final private Queue<AVVehicle> availableVehicles = new LinkedList<>();
+    final private Queue<DvrpVehicle> availableVehicles = new LinkedList<>();
     final private Queue<AVRequest> pendingRequests = new LinkedList<>();
 
     final private EventsManager eventsManager;
@@ -43,7 +43,7 @@ public class SingleFIFODispatcher implements AVDispatcher {
     }
 
     @Override
-    public void onNextTaskStarted(AVVehicle vehicle) {
+    public void onNextTaskStarted(DvrpVehicle vehicle) {
         Task task = vehicle.getSchedule().getCurrentTask();
         if (task.getTaskType() == AmodeusTaskType.STAY) {
             availableVehicles.add(vehicle);
@@ -51,14 +51,14 @@ public class SingleFIFODispatcher implements AVDispatcher {
     }
 
     @Override
-    public void addVehicle(AVVehicle vehicle) {
+    public void addVehicle(DvrpVehicle vehicle) {
         availableVehicles.add(vehicle);
         eventsManager.processEvent(new AVVehicleAssignmentEvent(mode, vehicle.getId(), 0));
     }
 
     private void reoptimize(double now) {
         while (availableVehicles.size() > 0 && pendingRequests.size() > 0) {
-            AVVehicle vehicle = availableVehicles.poll();
+            DvrpVehicle vehicle = availableVehicles.poll();
             AVRequest request = pendingRequests.poll();
             appender.schedule(request, vehicle, now);
         }

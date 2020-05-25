@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 import org.matsim.api.core.v01.events.Event;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
@@ -29,7 +30,6 @@ import ch.ethz.idsc.amodeus.net.SimulationObjects;
 import ch.ethz.idsc.amodeus.net.StorageUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AmodeusModeConfig;
-import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.AVVehicleAssignmentEvent;
 import ch.ethz.matsim.av.generator.AVGenerator;
 import ch.ethz.matsim.av.passenger.AVRequest;
@@ -96,7 +96,7 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
     /** Adding a @param vehicle during setup of simulation handled by {@link AVGenerator},
      * the parameter @param singleOrShared indicates if multi-passenger ride-sharing case
      * or unit capacity case. */
-    protected final void addVehicle(AVVehicle vehicle, RoboTaxiUsageType singleOrShared) {
+    protected final void addVehicle(DvrpVehicle vehicle, RoboTaxiUsageType singleOrShared) {
         RoboTaxi roboTaxi = new RoboTaxi(vehicle, new LinkTimePair(vehicle.getStartLink(), 0.0), vehicle.getStartLink(), singleOrShared);
         Event event = new AVVehicleAssignmentEvent(dispatcherMode, vehicle.getId(), 0);
         addRoboTaxi(roboTaxi, event);

@@ -14,7 +14,6 @@ import org.matsim.core.mobsim.framework.listeners.MobsimBeforeSimStepListener;
 
 import com.google.inject.Singleton;
 
-import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.refactoring.schedule.AmodeusDropoffTask;
@@ -95,7 +94,7 @@ public class AVOptimizer implements VrpOptimizer, OnlineTrackerListener, MobsimB
 
         // Notify the dispatcher that a new task has started
         synchronized (dispatcher) {
-            dispatcher.onNextTaskStarted((AVVehicle) vehicle);
+            dispatcher.onNextTaskStarted(vehicle);
         }
 
         // Post transit events if an agent was dropped up

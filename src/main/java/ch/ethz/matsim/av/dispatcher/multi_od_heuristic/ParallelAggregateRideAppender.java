@@ -8,6 +8,7 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.path.VrpPaths;
 import org.matsim.contrib.dvrp.schedule.Schedule;
@@ -17,7 +18,6 @@ import org.matsim.core.router.util.LeastCostPathCalculator.Path;
 import org.matsim.core.router.util.TravelTime;
 
 import ch.ethz.matsim.av.config.modal.TimingConfig;
-import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.multi_od_heuristic.aggregation.AggregatedRequest;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
@@ -41,7 +41,7 @@ public class ParallelAggregateRideAppender implements AggregateRideAppender {
     }
 
     private class AppendTask {
-        public AVVehicle vehicle;
+        public DvrpVehicle vehicle;
 
         public List<AVRequest> pickupOrder = new LinkedList<>();
         public List<AVRequest> dropoffOrder = new LinkedList<>();
@@ -62,7 +62,7 @@ public class ParallelAggregateRideAppender implements AggregateRideAppender {
         }
     }
 
-    public void schedule(AggregatedRequest request, AVVehicle vehicle, double now) {
+    public void schedule(AggregatedRequest request, DvrpVehicle vehicle, double now) {
         LinkedList<AVRequest> requests = new LinkedList<>();
         LinkedList<AVRequest> pickups = new LinkedList<>();
         LinkedList<AVRequest> dropoffs = new LinkedList<>();

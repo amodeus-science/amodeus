@@ -9,8 +9,9 @@ import java.util.Random;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
+import org.matsim.contrib.dvrp.fleet.DvrpVehicleSpecification;
+import org.matsim.contrib.dvrp.fleet.ImmutableDvrpVehicleSpecification;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
-import org.matsim.vehicles.VehicleType;
 
 import com.google.inject.TypeLiteral;
 
@@ -27,7 +28,6 @@ import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.Floor;
 import ch.ethz.idsc.tensor.sca.Sign;
 import ch.ethz.matsim.av.config.AmodeusModeConfig;
-import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.generator.AVGenerator;
 import ch.ethz.matsim.av.generator.AmodeusIdentifiers;
 
@@ -45,17 +45,17 @@ public class VehicleToVSGenerator implements AVGenerator {
     private final VirtualNetwork<Link> virtualNetwork;
     private final Tensor vehicleDistribution;
     private final Random random;
-    private final VehicleType vehicleType;
+    private final int capacity;
     private final AmodeusModeConfig operatorConfig;
     // ---
     protected Tensor placedVehicles;
 
     public VehicleToVSGenerator(AmodeusModeConfig operatorConfig, //
             VirtualNetwork<Link> virtualNetwork, //
-            TravelData travelData, VehicleType vehicleType) {
+            TravelData travelData, int capacity) {
         this.operatorConfig = operatorConfig;
         this.virtualNetwork = virtualNetwork;
-        this.vehicleType = vehicleType;
+        this.capacity = capacity;
 
         /** get distribution from travelData */
         Tensor v0 = travelData.getV0();
@@ -73,9 +73,9 @@ public class VehicleToVSGenerator implements AVGenerator {
     }
 
     @Override
-    public List<AVVehicle> generateVehicles() {
+    public List<DvrpVehicleSpecification> generateVehicles() {
         int generatedNumberOfVehicles = 0;
-        List<AVVehicle> vehicles = new LinkedList<>();
+        List<DvrpVehicleSpecification> vehicles = new LinkedList<>();
         placedVehicles = Array.zeros(virtualNetwork.getvNodesCount());
 
         while (generatedNumberOfVehicles < operatorConfig.getGeneratorConfig().getNumberOfVehicles()) {
@@ -85,7 +85,13 @@ public class VehicleToVSGenerator implements AVGenerator {
             /** update placedVehicles */
             placedVehicles.set(RealScalar.ONE::add, vNodeIndex);
             Id<DvrpVehicle> id = AmodeusIdentifiers.createVehicleId(operatorConfig.getMode(), generatedNumberOfVehicles);
-            vehicles.add(new AVVehicle(id, linkGen, 0.0, Double.POSITIVE_INFINITY, vehicleType));
+            vehicles.add(ImmutableDvrpVehicleSpecification.newBuilder() //
+                    .id(id) //
+                    .serviceBeginTime(0.0) //
+                    .serviceEndTime(Double.POSITIVE_INFINITY) //
+                    .capacity(capacity) //
+                    .startLinkId(linkGen.getId()) //
+                    .build());
         }
         return vehicles;
     }
@@ -115,13 +121,13 @@ public class VehicleToVSGenerator implements AVGenerator {
         @Override
         public AVGenerator createGenerator(InstanceGetter inject) {
             AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
-            VehicleType vehicleType = inject.getModal(VehicleType.class);
+            int capacity = operatorConfig.getGeneratorConfig().getCapacity();
 
             VirtualNetwork<Link> virtualNetwork = inject.getModal(new TypeLiteral<VirtualNetwork<Link>>() {
             });
             TravelData travelData = inject.getModal(TravelData.class);
 
-            return new VehicleToVSGenerator(operatorConfig, virtualNetwork, travelData, vehicleType);
+            return new VehicleToVSGenerator(operatorConfig, virtualNetwork, travelData, capacity);
         }
     }
 }

@@ -2,7 +2,6 @@ package ch.ethz.matsim.av.framework;
 
 import java.util.Map;
 
-import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.PopulationFactory;
 import org.matsim.contrib.dvrp.passenger.DefaultPassengerRequestValidator;
@@ -14,9 +13,6 @@ import org.matsim.contrib.dvrp.run.ModalProviders;
 import org.matsim.contrib.dvrp.trafficmonitoring.DvrpTravelTimeModule;
 import org.matsim.core.router.RoutingModule;
 import org.matsim.core.router.util.TravelTime;
-import org.matsim.vehicles.VehicleType;
-import org.matsim.vehicles.VehicleUtils;
-import org.matsim.vehicles.Vehicles;
 
 import com.google.inject.Inject;
 import com.google.inject.Key;
@@ -63,8 +59,6 @@ public class AVModeModule extends AbstractDvrpModeModule {
 
         // DVRP dynamics
         bindModal(PassengerRequestValidator.class).toInstance(new DefaultPassengerRequestValidator());
-        // bindModal(AVRouter.class).toProvider(new RouterProvider(getMode()));
-        bindModal(VehicleType.class).toProvider(new VehicleTypeProvider(getMode())).in(Singleton.class);
         bindModal(TravelTime.class).to(Key.get(TravelTime.class, Names.named(DvrpTravelTimeModule.DVRP_ESTIMATED)));
 
         bindModal(AVRouterShutdownListener.class).toProvider(modalProvider(getter -> {
@@ -143,35 +137,6 @@ public class AVModeModule extends AbstractDvrpModeModule {
             return factory.createInteractionFinder(modeConfig, network);
         }
     };
-
-    static private class VehicleTypeProvider extends ModalProviders.AbstractProvider<VehicleType> {
-        @Inject
-        Vehicles vehicles;
-
-        VehicleTypeProvider(String mode) {
-            super(mode);
-        }
-
-        @Override
-        public VehicleType get() {
-            AmodeusModeConfig operatorConfig = getModalInstance(AmodeusModeConfig.class);
-
-            String vehicleTypeName = operatorConfig.getGeneratorConfig().getVehicleType();
-            VehicleType vehicleType = null;
-
-            if (vehicleTypeName == null) {
-                vehicleType = VehicleUtils.getDefaultVehicleType();
-            } else {
-                vehicleType = vehicles.getVehicleTypes().get(Id.create(vehicleTypeName, VehicleType.class));
-
-                if (vehicleType == null) {
-                    throw new IllegalStateException(String.format("VehicleType '%s' does not exist for mode '%s'", vehicleType, getMode()));
-                }
-            }
-
-            return vehicleType;
-        }
-    }
 
     static class PriceCalculatorProider extends ModalProviders.AbstractProvider<PriceCalculator> {
         PriceCalculatorProider(AmodeusModeConfig modeConfig) {

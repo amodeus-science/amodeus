@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.path.VrpPaths;
 import org.matsim.contrib.dvrp.schedule.Schedule;
@@ -13,7 +14,6 @@ import org.matsim.core.router.util.LeastCostPathCalculator;
 import org.matsim.core.router.util.TravelTime;
 
 import ch.ethz.matsim.av.config.modal.TimingConfig;
-import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.multi_od_heuristic.aggregation.AggregatedRequest;
 import ch.ethz.matsim.av.passenger.AVRequest;
 import ch.ethz.refactoring.schedule.AmodeusDriveTask;
@@ -34,7 +34,7 @@ public class SerialAggregateRideAppender implements AggregateRideAppender {
         this.travelTimeEstimator = travelTimeEstimator;
     }
 
-    public void schedule(AggregatedRequest request, AVVehicle vehicle, double now) {
+    public void schedule(AggregatedRequest request, DvrpVehicle vehicle, double now) {
         Schedule schedule = vehicle.getSchedule();
         AmodeusStayTask stayTask = (AmodeusStayTask) Schedules.getLastTask(schedule);
 

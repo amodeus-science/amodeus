@@ -9,6 +9,7 @@ import java.util.Objects;
 
 import org.matsim.api.core.v01.events.Event;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
@@ -16,7 +17,6 @@ import org.matsim.core.config.Config;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.StorageUtils;
 import ch.ethz.matsim.av.config.AmodeusModeConfig;
-import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
@@ -63,7 +63,7 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
     }
 
     @Override
-    public abstract void addVehicle(AVVehicle vehicle);
+    public abstract void addVehicle(DvrpVehicle vehicle);
 
     /** functions called at every MATSim timestep, dispatching action happens in <b> redispatch <b> */
     @Override
@@ -156,7 +156,7 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
     /* package */ abstract void executeRedirects();
 
     @Override
-    public final void onNextTaskStarted(AVVehicle task) {
+    public final void onNextTaskStarted(DvrpVehicle task) {
         // intentionally empty
     }
 

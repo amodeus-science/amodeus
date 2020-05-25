@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
 import org.matsim.contrib.dvrp.schedule.Task;
@@ -26,7 +27,6 @@ import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationObjectCompiler;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AmodeusModeConfig;
-import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.generator.AVGenerator;
 import ch.ethz.matsim.av.passenger.AVRequest;
@@ -362,7 +362,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
 
     /** adding a vehicle during setup of simulation, handeled by {@link AVGenerator} */
     @Override
-    public final void addVehicle(AVVehicle vehicle) {
+    public final void addVehicle(DvrpVehicle vehicle) {
         super.addVehicle(vehicle, RoboTaxiUsageType.SINGLEUSED);
     }
 

@@ -21,6 +21,8 @@ import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.api.core.v01.population.PopulationFactory;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
+import org.matsim.contrib.dvrp.fleet.DvrpVehicleSpecification;
+import org.matsim.contrib.dvrp.fleet.ImmutableDvrpVehicleSpecification;
 import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
 import org.matsim.contrib.dvrp.run.DvrpModule;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
@@ -45,7 +47,6 @@ import com.google.inject.Provides;
 import ch.ethz.matsim.av.config.AmodeusConfigGroup;
 import ch.ethz.matsim.av.config.AmodeusModeConfig;
 import ch.ethz.matsim.av.config.modal.AmodeusScoringConfig;
-import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.multi_od_heuristic.MultiODHeuristic;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.framework.AVQSimModule;
@@ -168,11 +169,17 @@ public class TestScenario {
         }
 
         @Override
-        public List<AVVehicle> generateVehicles() {
+        public List<DvrpVehicleSpecification> generateVehicles() {
             VehicleType vehicleType = VehicleUtils.getDefaultVehicleType();
             vehicleType.getCapacity().setSeats(capacity);
 
-            return Collections.singletonList(new AVVehicle(Id.create("vehicle", DvrpVehicle.class), link, 0.0, Double.POSITIVE_INFINITY, vehicleType));
+            return Collections.singletonList(ImmutableDvrpVehicleSpecification.newBuilder() //
+                    .id(Id.create("vehicle", DvrpVehicle.class)) //
+                    .startLinkId(link.getId()) //
+                    .serviceBeginTime(0.0) //
+                    .serviceEndTime(Double.POSITIVE_INFINITY) //
+                    .capacity(capacity) //
+                    .build());
         }
     }
 

@@ -8,7 +8,6 @@ import java.io.IOException;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
@@ -16,8 +15,6 @@ import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.scenario.ScenarioUtils;
-import org.matsim.vehicles.VehicleType;
-import org.matsim.vehicles.VehicleUtils;
 
 import ch.ethz.idsc.amodeus.matsim.mod.VehicleToVSGenerator;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
@@ -44,13 +41,6 @@ public class VehicleToVSGeneratorTester {
     private static TravelData travelData123;
     private static TravelData travelData334;
     private static AmodeusModeConfig operatorConfig;
-
-    private static final VehicleType vehicleType;
-
-    static {
-        vehicleType = VehicleUtils.createVehicleType(Id.create("amodeusType", VehicleType.class));
-        vehicleType.getCapacity().setSeats(4);
-    }
 
     @BeforeClass
     public static void setup() throws IOException {
@@ -88,19 +78,19 @@ public class VehicleToVSGeneratorTester {
     @Test
     public void testHasNext() {
         VehicleToVSGenerator vehicleToVSGenerator = //
-                new VehicleToVSGenerator(operatorConfig, virtualNetwork, travelData000, vehicleType);
+                new VehicleToVSGenerator(operatorConfig, virtualNetwork, travelData000, 4);
 
         /** test hasNext */
         assertEquals(operatorConfig.getGeneratorConfig().getNumberOfVehicles(), vehicleToVSGenerator.generateVehicles().size());
 
         vehicleToVSGenerator = //
-                new VehicleToVSGenerator(operatorConfig, virtualNetwork, travelData123, vehicleType);
+                new VehicleToVSGenerator(operatorConfig, virtualNetwork, travelData123, 4);
 
         /** test hasNext */
         assertEquals(operatorConfig.getGeneratorConfig().getNumberOfVehicles(), vehicleToVSGenerator.generateVehicles().size());
 
         vehicleToVSGenerator = //
-                new VehicleToVSGenerator(operatorConfig, virtualNetwork, travelData334, vehicleType);
+                new VehicleToVSGenerator(operatorConfig, virtualNetwork, travelData334, 4);
 
         /** test hasNext */
         assertEquals(operatorConfig.getGeneratorConfig().getNumberOfVehicles(), vehicleToVSGenerator.generateVehicles().size());
@@ -146,7 +136,7 @@ public class VehicleToVSGeneratorTester {
     public void testTotallyGivenDistribution() {
         for (int i = 0; i < TRIALS; i++) {
             VehicleToVSGenerator vehicleToVSGenerator = //
-                    new VehicleToVSGenerator(operatorConfig, virtualNetwork, travelData334, vehicleType);
+                    new VehicleToVSGenerator(operatorConfig, virtualNetwork, travelData334, 4);
             vehicleToVSGenerator.generateVehicles();
             assertEquals(vehicleToVSGenerator.getPlacedVehicles(), Tensors.vector(3, 3, 4));
 
