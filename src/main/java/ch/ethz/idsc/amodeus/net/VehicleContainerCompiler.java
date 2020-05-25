@@ -19,7 +19,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
      *         {@link VehicleObject} as int indexes according to the @param db */
     public static VehicleContainer compile(RoboTaxi roboTaxi, List<Link> linkTrace, MatsimAmodeusDatabase db) {
         VehicleContainer vc = new VehicleContainer();
-        vc.vehicleIndex = db.getVehicleIndex(roboTaxi);
+        vc.vehicleIndex = roboTaxi.getId().index();
         GlobalAssert.that(!linkTrace.isEmpty());
         vc.linkTrace = linkTrace.stream().mapToInt(db::getLinkIndex).toArray();
         vc.roboTaxiStatus = roboTaxi.getStatus();

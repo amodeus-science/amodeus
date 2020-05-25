@@ -10,18 +10,15 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.matsim.api.core.v01.Coord;
-import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
 
 import ch.ethz.idsc.amodeus.data.ReferenceFrame;
-import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.TensorMap;
 import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.red.Median;
-import ch.ethz.matsim.av.passenger.AVRequest;
 
 public class MatsimAmodeusDatabase {
 
@@ -80,20 +77,6 @@ public class MatsimAmodeusDatabase {
 
     public int getOsmLinksSize() {
         return osmLinks.size();
-    }
-
-    /** @deprecated use {@link AVRequest#getId()} and {@link Id#index()} instead */
-    @Deprecated
-    public int getRequestIndex(AVRequest avRequest) {
-        // return requestIdIntegerDatabase.getId(avRequest.getId().toString()); // TODO remove
-        return avRequest.getId().index();
-    }
-
-    /** @deprecated use {@link AVRequest#getId()} and {@link Id#index()} instead */
-    @Deprecated
-    public int getVehicleIndex(RoboTaxi roboTaxi) {
-        // return vehicleIdIntegerDatabase.getId(roboTaxi.getId().toString()); // TODO remove
-        return roboTaxi.getId().index();
     }
 
     void setIteration(Integer iteration) {

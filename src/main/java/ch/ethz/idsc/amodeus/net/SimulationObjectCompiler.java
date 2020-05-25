@@ -77,7 +77,7 @@ public class SimulationObjectCompiler {
         map.forEach((k, v) -> {
             String id = k.getId().toString();
             if (requestMap.containsKey(id))
-                requestMap.get(id).associatedVehicle = db.getVehicleIndex(v);
+                requestMap.get(id).associatedVehicle = v.getId().index();
         });
     }
 

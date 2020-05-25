@@ -26,7 +26,7 @@ enum RequestContainerCompiler {
         GlobalAssert.that(Objects.nonNull(avRequest.getToLink()));
 
         RequestContainer requestContainer = new RequestContainer();
-        requestContainer.requestIndex = db.getRequestIndex(avRequest);
+        requestContainer.requestIndex = avRequest.getId().index();
         requestContainer.fromLinkIndex = db.getLinkIndex(avRequest.getFromLink());
         requestContainer.submissionTime = avRequest.getSubmissionTime();
         requestContainer.toLinkIndex = db.getLinkIndex(avRequest.getToLink());
