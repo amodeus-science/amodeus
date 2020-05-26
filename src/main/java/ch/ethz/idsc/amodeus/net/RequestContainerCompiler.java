@@ -10,14 +10,13 @@ import ch.ethz.matsim.av.passenger.AVRequest;
 
 enum RequestContainerCompiler {
     ;
-    /** @param avRequest
-     * @param db
-     * @param requestStatus
+
+    /** @param avRequest {@link AVRequest}
+     * @param requestStatus {@link RequestStatus}
      * @return {@link RequestContainer} with information for storage and later viewing in
      *         {@link SimulationObject} */
     public static RequestContainer compile( //
             AVRequest avRequest, //
-            MatsimAmodeusDatabase db, //
             RequestStatus requestStatus) {
         GlobalAssert.that(Objects.nonNull(avRequest));
 
@@ -26,10 +25,10 @@ enum RequestContainerCompiler {
         GlobalAssert.that(Objects.nonNull(avRequest.getToLink()));
 
         RequestContainer requestContainer = new RequestContainer();
-        requestContainer.requestIndex = db.getRequestIndex(avRequest);
-        requestContainer.fromLinkIndex = db.getLinkIndex(avRequest.getFromLink());
+        requestContainer.requestIndex = avRequest.getId().index();
+        requestContainer.fromLinkIndex = avRequest.getFromLink().getId().index();
         requestContainer.submissionTime = avRequest.getSubmissionTime();
-        requestContainer.toLinkIndex = db.getLinkIndex(avRequest.getToLink());
+        requestContainer.toLinkIndex = avRequest.getToLink().getId().index();
         requestContainer.requestStatus = EnumSet.of(requestStatus);
         return requestContainer;
     }

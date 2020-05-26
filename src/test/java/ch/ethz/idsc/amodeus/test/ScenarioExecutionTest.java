@@ -237,7 +237,7 @@ public class ScenarioExecutionTest {
             System.out.println("Viewer Test:");
 
             assertEquals(9, testViewer.getAmodeusComponent().viewerLayers.size());
-            assertEquals(31, testViewer.getViewerConfig().settings.getClass().getFields().length);
+            assertEquals(32, testViewer.getViewerConfig().settings.getClass().getFields().length);
         }
     }
 

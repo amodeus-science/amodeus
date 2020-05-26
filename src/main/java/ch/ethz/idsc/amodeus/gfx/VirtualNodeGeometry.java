@@ -39,8 +39,7 @@ import ch.ethz.idsc.tensor.sca.Sign;
         for (VirtualNode<Link> virtualNode : virtualNetwork.getVirtualNodes()) {
             Tensor coords = Tensors.empty();
             for (Link link : virtualNode.getLinks()) {
-                int index = db.getLinkIndex(link);
-                OsmLink osmLink = db.getOsmLink(index);
+                OsmLink osmLink = db.getOsmLink(link);
                 Coord coord = osmLink.getAt(.5);
                 coords.append(Tensors.vector(coord.getX(), coord.getY()));
             }
