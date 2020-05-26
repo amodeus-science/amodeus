@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import ch.ethz.idsc.amodeus.dispatcher.core.LinkStatusPair;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RequestStatus;
@@ -45,11 +46,21 @@ public class SimulationObjectCompiler {
         requestStatuses.forEach(this::insertRequest);
     }
 
+    /*
     public void insertVehicles(List<RoboTaxi> roboTaxis) {
         roboTaxis.forEach(rt -> insertVehicle(rt, Collections.singletonList(rt.getLastKnownLocation())));
     }
 
     public void insertVehicles(Map<RoboTaxi, List<Link>> tempLocationTrace) {
+        tempLocationTrace.forEach(this::insertVehicle);
+    }
+    */
+
+    public void insertVehicles(List<RoboTaxi> roboTaxis) {
+        roboTaxis.forEach(rt -> insertVehicle(rt, Collections.singletonList(new LinkStatusPair(rt.getLastKnownLocation(), rt.getStatus()))));
+    }
+
+    public void insertVehicles(Map<RoboTaxi, List<LinkStatusPair>> tempLocationTrace) {
         tempLocationTrace.forEach(this::insertVehicle);
     }
 
@@ -63,7 +74,15 @@ public class SimulationObjectCompiler {
         }
     }
 
+    /*
     private void insertVehicle(RoboTaxi roboTaxi, List<Link> tempTrace) {
+        VehicleContainer vehicleContainer = VehicleContainerCompiler.compile(roboTaxi, tempTrace);
+        final String key = roboTaxi.getId().toString();
+        vehicleMap.put(key, vehicleContainer);
+    }
+    */
+
+    private void insertVehicle(RoboTaxi roboTaxi, List<LinkStatusPair> tempTrace) {
         VehicleContainer vehicleContainer = VehicleContainerCompiler.compile(roboTaxi, tempTrace);
         final String key = roboTaxi.getId().toString();
         vehicleMap.put(key, vehicleContainer);
