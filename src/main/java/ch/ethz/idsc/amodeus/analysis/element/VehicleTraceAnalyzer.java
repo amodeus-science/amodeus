@@ -51,7 +51,7 @@ import org.matsim.api.core.v01.network.Link;
     }
 
     /* package */ void consolidate() {
-        // TODO distance differs in length of last link
+        // TODO distance differs in length of last link: solved
         vehicleTraceAnalyzerOld.consolidate();
         vehicleTraceAnalyzerNew.consolidate();
 
@@ -76,6 +76,7 @@ import org.matsim.api.core.v01.network.Link;
         return newDist;
     }
 }
+
 
 
 // TODO the linkTrace and timeTrace lists could be partially emptied during the register 
@@ -130,6 +131,13 @@ import org.matsim.api.core.v01.network.Link;
         // System.out.println("\t" + Arrays.stream(vc.statii).map(RoboTaxiStatus::toString).collect(Collectors.joining(", ")));
     }
 
+    // alternative
+    // public void register(VehicleContainer vc, long now) {
+    //     times.add(now);
+    //     for (int i = 0; i < vc.linkTrace.length; i++)
+    //         history.computeIfAbsent(now, t -> new ArrayList<>()).add(new LinkStatusPair(db.getOsmLink(vc.linkTrace[i]).link, vc.statii[i]));
+    // }
+
     /* package */ void consolidate() {
         /** compute distance at every time step */
         distances = history.entrySet().stream().collect(Collectors.toMap( //
@@ -144,6 +152,43 @@ import org.matsim.api.core.v01.network.Link;
         vehiclePickupDist = totalDistances.Get(DRIVING_STATII.indexOf(RoboTaxiStatus.DRIVETOCUSTOMER) + 1);
         vehicleRebalancedist = totalDistances.Get(DRIVING_STATII.indexOf(RoboTaxiStatus.REBALANCEDRIVE) + 1);
     }
+
+    // alternative
+    // /* package */ void consolidate() {
+    //     /** clean history */
+    //     // correct wrongly labeled stay
+    //     history.values().forEach(pairs -> IntStream.rangeClosed(2, pairs.size()).map(i -> pairs.size() - i) //
+    //             .filter(i -> pairs.get(i).roboTaxiStatus == RoboTaxiStatus.STAY) //
+    //             .filter(i -> pairs.get(i + 1).roboTaxiStatus != RoboTaxiStatus.STAY) //
+    //             .filter(i -> pairs.get(i).link !=  pairs.get(i + 1).link) //
+    //             .forEach(i -> pairs.set(i, new LinkStatusPair(pairs.get(i).link, pairs.get(i + 1).roboTaxiStatus))));
+    //
+    //     // remove stay
+    //     history.values().forEach(pairs -> pairs.removeIf(p -> p.roboTaxiStatus == RoboTaxiStatus.STAY));
+    //
+    //     // remove duplicate links
+    //     AtomicInteger pastLink = new AtomicInteger(-1);
+    //     history.values().forEach(pairs -> pairs.removeIf(p -> {
+    //         int id = p.link.getId().index();
+    //         return id == pastLink.getAndSet(id);
+    //     }));
+    //
+    //     // remove empty entries
+    //     history.entrySet().removeIf(e -> e.getValue().isEmpty());
+    //
+    //     /** compute distance at every time step */
+    //     distances = history.entrySet().stream().collect(Collectors.toMap( //
+    //             Entry::getKey, e -> distance(e.getValue()), (v1, v2) -> { throw new RuntimeException(); }, TreeMap::new));
+    //
+    //     // System.out.println("fut: " + Accumulate.of(Tensor.of(distances.values().stream().map(t -> t.Get(0)).map(Round._6))));
+    //
+    //     /** compute total distances */
+    //     Tensor totalDistances = distances.values().stream().reduce(Tensor::add).orElse(emptyDistance());
+    //     vehicleTotalDistance = totalDistances.Get(0);
+    //     vehicleCustomerDist = totalDistances.Get(DRIVING_STATII.indexOf(RoboTaxiStatus.DRIVEWITHCUSTOMER) + 1);
+    //     vehiclePickupDist = totalDistances.Get(DRIVING_STATII.indexOf(RoboTaxiStatus.DRIVETOCUSTOMER) + 1);
+    //     vehicleRebalancedist = totalDistances.Get(DRIVING_STATII.indexOf(RoboTaxiStatus.REBALANCEDRIVE) + 1);
+    // }
 
     private Tensor distance(Collection<LinkStatusPair> pairs) {
         Tensor distance = emptyDistance();
