@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.net.VehicleContainer;
+import ch.ethz.idsc.amodeus.net.VehicleContainerUtils;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Array;
@@ -41,7 +42,8 @@ import ch.ethz.idsc.tensor.alg.Array;
             final int index = entry.getKey();
             final List<VehicleContainer> list = entry.getValue();
 
-            final long total = list.stream().filter(vc -> vc.roboTaxiStatus.isDriving()).count();
+            // final long total = list.stream().filter(vc -> vc.roboTaxiStatus.isDriving()).count();
+            final long total = list.stream().filter(VehicleContainerUtils::isDriving).count();
             if (0 < total) {
                 final Tensor array;
                 if (linkTensor.containsKey(index))
@@ -50,8 +52,10 @@ import ch.ethz.idsc.tensor.alg.Array;
                     array = Array.zeros(width, 2);
                     linkTensor.put(index, array);
                 }
+                // Map<RoboTaxiStatus, List<VehicleContainer>> classify = //
+                //         list.stream().collect(Collectors.groupingBy(vc -> vc.roboTaxiStatus));
                 Map<RoboTaxiStatus, List<VehicleContainer>> classify = //
-                        list.stream().collect(Collectors.groupingBy(vc -> vc.roboTaxiStatus));
+                        list.stream().collect(Collectors.groupingBy(VehicleContainerUtils::finalStatus));
                 int[] counts = new int[3];
                 for (RoboTaxiStatus avStatus : INTERP)
                     counts[avStatus.ordinal()] = classify.containsKey(avStatus) ? classify.get(avStatus).size() : 0;

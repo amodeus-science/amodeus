@@ -18,6 +18,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.net.OsmLink;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.net.VehicleContainer;
+import ch.ethz.idsc.amodeus.net.VehicleContainerUtils;
 import ch.ethz.idsc.amodeus.util.gui.RowPanel;
 import ch.ethz.idsc.amodeus.util.gui.SpinnerLabel;
 
@@ -54,15 +55,19 @@ public class VehiclesLayer extends ViewerLayer {
                 for (VehicleContainer vc : entry.getValue()) {
                     Point p1 = amodeusComponent.getMapPosition(osmLink.getAt(ofs));
                     if (Objects.nonNull(p1)) {
+                        RoboTaxiStatus roboTaxiStatus = VehicleContainerUtils.finalStatus(vc);
                         if (showLocation) {
-                            Color color = statusColors.of(vc.roboTaxiStatus);
+                            // Color color = statusColors.of(vc.roboTaxiStatus);
+                            Color color = statusColors.of(roboTaxiStatus);
                             graphics.setColor(color);
                             graphics.fillRect(p1.x - car_half, p1.y - car_half, carwidth, carwidth);
                         }
-                        if (bits.get(vc.roboTaxiStatus.ordinal())) {
+                        // if (bits.get(vc.roboTaxiStatus.ordinal())) {
+                        if (bits.get(roboTaxiStatus.ordinal())) {
                             OsmLink toOsmLink = amodeusComponent.db.getOsmLink(vc.destinationLinkIndex);
                             Point p2 = amodeusComponent.getMapPositionAlways(toOsmLink.getAt(0.5));
-                            Color col = statusColors.ofDest(vc.roboTaxiStatus);
+                            // Color col = statusColors.ofDest(vc.roboTaxiStatus);
+                            Color col = statusColors.ofDest(roboTaxiStatus);
                             graphics.setColor(col);
                             graphics.drawLine(p1.x, p1.y, p2.x, p2.y);
                         }
@@ -77,7 +82,8 @@ public class VehiclesLayer extends ViewerLayer {
     protected void hud(Graphics2D graphics, SimulationObject ref) {
         int[] count = new int[RoboTaxiStatus.values().length];
         if (Objects.nonNull(ref)) {
-            ref.vehicles.forEach(v -> ++count[v.roboTaxiStatus.ordinal()]);
+            // ref.vehicles.forEach(v -> ++count[v.roboTaxiStatus.ordinal()]);
+            ref.vehicles.forEach(v -> ++count[VehicleContainerUtils.finalStatus(v).ordinal()]);
 
             for (RoboTaxiStatus avStatus : RoboTaxiStatus.values()) {
                 InfoString infoString = new InfoString(String.format("%5d %s", count[avStatus.ordinal()], avStatus.description()));

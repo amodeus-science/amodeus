@@ -66,7 +66,7 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
         dispatcherMode = operatorConfig.getMode();
     }
 
-    /** @return {@Collection} of all {@AVRequests} which are currently open.
+    /** @return {@link Collection} of all {@link AVRequest}s which are currently open.
      *         Requests are removed from list in setAcceptRequest function. */
     protected synchronized final Collection<AVRequest> getAVRequests() {
         return Collections.unmodifiableCollection(pendingRequests);
@@ -84,7 +84,7 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
                 .filter(rt -> status.contains(rt.getStatus())).collect(Collectors.toList());
     }
 
-    /** @return {@Collection} of {@RoboTaxi}s which can be redirected during
+    /** @return {@link Collection} of {@link RoboTaxi}s which can be redirected during
      *         iteration, for a shared {@link RoboTaxi}, any vehicle can be diverted unless
      *         it has a directive in the current ime step or it is on the last link of its
      *         directive. */

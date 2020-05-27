@@ -25,11 +25,9 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.alg.Accumulate;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.qty.Unit;
-import ch.ethz.idsc.tensor.sca.Round;
 import org.matsim.api.core.v01.network.Link;
 
 /* package */ class VehicleTraceAnalyzer {
@@ -57,15 +55,15 @@ import org.matsim.api.core.v01.network.Link;
         vehicleTraceAnalyzerOld.consolidate();
         vehicleTraceAnalyzerNew.consolidate();
 
-        vehicleTotalDistance = vehicleTraceAnalyzerOld.vehicleTotalDistance;
-        vehicleCustomerDist = vehicleTraceAnalyzerOld.vehicleCustomerDist;
-        vehiclePickupDist = vehicleTraceAnalyzerOld.vehiclePickupDist;
-        vehicleRebalancedist = vehicleTraceAnalyzerOld.vehicleRebalancedist;
+        vehicleTotalDistance = vehicleTraceAnalyzerNew.vehicleTotalDistance;
+        vehicleCustomerDist = vehicleTraceAnalyzerNew.vehicleCustomerDist;
+        vehiclePickupDist = vehicleTraceAnalyzerNew.vehiclePickupDist;
+        vehicleRebalancedist = vehicleTraceAnalyzerNew.vehicleRebalancedist;
 
-        System.out.println("Total:\t" + vehicleTraceAnalyzerOld.vehicleTotalDistance + " =?= " + vehicleTraceAnalyzerNew.vehicleTotalDistance);
-        System.out.println("Customer:\t" + vehicleTraceAnalyzerOld.vehicleCustomerDist + " =?= " + vehicleTraceAnalyzerNew.vehicleCustomerDist);
-        System.out.println("Pickup:\t" + vehicleTraceAnalyzerOld.vehiclePickupDist + " =?= " + vehicleTraceAnalyzerNew.vehiclePickupDist);
-        System.out.println("Rebalancing:\t" + vehicleTraceAnalyzerOld.vehicleRebalancedist + " =?= " + vehicleTraceAnalyzerNew.vehicleRebalancedist);
+        // System.out.println("Total:\t" + vehicleTraceAnalyzerOld.vehicleTotalDistance + " =?= " + vehicleTraceAnalyzerNew.vehicleTotalDistance);
+        // System.out.println("Customer:\t" + vehicleTraceAnalyzerOld.vehicleCustomerDist + " =?= " + vehicleTraceAnalyzerNew.vehicleCustomerDist);
+        // System.out.println("Pickup:\t" + vehicleTraceAnalyzerOld.vehiclePickupDist + " =?= " + vehicleTraceAnalyzerNew.vehiclePickupDist);
+        // System.out.println("Rebalancing:\t" + vehicleTraceAnalyzerOld.vehicleRebalancedist + " =?= " + vehicleTraceAnalyzerNew.vehicleRebalancedist);
     }
 
     /** @return at time step {@link Long} @param time1 encoded
@@ -73,9 +71,9 @@ import org.matsim.api.core.v01.network.Link;
     /* package */ Tensor labeledIntervalDistance(Long time1, Long time2) {
         Tensor oldDist = vehicleTraceAnalyzerOld.labeledIntervalDistance(time1, time2);
         Tensor newDist = vehicleTraceAnalyzerNew.labeledIntervalDistance(time1, time2);
-        System.out.println("old: " + oldDist);
-        System.out.println("new: " + newDist);
-        return oldDist;
+        // System.out.println("old: " + oldDist);
+        // System.out.println("new: " + newDist);
+        return newDist;
     }
 }
 
@@ -112,6 +110,7 @@ import org.matsim.api.core.v01.network.Link;
         times.add(now);
         Optional<Link> lastLink = history.values().stream().flatMap(Collection::stream).reduce((v1, v2) -> v2).map(pair -> pair.link);
         // Optional<Link> lastLink = Optional.ofNullable(history.lastEntry()).map(Entry::getValue).filter(l -> !l.isEmpty()).map(l -> l.get(l.size() - 1)).map(pair -> pair.link);
+        // TODO first link in first trace might be on STAY
         for (int i = 0; i < vc.linkTrace.length; i++) {
             Link link = db.getOsmLink(vc.linkTrace[i]).link;
             if (i > 0 || !lastLink.map(link::equals).orElse(false))
@@ -128,7 +127,7 @@ import org.matsim.api.core.v01.network.Link;
         distances = history.entrySet().stream().collect(Collectors.toMap( //
                 Entry::getKey, e -> distance(e.getValue()), (v1, v2) -> { throw new RuntimeException(); }, TreeMap::new));
 
-        System.out.println("new: " + Accumulate.of(Tensor.of(distances.values().stream().map(t -> t.Get(0)).map(Round._6))));
+        // System.out.println("new: " + Accumulate.of(Tensor.of(distances.values().stream().map(t -> t.Get(0)).map(Round._6))));
 
         /** compute total distances */
         Tensor totalDistances = distances.values().stream().reduce(Tensor::add).orElse(emptyDistance());
@@ -242,8 +241,8 @@ import org.matsim.api.core.v01.network.Link;
                 distanceAtTime.put(timeTrace.get(i - 1), distanceBefore.add(distanceLink));
             }
 
-        System.out.println("old: " + Tensor.of(distanceAtTime.values().stream().skip(1).map(Round._6)));
-        System.out.println(db.getOsmLink(linkTrace.get(linkTrace.size() - 1)).getLength());
+        // System.out.println("old: " + Tensor.of(distanceAtTime.values().stream().skip(1).map(Round._6)));
+        // System.out.println(db.getOsmLink(linkTrace.get(linkTrace.size() - 1)).getLength());
 
         /** compute total distances */
         vehicleTotalDistance = distanceAtTime.lastEntry().getValue();

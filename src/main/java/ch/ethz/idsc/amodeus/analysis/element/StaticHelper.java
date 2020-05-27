@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
+import ch.ethz.idsc.amodeus.net.VehicleContainerUtils;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Array;
@@ -25,7 +26,7 @@ import ch.ethz.idsc.tensor.alg.Array;
         // Map<RoboTaxiStatus, Long> map = simOjb.vehicles.stream() //
         //         .collect(Collectors.groupingBy(vehicleContainer -> vehicleContainer.roboTaxiStatus, Collectors.counting()));
         Map<RoboTaxiStatus, Long> map = simOjb.vehicles.stream() //
-                .collect(Collectors.groupingBy(vehicleContainer -> vehicleContainer.statii[vehicleContainer.statii.length - 1], Collectors.counting()));
+                .collect(Collectors.groupingBy(VehicleContainerUtils::finalStatus, Collectors.counting()));
         map.forEach((roboTaxiStatus, num) -> numPerStatus.set(RealScalar.of(num), roboTaxiStatus.ordinal()));
         return numPerStatus;
     }
