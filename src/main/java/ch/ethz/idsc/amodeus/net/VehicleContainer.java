@@ -29,9 +29,6 @@ public class VehicleContainer implements Serializable {
      * changes on the last link */
     public RoboTaxiStatus[] statii = new RoboTaxiStatus[] {};
 
-    @Deprecated /** use {@link VehicleContainerUtils#finalStatus(VehicleContainer)} instead */
-    public RoboTaxiStatus roboTaxiStatus = null;
-
     /** value -1 in case no particular destination */
     public int destinationLinkIndex = LINK_UNSPECIFIED;
 }

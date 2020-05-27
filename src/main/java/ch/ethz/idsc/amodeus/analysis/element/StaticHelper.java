@@ -23,8 +23,6 @@ import ch.ethz.idsc.tensor.alg.Array;
         // .collect(Collectors.groupingBy(vehicleContainer -> vehicleContainer.roboTaxiStatus));
         // for (Entry<RoboTaxiStatus, List<VehicleContainer>> entry : helpMap.entrySet())
         // numPerStatus.set(RealScalar.of(entry.getValue().size()), entry.getKey().ordinal());
-        // Map<RoboTaxiStatus, Long> map = simOjb.vehicles.stream() //
-        //         .collect(Collectors.groupingBy(vehicleContainer -> vehicleContainer.roboTaxiStatus, Collectors.counting()));
         Map<RoboTaxiStatus, Long> map = simOjb.vehicles.stream() //
                 .collect(Collectors.groupingBy(VehicleContainerUtils::finalStatus, Collectors.counting()));
         map.forEach((roboTaxiStatus, num) -> numPerStatus.set(RealScalar.of(num), roboTaxiStatus.ordinal()));
