@@ -110,11 +110,19 @@ import org.matsim.api.core.v01.network.Link;
         times.add(now);
         Optional<Link> lastLink = history.values().stream().flatMap(Collection::stream).reduce((v1, v2) -> v2).map(pair -> pair.link);
         // Optional<Link> lastLink = Optional.ofNullable(history.lastEntry()).map(Entry::getValue).filter(l -> !l.isEmpty()).map(l -> l.get(l.size() - 1)).map(pair -> pair.link);
-        // TODO first link in first trace might be on STAY
         for (int i = 0; i < vc.linkTrace.length; i++) {
             Link link = db.getOsmLink(vc.linkTrace[i]).link;
-            if (i > 0 || !lastLink.map(link::equals).orElse(false))
-                history.computeIfAbsent(now, l -> new ArrayList<>()).add(new LinkStatusPair(link, vc.statii[i]));
+            if (i > 0 || !lastLink.map(link::equals).orElse(false)) {
+                RoboTaxiStatus roboTaxiStatus = vc.statii[i];
+                if (roboTaxiStatus != RoboTaxiStatus.STAY) {
+                    history.computeIfAbsent(now, l -> new ArrayList<>()).add(new LinkStatusPair(link, roboTaxiStatus));
+                } else if (vc.linkTrace.length > i + 1 && link.getId().index() != vc.linkTrace[i + 1]) { // investigate why this status is assigned anyway
+                    roboTaxiStatus = vc.statii[i + 1];
+                    if (roboTaxiStatus != RoboTaxiStatus.STAY)
+                        history.computeIfAbsent(now, l -> new ArrayList<>()).add(new LinkStatusPair(link, roboTaxiStatus));
+                } else
+                    GlobalAssert.that(history.isEmpty()); // TODO remove if proven, maybe reblace check by isDriving
+            }
         }
 
         // System.out.println("vehicle:" + vc.vehicleIndex + ",\t" + vc.roboTaxiStatus);
