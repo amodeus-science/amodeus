@@ -12,20 +12,23 @@ import org.matsim.contrib.dvrp.run.DvrpModes;
 import org.matsim.contrib.dvrp.run.ModalProviders;
 import org.matsim.contrib.dvrp.trafficmonitoring.DvrpTravelTimeModule;
 import org.matsim.core.router.RoutingModule;
+import org.matsim.core.router.costcalculators.OnlyTimeDependentTravelDisutilityFactory;
+import org.matsim.core.router.util.LeastCostPathCalculator;
+import org.matsim.core.router.util.LeastCostPathCalculatorFactory;
+import org.matsim.core.router.util.TravelDisutility;
 import org.matsim.core.router.util.TravelTime;
 
 import com.google.inject.Inject;
 import com.google.inject.Key;
-import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 
 import ch.ethz.matsim.av.config.AmodeusModeConfig;
 import ch.ethz.matsim.av.config.modal.InteractionFinderConfig;
-import ch.ethz.matsim.av.financial.PriceCalculator;
-import ch.ethz.matsim.av.financial.StaticPriceCalculator;
 import ch.ethz.matsim.av.framework.registry.RouterRegistry;
+import ch.ethz.matsim.av.price_model.PriceModel;
+import ch.ethz.matsim.av.price_model.StaticPriceModel;
 import ch.ethz.matsim.av.router.AVRouter;
 import ch.ethz.matsim.av.router.AVRouterShutdownListener;
 import ch.ethz.matsim.av.routing.AVRouteFactory;
@@ -77,7 +80,7 @@ public class AVModeModule extends AbstractDvrpModeModule {
         // Waiting time estimation
         install(new WaitingTimeEstimationModule(modeConfig));
 
-        bindModal(PriceCalculator.class).toProvider(new PriceCalculatorProider(modeConfig));
+        bindModal(PriceModel.class).toProvider(new PriceCalculatorProider(modeConfig));
     }
 
     static private class RoutingModuleProvider extends ModalProviders.AbstractProvider<AVRoutingModule> {
@@ -93,7 +96,10 @@ public class AVModeModule extends AbstractDvrpModeModule {
 
         @Inject
         @Named("car")
-        Provider<RoutingModule> roadRoutingModuleProvider;
+        TravelTime travelTime;
+
+        @Inject
+        LeastCostPathCalculatorFactory routerFactory;
 
         RoutingModuleProvider(String mode) {
             super(mode);
@@ -107,10 +113,14 @@ public class AVModeModule extends AbstractDvrpModeModule {
 
             AVInteractionFinder interactionFinder = getModalInstance(AVInteractionFinder.class);
             WaitingTime waitingTime = getModalInstance(WaitingTime.class);
-            PriceCalculator priceCalculator = getModalInstance(PriceCalculator.class);
+            PriceModel priceCalculator = getModalInstance(PriceModel.class);
+            Network network = getModalInstance(Network.class);
 
-            return new AVRoutingModule(routeFactory, interactionFinder, waitingTime, populationFactory, walkRoutingModule, useAccessEgress, predictRoute,
-                    predictRoute ? roadRoutingModuleProvider.get() : null, priceCalculator, getMode());
+            TravelDisutility travelDisutility = new OnlyTimeDependentTravelDisutilityFactory().createTravelDisutility(travelTime);
+            LeastCostPathCalculator router = routerFactory.createPathCalculator(network, travelDisutility, travelTime);
+
+            return new AVRoutingModule(routeFactory, interactionFinder, waitingTime, populationFactory, walkRoutingModule, useAccessEgress, predictRoute, router, priceCalculator,
+                    network, travelTime, getMode());
         }
     };
 
@@ -138,15 +148,15 @@ public class AVModeModule extends AbstractDvrpModeModule {
         }
     };
 
-    static class PriceCalculatorProider extends ModalProviders.AbstractProvider<PriceCalculator> {
+    static class PriceCalculatorProider extends ModalProviders.AbstractProvider<PriceModel> {
         PriceCalculatorProider(AmodeusModeConfig modeConfig) {
             super(modeConfig.getMode());
         }
 
         @Override
-        public PriceCalculator get() {
+        public PriceModel get() {
             AmodeusModeConfig modeConfig = getModalInstance(AmodeusModeConfig.class);
-            return new StaticPriceCalculator(modeConfig.getPricingConfig());
+            return new StaticPriceModel(modeConfig.getPricingConfig());
         }
     }
 }

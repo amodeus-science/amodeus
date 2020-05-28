@@ -86,8 +86,8 @@ public class SingleRideAppender {
                 plainDropoffPath, travelTime);
 
         AmodeusDriveTask pickupDriveTask = new AmodeusDriveTask(pickupPath);
-        AmodeusPickupTask pickupTask = new AmodeusPickupTask(pickupPath.getArrivalTime(), pickupPath.getArrivalTime() + timing.getMinimumPickupDurationPerStop(), request.getFromLink(),
-                Double.NEGATIVE_INFINITY);
+        AmodeusPickupTask pickupTask = new AmodeusPickupTask(pickupPath.getArrivalTime(), pickupPath.getArrivalTime() + timing.getMinimumPickupDurationPerStop(),
+                request.getFromLink(), Double.NEGATIVE_INFINITY);
         pickupTask.addRequest(request);
         AmodeusDriveTask dropoffDriveTask = new AmodeusDriveTask(dropoffPath, Arrays.asList(request));
         AmodeusDropoffTask dropoffTask = new AmodeusDropoffTask(dropoffPath.getArrivalTime(), dropoffPath.getArrivalTime() + timing.getMinimumDropoffDurationPerStop(),
@@ -104,12 +104,6 @@ public class SingleRideAppender {
         schedule.addTask(pickupTask);
         schedule.addTask(dropoffDriveTask);
         schedule.addTask(dropoffTask);
-
-        double distance = 0.0;
-        for (int i = 0; i < dropoffPath.getLinkCount(); i++) {
-            distance += dropoffPath.getLink(i).getLength();
-        }
-        request.getRoute().setDistance(distance);
 
         if (dropoffTask.getEndTime() < scheduleEndTime) {
             schedule.addTask(new AmodeusStayTask(dropoffTask.getEndTime(), scheduleEndTime, dropoffTask.getLink()));

@@ -9,24 +9,24 @@ import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import ch.ethz.matsim.av.routing.AVRoute;
 
 public class AVRequest implements PassengerRequest {
-    final private Id<Request> id;
-    final private double submissionTime;
+    private final Id<Request> id;
+    private final double submissionTime;
 
-    final private Link pickupLink;
-    final private Link dropoffLink;
-    final private Id<Person> passengerId;
-    final private AVRoute route;
+    private final Link pickupLink;
+    private final Link dropoffLink;
+    private final Id<Person> passengerId;
 
     private final String mode;
+    private final AVRoute route;
 
-    public AVRequest(Id<Request> id, Id<Person> passengerId, Link pickupLink, Link dropoffLink, double pickupTime, double submissionTime, AVRoute route, String mode) {
+    public AVRequest(Id<Request> id, Id<Person> passengerId, Link pickupLink, Link dropoffLink, double submissionTime, String mode, AVRoute route) {
         this.id = id;
         this.passengerId = passengerId;
         this.pickupLink = pickupLink;
         this.dropoffLink = dropoffLink;
-        this.route = route;
         this.submissionTime = submissionTime;
         this.mode = mode;
+        this.route = route;
     }
 
     @Override
@@ -42,10 +42,6 @@ public class AVRequest implements PassengerRequest {
     @Override
     public Id<Person> getPassengerId() {
         return passengerId;
-    }
-
-    public AVRoute getRoute() {
-        return route;
     }
 
     @Override
@@ -66,5 +62,9 @@ public class AVRequest implements PassengerRequest {
     @Override
     public String getMode() {
         return mode;
+    }
+
+    public AVRoute getRoute() {
+        return route;
     }
 }

@@ -34,7 +34,7 @@ public class PreroutingTest {
 
         AmodeusScoringConfig scoringParams = operatorConfig.getScoringParameters(null);
         scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
-        
+
         operatorConfig.getPricingConfig().setPricePerKm(1.0);
 
         Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
@@ -70,11 +70,10 @@ public class PreroutingTest {
                     AVRoute route = (AVRoute) leg.getRoute();
 
                     Assert.assertTrue(route.getTravelTime().isDefined() && Double.isFinite(route.getTravelTime().seconds()));
-                    Assert.assertTrue(Double.isFinite(route.getDistance()));
-                    Assert.assertTrue(Double.isFinite(route.getWaitingTime()));
-                    Assert.assertTrue(Double.isFinite(route.getInVehicleTime()));
-                    Assert.assertTrue(Double.isFinite(route.getPrice()));
-                    Assert.assertTrue(route.getPrice() > 0.0);
+                    Assert.assertTrue(route.getExpectedDistance().isPresent());
+                    Assert.assertTrue(route.getWaitingTime().isDefined());
+                    Assert.assertTrue(route.getPrice().isPresent());
+                    Assert.assertTrue(route.getPrice().get() > 0.0);
                 }
             }
         }

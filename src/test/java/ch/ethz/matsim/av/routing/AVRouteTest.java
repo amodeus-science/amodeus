@@ -94,11 +94,11 @@ public class AVRouteTest {
 
             Assert.assertEquals("S1", route1.getStartLinkId().toString());
             Assert.assertEquals("E1", route1.getEndLinkId().toString());
-            Assert.assertEquals(123.0, route1.getWaitingTime(), 1e-3);
+            Assert.assertEquals(123.0, route1.getWaitingTime().seconds(), 1e-3);
 
             Assert.assertEquals("S2", route2.getStartLinkId().toString());
             Assert.assertEquals("E2", route2.getEndLinkId().toString());
-            Assert.assertEquals(987.0, route2.getWaitingTime(), 1e-3);
+            Assert.assertEquals(987.0, route2.getWaitingTime().seconds(), 1e-3);
         }
     }
 }

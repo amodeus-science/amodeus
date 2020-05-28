@@ -16,7 +16,6 @@ import com.google.inject.Singleton;
 
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.passenger.AVRequest;
-import ch.ethz.refactoring.schedule.AmodeusDropoffTask;
 import ch.ethz.refactoring.schedule.AmodeusTaskType;
 
 @Singleton
@@ -33,10 +32,13 @@ public class AVOptimizer implements VrpOptimizer, OnlineTrackerListener, MobsimB
 
     @Override
     public void requestSubmitted(Request request) {
-        AVRequest avRequest = (AVRequest) request;
+        AVRequest dataRequest = (AVRequest) request;
 
         synchronized (dispatcher) {
-            dispatcher.onRequestSubmitted(avRequest);
+            AmodeusRequestEvent requestEvent = AmodeusRequestEvent.fromRequest(now, dataRequest);
+            eventsManager.processEvent(requestEvent);
+
+            dispatcher.onRequestSubmitted(dataRequest);
         }
     }
 
@@ -95,17 +97,6 @@ public class AVOptimizer implements VrpOptimizer, OnlineTrackerListener, MobsimB
         // Notify the dispatcher that a new task has started
         synchronized (dispatcher) {
             dispatcher.onNextTaskStarted(vehicle);
-        }
-
-        // Post transit events if an agent was dropped up
-        if (nextTask instanceof AmodeusDropoffTask) {
-            processTransitEvent((AmodeusDropoffTask) nextTask);
-        }
-    }
-
-    private void processTransitEvent(AmodeusDropoffTask task) {
-        for (AVRequest request : task.getRequests().values()) {
-            eventsManager.processEvent(new AVTransitEvent(request, now));
         }
     }
 

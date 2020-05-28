@@ -2,10 +2,7 @@ package ch.ethz.matsim.av.framework;
 
 import java.util.Map;
 
-import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.controler.AbstractModule;
-import org.matsim.core.scoring.ScoringFunctionFactory;
-import org.matsim.core.scoring.functions.ScoringParametersForPerson;
 
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
@@ -27,16 +24,13 @@ import ch.ethz.matsim.av.router.DefaultAVRouter;
 import ch.ethz.matsim.av.routing.AVRouteFactory;
 import ch.ethz.matsim.av.routing.interaction.ClosestLinkInteractionFinder;
 import ch.ethz.matsim.av.routing.interaction.LinkAttributeInteractionFinder;
-import ch.ethz.matsim.av.scoring.AVScoringFunctionFactory;
-import ch.ethz.matsim.av.scoring.AVSubpopulationScoringParameters;
+import ch.ethz.matsim.av.scoring.AmodeusScoringModule;
 import ch.ethz.matsim.av.waiting_time.StandardWaitingTimeFactory;
 import ch.ethz.matsim.av.waiting_time.WaitingTimeFactory;
 
 public class AVModule extends AbstractModule {
     @Override
     public void install() {
-        bind(ScoringFunctionFactory.class).to(AVScoringFunctionFactory.class).asEagerSingleton();
-
         bind(AVRouteFactory.class);
 
         configureDispatchmentStrategies();
@@ -47,21 +41,16 @@ public class AVModule extends AbstractModule {
 
         addControlerListenerBinding().to(AnalysisOutputListener.class);
 
-        bind(AVSubpopulationScoringParameters.class);
-
         for (AmodeusModeConfig modeConfig : AmodeusConfigGroup.get(getConfig()).getModes().values()) {
             install(new AVModeModule(modeConfig));
         }
 
         bind(StandardWaitingTimeFactory.class);
         bind(WaitingTimeFactory.class).to(StandardWaitingTimeFactory.class);
-    }
 
-    @Provides
-    @Singleton
-    public AVScoringFunctionFactory provideAVScoringFunctionFactory(Scenario scenario, ScoringParametersForPerson defaultParameters, AVSubpopulationScoringParameters avParameters,
-            AmodeusConfigGroup config) {
-        return new AVScoringFunctionFactory(scenario, defaultParameters, avParameters, config.getModes().keySet());
+        if (AmodeusConfigGroup.get(getConfig()).getUseScoring()) {
+            install(new AmodeusScoringModule());
+        }
     }
 
     @Provides

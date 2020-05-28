@@ -92,7 +92,7 @@ public class WaitingTimeTest {
                     Leg leg = (Leg) element;
                     AVRoute route = (AVRoute) leg.getRoute();
 
-                    Assert.assertEquals(route.getWaitingTime(), 123.0, 1e-2);
+                    Assert.assertEquals(route.getWaitingTime().seconds(), 123.0, 1e-2);
                     numberOfRoutes++;
                 }
             }
@@ -130,10 +130,10 @@ public class WaitingTimeTest {
                     AVRoute route = (AVRoute) leg.getRoute();
 
                     if (Id.createLinkId("8:9_9:9").equals(route.getStartLinkId())) {
-                        Assert.assertEquals(route.getWaitingTime(), 456.0, 1e-2);
+                        Assert.assertEquals(route.getWaitingTime().seconds(), 456.0, 1e-2);
                         numberOfSpecialRoutes++;
                     } else {
-                        Assert.assertEquals(route.getWaitingTime(), 123.0, 1e-2);
+                        Assert.assertEquals(route.getWaitingTime().seconds(), 123.0, 1e-2);
                     }
 
                     numberOfRoutes++;
@@ -187,7 +187,7 @@ public class WaitingTimeTest {
                         AVRoute route = (AVRoute) leg.getRoute();
 
                         if (Id.createLinkId("8:9_9:9").equals(route.getStartLinkId())) {
-                            waitingTimes.add(route.getWaitingTime());
+                            waitingTimes.add(route.getWaitingTime().seconds());
                         }
                     }
                 }
@@ -242,7 +242,7 @@ public class WaitingTimeTest {
                         AVRoute route = (AVRoute) leg.getRoute();
 
                         if (Id.createLinkId("8:9_9:9").equals(route.getStartLinkId())) {
-                            waitingTimes.add(route.getWaitingTime());
+                            waitingTimes.add(route.getWaitingTime().seconds());
                         }
                     }
                 }

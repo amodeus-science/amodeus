@@ -47,7 +47,6 @@ public class AnalysisTest {
 
         avConfigGroup.setPassengerAnalysisInterval(2);
         avConfigGroup.setVehicleAnalysisInterval(2);
-        avConfigGroup.setEnableDistanceAnalysis(true);
 
         AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
         operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
@@ -85,8 +84,6 @@ public class AnalysisTest {
         controler.addOverridingModule(analyzer);
 
         controler.run();
-
-        Assert.assertEquals(4, countLines("test_output/output/distance_av.csv"));
 
         Assert.assertEquals(101, countLines("test_output/output/ITERS/it.0/0.amodeus_passenger_rides.csv"));
         Assert.assertEquals(501, countLines("test_output/output/ITERS/it.0/0.amodeus_vehicle_activities.csv"));
@@ -148,7 +145,6 @@ public class AnalysisTest {
 
         avConfigGroup.setPassengerAnalysisInterval(2);
         avConfigGroup.setVehicleAnalysisInterval(2);
-        avConfigGroup.setEnableDistanceAnalysis(true);
 
         AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
         operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
@@ -187,8 +183,6 @@ public class AnalysisTest {
         controler.addOverridingModule(analyzer);
 
         controler.run();
-
-        Assert.assertEquals(4, countLines("test_output/" + path + "/distance_av.csv"));
 
         Assert.assertEquals(101, countLines("test_output/" + path + "/ITERS/it.0/0.amodeus_passenger_rides.csv"));
         Assert.assertEquals(501, countLines("test_output/" + path + "/ITERS/it.0/0.amodeus_vehicle_activities.csv"));

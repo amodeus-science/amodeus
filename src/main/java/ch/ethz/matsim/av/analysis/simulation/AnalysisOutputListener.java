@@ -17,7 +17,6 @@ import org.matsim.core.controler.listener.ShutdownListener;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import ch.ethz.matsim.av.analysis.FleetDistanceListener;
 import ch.ethz.matsim.av.analysis.LinkFinder;
 import ch.ethz.matsim.av.analysis.passengers.PassengerAnalysisListener;
 import ch.ethz.matsim.av.analysis.passengers.PassengerAnalysisWriter;
@@ -40,13 +39,8 @@ public class AnalysisOutputListener implements IterationStartsListener, Iteratio
     private final int vehicleAnalysisInterval;
     private final VehicleAnalysisListener vehicleAnalysisListener;
 
-    private final boolean enableFleetDistanceListener;
-    private final FleetDistanceListener fleetDistanceListener;
-
     private boolean isPassengerAnalysisActive = false;
     private boolean isVehicleAnalysisActive = false;
-
-    private DistanceAnalysisWriter distanceAnalysisWriter;
 
     @Inject
     public AnalysisOutputListener(AmodeusConfigGroup config, ControlerConfigGroup controllerConfig, OutputDirectoryHierarchy outputDirectory, Network network) {
@@ -55,15 +49,11 @@ public class AnalysisOutputListener implements IterationStartsListener, Iteratio
 
         this.passengerAnalysisInterval = config.getPassengerAnalysisInterval();
         this.vehicleAnalysisInterval = config.getVehicleAnalysisInterval();
-        this.enableFleetDistanceListener = config.getEnableDistanceAnalysis();
 
         LinkFinder linkFinder = new LinkFinder(network);
 
         this.passengerAnalysisListener = new PassengerAnalysisListener(linkFinder);
         this.vehicleAnalysisListener = new VehicleAnalysisListener(linkFinder);
-
-        this.fleetDistanceListener = new FleetDistanceListener(config.getModes().keySet(), linkFinder);
-        this.distanceAnalysisWriter = new DistanceAnalysisWriter(outputDirectory, config.getModes().keySet());
     }
 
     @Override
@@ -76,10 +66,6 @@ public class AnalysisOutputListener implements IterationStartsListener, Iteratio
         if (vehicleAnalysisInterval > 0 && event.getIteration() % vehicleAnalysisInterval == 0) {
             isVehicleAnalysisActive = true;
             event.getServices().getEvents().addHandler(vehicleAnalysisListener);
-        }
-
-        if (enableFleetDistanceListener) {
-            event.getServices().getEvents().addHandler(fleetDistanceListener);
         }
     }
 
@@ -101,11 +87,6 @@ public class AnalysisOutputListener implements IterationStartsListener, Iteratio
 
                 String activitiesPath = outputDirectory.getIterationFilename(event.getIteration(), VEHICLE_ACTIVITIES_FILE_NAME);
                 new VehicleAnalysisWriter(vehicleAnalysisListener).writeActivities(new File(activitiesPath));
-            }
-
-            if (enableFleetDistanceListener) {
-                event.getServices().getEvents().removeHandler(fleetDistanceListener);
-                distanceAnalysisWriter.write(fleetDistanceListener);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -133,12 +114,6 @@ public class AnalysisOutputListener implements IterationStartsListener, Iteratio
             File outputPath = new File(outputDirectory.getOutputFilename(VEHICLE_ACTIVITIES_FILE_NAME));
             Files.copy(iterationPath.toPath(), outputPath.toPath());
         } catch (IOException e) {
-        }
-
-        try {
-            distanceAnalysisWriter.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 }

@@ -96,15 +96,15 @@ public class ArtificialScenarioCreator {
         network.addLink(linkDepotIn);
         network.addLink(linkDepotOut);
 
-        avRequest1 = new AVRequest(Id.create("p1", Request.class), null, linkUp, linkDown, 0.0, 0.0, null, "av");
-        avRequest2 = new AVRequest(Id.create("p2", Request.class), null, linkRight, linkLeft, 0.0, 0.0, null, "av");
-        avRequest3 = new AVRequest(Id.create("p3", Request.class), null, linkRight, linkUp, 0.0, 0.0, null, "av");
-        avRequest4 = new AVRequest(Id.create("p4", Request.class), null, linkRight, linkDown, 0.0, 0.0, null, "av");
-        avRequest5 = new AVRequest(Id.create("p5", Request.class), null, linkUp, linkRight, 0.0, 0.0, null, "av");
-        avRequest6 = new AVRequest(Id.create("p6", Request.class), null, linkUp, linkLeft, 0.0, 0.0, null, "av");
-        avRequest7 = new AVRequest(Id.create("p7", Request.class), null, linkRight, linkLeft, 0.0, 0.0, null, "av");
-        avRequestDepotOut = new AVRequest(Id.create("depotRequestOut", Request.class), null, linkDepotOut, linkDepotOut, 0.0, 0.0, null, "av");
-        avRequestDepotIn = new AVRequest(Id.create("depotRequestIn", Request.class), null, linkDepotIn, linkDepotIn, 0.0, 0.0, null, "av");
+        avRequest1 = new AVRequest(Id.create("p1", Request.class), null, linkUp, linkDown, 0.0, "av", null);
+        avRequest2 = new AVRequest(Id.create("p2", Request.class), null, linkRight, linkLeft, 0.0, "av", null);
+        avRequest3 = new AVRequest(Id.create("p3", Request.class), null, linkRight, linkUp, 0.0, "av", null);
+        avRequest4 = new AVRequest(Id.create("p4", Request.class), null, linkRight, linkDown, 0.0, "av", null);
+        avRequest5 = new AVRequest(Id.create("p5", Request.class), null, linkUp, linkRight, 0.0, "av", null);
+        avRequest6 = new AVRequest(Id.create("p6", Request.class), null, linkUp, linkLeft, 0.0, "av", null);
+        avRequest7 = new AVRequest(Id.create("p7", Request.class), null, linkRight, linkLeft, 0.0, "av", null);
+        avRequestDepotOut = new AVRequest(Id.create("depotRequestOut", Request.class), null, linkDepotOut, linkDepotOut, 0.0, "av", null);
+        avRequestDepotIn = new AVRequest(Id.create("depotRequestIn", Request.class), null, linkDepotIn, linkDepotIn, 0.0, "av", null);
 
     }
 }

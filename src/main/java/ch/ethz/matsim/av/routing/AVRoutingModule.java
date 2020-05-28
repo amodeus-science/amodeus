@@ -2,17 +2,24 @@ package ch.ethz.matsim.av.routing;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
+import org.matsim.api.core.v01.network.Link;
+import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.PopulationFactory;
+import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
+import org.matsim.contrib.dvrp.path.VrpPaths;
 import org.matsim.core.router.RoutingModule;
+import org.matsim.core.router.util.LeastCostPathCalculator;
+import org.matsim.core.router.util.TravelTime;
 import org.matsim.core.utils.geometry.CoordUtils;
 import org.matsim.facilities.Facility;
 
-import ch.ethz.matsim.av.financial.PriceCalculator;
+import ch.ethz.matsim.av.price_model.PriceModel;
 import ch.ethz.matsim.av.routing.interaction.AVInteractionFinder;
 import ch.ethz.matsim.av.waiting_time.WaitingTime;
 
@@ -22,8 +29,10 @@ public class AVRoutingModule implements RoutingModule {
     private final AVRouteFactory routeFactory;
     private final RoutingModule walkRoutingModule;
     private final PopulationFactory populationFactory;
-    private final RoutingModule roadRoutingModule;
-    private final PriceCalculator priceCalculator;
+    private final LeastCostPathCalculator router;
+    private final PriceModel priceCalculator;
+    private final Network network;
+    private final TravelTime travelTime;
 
     private final AVInteractionFinder interactionFinder;
     private final WaitingTime waitingTime;
@@ -33,7 +42,8 @@ public class AVRoutingModule implements RoutingModule {
     private final String mode;
 
     public AVRoutingModule(AVRouteFactory routeFactory, AVInteractionFinder interactionFinder, WaitingTime waitingTime, PopulationFactory populationFactory,
-            RoutingModule walkRoutingModule, boolean useAccessEgress, boolean predictRoute, RoutingModule roadRoutingModule, PriceCalculator priceCalculator, String mode) {
+            RoutingModule walkRoutingModule, boolean useAccessEgress, boolean predictRoute, LeastCostPathCalculator router, PriceModel priceCalculator, Network network,
+            TravelTime travelTime, String mode) {
         this.routeFactory = routeFactory;
         this.interactionFinder = interactionFinder;
         this.waitingTime = waitingTime;
@@ -41,9 +51,11 @@ public class AVRoutingModule implements RoutingModule {
         this.populationFactory = populationFactory;
         this.useAccessEgress = useAccessEgress;
         this.predictRoute = predictRoute;
-        this.roadRoutingModule = roadRoutingModule;
+        this.router = router;
         this.priceCalculator = priceCalculator;
         this.mode = mode;
+        this.network = network;
+        this.travelTime = travelTime;
     }
 
     @Override
@@ -94,19 +106,18 @@ public class AVRoutingModule implements RoutingModule {
         // something like that
         double vehicleDistance = Double.NaN;
         double vehicleTravelTime = Double.NaN;
-        double price = 0.0;
+        Optional<Double> price = Optional.empty();
 
         if (predictRoute) {
-            List<? extends PlanElement> transitElements = roadRoutingModule.calcRoute(pickupFacility, dropoffFacility, vehicleDepartureTime, null);
+            Link pickupLink = network.getLinks().get(pickupFacility.getLinkId());
+            Link dropoffLink = network.getLinks().get(dropoffFacility.getLinkId());
 
-            if (transitElements.size() != 1) {
-                throw new IllegalStateException("Expected one element in downstream routing module");
-            }
+            VrpPathWithTravelData path = VrpPaths.calcAndCreatePath(pickupLink, dropoffLink, vehicleDepartureTime, router, travelTime);
 
-            Leg leg = (Leg) transitElements.get(0);
-            vehicleDistance = leg.getRoute().getDistance();
-            vehicleTravelTime = leg.getRoute().getTravelTime().seconds();
-            price = priceCalculator.calculatePrice(vehicleDistance, vehicleTravelTime);
+            vehicleDistance = VrpPaths.calcDistance(path);
+            vehicleTravelTime = path.getTravelTime();
+
+            price = priceCalculator.calculatePrice(requestSendTime, pickupFacility, dropoffFacility, vehicleDistance, vehicleTravelTime);
         }
 
         double totalTravelTime = vehicleTravelTime + vehicleWaitingTime;
@@ -120,8 +131,10 @@ public class AVRoutingModule implements RoutingModule {
         }
 
         route.setWaitingTime(vehicleWaitingTime);
-        route.setInVehicleTime(vehicleTravelTime);
-        route.setPrice(price);
+
+        if (price.isPresent()) {
+            route.setPrice(price.get());
+        }
 
         Leg leg = populationFactory.createLeg(mode);
         leg.setDepartureTime(requestSendTime);

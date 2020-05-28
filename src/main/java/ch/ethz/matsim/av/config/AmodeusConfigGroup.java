@@ -14,12 +14,12 @@ public class AmodeusConfigGroup extends ReflectiveConfigGroup {
     static final public String NUMBER_OF_PARALLEL_ROUTERS = "numberOfParallelRouters";
     static final public String PASSENGER_ANALYSIS_INTERVAL = "passengerAnalysisInterval";
     static final public String VEHICLE_ANALYSIS_INTERVAL = "vehicleAnalysisInterval";
-    static final public String ENABLE_DISTANCE_ANALYSIS = "enableDistanceAnalysis";
+    static final public String USE_SCORING = "useScoring";
 
     private long parallelRouters = 4;
     private int passengerAnalysisInterval = 0;
     private int vehicleAnalysisInterval = 0;
-    private boolean enableDistanceAnalysis = false;
+    private boolean useScoring = true;
 
     public AmodeusConfigGroup() {
         super(GROUP_NAME);
@@ -135,13 +135,13 @@ public class AmodeusConfigGroup extends ReflectiveConfigGroup {
         this.vehicleAnalysisInterval = vehicleAnalysisInterval;
     }
 
-    @StringGetter(ENABLE_DISTANCE_ANALYSIS)
-    public boolean getEnableDistanceAnalysis() {
-        return enableDistanceAnalysis;
+    @StringGetter(USE_SCORING)
+    public boolean getUseScoring() {
+        return useScoring;
     }
 
-    @StringSetter(ENABLE_DISTANCE_ANALYSIS)
-    public void setEnableDistanceAnalysis(boolean enableDistanceAnalysis) {
-        this.enableDistanceAnalysis = enableDistanceAnalysis;
+    @StringSetter(USE_SCORING)
+    public void setUseScoring(boolean useScoring) {
+        this.useScoring = useScoring;
     }
 }

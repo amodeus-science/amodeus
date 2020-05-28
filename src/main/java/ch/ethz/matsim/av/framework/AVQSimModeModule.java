@@ -45,8 +45,7 @@ public class AVQSimModeModule extends AbstractDvrpModeQSimModule {
         install(new PassengerEngineQSimModule(getMode()));
 
         bindModal(PassengerRequestCreator.class).toProvider(modalProvider(getter -> {
-            Network network = getter.getModal(Network.class);
-            return new AVRequestCreator(getMode(), network);
+            return new AVRequestCreator(getMode());
         })).in(Singleton.class);
 
         bindModal(DynActionCreator.class).toProvider(modalProvider(getter -> {
