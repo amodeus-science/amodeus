@@ -1,9 +1,8 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared.highcap;
 
+import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
-
-import ch.ethz.matsim.av.passenger.AVRequest;
 
 /* package */ class NextPossibleStop {
     private final AVRequest avRequest;

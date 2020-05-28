@@ -13,9 +13,9 @@ import org.gnu.glpk.SWIGTYPE_p_double;
 import org.gnu.glpk.SWIGTYPE_p_int;
 import org.gnu.glpk.glp_iocp;
 import org.gnu.glpk.glp_prob;
+import org.matsim.amodeus.dvrp.request.AVRequest;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.matsim.av.passenger.AVRequest;
 
 /* package */ class ILPConstruction {
 

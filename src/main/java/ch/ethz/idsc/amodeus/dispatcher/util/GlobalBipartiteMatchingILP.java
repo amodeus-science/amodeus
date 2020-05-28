@@ -4,13 +4,13 @@ package ch.ethz.idsc.amodeus.dispatcher.util;
 import java.util.Collection;
 import java.util.Map;
 
+import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.matsim.av.passenger.AVRequest;
 
 public class GlobalBipartiteMatchingILP extends GlobalBipartiteMatching {
 

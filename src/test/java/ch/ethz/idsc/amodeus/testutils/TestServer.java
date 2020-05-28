@@ -4,6 +4,8 @@ package ch.ethz.idsc.amodeus.testutils;
 import java.io.File;
 import java.util.Objects;
 
+import org.matsim.amodeus.AmodeusConfigurator;
+import org.matsim.amodeus.config.AmodeusConfigGroup;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
@@ -27,8 +29,6 @@ import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.test.AnalysisTestExport;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.matsim.av.config.AmodeusConfigGroup;
-import ch.ethz.refactoring.AmodeusConfigurator;
 
 public class TestServer {
     private final File workingDirectory;

@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus;
 
+import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
@@ -9,8 +10,6 @@ import org.matsim.api.core.v01.network.Node;
 import org.matsim.contrib.dvrp.optimizer.Request;
 import org.matsim.core.config.Config;
 import org.matsim.core.network.NetworkUtils;
-
-import ch.ethz.matsim.av.passenger.AVRequest;
 
 public class ArtificialScenarioCreator {
     public final Node node1;

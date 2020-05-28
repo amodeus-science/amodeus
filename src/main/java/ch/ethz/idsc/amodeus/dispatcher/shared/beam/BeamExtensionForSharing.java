@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.core.network.NetworkUtils;
 
@@ -28,7 +29,6 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.red.VectorAngle;
-import ch.ethz.matsim.av.passenger.AVRequest;
 
 // TODO @ChengQi after checking with Jan, move to an application package and separate from core classes.
 public class BeamExtensionForSharing {

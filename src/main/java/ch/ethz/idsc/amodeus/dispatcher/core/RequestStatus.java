@@ -1,7 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
-import ch.ethz.matsim.av.passenger.AVRequest;
+import org.matsim.amodeus.dvrp.request.AVRequest;
 
 public enum RequestStatus {
     /** REGULAR REQUEST PROCESS */

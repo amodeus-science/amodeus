@@ -5,10 +5,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** abstract base class for all implementations that match {@link Collection}s of {@link RoboTaxi}s
  * and {@link Collection} of {@link AVRequest}s or of {@link Link}s */

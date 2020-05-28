@@ -4,6 +4,13 @@ import java.util.Iterator;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.matsim.amodeus.components.dispatcher.multi_od_heuristic.MultiODHeuristic;
+import org.matsim.amodeus.config.AmodeusConfigGroup;
+import org.matsim.amodeus.config.AmodeusModeConfig;
+import org.matsim.amodeus.config.modal.AmodeusScoringConfig;
+import org.matsim.amodeus.framework.AVModule;
+import org.matsim.amodeus.framework.AVQSimModule;
+import org.matsim.amodeus.routing.interaction.LinkAttributeInteractionFinder;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Link;
@@ -21,13 +28,6 @@ import org.matsim.core.config.groups.StrategyConfigGroup.StrategySettings;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.utils.geometry.CoordUtils;
 
-import ch.ethz.matsim.av.config.AmodeusConfigGroup;
-import ch.ethz.matsim.av.config.AmodeusModeConfig;
-import ch.ethz.matsim.av.config.modal.AmodeusScoringConfig;
-import ch.ethz.matsim.av.dispatcher.multi_od_heuristic.MultiODHeuristic;
-import ch.ethz.matsim.av.framework.AVModule;
-import ch.ethz.matsim.av.framework.AVQSimModule;
-import ch.ethz.matsim.av.routing.interaction.LinkAttributeInteractionFinder;
 import ch.ethz.matsim.av.scenario.TestScenarioAnalyzer;
 import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
 

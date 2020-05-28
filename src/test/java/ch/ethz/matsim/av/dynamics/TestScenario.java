@@ -5,6 +5,14 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.matsim.amodeus.components.AVGenerator;
+import org.matsim.amodeus.components.dispatcher.multi_od_heuristic.MultiODHeuristic;
+import org.matsim.amodeus.config.AmodeusConfigGroup;
+import org.matsim.amodeus.config.AmodeusModeConfig;
+import org.matsim.amodeus.config.modal.AmodeusScoringConfig;
+import org.matsim.amodeus.framework.AVModule;
+import org.matsim.amodeus.framework.AVQSimModule;
+import org.matsim.amodeus.framework.AVUtils;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
@@ -43,15 +51,6 @@ import org.matsim.vehicles.VehicleUtils;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
-
-import ch.ethz.matsim.av.config.AmodeusConfigGroup;
-import ch.ethz.matsim.av.config.AmodeusModeConfig;
-import ch.ethz.matsim.av.config.modal.AmodeusScoringConfig;
-import ch.ethz.matsim.av.dispatcher.multi_od_heuristic.MultiODHeuristic;
-import ch.ethz.matsim.av.framework.AVModule;
-import ch.ethz.matsim.av.framework.AVQSimModule;
-import ch.ethz.matsim.av.framework.AVUtils;
-import ch.ethz.matsim.av.generator.AVGenerator;
 
 /** TestScenario is used to create a various elements of a test scenario. This is used in various av.dynamics tests. */
 public class TestScenario {

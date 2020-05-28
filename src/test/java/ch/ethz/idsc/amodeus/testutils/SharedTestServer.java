@@ -3,12 +3,11 @@ package ch.ethz.idsc.amodeus.testutils;
 
 import java.io.File;
 
+import org.matsim.amodeus.config.AmodeusConfigGroup;
 import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.ConfigWriter;
-
-import ch.ethz.matsim.av.config.AmodeusConfigGroup;
 
 public class SharedTestServer extends TestServer {
 

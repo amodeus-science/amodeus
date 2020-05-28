@@ -4,10 +4,10 @@ package ch.ethz.idsc.amodeus.dispatcher.shared.highcap;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.matsim.av.passenger.AVRequest;
 
 /* package */ enum RebalanceExplorer {
     ;

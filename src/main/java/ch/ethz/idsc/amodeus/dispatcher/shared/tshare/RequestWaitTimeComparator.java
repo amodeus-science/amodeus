@@ -3,7 +3,7 @@ package ch.ethz.idsc.amodeus.dispatcher.shared.tshare;
 
 import java.util.Comparator;
 
-import ch.ethz.matsim.av.passenger.AVRequest;
+import org.matsim.amodeus.dvrp.request.AVRequest;
 
 /** This {@link Comparator} is used to sort {@link AVRequest}s with ascending wait time
  * which is the same as ascending submission time */

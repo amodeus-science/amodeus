@@ -3,8 +3,9 @@ package ch.ethz.idsc.amodeus.dispatcher.shared.fifs;
 
 import java.util.Optional;
 
+import org.matsim.amodeus.dvrp.request.AVRequest;
+
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** A {@link RequestWrap} contains more Information about the Request. for example the drive time in the unit capacity case */
 /* package */ class RequestWrap {

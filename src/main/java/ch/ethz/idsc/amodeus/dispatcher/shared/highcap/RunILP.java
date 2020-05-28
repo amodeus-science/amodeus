@@ -4,8 +4,9 @@ package ch.ethz.idsc.amodeus.dispatcher.shared.highcap;
 import java.util.List;
 import java.util.Set;
 
+import org.matsim.amodeus.dvrp.request.AVRequest;
+
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.matsim.av.passenger.AVRequest;
 
 /* package */ enum RunILP {
     ;

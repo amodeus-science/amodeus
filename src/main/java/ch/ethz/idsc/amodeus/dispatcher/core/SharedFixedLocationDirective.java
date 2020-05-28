@@ -1,7 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
-import ch.ethz.matsim.av.passenger.AVRequest;
+import org.matsim.amodeus.dvrp.request.AVRequest;
 
 /** for vehicles that are in stay task and should dropoff a customer at the link:
  * 1) finish stay task 2) append dropoff task 3) if more customers planned append drive task

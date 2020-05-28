@@ -8,6 +8,8 @@ import java.util.Objects;
 import java.util.TreeMap;
 import java.util.function.BiConsumer;
 
+import org.matsim.amodeus.dvrp.request.AVRequest;
+
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedUniversalDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.Compatibility;
@@ -16,7 +18,6 @@ import ch.ethz.idsc.amodeus.routing.CachedNetworkTimeDistance;
 import ch.ethz.idsc.amodeus.routing.NetworkTimeDistInterface;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** This class is a generalized implementation of the "Algorithm 2: Insertion feasibility check" supplied in
  * the T-Share publication. The original reference is only for menus with 1 passenger in the taxi and the

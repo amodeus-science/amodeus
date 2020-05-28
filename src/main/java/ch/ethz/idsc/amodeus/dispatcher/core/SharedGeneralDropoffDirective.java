@@ -3,15 +3,15 @@ package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.Objects;
 
+import org.matsim.amodeus.dvrp.request.AVRequest;
+import org.matsim.amodeus.dvrp.schedule.AmodeusDropoffTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.matsim.av.passenger.AVRequest;
-import ch.ethz.refactoring.schedule.AmodeusDropoffTask;
-import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
 /** for vehicles that are in stay task and should dropoff a customer at the link:
  * 1) finish stay task 2) append dropoff task 3) if more customers planned append drive task

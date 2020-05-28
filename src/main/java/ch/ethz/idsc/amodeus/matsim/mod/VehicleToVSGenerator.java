@@ -6,6 +6,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+import org.matsim.amodeus.components.AVGenerator;
+import org.matsim.amodeus.components.generator.AmodeusIdentifiers;
+import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
@@ -27,9 +30,6 @@ import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.Floor;
 import ch.ethz.idsc.tensor.sca.Sign;
-import ch.ethz.matsim.av.config.AmodeusModeConfig;
-import ch.ethz.matsim.av.generator.AVGenerator;
-import ch.ethz.matsim.av.generator.AmodeusIdentifiers;
 
 /** class generates {@link AVVehicle}s. It takes the required minimal initial vehicle numbers from
  * {@link TravelData}. In each virtual station it places the required number of vehicles.

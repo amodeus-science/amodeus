@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
 
+import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.core.utils.collections.QuadTree;
 import org.matsim.core.utils.collections.QuadTree.Rect;
 
@@ -13,7 +14,6 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.VectorQ;
-import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** Maintains a list of {@link T}s in a {@link Set} and a
  * {@link QuadTree} to enable both fast "contains" searches and

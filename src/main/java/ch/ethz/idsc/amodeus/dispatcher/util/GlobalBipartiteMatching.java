@@ -5,10 +5,10 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 
+import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** Use to solve a {@link RoboTaxi} to {@link AVRequest} assignment problem via
  * global (all to all) bipartite matching. Solved using

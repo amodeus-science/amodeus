@@ -4,6 +4,9 @@ package ch.ethz.idsc.amodeus.dispatcher.core;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.matsim.amodeus.config.AmodeusModeConfig;
+import org.matsim.amodeus.dvrp.request.AVRequest;
+import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
@@ -11,9 +14,6 @@ import org.matsim.core.router.util.TravelTime;
 
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.matsim.av.config.AmodeusModeConfig;
-import ch.ethz.matsim.av.passenger.AVRequest;
-import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
 /** class for wich all Dispatchers performing rebalancing, i.e., replacement of empty vehicles should be derived */
 public abstract class RebalancingDispatcher extends UniversalDispatcher {
