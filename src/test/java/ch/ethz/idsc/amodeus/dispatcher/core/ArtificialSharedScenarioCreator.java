@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
+import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.api.core.v01.Id;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicleImpl;
@@ -10,7 +11,6 @@ import org.matsim.contrib.dvrp.util.LinkTimePair;
 import org.matsim.core.config.Config;
 
 import ch.ethz.idsc.amodeus.ArtificialScenarioCreator;
-import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
 /* package */ class ArtificialSharedScenarioCreator extends ArtificialScenarioCreator {
 

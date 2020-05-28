@@ -3,6 +3,8 @@ package ch.ethz.idsc.amodeus.matsim.utils;
 
 import java.util.Objects;
 
+import org.matsim.amodeus.routing.AVRoute;
+import org.matsim.amodeus.routing.AVRouteFactory;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.population.Activity;
@@ -15,9 +17,6 @@ import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.core.population.io.PopulationReader;
 import org.matsim.core.population.io.PopulationWriter;
 import org.matsim.core.scenario.ScenarioUtils;
-
-import ch.ethz.matsim.av.routing.AVRoute;
-import ch.ethz.matsim.av.routing.AVRouteFactory;
 
 public enum AddCoordinatesToActivities {
     ;

@@ -4,12 +4,11 @@ import java.util.Arrays;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.matsim.amodeus.config.AmodeusConfigGroup;
+import org.matsim.amodeus.config.AmodeusModeConfig;
+import org.matsim.amodeus.config.modal.TimingConfig;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.controler.Controler;
-
-import ch.ethz.matsim.av.config.AmodeusConfigGroup;
-import ch.ethz.matsim.av.config.AmodeusModeConfig;
-import ch.ethz.matsim.av.config.modal.TimingConfig;
 
 /** Execute av.dynamics pick-up and drop-off tests */
 public class AVPickupDropoffTest {

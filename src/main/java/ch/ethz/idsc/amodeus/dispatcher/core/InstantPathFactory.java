@@ -3,12 +3,11 @@ package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.concurrent.Future;
 
+import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.core.router.util.LeastCostPathCalculator.Path;
 import org.matsim.core.router.util.TravelTime;
-
-import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
 /** InstantPathFactory may be used by 3rd party dispatchers to compute routes
  * Example: MPCDispatcher */

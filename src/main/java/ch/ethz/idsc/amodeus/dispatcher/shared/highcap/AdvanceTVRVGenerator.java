@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 
-import ch.ethz.matsim.av.passenger.AVRequest;
+import org.matsim.amodeus.dvrp.request.AVRequest;
 
 /* package */ class AdvanceTVRVGenerator {
     private final Set<Set<AVRequest>> rvEdges = new HashSet<>();

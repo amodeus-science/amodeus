@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Objects;
 
 import org.apache.log4j.Logger;
+import org.matsim.amodeus.components.AVGenerator;
+import org.matsim.amodeus.components.generator.AmodeusIdentifiers;
+import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
@@ -14,10 +17,6 @@ import org.matsim.contrib.dvrp.fleet.DvrpVehicleSpecification;
 import org.matsim.contrib.dvrp.fleet.ImmutableDvrpVehicleSpecification;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.gbl.MatsimRandom;
-
-import ch.ethz.matsim.av.config.AmodeusModeConfig;
-import ch.ethz.matsim.av.generator.AVGenerator;
-import ch.ethz.matsim.av.generator.AmodeusIdentifiers;
 
 /** class generates {@link AVVehicle}s and places them at a random link.
  * each link is equally likely.

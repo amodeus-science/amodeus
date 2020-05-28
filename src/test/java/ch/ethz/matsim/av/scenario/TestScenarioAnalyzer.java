@@ -1,5 +1,6 @@
 package ch.ethz.matsim.av.scenario;
 
+import org.matsim.amodeus.routing.AVRoutingModule;
 import org.matsim.api.core.v01.events.ActivityStartEvent;
 import org.matsim.api.core.v01.events.PersonArrivalEvent;
 import org.matsim.api.core.v01.events.PersonDepartureEvent;
@@ -7,8 +8,6 @@ import org.matsim.api.core.v01.events.handler.ActivityStartEventHandler;
 import org.matsim.api.core.v01.events.handler.PersonArrivalEventHandler;
 import org.matsim.api.core.v01.events.handler.PersonDepartureEventHandler;
 import org.matsim.core.controler.AbstractModule;
-
-import ch.ethz.matsim.av.routing.AVRoutingModule;
 
 public class TestScenarioAnalyzer extends AbstractModule implements PersonDepartureEventHandler, PersonArrivalEventHandler, ActivityStartEventHandler {
     public long numberOfDepartures;

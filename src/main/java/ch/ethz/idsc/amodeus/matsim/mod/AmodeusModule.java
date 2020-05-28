@@ -4,6 +4,9 @@ package ch.ethz.idsc.amodeus.matsim.mod;
 import java.util.Objects;
 
 import org.apache.log4j.Logger;
+import org.matsim.amodeus.config.AmodeusConfigGroup;
+import org.matsim.amodeus.config.AmodeusModeConfig;
+import org.matsim.amodeus.config.modal.GeneratorConfig;
 import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Plan;
@@ -13,10 +16,6 @@ import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.events.StartupEvent;
 import org.matsim.core.controler.listener.StartupListener;
 import org.matsim.core.trafficmonitoring.FreeSpeedTravelTime;
-
-import ch.ethz.matsim.av.config.AmodeusConfigGroup;
-import ch.ethz.matsim.av.config.AmodeusModeConfig;
-import ch.ethz.matsim.av.config.modal.GeneratorConfig;
 
 public class AmodeusModule extends AbstractModule {
     private final static Logger logger = Logger.getLogger(AmodeusModule.class);

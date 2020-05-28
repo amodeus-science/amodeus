@@ -7,6 +7,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import org.matsim.amodeus.components.AVDispatcher;
+import org.matsim.amodeus.config.AmodeusModeConfig;
+import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
 import org.matsim.api.core.v01.events.Event;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
@@ -16,9 +19,6 @@ import org.matsim.core.config.Config;
 
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.StorageUtils;
-import ch.ethz.matsim.av.config.AmodeusModeConfig;
-import ch.ethz.matsim.av.dispatcher.AVDispatcher;
-import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
 /** The purpose of RoboTaxiMaintainer is to register {@link AVVehicle} and provide the collection of
  * available vehicles to derived class.

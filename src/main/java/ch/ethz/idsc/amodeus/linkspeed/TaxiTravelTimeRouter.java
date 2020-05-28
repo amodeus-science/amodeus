@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Future;
 
+import org.matsim.amodeus.components.AVRouter;
+import org.matsim.amodeus.plpc.DefaultParallelLeastCostPathCalculator;
+import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
 import org.matsim.api.core.v01.population.Person;
@@ -18,9 +21,6 @@ import org.matsim.vehicles.Vehicle;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
-import ch.ethz.matsim.av.plcpc.DefaultParallelLeastCostPathCalculator;
-import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
-import ch.ethz.matsim.av.router.AVRouter;
 
 /** This is a nonfunctional sample demonstrating of how to include a custom
  * router to AMoDeus which is not the standard choice of the Paralllel Djikstra

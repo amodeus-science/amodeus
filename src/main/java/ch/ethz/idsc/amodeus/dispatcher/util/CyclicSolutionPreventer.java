@@ -8,12 +8,13 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
+import org.matsim.amodeus.dvrp.request.AVRequest;
+
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 import ch.ethz.idsc.amodeus.routing.EuclideanDistanceFunction;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** If a {@link EuclideanDistanceFunction} is used for bipartite matching, then cycling of robotic taxis
  * may occur, i.e., an assignment is removed as the assigned taxi approaches in the network because its

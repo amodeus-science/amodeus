@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.matsim.mod;
 
+import org.matsim.amodeus.framework.AVUtils;
 import org.matsim.core.controler.AbstractModule;
 
 import ch.ethz.idsc.amodeus.dispatcher.AdaptiveRealTimeRebalancingPolicy;
@@ -21,7 +22,6 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.fifs.FirstComeFirstServedStrategy;
 import ch.ethz.idsc.amodeus.dispatcher.shared.highcap.HighCapacityDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.tshare.TShareDispatcher;
 import ch.ethz.idsc.amodeus.parking.RestrictedLinkCapacityDispatcher;
-import ch.ethz.matsim.av.framework.AVUtils;
 
 public class AmodeusDispatcherModule extends AbstractModule {
     @Override

@@ -3,11 +3,10 @@ package ch.ethz.idsc.amodeus.matsim.xml;
 
 import java.io.File;
 
+import org.matsim.amodeus.config.AmodeusConfigGroup;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.ConfigWriter;
-
-import ch.ethz.matsim.av.config.AmodeusConfigGroup;
 
 public enum XmlRebalancingPeriodChanger {
     ;
