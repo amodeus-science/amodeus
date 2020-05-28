@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.NavigableSet;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -19,7 +18,6 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxiStatus;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.VehicleContainer;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Array;
@@ -140,41 +138,11 @@ import org.matsim.api.core.v01.network.Link;
         return Array.fill(() -> Quantity.of(0, unit), 4);
     }
 
-    /** @param time1 interval start (exclusive)
-     * @param time2 interval end (inclusive)
-     * @return distance covered in the interval as {total distance, with customer, pickup, rebalance} */
-    /* package */ Tensor labeledIntervalDistance(long time1, long time2) {
-        return labeledDistanceUntil(time2).subtract(labeledDistanceUntil(time1));
-    }
-
-    /** @param time (inclusive)
-     * @return distance covered until time as {total distance, with customer, pickup, rebalance} */
-    private Tensor labeledDistanceUntil(long time) {
-        Tensor totalDistances = distances.headMap(time, true).values().stream().reduce(Tensor::add).orElse(emptyDistance());
-
-        // linear interpolation including missing data points
-        if (!distances.containsKey(time)) {
-            Long keyHigher = distances.ceilingKey(time);
-            if (Objects.nonNull(keyHigher)) {
-                long keyLower = Optional.ofNullable(distances.lowerKey(time)).orElse(0L);
-                Tensor dist = distances.get(keyHigher).multiply(RationalScalar.of(time - keyLower, keyHigher - keyLower));
-                totalDistances = totalDistances.add(dist);
-            }
-        }
-        /*
-        // linear interpolation with missing data point = no distance
-        if (!distances.containsKey(time)) {
-            Optional<Long> optional = Optional.ofNullable(times.ceiling(time));
-            if (optional.isPresent()) {
-                long keyLower = Optional.ofNullable(times.lower(time)).orElse(0L);
-                long keyHigher = optional.get();
-                Tensor dist = distances.getOrDefault(keyHigher, emptyDistance()) //
-                        .multiply(RationalScalar.of(time - keyLower, keyHigher - keyLower));
-                totalDistances = totalDistances.add(dist);
-            }
-        }
-        */
-        return totalDistances;
+    /** @param endTime (inclusive)
+     * @return distance covered in time interval ending at endTime as {total distance, with customer, pickup, rebalance} */
+    /* package */ Tensor stepDistance(long endTime) {
+        GlobalAssert.that(times.contains(endTime)); // all times should have been visited, hence no interpolation is needed
+        return distances.getOrDefault(endTime, emptyDistance()); // if a time step is not in distances, no distance has been covered
     }
 }
 
