@@ -5,29 +5,29 @@ import org.matsim.core.config.ReflectiveConfigGroup;
 public class TimingConfig extends ReflectiveConfigGroup {
     static public final String GROUP_NAME = "timing";
 
-    static public final String PICKUP_DURATION_PER_STOP = "pickupDurationPerStop";
+    static public final String MINIMUM_PICKUP_DURATION_PER_STOP = "minimumPickupDurationPerStop";
     static public final String PICKUP_DURATION_PER_PASSENGER = "pickupDurationPerPassenger";
-    static public final String DROPOFF_DURATION_PER_STOP = "dropoffDurationPerStop";
+    static public final String MINIMUM_DROPOFF_DURATION_PER_STOP = "minimumDropoffDurationPerStop";
     static public final String DROPOFF_DURATION_PER_PASSENGER = "dropoffDurationPerPassenger";
 
-    private double pickupDurationPerStop = 15.0;
+    private double minimumPickupDurationPerStop = 15.0;
     private double pickupDurationPerPassenger = 0.0;
 
-    private double dropoffDurationPerStop = 10.0;
+    private double minimumDropoffDurationPerStop = 10.0;
     private double dropoffDurationPerPassenger = 0.0;
 
     public TimingConfig() {
         super(GROUP_NAME);
     }
 
-    @StringGetter(PICKUP_DURATION_PER_STOP)
-    public double getPickupDurationPerStop() {
-        return pickupDurationPerStop;
+    @StringGetter(MINIMUM_PICKUP_DURATION_PER_STOP)
+    public double getMinimumPickupDurationPerStop() {
+        return minimumPickupDurationPerStop;
     }
 
-    @StringSetter(PICKUP_DURATION_PER_STOP)
-    public void setPickupDurationPerStop(double pickupDurationPerStop) {
-        this.pickupDurationPerStop = pickupDurationPerStop;
+    @StringSetter(MINIMUM_PICKUP_DURATION_PER_STOP)
+    public void setMinimumPickupDurationPerStop(double pickupDurationPerStop) {
+        this.minimumPickupDurationPerStop = pickupDurationPerStop;
     }
 
     @StringGetter(PICKUP_DURATION_PER_PASSENGER)
@@ -40,14 +40,14 @@ public class TimingConfig extends ReflectiveConfigGroup {
         this.pickupDurationPerPassenger = pickupDurationPerPassenger;
     }
 
-    @StringGetter(DROPOFF_DURATION_PER_STOP)
-    public double getDropoffDurationPerStop() {
-        return dropoffDurationPerStop;
+    @StringGetter(MINIMUM_DROPOFF_DURATION_PER_STOP)
+    public double getMinimumDropoffDurationPerStop() {
+        return minimumDropoffDurationPerStop;
     }
 
-    @StringSetter(DROPOFF_DURATION_PER_STOP)
-    public void setDropoffDurationPerStop(double dropoffDurationPerStop) {
-        this.dropoffDurationPerStop = dropoffDurationPerStop;
+    @StringSetter(MINIMUM_DROPOFF_DURATION_PER_STOP)
+    public void setMinimumDropoffDurationPerStop(double dropoffDurationPerStop) {
+        this.minimumDropoffDurationPerStop = dropoffDurationPerStop;
     }
 
     @StringGetter(DROPOFF_DURATION_PER_PASSENGER)

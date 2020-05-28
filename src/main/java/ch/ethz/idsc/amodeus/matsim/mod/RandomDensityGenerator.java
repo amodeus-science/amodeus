@@ -10,12 +10,12 @@ import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
+import org.matsim.contrib.dvrp.fleet.DvrpVehicleSpecification;
+import org.matsim.contrib.dvrp.fleet.ImmutableDvrpVehicleSpecification;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.gbl.MatsimRandom;
-import org.matsim.vehicles.VehicleType;
 
 import ch.ethz.matsim.av.config.AmodeusModeConfig;
-import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.generator.AVGenerator;
 import ch.ethz.matsim.av.generator.AmodeusIdentifiers;
 
@@ -28,19 +28,19 @@ public class RandomDensityGenerator implements AVGenerator {
     private static final Logger LOGGER = Logger.getLogger(RandomDensityGenerator.class);
     // ---
     private final Network network;
-    private final VehicleType vehicleType;
+    private final int capacity;
     private final AmodeusModeConfig operatorConfig;
 
-    public RandomDensityGenerator(AmodeusModeConfig operatorConfig, Network network, VehicleType vehicleType) {
+    public RandomDensityGenerator(AmodeusModeConfig operatorConfig, Network network, int capacity) {
         this.network = Objects.requireNonNull(network);
         this.operatorConfig = operatorConfig;
-        this.vehicleType = vehicleType;
+        this.capacity = capacity;
     }
 
     @Override
-    public List<AVVehicle> generateVehicles() {
+    public List<DvrpVehicleSpecification> generateVehicles() {
         long generatedVehicles = 0;
-        List<AVVehicle> vehicles = new LinkedList<>();
+        List<DvrpVehicleSpecification> vehicles = new LinkedList<>();
         while (generatedVehicles < operatorConfig.getGeneratorConfig().getNumberOfVehicles()) {
             ++generatedVehicles;
 
@@ -50,8 +50,13 @@ public class RandomDensityGenerator implements AVGenerator {
             LOGGER.info("car placed at link " + link);
 
             Id<DvrpVehicle> id = AmodeusIdentifiers.createVehicleId(operatorConfig.getMode(), generatedVehicles);
-            AVVehicle vehicle = new AVVehicle(id, link, 0.0, Double.POSITIVE_INFINITY, vehicleType);
-            vehicles.add(vehicle);
+            vehicles.add(ImmutableDvrpVehicleSpecification.newBuilder() //
+                    .id(id) //
+                    .serviceBeginTime(0.0) //
+                    .serviceEndTime(Double.POSITIVE_INFINITY) //
+                    .capacity(capacity) //
+                    .startLinkId(link.getId()) //
+                    .build());
         }
         return vehicles;
     }
@@ -61,9 +66,9 @@ public class RandomDensityGenerator implements AVGenerator {
         public AVGenerator createGenerator(InstanceGetter inject) {
             AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
             Network network = inject.getModal(Network.class);
-            VehicleType vehicleType = inject.getModal(VehicleType.class);
+            int capacity = operatorConfig.getGeneratorConfig().getCapacity();
 
-            return new RandomDensityGenerator(operatorConfig, network, vehicleType);
+            return new RandomDensityGenerator(operatorConfig, network, capacity);
         }
     }
 }

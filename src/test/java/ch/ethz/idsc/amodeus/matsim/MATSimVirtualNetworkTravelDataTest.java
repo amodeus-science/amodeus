@@ -108,7 +108,6 @@ public class MATSimVirtualNetworkTravelDataTest {
         AmodeusConfigGroup avConfig = AmodeusConfigGroup.get(config);
 
         AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
-        operatorConfig.setAllowedLinkMode("car");
         avConfig.addMode(operatorConfig);
 
         GeneratorConfig generatorConfig = operatorConfig.getGeneratorConfig();

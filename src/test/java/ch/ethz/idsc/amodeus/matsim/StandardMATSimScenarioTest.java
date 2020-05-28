@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Random;
 
 import org.junit.AfterClass;
@@ -40,6 +41,7 @@ import org.matsim.core.gbl.MatsimRandom;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.algorithms.TransportModeNetworkFilter;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.inject.TypeLiteral;
 
 import ch.ethz.idsc.amodeus.data.LocationSpec;
@@ -148,6 +150,12 @@ public class StandardMATSimScenarioTest {
 
         // TODO @sebhoerl Difficult to keep this in as handling of "interaction" activities become much smarter in MATSim now. We would need to
         // set up a much more realistic test scenario. There is one in the AV package, so we can use that one!
+
+        for (Link link : network.getLinks().values()) {
+            if (link.getAllowedModes().contains("car")) {
+                link.setAllowedModes(new HashSet<>(Arrays.asList("car", "av")));
+            }
+        }
     }
 
     private static void fixInvalidActivityLocations(Network network, Population population) {
@@ -219,7 +227,8 @@ public class StandardMATSimScenarioTest {
         AmodeusConfigGroup avConfig = AmodeusConfigGroup.get(config);
 
         AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
-        operatorConfig.setAllowedLinkMode("car");
+        operatorConfig.setUseModeFilteredSubnetwork(true);
+        DvrpConfigGroup.get(config).setNetworkModes(ImmutableSet.of("av"));
         avConfig.addMode(operatorConfig);
 
         GeneratorConfig generatorConfig = operatorConfig.getGeneratorConfig();
@@ -284,7 +293,7 @@ public class StandardMATSimScenarioTest {
                     public void handleEvent(LinkEnterEvent event) {
                         // Fail if an AV attempts to enter a pt link
 
-                        if (event.getVehicleId().toString().startsWith("av_") && event.getLinkId().toString().startsWith("pt")) {
+                        if (event.getVehicleId().toString().startsWith("amodeus") && event.getLinkId().toString().startsWith("pt")) {
                             Assert.fail("AV attempted to enter PT link");
                         }
                     }

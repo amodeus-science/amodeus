@@ -4,22 +4,15 @@ package ch.ethz.idsc.amodeus.matsim.mod;
 import java.util.Objects;
 
 import org.apache.log4j.Logger;
-import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.PlanElement;
-import org.matsim.contrib.dvrp.run.DvrpModes;
-import org.matsim.contrib.dvrp.run.ModalProviders;
 import org.matsim.contrib.dvrp.trafficmonitoring.DvrpTravelTimeModule;
 import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.events.StartupEvent;
 import org.matsim.core.controler.listener.StartupListener;
 import org.matsim.core.trafficmonitoring.FreeSpeedTravelTime;
-import org.matsim.vehicles.VehicleType;
-import org.matsim.vehicles.Vehicles;
-
-import com.google.inject.Inject;
 
 import ch.ethz.matsim.av.config.AmodeusConfigGroup;
 import ch.ethz.matsim.av.config.AmodeusModeConfig;
@@ -41,50 +34,21 @@ public class AmodeusModule extends AbstractModule {
 
         addControlerListenerBinding().toInstance(new WarningListener());
 
-        // Update vehicle types by Amodeus configuration
+        // Update vehicle caapacities by Amodeus configuration
 
         for (AmodeusModeConfig operatorConfig : AmodeusConfigGroup.get(getConfig()).getModes().values()) {
             GeneratorConfig generatorConfig = operatorConfig.getGeneratorConfig();
-
-            String vehicleTypeName = generatorConfig.getVehicleType();
             String numberOfSeatsParameter = generatorConfig.getParams().get("numberOfSeats");
 
             if (Objects.nonNull(numberOfSeatsParameter)) {
-                if (Objects.nonNull(vehicleTypeName)) {
-                    throw new IllegalStateException(String.format( //
-                            "Both vehicleType and numberOfSeats are set for mode %s. This is amiguous. "
-                                    + "Option one is to define 'numberOfSeats' alone. In this case Amodeus will create an internal "
-                                    + "vehicle type with the specified number of seats automatically. Option two is to explicitly "
-                                    + "define a 'vehicleType' alone and register it through the possible ways that MATSim prvoides "
-                                    + "(either manually adding a VehicleType to the Vehicles container after loeading the scenario, or providing a vehicles.xml.gz file).",
+                int numberOfSeats = Integer.parseInt(numberOfSeatsParameter);
+
+                if (numberOfSeats != generatorConfig.getCapacity()) {
+                    generatorConfig.setCapacity(numberOfSeats);
+                    logger.warn(String.format("Overriding 'capacity' attribute of the generator for mode '%s' with the deprecated 'numberOfSeats' attribute.",
                             operatorConfig.getMode()));
                 }
-
-                // TODO: Adjust when we have actual modes instead of operators!
-                bind(DvrpModes.key(VehicleType.class, "av")).toProvider(new VehicleTypeProvider("av"));
             }
-        }
-    }
-
-    static private class VehicleTypeProvider extends ModalProviders.AbstractProvider<VehicleType> {
-        @Inject
-        Vehicles vehicles;
-
-        VehicleTypeProvider(String mode) {
-            super(mode);
-        }
-
-        @Override
-        public VehicleType get() {
-            AmodeusModeConfig operatorConfig = getModalInstance(AmodeusModeConfig.class);
-            GeneratorConfig generatorConfig = operatorConfig.getGeneratorConfig();
-
-            String numberOfSeatsParameter = generatorConfig.getParams().get("numberOfSeats");
-            int numberOfSeats = Integer.parseInt(numberOfSeatsParameter);
-
-            logger.info(String.format("Creating an on-the-fly vehicle type for Amodeus mode '%s' with %d seats", operatorConfig.getMode(), numberOfSeats));
-
-            return vehicles.getFactory().createVehicleType(Id.create(String.format("amodeus:%s:%d", operatorConfig.getMode(), numberOfSeats), VehicleType.class));
         }
     }
 

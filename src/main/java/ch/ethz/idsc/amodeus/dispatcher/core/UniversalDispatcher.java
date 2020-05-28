@@ -13,21 +13,20 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
 import org.matsim.contrib.dvrp.schedule.Task;
-import org.matsim.contrib.dvrp.tracker.TaskTracker;
+import org.matsim.contrib.dvrp.tracker.OnlineDriveTaskTracker;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
 
-import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDriveTaskTracker;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationObjectCompiler;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.matsim.av.config.AmodeusModeConfig;
-import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.generator.AVGenerator;
 import ch.ethz.matsim.av.passenger.AVRequest;
@@ -363,7 +362,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
 
     /** adding a vehicle during setup of simulation, handeled by {@link AVGenerator} */
     @Override
-    public final void addVehicle(AVVehicle vehicle) {
+    public final void addVehicle(DvrpVehicle vehicle) {
         super.addVehicle(vehicle, RoboTaxiUsageType.SINGLEUSED);
     }
 
@@ -379,9 +378,8 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
                 @Override
                 public void handle(AmodeusDriveTask avDriveTask) {
                     // for empty cars the drive task is second to last task
-                    TaskTracker taskTracker = avDriveTask.getTaskTracker();
-                    AmodeusDriveTaskTracker onlineDriveTaskTracker = (AmodeusDriveTaskTracker) taskTracker;
-                    LinkTimePair linkTimePair = onlineDriveTaskTracker.getSafeDiversionPoint();
+                    OnlineDriveTaskTracker taskTracker = (OnlineDriveTaskTracker) avDriveTask.getTaskTracker();
+                    LinkTimePair linkTimePair = Objects.requireNonNull(taskTracker.getDiversionPoint());
                     roboTaxi.setDivertableLinkTime(linkTimePair); // contains null check
                     roboTaxi.setCurrentDriveDestination(avDriveTask.getPath().getToLink());
                     GlobalAssert.that(ScheduleUtils.isNextToLastTask(schedule, avDriveTask) != roboTaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));

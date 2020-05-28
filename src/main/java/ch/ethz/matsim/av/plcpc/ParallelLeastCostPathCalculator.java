@@ -10,6 +10,4 @@ import org.matsim.vehicles.Vehicle;
 
 public interface ParallelLeastCostPathCalculator extends Closeable {
     Future<LeastCostPathCalculator.Path> calcLeastCostPath(Node fromNode, Node toNode, double starttime, final Person person, final Vehicle vehicle);
-
-    // void update();
 }

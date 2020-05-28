@@ -21,9 +21,9 @@ import org.matsim.core.config.groups.StrategyConfigGroup.StrategySettings;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.utils.geometry.CoordUtils;
 
-import ch.ethz.matsim.av.config.AVScoringParameterSet;
 import ch.ethz.matsim.av.config.AmodeusConfigGroup;
 import ch.ethz.matsim.av.config.AmodeusModeConfig;
+import ch.ethz.matsim.av.config.modal.AmodeusScoringConfig;
 import ch.ethz.matsim.av.dispatcher.multi_od_heuristic.MultiODHeuristic;
 import ch.ethz.matsim.av.framework.AVModule;
 import ch.ethz.matsim.av.framework.AVQSimModule;
@@ -42,7 +42,7 @@ public class RunAVExampleTest {
         operatorConfig.getPricingConfig().setSpatialBillingInterval(1000.0);
         avConfigGroup.addMode(operatorConfig);
 
-        AVScoringParameterSet scoringParams = operatorConfig.getScoringParameters(null);
+        AmodeusScoringConfig scoringParams = operatorConfig.getScoringParameters(null);
         scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
 
         Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
@@ -85,7 +85,7 @@ public class RunAVExampleTest {
         operatorConfig.getGeneratorConfig().setNumberOfVehicles(0);
         avConfigGroup.addMode(operatorConfig);
 
-        AVScoringParameterSet scoringParams = operatorConfig.getScoringParameters(null);
+        AmodeusScoringConfig scoringParams = operatorConfig.getScoringParameters(null);
         scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
 
         Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
@@ -117,7 +117,7 @@ public class RunAVExampleTest {
         operatorConfig.getPricingConfig().setSpatialBillingInterval(1000.0);
         avConfigGroup.addMode(operatorConfig);
 
-        AVScoringParameterSet scoringParams = operatorConfig.getScoringParameters(null);
+        AmodeusScoringConfig scoringParams = operatorConfig.getScoringParameters(null);
         scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
 
         Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
@@ -153,7 +153,7 @@ public class RunAVExampleTest {
         operatorConfig.getPricingConfig().setSpatialBillingInterval(1000.0);
         avConfigGroup.addMode(operatorConfig);
 
-        AVScoringParameterSet scoringParams = operatorConfig.getScoringParameters(null);
+        AmodeusScoringConfig scoringParams = operatorConfig.getScoringParameters(null);
         scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
 
         operatorConfig.setUseAccessAgress(true);
@@ -210,7 +210,7 @@ public class RunAVExampleTest {
         operatorConfig.getInteractionFinderConfig().getParams().put("allowedLinkAttribute", "avflag");
         avConfigGroup.addMode(operatorConfig);
 
-        AVScoringParameterSet scoringParams = operatorConfig.getScoringParameters(null);
+        AmodeusScoringConfig scoringParams = operatorConfig.getScoringParameters(null);
         scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
 
         operatorConfig.setUseAccessAgress(true);

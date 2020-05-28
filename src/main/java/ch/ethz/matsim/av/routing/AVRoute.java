@@ -3,10 +3,12 @@ package ch.ethz.matsim.av.routing;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.core.population.routes.AbstractRoute;
+import org.matsim.core.utils.misc.OptionalTime;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,55 +16,59 @@ import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 public class AVRoute extends AbstractRoute {
-    final static String AV_ROUTE = "av";
+    public final static String AV_ROUTE = "av";
 
-    private double waitingTime;
-    private double inVehicleTime;
-    private double price;
+    private OptionalTime waitingTime = OptionalTime.undefined();
+    private Optional<Double> price = Optional.empty();
 
     public AVRoute(Id<Link> startLinkId, Id<Link> endLinkId) {
         super(startLinkId, endLinkId);
     }
 
-    public double getWaitingTime() {
+    public OptionalTime getWaitingTime() {
         return waitingTime;
     }
 
     public void setWaitingTime(double waitingTime) {
-        this.waitingTime = waitingTime;
+        this.waitingTime = OptionalTime.defined(waitingTime);
     }
 
-    public double getInVehicleTime() {
-        return inVehicleTime;
-    }
-
-    public void setInVehicleTime(double inVehicleTime) {
-        this.inVehicleTime = inVehicleTime;
-    }
-
-    public double getPrice() {
+    public Optional<Double> getPrice() {
         return price;
     }
 
     public void setPrice(double price) {
-        this.price = price;
+        this.price = Optional.of(price);
+    }
+
+    public Optional<Double> getExpectedDistance() {
+        return Optional.ofNullable(getDistance());
+    }
+
+    public OptionalTime getInVehicleTime() {
+        return getTravelTime().isDefined() && getWaitingTime().isDefined() ? OptionalTime.defined(getTravelTime().seconds() - getWaitingTime().seconds())
+                : OptionalTime.undefined();
     }
 
     private void interpretAttributes(Map<String, Object> attributes) {
         Double waitingTime = (Double) attributes.get("waitingTime");
-        Double inVehicleTime = (Double) attributes.get("inVehicleTime");
         Double price = (Double) attributes.get("price");
 
-        this.waitingTime = waitingTime;
-        this.inVehicleTime = inVehicleTime;
-        this.price = price;
+        this.waitingTime = Optional.ofNullable(waitingTime).map(OptionalTime::defined).orElse(OptionalTime.undefined());
+        this.price = Optional.ofNullable(price);
     }
 
     private Map<String, Object> buildAttributes() {
         Map<String, Object> attributes = new HashMap<>();
-        attributes.put("waitingTime", waitingTime);
-        attributes.put("inVehicleTime", inVehicleTime);
-        attributes.put("price", price);
+
+        if (waitingTime.isDefined()) {
+            attributes.put("waitingTime", waitingTime.seconds());
+        }
+
+        if (price.isPresent()) {
+            attributes.put("price", price.get());
+        }
+
         return attributes;
     }
 

@@ -8,6 +8,7 @@ import java.util.Map;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -17,7 +18,6 @@ import org.matsim.core.utils.collections.QuadTree;
 
 import ch.ethz.matsim.av.config.AmodeusModeConfig;
 import ch.ethz.matsim.av.config.modal.DispatcherConfig;
-import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.matsim.av.dispatcher.AVDispatcher;
 import ch.ethz.matsim.av.dispatcher.AVVehicleAssignmentEvent;
 import ch.ethz.matsim.av.dispatcher.multi_od_heuristic.aggregation.AggregatedRequest;
@@ -40,17 +40,17 @@ public class MultiODHeuristic implements AVDispatcher {
     final private double replanningInterval;
     final private long numberOfSeats;
 
-    final private List<AVVehicle> availableVehicles = new LinkedList<>();
+    final private List<DvrpVehicle> availableVehicles = new LinkedList<>();
     final private List<AggregatedRequest> pendingRequests = new LinkedList<>();
     final private List<AggregatedRequest> assignableRequests = new LinkedList<>();
 
-    final private QuadTree<AVVehicle> availableVehiclesTree;
+    final private QuadTree<DvrpVehicle> availableVehiclesTree;
     final private QuadTree<AggregatedRequest> pendingRequestsTree;
 
-    final private Map<AVVehicle, Link> vehicleLinks = new HashMap<>();
+    final private Map<DvrpVehicle, Link> vehicleLinks = new HashMap<>();
     final private Map<AggregatedRequest, Link> requestLinks = new HashMap<>();
 
-    final private Map<AVVehicle, AggregatedRequest> vehicle2Request = new HashMap<>();
+    final private Map<DvrpVehicle, AggregatedRequest> vehicle2Request = new HashMap<>();
 
     private SingleHeuristicDispatcher.HeuristicMode dispatcherMode = SingleHeuristicDispatcher.HeuristicMode.OVERSUPPLY;
 
@@ -78,7 +78,7 @@ public class MultiODHeuristic implements AVDispatcher {
     }
 
     @Override
-    public void onNextTaskStarted(AVVehicle vehicle) {
+    public void onNextTaskStarted(DvrpVehicle vehicle) {
         Task task = vehicle.getSchedule().getCurrentTask();
         if (task.getTaskType() == AmodeusTaskType.PICKUP) {
             assignableRequests.remove(vehicle2Request.remove(vehicle));
@@ -100,7 +100,7 @@ public class MultiODHeuristic implements AVDispatcher {
 
         while (pendingRequests.size() > 0 && availableVehicles.size() > 0) {
             AggregatedRequest request = null;
-            AVVehicle vehicle = null;
+            DvrpVehicle vehicle = null;
 
             switch (dispatcherMode) {
             case OVERSUPPLY:
@@ -117,7 +117,7 @@ public class MultiODHeuristic implements AVDispatcher {
             removeVehicle(vehicle);
             vehicle2Request.put(vehicle, request);
 
-            assignableRequests.remove(request); // TODO @sebhoerl IMPORTANT; otherwise REscheduling is necessary!!!
+            assignableRequests.remove(request);
             appender.schedule(request, vehicle, now);
         }
     }
@@ -183,11 +183,11 @@ public class MultiODHeuristic implements AVDispatcher {
         return pendingRequests.get(0);
     }
 
-    private AVVehicle findVehicle() {
+    private DvrpVehicle findVehicle() {
         return availableVehicles.get(0);
     }
 
-    private AVVehicle findClosestVehicle(Link link) {
+    private DvrpVehicle findClosestVehicle(Link link) {
         Coord coord = link.getCoord();
         return availableVehiclesTree.getClosest(coord.getX(), coord.getY());
     }
@@ -198,19 +198,19 @@ public class MultiODHeuristic implements AVDispatcher {
     }
 
     @Override
-    public void addVehicle(AVVehicle vehicle) {
+    public void addVehicle(DvrpVehicle vehicle) {
         addVehicle(vehicle, vehicle.getStartLink());
         eventsManager.processEvent(new AVVehicleAssignmentEvent(mode, vehicle.getId(), 0));
     }
 
-    private void addVehicle(AVVehicle vehicle, Link link) {
+    private void addVehicle(DvrpVehicle vehicle, Link link) {
         availableVehicles.add(vehicle);
         availableVehiclesTree.put(link.getCoord().getX(), link.getCoord().getY(), vehicle);
         vehicleLinks.put(vehicle, link);
         // reoptimize = true;
     }
 
-    private void removeVehicle(AVVehicle vehicle) {
+    private void removeVehicle(DvrpVehicle vehicle) {
         availableVehicles.remove(vehicle);
         Coord coord = vehicleLinks.remove(vehicle).getCoord();
         availableVehiclesTree.remove(coord.getX(), coord.getY(), vehicle);
@@ -222,7 +222,6 @@ public class MultiODHeuristic implements AVDispatcher {
         pendingRequestsTree.remove(coord.getX(), coord.getY(), request);
     }
 
-    // TODO: Effectively, this can become a provider now ...
     static public class Factory implements AVDispatcherFactory {
         @Override
         public AVDispatcher createDispatcher(InstanceGetter inject) {

@@ -57,11 +57,13 @@ import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
             // final double endDropoffTime =
             // vrpPathWithTravelData.getArrivalTime() + dropoffDurationPerStop;
-            schedule.addTask(new AmodeusDropoffTask( //
+            AmodeusDropoffTask dropoffTask = new AmodeusDropoffTask( //
                     begDropoffTime, // start of dropoff
                     endDropoffTime, // end of dropoff
-                    avRequest.getToLink(), // location of dropoff
-                    Arrays.asList(avRequest)));
+                    avRequest.getToLink() // location of dropoff
+            );
+            dropoffTask.addRequest(avRequest);
+            schedule.addTask(dropoffTask);
 
             ScheduleUtils.makeWhole(roboTaxi, endDropoffTime, scheduleEndTime, avRequest.getToLink());
 

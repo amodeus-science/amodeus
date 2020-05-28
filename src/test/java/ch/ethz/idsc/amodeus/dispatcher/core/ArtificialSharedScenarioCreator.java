@@ -3,29 +3,21 @@ package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import org.matsim.api.core.v01.Id;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
+import org.matsim.contrib.dvrp.fleet.DvrpVehicleImpl;
+import org.matsim.contrib.dvrp.fleet.ImmutableDvrpVehicleSpecification;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 import org.matsim.core.config.Config;
-import org.matsim.vehicles.VehicleType;
-import org.matsim.vehicles.VehicleUtils;
 
 import ch.ethz.idsc.amodeus.ArtificialScenarioCreator;
-import ch.ethz.matsim.av.data.AVVehicle;
 import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
 /* package */ class ArtificialSharedScenarioCreator extends ArtificialScenarioCreator {
 
-    public final AVVehicle vehicle1;
-    public final AVVehicle vehicle2;
+    public final DvrpVehicle vehicle1;
+    public final DvrpVehicle vehicle2;
     public final RoboTaxi roboTaxi1;
     public final RoboTaxi roboTaxi2;
-
-    static final VehicleType vehicleType;
-
-    static {
-        vehicleType = VehicleUtils.createVehicleType(Id.create("amodeusType", VehicleType.class));
-        vehicleType.getCapacity().setSeats(3);
-    }
 
     public ArtificialSharedScenarioCreator() {
         this(null);
@@ -36,18 +28,30 @@ import ch.ethz.refactoring.schedule.AmodeusStayTask;
         LinkTimePair divertableLinkTime = new LinkTimePair(linkDepotOut, 0.0);
 
         Id<DvrpVehicle> idAv1 = Id.create("av1", DvrpVehicle.class);
-        vehicle1 = new AVVehicle(idAv1, linkDepotOut, 0.0, Double.POSITIVE_INFINITY, vehicleType);
+        vehicle1 = new DvrpVehicleImpl(ImmutableDvrpVehicleSpecification.newBuilder() //
+                .id(idAv1) //
+                .serviceBeginTime(0.0) //
+                .serviceEndTime(Double.POSITIVE_INFINITY) //
+                .capacity(3) //
+                .startLinkId(linkDepotOut.getId()) //
+                .build(), linkDepotOut);
         roboTaxi1 = new RoboTaxi(vehicle1, divertableLinkTime, linkDepotOut, RoboTaxiUsageType.SHARED);
         setFirstStayTask(vehicle1);
 
         Id<DvrpVehicle> idAv2 = Id.create("av2", DvrpVehicle.class);
-        vehicle2 = new AVVehicle(idAv2, linkDepotOut, 0.0, Double.POSITIVE_INFINITY, vehicleType);
+        vehicle2 = new DvrpVehicleImpl(ImmutableDvrpVehicleSpecification.newBuilder() //
+                .id(idAv2) //
+                .serviceBeginTime(0.0) //
+                .serviceEndTime(Double.POSITIVE_INFINITY) //
+                .capacity(3) //
+                .startLinkId(linkDepotOut.getId()) //
+                .build(), linkDepotOut);
         roboTaxi2 = new RoboTaxi(vehicle2, divertableLinkTime, linkDepotOut, RoboTaxiUsageType.SHARED);
         setFirstStayTask(vehicle2);
         System.out.println("ArtificialScenario Created");
     }
 
-    private static void setFirstStayTask(AVVehicle vehicle) {
+    private static void setFirstStayTask(DvrpVehicle vehicle) {
         Schedule schedule = vehicle.getSchedule();
         schedule.addTask(new AmodeusStayTask(vehicle.getServiceBeginTime(), vehicle.getServiceEndTime(), vehicle.getStartLink()));
         schedule.nextTask();

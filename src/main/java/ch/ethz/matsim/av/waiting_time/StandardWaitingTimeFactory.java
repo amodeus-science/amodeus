@@ -5,7 +5,7 @@ import org.matsim.api.core.v01.network.Network;
 import com.google.inject.Singleton;
 
 import ch.ethz.matsim.av.config.AmodeusModeConfig;
-import ch.ethz.matsim.av.config.modal.AmodeusWaitingTimeEstimationConfig;
+import ch.ethz.matsim.av.config.modal.WaitingTimeConfig;
 import ch.ethz.matsim.av.waiting_time.constant.ConstantWaitingTime;
 import ch.ethz.matsim.av.waiting_time.dynamic.DynamicWaitingTime;
 import ch.ethz.matsim.av.waiting_time.dynamic.LinkGroupDefinition;
@@ -16,7 +16,7 @@ import ch.ethz.matsim.av.waiting_time.link_attribute.LinkWaitingTimeData;
 public class StandardWaitingTimeFactory implements WaitingTimeFactory {
     @Override
     public WaitingTime createWaitingTime(AmodeusModeConfig modeConfig, Network network) {
-        AmodeusWaitingTimeEstimationConfig waitingTimeConfig = modeConfig.getWaitingTimeEstimationConfig();
+        WaitingTimeConfig waitingTimeConfig = modeConfig.getWaitingTimeEstimationConfig();
 
         if (waitingTimeConfig.getEstimationAlpha() > 0.0) {
             LinkWaitingTimeData linkWaitingTimeData = LinkWaitingTimeData.createEmpty();

@@ -3,7 +3,8 @@ package ch.ethz.matsim.av.dispatcher.multi_od_heuristic.aggregation;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import ch.ethz.matsim.av.data.AVVehicle;
+import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
+
 import ch.ethz.matsim.av.dispatcher.multi_od_heuristic.TravelTimeEstimator;
 import ch.ethz.matsim.av.passenger.AVRequest;
 
@@ -14,7 +15,7 @@ public class AggregatedRequest {
     final long occupancyThreshold;
     final double distanceThreshold;
 
-    private AVVehicle vehicle = null;
+    private DvrpVehicle vehicle = null;
 
     final private TravelTimeEstimator estimator;
 
@@ -58,11 +59,11 @@ public class AggregatedRequest {
         return distance1 + distance2;
     }
 
-    public void setVehicle(AVVehicle vehicle) {
+    public void setVehicle(DvrpVehicle vehicle) {
         this.vehicle = vehicle;
     }
 
-    public AVVehicle getVehicle() {
+    public DvrpVehicle getVehicle() {
         return vehicle;
     }
 }

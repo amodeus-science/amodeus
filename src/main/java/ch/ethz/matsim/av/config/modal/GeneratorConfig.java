@@ -9,13 +9,13 @@ public class GeneratorConfig extends ReflectiveConfigGroup {
 
     static public final String TYPE = "type";
     static public final String NUMBER_OF_VEHICLES = "numberOfVehicles";
-    static public final String VEHICLE_TYPE = "vehicleType";
+    static public final String CAPACITY = "capacity";
 
     static public final String DEFAULT_GENERATOR = PopulationDensityGenerator.TYPE;
     private String type = DEFAULT_GENERATOR;
 
-    private int numberOfVehicles;
-    private String vehicleType;
+    private int numberOfVehicles = 100;
+    private int capacity = 4;
 
     public GeneratorConfig() {
         super(GROUP_NAME, true);
@@ -41,13 +41,13 @@ public class GeneratorConfig extends ReflectiveConfigGroup {
         this.numberOfVehicles = numberOfVehicles;
     }
 
-    @StringGetter(VEHICLE_TYPE)
-    public String getVehicleType() {
-        return vehicleType;
+    @StringGetter(CAPACITY)
+    public int getCapacity() {
+        return capacity;
     }
 
-    @StringSetter(VEHICLE_TYPE)
-    public void getVehicleType(String vehicleType) {
-        this.vehicleType = vehicleType;
+    @StringSetter(CAPACITY)
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
     }
 }

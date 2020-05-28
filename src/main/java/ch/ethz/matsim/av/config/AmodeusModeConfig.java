@@ -7,8 +7,9 @@ import org.matsim.contrib.dvrp.run.Modal;
 import org.matsim.core.config.ConfigGroup;
 import org.matsim.core.config.ReflectiveConfigGroup;
 
-import ch.ethz.matsim.av.config.modal.AmodeusPricingConfig;
-import ch.ethz.matsim.av.config.modal.AmodeusWaitingTimeEstimationConfig;
+import ch.ethz.matsim.av.config.modal.PricingConfig;
+import ch.ethz.matsim.av.config.modal.WaitingTimeConfig;
+import ch.ethz.matsim.av.config.modal.AmodeusScoringConfig;
 import ch.ethz.matsim.av.config.modal.DispatcherConfig;
 import ch.ethz.matsim.av.config.modal.GeneratorConfig;
 import ch.ethz.matsim.av.config.modal.InteractionFinderConfig;
@@ -21,26 +22,21 @@ public class AmodeusModeConfig extends ReflectiveConfigGroup implements Modal {
     static public final String MODE = "mode";
 
     static public final String ROUTER_TYPE = "routerType";
-    static public final String ALLOWED_LINK_ATTRIBUTE = "allowedLinkAttribute";
-    static public final String CLEAN_NETWORK = "cleanNetwork";
     static public final String PREDICT_ROUTE_TRAVEL_TIME = "predictRouteTravelTime";
     static public final String PREDICT_ROUTE_PRICE = "predictRoutePrice";
-    static final public String ALLOWED_LINK_MODE = "allowedLinkMode";
+    static final public String USE_MODE_FILTERED_SUBNETWORK = "useModeFilteredSubnetwork";
     static final public String USE_ACCESS_EGRESS = "useAccessEgress";
 
     private String mode = "av";
 
-    private String allowedLinkAttribute = null;
-    private boolean cleanNetwork = false;
     private boolean predictRouteTravelTime = false;
     private boolean predictRoutePrice = false;
     private boolean useAccessEgress = false;
-    private String allowedLinkMode = null;
+    private boolean useModeFilteredSubnetwork = false;
 
-    private AmodeusPricingConfig pricingConfig = new AmodeusPricingConfig();
-    private AmodeusWaitingTimeEstimationConfig waitingTimeEstimationConfig = new AmodeusWaitingTimeEstimationConfig();
+    private PricingConfig pricingConfig = new PricingConfig();
+    private WaitingTimeConfig waitingTimeEstimationConfig = new WaitingTimeConfig();
 
-    // TODO: Refactor those to be more adaptible
     private GeneratorConfig generatorConfig = new GeneratorConfig();
     private DispatcherConfig dispatcherConfig = new DispatcherConfig();
     private RouterConfig routerConfig = new RouterConfig();
@@ -61,7 +57,7 @@ public class AmodeusModeConfig extends ReflectiveConfigGroup implements Modal {
         super.addParameterSet(interactionFinderConfig);
         super.addParameterSet(timingConfig);
 
-        super.addParameterSet(new AVScoringParameterSet());
+        super.addParameterSet(new AmodeusScoringConfig());
     }
 
     public AmodeusModeConfig(String mode) {
@@ -74,9 +70,9 @@ public class AmodeusModeConfig extends ReflectiveConfigGroup implements Modal {
     @Override
     public ConfigGroup createParameterSet(String type) {
         switch (type) {
-        case AmodeusPricingConfig.GROUP_NAME:
+        case PricingConfig.GROUP_NAME:
             return pricingConfig;
-        case AmodeusWaitingTimeEstimationConfig.GROUP_NAME:
+        case WaitingTimeConfig.GROUP_NAME:
             return waitingTimeEstimationConfig;
         case GeneratorConfig.GROUP_NAME:
             return generatorConfig;
@@ -88,8 +84,8 @@ public class AmodeusModeConfig extends ReflectiveConfigGroup implements Modal {
             return interactionFinderConfig;
         case TimingConfig.GROUP_NAME:
             return timingConfig;
-        case AVScoringParameterSet.GROUP_NAME:
-            return new AVScoringParameterSet();
+        case AmodeusScoringConfig.GROUP_NAME:
+            return new AmodeusScoringConfig();
         default:
             throw new IllegalStateException("AmodeusModeConfig does not support parameter set type: " + type);
         }
@@ -97,7 +93,7 @@ public class AmodeusModeConfig extends ReflectiveConfigGroup implements Modal {
 
     @Override
     public void addParameterSet(ConfigGroup parameterSet) {
-        if (parameterSet instanceof AmodeusPricingConfig) {
+        if (parameterSet instanceof PricingConfig) {
             if (!(parameterSet == pricingConfig)) {
                 throw new IllegalStateException("Use getPricingConfig() to change the pricing configuration.");
             }
@@ -105,7 +101,7 @@ public class AmodeusModeConfig extends ReflectiveConfigGroup implements Modal {
             return;
         }
 
-        if (parameterSet instanceof AmodeusWaitingTimeEstimationConfig) {
+        if (parameterSet instanceof WaitingTimeConfig) {
             if (!(parameterSet == waitingTimeEstimationConfig)) {
                 throw new IllegalStateException("Use getWaitingTimeEstimationConfig() to change the pricing configuration.");
             }
@@ -153,7 +149,7 @@ public class AmodeusModeConfig extends ReflectiveConfigGroup implements Modal {
             return;
         }
 
-        if (parameterSet instanceof AVScoringParameterSet) {
+        if (parameterSet instanceof AmodeusScoringConfig) {
             if (hasDefaultScoringConfiguration) {
                 clearScoringParameters();
                 hasDefaultScoringConfiguration = false;
@@ -166,11 +162,11 @@ public class AmodeusModeConfig extends ReflectiveConfigGroup implements Modal {
         throw new IllegalStateException("Invalid parameter set for AmodeusModeConfig: " + parameterSet.getName());
     }
 
-    public AmodeusPricingConfig getPricingConfig() {
+    public PricingConfig getPricingConfig() {
         return pricingConfig;
     }
 
-    public AmodeusWaitingTimeEstimationConfig getWaitingTimeEstimationConfig() {
+    public WaitingTimeConfig getWaitingTimeEstimationConfig() {
         return waitingTimeEstimationConfig;
     }
 
@@ -194,16 +190,16 @@ public class AmodeusModeConfig extends ReflectiveConfigGroup implements Modal {
         return timingConfig;
     }
 
-    public void addScoringParameters(AVScoringParameterSet scoringParameters) {
+    public void addScoringParameters(AmodeusScoringConfig scoringParameters) {
         addParameterSet(scoringParameters);
     }
 
-    public Collection<AVScoringParameterSet> getScoringParameters() {
-        return getParameterSets(AVScoringParameterSet.GROUP_NAME).stream().map(AVScoringParameterSet.class::cast).collect(Collectors.toSet());
+    public Collection<AmodeusScoringConfig> getScoringParameters() {
+        return getParameterSets(AmodeusScoringConfig.GROUP_NAME).stream().map(AmodeusScoringConfig.class::cast).collect(Collectors.toSet());
     }
 
-    public AVScoringParameterSet getScoringParameters(String subpopulation) {
-        for (AVScoringParameterSet set : getScoringParameters()) {
+    public AmodeusScoringConfig getScoringParameters(String subpopulation) {
+        for (AmodeusScoringConfig set : getScoringParameters()) {
             if (set.getSubpopulation() == null) {
                 if (subpopulation == null) {
                     return set;
@@ -217,20 +213,10 @@ public class AmodeusModeConfig extends ReflectiveConfigGroup implements Modal {
     }
 
     public void clearScoringParameters() {
-        clearParameterSetsForType(AVScoringParameterSet.GROUP_NAME);
+        clearParameterSetsForType(AmodeusScoringConfig.GROUP_NAME);
     }
 
     // Getters and setters
-
-    @StringGetter(ALLOWED_LINK_ATTRIBUTE)
-    public String getAllowedLinkAttribute() {
-        return allowedLinkAttribute;
-    }
-
-    @StringSetter(ALLOWED_LINK_ATTRIBUTE)
-    public void setAllowedLinkAttribute(String allowedLinkAttribute) {
-        this.allowedLinkAttribute = allowedLinkAttribute;
-    }
 
     @StringGetter(PREDICT_ROUTE_TRAVEL_TIME)
     public boolean getPredictRouteTravelTime() {
@@ -252,14 +238,14 @@ public class AmodeusModeConfig extends ReflectiveConfigGroup implements Modal {
         this.predictRoutePrice = predictRoutePrice;
     }
 
-    @StringGetter(CLEAN_NETWORK)
-    public boolean getCleanNetwork() {
-        return cleanNetwork;
+    @StringGetter(USE_MODE_FILTERED_SUBNETWORK)
+    public boolean getUseModeFilteredSubnetwork() {
+        return useModeFilteredSubnetwork;
     }
 
-    @StringSetter(CLEAN_NETWORK)
-    public void setCleanNetwork(boolean cleanNetwork) {
-        this.cleanNetwork = cleanNetwork;
+    @StringSetter(USE_MODE_FILTERED_SUBNETWORK)
+    public void setUseModeFilteredSubnetwork(boolean useModeFilteredSubnetwork) {
+        this.useModeFilteredSubnetwork = useModeFilteredSubnetwork;
     }
 
     @StringGetter(USE_ACCESS_EGRESS)
@@ -270,16 +256,6 @@ public class AmodeusModeConfig extends ReflectiveConfigGroup implements Modal {
     @StringSetter(USE_ACCESS_EGRESS)
     public void setUseAccessAgress(boolean useAccessEgress) {
         this.useAccessEgress = useAccessEgress;
-    }
-
-    @StringGetter(ALLOWED_LINK_MODE)
-    public String getAllowedLinkMode() {
-        return allowedLinkMode;
-    }
-
-    @StringSetter(ALLOWED_LINK_MODE)
-    public void setAllowedLinkMode(String allowedLinkMode) {
-        this.allowedLinkMode = allowedLinkMode;
     }
 
     @StringGetter(MODE)

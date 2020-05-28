@@ -13,13 +13,13 @@ import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
+import org.matsim.contrib.dvrp.fleet.DvrpVehicleSpecification;
+import org.matsim.contrib.dvrp.fleet.ImmutableDvrpVehicleSpecification;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.facilities.ActivityFacilities;
-import org.matsim.vehicles.VehicleType;
 
 import ch.ethz.matsim.av.config.AmodeusModeConfig;
 import ch.ethz.matsim.av.config.modal.GeneratorConfig;
-import ch.ethz.matsim.av.data.AVVehicle;
 
 public class PopulationDensityGenerator implements AVGenerator {
     static public final String TYPE = "PopulationDensity";
@@ -27,16 +27,15 @@ public class PopulationDensityGenerator implements AVGenerator {
     private final String mode;
     private final int randomSeed;
     private final long numberOfVehicles;
-    private final VehicleType vehicleType;
+    private final int capacity;
 
     private List<Link> linkList = new LinkedList<>();
     private Map<Link, Double> cumulativeDensity = new HashMap<>();
 
-    public PopulationDensityGenerator(String mode, int numberOfVehicles, Network network, Population population, ActivityFacilities facilities, int randomSeed,
-            VehicleType vehicleType) {
+    public PopulationDensityGenerator(String mode, int numberOfVehicles, Network network, Population population, ActivityFacilities facilities, int randomSeed, int capacity) {
         this.randomSeed = randomSeed;
         this.numberOfVehicles = numberOfVehicles;
-        this.vehicleType = vehicleType;
+        this.capacity = capacity;
         this.mode = mode;
 
         // Determine density
@@ -55,9 +54,11 @@ public class PopulationDensityGenerator implements AVGenerator {
                     density.put(link, 1.0);
                 }
 
-                if (!linkList.contains(link))
+                if (!linkList.contains(link)) {
                     linkList.add(link);
-                sum += 1.0; // TODO @sebhoerl This looks strange!
+                }
+
+                sum += 1.0;
             }
         }
 
@@ -71,8 +72,8 @@ public class PopulationDensityGenerator implements AVGenerator {
     }
 
     @Override
-    public List<AVVehicle> generateVehicles() {
-        List<AVVehicle> vehicles = new LinkedList<>();
+    public List<DvrpVehicleSpecification> generateVehicles() {
+        List<DvrpVehicleSpecification> vehicles = new LinkedList<>();
         Random random = new Random(randomSeed);
 
         int generatedNumberOfVehicles = 0;
@@ -91,7 +92,14 @@ public class PopulationDensityGenerator implements AVGenerator {
             }
 
             Id<DvrpVehicle> id = AmodeusIdentifiers.createVehicleId(mode, generatedNumberOfVehicles);
-            vehicles.add(new AVVehicle(id, selectedLink, 0.0, Double.POSITIVE_INFINITY, vehicleType));
+
+            vehicles.add(ImmutableDvrpVehicleSpecification.newBuilder() //
+                    .id(id) //
+                    .serviceBeginTime(0.0) //
+                    .serviceEndTime(Double.POSITIVE_INFINITY) //
+                    .capacity(capacity) //
+                    .startLinkId(selectedLink.getId()) //
+                    .build());
         }
 
         return vehicles;
@@ -101,16 +109,16 @@ public class PopulationDensityGenerator implements AVGenerator {
         @Override
         public AVGenerator createGenerator(InstanceGetter inject) {
             AmodeusModeConfig modeConfig = inject.getModal(AmodeusModeConfig.class);
-            VehicleType vehicleType = inject.getModal(VehicleType.class);
             Network network = inject.getModal(Network.class);
 
             Population population = inject.get(Population.class);
             ActivityFacilities facilities = inject.get(ActivityFacilities.class);
 
             GeneratorConfig generatorConfig = modeConfig.getGeneratorConfig();
+            int capacity = generatorConfig.getCapacity();
             int randomSeed = Integer.parseInt(generatorConfig.getParams().getOrDefault("randomSeed", "1234"));
 
-            return new PopulationDensityGenerator(modeConfig.getMode(), generatorConfig.getNumberOfVehicles(), network, population, facilities, randomSeed, vehicleType);
+            return new PopulationDensityGenerator(modeConfig.getMode(), generatorConfig.getNumberOfVehicles(), network, population, facilities, randomSeed, capacity);
         }
     }
 }
