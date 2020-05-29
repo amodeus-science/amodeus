@@ -9,12 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.matsim.api.core.v01.network.Link;
-import org.matsim.contrib.dvrp.passenger.PassengerRequest;
-
+import ch.ethz.idsc.amodeus.dispatcher.core.LinkStatusPair;
 import ch.ethz.idsc.amodeus.dispatcher.core.RequestStatus;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 public class SimulationObjectCompiler {
     private final SimulationObject simulationObject;
@@ -46,10 +45,10 @@ public class SimulationObjectCompiler {
     }
 
     public void insertVehicles(List<RoboTaxi> roboTaxis) {
-        roboTaxis.forEach(rt -> insertVehicle(rt, Collections.singletonList(rt.getLastKnownLocation())));
+        roboTaxis.forEach(rt -> insertVehicle(rt, Collections.singletonList(new LinkStatusPair(rt.getLastKnownLocation(), rt.getStatus()))));
     }
 
-    public void insertVehicles(Map<RoboTaxi, List<Link>> tempLocationTrace) {
+    public void insertVehicles(Map<RoboTaxi, List<LinkStatusPair>> tempLocationTrace) {
         tempLocationTrace.forEach(this::insertVehicle);
     }
 
@@ -63,7 +62,7 @@ public class SimulationObjectCompiler {
         }
     }
 
-    private void insertVehicle(RoboTaxi roboTaxi, List<Link> tempTrace) {
+    private void insertVehicle(RoboTaxi roboTaxi, List<LinkStatusPair> tempTrace) {
         VehicleContainer vehicleContainer = VehicleContainerCompiler.compile(roboTaxi, tempTrace);
         final String key = roboTaxi.getId().toString();
         vehicleMap.put(key, vehicleContainer);

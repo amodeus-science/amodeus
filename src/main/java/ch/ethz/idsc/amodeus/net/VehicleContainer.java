@@ -24,9 +24,11 @@ public class VehicleContainer implements Serializable {
      * the process of generation */
     public int[] linkTrace = new int[] { LINK_UNSPECIFIED };
 
-    public RoboTaxiStatus roboTaxiStatus = null;
+    /** Statii associated to the links in linkTrace
+     * there might be an additional {@link RoboTaxiStatus} if the status
+     * changes on the last link */
+    public RoboTaxiStatus[] statii = new RoboTaxiStatus[] {};
 
     /** value -1 in case no particular destination */
     public int destinationLinkIndex = LINK_UNSPECIFIED;
-
 }
