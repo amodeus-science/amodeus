@@ -49,7 +49,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     int total_matchedRequests = 0;
     private final String dispatcherMode;
 
-    private Map<RoboTaxi, List<Link>> tempLocationTrace = new HashMap<>();
+    private Map<RoboTaxi, List<LinkStatusPair>> tempLocationTrace = new HashMap<>();
 
     public BasicUniversalDispatcher(EventsManager eventsManager, Config config, //
             AmodeusModeConfig operatorConfig, //
@@ -83,7 +83,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
                 .filter(rt -> status.contains(rt.getStatus())).collect(Collectors.toList());
     }
 
-    /** @return {@Collection} of {@RoboTaxi}s which can be redirected during
+    /** @return {@link Collection} of {@link RoboTaxi}s which can be redirected during
      *         iteration, for a shared {@link RoboTaxi}, any vehicle can be diverted unless
      *         it has a directive in the current ime step or it is on the last link of its
      *         directive. */
@@ -150,10 +150,10 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
     @Override
     /* package */ void updateLocationTrace(RoboTaxi roboTaxi, Link lastLoc) {
-        List<Link> trace = tempLocationTrace.get(roboTaxi);
+        List<LinkStatusPair> trace = tempLocationTrace.get(roboTaxi);
         /** trace is empty or the position has changed */
-        if (trace.isEmpty() || !lastLoc.equals(trace.get(trace.size() - 1)))
-            trace.add(lastLoc);
+        if (trace.isEmpty() || !lastLoc.equals(trace.get(trace.size() - 1).link))
+            trace.add(new LinkStatusPair(lastLoc, roboTaxi.getStatus()));
     }
 
     private void flushLocationTraces() {
