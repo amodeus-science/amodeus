@@ -4,14 +4,13 @@ package ch.ethz.idsc.amodeus.analysis.service;
 import java.io.File;
 import java.io.IOException;
 
+import org.matsim.amodeus.analysis.LinkFinder;
+import org.matsim.amodeus.analysis.passengers.PassengerAnalysisListener;
+import org.matsim.amodeus.analysis.passengers.PassengerAnalysisWriter;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.events.EventsUtils;
 import org.matsim.core.events.MatsimEventsReader;
-
-import ch.ethz.matsim.av.analysis.LinkFinder;
-import ch.ethz.matsim.av.analysis.passengers.PassengerAnalysisListener;
-import ch.ethz.matsim.av.analysis.passengers.PassengerAnalysisWriter;
 
 public enum ConvertAVServicesFromEvents {
     ;

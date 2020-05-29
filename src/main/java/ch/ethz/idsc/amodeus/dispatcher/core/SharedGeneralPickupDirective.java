@@ -3,14 +3,14 @@ package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.List;
 
+import org.matsim.amodeus.dvrp.request.AVRequest;
+import org.matsim.amodeus.dvrp.schedule.AmodeusPickupTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.matsim.av.passenger.AVRequest;
-import ch.ethz.refactoring.schedule.AmodeusPickupTask;
-import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
 /** for vehicles that are in stay task and should pickup a customer at the link:
  * 1) finish stay task 2) append pickup task 3) append drive task 4) append new stay task */
@@ -45,7 +45,8 @@ import ch.ethz.refactoring.schedule.AmodeusStayTask;
                     getTimeNow, // start of pickup
                     futurePathContainer.getStartTime(), // end of pickup
                     sameOriginRequests.get(0).getFromLink(), // location of driving start
-                    0.0, sameOriginRequests);
+                    0.0);
+            sameOriginRequests.forEach(pickupTask::addRequest);
             schedule.addTask(pickupTask);
 
             GlobalAssert.that(futurePathContainer.getStartTime() < scheduleEndTime);

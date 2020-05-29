@@ -11,6 +11,9 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.matsim.amodeus.config.AmodeusConfigGroup;
+import org.matsim.amodeus.config.AmodeusModeConfig;
+import org.matsim.amodeus.config.modal.AmodeusScoringConfig;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.ConfigWriter;
@@ -48,12 +51,12 @@ public class ConfigTest {
 
             operator1.clearScoringParameters();
 
-            AVScoringParameterSet params1 = new AVScoringParameterSet();
+            AmodeusScoringConfig params1 = new AmodeusScoringConfig();
             params1.setSubpopulation(null);
             params1.setMarginalUtilityOfWaitingTime(1.0);
             operator1.addScoringParameters(params1);
 
-            AVScoringParameterSet params2 = new AVScoringParameterSet();
+            AmodeusScoringConfig params2 = new AmodeusScoringConfig();
             params2.setSubpopulation("xyz");
             params2.setMarginalUtilityOfWaitingTime(15.0);
             operator1.addScoringParameters(params2);
@@ -79,10 +82,10 @@ public class ConfigTest {
             Assert.assertEquals(15, operator2.getGeneratorConfig().getNumberOfVehicles());
             Assert.assertEquals(789.0, operator2.getTimingConfig().getPickupDurationPerPassenger(), 1e-3);
 
-            AVScoringParameterSet params1 = operator1.getScoringParameters(null);
+            AmodeusScoringConfig params1 = operator1.getScoringParameters(null);
             Assert.assertEquals(1.0, params1.getMarginalUtilityOfWaitingTime(), 1e-2);
 
-            AVScoringParameterSet params2 = operator1.getScoringParameters("xyz");
+            AmodeusScoringConfig params2 = operator1.getScoringParameters("xyz");
             Assert.assertEquals(15.0, params2.getMarginalUtilityOfWaitingTime(), 1e-2);
         }
     }

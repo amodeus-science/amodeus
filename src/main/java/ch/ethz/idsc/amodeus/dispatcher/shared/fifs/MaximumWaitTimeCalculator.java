@@ -4,7 +4,7 @@ package ch.ethz.idsc.amodeus.dispatcher.shared.fifs;
 import java.util.Objects;
 import java.util.Set;
 
-import ch.ethz.matsim.av.passenger.AVRequest;
+import org.matsim.amodeus.dvrp.request.AVRequest;
 
 /* package */ class MaximumWaitTimeCalculator {
     private final double maxWaitTime;

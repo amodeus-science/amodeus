@@ -4,6 +4,9 @@ package ch.ethz.idsc.amodeus.dispatcher;
 import java.util.List;
 import java.util.Map;
 
+import org.matsim.amodeus.components.AVDispatcher;
+import org.matsim.amodeus.components.AVRouter;
+import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
@@ -43,9 +46,6 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.sca.Floor;
-import ch.ethz.matsim.av.config.AmodeusModeConfig;
-import ch.ethz.matsim.av.dispatcher.AVDispatcher;
-import ch.ethz.matsim.av.router.AVRouter;
 
 /** Implementation of the feedforward time-varying rebalancing policy presented in
  * Spieser, Kevin, Samitha Samaranayake, and Emilio Frazzoli.

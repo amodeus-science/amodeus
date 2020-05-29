@@ -4,9 +4,10 @@ package ch.ethz.idsc.amodeus.net;
 import java.util.EnumSet;
 import java.util.Objects;
 
+import org.matsim.amodeus.dvrp.request.AVRequest;
+
 import ch.ethz.idsc.amodeus.dispatcher.core.RequestStatus;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.matsim.av.passenger.AVRequest;
 
 enum RequestContainerCompiler {
     ;

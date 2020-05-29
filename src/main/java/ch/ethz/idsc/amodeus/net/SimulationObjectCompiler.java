@@ -10,11 +10,10 @@ import java.util.Map;
 import java.util.Objects;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.LinkStatusPair;
-
 import ch.ethz.idsc.amodeus.dispatcher.core.RequestStatus;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.matsim.av.passenger.AVRequest;
+import org.matsim.amodeus.dvrp.request.AVRequest;
 
 public class SimulationObjectCompiler {
     private final SimulationObject simulationObject;

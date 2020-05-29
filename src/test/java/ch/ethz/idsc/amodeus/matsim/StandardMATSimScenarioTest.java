@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Random;
 
 import org.junit.AfterClass;
@@ -15,6 +16,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.matsim.amodeus.AmodeusConfigurator;
+import org.matsim.amodeus.config.AmodeusConfigGroup;
+import org.matsim.amodeus.config.AmodeusModeConfig;
+import org.matsim.amodeus.config.modal.DispatcherConfig;
+import org.matsim.amodeus.config.modal.GeneratorConfig;
+import org.matsim.amodeus.framework.AVQSimModule;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.events.LinkEnterEvent;
@@ -40,6 +47,7 @@ import org.matsim.core.gbl.MatsimRandom;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.algorithms.TransportModeNetworkFilter;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.inject.TypeLiteral;
 
 import ch.ethz.idsc.amodeus.data.LocationSpec;
@@ -60,14 +68,8 @@ import ch.ethz.idsc.amodeus.util.io.Locate;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
-import ch.ethz.matsim.av.config.AmodeusConfigGroup;
-import ch.ethz.matsim.av.config.AmodeusModeConfig;
-import ch.ethz.matsim.av.config.modal.DispatcherConfig;
-import ch.ethz.matsim.av.config.modal.GeneratorConfig;
-import ch.ethz.matsim.av.framework.AVQSimModule;
 import ch.ethz.matsim.av.scenario.TestScenarioAnalyzer;
 import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
-import ch.ethz.refactoring.AmodeusConfigurator;
 
 @RunWith(Parameterized.class)
 public class StandardMATSimScenarioTest {
@@ -148,6 +150,12 @@ public class StandardMATSimScenarioTest {
 
         // TODO @sebhoerl Difficult to keep this in as handling of "interaction" activities become much smarter in MATSim now. We would need to
         // set up a much more realistic test scenario. There is one in the AV package, so we can use that one!
+
+        for (Link link : network.getLinks().values()) {
+            if (link.getAllowedModes().contains("car")) {
+                link.setAllowedModes(new HashSet<>(Arrays.asList("car", "av")));
+            }
+        }
     }
 
     private static void fixInvalidActivityLocations(Network network, Population population) {
@@ -219,7 +227,8 @@ public class StandardMATSimScenarioTest {
         AmodeusConfigGroup avConfig = AmodeusConfigGroup.get(config);
 
         AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
-        operatorConfig.setAllowedLinkMode("car");
+        operatorConfig.setUseModeFilteredSubnetwork(true);
+        DvrpConfigGroup.get(config).setNetworkModes(ImmutableSet.of("av"));
         avConfig.addMode(operatorConfig);
 
         GeneratorConfig generatorConfig = operatorConfig.getGeneratorConfig();
@@ -284,7 +293,7 @@ public class StandardMATSimScenarioTest {
                     public void handleEvent(LinkEnterEvent event) {
                         // Fail if an AV attempts to enter a pt link
 
-                        if (event.getVehicleId().toString().startsWith("av_") && event.getLinkId().toString().startsWith("pt")) {
+                        if (event.getVehicleId().toString().startsWith("amodeus") && event.getLinkId().toString().startsWith("pt")) {
                             Assert.fail("AV attempted to enter PT link");
                         }
                     }

@@ -1,17 +1,18 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
+import java.util.Objects;
+
+import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
 import org.matsim.contrib.dvrp.tracker.OnlineDriveTaskTracker;
-import org.matsim.contrib.dvrp.tracker.TaskTracker;
+import org.matsim.contrib.dvrp.util.LinkTimePair;
 
-import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDriveTaskTracker;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.refactoring.schedule.AmodeusDriveTask;
-import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
 /** for vehicles that are currently driving, but should go to a new destination:
  * 1) change path of current drive task
@@ -30,9 +31,12 @@ import ch.ethz.refactoring.schedule.AmodeusStayTask;
         final AmodeusStayTask avStayTask = (AmodeusStayTask) Schedules.getLastTask(schedule);
         final double scheduleEndTime = avStayTask.getEndTime();
 
-        TaskTracker taskTracker = avDriveTask.getTaskTracker();
-        AmodeusDriveTaskTracker onlineDriveTaskTrackerImpl = (AmodeusDriveTaskTracker) taskTracker;
-        final int diversionLinkIndex = onlineDriveTaskTrackerImpl.getDiversionLinkIndex();
+        OnlineDriveTaskTracker taskTracker = (OnlineDriveTaskTracker) avDriveTask.getTaskTracker();
+        LinkTimePair diversionPoint = Objects.requireNonNull(taskTracker.getDiversionPoint());
+        
+        boolean isCurrentLinkDiversion = diversionPoint.link == taskTracker.getPath().getLink(taskTracker.getCurrentLinkIdx());
+        final int diversionLinkIndex = taskTracker.getCurrentLinkIdx() + (isCurrentLinkDiversion ? 0 : 1);
+        
         final int lengthOfDiversion = vrpPathWithTravelData.getLinkCount();
         OnlineDriveTaskTracker onlineDriveTaskTracker = (OnlineDriveTaskTracker) taskTracker;
         final double newEndTime = vrpPathWithTravelData.getArrivalTime();
@@ -56,6 +60,7 @@ import ch.ethz.refactoring.schedule.AmodeusStayTask;
                 System.err.println("====================================");
                 System.err.println("Found problem with diversionLinkIdx!");
                 System.err.println("====================================");
+                throw new IllegalStateException();
             }
         else
             reportExecutionBypass(newEndTime - scheduleEndTime);

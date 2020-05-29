@@ -11,6 +11,10 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import org.matsim.amodeus.components.AVDispatcher;
+import org.matsim.amodeus.components.AVRouter;
+import org.matsim.amodeus.config.AmodeusModeConfig;
+import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
@@ -43,10 +47,6 @@ import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.qty.Quantity;
-import ch.ethz.matsim.av.config.AmodeusModeConfig;
-import ch.ethz.matsim.av.dispatcher.AVDispatcher;
-import ch.ethz.matsim.av.passenger.AVRequest;
-import ch.ethz.matsim.av.router.AVRouter;
 
 /** Ma, Shuo, Yu Zheng, and Ouri Wolfson. "T-share: A large-scale dynamic taxi ridesharing service."
  * Data Engineering (ICDE), 2013 IEEE 29th International Conference on. IEEE, 2013.

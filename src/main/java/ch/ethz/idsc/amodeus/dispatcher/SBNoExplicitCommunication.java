@@ -3,6 +3,10 @@ package ch.ethz.idsc.amodeus.dispatcher;
 
 import java.util.Objects;
 
+import org.matsim.amodeus.components.AVDispatcher;
+import org.matsim.amodeus.components.AVRouter;
+import org.matsim.amodeus.config.AmodeusModeConfig;
+import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
@@ -16,10 +20,6 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.util.VoronoiPartition;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.TensorCoords;
-import ch.ethz.matsim.av.config.AmodeusModeConfig;
-import ch.ethz.matsim.av.dispatcher.AVDispatcher;
-import ch.ethz.matsim.av.passenger.AVRequest;
-import ch.ethz.matsim.av.router.AVRouter;
 
 /** Arsie, Alessandro, Ketan Savla, and Emilio Frazzoli. "Efficient routing algorithms for multiple
  * vehicles with no explicit communications." IEEE Transactions on Automatic Control 54.10 (2009): 2302-2317. ,

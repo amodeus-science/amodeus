@@ -7,36 +7,28 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.matsim.amodeus.dvrp.request.AVRequest;
+import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusDropoffTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusPickupTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
+import org.matsim.contrib.dvrp.fleet.DvrpVehicleImpl;
+import org.matsim.contrib.dvrp.fleet.ImmutableDvrpVehicleSpecification;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
-import org.matsim.vehicles.VehicleType;
-import org.matsim.vehicles.VehicleUtils;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.matsim.av.data.AVVehicle;
-import ch.ethz.matsim.av.passenger.AVRequest;
-import ch.ethz.refactoring.schedule.AmodeusDriveTask;
-import ch.ethz.refactoring.schedule.AmodeusDropoffTask;
-import ch.ethz.refactoring.schedule.AmodeusPickupTask;
-import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
 /* package */ enum StaticRoboTaxiCreator {
     ;
 
     private static final int seats = 100; // just a large number as we are not testing capacity with that
-
-    private static final VehicleType vehicleType;
-
-    static {
-        vehicleType = VehicleUtils.createVehicleType(Id.create("amodeusType", VehicleType.class));
-        vehicleType.getCapacity().setSeats(seats);
-    }
 
     /* package */ static final double TASK_END = 10.0;
     private static final String STAYINGVEHICLEID = "stayingRoboTaxi";
@@ -100,7 +92,13 @@ import ch.ethz.refactoring.schedule.AmodeusStayTask;
     private static RoboTaxi createRoboTaxi(Link divertableLink, Link vehicleLink) {
         LinkTimePair divertableLinkTime = new LinkTimePair(divertableLink, 0.0);
         Id<DvrpVehicle> idAv2 = Id.create(STAYINGVEHICLEID, DvrpVehicle.class);
-        AVVehicle vehicle = new AVVehicle(idAv2, vehicleLink, 0.0, Double.POSITIVE_INFINITY, vehicleType);
+        DvrpVehicle vehicle = new DvrpVehicleImpl(ImmutableDvrpVehicleSpecification.newBuilder() //
+                .id(idAv2) //
+                .serviceBeginTime(0.0) //
+                .serviceEndTime(Double.POSITIVE_INFINITY) //
+                .capacity(seats) //
+                .startLinkId(vehicleLink.getId()) //
+                .build(), vehicleLink);
         return new RoboTaxi(vehicle, divertableLinkTime, divertableLinkTime.link, RoboTaxiUsageType.SHARED);
     }
 

@@ -9,6 +9,12 @@ import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
+import org.matsim.amodeus.config.AmodeusConfigGroup;
+import org.matsim.amodeus.config.AmodeusModeConfig;
+import org.matsim.amodeus.config.modal.AmodeusScoringConfig;
+import org.matsim.amodeus.framework.AVModule;
+import org.matsim.amodeus.framework.AVQSimModule;
+import org.matsim.amodeus.routing.AVRoute;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Link;
@@ -27,12 +33,6 @@ import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.events.IterationEndsEvent;
 import org.matsim.core.controler.listener.IterationEndsListener;
 
-import ch.ethz.matsim.av.config.AVScoringParameterSet;
-import ch.ethz.matsim.av.config.AmodeusConfigGroup;
-import ch.ethz.matsim.av.config.AmodeusModeConfig;
-import ch.ethz.matsim.av.framework.AVModule;
-import ch.ethz.matsim.av.framework.AVQSimModule;
-import ch.ethz.matsim.av.routing.AVRoute;
 import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
 
 public class WaitingTimeTest {
@@ -45,7 +45,7 @@ public class WaitingTimeTest {
         operatorConfig.getPricingConfig().setSpatialBillingInterval(1000.0);
         avConfigGroup.addMode(operatorConfig);
 
-        AVScoringParameterSet scoringParams = operatorConfig.getScoringParameters(null);
+        AmodeusScoringConfig scoringParams = operatorConfig.getScoringParameters(null);
         scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
 
         return avConfigGroup;
@@ -92,7 +92,7 @@ public class WaitingTimeTest {
                     Leg leg = (Leg) element;
                     AVRoute route = (AVRoute) leg.getRoute();
 
-                    Assert.assertEquals(route.getWaitingTime(), 123.0, 1e-2);
+                    Assert.assertEquals(route.getWaitingTime().seconds(), 123.0, 1e-2);
                     numberOfRoutes++;
                 }
             }
@@ -130,10 +130,10 @@ public class WaitingTimeTest {
                     AVRoute route = (AVRoute) leg.getRoute();
 
                     if (Id.createLinkId("8:9_9:9").equals(route.getStartLinkId())) {
-                        Assert.assertEquals(route.getWaitingTime(), 456.0, 1e-2);
+                        Assert.assertEquals(route.getWaitingTime().seconds(), 456.0, 1e-2);
                         numberOfSpecialRoutes++;
                     } else {
-                        Assert.assertEquals(route.getWaitingTime(), 123.0, 1e-2);
+                        Assert.assertEquals(route.getWaitingTime().seconds(), 123.0, 1e-2);
                     }
 
                     numberOfRoutes++;
@@ -187,7 +187,7 @@ public class WaitingTimeTest {
                         AVRoute route = (AVRoute) leg.getRoute();
 
                         if (Id.createLinkId("8:9_9:9").equals(route.getStartLinkId())) {
-                            waitingTimes.add(route.getWaitingTime());
+                            waitingTimes.add(route.getWaitingTime().seconds());
                         }
                     }
                 }
@@ -242,7 +242,7 @@ public class WaitingTimeTest {
                         AVRoute route = (AVRoute) leg.getRoute();
 
                         if (Id.createLinkId("8:9_9:9").equals(route.getStartLinkId())) {
-                            waitingTimes.add(route.getWaitingTime());
+                            waitingTimes.add(route.getWaitingTime().seconds());
                         }
                     }
                 }

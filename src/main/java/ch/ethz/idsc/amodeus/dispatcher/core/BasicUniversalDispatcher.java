@@ -13,8 +13,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.matsim.amodeus.components.AVGenerator;
+import org.matsim.amodeus.components.dispatcher.AVVehicleAssignmentEvent;
+import org.matsim.amodeus.config.AmodeusModeConfig;
+import org.matsim.amodeus.dvrp.request.AVRequest;
+import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
 import org.matsim.api.core.v01.events.Event;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
@@ -28,12 +34,6 @@ import ch.ethz.idsc.amodeus.net.SimulationObjectCompiler;
 import ch.ethz.idsc.amodeus.net.SimulationObjects;
 import ch.ethz.idsc.amodeus.net.StorageUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.matsim.av.config.AmodeusModeConfig;
-import ch.ethz.matsim.av.data.AVVehicle;
-import ch.ethz.matsim.av.dispatcher.AVVehicleAssignmentEvent;
-import ch.ethz.matsim.av.generator.AVGenerator;
-import ch.ethz.matsim.av.passenger.AVRequest;
-import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
 /** This class contains all functionality which is used by both unit capacity
  * dispatchers and shared {@link RoboTaxi} dispatchers. */
@@ -58,8 +58,8 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
         super(eventsManager, config, operatorConfig);
         this.db = db;
         futurePathFactory = new FuturePathFactory(parallelLeastCostPathCalculator, travelTime);
-        pickupDurationPerStop = operatorConfig.getTimingConfig().getPickupDurationPerStop();
-        dropoffDurationPerStop = operatorConfig.getTimingConfig().getDropoffDurationPerStop();
+        pickupDurationPerStop = operatorConfig.getTimingConfig().getMinimumPickupDurationPerStop();
+        dropoffDurationPerStop = operatorConfig.getTimingConfig().getMinimumDropoffDurationPerStop();
         SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
         publishPeriod = safeConfig.getInteger("publishPeriod", 10);
         dispatcherMode = operatorConfig.getMode();
@@ -96,7 +96,7 @@ import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
     /** Adding a @param vehicle during setup of simulation handled by {@link AVGenerator},
      * the parameter @param singleOrShared indicates if multi-passenger ride-sharing case
      * or unit capacity case. */
-    protected final void addVehicle(AVVehicle vehicle, RoboTaxiUsageType singleOrShared) {
+    protected final void addVehicle(DvrpVehicle vehicle, RoboTaxiUsageType singleOrShared) {
         RoboTaxi roboTaxi = new RoboTaxi(vehicle, new LinkTimePair(vehicle.getStartLink(), 0.0), vehicle.getStartLink(), singleOrShared);
         Event event = new AVVehicleAssignmentEvent(dispatcherMode, vehicle.getId(), 0);
         addRoboTaxi(roboTaxi, event);

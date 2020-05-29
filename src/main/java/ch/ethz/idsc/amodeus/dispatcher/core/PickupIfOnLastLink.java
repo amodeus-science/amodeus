@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
-import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** This function is used to execute pick-ups for shared roboTaxis, single-use/unit-capacity
  * roboTaxis are not using this class. */

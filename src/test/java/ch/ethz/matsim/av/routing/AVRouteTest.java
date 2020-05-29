@@ -8,6 +8,8 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.matsim.amodeus.routing.AVRoute;
+import org.matsim.amodeus.routing.AVRouteFactory;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.population.Leg;
@@ -94,11 +96,11 @@ public class AVRouteTest {
 
             Assert.assertEquals("S1", route1.getStartLinkId().toString());
             Assert.assertEquals("E1", route1.getEndLinkId().toString());
-            Assert.assertEquals(123.0, route1.getWaitingTime(), 1e-3);
+            Assert.assertEquals(123.0, route1.getWaitingTime().seconds(), 1e-3);
 
             Assert.assertEquals("S2", route2.getStartLinkId().toString());
             Assert.assertEquals("E2", route2.getEndLinkId().toString());
-            Assert.assertEquals(987.0, route2.getWaitingTime(), 1e-3);
+            Assert.assertEquals(987.0, route2.getWaitingTime().seconds(), 1e-3);
         }
     }
 }

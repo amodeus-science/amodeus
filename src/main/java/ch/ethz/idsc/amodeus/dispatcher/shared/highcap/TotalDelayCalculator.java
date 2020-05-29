@@ -5,8 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.matsim.amodeus.dvrp.request.AVRequest;
+
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
-import ch.ethz.matsim.av.passenger.AVRequest;
 
 /* package */ enum TotalDelayCalculator {
 

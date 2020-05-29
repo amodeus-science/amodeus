@@ -4,12 +4,11 @@ import java.util.Arrays;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.matsim.amodeus.config.AmodeusConfigGroup;
+import org.matsim.amodeus.config.AmodeusModeConfig;
+import org.matsim.amodeus.config.modal.TimingConfig;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.controler.Controler;
-
-import ch.ethz.matsim.av.config.AmodeusConfigGroup;
-import ch.ethz.matsim.av.config.AmodeusModeConfig;
-import ch.ethz.matsim.av.config.modal.TimingConfig;
 
 /** Execute av.dynamics pick-up and drop-off tests */
 public class AVPickupDropoffTest {
@@ -25,7 +24,7 @@ public class AVPickupDropoffTest {
             controller.run();
 
             Assert.assertEquals(1, listener.times.size());
-            Assert.assertEquals(1013.0, listener.times.get(0), 1e-3);
+            Assert.assertEquals(1014.0, listener.times.get(0), 1e-3);
         }
 
         { // Three agents, no pickup time
@@ -41,9 +40,9 @@ public class AVPickupDropoffTest {
             controller.run();
 
             Assert.assertEquals(3, listener.times.size());
-            Assert.assertEquals(1013.0, listener.times.get(0), 1e-3);
-            Assert.assertEquals(1013.0, listener.times.get(1), 1e-3);
-            Assert.assertEquals(1013.0, listener.times.get(2), 1e-3);
+            Assert.assertEquals(1014.0, listener.times.get(0), 1e-3);
+            Assert.assertEquals(1014.0, listener.times.get(1), 1e-3);
+            Assert.assertEquals(1014.0, listener.times.get(2), 1e-3);
         }
     }
 
@@ -54,7 +53,7 @@ public class AVPickupDropoffTest {
             AmodeusConfigGroup config = TestScenario.createConfig();
             AmodeusModeConfig operatorConfig = config.getModes().values().iterator().next();
             TimingConfig timingConfig = operatorConfig.getTimingConfig();
-            timingConfig.setPickupDurationPerStop(15.0);
+            timingConfig.setMinimumPickupDurationPerStop(15.0);
 
             Scenario scenario = TestScenario.createScenario(config, Arrays.asList(new TestRequest(0.0, 0.0)));
 
@@ -70,7 +69,7 @@ public class AVPickupDropoffTest {
             AmodeusConfigGroup config = TestScenario.createConfig();
             AmodeusModeConfig operatorConfig = config.getModes().values().iterator().next();
             TimingConfig timingConfig = operatorConfig.getTimingConfig();
-            timingConfig.setPickupDurationPerStop(15.0);
+            timingConfig.setMinimumPickupDurationPerStop(15.0);
 
             Scenario scenario = TestScenario.createScenario(config, Arrays.asList( //
                     new TestRequest(0.0, 0.0), //
@@ -105,7 +104,7 @@ public class AVPickupDropoffTest {
             controller.run();
 
             Assert.assertEquals(1, listener.times.size());
-            Assert.assertEquals(1013.0 + 15.0, listener.times.get(0), 1e-3);
+            Assert.assertEquals(1014.0 + 15.0, listener.times.get(0), 1e-3);
         }
 
         { // Three agents, 15s pickup time per person
@@ -125,9 +124,9 @@ public class AVPickupDropoffTest {
             controller.run();
 
             Assert.assertEquals(3, listener.times.size());
-            Assert.assertEquals(1013.0 + 15.0 * 3.0, listener.times.get(0), 1e-3);
-            Assert.assertEquals(1013.0 + 15.0 * 3.0, listener.times.get(1), 1e-3);
-            Assert.assertEquals(1013.0 + 15.0 * 3.0, listener.times.get(2), 1e-3);
+            Assert.assertEquals(1014.0 + 15.0 * 3.0, listener.times.get(0), 1e-3);
+            Assert.assertEquals(1014.0 + 15.0 * 3.0, listener.times.get(1), 1e-3);
+            Assert.assertEquals(1014.0 + 15.0 * 3.0, listener.times.get(2), 1e-3);
         }
     }
 
@@ -141,7 +140,7 @@ public class AVPickupDropoffTest {
         controller.run();
 
         Assert.assertEquals(1, listener.times.size());
-        Assert.assertEquals(1013.0 + 100.0, listener.times.get(0), 1e-3);
+        Assert.assertEquals(1014.0 + 100.0, listener.times.get(0), 1e-3);
     }
 
     /** Test various drop-off parameters (scenario where there is no drop-off time, then where there is
@@ -161,16 +160,16 @@ public class AVPickupDropoffTest {
             controller.run();
 
             Assert.assertEquals(3, listener.times.size());
-            Assert.assertEquals(1013.0, listener.times.get(0), 1e-3);
-            Assert.assertEquals(1013.0, listener.times.get(1), 1e-3);
-            Assert.assertEquals(1013.0, listener.times.get(2), 1e-3);
+            Assert.assertEquals(1014.0, listener.times.get(0), 1e-3);
+            Assert.assertEquals(1014.0, listener.times.get(1), 1e-3);
+            Assert.assertEquals(1014.0, listener.times.get(2), 1e-3);
         }
 
         { // Three agents, 15s dropoff time per stop
             AmodeusConfigGroup config = TestScenario.createConfig();
             AmodeusModeConfig operatorConfig = config.getModes().values().iterator().next();
             TimingConfig timingConfig = operatorConfig.getTimingConfig();
-            timingConfig.setDropoffDurationPerStop(15.0);
+            timingConfig.setMinimumDropoffDurationPerStop(15.0);
 
             Scenario scenario = TestScenario.createScenario(config, Arrays.asList( //
                     new TestRequest(0.0, 0.0), //
@@ -183,9 +182,9 @@ public class AVPickupDropoffTest {
             controller.run();
 
             Assert.assertEquals(3, listener.times.size());
-            Assert.assertEquals(1013.0 + 15.0, listener.times.get(0), 1e-3);
-            Assert.assertEquals(1013.0 + 15.0, listener.times.get(1), 1e-3);
-            Assert.assertEquals(1013.0 + 15.0, listener.times.get(2), 1e-3);
+            Assert.assertEquals(1014.0 + 15.0, listener.times.get(0), 1e-3);
+            Assert.assertEquals(1014.0 + 15.0, listener.times.get(1), 1e-3);
+            Assert.assertEquals(1014.0 + 15.0, listener.times.get(2), 1e-3);
         }
 
         { // Three agents, 15s dropoff time per passenger
@@ -205,9 +204,9 @@ public class AVPickupDropoffTest {
             controller.run();
 
             Assert.assertEquals(3, listener.times.size());
-            Assert.assertEquals(1013.0 + 15.0 * 3.0, listener.times.get(0), 1e-3);
-            Assert.assertEquals(1013.0 + 15.0 * 3.0, listener.times.get(1), 1e-3);
-            Assert.assertEquals(1013.0 + 15.0 * 3.0, listener.times.get(2), 1e-3);
+            Assert.assertEquals(1014.0 + 15.0 * 3.0, listener.times.get(0), 1e-3);
+            Assert.assertEquals(1014.0 + 15.0 * 3.0, listener.times.get(1), 1e-3);
+            Assert.assertEquals(1014.0 + 15.0 * 3.0, listener.times.get(2), 1e-3);
         }
     }
 }

@@ -3,6 +3,7 @@ package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.Optional;
 
+import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
@@ -11,7 +12,6 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.matsim.av.passenger.AVRequest;
 
 /* package */ enum AssignSharedDropoffDirective {
     ;

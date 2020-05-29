@@ -12,6 +12,11 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.matsim.amodeus.config.AmodeusConfigGroup;
+import org.matsim.amodeus.config.AmodeusModeConfig;
+import org.matsim.amodeus.config.modal.AmodeusScoringConfig;
+import org.matsim.amodeus.framework.AVModule;
+import org.matsim.amodeus.framework.AVQSimModule;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
 import org.matsim.contrib.dvrp.run.DvrpModule;
@@ -22,11 +27,6 @@ import org.matsim.core.config.groups.StrategyConfigGroup.StrategySettings;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.utils.io.IOUtils;
 
-import ch.ethz.matsim.av.config.AVScoringParameterSet;
-import ch.ethz.matsim.av.config.AmodeusConfigGroup;
-import ch.ethz.matsim.av.config.AmodeusModeConfig;
-import ch.ethz.matsim.av.framework.AVModule;
-import ch.ethz.matsim.av.framework.AVQSimModule;
 import ch.ethz.matsim.av.scenario.TestScenarioAnalyzer;
 import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
 
@@ -47,7 +47,6 @@ public class AnalysisTest {
 
         avConfigGroup.setPassengerAnalysisInterval(2);
         avConfigGroup.setVehicleAnalysisInterval(2);
-        avConfigGroup.setEnableDistanceAnalysis(true);
 
         AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
         operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
@@ -55,7 +54,7 @@ public class AnalysisTest {
         operatorConfig.getPricingConfig().setSpatialBillingInterval(1000.0);
         avConfigGroup.addMode(operatorConfig);
 
-        AVScoringParameterSet scoringParams = operatorConfig.getScoringParameters(null);
+        AmodeusScoringConfig scoringParams = operatorConfig.getScoringParameters(null);
         scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
 
         Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
@@ -85,8 +84,6 @@ public class AnalysisTest {
         controler.addOverridingModule(analyzer);
 
         controler.run();
-
-        Assert.assertEquals(4, countLines("test_output/output/distance_av.csv"));
 
         Assert.assertEquals(101, countLines("test_output/output/ITERS/it.0/0.amodeus_passenger_rides.csv"));
         Assert.assertEquals(501, countLines("test_output/output/ITERS/it.0/0.amodeus_vehicle_activities.csv"));
@@ -148,7 +145,6 @@ public class AnalysisTest {
 
         avConfigGroup.setPassengerAnalysisInterval(2);
         avConfigGroup.setVehicleAnalysisInterval(2);
-        avConfigGroup.setEnableDistanceAnalysis(true);
 
         AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
         operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
@@ -156,7 +152,7 @@ public class AnalysisTest {
         operatorConfig.getPricingConfig().setSpatialBillingInterval(1000.0);
         avConfigGroup.addMode(operatorConfig);
 
-        AVScoringParameterSet scoringParams = operatorConfig.getScoringParameters(null);
+        AmodeusScoringConfig scoringParams = operatorConfig.getScoringParameters(null);
         scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
 
         Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
@@ -187,8 +183,6 @@ public class AnalysisTest {
         controler.addOverridingModule(analyzer);
 
         controler.run();
-
-        Assert.assertEquals(4, countLines("test_output/" + path + "/distance_av.csv"));
 
         Assert.assertEquals(101, countLines("test_output/" + path + "/ITERS/it.0/0.amodeus_passenger_rides.csv"));
         Assert.assertEquals(501, countLines("test_output/" + path + "/ITERS/it.0/0.amodeus_vehicle_activities.csv"));

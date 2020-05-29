@@ -4,6 +4,7 @@ package ch.ethz.idsc.amodeus.dispatcher.util;
 import java.util.Collection;
 import java.util.Map;
 
+import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.router.FastAStarLandmarksFactory;
 
@@ -14,7 +15,6 @@ import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 import ch.ethz.idsc.amodeus.routing.NetworkMinTimeDistanceFunction;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.matsim.av.passenger.AVRequest;
 
 /* package */ abstract class BipartiteMatcherInternal implements BipartiteMatcher {
 

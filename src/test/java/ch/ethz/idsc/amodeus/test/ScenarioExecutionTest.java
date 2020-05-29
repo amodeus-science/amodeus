@@ -157,11 +157,11 @@ public class ScenarioExecutionTest {
         assertTrue(Scalars.lessEquals(ZERO_KM, (Scalar) s)));
         assertEquals(Total.of(ate.getDistancElement().totalDistancesPerVehicle), ate.getDistancElement().totalDistance);
 
-        scalarAssert.add((Scalar) Quantity.of(2872.82598, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
+        scalarAssert.add((Scalar) Quantity.of(2872.46383, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
         scalarAssert.add((Scalar) Quantity.of(1054.11900, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
         scalarAssert.add((Scalar) Quantity.of(279.69730, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistancePicku.map(Round._5));
-        scalarAssert.add((Scalar) Quantity.of(1539.00968, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRebal.map(Round._5));
-        scalarAssert.add((Scalar) RealScalar.of(0.36693).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRatio.map(Round._5));
+        scalarAssert.add((Scalar) Quantity.of(1538.64753, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRebal.map(Round._5));
+        scalarAssert.add((Scalar) RealScalar.of(0.36697).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRatio.map(Round._5));
 
         scalarAssert.add((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle), //
                 ate.getDistancElement().totalDistance);

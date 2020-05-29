@@ -5,8 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.matsim.amodeus.dvrp.request.AVRequest;
+
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
-import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** In this class the constraints of ride sharing are defined. */
 /* package */ class RideSharingConstraints {

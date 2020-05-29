@@ -6,9 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
-
-import ch.ethz.matsim.av.passenger.AVRequest;
 
 public enum DispatcherUtils {
     ;

@@ -11,6 +11,10 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.matsim.amodeus.components.AVDispatcher;
+import org.matsim.amodeus.components.AVRouter;
+import org.matsim.amodeus.config.AmodeusModeConfig;
+import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
@@ -27,10 +31,6 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseUtil;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.routing.EasyMinTimePathCalculator;
-import ch.ethz.matsim.av.config.AmodeusModeConfig;
-import ch.ethz.matsim.av.dispatcher.AVDispatcher;
-import ch.ethz.matsim.av.passenger.AVRequest;
-import ch.ethz.matsim.av.router.AVRouter;
 
 /** High-Capacity Algorithm from Alonso-Mora, Javier, et al. "On-demand high-capacity ride-sharing via dynamic trip-vehicle assignment."
  * Proceedings of the National Academy of Sciences 114.3 (2017): 462-467.

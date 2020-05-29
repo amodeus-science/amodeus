@@ -5,10 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.Id;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
-
-import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** This class provides a means to warm start the Hungarian algorithm with
  * the objective of improving the convergence

@@ -5,6 +5,14 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.matsim.amodeus.components.AVGenerator;
+import org.matsim.amodeus.components.dispatcher.multi_od_heuristic.MultiODHeuristic;
+import org.matsim.amodeus.config.AmodeusConfigGroup;
+import org.matsim.amodeus.config.AmodeusModeConfig;
+import org.matsim.amodeus.config.modal.AmodeusScoringConfig;
+import org.matsim.amodeus.framework.AVModule;
+import org.matsim.amodeus.framework.AVQSimModule;
+import org.matsim.amodeus.framework.AVUtils;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
@@ -21,6 +29,8 @@ import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.api.core.v01.population.PopulationFactory;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
+import org.matsim.contrib.dvrp.fleet.DvrpVehicleSpecification;
+import org.matsim.contrib.dvrp.fleet.ImmutableDvrpVehicleSpecification;
 import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
 import org.matsim.contrib.dvrp.run.DvrpModule;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
@@ -41,16 +51,6 @@ import org.matsim.vehicles.VehicleUtils;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
-
-import ch.ethz.matsim.av.config.AVScoringParameterSet;
-import ch.ethz.matsim.av.config.AmodeusConfigGroup;
-import ch.ethz.matsim.av.config.AmodeusModeConfig;
-import ch.ethz.matsim.av.data.AVVehicle;
-import ch.ethz.matsim.av.dispatcher.multi_od_heuristic.MultiODHeuristic;
-import ch.ethz.matsim.av.framework.AVModule;
-import ch.ethz.matsim.av.framework.AVQSimModule;
-import ch.ethz.matsim.av.framework.AVUtils;
-import ch.ethz.matsim.av.generator.AVGenerator;
 
 /** TestScenario is used to create a various elements of a test scenario. This is used in various av.dynamics tests. */
 public class TestScenario {
@@ -168,11 +168,17 @@ public class TestScenario {
         }
 
         @Override
-        public List<AVVehicle> generateVehicles() {
+        public List<DvrpVehicleSpecification> generateVehicles() {
             VehicleType vehicleType = VehicleUtils.getDefaultVehicleType();
             vehicleType.getCapacity().setSeats(capacity);
 
-            return Collections.singletonList(new AVVehicle(Id.create("vehicle", DvrpVehicle.class), link, 0.0, Double.POSITIVE_INFINITY, vehicleType));
+            return Collections.singletonList(ImmutableDvrpVehicleSpecification.newBuilder() //
+                    .id(Id.create("vehicle", DvrpVehicle.class)) //
+                    .startLinkId(link.getId()) //
+                    .serviceBeginTime(0.0) //
+                    .serviceEndTime(Double.POSITIVE_INFINITY) //
+                    .capacity(capacity) //
+                    .build());
         }
     }
 
@@ -200,13 +206,13 @@ public class TestScenario {
         operatorConfig.getGeneratorConfig().setType("Single");
         config.addMode(operatorConfig);
 
-        AVScoringParameterSet scoringParams = operatorConfig.getScoringParameters(null);
+        AmodeusScoringConfig scoringParams = operatorConfig.getScoringParameters(null);
         scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
 
         operatorConfig.getTimingConfig().setPickupDurationPerPassenger(0.0);
-        operatorConfig.getTimingConfig().setPickupDurationPerStop(0.0);
+        operatorConfig.getTimingConfig().setMinimumPickupDurationPerStop(0.0);
         operatorConfig.getTimingConfig().setDropoffDurationPerPassenger(0.0);
-        operatorConfig.getTimingConfig().setDropoffDurationPerStop(0.0);
+        operatorConfig.getTimingConfig().setMinimumDropoffDurationPerStop(0.0);
 
         operatorConfig.setUseAccessAgress(true);
 

@@ -10,6 +10,11 @@ import java.util.zip.DataFormatException;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
+import org.matsim.amodeus.AmodeusConfigurator;
+import org.matsim.amodeus.config.AmodeusConfigGroup;
+import org.matsim.amodeus.config.AmodeusModeConfig;
+import org.matsim.amodeus.config.modal.DispatcherConfig;
+import org.matsim.amodeus.config.modal.GeneratorConfig;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
 import org.matsim.core.config.Config;
@@ -30,12 +35,7 @@ import ch.ethz.idsc.amodeus.util.io.Locate;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkGet;
-import ch.ethz.matsim.av.config.AmodeusConfigGroup;
-import ch.ethz.matsim.av.config.AmodeusModeConfig;
-import ch.ethz.matsim.av.config.modal.DispatcherConfig;
-import ch.ethz.matsim.av.config.modal.GeneratorConfig;
 import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
-import ch.ethz.refactoring.AmodeusConfigurator;
 
 public class MATSimVirtualNetworkTravelDataTest {
     @Test
@@ -108,7 +108,6 @@ public class MATSimVirtualNetworkTravelDataTest {
         AmodeusConfigGroup avConfig = AmodeusConfigGroup.get(config);
 
         AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
-        operatorConfig.setAllowedLinkMode("car");
         avConfig.addMode(operatorConfig);
 
         GeneratorConfig generatorConfig = operatorConfig.getGeneratorConfig();

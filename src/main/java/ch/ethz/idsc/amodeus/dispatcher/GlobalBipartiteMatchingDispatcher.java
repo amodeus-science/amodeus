@@ -1,6 +1,9 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher;
 
+import org.matsim.amodeus.components.AVDispatcher;
+import org.matsim.amodeus.components.AVRouter;
+import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -18,9 +21,6 @@ import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.matsim.av.config.AmodeusModeConfig;
-import ch.ethz.matsim.av.dispatcher.AVDispatcher;
-import ch.ethz.matsim.av.router.AVRouter;
 
 /** Dispatcher repeatedly solves a bipartite matching problem to match available vehicles and open requests.
  * The problem can either be solved using networkdistance or Euclidean distance. Currently network

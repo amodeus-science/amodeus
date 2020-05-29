@@ -4,6 +4,8 @@ package ch.ethz.idsc.amodeus.testutils;
 import java.io.File;
 import java.util.Objects;
 
+import org.matsim.amodeus.config.AmodeusConfigGroup;
+import org.matsim.amodeus.config.modal.GeneratorConfig;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
@@ -22,8 +24,6 @@ import ch.ethz.idsc.amodeus.traveldata.StaticTravelData;
 import ch.ethz.idsc.amodeus.traveldata.StaticTravelDataCreator;
 import ch.ethz.idsc.amodeus.traveldata.TravelDataIO;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
-import ch.ethz.matsim.av.config.AmodeusConfigGroup;
-import ch.ethz.matsim.av.config.modal.GeneratorConfig;
 
 public class TestPreparer {
 

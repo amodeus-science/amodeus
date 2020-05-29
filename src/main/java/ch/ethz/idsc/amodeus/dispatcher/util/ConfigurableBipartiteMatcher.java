@@ -4,13 +4,13 @@ package ch.ethz.idsc.amodeus.dispatcher.util;
 import java.util.Collection;
 import java.util.Map;
 
+import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Network;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
-import ch.ethz.matsim.av.passenger.AVRequest;
 
 public class ConfigurableBipartiteMatcher extends BipartiteMatcherInternal {
 

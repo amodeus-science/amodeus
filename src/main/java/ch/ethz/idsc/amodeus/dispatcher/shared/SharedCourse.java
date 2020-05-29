@@ -3,10 +3,10 @@ package ch.ethz.idsc.amodeus.dispatcher.shared;
 
 import java.util.Objects;
 
+import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** Middle level class in SharedRoboTaxi functionality, a {@link SharedMenu} is
  * composed of {@link SharedCourse}s which internally have a {@link SharedMealType}s

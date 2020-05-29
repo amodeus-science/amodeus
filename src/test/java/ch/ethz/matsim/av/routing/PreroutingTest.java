@@ -2,6 +2,12 @@ package ch.ethz.matsim.av.routing;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.matsim.amodeus.config.AmodeusConfigGroup;
+import org.matsim.amodeus.config.AmodeusModeConfig;
+import org.matsim.amodeus.config.modal.AmodeusScoringConfig;
+import org.matsim.amodeus.framework.AVModule;
+import org.matsim.amodeus.framework.AVQSimModule;
+import org.matsim.amodeus.routing.AVRoute;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
@@ -15,11 +21,6 @@ import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
 import org.matsim.core.config.groups.StrategyConfigGroup.StrategySettings;
 import org.matsim.core.controler.Controler;
 
-import ch.ethz.matsim.av.config.AVScoringParameterSet;
-import ch.ethz.matsim.av.config.AmodeusConfigGroup;
-import ch.ethz.matsim.av.config.AmodeusModeConfig;
-import ch.ethz.matsim.av.framework.AVModule;
-import ch.ethz.matsim.av.framework.AVQSimModule;
 import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
 
 public class PreroutingTest {
@@ -32,9 +33,9 @@ public class PreroutingTest {
         operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
         avConfigGroup.addMode(operatorConfig);
 
-        AVScoringParameterSet scoringParams = operatorConfig.getScoringParameters(null);
+        AmodeusScoringConfig scoringParams = operatorConfig.getScoringParameters(null);
         scoringParams.setMarginalUtilityOfWaitingTime(-0.84);
-        
+
         operatorConfig.getPricingConfig().setPricePerKm(1.0);
 
         Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
@@ -70,11 +71,10 @@ public class PreroutingTest {
                     AVRoute route = (AVRoute) leg.getRoute();
 
                     Assert.assertTrue(route.getTravelTime().isDefined() && Double.isFinite(route.getTravelTime().seconds()));
-                    Assert.assertTrue(Double.isFinite(route.getDistance()));
-                    Assert.assertTrue(Double.isFinite(route.getWaitingTime()));
-                    Assert.assertTrue(Double.isFinite(route.getInVehicleTime()));
-                    Assert.assertTrue(Double.isFinite(route.getPrice()));
-                    Assert.assertTrue(route.getPrice() > 0.0);
+                    Assert.assertTrue(route.getExpectedDistance().isPresent());
+                    Assert.assertTrue(route.getWaitingTime().isDefined());
+                    Assert.assertTrue(route.getPrice().isPresent());
+                    Assert.assertTrue(route.getPrice().get() > 0.0);
                 }
             }
         }

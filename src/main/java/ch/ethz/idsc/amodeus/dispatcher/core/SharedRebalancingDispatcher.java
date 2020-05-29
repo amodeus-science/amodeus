@@ -4,6 +4,8 @@ package ch.ethz.idsc.amodeus.dispatcher.core;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.matsim.amodeus.config.AmodeusModeConfig;
+import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
@@ -15,8 +17,6 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.matsim.av.config.AmodeusModeConfig;
-import ch.ethz.matsim.av.plcpc.ParallelLeastCostPathCalculator;
 
 /** abstract base class for dispatchers that perform relocation of empty
  * vehicles (rebalancing) or redirect vehicles during customer journeys

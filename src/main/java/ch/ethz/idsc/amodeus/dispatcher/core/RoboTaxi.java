@@ -5,6 +5,11 @@ import java.util.List;
 import java.util.Objects;
 
 import org.apache.log4j.Logger;
+import org.matsim.amodeus.dvrp.request.AVRequest;
+import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusDropoffTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusPickupTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
@@ -23,12 +28,6 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenu;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMenuCheck;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.matsim.av.data.AVVehicle;
-import ch.ethz.matsim.av.passenger.AVRequest;
-import ch.ethz.refactoring.schedule.AmodeusDriveTask;
-import ch.ethz.refactoring.schedule.AmodeusDropoffTask;
-import ch.ethz.refactoring.schedule.AmodeusPickupTask;
-import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
 /** RoboTaxi is central class to be used in all dispatchers. Dispatchers control
  * a fleet of RoboTaxis, each is uniquely associated to an AVVehicle object in
@@ -37,7 +36,7 @@ public final class RoboTaxi {
     /** unit capacity fields */
     private static final Logger LOGGER = Logger.getLogger(RoboTaxi.class);
 
-    private final AVVehicle avVehicle;
+    private final DvrpVehicle avVehicle;
     private RoboTaxiStatus status;
     private final RoboTaxiUsageType usageType; // final might be removed if dispatchers can modify usage
 
@@ -61,7 +60,7 @@ public final class RoboTaxi {
      * @param divertableLinkTime
      * @param driveDestination
      * @param usageType */
-    /* package */ RoboTaxi(AVVehicle avVehicle, LinkTimePair divertableLinkTime, Link driveDestination, RoboTaxiUsageType usageType) {
+    /* package */ RoboTaxi(DvrpVehicle avVehicle, LinkTimePair divertableLinkTime, Link driveDestination, RoboTaxiUsageType usageType) {
         this.avVehicle = avVehicle;
         this.divertableLinkTime = divertableLinkTime;
         this.driveDestination = Objects.requireNonNull(driveDestination);

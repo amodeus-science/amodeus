@@ -1,6 +1,10 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
+import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusDropoffTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusPickupTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Task;
@@ -10,10 +14,6 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourseAccess;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.refactoring.schedule.AmodeusDriveTask;
-import ch.ethz.refactoring.schedule.AmodeusDropoffTask;
-import ch.ethz.refactoring.schedule.AmodeusPickupTask;
-import ch.ethz.refactoring.schedule.AmodeusStayTask;
 
 /* package */ enum SetSharedRoboTaxiDiversion {
     ;

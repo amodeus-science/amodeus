@@ -3,11 +3,11 @@ package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.List;
 
+import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
-import ch.ethz.matsim.av.passenger.AVRequest;
 
 /* package */ class PickupAndAssignDirective {
 

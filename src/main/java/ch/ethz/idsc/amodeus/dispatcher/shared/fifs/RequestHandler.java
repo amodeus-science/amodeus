@@ -10,12 +10,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.util.TreeMultipleItems;
 import ch.ethz.idsc.amodeus.routing.NetworkTimeDistInterface;
-import ch.ethz.matsim.av.passenger.AVRequest;
 
 /** A {@link RequestHandler} takes care of all the requests in the scenario. It allows to quickly access the
  * desired subgroups such as unassigned Requests or allows to find the earliest requests computationally efficient. */
