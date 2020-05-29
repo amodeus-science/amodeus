@@ -25,7 +25,7 @@ public class DispatcherConfig extends ReflectiveConfigGroup {
     private String travelDataPath;
     private boolean regenerateTravelData = false;
 
-    private double publishPeriod = 10.0;
+    private int publishPeriod = 10;
 
     public DispatcherConfig() {
         super(GROUP_NAME, true);
@@ -82,12 +82,12 @@ public class DispatcherConfig extends ReflectiveConfigGroup {
     }
 
     @StringGetter(PUBLISH_PERIOD)
-    public double getPublishPeriod() {
+    public int getPublishPeriod() {
         return publishPeriod;
     }
 
     @StringSetter(PUBLISH_PERIOD)
-    public void setPublishPeriod(double publishPeriod) {
+    public void setPublishPeriod(int publishPeriod) {
         this.publishPeriod = publishPeriod;
     }
 }

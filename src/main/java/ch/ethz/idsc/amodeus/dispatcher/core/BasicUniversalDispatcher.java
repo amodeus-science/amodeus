@@ -61,7 +61,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         pickupDurationPerStop = operatorConfig.getTimingConfig().getMinimumPickupDurationPerStop();
         dropoffDurationPerStop = operatorConfig.getTimingConfig().getMinimumDropoffDurationPerStop();
         SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
-        publishPeriod = safeConfig.getInteger("publishPeriod", 10);
+        publishPeriod = operatorConfig.getDispatcherConfig().getPublishPeriod();
         dispatcherMode = operatorConfig.getMode();
     }
 
