@@ -1,11 +1,11 @@
 package org.matsim.amodeus.components;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders;
 
 public interface AVDispatcher {
-    void onRequestSubmitted(AVRequest request);
+    void onRequestSubmitted(PassengerRequest request);
 
     void onNextTaskStarted(DvrpVehicle vehicle);
 

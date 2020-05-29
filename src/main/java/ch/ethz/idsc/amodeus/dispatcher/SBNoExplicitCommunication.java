@@ -6,10 +6,10 @@ import java.util.Objects;
 import org.matsim.amodeus.components.AVDispatcher;
 import org.matsim.amodeus.components.AVRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
@@ -43,7 +43,7 @@ public class SBNoExplicitCommunication extends AbstractNoExplicitCommunication {
 
         /** 1) if D(t) not empty, move towards nearest outstanding target */
         for (RoboTaxi roboTaxi : getDivertableRoboTaxis()) {
-            AVRequest closest = requestMaintainer.getClosest( //
+            PassengerRequest closest = requestMaintainer.getClosest( //
                     TensorCoords.toTensor(roboTaxi.getDivertableLocation().getCoord()));
             // /** as long as the {@link RoboTaxi} has never visited any target, move towards closest request */
             // if (!weberMaintainers.get(roboTaxi).visitedTargets()) {

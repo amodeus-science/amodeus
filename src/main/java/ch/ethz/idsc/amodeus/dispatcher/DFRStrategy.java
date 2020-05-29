@@ -115,7 +115,7 @@ public class DFRStrategy extends PartitionedDispatcher {
         /** assigning vehicles to requests, simply a bipartite matching */
         if (round_now % dispatchPeriod == 0)
             printVals = bipartiteMatchingUtils.executePickup(this, getDivertableRoboTaxis(), //
-                    getAVRequests(), distanceFunction, network);
+                    getPassengerRequests(), distanceFunction, network);
 
         /** rebalancing contributions */
         long contribDFR = 0;

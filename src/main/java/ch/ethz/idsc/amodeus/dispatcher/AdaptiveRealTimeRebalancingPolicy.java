@@ -7,9 +7,9 @@ import java.util.Map;
 import org.matsim.amodeus.components.AVDispatcher;
 import org.matsim.amodeus.components.AVRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
@@ -109,7 +109,7 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
         /** necessary because robotaxis not presence at time zero */
         if (round_now % rebalancingPeriod == 0) {
 
-            Map<VirtualNode<Link>, List<AVRequest>> requests = getVirtualNodeRequests();
+            Map<VirtualNode<Link>, List<PassengerRequest>> requests = getVirtualNodeRequests();
             /** compute rebalancing vehicles and send to virtualNodes */
             {
                 Map<VirtualNode<Link>, List<RoboTaxi>> availableVehicles = getVirtualNodeDivertableNotRebalancingRoboTaxis();
@@ -184,7 +184,7 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
         /** Part II: outside rebalancing periods, permanently assign destinations to vehicles using bipartite matching */
         if (round_now % dispatchPeriod == 0)
             printVals = bipartiteMatcher.executePickup(this, getDivertableRoboTaxis(), //
-                    getAVRequests(), distanceFunction, network);
+                    getPassengerRequests(), distanceFunction, network);
     }
 
     @Override

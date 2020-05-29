@@ -5,9 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.Id;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 /** This class provides a means to warm start the Hungarian algorithm with
  * the objective of improving the convergence
@@ -16,9 +16,9 @@ public class Warmstarter {
     private static final int UNASSIGNED = -1;
     private static final double EPS = 1e-8;
     public static List<Id<DvrpVehicle>> lastTaxis = null;
-    public static List<AVRequest> lastRequests = null;
+    public static List<PassengerRequest> lastRequests = null;
     public static List<Id<DvrpVehicle>> thisTaxis = null;
-    public static List<AVRequest> thisRequests = null;
+    public static List<PassengerRequest> thisRequests = null;
     private static int[] lastMatching = null;
 
     private static int[] lastInitMatching;
@@ -52,7 +52,7 @@ public class Warmstarter {
         hasResult = true;
     }
 
-    public Warmstarter(double[][] costMatrix, List<Id<DvrpVehicle>> taxis, List<AVRequest> requests) {
+    public Warmstarter(double[][] costMatrix, List<Id<DvrpVehicle>> taxis, List<PassengerRequest> requests) {
         this.costMatrix = costMatrix;
         rowDim = costMatrix.length;
         colDim = costMatrix[0].length;
@@ -135,9 +135,9 @@ public class Warmstarter {
         return costMatrix[x][y];
     }
 
-    private void setNewMatching(List<Id<DvrpVehicle>> actTaxi, List<AVRequest> actRequest) {
+    private void setNewMatching(List<Id<DvrpVehicle>> actTaxi, List<PassengerRequest> actRequest) {
         Id<DvrpVehicle> tmpTaxi = null;
-        AVRequest tmpReq = null;
+        PassengerRequest tmpReq = null;
         int tmpTaxiId = UNASSIGNED;
         int last = UNASSIGNED;
         // List<Integer> taxiIDmatched = new ArrayList<>();
@@ -215,7 +215,7 @@ public class Warmstarter {
         return valid;
     }
 
-    public static void setLastData(List<Id<DvrpVehicle>> lastTaxi, List<AVRequest> lastRequest) {
+    public static void setLastData(List<Id<DvrpVehicle>> lastTaxi, List<PassengerRequest> lastRequest) {
         lastTaxis = lastTaxi;
         lastRequests = lastRequest;
     }

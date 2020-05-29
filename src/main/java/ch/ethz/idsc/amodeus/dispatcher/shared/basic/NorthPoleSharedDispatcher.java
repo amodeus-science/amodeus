@@ -10,10 +10,10 @@ import java.util.Random;
 import org.matsim.amodeus.components.AVDispatcher;
 import org.matsim.amodeus.components.AVRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
@@ -30,7 +30,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 /** this is a demo of functionality for the shared dispatchers (> 1 person in {@link RoboTaxi}
  * 
- * whenever 4 {@link AVRequest}s are open, a {@link RoboTaxi} is assigned to pickup all of them,
+ * whenever 4 {@link PassengerRequest}s are open, a {@link RoboTaxi} is assigned to pickup all of them,
  * it first picks up passengers 1,2,3,4 and then starts to bring passengers 1,2,3 to their destinations.
  * Passenger 4 is less lucky as the {@link RoboTaxi} first visits the city's North pole (northern most link)
  * before passenger 4 is finally dropped of and the procedure starts from beginning. */
@@ -61,12 +61,12 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
         if (round_now % dispatchPeriod == 0)
             /** assignment of {@link RoboTaxi}s */
             for (RoboTaxi sharedRoboTaxi : getDivertableUnassignedRoboTaxis())
-                if (getUnassignedAVRequests().size() >= 4) {
+                if (getUnassignedPassengerRequests().size() >= 4) {
                     /** select 4 requests */
-                    AVRequest firstRequest = getUnassignedAVRequests().get(0);
-                    AVRequest secondRequest = getUnassignedAVRequests().get(1);
-                    AVRequest thirdRequest = getUnassignedAVRequests().get(2);
-                    AVRequest fourthRequest = getUnassignedAVRequests().get(3);
+                    PassengerRequest firstRequest = getUnassignedPassengerRequests().get(0);
+                    PassengerRequest secondRequest = getUnassignedPassengerRequests().get(1);
+                    PassengerRequest thirdRequest = getUnassignedPassengerRequests().get(2);
+                    PassengerRequest fourthRequest = getUnassignedPassengerRequests().get(3);
 
                     /** add pickup for request 1 */
                     addSharedRoboTaxiPickup(sharedRoboTaxi, firstRequest);

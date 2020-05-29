@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusDropoffTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusPickupTask;
@@ -17,6 +16,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicleImpl;
 import org.matsim.contrib.dvrp.fleet.ImmutableDvrpVehicleSpecification;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
@@ -104,7 +104,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
     /* package */ static void updateRoboTaxiMenuTo(RoboTaxi roboTaxi, List<SharedCourse> courses) {
         cleanRTMenu(roboTaxi);
-        Set<AVRequest> pickupRequests = new HashSet<>();
+        Set<PassengerRequest> pickupRequests = new HashSet<>();
         for (SharedCourse sharedCourse : courses) {
             switch (sharedCourse.getMealType()) {
             case PICKUP:
@@ -131,11 +131,11 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         roboTaxi.updateMenu(courses);
     }
 
-    /* package */ static void addAvRequestInBegining(RoboTaxi roboTaxi, AVRequest avRequest) {
-        List<SharedCourse> withoutAVRequest = new ArrayList<>(roboTaxi.getUnmodifiableViewOfCourses());
-        roboTaxi.addAVRequestToMenu(avRequest);
+    /* package */ static void addAvRequestInBegining(RoboTaxi roboTaxi, PassengerRequest avRequest) {
+        List<SharedCourse> withoutPassengerRequest = new ArrayList<>(roboTaxi.getUnmodifiableViewOfCourses());
+        roboTaxi.addPassengerRequestToMenu(avRequest);
         List<SharedCourse> newMenu = Arrays.asList(SharedCourse.pickupCourse(avRequest), SharedCourse.dropoffCourse(avRequest));
-        newMenu.addAll(withoutAVRequest);
+        newMenu.addAll(withoutPassengerRequest);
         roboTaxi.updateMenu(newMenu);
     }
 

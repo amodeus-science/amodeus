@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 
@@ -37,8 +37,8 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
      * @param newAvRequest
      * @param requestMaintainer
      * @return */
-    public boolean driveTimeCurrentPassengersExceeded(Map<AVRequest, Double> driveTimes, AVRequest newAvRequest, RequestHandler requestMaintainer) {
-        for (AVRequest avRequest : driveTimes.keySet())
+    public boolean driveTimeCurrentPassengersExceeded(Map<PassengerRequest, Double> driveTimes, PassengerRequest newAvRequest, RequestHandler requestMaintainer) {
+        for (PassengerRequest avRequest : driveTimes.keySet())
             if (!avRequest.equals(newAvRequest))
                 if (driveTimes.get(avRequest) > maxDriveTimeIncrease * requestMaintainer.getDriveTimeDirectUnitCap(avRequest))
                     return true;
@@ -58,9 +58,9 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
      *         if
      *         true this new route is not a valid possibility. returns false if the second constraint is satisfied for all requests. */
     public boolean remainingTimeCurrentPassengerExceeded(SharedAvRoute sharedAvRoute, SharedAvRoute oldRoute, double now) {
-        Map<AVRequest, Double> newrouteRemainingTimes = getRemainingTimes(sharedAvRoute, now);
-        Map<AVRequest, Double> oldrouteRemainingTimes = getRemainingTimes(oldRoute, now);
-        for (Entry<AVRequest, Double> entry : oldrouteRemainingTimes.entrySet())
+        Map<PassengerRequest, Double> newrouteRemainingTimes = getRemainingTimes(sharedAvRoute, now);
+        Map<PassengerRequest, Double> oldrouteRemainingTimes = getRemainingTimes(oldRoute, now);
+        for (Entry<PassengerRequest, Double> entry : oldrouteRemainingTimes.entrySet())
             if (newrouteRemainingTimes.get(entry.getKey()) > entry.getValue() * maxRemainingTimeIncrease)
                 return true;
         return false;
@@ -105,8 +105,8 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
         return sharedAvRoute.getEndTime() <= oldRoute.getEndTime() + unitCapacityDriveTime + dropoffDuration;
     }
 
-    private static Map<AVRequest, Double> getRemainingTimes(SharedAvRoute route, double now) {
-        Map<AVRequest, Double> remainingTimes = new HashMap<>();
+    private static Map<PassengerRequest, Double> getRemainingTimes(SharedAvRoute route, double now) {
+        Map<PassengerRequest, Double> remainingTimes = new HashMap<>();
         for (SharedRoutePoint sharedRoutePoint : route.getRoute())
             if (sharedRoutePoint.getMealType().equals(SharedMealType.DROPOFF))
                 remainingTimes.put(sharedRoutePoint.getAvRequest(), sharedRoutePoint.getArrivalTime() - now);

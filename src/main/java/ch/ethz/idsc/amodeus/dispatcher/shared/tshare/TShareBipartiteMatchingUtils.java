@@ -6,8 +6,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedUniversalDispatcher;
@@ -20,13 +20,13 @@ import ch.ethz.idsc.tensor.Tensors;
 /* package */ class TShareBipartiteMatchingUtils {
 
     public Tensor executePickup(SharedUniversalDispatcher universalDispatcher, //
-            Function<AVRequest, RoboTaxi> getPickupTaxi, //
+            Function<PassengerRequest, RoboTaxi> getPickupTaxi, //
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
-            Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
+            Collection<PassengerRequest> requests, /** <- typically universalDispatcher.getPassengerRequests() */
             CachedNetworkTimeDistance distanceCashed, double now) {
         Tensor infoLine = Tensors.empty();
 
-        Map<RoboTaxi, AVRequest> matching = ((new GlobalBipartiteMatching(new CachedDistanceCost(distanceCashed, now)))//
+        Map<RoboTaxi, PassengerRequest> matching = ((new GlobalBipartiteMatching(new CachedDistanceCost(distanceCashed, now)))//
                 .match(roboTaxis, requests));
 
         /** perform dispatching */

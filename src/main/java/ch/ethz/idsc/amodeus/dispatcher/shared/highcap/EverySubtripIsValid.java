@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 /* package */ enum EverySubtripIsValid {
     ;
@@ -16,12 +16,12 @@ import org.matsim.amodeus.dvrp.request.AVRequest;
      * @param listOfTripsFromLastLoop
      * @param thisTrip
      * @return */
-    public static boolean of(List<Set<AVRequest>> listOfTripsFromLastLoop, Set<AVRequest> thisTrip) {
-        List<AVRequest> listOfSingleRequest = new ArrayList<>(thisTrip);
+    public static boolean of(List<Set<PassengerRequest>> listOfTripsFromLastLoop, Set<PassengerRequest> thisTrip) {
+        List<PassengerRequest> listOfSingleRequest = new ArrayList<>(thisTrip);
 
         // generate all sub-trips
-        List<Set<AVRequest>> listOfSubtrips = listOfSingleRequest.stream().map(avRequest -> {
-            HashSet<AVRequest> set = new HashSet<>(listOfSingleRequest);
+        List<Set<PassengerRequest>> listOfSubtrips = listOfSingleRequest.stream().map(avRequest -> {
+            HashSet<PassengerRequest> set = new HashSet<>(listOfSingleRequest);
             set.remove(avRequest);
             return set;
         }).collect(Collectors.toList());

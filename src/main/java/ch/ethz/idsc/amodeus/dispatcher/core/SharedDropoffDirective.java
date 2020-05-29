@@ -1,10 +1,10 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.amodeus.dvrp.schedule.AmodeusDropoffTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
 
@@ -12,7 +12,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 /*package*/ class SharedDropoffDirective extends SharedFixedLocationDirective {
 
-    public SharedDropoffDirective(RoboTaxi roboTaxi, AVRequest avRequest, double getTimeNow, double durationOfTask) {
+    public SharedDropoffDirective(RoboTaxi roboTaxi, PassengerRequest avRequest, double getTimeNow, double durationOfTask) {
         super(roboTaxi, avRequest, getTimeNow, durationOfTask);
     }
 

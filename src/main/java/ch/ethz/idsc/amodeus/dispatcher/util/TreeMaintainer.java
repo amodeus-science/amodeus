@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.core.utils.collections.QuadTree;
 import org.matsim.core.utils.collections.QuadTree.Rect;
 
@@ -17,7 +17,7 @@ import ch.ethz.idsc.tensor.alg.VectorQ;
 
 /** Maintains a list of {@link T}s in a {@link Set} and a
  * {@link QuadTree} to enable both fast "contains" searches and
- * "closest" searches, T might be for instance {@link AVRequest}s
+ * "closest" searches, T might be for instance {@link PassengerRequest}s
  * or {@link RoboTaxi}s
  * 
  * @author clruch */

@@ -8,8 +8,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
@@ -27,7 +27,7 @@ import ch.ethz.idsc.tensor.Scalar;
         this.virtualNetwork = virtualNetwork;
     }
 
-    public Collection<RoboTaxi> apply(AVRequest request, Map<VirtualNode<Link>, Set<RoboTaxi>> plannedLocations, //
+    public Collection<RoboTaxi> apply(PassengerRequest request, Map<VirtualNode<Link>, Set<RoboTaxi>> plannedLocations, //
             Scalar timeLeftForPickup, Scalar timeLeftUntilArrival) {
 
         /** origin cell = {@link GridCell} of {@link VirtualNode} containing the request origin link */

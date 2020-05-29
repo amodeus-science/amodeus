@@ -10,9 +10,9 @@ import java.util.stream.Collectors;
 import org.matsim.amodeus.components.AVDispatcher;
 import org.matsim.amodeus.components.AVRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
@@ -64,7 +64,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
      * occurs */
 
     /** data structures are used to enable fast "contains" searching */
-    private final TreeMaintainer<AVRequest> requestMaintainer;
+    private final TreeMaintainer<PassengerRequest> requestMaintainer;
     private final double[] networkBounds;
 
     protected RestrictedLinkCapacityDispatcher(Network network, //
@@ -103,7 +103,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
 
             robotaxisDivertable.forEach(unassignedRoboTaxis::add);
 
-            List<AVRequest> requests = getUnassignedAVRequests();
+            List<PassengerRequest> requests = getUnassignedPassengerRequests();
             requests.forEach(requestMaintainer::add);
 
             /** distinguish over- and undersupply cases */
@@ -112,7 +112,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
             if (unassignedRoboTaxis.size() > 0 && requests.size() > 0) {
                 /** oversupply case */
                 if (oversupply)
-                    for (AVRequest avr : requests) {
+                    for (PassengerRequest avr : requests) {
                         RoboTaxi closest = unassignedRoboTaxis.getClosest(getLocation(avr));
                         if (Objects.nonNull(closest)) {
                             addSharedRoboTaxiPickup(closest, avr);
@@ -124,7 +124,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
                 /** undersupply case */
                 else
                     for (RoboTaxi roboTaxi : robotaxisDivertable) {
-                        AVRequest closest = requestMaintainer.getClosest(getRoboTaxiLoc(roboTaxi));
+                        PassengerRequest closest = requestMaintainer.getClosest(getRoboTaxiLoc(roboTaxi));
                         if (Objects.nonNull(closest)) {
                             addSharedRoboTaxiPickup(roboTaxi, closest);
 
@@ -142,8 +142,8 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
         /** Sharing idea: if a robotaxi Picks up a customer check if other open request
          * are close with similar direction and pick them up. */
         if (round_now % sharingPeriod == 0) {
-            Map<AVRequest, RoboTaxi> addedRequests = beamExtensionForSharing.findAssignementAndExecute(getRoboTaxis(), getAVRequests(), this);
-            for (AVRequest avRequest : addedRequests.keySet())
+            Map<PassengerRequest, RoboTaxi> addedRequests = beamExtensionForSharing.findAssignementAndExecute(getRoboTaxis(), getPassengerRequests(), this);
+            for (PassengerRequest avRequest : addedRequests.keySet())
                 /** a avRequest is not contained in the requestMaintainer if the request was
                  * already assigned before. in that case a removal is not needed */
                 if (requestMaintainer.contains(avRequest))
@@ -156,8 +156,8 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
     }
 
     /** @param request
-     * @return {@link Coord} with {@link AVRequest} location */
-    /* package */ Tensor getLocation(AVRequest request) {
+     * @return {@link Coord} with {@link PassengerRequest} location */
+    /* package */ Tensor getLocation(PassengerRequest request) {
         Coord coord = request.getFromLink().getFromNode().getCoord();
         return Tensors.vector(coord.getX(), coord.getY());
     }

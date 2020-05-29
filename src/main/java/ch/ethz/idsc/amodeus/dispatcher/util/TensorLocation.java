@@ -1,8 +1,8 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.util;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.net.TensorCoords;
@@ -11,7 +11,7 @@ import ch.ethz.idsc.tensor.Tensor;
 public enum TensorLocation {
     ;
 
-    public static Tensor of(AVRequest avRequest) {
+    public static Tensor of(PassengerRequest avRequest) {
         return ofLink(avRequest.getFromLink());
     }
 

@@ -27,6 +27,11 @@
 			<version>${matsim.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.matsim.contrib</groupId>
+			<artifactId>drt</artifactId>
+			<version>${matsim.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>ch.ethz.idsc</groupId>
 			<artifactId>tensor</artifactId>
 			<version>0.8.4</version>

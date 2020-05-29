@@ -6,9 +6,9 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.matsim.amodeus.config.AmodeusModeConfig;
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
@@ -39,9 +39,9 @@ public abstract class SharedPartitionedDispatcher extends SharedRebalancingDispa
         this.virtualNetwork = Objects.requireNonNull(virtualNetwork);
     }
 
-    /** @return {@link java.util.Map} where all {@link AVRequest} are listed at the {@link VirtualNode} where their {@link AVRequest.fromLink} is. */
-    protected Map<VirtualNode<Link>, List<AVRequest>> getVirtualNodeRequests() {
-        return virtualNetwork.binToVirtualNode(getAVRequests(), AVRequest::getFromLink);
+    /** @return {@link java.util.Map} where all {@link PassengerRequest} are listed at the {@link VirtualNode} where their {@link PassengerRequest.fromLink} is. */
+    protected Map<VirtualNode<Link>, List<PassengerRequest>> getVirtualNodeRequests() {
+        return virtualNetwork.binToVirtualNode(getPassengerRequests(), PassengerRequest::getFromLink);
     }
 
     /** @return {@link java.util.Map} where all divertable not rebalancing {@link RoboTaxi} are listed at the {@link VirtualNode} where their {@link Link}

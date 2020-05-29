@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 
@@ -19,7 +19,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
      * 
      * /* package */
     public static double of(List<StopInRoute> route, //
-            Map<AVRequest, RequestKeyInfo> requestKeyInfoMap, //
+            Map<PassengerRequest, RequestKeyInfo> requestKeyInfoMap, //
             TravelTimeComputation ttc) {
 
         if (Objects.isNull(route))
@@ -31,7 +31,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 
         for (StopInRoute stopInRoute : route)
             if (stopInRoute.getStopType() == SharedMealType.DROPOFF) {
-                AVRequest requestOfTheStop = stopInRoute.getavRequest();
+                PassengerRequest requestOfTheStop = stopInRoute.getavRequest();
                 double modifiedSubmissionTime = requestKeyInfoMap.get(requestOfTheStop).getModifiableSubmissionTime();
                 double timeToTravel = ttc.of(requestOfTheStop.getFromLink(), //
                         requestOfTheStop.getToLink(), modifiedSubmissionTime, true);

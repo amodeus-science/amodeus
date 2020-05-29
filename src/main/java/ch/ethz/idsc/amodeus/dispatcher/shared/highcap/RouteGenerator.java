@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.core.network.NetworkUtils;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
@@ -19,12 +19,12 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
     /** Route Generator
      * this function generate a route base on current request on board and additional requests to be assigned to the roboTaxi
      * the output is list of stopInRoute (time, link, type(pickup/drop off), avRequest) */
-    // input: roboTaxi, additionRequest, allAVRequest(for loading requests on board), now, router
+    // input: roboTaxi, additionRequest, allPassengerRequest(for loading requests on board), now, router
     // output: route (a list of stopInRoute)
     // 20181022 Important update! Stop generating route immediately when the route is not feasible.
 
-    public static List<StopInRoute> of(RoboTaxi roboTaxi, Set<AVRequest> additionalRequest, //
-            double now, Map<AVRequest, RequestKeyInfo> requestKeyInfoMap, //
+    public static List<StopInRoute> of(RoboTaxi roboTaxi, Set<PassengerRequest> additionalRequest, //
+            double now, Map<PassengerRequest, RequestKeyInfo> requestKeyInfoMap, //
             int capacityOfTaxi, TravelTimeComputation ttc, double pickupDurationPerStop, double dropoffDurationPerStop) {
         // define some variables
         double nowInThisFunction;
@@ -33,10 +33,10 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
         List<NextPossibleStop> nextPossibleStopsList = new ArrayList<>();
         int numberOfPassengerOnboard = (int) roboTaxi.getOnBoardPassengers(); // get initial no. passenger on board.
 
-        for (AVRequest avRequest : OnMenuRequests.getOnBoardRequests(roboTaxi.getUnmodifiableViewOfCourses()))
+        for (PassengerRequest avRequest : OnMenuRequests.getOnBoardRequests(roboTaxi.getUnmodifiableViewOfCourses()))
             nextPossibleStopsList.add(new NextPossibleStop(avRequest, true));// add all on board request to the set
 
-        for (AVRequest avRequest : additionalRequest)
+        for (PassengerRequest avRequest : additionalRequest)
             nextPossibleStopsList.add(new NextPossibleStop(avRequest, false));// add all additional request to the set
 
         Link currentLink = roboTaxi.getDivertableLocation(); // for looking for first stop, use current taxi location (link)
@@ -93,7 +93,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 
             // If it reached here, this stop is valid. Write it down in the list
             StopInRoute nextStopInRoute = new StopInRoute(arrivalTime, chosenNextStop.getLink(), //
-                    stopType, chosenNextStop.getAVRequest());
+                    stopType, chosenNextStop.getPassengerRequest());
             finalRoute.add(nextStopInRoute);
 
             // "move" the taxi to that stop and calculate the next stop (loop)
@@ -112,9 +112,9 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 
     /** Check if this stop is valid */
     static boolean stopIsValid(NextPossibleStop chosenStop, Double arrivalTime, //
-            Map<AVRequest, RequestKeyInfo> requestKeyInfoMap, //
+            Map<PassengerRequest, RequestKeyInfo> requestKeyInfoMap, //
             TravelTimeComputation ttc) {
-        RequestKeyInfo requestKeyInfo = requestKeyInfoMap.get(chosenStop.getAVRequest());
+        RequestKeyInfo requestKeyInfo = requestKeyInfoMap.get(chosenStop.getPassengerRequest());
         final double deadline = chosenStop.getOnboardStatus() //
                 ? requestKeyInfo.getDeadlineDropOff() //
                 : requestKeyInfo.getDeadlinePickUp();

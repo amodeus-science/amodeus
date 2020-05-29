@@ -13,7 +13,7 @@ import org.gnu.glpk.SWIGTYPE_p_double;
 import org.gnu.glpk.SWIGTYPE_p_int;
 import org.gnu.glpk.glp_iocp;
 import org.gnu.glpk.glp_prob;
-import org.matsim.amodeus.dvrp.request.AVRequest;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 
@@ -29,9 +29,9 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
         GLPK.glp_delete_prob(lp);
     }
 
-    public void defineLP(List<TripWithVehicle> grossListOfRTVEdges, List<AVRequest> openRequestList, //
+    public void defineLP(List<TripWithVehicle> grossListOfRTVEdges, List<PassengerRequest> openRequestList, //
             List<RoboTaxi> listOfRoboTaxiWithValidTrip, double costOfIgnoredReuqestNormal, double costOfIgnoredReuqestHigh, //
-            Set<AVRequest> requestMatchedLastStep) {
+            Set<PassengerRequest> requestMatchedLastStep) {
         // define some variables
         int numOfRTVEdges = grossListOfRTVEdges.size();
         int numOfTaxiInILP = listOfRoboTaxiWithValidTrip.size();

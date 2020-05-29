@@ -1,17 +1,17 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.routing;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 
 /** interface for distances in the AMoDeus simulations */
 public interface DistanceFunction {
 
-    /** @return distance from the {@link RoboTaxi} @param robotaxi to the {@link AVRequest}
+    /** @return distance from the {@link RoboTaxi} @param robotaxi to the {@link PassengerRequest}
      * @param avRequest */
-    double getDistance(RoboTaxi roboTaxi, AVRequest avRequest);
+    double getDistance(RoboTaxi roboTaxi, PassengerRequest avRequest);
 
     /** @return distance from the {@link RoboTaxi} @param robotaxi to the {@link Link}
      * @param link */

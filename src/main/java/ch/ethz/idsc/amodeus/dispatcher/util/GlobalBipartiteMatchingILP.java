@@ -4,8 +4,8 @@ package ch.ethz.idsc.amodeus.dispatcher.util;
 import java.util.Collection;
 import java.util.Map;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.matsim.SafeConfig;
@@ -31,9 +31,9 @@ public class GlobalBipartiteMatchingILP extends GlobalBipartiteMatching {
     }
 
     @Override
-    protected Map<RoboTaxi, AVRequest> protected_match(Collection<RoboTaxi> roboTaxis, Collection<AVRequest> requests) {
-        return (new GlobalBipartiteHelperILP<AVRequest>(new GLPKAssignmentSolverBetter(costFunctionWeights)))//
-                .genericMatch(roboTaxis, requests, AVRequest::getFromLink, globalBipartiteCost);
+    protected Map<RoboTaxi, PassengerRequest> protected_match(Collection<RoboTaxi> roboTaxis, Collection<PassengerRequest> requests) {
+        return (new GlobalBipartiteHelperILP<PassengerRequest>(new GLPKAssignmentSolverBetter(costFunctionWeights)))//
+                .genericMatch(roboTaxis, requests, PassengerRequest::getFromLink, globalBipartiteCost);
     }
 
     @Override

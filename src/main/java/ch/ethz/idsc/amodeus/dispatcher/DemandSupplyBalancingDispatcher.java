@@ -8,9 +8,9 @@ import java.util.Objects;
 import org.matsim.amodeus.components.AVDispatcher;
 import org.matsim.amodeus.components.AVRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
@@ -38,7 +38,7 @@ public class DemandSupplyBalancingDispatcher extends RebalancingDispatcher {
 
     private final int dispatchPeriod;
     /** data structures are used to enable fast "contains" searching */
-    private final TreeMaintainer<AVRequest> requestMaintainer;
+    private final TreeMaintainer<PassengerRequest> requestMaintainer;
     private final TreeMaintainer<RoboTaxi> unassignedRoboTaxis;
 
     protected DemandSupplyBalancingDispatcher(Config config, AmodeusModeConfig operatorConfig, //
@@ -60,7 +60,7 @@ public class DemandSupplyBalancingDispatcher extends RebalancingDispatcher {
             /** get open requests and available vehicles */
             Collection<RoboTaxi> roboTaxisDivertable = getDivertableUnassignedRoboTaxis();
             getRoboTaxiSubset(RoboTaxiStatus.STAY).forEach(unassignedRoboTaxis::add);
-            List<AVRequest> requests = getUnassignedAVRequests();
+            List<PassengerRequest> requests = getUnassignedPassengerRequests();
             requests.forEach(requestMaintainer::add);
 
             /** distinguish over- and undersupply cases */
@@ -71,7 +71,7 @@ public class DemandSupplyBalancingDispatcher extends RebalancingDispatcher {
             if (unassignedRoboTaxis.size() > 0 && requests.size() > 0)
                 /** oversupply case */
                 if (oversupply)
-                    for (AVRequest avr : requests) {
+                    for (PassengerRequest avr : requests) {
                         RoboTaxi closest = unassignedRoboTaxis.getClosest(getLocation(avr));
                         if (closest != null) {
                             setRoboTaxiPickup(closest, avr);
@@ -84,7 +84,7 @@ public class DemandSupplyBalancingDispatcher extends RebalancingDispatcher {
                     for (RoboTaxi roboTaxi : roboTaxisDivertable) {
                         Coord coord = roboTaxi.getDivertableLocation().getFromNode().getCoord();
                         Tensor tCoord = Tensors.vector(coord.getX(), coord.getY());
-                        AVRequest closest = requestMaintainer.getClosest(tCoord);
+                        PassengerRequest closest = requestMaintainer.getClosest(tCoord);
                         if (Objects.nonNull(closest)) {
                             setRoboTaxiPickup(roboTaxi, closest);
                             unassignedRoboTaxis.remove(roboTaxi);
@@ -95,8 +95,8 @@ public class DemandSupplyBalancingDispatcher extends RebalancingDispatcher {
     }
 
     /** @param request
-     * @return {@link Coord} with {@link AVRequest} location */
-    /* package */ Tensor getLocation(AVRequest request) {
+     * @return {@link Coord} with {@link PassengerRequest} location */
+    /* package */ Tensor getLocation(PassengerRequest request) {
         return TensorCoords.toTensor(request.getFromLink().getFromNode().getCoord());
     }
 

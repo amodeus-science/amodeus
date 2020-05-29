@@ -15,9 +15,9 @@ import java.util.stream.Collectors;
 import org.matsim.amodeus.components.AVDispatcher;
 import org.matsim.amodeus.components.AVRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
@@ -50,7 +50,6 @@ import ch.ethz.idsc.amodeus.routing.EasyMinTimePathCalculator;
     private static final double maxWaitTime = 300.0;
     private static final double costOfIgnoredReuqestNormal = 7200;
     private static final double costOfIgnoredReuqestHigh = 72000;
-    private static final int DEFAULTNUMBERSEATS = 4;
 
     private final int dispatchPeriod;
     private final int rebalancePeriod;
@@ -77,13 +76,13 @@ import ch.ethz.idsc.amodeus.routing.EasyMinTimePathCalculator;
 
     /** other objects that are needed in each dispatching/re-balance period */
     private List<TripWithVehicle> lastAssignment = new ArrayList<>(); // this is needed for latest pick up time modification
-    private Set<AVRequest> requestMatchedLastStep = new HashSet<>();
+    private Set<PassengerRequest> requestMatchedLastStep = new HashSet<>();
 
-    private Set<AVRequest> requestPool = new HashSet<>();
-    private Set<AVRequest> lastRequestPool = new HashSet<>(); // this is used by RV and RTV generator to speed up the process
-    private Set<AVRequest> overduedRequests = new HashSet<>();
+    private Set<PassengerRequest> requestPool = new HashSet<>();
+    private Set<PassengerRequest> lastRequestPool = new HashSet<>(); // this is used by RV and RTV generator to speed up the process
+    private Set<PassengerRequest> overduedRequests = new HashSet<>();
 
-    private Map<AVRequest, RequestKeyInfo> requestKeyInfoMap = new HashMap<>();
+    private Map<PassengerRequest, RequestKeyInfo> requestKeyInfoMap = new HashMap<>();
 
     /** PARKING EXTENSION */
     private final ParkingStrategy parkingStrategy;
@@ -103,7 +102,7 @@ import ch.ethz.idsc.amodeus.routing.EasyMinTimePathCalculator;
         DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(30); // if want to change value, change in av file, here only for backup
         rebalancePeriod = dispatcherConfig.getRebalancingPeriod(60); // same as above
-        capacityOfTaxi = (int) Long.parseLong(operatorConfig.getGeneratorConfig().getParams().getOrDefault("numberOfSeats", String.valueOf(DEFAULTNUMBERSEATS)));
+        capacityOfTaxi = operatorConfig.getGeneratorConfig().getCapacity();
 
         links = new ArrayList<>(network.getLinks().values());
         Collections.shuffle(links, randGen);
@@ -132,11 +131,11 @@ import ch.ethz.idsc.amodeus.routing.EasyMinTimePathCalculator;
         if (round_now % dispatchPeriod == 1) {
             System.out.println(now);
             // remove request that is no longer open in the map
-            RequestTracker.removeClosedRequest(requestPool, getAVRequests());
+            RequestTracker.removeClosedRequest(requestPool, getPassengerRequests());
             // remove request that deadline for pick up has passed
             overduedRequests = RequestTracker.removeOverduedRequest(requestPool, requestKeyInfoMap, now, requestMatchedLastStep);
             // put new open requests in requestKeyInfoMap (if size limit is not reached)
-            for (AVRequest avRequest : getAVRequests()) {
+            for (PassengerRequest avRequest : getPassengerRequests()) {
                 if (requestPool.size() < sizeLimit && !overduedRequests.contains(avRequest))
                     requestPool.add(avRequest);
                 requestKeyInfoMap.computeIfAbsent(avRequest, avr -> new RequestKeyInfo(avr, maxWaitTime, MAX_DELAY, ttc));
@@ -147,15 +146,15 @@ import ch.ethz.idsc.amodeus.routing.EasyMinTimePathCalculator;
                 requestKeyInfo.modifyDeadlinePickUp(lastAssignment, avRequest, maxWaitTime); // according to paper
             }));
 
-            Set<AVRequest> newAddedValidRequests = RequestTracker.getNewAddedValidRequests(requestPool, lastRequestPool); // write down new added requests
-            Set<AVRequest> removedRequests = RequestTracker.getRemovedRequests(requestPool, lastRequestPool); // write down removed request
-            Set<AVRequest> remainedRequests = RequestTracker.getRemainedRequests(requestPool, lastRequestPool); // write down remained request
+            Set<PassengerRequest> newAddedValidRequests = RequestTracker.getNewAddedValidRequests(requestPool, lastRequestPool); // write down new added requests
+            Set<PassengerRequest> removedRequests = RequestTracker.getRemovedRequests(requestPool, lastRequestPool); // write down removed request
+            Set<PassengerRequest> remainedRequests = RequestTracker.getRemainedRequests(requestPool, lastRequestPool); // write down remained request
 
             // remove the data from cache to release memory
-            removedRequests.stream().filter(avRequest -> !overduedRequests.contains(avRequest)).map(AVRequest::getFromLink).forEach(ttc::removeEntry);
+            removedRequests.stream().filter(avRequest -> !overduedRequests.contains(avRequest)).map(PassengerRequest::getFromLink).forEach(ttc::removeEntry);
 
             // RV diagram construction
-            Set<Set<AVRequest>> rvEdges = rvGenerator.generateRVGraph(newAddedValidRequests, removedRequests, remainedRequests, //
+            Set<Set<PassengerRequest>> rvEdges = rvGenerator.generateRVGraph(newAddedValidRequests, removedRequests, remainedRequests, //
                     now, ttc, requestKeyInfoMap);
 
             // RTV diagram construction (generate a list of edges between trip and vehicle)
@@ -170,7 +169,7 @@ import ch.ethz.idsc.amodeus.routing.EasyMinTimePathCalculator;
                 // we need to find the number of taxi in ILP
                 List<RoboTaxi> listOfRoboTaxiWithValidTrip = grossListOfRTVEdges.stream().map(TripWithVehicle::getRoboTaxi).distinct().collect(Collectors.toList());
 
-                List<AVRequest> validOpenRequestList = new ArrayList<>(requestPool);
+                List<PassengerRequest> validOpenRequestList = new ArrayList<>(requestPool);
                 List<Double> iLPResultList = RunILP.of(grossListOfRTVEdges, validOpenRequestList, listOfRoboTaxiWithValidTrip, //
                         costOfIgnoredReuqestNormal, costOfIgnoredReuqestHigh, requestMatchedLastStep);
                 for (int i = 0; i < grossListOfRTVEdges.size(); i++)
@@ -191,17 +190,17 @@ import ch.ethz.idsc.amodeus.routing.EasyMinTimePathCalculator;
                 List<SharedCourse> courseForThisTaxi = routeToAssign.stream() //
                         .map(StopInRoute::getSharedCourse) //
                         .collect(Collectors.toList());
-                for (AVRequest avRequest : tripWithVehicle.getTrip())
+                for (PassengerRequest avRequest : tripWithVehicle.getTrip())
                     addSharedRoboTaxiPickup(roboTaxiToAssign, avRequest);
                 // create set of requests in the route
-                Set<AVRequest> setOfAVRequestInRoute = routeToAssign.stream() //
+                Set<PassengerRequest> setOfPassengerRequestInRoute = routeToAssign.stream() //
                         .map(StopInRoute::getavRequest) //
                         .collect(Collectors.toSet());
-                for (AVRequest avRequest : SharedCourseUtil.getUniqueAVRequests(roboTaxiToAssign.getUnmodifiableViewOfCourses()))
-                    if (!setOfAVRequestInRoute.contains(avRequest))
+                for (PassengerRequest avRequest : SharedCourseUtil.getUniquePassengerRequests(roboTaxiToAssign.getUnmodifiableViewOfCourses()))
+                    if (!setOfPassengerRequestInRoute.contains(avRequest))
                         abortAvRequest(avRequest);
 
-                if (checkingUpdateMenuOrNot.updateMenuOrNot(roboTaxiToAssign, setOfAVRequestInRoute))
+                if (checkingUpdateMenuOrNot.updateMenuOrNot(roboTaxiToAssign, setOfPassengerRequestInRoute))
                     roboTaxiToAssign.updateMenu(courseForThisTaxi);
             }
 
@@ -218,7 +217,7 @@ import ch.ethz.idsc.amodeus.routing.EasyMinTimePathCalculator;
         /** Re-balance */
         if (round_now % rebalancePeriod == 2) { // in order to avoid dispatch and re-balance happen at same time
             // check if there are both idling vehicles and unassigned requests at same time
-            List<AVRequest> listOfUnassignedRequest = getUnassignedAVRequests();
+            List<PassengerRequest> listOfUnassignedRequest = getUnassignedPassengerRequests();
             List<RoboTaxi> listOfIdlingTaxi = new ArrayList<>(getDivertableUnassignedRoboTaxis());
 
             // for (RoboTaxi roboTaxi : getRoboTaxis()) {

@@ -28,7 +28,7 @@ public class RetrieveToLinkTest extends TestCase {
         assertFalse(RetrieveToLink.forShared(roboTaxi, 0.0).isPresent()); // case empty menu
 
         // Case 1b) Next course is on same link
-        roboTaxi.addAVRequestToMenu(s.avRequestDepotOut);
+        roboTaxi.addPassengerRequestToMenu(s.avRequestDepotOut);
         assertTrue(RetrieveToLink.forShared(roboTaxi, 0.0).isPresent()); // case pickup course
         assertEquals(RetrieveToLink.forShared(roboTaxi, 0.0).get(), s.avRequestDepotOut.getFromLink()); // case pickup course
 
@@ -47,7 +47,7 @@ public class RetrieveToLinkTest extends TestCase {
 
         // Case 1c) Next course is on different link
         assertFalse(RetrieveToLink.forShared(roboTaxi, 0.0).isPresent()); // case empty menu
-        roboTaxi.addAVRequestToMenu(s.avRequest1);
+        roboTaxi.addPassengerRequestToMenu(s.avRequest1);
         assertTrue(RetrieveToLink.forShared(roboTaxi, 0.0).isPresent()); // case pickup course
         assertEquals(RetrieveToLink.forShared(roboTaxi, 0.0).get(), s.avRequest1.getFromLink()); // case pickup course
 
@@ -67,7 +67,7 @@ public class RetrieveToLinkTest extends TestCase {
         assertFalse(RetrieveToLink.forShared(roboTaxi, 0.0).isPresent()); // case empty menu
 
         // Case 2b) Next course is on same link as Divertable Location
-        roboTaxi.addAVRequestToMenu(s.avRequestDepotOut);
+        roboTaxi.addPassengerRequestToMenu(s.avRequestDepotOut);
         assertTrue(RetrieveToLink.forShared(roboTaxi, 0.0).isPresent()); // case pickup course
         assertEquals(RetrieveToLink.forShared(roboTaxi, 0.0).get(), s.linkDepotOut); // case pickup course
 
@@ -87,7 +87,7 @@ public class RetrieveToLinkTest extends TestCase {
         StaticRoboTaxiCreator.cleanRTMenu(roboTaxi);
 
         // Case 2c) Next course is on same link as Stay Task Location
-        roboTaxi.addAVRequestToMenu(s.avRequestDepotIn);
+        roboTaxi.addPassengerRequestToMenu(s.avRequestDepotIn);
         assertTrue(RetrieveToLink.forShared(roboTaxi, 0.0).isPresent()); // case pickup course
         assertEquals(RetrieveToLink.forShared(roboTaxi, 0.0).get(), s.linkDepotIn); // case pickup course
 
@@ -106,7 +106,7 @@ public class RetrieveToLinkTest extends TestCase {
 
         // Case 2d) Next course is on different link
         assertFalse(RetrieveToLink.forShared(roboTaxi, 0.0).isPresent()); // case empty menu
-        roboTaxi.addAVRequestToMenu(s.avRequest1);
+        roboTaxi.addPassengerRequestToMenu(s.avRequest1);
         assertTrue(RetrieveToLink.forShared(roboTaxi, 0.0).isPresent()); // case pickup course
         assertEquals(RetrieveToLink.forShared(roboTaxi, 0.0).get(), s.avRequest1.getFromLink()); // case pickup course
 
@@ -139,7 +139,7 @@ public class RetrieveToLinkTest extends TestCase {
         }
 
         // Case 1b) Next course is on same link
-        roboTaxi.addAVRequestToMenu(artificialScenarioCreator.avRequestDepotOut);
+        roboTaxi.addPassengerRequestToMenu(artificialScenarioCreator.avRequestDepotOut);
         assertFalse(RetrieveToLink.forShared(roboTaxi, now).isPresent()); // case pickup course
 
         roboTaxi.pickupNewCustomerOnBoard();
@@ -155,7 +155,7 @@ public class RetrieveToLinkTest extends TestCase {
         StaticRoboTaxiCreator.cleanRTMenu(roboTaxi);
 
         // Case 1c) Next course is on other link
-        roboTaxi.addAVRequestToMenu(artificialScenarioCreator.avRequest1);
+        roboTaxi.addPassengerRequestToMenu(artificialScenarioCreator.avRequest1);
         assertFalse(RetrieveToLink.forShared(roboTaxi, now).isPresent()); // case pickup course
 
         StaticRoboTaxiCreator.updateRoboTaxiMenuTo(roboTaxi, Collections.singletonList(SharedCourse.dropoffCourse(artificialScenarioCreator.avRequest1)));
@@ -178,7 +178,7 @@ public class RetrieveToLinkTest extends TestCase {
         }
 
         // Case 2b) Next course is on same link
-        roboTaxi.addAVRequestToMenu(artificialScenarioCreator.avRequestDepotOut);
+        roboTaxi.addPassengerRequestToMenu(artificialScenarioCreator.avRequestDepotOut);
         assertTrue(RetrieveToLink.forShared(roboTaxi, now).isPresent()); // case pickup course
         assertEquals(RetrieveToLink.forShared(roboTaxi, now).get(), artificialScenarioCreator.linkDepotOut); // case pickup course
 
@@ -196,7 +196,7 @@ public class RetrieveToLinkTest extends TestCase {
         StaticRoboTaxiCreator.cleanRTMenu(roboTaxi);
 
         // Case 2c) Next course is on other link
-        roboTaxi.addAVRequestToMenu(artificialScenarioCreator.avRequest1);
+        roboTaxi.addPassengerRequestToMenu(artificialScenarioCreator.avRequest1);
         assertTrue(RetrieveToLink.forShared(roboTaxi, now).isPresent()); // case pickup course
         assertEquals(RetrieveToLink.forShared(roboTaxi, now).get(), artificialScenarioCreator.linkUp); // case pickup course
 
@@ -229,7 +229,7 @@ public class RetrieveToLinkTest extends TestCase {
         }
 
         // Case 1b) Next course is on same link
-        roboTaxi.addAVRequestToMenu(s.avRequestDepotOut);
+        roboTaxi.addPassengerRequestToMenu(s.avRequestDepotOut);
         assertFalse(RetrieveToLink.forShared(roboTaxi, now).isPresent()); // case pickup course
 
         roboTaxi.pickupNewCustomerOnBoard();
@@ -245,7 +245,7 @@ public class RetrieveToLinkTest extends TestCase {
         StaticRoboTaxiCreator.cleanRTMenu(roboTaxi);
 
         // Case 1c) Next course is on other link
-        roboTaxi.addAVRequestToMenu(s.avRequest1);
+        roboTaxi.addPassengerRequestToMenu(s.avRequest1);
         assertFalse(RetrieveToLink.forShared(roboTaxi, now).isPresent()); // case pickup course
 
         StaticRoboTaxiCreator.updateRoboTaxiMenuTo(roboTaxi, Collections.singletonList(SharedCourse.dropoffCourse(s.avRequest1)));
@@ -263,7 +263,7 @@ public class RetrieveToLinkTest extends TestCase {
         assertFalse(RetrieveToLink.forShared(roboTaxi, now).isPresent());
 
         // Case 2b) Next course is on same link
-        roboTaxi.addAVRequestToMenu(s.avRequestDepotOut);
+        roboTaxi.addPassengerRequestToMenu(s.avRequestDepotOut);
         assertTrue(RetrieveToLink.forShared(roboTaxi, now).isPresent()); // case pickup course
         assertEquals(RetrieveToLink.forShared(roboTaxi, now).get(), s.linkDepotOut); // case pickup course
 
@@ -281,7 +281,7 @@ public class RetrieveToLinkTest extends TestCase {
         StaticRoboTaxiCreator.cleanRTMenu(roboTaxi);
 
         // Case 2c) Next course is on other link
-        roboTaxi.addAVRequestToMenu(s.avRequest1);
+        roboTaxi.addPassengerRequestToMenu(s.avRequest1);
         assertTrue(RetrieveToLink.forShared(roboTaxi, now).isPresent()); // case pickup course
         assertEquals(RetrieveToLink.forShared(roboTaxi, now).get(), s.linkUp); // case pickup course
 
@@ -317,7 +317,7 @@ public class RetrieveToLinkTest extends TestCase {
         }
 
         // Case 1b) Next course is on same link as current position
-        roboTaxi.addAVRequestToMenu(s.avRequestDepotOut);
+        roboTaxi.addPassengerRequestToMenu(s.avRequestDepotOut);
         assertTrue(RetrieveToLink.forShared(roboTaxi, now).isPresent());
         assertEquals(RetrieveToLink.forShared(roboTaxi, now).get(), s.linkDepotOut);
 
@@ -335,7 +335,7 @@ public class RetrieveToLinkTest extends TestCase {
         StaticRoboTaxiCreator.cleanRTMenu(roboTaxi);
 
         // Case 1c) Next course is on same course as destination link
-        roboTaxi.addAVRequestToMenu(s.avRequest1);
+        roboTaxi.addPassengerRequestToMenu(s.avRequest1);
         assertFalse(RetrieveToLink.forShared(roboTaxi, now).isPresent()); // case pickup course
 
         StaticRoboTaxiCreator.updateRoboTaxiMenuTo(roboTaxi, Collections.singletonList(SharedCourse.dropoffCourse(s.avRequest3)));
@@ -346,7 +346,7 @@ public class RetrieveToLinkTest extends TestCase {
         StaticRoboTaxiCreator.cleanRTMenu(roboTaxi);
 
         // Case 1d) Next course is on different link than divertable and destination link
-        roboTaxi.addAVRequestToMenu(s.avRequest4);
+        roboTaxi.addPassengerRequestToMenu(s.avRequest4);
         assertTrue(RetrieveToLink.forShared(roboTaxi, now).isPresent());
         assertEquals(RetrieveToLink.forShared(roboTaxi, now).get(), s.linkRight);
 
@@ -379,7 +379,7 @@ public class RetrieveToLinkTest extends TestCase {
         }
 
         // Case 2b) Next course is on same link as current position
-        roboTaxi.addAVRequestToMenu(s.avRequestDepotOut);
+        roboTaxi.addPassengerRequestToMenu(s.avRequestDepotOut);
         assertTrue(RetrieveToLink.forShared(roboTaxi, now).isPresent());
         assertEquals(RetrieveToLink.forShared(roboTaxi, now).get(), s.linkDepotOut);
 
@@ -397,7 +397,7 @@ public class RetrieveToLinkTest extends TestCase {
         StaticRoboTaxiCreator.cleanRTMenu(roboTaxi);
 
         // Case 2c) Next course is on same course as destination link
-        roboTaxi.addAVRequestToMenu(s.avRequest1);
+        roboTaxi.addPassengerRequestToMenu(s.avRequest1);
         assertTrue(RetrieveToLink.forShared(roboTaxi, now).isPresent()); // case pickup course
         assertEquals(RetrieveToLink.forShared(roboTaxi, now).get(), s.linkUp);
 
@@ -411,7 +411,7 @@ public class RetrieveToLinkTest extends TestCase {
         StaticRoboTaxiCreator.cleanRTMenu(roboTaxi);
 
         // Case 2c) Next course is on different link than divertable and end link
-        roboTaxi.addAVRequestToMenu(s.avRequest4);
+        roboTaxi.addPassengerRequestToMenu(s.avRequest4);
         assertTrue(RetrieveToLink.forShared(roboTaxi, now).isPresent());
         assertEquals(RetrieveToLink.forShared(roboTaxi, now).get(), s.linkRight);
 

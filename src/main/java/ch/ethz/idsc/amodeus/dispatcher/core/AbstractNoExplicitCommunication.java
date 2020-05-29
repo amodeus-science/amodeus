@@ -7,8 +7,8 @@ import java.util.Map;
 
 import org.matsim.amodeus.components.AVRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.network.NetworkUtils;
@@ -29,7 +29,7 @@ public abstract class AbstractNoExplicitCommunication extends RebalancingDispatc
     private final Network network;
     private final CyclePreventer cyclePreventer = new CyclePreventer();
     protected final Map<RoboTaxi, WeberMaintainer> weberMaintainers = new HashMap<>();
-    protected final TreeMaintainer<AVRequest> requestMaintainer;
+    protected final TreeMaintainer<PassengerRequest> requestMaintainer;
 
     protected AbstractNoExplicitCommunication(Network network, Config config, //
             AmodeusModeConfig operatorConfig, TravelTime travelTime, //
@@ -48,7 +48,7 @@ public abstract class AbstractNoExplicitCommunication extends RebalancingDispatc
         cyclePreventer.update(getRoboTaxis(), this::setRoboTaxiRebalance);
 
         /** get set D(t), the open requests */
-        Collection<AVRequest> d = getAVRequests();
+        Collection<PassengerRequest> d = getPassengerRequests();
         d.forEach(requestMaintainer::add);
 
         /** as soon as {@link RoboTaxi}s appear, initialize with present location */
@@ -57,7 +57,7 @@ public abstract class AbstractNoExplicitCommunication extends RebalancingDispatc
 
         /** if a {@link RoboTaxi} is on the same {@link Link} as a {@link AVRquest}, a pickup
          * is executed */
-        Map<RoboTaxi, AVRequest> matched = DrivebyRequestStopper.stopDrivingBy(DispatcherUtils.getAVRequestsAtLinks(getAVRequests()), //
+        Map<RoboTaxi, PassengerRequest> matched = DrivebyRequestStopper.stopDrivingBy(DispatcherUtils.getPassengerRequestsAtLinks(getPassengerRequests()), //
                 getDivertableRoboTaxis(), this::setRoboTaxiPickup);
         matched.values().forEach(requestMaintainer::remove);
 

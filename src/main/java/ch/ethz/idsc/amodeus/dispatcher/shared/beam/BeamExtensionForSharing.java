@@ -11,8 +11,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.Coord;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.core.network.NetworkUtils;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
@@ -35,7 +35,7 @@ public class BeamExtensionForSharing {
     // TODO @ChengQi after checking with Jan, code/api style is bad: lastEmptyTaxis
     private Collection<RoboTaxi> lastEmptyTaxis = new HashSet<>();
     // TODO @ChengQi after checking with Jan, code/api style is bad: addedAvRequests
-    private final Map<AVRequest, RoboTaxi> addedAvRequests = new HashMap<>();
+    private final Map<PassengerRequest, RoboTaxi> addedAvRequests = new HashMap<>();
     private Scalar phiMax;
     private double rMax;
 
@@ -50,7 +50,8 @@ public class BeamExtensionForSharing {
      * 3. reorders the menu of the RoboTaxis
      * 
      * @return the newly added Requests */
-    public Map<AVRequest, RoboTaxi> findAssignementAndExecute(Collection<RoboTaxi> roboTaxis, Collection<AVRequest> openRideSharingRequests, SharedUniversalDispatcher sud) {
+    public Map<PassengerRequest, RoboTaxi> findAssignementAndExecute(Collection<RoboTaxi> roboTaxis, Collection<PassengerRequest> openRideSharingRequests,
+            SharedUniversalDispatcher sud) {
         getSharingAssignements(roboTaxis, openRideSharingRequests);
         assignTo(sud);
         reorderMenus();
@@ -66,7 +67,7 @@ public class BeamExtensionForSharing {
      * @param avRequests all the requests which are still not picked up and should be considered for ride sharing
      * @return */
 
-    public Map<AVRequest, RoboTaxi> getSharingAssignements(Collection<RoboTaxi> allRoboTaxis, Collection<AVRequest> avRequests) {
+    public Map<PassengerRequest, RoboTaxi> getSharingAssignements(Collection<RoboTaxi> allRoboTaxis, Collection<PassengerRequest> avRequests) {
         addedAvRequests.clear();
         Set<RoboTaxi> driveWithCustomerRoboTaxis = allRoboTaxis.stream().filter(rt -> rt.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER)).collect(Collectors.toSet());
 
@@ -75,7 +76,7 @@ public class BeamExtensionForSharing {
             GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
             if (lastEmptyTaxis.contains(roboTaxi))
                 /** The RoboTaxi just picked up a customer! Lets see if we find close requests with similar direction */
-                for (AVRequest avRequest : avRequests)
+                for (PassengerRequest avRequest : avRequests)
                     if (!addedAvRequests.containsKey(avRequest) && checkIfPossibleSharing(roboTaxi, avRequest, numberAdded)) {
                         addedAvRequests.put(avRequest, roboTaxi);
                         numberAdded.incrementAndGet();
@@ -110,7 +111,7 @@ public class BeamExtensionForSharing {
         }
     }
 
-    private boolean checkIfPossibleSharing(RoboTaxi roboTaxi, AVRequest request2, AtomicInteger numberAdded) {
+    private boolean checkIfPossibleSharing(RoboTaxi roboTaxi, PassengerRequest request2, AtomicInteger numberAdded) {
         /** Check if the Robotaxi can Pickup a new customer on board or if it is allready full */
         if (!oneMorePickupPossible(roboTaxi, numberAdded))
             return false;
@@ -134,7 +135,7 @@ public class BeamExtensionForSharing {
                 + numberAdded.get() < roboTaxi.getCapacity();
     }
 
-    private static Optional<Scalar> directionAngle(RoboTaxi roboTaxi, AVRequest request2) {
+    private static Optional<Scalar> directionAngle(RoboTaxi roboTaxi, PassengerRequest request2) {
         return phiof(roboTaxi.getDivertableLocation().getCoord(), getDirectionOfTrip(roboTaxi), request2.getFromLink().getCoord(), request2.getToLink().getCoord());
     }
 

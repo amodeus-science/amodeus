@@ -7,13 +7,13 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import org.matsim.amodeus.config.modal.TimingConfig;
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusDropoffTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusPickupTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.path.VrpPaths;
 import org.matsim.contrib.dvrp.schedule.Schedule;
@@ -36,7 +36,7 @@ public class SingleRideAppender {
     }
 
     private class AppendTask {
-        final public AVRequest request;
+        final public PassengerRequest request;
         final public DvrpVehicle vehicle;
 
         final public Future<Path> pickup;
@@ -44,7 +44,7 @@ public class SingleRideAppender {
 
         final public double time;
 
-        public AppendTask(AVRequest request, DvrpVehicle vehicle, double time, Future<Path> pickup, Future<Path> dropoff) {
+        public AppendTask(PassengerRequest request, DvrpVehicle vehicle, double time, Future<Path> pickup, Future<Path> dropoff) {
             this.request = request;
             this.vehicle = vehicle;
             this.pickup = pickup;
@@ -53,7 +53,7 @@ public class SingleRideAppender {
         }
     }
 
-    public void schedule(AVRequest request, DvrpVehicle vehicle, double now) {
+    public void schedule(PassengerRequest request, DvrpVehicle vehicle, double now) {
         Schedule schedule = vehicle.getSchedule();
         AmodeusStayTask stayTask = (AmodeusStayTask) Schedules.getLastTask(schedule);
 
@@ -64,7 +64,7 @@ public class SingleRideAppender {
     }
 
     public void schedule(AppendTask task, Path plainPickupPath, Path plainDropoffPath) {
-        AVRequest request = task.request;
+        PassengerRequest request = task.request;
         DvrpVehicle vehicle = task.vehicle;
         double now = task.time;
 

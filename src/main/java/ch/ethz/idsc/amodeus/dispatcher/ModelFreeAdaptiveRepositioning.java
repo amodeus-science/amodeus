@@ -9,9 +9,9 @@ import java.util.Objects;
 import org.matsim.amodeus.components.AVDispatcher;
 import org.matsim.amodeus.components.AVRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
@@ -50,7 +50,7 @@ public class ModelFreeAdaptiveRepositioning extends RebalancingDispatcher {
 
     /** list of last known request locations */
     private final FIFOFixedQueue<Link> lastRebLoc;
-    private HashSet<AVRequest> registeredRequests = new HashSet<>();
+    private HashSet<PassengerRequest> registeredRequests = new HashSet<>();
 
     private ModelFreeAdaptiveRepositioning(Network network, Config config, AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, AVRouter router, EventsManager eventsManager, //
@@ -81,7 +81,7 @@ public class ModelFreeAdaptiveRepositioning extends RebalancingDispatcher {
         final long round_now = Math.round(now);
 
         /** take account of newly arrived requests */
-        getAVRequests().stream().filter(avr -> !registeredRequests.contains(avr)).forEach(avr -> {
+        getPassengerRequests().stream().filter(avr -> !registeredRequests.contains(avr)).forEach(avr -> {
             lastRebLoc.manage(avr.getFromLink());
             registeredRequests.add(avr);
         });
@@ -89,7 +89,7 @@ public class ModelFreeAdaptiveRepositioning extends RebalancingDispatcher {
         /** dipatch step */
         if (round_now % dispatchPeriod == 0)
             /** step 1, execute pickup on all open requests */
-            printVals = assignmentMatcher.executePickup(this, getDivertableRoboTaxis(), getAVRequests(), //
+            printVals = assignmentMatcher.executePickup(this, getDivertableRoboTaxis(), getPassengerRequests(), //
                     EuclideanDistanceFunction.INSTANCE, network);
 
         /** rebalancing step */

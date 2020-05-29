@@ -10,8 +10,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 import ch.ethz.idsc.amodeus.dispatcher.util.TreeMultipleItems;
@@ -21,16 +21,16 @@ import ch.ethz.idsc.amodeus.routing.NetworkTimeDistInterface;
  * desired subgroups such as unassigned Requests or allows to find the earliest requests computationally efficient. */
 /* package */ class RequestHandler {
     /** Structure for the Track of Wait times and so on */
-    private final Map<AVRequest, RequestWrap> requests = new HashMap<>();
+    private final Map<PassengerRequest, RequestWrap> requests = new HashMap<>();
     /** unnassigned Requests Sorted in a Navigable Map such that the earliest Request can be found easily */
-    private final TreeMultipleItems<AVRequest> unassignedRequests = new TreeMultipleItems<>(r -> r.getSubmissionTime());
+    private final TreeMultipleItems<PassengerRequest> unassignedRequests = new TreeMultipleItems<>(r -> r.getSubmissionTime());
     /** All requests submitted in the last hour. This is used for the Rebalancing. */
-    private final TreeMultipleItems<AVRequest> requestsLastHour = new TreeMultipleItems<>(r -> r.getSubmissionTime());
+    private final TreeMultipleItems<PassengerRequest> requestsLastHour = new TreeMultipleItems<>(r -> r.getSubmissionTime());
     /** All the drive Times for each requests if this request would be served directely with a unit capacity robo taxi */
-    private final Map<AVRequest, Double> driveTimesSingle = new HashMap<>();
+    private final Map<PassengerRequest, Double> driveTimesSingle = new HashMap<>();
     /** All the effective Pickupe Times for each Requests. needed for the Constraints */
     /** All the Requests which were Pending in the last time Step */
-    private final Set<AVRequest> lastStepPending = new HashSet<>();
+    private final Set<PassengerRequest> lastStepPending = new HashSet<>();
 
     /** Time Constants for wait list times */
     private final Optional<Double> extremWaitListTime;
@@ -49,18 +49,18 @@ import ch.ethz.idsc.amodeus.routing.NetworkTimeDistInterface;
         this.waitListTime = waitListTime;
     }
 
-    public void addUnassignedRequests(Collection<AVRequest> unassignedAVRequests, NetworkTimeDistInterface timeDb, Double now) {
-        unassignedAVRequests.forEach(r -> {
+    public void addUnassignedRequests(Collection<PassengerRequest> unassignedPassengerRequests, NetworkTimeDistInterface timeDb, Double now) {
+        unassignedPassengerRequests.forEach(r -> {
             unassignedRequests.add(r);
             requestsLastHour.add(r);
             driveTimesSingle.put(r, timeDb.travelTime(r.getFromLink(), r.getToLink(), now).number().doubleValue());
         });
 
-        unassignedAVRequests.stream().filter(avr -> !requests.containsKey(avr)).forEach(avr -> requests.put(avr, new RequestWrap(avr)));
-        unassignedAVRequests.forEach(avr -> requests.get(avr).setUnitCapDriveTime(timeDb.travelTime(avr.getFromLink(), avr.getToLink(), now).number().doubleValue()));
+        unassignedPassengerRequests.stream().filter(avr -> !requests.containsKey(avr)).forEach(avr -> requests.put(avr, new RequestWrap(avr)));
+        unassignedPassengerRequests.forEach(avr -> requests.get(avr).setUnitCapDriveTime(timeDb.travelTime(avr.getFromLink(), avr.getToLink(), now).number().doubleValue()));
     }
 
-    public void updatePickupTimes(Collection<AVRequest> avRequests, double now) {
+    public void updatePickupTimes(Collection<PassengerRequest> avRequests, double now) {
         lastStepPending.stream().filter(r -> !avRequests.contains(r)).forEach(r -> requests.get(r).setPickupTime(now));
         lastStepPending.clear();
         lastStepPending.addAll(avRequests);
@@ -71,41 +71,41 @@ import ch.ethz.idsc.amodeus.routing.NetworkTimeDistInterface;
     }
 
     public Set<Link> getRequestLinksLastHour() {
-        return requestsLastHour.getValues().stream().map(AVRequest::getFromLink).collect(Collectors.toSet());
+        return requestsLastHour.getValues().stream().map(PassengerRequest::getFromLink).collect(Collectors.toSet());
     }
 
-    public void removeFromUnasignedRequests(AVRequest avRequest) {
+    public void removeFromUnasignedRequests(PassengerRequest avRequest) {
         unassignedRequests.remove(avRequest);
     }
 
-    public List<AVRequest> getInOrderOffSubmissionTime() {
+    public List<PassengerRequest> getInOrderOffSubmissionTime() {
         return unassignedRequests.getTsInOrderOfValue();
     }
 
-    public boolean isOnWaitList(AVRequest avRequest) {
+    public boolean isOnWaitList(PassengerRequest avRequest) {
         return requests.get(avRequest).isOnWaitList();
     }
 
-    public void addToWaitList(AVRequest avRequest) {
+    public void addToWaitList(PassengerRequest avRequest) {
         requests.get(avRequest).putToWaitList();
     }
 
-    public void addToExtreemWaitList(AVRequest avRequest) {
+    public void addToExtreemWaitList(PassengerRequest avRequest) {
         requests.get(avRequest).putToExtreemWaitList();
     }
 
-    public double getDriveTimeDirectUnitCap(AVRequest avRequest) {
+    public double getDriveTimeDirectUnitCap(PassengerRequest avRequest) {
         return driveTimesSingle.get(avRequest);
     }
 
-    public Map<AVRequest, Double> getDriveTimes(SharedAvRoute route) {
+    public Map<PassengerRequest, Double> getDriveTimes(SharedAvRoute route) {
         // Preparation
-        Map<AVRequest, Double> thisPickupTimes = new HashMap<>();
+        Map<PassengerRequest, Double> thisPickupTimes = new HashMap<>();
         route.getRoute().stream() //
                 .filter(srp -> srp.getMealType().equals(SharedMealType.PICKUP)) //
                 .forEach(srp -> thisPickupTimes.put(srp.getAvRequest(), srp.getArrivalTime()));
         //
-        Map<AVRequest, Double> driveTimes = new HashMap<>();
+        Map<PassengerRequest, Double> driveTimes = new HashMap<>();
         for (SharedRoutePoint sharedRoutePoint : route.getRoute())
             if (sharedRoutePoint.getMealType().equals(SharedMealType.DROPOFF))
                 if (thisPickupTimes.containsKey(sharedRoutePoint.getAvRequest()))
@@ -117,21 +117,21 @@ import ch.ethz.idsc.amodeus.routing.NetworkTimeDistInterface;
         return driveTimes;
     }
 
-    public RequestWrap getRequestWrap(AVRequest avRequest) {
+    public RequestWrap getRequestWrap(PassengerRequest avRequest) {
         return requests.get(avRequest);
     }
 
-    public double calculateWaitTime(AVRequest avRequest) {
+    public double calculateWaitTime(PassengerRequest avRequest) {
         return extremWaitListTime//
                 .filter(t -> requests.get(avRequest).isOnExtreemWaitList())//
                 .orElse(calculateInternal(avRequest));
     }
 
-    private double calculateInternal(AVRequest avRequest) {
+    private double calculateInternal(PassengerRequest avRequest) {
         return (isOnWaitList(avRequest)) ? maxWaitTime : waitListTime;
     }
 
-    public Set<AVRequest> getCopyOfUnassignedAVRequests() {
+    public Set<PassengerRequest> getCopyOfUnassignedPassengerRequests() {
         return unassignedRequests.getValues();
     }
 

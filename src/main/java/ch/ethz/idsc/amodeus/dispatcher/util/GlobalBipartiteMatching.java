@@ -5,12 +5,12 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 
-/** Use to solve a {@link RoboTaxi} to {@link AVRequest} assignment problem via
+/** Use to solve a {@link RoboTaxi} to {@link PassengerRequest} assignment problem via
  * global (all to all) bipartite matching. Solved using
  * the Hungarian algorithm */
 public class GlobalBipartiteMatching extends AbstractRoboTaxiDestMatcher {
@@ -24,14 +24,14 @@ public class GlobalBipartiteMatching extends AbstractRoboTaxiDestMatcher {
         this.globalBipartiteCost = Objects.requireNonNull(globalBipartiteCost);
     }
 
-    /** Match RoboTaxis to AVRequests
+    /** Match RoboTaxis to PassengerRequests
      * 
      * @param roboTaxis
      * @param requests
      * @return */
     @Override
-    protected Map<RoboTaxi, AVRequest> protected_match(Collection<RoboTaxi> roboTaxis, Collection<AVRequest> requests) {
-        return GlobalBipartiteHelper.genericMatch(roboTaxis, requests, AVRequest::getFromLink, globalBipartiteCost);
+    protected Map<RoboTaxi, PassengerRequest> protected_match(Collection<RoboTaxi> roboTaxis, Collection<PassengerRequest> requests) {
+        return GlobalBipartiteHelper.genericMatch(roboTaxis, requests, PassengerRequest::getFromLink, globalBipartiteCost);
     }
 
     /** Match Robotaxis to links.

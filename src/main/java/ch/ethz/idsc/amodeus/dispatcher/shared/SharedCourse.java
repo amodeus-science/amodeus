@@ -3,15 +3,15 @@ package ch.ethz.idsc.amodeus.dispatcher.shared;
 
 import java.util.Objects;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 
 /** Middle level class in SharedRoboTaxi functionality, a {@link SharedMenu} is
  * composed of {@link SharedCourse}s which internally have a {@link SharedMealType}s
  * A {@link SharedCourse} has the following attributes:
- * - 1 {@link AVRequest} (unless it is a redirect course)
+ * - 1 {@link PassengerRequest} (unless it is a redirect course)
  * - 1 {@link Link}
  * - 1 {@link String} unique ID
  * - 1 {@link SharedMealType} either PICKUP, DROPOFF or REDIRECT}
@@ -19,18 +19,18 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
  * There are three different possible {@link SharedCourse}s which can be instantiated
  * with the static functions below. */
 public class SharedCourse {
-    protected static final AVRequest STANDARD_REDIRECT_AVREQUEST = null;
+    protected static final PassengerRequest STANDARD_REDIRECT_AVREQUEST = null;
 
     /** @return a pickup course, which is a {@link SharedCourse} during which the
-     *         {@link AVRequest} @param avRequest should be picked up at its origin. */
-    public static SharedCourse pickupCourse(AVRequest avRequest) {
+     *         {@link PassengerRequest} @param avRequest should be picked up at its origin. */
+    public static SharedCourse pickupCourse(PassengerRequest avRequest) {
         Objects.requireNonNull(avRequest);
         return new SharedCourse(avRequest, avRequest.getFromLink(), avRequest.getId().toString(), SharedMealType.PICKUP);
     }
 
     /** @return a dropoff course, which is a {@link SharedCourse} during which the
-     *         {@link AVRequest} @param avRequest should be dropped off at its destination. */
-    public static SharedCourse dropoffCourse(AVRequest avRequest) {
+     *         {@link PassengerRequest} @param avRequest should be dropped off at its destination. */
+    public static SharedCourse dropoffCourse(PassengerRequest avRequest) {
         Objects.requireNonNull(avRequest);
         return new SharedCourse(avRequest, avRequest.getToLink(), avRequest.getId().toString(), SharedMealType.DROPOFF);
     }
@@ -45,17 +45,17 @@ public class SharedCourse {
 
     // ---
     /** class implementation */
-    private final AVRequest avRequest;
+    private final PassengerRequest avRequest;
     private final Link link;
     private final String courseId;
     private final SharedMealType sharedRoboTaxiMealType;
 
     /** @param for {@link SharedMealType} PICKUP and DROPOFF the requestID must be the
-     *            id of the {@link AVRequest}, otherwise a self-chosen id to distinguish different
+     *            id of the {@link PassengerRequest}, otherwise a self-chosen id to distinguish different
      *            {@link SharedMealType} tasks of type REDIRECT
      * @param link
      * @param sharedAVMealType */
-    protected SharedCourse(AVRequest avRequest, Link link, String courseId, SharedMealType sharedAVMealType) {
+    protected SharedCourse(PassengerRequest avRequest, Link link, String courseId, SharedMealType sharedAVMealType) {
         this.avRequest = avRequest;
         this.link = Objects.requireNonNull(link);
         this.courseId = Objects.requireNonNull(courseId);
@@ -74,7 +74,7 @@ public class SharedCourse {
         return link;
     }
 
-    public final AVRequest getAvRequest() {
+    public final PassengerRequest getAvRequest() {
         return avRequest;
     }
 
