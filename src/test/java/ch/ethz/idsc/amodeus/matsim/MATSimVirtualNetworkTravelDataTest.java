@@ -65,7 +65,7 @@ public class MATSimVirtualNetworkTravelDataTest {
         for (int i = 0; i < 2; i++) {
             Controler controler = prepare();
 
-            AmodeusModeConfig modeConfig = AmodeusConfigGroup.get(controler.getConfig()).getMode("av");
+            AmodeusModeConfig modeConfig = AmodeusConfigGroup.get(controler.getConfig()).getMode(AmodeusModeConfig.DEFAULT_MODE);
             modeConfig.getDispatcherConfig().setRegenerateVirtualNetwork(true);
             modeConfig.getDispatcherConfig().setRegenerateTravelData(true);
 
@@ -99,7 +99,7 @@ public class MATSimVirtualNetworkTravelDataTest {
         ReferenceFrame referenceFrame = locationSpec.referenceFrame();
         MatsimAmodeusDatabase db = MatsimAmodeusDatabase.initialize(scenario.getNetwork(), referenceFrame);
 
-        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams("av");
+        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams(AmodeusModeConfig.DEFAULT_MODE);
         modeParams.setMonetaryDistanceRate(0.0);
         modeParams.setMarginalUtilityOfTraveling(8.86);
         modeParams.setConstant(0.0);
@@ -108,7 +108,7 @@ public class MATSimVirtualNetworkTravelDataTest {
 
         AmodeusConfigGroup avConfig = AmodeusConfigGroup.get(config);
 
-        AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
+        AmodeusModeConfig operatorConfig = new AmodeusModeConfig(AmodeusModeConfig.DEFAULT_MODE);
         avConfig.addMode(operatorConfig);
 
         GeneratorConfig generatorConfig = operatorConfig.getGeneratorConfig();

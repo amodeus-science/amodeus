@@ -28,7 +28,7 @@ public class PreroutingTest {
     public void testPreRouting() {
         AmodeusConfigGroup avConfigGroup = new AmodeusConfigGroup();
 
-        AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
+        AmodeusModeConfig operatorConfig = new AmodeusModeConfig(AmodeusModeConfig.DEFAULT_MODE);
         operatorConfig.setPredictRouteTravelTime(true);
         operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
         avConfigGroup.addMode(operatorConfig);
@@ -43,7 +43,7 @@ public class PreroutingTest {
 
         config.plansCalcRoute().setRoutingRandomness(0.0);
 
-        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams("av");
+        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams(AmodeusModeConfig.DEFAULT_MODE);
         modeParams.setMonetaryDistanceRate(0.0);
         modeParams.setMarginalUtilityOfTraveling(8.86);
         modeParams.setConstant(0.0);

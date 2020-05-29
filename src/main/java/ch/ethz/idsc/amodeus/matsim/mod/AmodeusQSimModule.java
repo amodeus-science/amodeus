@@ -13,23 +13,5 @@ public class AmodeusQSimModule extends AbstractQSimModule {
          * legs. */
 
         install(new AVQSimModule());
-
-        // TODO: Can be removed!'
-        /* install(Modules.override(new AVQSimModule()).with(new AbstractModule() {
-         * 
-         * @Override
-         * protected void configure() {
-         * for (OperatorConfig operatorConfig : AVConfigGroup.getOrCreate(getConfig()).getOperatorConfigs().values()) {
-         * // TODO: Fix this one we have no modes!
-         * 
-         * bind(DvrpModes.key(VrpLegFactory.class, "av")).toProvider(ModalProviders.createProvider("av", getter -> {
-         * QSim qsim = getter.get(QSim.class);
-         * AVOptimizer optimizer = getter.getModal(AVOptimizer.class);
-         * 
-         * return TrackingHelper.createLegCreatorWithIDSCTracking(optimizer, qsim.getSimTimer());
-         * }));
-         * }
-         * }
-         * })); */
     }
 }

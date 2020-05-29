@@ -15,6 +15,6 @@ public class AmodeusRouteFactory implements RouteFactory {
 
     @Override
     public String getCreatedRouteType() {
-        return AmodeusRoute.AV_ROUTE;
+        return AmodeusRoute.AMODEUS_ROUTE;
     }
 }

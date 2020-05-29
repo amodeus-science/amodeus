@@ -3,6 +3,7 @@ package ch.ethz.idsc.amodeus.taxitrip;
 
 import java.time.LocalDate;
 
+import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.population.Activity;
@@ -38,7 +39,7 @@ public enum PersonCreate {
         endActivity.setStartTime(timeConvert.ldtToAmodeus(taxiTrip.dropoffTimeDate, simulationDate));
 
         /** leg between activity */
-        Leg leg = populationFactory.createLeg("av");
+        Leg leg = populationFactory.createLeg(AmodeusModeConfig.DEFAULT_MODE);
         leg.setDepartureTime(startActivity.getEndTime().seconds());
 
         /** assemble */

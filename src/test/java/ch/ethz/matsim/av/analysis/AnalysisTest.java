@@ -48,7 +48,7 @@ public class AnalysisTest {
         avConfigGroup.setPassengerAnalysisInterval(2);
         avConfigGroup.setVehicleAnalysisInterval(2);
 
-        AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
+        AmodeusModeConfig operatorConfig = new AmodeusModeConfig(AmodeusModeConfig.DEFAULT_MODE);
         operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
         operatorConfig.getPricingConfig().setPricePerKm(0.48);
         operatorConfig.getPricingConfig().setSpatialBillingInterval(1000.0);
@@ -60,7 +60,7 @@ public class AnalysisTest {
         Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
         Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
 
-        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams("av");
+        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams(AmodeusModeConfig.DEFAULT_MODE);
         modeParams.setMonetaryDistanceRate(0.0);
         modeParams.setMarginalUtilityOfTraveling(8.86);
         modeParams.setConstant(0.0);
@@ -146,7 +146,7 @@ public class AnalysisTest {
         avConfigGroup.setPassengerAnalysisInterval(2);
         avConfigGroup.setVehicleAnalysisInterval(2);
 
-        AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
+        AmodeusModeConfig operatorConfig = new AmodeusModeConfig(AmodeusModeConfig.DEFAULT_MODE);
         operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
         operatorConfig.getPricingConfig().setPricePerKm(0.48);
         operatorConfig.getPricingConfig().setSpatialBillingInterval(1000.0);
@@ -158,7 +158,7 @@ public class AnalysisTest {
         Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
         Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
 
-        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams("av");
+        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams(AmodeusModeConfig.DEFAULT_MODE);
         modeParams.setMonetaryDistanceRate(0.0);
         modeParams.setMarginalUtilityOfTraveling(8.86);
         modeParams.setConstant(0.0);

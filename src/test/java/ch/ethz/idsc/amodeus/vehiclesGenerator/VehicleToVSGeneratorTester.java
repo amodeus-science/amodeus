@@ -62,7 +62,7 @@ public class VehicleToVSGeneratorTester {
         virtualNetwork = virtualNetworkCreator.create(network, population, scenarioOptions, numRt, endTime);
 
         /** creating dummy config with 10 vehicles */
-        operatorConfig = new AmodeusModeConfig("av");
+        operatorConfig = new AmodeusModeConfig(AmodeusModeConfig.DEFAULT_MODE);
 
         GeneratorConfig avGeneratorConfig = operatorConfig.getGeneratorConfig();
         avGeneratorConfig.setType("strategy");

@@ -58,7 +58,7 @@ public class TestScenario {
     static public Scenario createScenario(AmodeusConfigGroup avConfig, Collection<TestRequest> requests) {
         DvrpConfigGroup dvrpConfigGroup = new DvrpConfigGroup();
         dvrpConfigGroup.setMobsimMode("car");
-        dvrpConfigGroup.setNetworkModes(ImmutableSet.of("av"));
+        dvrpConfigGroup.setNetworkModes(ImmutableSet.of(AmodeusModeConfig.DEFAULT_MODE));
 
         Config config = ConfigUtils.createConfig(avConfig, dvrpConfigGroup);
 
@@ -69,10 +69,10 @@ public class TestScenario {
         config.qsim().setFlowCapFactor(1000.0);
         config.qsim().setEndTime(10 * 3600.0);
 
-        ModeParams modeParams = new ModeParams("av");
+        ModeParams modeParams = new ModeParams(AmodeusModeConfig.DEFAULT_MODE);
         config.planCalcScore().addModeParams(modeParams);
 
-        ActivityParams activityParams = new ActivityParams("av interaction");
+        ActivityParams activityParams = new ActivityParams("amodeus interaction");
         activityParams.setTypicalDuration(1.0);
         activityParams.setScoringThisActivityAtAll(false);
         config.planCalcScore().addActivityParams(activityParams);
@@ -102,12 +102,12 @@ public class TestScenario {
         Link link2r = networkFactory.createLink(Id.createLinkId("link2r"), node3, node2);
         Link link3r = networkFactory.createLink(Id.createLinkId("link3r"), node4, node3);
 
-        link1.setAllowedModes(Collections.singleton("av"));
-        link2.setAllowedModes(Collections.singleton("av"));
-        link3.setAllowedModes(Collections.singleton("av"));
-        link1r.setAllowedModes(Collections.singleton("av"));
-        link2r.setAllowedModes(Collections.singleton("av"));
-        link3r.setAllowedModes(Collections.singleton("av"));
+        link1.setAllowedModes(Collections.singleton(AmodeusModeConfig.DEFAULT_MODE));
+        link2.setAllowedModes(Collections.singleton(AmodeusModeConfig.DEFAULT_MODE));
+        link3.setAllowedModes(Collections.singleton(AmodeusModeConfig.DEFAULT_MODE));
+        link1r.setAllowedModes(Collections.singleton(AmodeusModeConfig.DEFAULT_MODE));
+        link2r.setAllowedModes(Collections.singleton(AmodeusModeConfig.DEFAULT_MODE));
+        link3r.setAllowedModes(Collections.singleton(AmodeusModeConfig.DEFAULT_MODE));
 
         link1.setFreespeed(10.0);
         link2.setFreespeed(10.0);
@@ -147,7 +147,7 @@ public class TestScenario {
             firstActivity.setEndTime(request.departureTime);
             plan.addActivity(firstActivity);
 
-            Leg leg = populationFactory.createLeg("av");
+            Leg leg = populationFactory.createLeg(AmodeusModeConfig.DEFAULT_MODE);
             plan.addLeg(leg);
 
             Activity secondActivity = populationFactory.createActivityFromLinkId("generic", link3.getId());
@@ -201,7 +201,7 @@ public class TestScenario {
     static public AmodeusConfigGroup createConfig() {
         AmodeusConfigGroup config = new AmodeusConfigGroup();
 
-        AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
+        AmodeusModeConfig operatorConfig = new AmodeusModeConfig(AmodeusModeConfig.DEFAULT_MODE);
         operatorConfig.getDispatcherConfig().setType(MultiODHeuristic.TYPE);
         operatorConfig.getGeneratorConfig().setType("Single");
         config.addMode(operatorConfig);
@@ -241,7 +241,7 @@ public class TestScenario {
 
         controller.addOverridingQSimModule(new AVQSimModule());
 
-        controller.configureQSimComponents(AVQSimModule.activateModes("av"));
+        controller.configureQSimComponents(AVQSimModule.activateModes(AmodeusModeConfig.DEFAULT_MODE));
 
         return controller;
     }
@@ -251,7 +251,7 @@ public class TestScenario {
 
         @Override
         public void handleEvent(PersonArrivalEvent event) {
-            if (!event.getPersonId().toString().equals("vehicle") && event.getLegMode().equals("av"))
+            if (!event.getPersonId().toString().equals("vehicle") && event.getLegMode().equals(AmodeusModeConfig.DEFAULT_MODE))
                 times.add(event.getTime());
         }
     }

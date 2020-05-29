@@ -23,7 +23,7 @@ import org.matsim.core.utils.geometry.CoordUtils;
 import org.matsim.facilities.Facility;
 
 public class AmodeusRoutingModule implements RoutingModule {
-    static final public String INTERACTION_ACTIVITY_TYPE = "av interaction";
+    static final public String INTERACTION_ACTIVITY_TYPE = "amodeus interaction";
 
     private final AmodeusRouteFactory routeFactory;
     private final RoutingModule walkRoutingModule;

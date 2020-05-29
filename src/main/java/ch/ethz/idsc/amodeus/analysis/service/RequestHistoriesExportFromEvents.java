@@ -2,7 +2,9 @@
 package ch.ethz.idsc.amodeus.analysis.service;
 
 import java.io.File;
+import java.util.Collections;
 
+import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.config.Config;
 
@@ -25,7 +27,8 @@ public class RequestHistoriesExportFromEvents implements AnalysisExport {
     @Override
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
         try {
-            ConvertAVServicesFromEvents.write(network, relativeDirectory.getAbsolutePath() + "/" + REQUEST_HISTORY_CSV, eventFile);
+            ConvertAVServicesFromEvents.write(network, relativeDirectory.getAbsolutePath() + "/" + REQUEST_HISTORY_CSV, eventFile,
+                    Collections.singleton(AmodeusModeConfig.DEFAULT_MODE));
         } catch (Exception e) {
             System.err.println("It was not possible to create the " + REQUEST_HISTORY_CSV);
         }

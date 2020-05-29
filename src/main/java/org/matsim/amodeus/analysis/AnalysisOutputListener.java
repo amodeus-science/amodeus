@@ -50,7 +50,7 @@ public class AnalysisOutputListener implements IterationStartsListener, Iteratio
 
         LinkFinder linkFinder = new LinkFinder(network);
 
-        this.passengerAnalysisListener = new PassengerAnalysisListener(linkFinder);
+        this.passengerAnalysisListener = new PassengerAnalysisListener(config.getModes().keySet(), linkFinder);
         this.vehicleAnalysisListener = new VehicleAnalysisListener(linkFinder);
     }
 

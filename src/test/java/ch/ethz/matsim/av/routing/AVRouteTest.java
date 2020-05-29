@@ -8,6 +8,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.amodeus.routing.AmodeusRoute;
 import org.matsim.amodeus.routing.AmodeusRouteFactory;
 import org.matsim.api.core.v01.Id;
@@ -57,7 +58,7 @@ public class AVRouteTest {
 
             plan.addActivity(factory.createActivityFromLinkId("whatever", Id.createLinkId("somewhere")));
 
-            leg = factory.createLeg("av");
+            leg = factory.createLeg(AmodeusModeConfig.DEFAULT_MODE);
             route = routeFactory.createRoute(Id.createLinkId("S1"), Id.createLinkId("E1"));
             route.setWaitingTime(123.0);
             leg.setRoute(route);
@@ -65,7 +66,7 @@ public class AVRouteTest {
 
             plan.addActivity(factory.createActivityFromLinkId("whatever", Id.createLinkId("somewhere")));
 
-            leg = factory.createLeg("av");
+            leg = factory.createLeg(AmodeusModeConfig.DEFAULT_MODE);
             route = routeFactory.createRoute(Id.createLinkId("S2"), Id.createLinkId("E2"));
             route.setWaitingTime(987.0);
             leg.setRoute(route);

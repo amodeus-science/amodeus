@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 public class AmodeusRoute extends AbstractRoute {
-    public final static String AV_ROUTE = "av";
+    public final static String AMODEUS_ROUTE = "amodeus";
 
     private OptionalTime waitingTime = OptionalTime.undefined();
     private Optional<Double> price = Optional.empty();
@@ -96,6 +96,6 @@ public class AmodeusRoute extends AbstractRoute {
 
     @Override
     public String getRouteType() {
-        return AV_ROUTE;
+        return AMODEUS_ROUTE;
     }
 }

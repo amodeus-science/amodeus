@@ -3,6 +3,7 @@ package ch.ethz.idsc.amodeus.analysis.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 
 import org.matsim.amodeus.analysis.LinkFinder;
 import org.matsim.amodeus.analysis.passengers.PassengerAnalysisListener;
@@ -15,11 +16,11 @@ import org.matsim.core.events.MatsimEventsReader;
 public enum ConvertAVServicesFromEvents {
     ;
 
-    public static void write(Network network, String outputPath, String eventsPath) throws IOException {
+    public static void write(Network network, String outputPath, String eventsPath, Collection<String> modes) throws IOException {
         System.out.println("Read File from " + eventsPath);
 
         LinkFinder linkFinder = new LinkFinder(network);
-        PassengerAnalysisListener listener = new PassengerAnalysisListener(linkFinder);
+        PassengerAnalysisListener listener = new PassengerAnalysisListener(modes, linkFinder);
 
         EventsManager eventsManager = EventsUtils.createEventsManager();
         eventsManager.addHandler(listener);

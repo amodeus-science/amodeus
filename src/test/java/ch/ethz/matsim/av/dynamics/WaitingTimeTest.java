@@ -39,7 +39,7 @@ public class WaitingTimeTest {
     static AmodeusConfigGroup createConfig() {
         AmodeusConfigGroup avConfigGroup = new AmodeusConfigGroup();
 
-        AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
+        AmodeusModeConfig operatorConfig = new AmodeusModeConfig(AmodeusModeConfig.DEFAULT_MODE);
         operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
         operatorConfig.getPricingConfig().setPricePerKm(0.48);
         operatorConfig.getPricingConfig().setSpatialBillingInterval(1000.0);
@@ -55,7 +55,7 @@ public class WaitingTimeTest {
         Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
         Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
 
-        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams("av");
+        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams(AmodeusModeConfig.DEFAULT_MODE);
         modeParams.setMonetaryDistanceRate(0.0);
         modeParams.setMarginalUtilityOfTraveling(8.86);
         modeParams.setConstant(0.0);
@@ -65,7 +65,7 @@ public class WaitingTimeTest {
         controler.addOverridingModule(new AVModule());
         controler.addOverridingQSimModule(new AVQSimModule());
 
-        controler.configureQSimComponents(AVQSimModule.activateModes("av"));
+        controler.configureQSimComponents(AVQSimModule.activateModes(AmodeusModeConfig.DEFAULT_MODE));
 
         return controler;
     }
@@ -73,7 +73,7 @@ public class WaitingTimeTest {
     @Test
     public void testConstantWaitingTime() {
         AmodeusConfigGroup config = createConfig();
-        AmodeusModeConfig operatorConfig = config.getModes().get("av");
+        AmodeusModeConfig operatorConfig = config.getModes().get(AmodeusModeConfig.DEFAULT_MODE);
 
         operatorConfig.getWaitingTimeEstimationConfig().setDefaultWaitingTime(123.0);
 
@@ -104,7 +104,7 @@ public class WaitingTimeTest {
     @Test
     public void testAttributeWaitingTime() {
         AmodeusConfigGroup config = createConfig();
-        AmodeusModeConfig operatorConfig = config.getModes().get("av");
+        AmodeusModeConfig operatorConfig = config.getModes().get(AmodeusModeConfig.DEFAULT_MODE);
 
         operatorConfig.getWaitingTimeEstimationConfig().setDefaultWaitingTime(123.0);
         operatorConfig.getWaitingTimeEstimationConfig().setConstantWaitingTimeLinkAttribute("avWaitingTime");
@@ -148,7 +148,7 @@ public class WaitingTimeTest {
     @Test
     public void testDynamicWaitingTime() {
         AmodeusConfigGroup config = createConfig();
-        AmodeusModeConfig operatorConfig = config.getModes().get("av");
+        AmodeusModeConfig operatorConfig = config.getModes().get(AmodeusModeConfig.DEFAULT_MODE);
 
         operatorConfig.getWaitingTimeEstimationConfig().setDefaultWaitingTime(123.0);
         operatorConfig.getWaitingTimeEstimationConfig().setConstantWaitingTimeLinkAttribute("avWaitingTime");
@@ -204,7 +204,7 @@ public class WaitingTimeTest {
     @Test
     public void testDynamicWaitingTimeWithoutConstantAttribute() {
         AmodeusConfigGroup config = createConfig();
-        AmodeusModeConfig operatorConfig = config.getModes().get("av");
+        AmodeusModeConfig operatorConfig = config.getModes().get(AmodeusModeConfig.DEFAULT_MODE);
 
         operatorConfig.getWaitingTimeEstimationConfig().setDefaultWaitingTime(123.0);
         operatorConfig.getWaitingTimeEstimationConfig().setEstimationLinkAttribute("avGroup");
