@@ -1,9 +1,9 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.amodeus.dvrp.schedule.AmodeusPickupTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
 
@@ -13,7 +13,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
  * 1) finish pickup or dropoff task 2) append drive task 3) append new stay task */
 /* package */ final class SharedPickupDirective extends SharedFixedLocationDirective {
 
-    public SharedPickupDirective(RoboTaxi roboTaxi, AVRequest avRequest, double getTimeNow, double durationOfTask) {
+    public SharedPickupDirective(RoboTaxi roboTaxi, PassengerRequest avRequest, double getTimeNow, double durationOfTask) {
         super(roboTaxi, avRequest, getTimeNow, durationOfTask);
     }
 

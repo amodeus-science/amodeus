@@ -8,7 +8,7 @@ import java.util.Objects;
 import java.util.TreeMap;
 import java.util.function.BiConsumer;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedUniversalDispatcher;
@@ -42,13 +42,13 @@ import ch.ethz.idsc.tensor.Scalar;
 /* package */ class InsertionChecker {
 
     private final RoboTaxi roboTaxi;
-    private final AVRequest request;
+    private final PassengerRequest request;
     private List<SharedCourse> optimalMenu = null;
     private Scalar optimalLength;
     private Scalar originalLength;
 
     public InsertionChecker(CachedNetworkTimeDistance distance, NetworkTimeDistInterface travelTimeCached, //
-            RoboTaxi roboTaxi, AVRequest request, Scalar pickupDelayMax, Scalar drpoffDelayMax, double timeNow) {
+            RoboTaxi roboTaxi, PassengerRequest request, Scalar pickupDelayMax, Scalar drpoffDelayMax, double timeNow) {
         this.roboTaxi = roboTaxi;
         this.request = request;
 
@@ -56,7 +56,7 @@ import ch.ethz.idsc.tensor.Scalar;
         List<SharedCourse> originalMenu = roboTaxi.getUnmodifiableViewOfCourses();
         int length = originalMenu.size();
 
-        /** we should only be here if the {@link RoboTaxi} has a {@link AVRequest} on board */
+        /** we should only be here if the {@link RoboTaxi} has a {@link PassengerRequest} on board */
         if (length < 1) {
             System.err.println("menu size of " + roboTaxi.getId().toString() + " is: " + length);
             System.err.println("this part of the method should only be reached to insert additional requests.");
@@ -125,7 +125,7 @@ import ch.ethz.idsc.tensor.Scalar;
 
     /** Function add the request to the optimal menu with the {@link BiConsumer} @param addSharedPickup
      * supplied by the dispatcher, normally from {@link SharedUniversalDispatcher} */
-    public void executeBest(BiConsumer<RoboTaxi, AVRequest> addSharedPickup) {
+    public void executeBest(BiConsumer<RoboTaxi, PassengerRequest> addSharedPickup) {
         if (Objects.nonNull(optimalMenu)) {
             addSharedPickup.accept(roboTaxi, request);
             roboTaxi.updateMenu(optimalMenu);

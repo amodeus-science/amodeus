@@ -17,8 +17,8 @@ public class ArtificialSharedScenarioCreatorTest extends TestCase {
         List<SharedCourse> list1 = Arrays.asList(pickupCourse1, dropoffCourse1, pickupCourse1, dropoffCourse1);
 
         assertEquals(4, list1.size());
-        assertEquals(1, SharedCourseUtil.getUniqueAVRequests(list1).size());
-        assertEquals(1, SharedCourseUtil.getUniqueAVRequests(SharedCourseUtil.copy(list1)).size());
+        assertEquals(1, SharedCourseUtil.getUniquePassengerRequests(list1).size());
+        assertEquals(1, SharedCourseUtil.getUniquePassengerRequests(SharedCourseUtil.copy(list1)).size());
     }
 
 }

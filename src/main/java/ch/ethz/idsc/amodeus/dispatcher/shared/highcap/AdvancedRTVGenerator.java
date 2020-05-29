@@ -8,15 +8,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 
 /* package */ class AdvancedRTVGenerator {
     private static final double MAX_RANGE = 999999.8;
     // ---
-    private final Map<RoboTaxi, Set<AVRequest>> feasibleOpenRequestFromLastStepMap = new HashMap<>();
+    private final Map<RoboTaxi, Set<PassengerRequest>> feasibleOpenRequestFromLastStepMap = new HashMap<>();
     private final int capacityOfTaxi;
     private final double pickupDurationPerStop;
     private final double dropoffDurationPerStop;
@@ -27,13 +27,13 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
         this.dropoffDurationPerStop = dropoffDurationPerStop;
     }
 
-    public List<TripWithVehicle> generateRTV(List<RoboTaxi> roboTaxis, Set<AVRequest> newAddedRequests, Set<AVRequest> removedRequests, //
-            double now, Map<AVRequest, RequestKeyInfo> requestKeyInfoMap, Set<Set<AVRequest>> rvEdges, //
+    public List<TripWithVehicle> generateRTV(List<RoboTaxi> roboTaxis, Set<PassengerRequest> newAddedRequests, Set<PassengerRequest> removedRequests, //
+            double now, Map<PassengerRequest, RequestKeyInfo> requestKeyInfoMap, Set<Set<PassengerRequest>> rvEdges, //
             TravelTimeComputation ttc, List<TripWithVehicle> lastAssignment, double trafficAllowance) {
         List<TripWithVehicle> grossListOfRTVEdges = new ArrayList<>();
         for (RoboTaxi roboTaxi : roboTaxis) {
             // construct collection of single request to check
-            Set<AVRequest> candidateRequests = new HashSet<>();
+            Set<PassengerRequest> candidateRequests = new HashSet<>();
             // first get feasible request from last step
             if (!feasibleOpenRequestFromLastStepMap.containsKey(roboTaxi)) {
                 feasibleOpenRequestFromLastStepMap.put(roboTaxi, new HashSet<>());
@@ -52,21 +52,21 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
             // IMPORTANT!!! deadlines need to be changed back to the old value after we finish dealing with this roboTaxi
             for (TripWithVehicle tripWithVehicle : lastAssignment)
                 if (tripWithVehicle.getRoboTaxi() == roboTaxi) {
-                    for (AVRequest avRequest : tripWithVehicle.getTrip())
+                    for (PassengerRequest avRequest : tripWithVehicle.getTrip())
                         if (requestKeyInfoMap.containsKey(avRequest))
                             requestKeyInfoMap.get(avRequest).addTrafficAllowance(trafficAllowance);
                     break;
                 }
 
             // size 1 trips:
-            List<Set<AVRequest>> listOfsize1Trip = new ArrayList<>(); // this is useful for generating possible combination for size 2 trip
-            for (AVRequest avRequest : candidateRequests) {
+            List<Set<PassengerRequest>> listOfsize1Trip = new ArrayList<>(); // this is useful for generating possible combination for size 2 trip
+            for (PassengerRequest avRequest : candidateRequests) {
                 double timeFromTaxiToRequest = ttc.of(taxiCurrentLink, //
                         avRequest.getFromLink(), now, false); // do not store this travel time in Cache.
                 double arrivalTime = now + timeFromTaxiToRequest;
                 double deadlineForPickUp = requestKeyInfoMap.get(avRequest).getDeadlinePickUp(); // see note about modifiedSubmission Time above
                 if (arrivalTime < deadlineForPickUp) { // the request is not too far, we can proceed to route generation/validation
-                    Set<AVRequest> additionalRequest = new HashSet<>();
+                    Set<PassengerRequest> additionalRequest = new HashSet<>();
                     additionalRequest.add(avRequest);
                     List<StopInRoute> route = RouteGenerator.of(roboTaxi, additionalRequest, now, //
                             requestKeyInfoMap, capacityOfTaxi, ttc, pickupDurationPerStop, dropoffDurationPerStop);
@@ -87,10 +87,10 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
             }
 
             // size 2 trips:
-            List<Set<AVRequest>> listOfSize2Trips = new ArrayList<>();
+            List<Set<PassengerRequest>> listOfSize2Trips = new ArrayList<>();
             for (int i = 0; i < listOfsize1Trip.size(); i++)
                 for (int j = i + 1; j < listOfsize1Trip.size(); j++) {
-                    Set<AVRequest> thisTrip = new HashSet<>();
+                    Set<PassengerRequest> thisTrip = new HashSet<>();
                     thisTrip.add(listOfsize1Trip.get(i).iterator().next());
                     thisTrip.add(listOfsize1Trip.get(j).iterator().next());
                     // check if this trip is in RV graph
@@ -107,15 +107,15 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
                 }
 
             // size 3 to maximum trip length
-            List<Set<AVRequest>> listOfTripsFromLastLoop = listOfSize2Trips;
-            List<Set<AVRequest>> listOfTripsFromThisLoop = new ArrayList<>();
+            List<Set<PassengerRequest>> listOfTripsFromLastLoop = listOfSize2Trips;
+            List<Set<PassengerRequest>> listOfTripsFromThisLoop = new ArrayList<>();
             int k = 3;
             while (k <= capacityOfTaxi && !listOfTripsFromLastLoop.isEmpty()) {
                 // generate all combination of trips with size k
                 listOfTripsFromThisLoop.clear();
                 for (int i = 0; i < listOfTripsFromLastLoop.size(); i++) {
                     for (int j = i + 1; j < listOfTripsFromLastLoop.size(); j++) {
-                        Set<AVRequest> thisTrip = new HashSet<>();
+                        Set<PassengerRequest> thisTrip = new HashSet<>();
                         thisTrip.addAll(listOfTripsFromLastLoop.get(i));
                         thisTrip.addAll(listOfTripsFromLastLoop.get(j));
 
@@ -149,7 +149,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
             // remove traffic allowance we added before, so that next taxi will get the original value
             for (TripWithVehicle tripWithVehicle : lastAssignment)
                 if (tripWithVehicle.getRoboTaxi() == roboTaxi) {
-                    for (AVRequest avRequest : tripWithVehicle.getTrip())
+                    for (PassengerRequest avRequest : tripWithVehicle.getTrip())
                         if (requestKeyInfoMap.keySet().contains(avRequest))
                             requestKeyInfoMap.get(avRequest).removeTrafficAllowance(trafficAllowance);
                     break;

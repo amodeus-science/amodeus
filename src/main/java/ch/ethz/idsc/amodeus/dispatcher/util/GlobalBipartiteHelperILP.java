@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
@@ -53,7 +53,7 @@ import ch.ethz.idsc.tensor.red.Total;
 
             /** possible previous assignments */
             if (previousAssignment.containsKey(roboTaxi)) {
-                AVRequest previous = (AVRequest) previousAssignment.get(roboTaxi);
+                PassengerRequest previous = (PassengerRequest) previousAssignment.get(roboTaxi);
                 int k = 0;
                 for (T t : ordered_linkObjects) {
                     if (t.equals(previous))

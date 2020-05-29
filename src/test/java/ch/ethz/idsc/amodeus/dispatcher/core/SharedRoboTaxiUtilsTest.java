@@ -26,9 +26,9 @@ public class SharedRoboTaxiUtilsTest extends TestCase {
         assertEquals(SharedRoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1), RoboTaxiStatus.REBALANCEDRIVE);
         s.roboTaxi1.finishRedirection();
 
-        s.roboTaxi1.addAVRequestToMenu(s.avRequest1);
+        s.roboTaxi1.addPassengerRequestToMenu(s.avRequest1);
         try { // A request can only be added once to a robo Taxi
-            s.roboTaxi1.addAVRequestToMenu(s.avRequest1);
+            s.roboTaxi1.addPassengerRequestToMenu(s.avRequest1);
             fail();
         } catch (Exception e) {
             // ---
@@ -58,8 +58,8 @@ public class SharedRoboTaxiUtilsTest extends TestCase {
         s.roboTaxi1.cleanAndAbandonMenu();
         assertEquals(s.roboTaxi1.getUnmodifiableViewOfCourses(), new ArrayList<>());
 
-        s.roboTaxi1.addAVRequestToMenu(s.avRequest1);
-        s.roboTaxi1.addAVRequestToMenu(s.avRequest2);
+        s.roboTaxi1.addPassengerRequestToMenu(s.avRequest1);
+        s.roboTaxi1.addPassengerRequestToMenu(s.avRequest2);
         s.roboTaxi1.moveAVCourseToNext(SharedCourse.dropoffCourse(s.avRequest1));
         List<SharedCourse> courses = s.roboTaxi1.getUnmodifiableViewOfCourses();
         try {// You should only be able to view this list
@@ -77,9 +77,9 @@ public class SharedRoboTaxiUtilsTest extends TestCase {
             // ---
         }
         modifiableList.add(SharedCourse.dropoffCourse(s.avRequest3));
-        s.roboTaxi1.addAVRequestToMenu(s.avRequest3);
+        s.roboTaxi1.addPassengerRequestToMenu(s.avRequest3);
         s.roboTaxi1.updateMenu(modifiableList);
-        s.roboTaxi1.addAVRequestToMenu(s.avRequest4);
+        s.roboTaxi1.addPassengerRequestToMenu(s.avRequest4);
         s.roboTaxi1.moveAVCourseToPrev(SharedCourse.pickupCourse(s.avRequest4));
         s.roboTaxi1.moveAVCourseToPrev(SharedCourse.pickupCourse(s.avRequest4));
         try { // It should not be Possible to have a menu which plans to pick up more customers than capacity
@@ -115,7 +115,7 @@ public class SharedRoboTaxiUtilsTest extends TestCase {
             // ---
         }
         try { // because the next customer was picked up it is not allowed anymore to abort this request
-            s.roboTaxi1.removeAVRequestFromMenu(s.avRequest3);
+            s.roboTaxi1.removePassengerRequestFromMenu(s.avRequest3);
             fail();
         } catch (Exception e) {
             // ---
@@ -155,7 +155,7 @@ public class SharedRoboTaxiUtilsTest extends TestCase {
                 new HashSet<>(Arrays.asList(s.avRequest1, s.avRequest3)));
         assertEquals(SharedCourseAccess.getStarter(s.roboTaxi1).get(), SharedCourse.pickupCourse(s.avRequest2));
         assertTrue(SharedRoboTaxiUtils.isNextCourseOfType(s.roboTaxi1, SharedMealType.PICKUP));
-        assertEquals(SharedCourseUtil.getUniqueAVRequests(s.roboTaxi1.getUnmodifiableViewOfCourses()),
+        assertEquals(SharedCourseUtil.getUniquePassengerRequests(s.roboTaxi1.getUnmodifiableViewOfCourses()),
                 new HashSet<>(Arrays.asList(s.avRequest1, s.avRequest2, s.avRequest3, s.avRequest4)));
 
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.avRequest2.getFromLink(), 1.0));
@@ -165,7 +165,7 @@ public class SharedRoboTaxiUtilsTest extends TestCase {
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.avRequest1.getToLink(), 1.0));
         s.roboTaxi1.dropOffCustomer();
 
-        s.roboTaxi1.removeAVRequestFromMenu(s.avRequest4);
+        s.roboTaxi1.removePassengerRequestFromMenu(s.avRequest4);
         try {
             s.roboTaxi1.cleanAndAbandonMenu();
             fail();
@@ -179,7 +179,7 @@ public class SharedRoboTaxiUtilsTest extends TestCase {
 
         s.roboTaxi1.setDivertableLinkTime(new LinkTimePair(s.linkLeft, 1.0));
         s.roboTaxi1.startDropoff();
-        s.roboTaxi1.addAVRequestToMenu(s.avRequest5);
+        s.roboTaxi1.addPassengerRequestToMenu(s.avRequest5);
         try {
             s.roboTaxi1.moveAVCourseToNext(SharedCourseAccess.getStarter(s.roboTaxi1).get());
             fail();

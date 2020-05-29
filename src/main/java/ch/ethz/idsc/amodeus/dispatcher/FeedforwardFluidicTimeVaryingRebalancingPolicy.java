@@ -161,7 +161,7 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
          * bipartite matching */
         if (round_now % dispatchPeriod == 0)
             printVals = bipartiteMatcher.executePickup(this, getDivertableRoboTaxis(), //
-                    getAVRequests(), distanceFunction, network);
+                    getPassengerRequests(), distanceFunction, network);
     }
 
     @Override

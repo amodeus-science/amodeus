@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 import org.matsim.amodeus.components.AVDispatcher;
 import org.matsim.amodeus.components.AVGenerator;
 import org.matsim.amodeus.config.AmodeusModeConfig;
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusDropoffTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusPickupTask;
@@ -23,6 +22,7 @@ import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
 import org.matsim.contrib.dvrp.schedule.Task;
@@ -37,14 +37,14 @@ import ch.ethz.idsc.amodeus.net.SimulationObjectCompiler;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 /** purpose of {@link UniversalDispatcher} is to collect and manage
- * {@link AVRequest}s alternative implementation of {@link AVDispatcher};
+ * {@link PassengerRequest}s alternative implementation of {@link AVDispatcher};
  * supersedes {@link AbstractDispatcher}. */
 public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
-    private final Map<AVRequest, RoboTaxi> pickupRegister = new HashMap<>();
-    private final Map<AVRequest, RoboTaxi> rqstDrvRegister = new HashMap<>();
-    private final Map<AVRequest, RoboTaxi> periodFulfilledRequests = new HashMap<>();
-    private final Set<AVRequest> periodAssignedRequests = new HashSet<>();
-    private final Set<AVRequest> periodPickedUpRequests = new HashSet<>();
+    private final Map<PassengerRequest, RoboTaxi> pickupRegister = new HashMap<>();
+    private final Map<PassengerRequest, RoboTaxi> rqstDrvRegister = new HashMap<>();
+    private final Map<PassengerRequest, RoboTaxi> periodFulfilledRequests = new HashMap<>();
+    private final Set<PassengerRequest> periodAssignedRequests = new HashSet<>();
+    private final Set<PassengerRequest> periodPickedUpRequests = new HashSet<>();
 
     protected UniversalDispatcher(Config config, AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, //
@@ -56,8 +56,8 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
     // ===================================================================================
     // Methods to use EXTERNALLY in derived dispatchers
 
-    /** @return {@link AVRequest}s currently not assigned to a vehicle */
-    protected synchronized final List<AVRequest> getUnassignedAVRequests() {
+    /** @return {@link PassengerRequest}s currently not assigned to a vehicle */
+    protected synchronized final List<PassengerRequest> getUnassignedPassengerRequests() {
         return pendingRequests.stream() //
                 .filter(r -> !pickupRegister.containsKey(r)) //
                 .collect(Collectors.toList());
@@ -82,22 +82,22 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
 
     /** @return immutable and inverted copy of pickupRegister, displays which
      *         vehicles are currently scheduled to pickup which request */
-    protected final Map<RoboTaxi, AVRequest> getPickupRoboTaxis() {
-        Map<RoboTaxi, AVRequest> pickupPairs = pickupRegister.entrySet().stream() //
+    protected final Map<RoboTaxi, PassengerRequest> getPickupRoboTaxis() {
+        Map<RoboTaxi, PassengerRequest> pickupPairs = pickupRegister.entrySet().stream() //
                 .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
 
         GlobalAssert.that(pickupPairs.keySet().stream().allMatch(rt -> rt.getStatus().equals(RoboTaxiStatus.DRIVETOCUSTOMER)));
         return pickupPairs;
     }
 
-    /** Diverts {@link RoboTaxi} to {@link Link} of {@link AVRequest} and adds pair
+    /** Diverts {@link RoboTaxi} to {@link Link} of {@link PassengerRequest} and adds pair
      * to pickupRegister. If the {@link RoboTaxi} was scheduled to pickup another
-     * {@link AVRequest}, then this pair is silently revmoved from the pickup
+     * {@link PassengerRequest}, then this pair is silently revmoved from the pickup
      * register.
      * 
      * @param roboTaxi
      * @param avRequest */
-    public final void setRoboTaxiPickup(RoboTaxi roboTaxi, AVRequest avRequest) {
+    public final void setRoboTaxiPickup(RoboTaxi roboTaxi, PassengerRequest avRequest) {
         GlobalAssert.that(roboTaxi.isWithoutCustomer());
         GlobalAssert.that(pendingRequests.contains(avRequest));
 
@@ -108,10 +108,10 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
 
         // 1) enter information into pickup table
         if (pickupRegister.containsValue(roboTaxi)) {
-            AVRequest toRemove = pickupRegister.entrySet().stream()//
+            PassengerRequest toRemove = pickupRegister.entrySet().stream()//
                     .filter(e -> e.getValue().equals(roboTaxi)).findAny().get().getKey();
-            pickupRegister.remove(toRemove); // remove AVRequest/RoboTaxi pair served before by roboTaxi
-            pickupRegister.remove(avRequest); // remove AVRequest/RoboTaxi pair corresponding to avRequest
+            pickupRegister.remove(toRemove); // remove PassengerRequest/RoboTaxi pair served before by roboTaxi
+            pickupRegister.remove(avRequest); // remove PassengerRequest/RoboTaxi pair corresponding to avRequest
         }
         pickupRegister.put(avRequest, roboTaxi); // add new pair
         GlobalAssert.that(pickupRegister.size() == pickupRegister.values().stream().distinct().count());
@@ -191,11 +191,11 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
 
     /** Function called from {@link UniversalDispatcher#executePickups} if a
      * {@link RoboTaxi} scheduled for pickup has reached the
-     * {@link AVRequest#pickupLink} of the {@link AVRequest}.
+     * {@link PassengerRequest#pickupLink} of the {@link PassengerRequest}.
      * 
      * @param roboTaxi
      * @param avRequest */
-    private synchronized final void setAcceptRequest(RoboTaxi roboTaxi, AVRequest avRequest) {
+    private synchronized final void setAcceptRequest(RoboTaxi roboTaxi, PassengerRequest avRequest) {
         roboTaxi.setStatus(RoboTaxiStatus.DRIVEWITHCUSTOMER);
         roboTaxi.setCurrentDriveDestination(avRequest.getToLink());
 
@@ -228,11 +228,11 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
 
     /** Function called from {@link UniversalDispatcher#executeDropoffs} if a
      * {@link RoboTaxi} scheduled for dropoff has reached the
-     * {@link AVRequest#dropoffLink} of the {@link AVRequest}.
+     * {@link PassengerRequest#dropoffLink} of the {@link PassengerRequest}.
      * 
      * @param roboTaxi
      * @param avRequest */
-    private synchronized final void setPassengerDropoff(RoboTaxi roboTaxi, AVRequest avRequest) {
+    private synchronized final void setPassengerDropoff(RoboTaxi roboTaxi, PassengerRequest avRequest) {
         RoboTaxi former = rqstDrvRegister.remove(avRequest);
         GlobalAssert.that(roboTaxi == former);
 
@@ -249,7 +249,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
         return pickupRegister.containsValue(robotaxi);
     }
 
-    /* package */ final boolean removeFromPickupRegisters(AVRequest avRequest) {
+    /* package */ final boolean removeFromPickupRegisters(PassengerRequest avRequest) {
         return Objects.isNull(pickupRegister.remove(avRequest));
     }
 
@@ -258,17 +258,17 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
      *         assigned to avRequest Used by BipartiteMatching in
      *         euclideanNonCyclic, there a comparison to the old av assignment is
      *         needed */
-    public final Optional<RoboTaxi> getPickupTaxi(AVRequest avRequest) {
+    public final Optional<RoboTaxi> getPickupTaxi(PassengerRequest avRequest) {
         return Optional.ofNullable(pickupRegister.get(avRequest));
     }
 
     /** complete all matchings if a {@link RoboTaxi} has arrived at the fromLink of
-     * an {@link AVRequest} */
+     * an {@link PassengerRequest} */
     @Override
     final void executePickups() {
-        Map<AVRequest, RoboTaxi> pickupRegisterCopy = new HashMap<>(pickupRegister);
-        for (Entry<AVRequest, RoboTaxi> entry : pickupRegisterCopy.entrySet()) {
-            AVRequest avRequest = entry.getKey();
+        Map<PassengerRequest, RoboTaxi> pickupRegisterCopy = new HashMap<>(pickupRegister);
+        for (Entry<PassengerRequest, RoboTaxi> entry : pickupRegisterCopy.entrySet()) {
+            PassengerRequest avRequest = entry.getKey();
             GlobalAssert.that(pendingRequests.contains(avRequest));
             RoboTaxi pickupVehicle = entry.getValue();
             Link pickupVehicleLink = pickupVehicle.getDivertableLocation();
@@ -279,13 +279,13 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
     }
 
     /** complete all matchings if a {@link RoboTaxi} has arrived at the toLink of an
-     * {@link AVRequest} */
+     * {@link PassengerRequest} */
     @Override
     final void executeDropoffs() {
-        Map<AVRequest, RoboTaxi> requestRegisterCopy = new HashMap<>(rqstDrvRegister);
-        for (Entry<AVRequest, RoboTaxi> entry : requestRegisterCopy.entrySet())
+        Map<PassengerRequest, RoboTaxi> requestRegisterCopy = new HashMap<>(rqstDrvRegister);
+        for (Entry<PassengerRequest, RoboTaxi> entry : requestRegisterCopy.entrySet())
             if (Objects.nonNull(entry.getValue())) {
-                AVRequest avRequest = entry.getKey();
+                PassengerRequest avRequest = entry.getKey();
                 RoboTaxi dropoffVehicle = entry.getValue();
                 Link dropoffVehicleLink = dropoffVehicle.getDivertableLocation();
                 boolean isOk = dropoffVehicle.getSchedule().getCurrentTask() == Schedules.getLastTask(dropoffVehicle.getSchedule());
@@ -295,8 +295,8 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
     }
 
     /** function stops {@link RoboTaxi} which are still heading towards an
-     * {@link AVRequest} but another {@link RoboTaxi} was scheduled to pickup this
-     * {@link AVRequest} in the meantime */
+     * {@link PassengerRequest} but another {@link RoboTaxi} was scheduled to pickup this
+     * {@link PassengerRequest} in the meantime */
     @Override
     /* package */ final void stopAbortedPickupRoboTaxis() {
 
@@ -340,7 +340,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
         simulationObjectCompiler.insertRequests(periodPickedUpRequests, RequestStatus.PICKUP);
         simulationObjectCompiler.insertRequests(periodFulfilledRequests.keySet(), RequestStatus.DROPOFF);
 
-        /** insert information of association of {@link RoboTaxi}s and {@link AVRequest}s */
+        /** insert information of association of {@link RoboTaxi}s and {@link PassengerRequest}s */
         simulationObjectCompiler.addRequestRoboTaxiAssoc(pickupRegister);
         simulationObjectCompiler.addRequestRoboTaxiAssoc(rqstDrvRegister);
         simulationObjectCompiler.addRequestRoboTaxiAssoc(periodFulfilledRequests);

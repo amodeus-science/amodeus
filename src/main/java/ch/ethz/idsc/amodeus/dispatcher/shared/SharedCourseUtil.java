@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 public enum SharedCourseUtil {
     ;
@@ -16,9 +16,9 @@ public enum SharedCourseUtil {
         return new ArrayList<>(courses);
     }
 
-    /** @return {@link Set} of unique {@link AVRequest}s in the {@link List} of {@link SharedCourse}s
+    /** @return {@link Set} of unique {@link PassengerRequest}s in the {@link List} of {@link SharedCourse}s
      *         provided in @param courses */
-    public static Set<AVRequest> getUniqueAVRequests(List<? extends SharedCourse> courses) {
+    public static Set<PassengerRequest> getUniquePassengerRequests(List<? extends SharedCourse> courses) {
         return courses.stream() //
                 .filter(sc -> !sc.getMealType().equals(SharedMealType.REDIRECT)) //
                 .map(SharedCourse::getAvRequest).collect(Collectors.toSet()); //

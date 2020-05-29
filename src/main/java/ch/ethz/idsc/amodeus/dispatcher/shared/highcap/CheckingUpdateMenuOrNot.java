@@ -6,15 +6,15 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 
 /* package */ class CheckingUpdateMenuOrNot {
-    private final Map<RoboTaxi, Set<AVRequest>> lastSetOfRequestsInRoute = new HashMap<>();
-    private final Map<RoboTaxi, Set<AVRequest>> secondLastSetOfRequestInRoute = new HashMap<>();
+    private final Map<RoboTaxi, Set<PassengerRequest>> lastSetOfRequestsInRoute = new HashMap<>();
+    private final Map<RoboTaxi, Set<PassengerRequest>> secondLastSetOfRequestInRoute = new HashMap<>();
 
-    public boolean updateMenuOrNot(RoboTaxi roboTaxi, Set<AVRequest> setOfRequestsInRoute) {
+    public boolean updateMenuOrNot(RoboTaxi roboTaxi, Set<PassengerRequest> setOfRequestsInRoute) {
         // prevent looping
         secondLastSetOfRequestInRoute.computeIfAbsent(roboTaxi, rt -> new HashSet<>());
 

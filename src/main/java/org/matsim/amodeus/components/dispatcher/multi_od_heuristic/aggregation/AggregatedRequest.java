@@ -4,12 +4,12 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import org.matsim.amodeus.components.dispatcher.multi_od_heuristic.TravelTimeEstimator;
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 public class AggregatedRequest {
-    final private AVRequest master;
-    final Collection<AVRequest> slaves = new LinkedList<>();
+    final private PassengerRequest master;
+    final Collection<PassengerRequest> slaves = new LinkedList<>();
 
     final long occupancyThreshold;
     final double distanceThreshold;
@@ -18,7 +18,7 @@ public class AggregatedRequest {
 
     final private TravelTimeEstimator estimator;
 
-    public AggregatedRequest(AVRequest master, TravelTimeEstimator estimator, long occupancyThreshold) {
+    public AggregatedRequest(PassengerRequest master, TravelTimeEstimator estimator, long occupancyThreshold) {
         this.master = master;
         this.estimator = estimator;
         this.occupancyThreshold = occupancyThreshold;
@@ -26,19 +26,19 @@ public class AggregatedRequest {
         distanceThreshold = estimator.getTravelTimeThreshold();
     }
 
-    public AVRequest getMasterRequest() {
+    public PassengerRequest getMasterRequest() {
         return master;
     }
 
-    public void addSlaveRequest(AVRequest slave) {
+    public void addSlaveRequest(PassengerRequest slave) {
         slaves.add(slave);
     }
 
-    public Collection<AVRequest> getSlaveRequests() {
+    public Collection<PassengerRequest> getSlaveRequests() {
         return slaves;
     }
 
-    public Double accept(AVRequest candidate) {
+    public Double accept(PassengerRequest candidate) {
         if (slaves.size() >= occupancyThreshold - 1) {
             return null;
         }

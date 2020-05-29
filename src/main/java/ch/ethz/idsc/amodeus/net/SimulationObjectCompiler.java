@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RequestStatus;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
@@ -37,11 +37,11 @@ public class SimulationObjectCompiler {
         this.simulationObject = simulationObject;
     }
 
-    public void insertRequests(Collection<AVRequest> requests, RequestStatus status) {
+    public void insertRequests(Collection<PassengerRequest> requests, RequestStatus status) {
         requests.forEach(r -> insertRequest(r, status));
     }
 
-    public void insertRequests(Map<AVRequest, RequestStatus> requestStatuses) {
+    public void insertRequests(Map<PassengerRequest, RequestStatus> requestStatuses) {
         requestStatuses.forEach(this::insertRequest);
     }
 
@@ -53,7 +53,7 @@ public class SimulationObjectCompiler {
         tempLocationTrace.forEach(this::insertVehicle);
     }
 
-    private void insertRequest(AVRequest avRequest, RequestStatus requestStatus) {
+    private void insertRequest(PassengerRequest avRequest, RequestStatus requestStatus) {
         String id = avRequest.getId().toString();
         if (requestMap.containsKey(id)) {
             requestMap.get(id).requestStatus.add(requestStatus);
@@ -69,7 +69,7 @@ public class SimulationObjectCompiler {
         vehicleMap.put(key, vehicleContainer);
     }
 
-    public void addRequestRoboTaxiAssoc(Map<AVRequest, RoboTaxi> map) {
+    public void addRequestRoboTaxiAssoc(Map<PassengerRequest, RoboTaxi> map) {
         map.forEach((k, v) -> {
             String id = k.getId().toString();
             if (requestMap.containsKey(id))

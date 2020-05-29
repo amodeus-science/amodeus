@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Objects;
 
 import org.apache.log4j.Logger;
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusDropoffTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusPickupTask;
@@ -13,6 +12,7 @@ import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
@@ -332,7 +332,7 @@ public final class RoboTaxi {
         this.status = SharedRoboTaxiUtils.calculateStatusFromMenu(this);
     }
 
-    /* package */ void addAVRequestToMenu(AVRequest avRequest) {
+    /* package */ void addPassengerRequestToMenu(PassengerRequest avRequest) {
         // TODO @ChengQi what is the wanted behaviour? shouldn't the
         // dispatcher take care of this? We could bring it into the rebalancing dispatcher,
         // there we can add a function which is called:
@@ -368,8 +368,8 @@ public final class RoboTaxi {
         setMenu(SharedCourseRemove.starter(menu));
     }
 
-    /* package */ void pickupOf(List<AVRequest> avrs) {
-        for (AVRequest avr : avrs)
+    /* package */ void pickupOf(List<PassengerRequest> avrs) {
+        for (PassengerRequest avr : avrs)
             setMenu(SharedCourseRemove.several(menu, SharedCourse.pickupCourse(avr)));
     }
 
@@ -401,7 +401,7 @@ public final class RoboTaxi {
      * called if the Request has not been picked up
      * 
      * @param avRequest */
-    /* package */ void removeAVRequestFromMenu(AVRequest avRequest) {
+    /* package */ void removePassengerRequestFromMenu(PassengerRequest avRequest) {
         SharedCourse pickupCourse = SharedCourse.pickupCourse(avRequest);
         SharedCourse dropoffCourse = SharedCourse.dropoffCourse(avRequest);
         GlobalAssert.that(menu.getCourseList().contains(pickupCourse) && menu.getCourseList().contains(dropoffCourse));

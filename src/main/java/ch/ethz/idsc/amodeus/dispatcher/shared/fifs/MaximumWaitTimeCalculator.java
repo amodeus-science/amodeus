@@ -4,7 +4,7 @@ package ch.ethz.idsc.amodeus.dispatcher.shared.fifs;
 import java.util.Objects;
 import java.util.Set;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 /* package */ class MaximumWaitTimeCalculator {
     private final double maxWaitTime;
@@ -17,13 +17,13 @@ import org.matsim.amodeus.dvrp.request.AVRequest;
         this.extremeWaitListTime = extremWaitListTime;
     }
 
-    public double calculate(AVRequest avRequest, Set<AVRequest> waitList, Set<AVRequest> extremeWaitList) {
+    public double calculate(PassengerRequest avRequest, Set<PassengerRequest> waitList, Set<PassengerRequest> extremeWaitList) {
         if (Objects.isNull(extremeWaitList))
             return calculate(avRequest, waitList);
         return extremeWaitList.contains(avRequest) ? extremeWaitListTime : calculate(avRequest, waitList);
     }
 
-    public double calculate(AVRequest avRequest, Set<AVRequest> waitLists) {
+    public double calculate(PassengerRequest avRequest, Set<PassengerRequest> waitLists) {
         return waitLists.contains(avRequest) ? maxWaitTime : waitListTime;
     }
 }

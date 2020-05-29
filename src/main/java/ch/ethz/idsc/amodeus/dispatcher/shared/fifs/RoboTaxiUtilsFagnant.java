@@ -7,8 +7,8 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.routing.NetworkTimeDistInterface;
@@ -52,7 +52,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
      * @param timeDb
      * @return */
     public static Optional<RoboTaxi> getClosestUnassignedRoboTaxiWithinMaxTime( //
-            RoboTaxiHandler roboTaxiHandler, AVRequest avRequest, double maxTime, double now, NetworkTimeDistInterface timeDb) {
+            RoboTaxiHandler roboTaxiHandler, PassengerRequest avRequest, double maxTime, double now, NetworkTimeDistInterface timeDb) {
         NavigableMap<Double, RoboTaxi> roboTaxis = RoboTaxiUtilsFagnant.getRoboTaxisWithinMaxTime(avRequest.getFromLink(), roboTaxiHandler.getUnassignedRoboTaxis(), timeDb,
                 maxTime, roboTaxiHandler, now);
         if (roboTaxis.isEmpty()) {

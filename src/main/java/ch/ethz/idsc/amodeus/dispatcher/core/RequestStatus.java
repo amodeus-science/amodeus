@@ -1,7 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.core;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 public enum RequestStatus {
     /** REGULAR REQUEST PROCESS */
@@ -40,7 +40,7 @@ public enum RequestStatus {
     }
 
     /** @return true if the customer is not yet served, false otherwise.
-     *         A {@link AVRequest} is counted as served as soon as the "moment of impatience"
+     *         A {@link PassengerRequest} is counted as served as soon as the "moment of impatience"
      *         for the customer is over and the customer is together with the car, i.e.,
      *         in pickup process, driving or during dropoff */
     public boolean isUnserved() {

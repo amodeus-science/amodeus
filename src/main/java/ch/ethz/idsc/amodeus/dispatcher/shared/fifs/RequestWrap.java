@@ -3,23 +3,23 @@ package ch.ethz.idsc.amodeus.dispatcher.shared.fifs;
 
 import java.util.Optional;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 /** A {@link RequestWrap} contains more Information about the Request. for example the drive time in the unit capacity case */
 /* package */ class RequestWrap {
-    private final AVRequest avRequest;
+    private final PassengerRequest avRequest;
     private Optional<Double> pickupTime = Optional.empty();
     private Optional<Double> unitCapacityDriveTime = Optional.empty();
     private boolean isOnWaitList = false;
     private boolean isOnExtreemWaitList = false;
 
-    public RequestWrap(AVRequest avRequest) {
+    public RequestWrap(PassengerRequest avRequest) {
         this.avRequest = avRequest;
     }
 
-    public AVRequest getAvRequest() {
+    public PassengerRequest getAvRequest() {
         return avRequest;
     }
 

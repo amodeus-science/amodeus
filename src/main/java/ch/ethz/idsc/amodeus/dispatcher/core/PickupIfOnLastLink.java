@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
 
@@ -16,11 +16,11 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 /* package */ enum PickupIfOnLastLink {
     ;
 
-    public static List<AVRequest> apply(RoboTaxi roboTaxi, double timeNow, //
+    public static List<PassengerRequest> apply(RoboTaxi roboTaxi, double timeNow, //
             double pickupDurationPerStop, FuturePathFactory futurePathFactory) {
 
         List<SharedCourse> courses = PickupNowCourses.of(roboTaxi);
-        List<AVRequest> pickupNowRequests = courses.stream().map(c -> c.getAvRequest())//
+        List<PassengerRequest> pickupNowRequests = courses.stream().map(c -> c.getAvRequest())//
                 .collect(Collectors.toList());
 
         // check of roboTaxi is on last task

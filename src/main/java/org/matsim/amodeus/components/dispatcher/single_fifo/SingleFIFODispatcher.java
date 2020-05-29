@@ -8,9 +8,9 @@ import org.matsim.amodeus.components.AVRouter;
 import org.matsim.amodeus.components.dispatcher.AVVehicleAssignmentEvent;
 import org.matsim.amodeus.components.dispatcher.utils.SingleRideAppender;
 import org.matsim.amodeus.config.AmodeusModeConfig;
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.amodeus.dvrp.schedule.AmodeusTaskType;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -21,7 +21,7 @@ public class SingleFIFODispatcher implements AVDispatcher {
 
     final private SingleRideAppender appender;
     final private Queue<DvrpVehicle> availableVehicles = new LinkedList<>();
-    final private Queue<AVRequest> pendingRequests = new LinkedList<>();
+    final private Queue<PassengerRequest> pendingRequests = new LinkedList<>();
 
     final private EventsManager eventsManager;
 
@@ -36,7 +36,7 @@ public class SingleFIFODispatcher implements AVDispatcher {
     }
 
     @Override
-    public void onRequestSubmitted(AVRequest request) {
+    public void onRequestSubmitted(PassengerRequest request) {
         pendingRequests.add(request);
         reoptimize = true;
     }
@@ -58,7 +58,7 @@ public class SingleFIFODispatcher implements AVDispatcher {
     private void reoptimize(double now) {
         while (availableVehicles.size() > 0 && pendingRequests.size() > 0) {
             DvrpVehicle vehicle = availableVehicles.poll();
-            AVRequest request = pendingRequests.poll();
+            PassengerRequest request = pendingRequests.poll();
             appender.schedule(request, vehicle, now);
         }
 

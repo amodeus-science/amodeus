@@ -2,7 +2,6 @@ package org.matsim.amodeus.dvrp.activity;
 
 import java.util.Map;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.Id;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.optimizer.Request;
@@ -23,7 +22,7 @@ public class AmodeusPickupActivity extends FirstLastSimStepDynActivity implement
     private final PassengerEngine passengerEngine;
     private final DynAgent driver;
 
-    private final Map<Id<Request>, AVRequest> requests;
+    private final Map<Id<Request>, PassengerRequest> requests;
     private final double durationPerPassenger;
 
     private final double expectedEndTime;
@@ -31,7 +30,7 @@ public class AmodeusPickupActivity extends FirstLastSimStepDynActivity implement
 
     private int insidePassengers = 0;
 
-    public AmodeusPickupActivity(PassengerEngine passengerEngine, DynAgent driver, DvrpVehicle vehicle, Map<Id<Request>, AVRequest> requests, double expectedEndTime,
+    public AmodeusPickupActivity(PassengerEngine passengerEngine, DynAgent driver, DvrpVehicle vehicle, Map<Id<Request>, PassengerRequest> requests, double expectedEndTime,
             double durationPerPassenger) {
         super(ACTIVITY_TYPE);
 
@@ -50,7 +49,7 @@ public class AmodeusPickupActivity extends FirstLastSimStepDynActivity implement
 
     @Override
     protected void beforeFirstStep(double now) {
-        for (AVRequest request : requests.values()) {
+        for (PassengerRequest request : requests.values()) {
             tryPerformPickup(request, now);
         }
     }

@@ -22,6 +22,7 @@ public class AmodeusModule extends AbstractModule {
 
     @Override
     public void install() {
+        // TODO: Fix this
         /* This has been added after upgrading Amodeus' dependency to MATSim:0.10.1. In the mean time, DVRP got a new "initial travel time" which resembles
          * better what
          * QSim produces (since the time-step (seconds) based QSim produces travel times that are "rounded" to the next integer). This is now considered in DVRP

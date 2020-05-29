@@ -4,7 +4,7 @@ package ch.ethz.idsc.amodeus.net;
 import java.util.EnumSet;
 import java.util.Objects;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RequestStatus;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
@@ -12,12 +12,12 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 enum RequestContainerCompiler {
     ;
 
-    /** @param avRequest {@link AVRequest}
+    /** @param avRequest {@link PassengerRequest}
      * @param requestStatus {@link RequestStatus}
      * @return {@link RequestContainer} with information for storage and later viewing in
      *         {@link SimulationObject} */
     public static RequestContainer compile( //
-            AVRequest avRequest, //
+            PassengerRequest avRequest, //
             RequestStatus requestStatus) {
         GlobalAssert.that(Objects.nonNull(avRequest));
 

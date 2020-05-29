@@ -14,13 +14,13 @@ import org.matsim.amodeus.components.dispatcher.single_heuristic.ModeChangeEvent
 import org.matsim.amodeus.components.dispatcher.single_heuristic.SingleHeuristicDispatcher;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.amodeus.config.modal.DispatcherConfig;
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusTaskType;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -72,7 +72,7 @@ public class MultiODHeuristic implements AVDispatcher {
     }
 
     @Override
-    public void onRequestSubmitted(AVRequest request) {
+    public void onRequestSubmitted(PassengerRequest request) {
         addRequest(request, request.getFromLink());
     }
 
@@ -123,7 +123,7 @@ public class MultiODHeuristic implements AVDispatcher {
 
     @Override
     public void onNextTimestep(double now) {
-        for (Map.Entry<AVRequest, AVRequest> pair : aggregationMap.entrySet()) {
+        for (Map.Entry<PassengerRequest, PassengerRequest> pair : aggregationMap.entrySet()) {
             eventsManager.processEvent(new AggregationEvent(pair.getValue(), pair.getKey(), now));
         }
         aggregationMap.clear();
@@ -141,9 +141,9 @@ public class MultiODHeuristic implements AVDispatcher {
         }
     }
 
-    final private Map<AVRequest, AVRequest> aggregationMap = new HashMap<>();
+    final private Map<PassengerRequest, PassengerRequest> aggregationMap = new HashMap<>();
 
-    private void addRequest(AVRequest request, Link link) {
+    private void addRequest(PassengerRequest request, Link link) {
         AggregatedRequest aggregate = findAggregateRequest(request);
 
         if (aggregate != null) {
@@ -160,7 +160,7 @@ public class MultiODHeuristic implements AVDispatcher {
         }
     }
 
-    private AggregatedRequest findAggregateRequest(AVRequest request) {
+    private AggregatedRequest findAggregateRequest(PassengerRequest request) {
         AggregatedRequest bestAggregate = null;
         double bestCost = Double.POSITIVE_INFINITY;
 
@@ -234,7 +234,7 @@ public class MultiODHeuristic implements AVDispatcher {
 
             double replanningInterval = Double.parseDouble(dispatcherConfig.getParams().getOrDefault("replanningInterval", "10.0"));
             double threshold = Double.parseDouble(dispatcherConfig.getParams().getOrDefault("maximumTimeRadius", "600.0"));
-            long numberOfSeats = Long.parseLong(operatorConfig.getGeneratorConfig().getParams().getOrDefault("numberOfSeats", "4"));
+            long numberOfSeats = operatorConfig.getGeneratorConfig().getCapacity();
 
             FactorTravelTimeEstimator estimator = new FactorTravelTimeEstimator(threshold);
 

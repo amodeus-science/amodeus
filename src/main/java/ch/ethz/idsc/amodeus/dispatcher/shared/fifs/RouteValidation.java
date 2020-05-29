@@ -7,12 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import org.matsim.amodeus.dvrp.request.AVRequest;
-
 import java.util.NavigableMap;
 import java.util.Optional;
 import java.util.Set;
+
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.shared.Compatibility;
@@ -48,8 +47,8 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
      * @param requestHandler
      * @return true if this is a valid route, false if the rout can not be considered for sharing. */
     public boolean isValidRoute(SharedAvRoute sharedAvRoute, SharedAvRoute oldRoute, RequestWrap newRequestWrap, double now, RequestHandler requestHandler) {
-        Map<AVRequest, Double> driveTimes = requestHandler.getDriveTimes(sharedAvRoute);
-        AVRequest newAvRequest = newRequestWrap.getAvRequest();
+        Map<PassengerRequest, Double> driveTimes = requestHandler.getDriveTimes(sharedAvRoute);
+        PassengerRequest newAvRequest = newRequestWrap.getAvRequest();
         double unitCapacityDriveTime = requestHandler.getDriveTimeDirectUnitCap(newAvRequest);
         GlobalAssert.that(unitCapacityDriveTime == newRequestWrap.getUnitDriveTime());
         // Requirement 1 Current Passenger Total Travel Time Increase
@@ -79,7 +78,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
      * @param requestMaintainer
      * @param roboTaxiMaintainer
      * @return The Closest RoboTaxi with a Shared Menu associated with it. */
-    /* package */ Optional<Entry<RoboTaxi, List<SharedCourse>>> getClosestValidSharingRoboTaxi(Set<RoboTaxi> robotaxisWithMenu, AVRequest avRequest, double now, //
+    /* package */ Optional<Entry<RoboTaxi, List<SharedCourse>>> getClosestValidSharingRoboTaxi(Set<RoboTaxi> robotaxisWithMenu, PassengerRequest avRequest, double now, //
             CachedNetworkTimeDistance timeDb, RequestHandler requestMaintainer, RoboTaxiHandler roboTaxiMaintainer) {
 
         GlobalAssert.that(robotaxisWithMenu.stream().allMatch(SharedCourseAccess::hasStarter));
@@ -112,7 +111,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         return rt;
     }
 
-    private Optional<Entry<RoboTaxi, List<SharedCourse>>> getFastestValidEntry(AvRouteHandler avRouteHandler, AVRequest avRequest, Map<RoboTaxi, SharedAvRoute> oldRoutes,
+    private Optional<Entry<RoboTaxi, List<SharedCourse>>> getFastestValidEntry(AvRouteHandler avRouteHandler, PassengerRequest avRequest, Map<RoboTaxi, SharedAvRoute> oldRoutes,
             double now, RequestHandler requestMaintainer) {
         int numberEntries = avRouteHandler.getNumbervalues();
         for (int i = 0; i < numberEntries; i++) {
@@ -133,10 +132,10 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
     public boolean menuFulfillsConstraints( //
             RoboTaxi roboTaxi, List<SharedCourse> newRoute, //
-            AVRequest avRequest, double now, //
+            PassengerRequest avRequest, double now, //
             CachedNetworkTimeDistance timeDb, RequestHandler requestMaintainer) {
-        Set<AVRequest> currentRequests = SharedCourseUtil.getUniqueAVRequests(roboTaxi.getUnmodifiableViewOfCourses());
-        GlobalAssert.that(SharedCourseUtil.getUniqueAVRequests(newRoute).containsAll(currentRequests));
+        Set<PassengerRequest> currentRequests = SharedCourseUtil.getUniquePassengerRequests(roboTaxi.getUnmodifiableViewOfCourses());
+        GlobalAssert.that(SharedCourseUtil.getUniquePassengerRequests(newRoute).containsAll(currentRequests));
         SharedAvRoute sharedAvRoute = SharedAvRoute.of(newRoute, roboTaxi.getDivertableLocation(), now, pickupDuration, dropoffDuration, timeDb);
         SharedAvRoute oldRoute = SharedAvRoute.of(roboTaxi.getUnmodifiableViewOfCourses(), roboTaxi.getDivertableLocation(), now, pickupDuration, dropoffDuration, timeDb);
         return isValidRoute(sharedAvRoute, oldRoute, requestMaintainer.getRequestWrap(avRequest), now, requestMaintainer);

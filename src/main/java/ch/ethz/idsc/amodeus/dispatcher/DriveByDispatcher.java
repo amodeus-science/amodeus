@@ -47,12 +47,12 @@ public class DriveByDispatcher extends RebalancingDispatcher {
 
         // stop all vehicles which are driving by an open request
         total_abortTrip += DrivebyRequestStopper //
-                .stopDrivingBy(DispatcherUtils.getAVRequestsAtLinks(getAVRequests()), getDivertableRoboTaxis(), this::setRoboTaxiPickup).size();
+                .stopDrivingBy(DispatcherUtils.getPassengerRequestsAtLinks(getPassengerRequests()), getDivertableRoboTaxis(), this::setRoboTaxiPickup).size();
 
         // send vehicles to travel around the city to random links (random
         // loitering)
         final long round_now = Math.round(now);
-        if (round_now % rebalancingPeriod == 0 && 0 < getAVRequests().size())
+        if (round_now % rebalancingPeriod == 0 && 0 < getPassengerRequests().size())
             for (RoboTaxi roboTaxi : getDivertableRoboTaxis())
                 if (rebPos > randGen.nextDouble())
                     setRoboTaxiRebalance(roboTaxi, pollNextDestination());
