@@ -8,18 +8,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 public class TripWithVehicle {
-    private final Set<AVRequest> trip = new HashSet<>();
+    private final Set<PassengerRequest> trip = new HashSet<>();
     private final RoboTaxi roboTaxi;
     private final double totalDelay;
     private final List<StopInRoute> route;
 
-    public TripWithVehicle(RoboTaxi roboTaxi, double totalDelay, Collection<AVRequest> trip, List<StopInRoute> route) {
+    public TripWithVehicle(RoboTaxi roboTaxi, double totalDelay, Collection<PassengerRequest> trip, List<StopInRoute> route) {
         this.roboTaxi = roboTaxi;
         this.totalDelay = totalDelay;
         this.trip.addAll(trip);
@@ -35,7 +35,7 @@ public class TripWithVehicle {
         return totalDelay;
     }
 
-    public Set<AVRequest> getTrip() {
+    public Set<PassengerRequest> getTrip() {
         return trip;
     }
 

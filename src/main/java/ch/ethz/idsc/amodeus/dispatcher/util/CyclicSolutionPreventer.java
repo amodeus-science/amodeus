@@ -8,7 +8,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
@@ -27,12 +27,12 @@ public enum CyclicSolutionPreventer {
     // TODO @clruch eliminate duplicate code, only difference is universalDispatcher,
     // shareduniversaldispatcher
 
-    public static Map<RoboTaxi, AVRequest> apply(Map<RoboTaxi, AVRequest> assgnmt, UniversalDispatcher universalDispatcher, //
+    public static Map<RoboTaxi, PassengerRequest> apply(Map<RoboTaxi, PassengerRequest> assgnmt, UniversalDispatcher universalDispatcher, //
             DistanceFunction accDstFctn) {
 
-        Map<RoboTaxi, AVRequest> assgnmtCopy = new HashMap<>(assgnmt);
+        Map<RoboTaxi, PassengerRequest> assgnmtCopy = new HashMap<>(assgnmt);
 
-        for (Entry<RoboTaxi, AVRequest> entry : assgnmtCopy.entrySet()) {
+        for (Entry<RoboTaxi, PassengerRequest> entry : assgnmtCopy.entrySet()) {
             /** previously assigned {@link RoboTaxi} */
             Optional<RoboTaxi> optional = universalDispatcher.getPickupTaxi(entry.getValue());
             if (optional.isPresent()) {
@@ -54,11 +54,11 @@ public enum CyclicSolutionPreventer {
         return assgnmt;
     }
 
-    public static Map<RoboTaxi, AVRequest> apply(Map<RoboTaxi, AVRequest> assgnmt, Function<AVRequest, RoboTaxi> getPickupTaxi, //
+    public static Map<RoboTaxi, PassengerRequest> apply(Map<RoboTaxi, PassengerRequest> assgnmt, Function<PassengerRequest, RoboTaxi> getPickupTaxi, //
             DistanceFunction accDstFctn) {
-        Map<RoboTaxi, AVRequest> assgnmtCopy = new HashMap<>(assgnmt);
+        Map<RoboTaxi, PassengerRequest> assgnmtCopy = new HashMap<>(assgnmt);
 
-        for (Entry<RoboTaxi, AVRequest> entry : assgnmtCopy.entrySet()) {
+        for (Entry<RoboTaxi, PassengerRequest> entry : assgnmtCopy.entrySet()) {
             /** previously assigned {@link RoboTaxi} */
             RoboTaxi prvTaxi = getPickupTaxi.apply(entry.getValue());
             if (Objects.nonNull(prvTaxi)) {

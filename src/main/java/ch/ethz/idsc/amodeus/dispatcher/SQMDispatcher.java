@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
 import org.matsim.amodeus.components.AVDispatcher;
 import org.matsim.amodeus.components.AVRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
@@ -74,7 +74,7 @@ public class SQMDispatcher extends PartitionedDispatcher {
         if (nodeToTaxi.isEmpty())
             assignVirtualNodes();
 
-        List<AVRequest> unassigned_requests = getUnassignedAVRequests();
+        List<PassengerRequest> unassigned_requests = getUnassignedPassengerRequests();
 
         for (RoboTaxi taxi : getRoboTaxiSubset(RoboTaxiStatus.STAY)) {
             // move unassigned taxis back to their virtual station
@@ -85,8 +85,8 @@ public class SQMDispatcher extends PartitionedDispatcher {
             // first-in first-out manner
             else {
                 double earliestSubmission = Double.MAX_VALUE;
-                AVRequest earliestAvr = null;
-                for (AVRequest avr : unassigned_requests) {
+                PassengerRequest earliestAvr = null;
+                for (PassengerRequest avr : unassigned_requests) {
                     if (taxiToNode.get(taxi).getLinks().contains(avr.getFromLink()) && avr.getSubmissionTime() < earliestSubmission) {
                         earliestSubmission = avr.getSubmissionTime();
                         earliestAvr = avr;

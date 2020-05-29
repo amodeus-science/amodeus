@@ -5,13 +5,13 @@ import java.util.Queue;
 
 import org.matsim.amodeus.components.dispatcher.multi_od_heuristic.aggregation.AggregatedRequest;
 import org.matsim.amodeus.config.modal.TimingConfig;
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusDropoffTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusPickupTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.path.VrpPaths;
 import org.matsim.contrib.dvrp.schedule.Schedule;
@@ -46,9 +46,9 @@ public class SerialAggregateRideAppender implements AggregateRideAppender {
             startTime = stayTask.getBeginTime();
         }
 
-        LinkedList<AVRequest> requests = new LinkedList<>();
-        LinkedList<AVRequest> pickups = new LinkedList<>();
-        LinkedList<AVRequest> dropoffs = new LinkedList<>();
+        LinkedList<PassengerRequest> requests = new LinkedList<>();
+        LinkedList<PassengerRequest> pickups = new LinkedList<>();
+        LinkedList<PassengerRequest> dropoffs = new LinkedList<>();
 
         requests.addAll(request.getSlaveRequests());
         requests.add(request.getMasterRequest());
@@ -57,16 +57,16 @@ public class SerialAggregateRideAppender implements AggregateRideAppender {
         dropoffs.addAll(request.getSlaveRequests());
         dropoffs.add(request.getMasterRequest());
 
-        Queue<AVRequest> pickupOrder = new LinkedList<>();
-        Queue<AVRequest> dropoffOrder = new LinkedList<>();
+        Queue<PassengerRequest> pickupOrder = new LinkedList<>();
+        Queue<PassengerRequest> dropoffOrder = new LinkedList<>();
 
         Link current = stayTask.getLink();
 
         while (pickups.size() > 0) {
-            AVRequest closestRequest = null;
+            PassengerRequest closestRequest = null;
             double shortestDistance = Double.POSITIVE_INFINITY;
 
-            for (AVRequest pickup : pickups) {
+            for (PassengerRequest pickup : pickups) {
                 double distance = travelTimeEstimator.estimateTravelTime(current, pickup.getFromLink(), startTime);
 
                 if (distance < shortestDistance) {
@@ -81,10 +81,10 @@ public class SerialAggregateRideAppender implements AggregateRideAppender {
         }
 
         while (dropoffs.size() > 0) {
-            AVRequest closestRequest = null;
+            PassengerRequest closestRequest = null;
             double shortestDistance = Double.POSITIVE_INFINITY;
 
-            for (AVRequest dropoff : dropoffs) {
+            for (PassengerRequest dropoff : dropoffs) {
                 double distance = travelTimeEstimator.estimateTravelTime(current, dropoff.getToLink(), startTime);
 
                 if (distance < shortestDistance) {
@@ -101,7 +101,7 @@ public class SerialAggregateRideAppender implements AggregateRideAppender {
         Link currentLink = stayTask.getLink();
         double currentTime = startTime;
         Task currentTask = stayTask;
-        LinkedList<AVRequest> currentRequests = new LinkedList<>();
+        LinkedList<PassengerRequest> currentRequests = new LinkedList<>();
 
         LinkedList<VrpPathWithTravelData> paths = new LinkedList<>();
         LinkedList<AmodeusDriveTask> driveTasks = new LinkedList<>();
@@ -112,7 +112,7 @@ public class SerialAggregateRideAppender implements AggregateRideAppender {
             schedule.removeLastTask();
         }
 
-        for (AVRequest pickup : pickupOrder) {
+        for (PassengerRequest pickup : pickupOrder) {
             if (!pickup.getFromLink().equals(currentLink)) {
                 VrpPathWithTravelData path = VrpPaths.calcAndCreatePath(currentLink, pickup.getFromLink(), currentTime, router, travelTime);
                 paths.add(path);
@@ -141,7 +141,7 @@ public class SerialAggregateRideAppender implements AggregateRideAppender {
             }
         }
 
-        for (AVRequest dropoff : dropoffOrder) {
+        for (PassengerRequest dropoff : dropoffOrder) {
             if (!dropoff.getToLink().equals(currentLink)) {
                 VrpPathWithTravelData path = VrpPaths.calcAndCreatePath(currentLink, dropoff.getToLink(), currentTime, router, travelTime);
                 paths.add(path);

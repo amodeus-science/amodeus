@@ -16,11 +16,11 @@ import java.util.stream.Collectors;
 import org.matsim.amodeus.components.AVGenerator;
 import org.matsim.amodeus.components.dispatcher.AVVehicleAssignmentEvent;
 import org.matsim.amodeus.config.AmodeusModeConfig;
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
 import org.matsim.api.core.v01.events.Event;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
@@ -41,7 +41,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
     protected int publishPeriod; // not final, so that dispatchers can disable, or manipulate
 
-    final Set<AVRequest> pendingRequests = new LinkedHashSet<>();
+    final Set<PassengerRequest> pendingRequests = new LinkedHashSet<>();
     final MatsimAmodeusDatabase db;
     final FuturePathFactory futurePathFactory;
     protected final double pickupDurationPerStop;
@@ -65,9 +65,9 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         dispatcherMode = operatorConfig.getMode();
     }
 
-    /** @return {@Collection} of all {@AVRequests} which are currently open.
+    /** @return {@Collection} of all {@PassengerRequests} which are currently open.
      *         Requests are removed from list in setAcceptRequest function. */
-    protected synchronized final Collection<AVRequest> getAVRequests() {
+    protected synchronized final Collection<PassengerRequest> getPassengerRequests() {
         return Collections.unmodifiableCollection(pendingRequests);
     }
 
@@ -107,7 +107,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
      * {@link #pendingRequests}, needs to be public because called from other not
      * derived MATSim functions which are located in another package */
     @Override
-    public void onRequestSubmitted(AVRequest request) {
+    public void onRequestSubmitted(PassengerRequest request) {
         boolean added = pendingRequests.add(request);
         GlobalAssert.that(added);
     }
@@ -117,7 +117,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
     protected String getInfoLine() {
         return String.format("%s R=(%5d) MR=%6d", //
                 super.getInfoLine(), //
-                getAVRequests().size(), //
+                getPassengerRequests().size(), //
                 total_matchedRequests);
     }
 

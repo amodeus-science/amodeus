@@ -10,9 +10,9 @@ import java.util.stream.Collectors;
 import org.matsim.amodeus.components.AVDispatcher;
 import org.matsim.amodeus.components.AVRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
@@ -113,22 +113,22 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
     @Override
     protected void redispatch(double now) {
         final long round_now = Math.round(now);
-        requestHandler.updatePickupTimes(getAVRequests(), now);
+        requestHandler.updatePickupTimes(getPassengerRequests(), now);
 
         if (round_now % dispatchPeriod == 0) {
             /** prepare the registers for the dispatching */
             roboTaxiHandler.update(getRoboTaxis(), getDivertableUnassignedRoboTaxis());
-            requestHandler.addUnassignedRequests(getUnassignedAVRequests(), timeDb, now);
+            requestHandler.addUnassignedRequests(getUnassignedPassengerRequests(), timeDb, now);
             requestHandler.updateLastHourRequests(now, BINSIZETRAVELDEMAND);
 
             /** calculate Rebalance before (!) dispatching */
             Set<Link> lastHourRequests = requestHandler.getRequestLinksLastHour();
-            RebalancingDirectives rebalanceDirectives = rebalancing.getRebalancingDirectives(round_now, lastHourRequests, requestHandler.getCopyOfUnassignedAVRequests(),
+            RebalancingDirectives rebalanceDirectives = rebalancing.getRebalancingDirectives(round_now, lastHourRequests, requestHandler.getCopyOfUnassignedPassengerRequests(),
                     roboTaxiHandler.getUnassignedRoboTaxis());
 
             /** for all AV Requests in the order of their submision, try to find the closest
              * vehicle and assign */
-            for (AVRequest avRequest : requestHandler.getInOrderOffSubmissionTime()) {
+            for (PassengerRequest avRequest : requestHandler.getInOrderOffSubmissionTime()) {
                 Set<RoboTaxi> robotaxisWithMenu = getRoboTaxis().stream()//
                         .filter(StaticHelper::plansPickupsOrDropoffs)//
                         .collect(Collectors.toSet());

@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 import org.matsim.amodeus.components.dispatcher.multi_od_heuristic.aggregation.AggregatedRequest;
 import org.matsim.amodeus.config.modal.TimingConfig;
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusDropoffTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusPickupTask;
@@ -17,6 +16,7 @@ import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.path.VrpPaths;
 import org.matsim.contrib.dvrp.schedule.Schedule;
@@ -42,8 +42,8 @@ public class ParallelAggregateRideAppender implements AggregateRideAppender {
     private class AppendTask {
         public DvrpVehicle vehicle;
 
-        public List<AVRequest> pickupOrder = new LinkedList<>();
-        public List<AVRequest> dropoffOrder = new LinkedList<>();
+        public List<PassengerRequest> pickupOrder = new LinkedList<>();
+        public List<PassengerRequest> dropoffOrder = new LinkedList<>();
 
         public List<Future<Path>> pickupPaths = new LinkedList<>();
         public List<Future<Path>> dropoffPaths = new LinkedList<>();
@@ -53,18 +53,18 @@ public class ParallelAggregateRideAppender implements AggregateRideAppender {
 
     private class OrderedRequest {
         final public double startTime;
-        final public AVRequest request;
+        final public PassengerRequest request;
 
-        public OrderedRequest(AVRequest request, double startTime) {
+        public OrderedRequest(PassengerRequest request, double startTime) {
             this.startTime = startTime;
             this.request = request;
         }
     }
 
     public void schedule(AggregatedRequest request, DvrpVehicle vehicle, double now) {
-        LinkedList<AVRequest> requests = new LinkedList<>();
-        LinkedList<AVRequest> pickups = new LinkedList<>();
-        LinkedList<AVRequest> dropoffs = new LinkedList<>();
+        LinkedList<PassengerRequest> requests = new LinkedList<>();
+        LinkedList<PassengerRequest> pickups = new LinkedList<>();
+        LinkedList<PassengerRequest> dropoffs = new LinkedList<>();
 
         requests.addAll(request.getSlaveRequests());
         requests.add(request.getMasterRequest());
@@ -83,10 +83,10 @@ public class ParallelAggregateRideAppender implements AggregateRideAppender {
         double currentTime = now;
 
         while (pickups.size() > 0) {
-            AVRequest closestRequest = null;
+            PassengerRequest closestRequest = null;
             double shortestTravelTime = Double.POSITIVE_INFINITY;
 
-            for (AVRequest pickup : pickups) {
+            for (PassengerRequest pickup : pickups) {
                 double travelTime = travelTimeEstimator.estimateTravelTime(currentLink, pickup.getFromLink(), currentTime);
 
                 if (travelTime < shortestTravelTime) {
@@ -108,10 +108,10 @@ public class ParallelAggregateRideAppender implements AggregateRideAppender {
         }
 
         while (dropoffs.size() > 0) {
-            AVRequest closestRequest = null;
+            PassengerRequest closestRequest = null;
             double shortestTravelTime = Double.POSITIVE_INFINITY;
 
-            for (AVRequest dropoff : dropoffs) {
+            for (PassengerRequest dropoff : dropoffs) {
                 double travelTime = travelTimeEstimator.estimateTravelTime(currentLink, dropoff.getToLink(), currentTime);
 
                 if (travelTime < shortestTravelTime) {
@@ -184,7 +184,7 @@ public class ParallelAggregateRideAppender implements AggregateRideAppender {
         double currentTime = startTime;
 
         Task currentTask = stayTask;
-        LinkedList<AVRequest> currentRequests = new LinkedList<>();
+        LinkedList<PassengerRequest> currentRequests = new LinkedList<>();
 
         LinkedList<VrpPathWithTravelData> paths = new LinkedList<>();
         LinkedList<AmodeusDriveTask> driveTasks = new LinkedList<>();
@@ -192,7 +192,7 @@ public class ParallelAggregateRideAppender implements AggregateRideAppender {
         Iterator<Path> pickupPathIterator = plainPickupPaths.iterator();
         Iterator<Path> dropoffPathIterator = plainDropoffPaths.iterator();
 
-        for (AVRequest pickup : appendTask.pickupOrder) {
+        for (PassengerRequest pickup : appendTask.pickupOrder) {
             Path plainPickupPath = pickupPathIterator.next();
 
             if (plainPickupPath != null) {
@@ -223,7 +223,7 @@ public class ParallelAggregateRideAppender implements AggregateRideAppender {
             }
         }
 
-        for (AVRequest dropoff : appendTask.dropoffOrder) {
+        for (PassengerRequest dropoff : appendTask.dropoffOrder) {
             Path plainDropoffPath = dropoffPathIterator.next();
 
             if (plainDropoffPath != null) {

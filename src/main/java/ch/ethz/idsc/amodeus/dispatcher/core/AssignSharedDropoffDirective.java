@@ -3,8 +3,8 @@ package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.Optional;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
 
@@ -16,7 +16,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 /* package */ enum AssignSharedDropoffDirective {
     ;
 
-    public static final Optional<AVRequest> apply(RoboTaxi roboTaxi, double now, double dropoffDurationPerStop, FuturePathFactory futurePathFactory) {
+    public static final Optional<PassengerRequest> apply(RoboTaxi roboTaxi, double now, double dropoffDurationPerStop, FuturePathFactory futurePathFactory) {
         Link dropoffVehicleLink = roboTaxi.getDivertableLocation();
         // SHARED note that waiting for last staytask adds a one second staytask before
         // switching to dropoffTask
@@ -25,7 +25,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
             Optional<SharedCourse> currentCourse = SharedCourseAccess.getStarter(roboTaxi);
             GlobalAssert.that(currentCourse.isPresent());
             if (currentCourse.get().getMealType().equals(SharedMealType.DROPOFF)) {
-                AVRequest avRequest = currentCourse.get().getAvRequest();
+                PassengerRequest avRequest = currentCourse.get().getAvRequest();
                 GlobalAssert.that(roboTaxi.isWithoutDirective());
                 if (avRequest.getToLink().equals(dropoffVehicleLink)) {
                     assignDropoffDirective(roboTaxi, avRequest, now, dropoffDurationPerStop, futurePathFactory);
@@ -36,7 +36,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         return Optional.empty();
     }
 
-    private static final void assignDropoffDirective(RoboTaxi roboTaxi, AVRequest avRequest, double now, double dropoffDurationPerStop, FuturePathFactory futurePathFactory) {
+    private static final void assignDropoffDirective(RoboTaxi roboTaxi, PassengerRequest avRequest, double now, double dropoffDurationPerStop, FuturePathFactory futurePathFactory) {
         // CHECK That Dropoff Is Possible
         Optional<SharedCourse> currentCourse = SharedCourseAccess.getStarter(roboTaxi);
         GlobalAssert.that(currentCourse.isPresent());

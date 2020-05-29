@@ -3,10 +3,10 @@ package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.Objects;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.amodeus.dvrp.schedule.AmodeusDropoffTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
@@ -18,11 +18,11 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
  * 4) append new stay task */
 /* package */ final class SharedGeneralDropoffDirective extends FuturePathDirective {
     final RoboTaxi roboTaxi;
-    final AVRequest currentRequest;
+    final PassengerRequest currentRequest;
     final double getTimeNow;
     final double dropoffDurationPerStop;
 
-    public SharedGeneralDropoffDirective(RoboTaxi roboTaxi, AVRequest currentRequest, //
+    public SharedGeneralDropoffDirective(RoboTaxi roboTaxi, PassengerRequest currentRequest, //
             FuturePathContainer futurePathContainer, final double getTimeNow, double dropoffDurationPerStop) {
         super(futurePathContainer);
         this.roboTaxi = roboTaxi;

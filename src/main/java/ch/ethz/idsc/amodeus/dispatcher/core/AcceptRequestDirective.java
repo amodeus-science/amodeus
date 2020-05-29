@@ -3,11 +3,11 @@ package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.Arrays;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusDropoffTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusPickupTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
@@ -19,11 +19,11 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
  * dropoff task 5) append new stay task */
 /* package */ final class AcceptRequestDirective extends FuturePathDirective {
     final RoboTaxi roboTaxi;
-    final AVRequest avRequest;
+    final PassengerRequest avRequest;
     final double getTimeNow;
     final double dropoffDurationPerStop;
 
-    public AcceptRequestDirective(RoboTaxi roboTaxi, AVRequest avRequest, //
+    public AcceptRequestDirective(RoboTaxi roboTaxi, PassengerRequest avRequest, //
             FuturePathContainer futurePathContainer, final double getTimeNow, double dropoffDurationPerStop) {
         super(futurePathContainer);
         this.roboTaxi = roboTaxi;
@@ -66,11 +66,6 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
             schedule.addTask(dropoffTask);
 
             ScheduleUtils.makeWhole(roboTaxi, endDropoffTime, scheduleEndTime, avRequest.getToLink());
-
-            // following computation is mandatory for the internal scoring function
-            final double distance = VrpPathUtils.getDistance(vrpPathWithTravelData);
-            avRequest.getRoute().setDistance(distance);
-
         } else
             reportExecutionBypass(endDropoffTime - scheduleEndTime);
     }

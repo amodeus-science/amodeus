@@ -8,10 +8,10 @@ import java.util.stream.Collectors;
 import org.matsim.amodeus.components.AVDispatcher;
 import org.matsim.amodeus.components.AVRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
@@ -51,10 +51,10 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
     /** data structures are used to enable fast "contains" searching */
     private final TreeMaintainer<RoboTaxi> unassignedRoboTaxis;
 
-    private final TreeMultipleItems<AVRequest> unassignedRequests;
-    private final TreeMultipleItems<AVRequest> requestsLastHour;
-    private final Set<AVRequest> waitList = new HashSet<>();
-    private final Set<AVRequest> extremWaitList = new HashSet<>();
+    private final TreeMultipleItems<PassengerRequest> unassignedRequests;
+    private final TreeMultipleItems<PassengerRequest> requestsLastHour;
+    private final Set<PassengerRequest> waitList = new HashSet<>();
+    private final Set<PassengerRequest> extremWaitList = new HashSet<>();
 
     private static final double MAXLAGTRAVELTIMECALCULATION = 1800.0;
     private final CachedNetworkTimeDistance timeDb;
@@ -68,8 +68,8 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
 
         double[] networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
         this.unassignedRoboTaxis = new TreeMaintainer<>(networkBounds, this::getRoboTaxiLoc);
-        this.unassignedRequests = new TreeMultipleItems<>(AVRequest::getSubmissionTime);
-        this.requestsLastHour = new TreeMultipleItems<>(AVRequest::getSubmissionTime);
+        this.unassignedRequests = new TreeMultipleItems<>(PassengerRequest::getSubmissionTime);
+        this.requestsLastHour = new TreeMultipleItems<>(PassengerRequest::getSubmissionTime);
 
         FastAStarLandmarksFactory factory = new FastAStarLandmarksFactory(Runtime.getRuntime().availableProcessors());
         LeastCostPathCalculator calculator = EasyMinTimePathCalculator.prepPathCalculator(network, factory);
@@ -89,22 +89,22 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
 
             /** prepare the registers for the dispatching */
             getDivertableUnassignedRoboTaxis().forEach(unassignedRoboTaxis::add);
-            getUnassignedAVRequests().forEach(r -> {
+            getUnassignedPassengerRequests().forEach(r -> {
                 unassignedRequests.add(r);
                 requestsLastHour.add(r);
             });
             requestsLastHour.removeAllElementsWithValueSmaller(now - BINSIZETRAVELDEMAND);
 
             /** calculate Rebalance before dispatching */
-            Set<Link> lastHourRequests = requestsLastHour.getValues().stream().map(AVRequest::getFromLink).collect(Collectors.toSet());
+            Set<Link> lastHourRequests = requestsLastHour.getValues().stream().map(PassengerRequest::getFromLink).collect(Collectors.toSet());
             RebalancingDirectives rebalanceDirectives = kockelmanRebalancing.getRebalancingDirectives(round_now, //
                     lastHourRequests, //
                     unassignedRequests.getValues(), unassignedRoboTaxis.getValues());
 
-            /** for all {@link AVRequest}s in the order of their submission, try to find the closest
+            /** for all {@link PassengerRequest}s in the order of their submission, try to find the closest
              * vehicle and assign */
-            Set<AVRequest> requestsToRemove = new HashSet<>();
-            for (AVRequest avRequest : unassignedRequests.getTsInOrderOfValue()) {
+            Set<PassengerRequest> requestsToRemove = new HashSet<>();
+            for (PassengerRequest avRequest : unassignedRequests.getTsInOrderOfValue()) {
                 boolean assigned = false;
                 if (unassignedRoboTaxis.size() > 0) {
                     RoboTaxi closestRoboTaxi = unassignedRoboTaxis.getClosest(getLocation(avRequest));
@@ -142,8 +142,8 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
     }
 
     /** @param request
-     * @return {@link Coord} with {@link AVRequest} location */
-    private static Tensor getLocation(AVRequest request) {
+     * @return {@link Coord} with {@link PassengerRequest} location */
+    private static Tensor getLocation(PassengerRequest request) {
         return TensorCoords.toTensor(request.getFromLink().getFromNode().getCoord());
     }
 

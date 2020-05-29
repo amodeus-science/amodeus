@@ -8,10 +8,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.util.TreeMultipleItems;
@@ -68,22 +68,22 @@ import ch.ethz.idsc.amodeus.routing.CachedNetworkTimeDistance;
      * @param now the current time
      * @param historicalRequestLinks historical request link data. should correspond to the historicalDataTime entered in the constructor. Can come from a
      *            collection of the data in the simulation or from historical data like a taxi company could have it.
-     * @param allUnassignedAVRequests all currently unassigned {@link AVRequest}s
+     * @param allUnassignedPassengerRequests all currently unassigned {@link PassengerRequest}s
      * @param allAvailableRobotaxisforRebalance all {@link RoboTaxi}s which should be considered for Rebalancing
      * @return rebalancing directives */
     public RebalancingDirectives getRebalancingDirectives( //
-            double now, Set<Link> historicalRequestLinks, Set<AVRequest> allUnassignedAVRequests, //
+            double now, Set<Link> historicalRequestLinks, Set<PassengerRequest> allUnassignedPassengerRequests, //
             Set<RoboTaxi> allAvailableRobotaxisforRebalance) {
 
         /** First we have to update all the blocks with the new values of requests and RoboTaxis */
         blocks.values().forEach(Block::clear);
 
         allAvailableRobotaxisforRebalance.forEach(rt -> blocks.get(linkBlockLookup.get(rt.getDivertableLocation()).getId()).addRoboTaxi(rt));
-        allUnassignedAVRequests.forEach(req -> blocks.get(linkBlockLookup.get(req.getFromLink()).getId()).addUnassignedRequest());
+        allUnassignedPassengerRequests.forEach(req -> blocks.get(linkBlockLookup.get(req.getFromLink()).getId()).addUnassignedRequest());
         historicalRequestLinks.forEach(l -> blocks.get(linkBlockLookup.get(l).getId()).addRequestLastHour(l));
 
         /** Calculate the initial Block Balances for each block */
-        blocks.values().forEach(v -> v.calculateInitialBlockBalance(allAvailableRobotaxisforRebalance.size(), allUnassignedAVRequests.size()));
+        blocks.values().forEach(v -> v.calculateInitialBlockBalance(allAvailableRobotaxisforRebalance.size(), allUnassignedPassengerRequests.size()));
 
         /** By using push and pull between the Blocks Lets determine which block sends how many robotaxis to which other block */
         calculateRebalancing();

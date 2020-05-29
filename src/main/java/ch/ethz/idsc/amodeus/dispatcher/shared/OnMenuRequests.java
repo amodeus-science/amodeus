@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
@@ -14,14 +14,14 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 public enum OnMenuRequests {
     ;
 
-    public static Set<AVRequest> getOnBoardRequests(List<? extends SharedCourse> courses) {
-        Set<AVRequest> pickups = courseMealStream(courses, SharedMealType.PICKUP) //
+    public static Set<PassengerRequest> getOnBoardRequests(List<? extends SharedCourse> courses) {
+        Set<PassengerRequest> pickups = courseMealStream(courses, SharedMealType.PICKUP) //
                 .map(SharedCourse::getAvRequest).collect(Collectors.toSet());
 
-        Set<AVRequest> dropoffs = courseMealStream(courses, SharedMealType.DROPOFF) //
+        Set<PassengerRequest> dropoffs = courseMealStream(courses, SharedMealType.DROPOFF) //
                 .map(SharedCourse::getAvRequest).collect(Collectors.toSet());
 
-        for (AVRequest avRequestIDpickup : pickups) {
+        for (PassengerRequest avRequestIDpickup : pickups) {
             boolean removeOk = dropoffs.remove(avRequestIDpickup);
             GlobalAssert.that(removeOk);
         }

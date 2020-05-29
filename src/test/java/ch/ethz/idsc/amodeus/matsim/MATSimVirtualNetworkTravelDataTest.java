@@ -45,10 +45,6 @@ public class MATSimVirtualNetworkTravelDataTest {
 
         for (int i = 0; i < 2; i++) {
             Controler controler = prepare();
-
-            AmodeusConfigGroup.get(controler.getConfig()).getModes().values().iterator().next().getParams().put("regenerateVirtualNetwork", "false");
-            AmodeusConfigGroup.get(controler.getConfig()).getModes().values().iterator().next().getParams().put("regenerateTravelData", "false");
-
             controler.run();
 
             Assert.assertTrue(new File(workingDirectory, "generatedVirtualNetwork").exists());
@@ -57,7 +53,7 @@ public class MATSimVirtualNetworkTravelDataTest {
             virtualNetworkIds.add(VirtualNetworkGet.readFile(controler.getScenario().getNetwork(), new File(workingDirectory, "generatedVirtualNetwork")).getvNetworkID());
         }
 
-        // Here, we want that the generated network is reused, so we expect the ID to stay the same
+        // We want that the generated network is reused, so we expect the ID to stay the same
         Assert.assertEquals(virtualNetworkIds.get(0), virtualNetworkIds.get(1));
     }
 
@@ -68,6 +64,11 @@ public class MATSimVirtualNetworkTravelDataTest {
 
         for (int i = 0; i < 2; i++) {
             Controler controler = prepare();
+
+            AmodeusModeConfig modeConfig = AmodeusConfigGroup.get(controler.getConfig()).getMode("av");
+            modeConfig.getDispatcherConfig().setRegenerateVirtualNetwork(true);
+            modeConfig.getDispatcherConfig().setRegenerateTravelData(true);
+
             controler.run();
 
             Assert.assertTrue(new File(workingDirectory, "generatedVirtualNetwork").exists());
@@ -76,7 +77,7 @@ public class MATSimVirtualNetworkTravelDataTest {
             virtualNetworkIds.add(VirtualNetworkGet.readFile(controler.getScenario().getNetwork(), new File(workingDirectory, "generatedVirtualNetwork")).getvNetworkID());
         }
 
-        // By default, the network always gets regenerated, so we expect different IDs for the two runs.
+        // The network always gets regenerated, so we expect different IDs for the two runs.
         Assert.assertNotEquals(virtualNetworkIds.get(0), virtualNetworkIds.get(1));
     }
 
@@ -128,8 +129,8 @@ public class MATSimVirtualNetworkTravelDataTest {
         lpOptions.saveAndOverwriteLPOptions();
 
         // Set up paths
-        operatorConfig.getParams().put("virtualNetworkPath", "generatedVirtualNetwork");
-        operatorConfig.getParams().put("travelDataPath", "generatedTravelData");
+        operatorConfig.getDispatcherConfig().setVirtualNetworkPath("generatedVirtualNetwork");
+        operatorConfig.getDispatcherConfig().setTravelDataPath("generatedTravelData");
 
         // Controller
         Controler controller = new Controler(scenario);

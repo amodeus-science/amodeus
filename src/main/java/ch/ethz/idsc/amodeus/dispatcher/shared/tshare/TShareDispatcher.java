@@ -14,9 +14,9 @@ import java.util.stream.Collectors;
 import org.matsim.amodeus.components.AVDispatcher;
 import org.matsim.amodeus.components.AVRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
@@ -120,7 +120,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
                     .filter(rt -> (rt.getUnmodifiableViewOfCourses().size() == 0)) //
                     .collect(Collectors.toList());
             printInfo = bipartiteMatchingUtils.executePickup(this, this::getCurrentPickupTaxi, divertableAndEmpty, //
-                    getUnassignedAVRequests(), distanceCashed, now);
+                    getUnassignedPassengerRequests(), distanceCashed, now);
         }
     }
 
@@ -135,12 +135,12 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
                 RoboTaxiPlannedLocations.of(occupiedNotFull, virtualNetwork);
 
         /** do T-share ridesharing */
-        List<AVRequest> sortedRequests = getAVRequests().stream() //
+        List<PassengerRequest> sortedRequests = getPassengerRequests().stream() //
                 .filter(avr -> !getCurrentPickupAssignements().keySet().contains(avr)) // requests are not scheduled to be picked up
                 .sorted(RequestWaitTimeComparator.INSTANCE) // sort such that earliest submission is first
                 .collect(Collectors.toList());
 
-        for (AVRequest avr : sortedRequests) {
+        for (PassengerRequest avr : sortedRequests) {
 
             // compute times left until pickup or dropoff window closed
             Scalar timeLeftForPickup = LatestPickup.timeTo(avr, pickupDelayMax, now);

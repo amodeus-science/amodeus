@@ -3,16 +3,16 @@ package ch.ethz.idsc.amodeus.dispatcher.shared.highcap;
 
 import java.util.Objects;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 
 /* package */ class RebalanceTripWithVehicle {
-    private final AVRequest avRequest; // since there is only 1 request in each re-balnce trip, we don't need to use set
+    private final PassengerRequest avRequest; // since there is only 1 request in each re-balnce trip, we don't need to use set
     private final RoboTaxi roboTaxi;
     private final double timeToTravel;
 
-    public RebalanceTripWithVehicle(RoboTaxi roboTaxi, double timeToTravel, AVRequest avRequest) {
+    public RebalanceTripWithVehicle(RoboTaxi roboTaxi, double timeToTravel, PassengerRequest avRequest) {
         this.roboTaxi = Objects.requireNonNull(roboTaxi);
         this.timeToTravel = timeToTravel;
         this.avRequest = avRequest;
@@ -26,7 +26,7 @@ import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
         return timeToTravel;
     }
 
-    public AVRequest getAvRequest() {
+    public PassengerRequest getAvRequest() {
         return avRequest;
     }
 }

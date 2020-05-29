@@ -10,13 +10,13 @@ import org.matsim.amodeus.components.AVRouter;
 import org.matsim.amodeus.components.dispatcher.AVVehicleAssignmentEvent;
 import org.matsim.amodeus.components.dispatcher.utils.SingleRideAppender;
 import org.matsim.amodeus.config.AmodeusModeConfig;
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusTaskType;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -36,13 +36,13 @@ public class SingleHeuristicDispatcher implements AVDispatcher {
     final private double replanningInterval;
 
     final private List<DvrpVehicle> availableVehicles = new LinkedList<>();
-    final private List<AVRequest> pendingRequests = new LinkedList<>();
+    final private List<PassengerRequest> pendingRequests = new LinkedList<>();
 
     final private QuadTree<DvrpVehicle> availableVehiclesTree;
-    final private QuadTree<AVRequest> pendingRequestsTree;
+    final private QuadTree<PassengerRequest> pendingRequestsTree;
 
     final private Map<DvrpVehicle, Link> vehicleLinks = new HashMap<>();
-    final private Map<AVRequest, Link> requestLinks = new HashMap<>();
+    final private Map<PassengerRequest, Link> requestLinks = new HashMap<>();
 
     public enum HeuristicMode {
         OVERSUPPLY, UNDERSUPPLY
@@ -63,7 +63,7 @@ public class SingleHeuristicDispatcher implements AVDispatcher {
     }
 
     @Override
-    public void onRequestSubmitted(AVRequest request) {
+    public void onRequestSubmitted(PassengerRequest request) {
         addRequest(request, request.getFromLink());
     }
 
@@ -84,7 +84,7 @@ public class SingleHeuristicDispatcher implements AVDispatcher {
         }
 
         while (pendingRequests.size() > 0 && availableVehicles.size() > 0) {
-            AVRequest request = null;
+            PassengerRequest request = null;
             DvrpVehicle vehicle = null;
 
             switch (dispatcherMode) {
@@ -120,14 +120,14 @@ public class SingleHeuristicDispatcher implements AVDispatcher {
         }
     }
 
-    private void addRequest(AVRequest request, Link link) {
+    private void addRequest(PassengerRequest request, Link link) {
         pendingRequests.add(request);
         pendingRequestsTree.put(link.getCoord().getX(), link.getCoord().getY(), request);
         requestLinks.put(request, link);
         // reoptimize = true;
     }
 
-    private AVRequest findRequest() {
+    private PassengerRequest findRequest() {
         return pendingRequests.get(0);
     }
 
@@ -140,7 +140,7 @@ public class SingleHeuristicDispatcher implements AVDispatcher {
         return availableVehiclesTree.getClosest(coord.getX(), coord.getY());
     }
 
-    private AVRequest findClosestRequest(Link link) {
+    private PassengerRequest findClosestRequest(Link link) {
         Coord coord = link.getCoord();
         return pendingRequestsTree.getClosest(coord.getX(), coord.getY());
     }
@@ -168,7 +168,7 @@ public class SingleHeuristicDispatcher implements AVDispatcher {
         availableVehiclesTree.remove(coord.getX(), coord.getY(), vehicle);
     }
 
-    private void removeRequest(AVRequest request) {
+    private void removeRequest(PassengerRequest request) {
         if (!pendingRequests.contains(request)) {
             throw new IllegalStateException();
         }

@@ -2,14 +2,14 @@ package org.matsim.amodeus.components.dispatcher.multi_od_heuristic.aggregation;
 
 import java.util.Map;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.events.Event;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 public class AggregationEvent extends Event {
-    final private AVRequest master;
-    final private AVRequest slave;
+    final private PassengerRequest master;
+    final private PassengerRequest slave;
 
-    public AggregationEvent(AVRequest master, AVRequest slave, double time) {
+    public AggregationEvent(PassengerRequest master, PassengerRequest slave, double time) {
         super(time);
 
         this.master = master;

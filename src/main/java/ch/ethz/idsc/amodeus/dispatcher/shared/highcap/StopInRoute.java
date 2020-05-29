@@ -1,8 +1,8 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared.highcap;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
@@ -12,9 +12,9 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
     private final double time;
     private final Link stopLink;
     private final SharedMealType stopType;
-    private final AVRequest avRequest;
+    private final PassengerRequest avRequest;
 
-    public StopInRoute(double time, Link stopLink, SharedMealType stopType, AVRequest avRequest) {
+    public StopInRoute(double time, Link stopLink, SharedMealType stopType, PassengerRequest avRequest) {
         this.time = time;
         this.stopLink = stopLink;
         this.stopType = stopType;
@@ -33,7 +33,7 @@ import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
         return time;
     }
 
-    public AVRequest getavRequest() {
+    public PassengerRequest getavRequest() {
         return avRequest;
     }
 

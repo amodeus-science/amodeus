@@ -4,7 +4,7 @@ package ch.ethz.idsc.amodeus.dispatcher.shared.highcap;
 import java.util.List;
 import java.util.Set;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedMealType;
 
@@ -14,7 +14,7 @@ public class RequestKeyInfo {
     private double deadlineDropOff;
     private boolean allowanceGiven;
 
-    public RequestKeyInfo(AVRequest avRequest, double maxWaitTime, double maxDelay, TravelTimeComputation ttc) {
+    public RequestKeyInfo(PassengerRequest avRequest, double maxWaitTime, double maxDelay, TravelTimeComputation ttc) {
         modifiableSubmissionTime = avRequest.getSubmissionTime();
         deadlinePickUp = avRequest.getSubmissionTime() + maxWaitTime;
         deadlineDropOff = avRequest.getSubmissionTime() + ttc.of(avRequest.getFromLink(), avRequest.getToLink(), //
@@ -34,7 +34,7 @@ public class RequestKeyInfo {
         return modifiableSubmissionTime;
     }
 
-    public void modifyDeadlinePickUp(List<TripWithVehicle> lastAssignment, AVRequest avRequest, double maxWaitTime) {
+    public void modifyDeadlinePickUp(List<TripWithVehicle> lastAssignment, PassengerRequest avRequest, double maxWaitTime) {
         deadlinePickUp = modifiableSubmissionTime + maxWaitTime; // first write the original value
         // if it is assigned last time then make the deadline earlier
         for (TripWithVehicle tripWithVehicle : lastAssignment)
@@ -65,7 +65,7 @@ public class RequestKeyInfo {
         }
     }
 
-    public void modifySubmissionTime(double now, double maxWaitTime, AVRequest avRequest, Set<AVRequest> overduedRequests) {
+    public void modifySubmissionTime(double now, double maxWaitTime, PassengerRequest avRequest, Set<PassengerRequest> overduedRequests) {
         if (modifiableSubmissionTime + maxWaitTime < now && overduedRequests.contains(avRequest)) {
             modifiableSubmissionTime += maxWaitTime;
             deadlinePickUp += maxWaitTime;

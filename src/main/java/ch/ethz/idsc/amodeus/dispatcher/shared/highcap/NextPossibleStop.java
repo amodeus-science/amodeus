@@ -1,14 +1,14 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus.dispatcher.shared.highcap;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 /* package */ class NextPossibleStop {
-    private final AVRequest avRequest;
+    private final PassengerRequest avRequest;
     private boolean onboardTrueOrFalse;
 
-    public NextPossibleStop(AVRequest avRequest, boolean onboardTrueOrFalse) {
+    public NextPossibleStop(PassengerRequest avRequest, boolean onboardTrueOrFalse) {
         this.avRequest = avRequest;
         this.onboardTrueOrFalse = onboardTrueOrFalse;
     }
@@ -25,7 +25,7 @@ import org.matsim.api.core.v01.network.Link;
         onboardTrueOrFalse = isItOnboardNow;
     }
 
-    public AVRequest getAVRequest() {
+    public PassengerRequest getPassengerRequest() {
         return avRequest;
     }
 }

@@ -3,9 +3,9 @@ package ch.ethz.idsc.amodeus.dispatcher.core;
 
 import java.util.List;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.amodeus.dvrp.schedule.AmodeusPickupTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
@@ -16,10 +16,10 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
  * 1) finish stay task 2) append pickup task 3) append drive task 4) append new stay task */
 /* package */ final class SharedGeneralPickupDirective extends FuturePathDirective {
     final RoboTaxi roboTaxi;
-    final List<AVRequest> sameOriginRequests;
+    final List<PassengerRequest> sameOriginRequests;
     final double getTimeNow;
 
-    public SharedGeneralPickupDirective(RoboTaxi roboTaxi, List<AVRequest> sameOriginRequests, //
+    public SharedGeneralPickupDirective(RoboTaxi roboTaxi, List<PassengerRequest> sameOriginRequests, //
             FuturePathContainer futurePathContainer, final double getTimeNow) {
         super(futurePathContainer);
         this.roboTaxi = roboTaxi;
@@ -27,7 +27,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
         this.getTimeNow = getTimeNow;
 
         // all requests must have same from link
-        GlobalAssert.that(sameOriginRequests.stream().map(AVRequest::getFromLink).distinct().count() == 1);
+        GlobalAssert.that(sameOriginRequests.stream().map(PassengerRequest::getFromLink).distinct().count() == 1);
     }
 
     @Override
@@ -52,11 +52,6 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
             GlobalAssert.that(futurePathContainer.getStartTime() < scheduleEndTime);
             ScheduleUtils.makeWhole(roboTaxi, futurePathContainer.getStartTime(), scheduleEndTime, //
                     sameOriginRequests.get(0).getFromLink());
-
-            // jan: following computation is mandatory for the internal scoring
-            // // function
-            final double distance = VrpPathUtils.getDistance(vrpPathWithTravelData);
-            sameOriginRequests.forEach(r -> r.getRoute().setDistance(distance));// .getRoute().setDistance(distance);
 
         } else
             reportExecutionBypass(endTaskTime - scheduleEndTime);

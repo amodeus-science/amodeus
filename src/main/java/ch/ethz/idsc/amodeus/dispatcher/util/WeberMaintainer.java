@@ -14,9 +14,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.core.utils.geometry.CoordUtils;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
@@ -28,7 +28,7 @@ public class WeberMaintainer {
     private final Network network;
     private final List<Link> pastLinks;
     private Set<Link> minimizers;
-    private Set<AVRequest> reqs = new HashSet<>();
+    private Set<PassengerRequest> reqs = new HashSet<>();
 
     /** @param {@link Link} to initialize
      * @param network with {@link Link}s */
@@ -38,7 +38,7 @@ public class WeberMaintainer {
         minimizers = new HashSet<>(pastLinks);
     }
 
-    public void update(AVRequest avr) {
+    public void update(PassengerRequest avr) {
         if (reqs.add(avr))
             update(avr.getFromLink());
     }

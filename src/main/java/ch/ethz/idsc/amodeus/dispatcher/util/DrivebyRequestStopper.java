@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
@@ -21,15 +21,15 @@ public enum DrivebyRequestStopper {
      * matched once.
      * 
      * @return {@link Map} with the matchings */
-    public static Map<RoboTaxi, AVRequest> stopDrivingBy(Map<Link, List<AVRequest>> requestLocs, Collection<RoboTaxi> roboTaxis, //
-            BiConsumer<RoboTaxi, AVRequest> biConsumer) {
-        Map<RoboTaxi, AVRequest> pickups = new HashMap<>();
+    public static Map<RoboTaxi, PassengerRequest> stopDrivingBy(Map<Link, List<PassengerRequest>> requestLocs, Collection<RoboTaxi> roboTaxis, //
+            BiConsumer<RoboTaxi, PassengerRequest> biConsumer) {
+        Map<RoboTaxi, PassengerRequest> pickups = new HashMap<>();
         for (RoboTaxi roboTaxi : roboTaxis) {
             Link link = roboTaxi.getDivertableLocation();
             if (requestLocs.containsKey(link)) {
-                List<AVRequest> requestList = requestLocs.get(link);
+                List<PassengerRequest> requestList = requestLocs.get(link);
                 if (!requestList.isEmpty()) {
-                    AVRequest request = requestList.get(0);
+                    PassengerRequest request = requestList.get(0);
                     biConsumer.accept(roboTaxi, request);
                     pickups.put(roboTaxi, request);
                     requestList.remove(0);

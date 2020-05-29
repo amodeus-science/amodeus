@@ -10,9 +10,9 @@ import java.util.Map.Entry;
 import org.matsim.amodeus.components.AVDispatcher;
 import org.matsim.amodeus.components.AVRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
@@ -49,7 +49,7 @@ public class ExtDemandSupplyBeamSharing extends SharedRebalancingDispatcher {
     /** the maximal angle between the two directions which is allowed that sharing occurs */
 
     /** data structures are used to enable fast "contains" searching */
-    private final TreeMaintainer<AVRequest> requestMaintainer;
+    private final TreeMaintainer<PassengerRequest> requestMaintainer;
     private final TreeMaintainer<RoboTaxi> unassignedRoboTaxis;
 
     protected ExtDemandSupplyBeamSharing(Network network, //
@@ -79,7 +79,7 @@ public class ExtDemandSupplyBeamSharing extends SharedRebalancingDispatcher {
             Collection<RoboTaxi> robotaxisDivertable = getDivertableUnassignedRoboTaxis();
             robotaxisDivertable.stream().forEach(rt -> unassignedRoboTaxis.add(rt));
 
-            List<AVRequest> requests = getUnassignedAVRequests();
+            List<PassengerRequest> requests = getUnassignedPassengerRequests();
             requests.stream().forEach(r -> requestMaintainer.add(r));
 
             /** distinguish over- and undersupply cases */
@@ -90,7 +90,7 @@ public class ExtDemandSupplyBeamSharing extends SharedRebalancingDispatcher {
             if (unassignedRoboTaxis.size() > 0 && requests.size() > 0) {
                 /** oversupply case */
                 if (oversupply)
-                    for (AVRequest avr : requests) {
+                    for (PassengerRequest avr : requests) {
                         RoboTaxi closest = unassignedRoboTaxis.getClosest(getLocation(avr));
                         if (closest != null) {
                             addSharedRoboTaxiPickup(closest, avr);
@@ -101,7 +101,7 @@ public class ExtDemandSupplyBeamSharing extends SharedRebalancingDispatcher {
                 /** undersupply case */
                 else
                     for (RoboTaxi roboTaxi : robotaxisDivertable) {
-                        AVRequest closest = requestMaintainer.getClosest(getRoboTaxiLoc(roboTaxi));
+                        PassengerRequest closest = requestMaintainer.getClosest(getRoboTaxiLoc(roboTaxi));
                         if (closest != null) {
                             addSharedRoboTaxiPickup(roboTaxi, closest);
                             unassignedRoboTaxis.remove(roboTaxi);
@@ -122,8 +122,8 @@ public class ExtDemandSupplyBeamSharing extends SharedRebalancingDispatcher {
         // ADDITIONAL SHARING POSSIBILITY AT EACH PICKUP
         /** Sharing idea: if a robotaxi Picks up a customer check if other open request are close with similar direction and pick them up. */
         if (round_now % sharingPeriod == 0) {
-            Map<AVRequest, RoboTaxi> addedRequests = beamExtensionForSharing.findAssignementAndExecute(getRoboTaxis(), getAVRequests(), this);
-            for (Entry<AVRequest, RoboTaxi> entry : addedRequests.entrySet()) {
+            Map<PassengerRequest, RoboTaxi> addedRequests = beamExtensionForSharing.findAssignementAndExecute(getRoboTaxis(), getPassengerRequests(), this);
+            for (Entry<PassengerRequest, RoboTaxi> entry : addedRequests.entrySet()) {
                 GlobalAssert.that(!unassignedRoboTaxis.contains(entry.getValue()));
                 /** a avRequest is not contained in the requestMaintainer if the request was already assigned before. in that case a removal is not
                  * needed */
@@ -134,8 +134,8 @@ public class ExtDemandSupplyBeamSharing extends SharedRebalancingDispatcher {
     }
 
     /** @param request
-     * @return {@link Coord} with {@link AVRequest} location */
-    /* package */ Tensor getLocation(AVRequest request) {
+     * @return {@link Coord} with {@link PassengerRequest} location */
+    /* package */ Tensor getLocation(PassengerRequest request) {
         Coord coord = request.getFromLink().getFromNode().getCoord();
         return Tensors.vector(coord.getX(), coord.getY());
     }

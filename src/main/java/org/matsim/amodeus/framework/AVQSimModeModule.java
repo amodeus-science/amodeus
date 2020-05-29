@@ -35,7 +35,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.inject.Singleton;
 
 public class AVQSimModeModule extends AbstractDvrpModeQSimModule {
-    protected AVQSimModeModule(AmodeusModeConfig modeConfig) {
+    public AVQSimModeModule(AmodeusModeConfig modeConfig) {
         super(modeConfig.getMode());
     }
 

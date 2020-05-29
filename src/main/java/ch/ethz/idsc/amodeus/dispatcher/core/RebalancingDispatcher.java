@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.matsim.amodeus.config.AmodeusModeConfig;
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
@@ -34,7 +34,7 @@ public abstract class RebalancingDispatcher extends UniversalDispatcher {
         GlobalAssert.that(roboTaxi.isWithoutCustomer());
         /** if {@link RoboTaxi} is during pickup, remove from pickup register */
         if (isInPickupRegister(roboTaxi)) {
-            AVRequest toRemove = getPickupRoboTaxis().get(roboTaxi);
+            PassengerRequest toRemove = getPickupRoboTaxis().get(roboTaxi);
             removeFromPickupRegisters(toRemove);
         }
         setRoboTaxiDiversion(roboTaxi, destination, RoboTaxiStatus.REBALANCEDRIVE);

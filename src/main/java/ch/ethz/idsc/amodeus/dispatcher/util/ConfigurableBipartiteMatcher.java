@@ -4,8 +4,8 @@ package ch.ethz.idsc.amodeus.dispatcher.util;
 import java.util.Collection;
 import java.util.Map;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
@@ -50,30 +50,30 @@ public class ConfigurableBipartiteMatcher extends BipartiteMatcherInternal {
     }
 
     @Override
-    public Map<RoboTaxi, AVRequest> getGBPMatch(UniversalDispatcher universalDispatcher, //
+    public Map<RoboTaxi, PassengerRequest> getGBPMatch(UniversalDispatcher universalDispatcher, //
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
-            Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
+            Collection<PassengerRequest> requests, /** <- typically universalDispatcher.getPassengerRequests() */
             DistanceFunction distanceFunction, Network network) {
         if (hungarian)
             return hungarianMatch(universalDispatcher, roboTaxis, requests, distanceFunction, network);
         return integerLinearProgramMatch(universalDispatcher, roboTaxis, requests, distanceFunction, network);
     }
 
-    private Map<RoboTaxi, AVRequest> hungarianMatch(UniversalDispatcher universalDispatcher, //
+    private Map<RoboTaxi, PassengerRequest> hungarianMatch(UniversalDispatcher universalDispatcher, //
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
-            Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
+            Collection<PassengerRequest> requests, /** <- typically universalDispatcher.getPassengerRequests() */
             DistanceFunction distanceFunction, Network network) {
         /** reduction of problem size with kd-tree, helps to downsize problems where n << m or m>> n
          * for n number of available taxis and m number of available requests */
-        Map<RoboTaxi, AVRequest> gbpMatch = globalBipartiteMatcher.match(roboTaxis, requests);
+        Map<RoboTaxi, PassengerRequest> gbpMatch = globalBipartiteMatcher.match(roboTaxis, requests);
         /** prevent cycling an assignment is only updated if the new distance is smaller than the
          * old distance */
         return CyclicSolutionPreventer.apply(gbpMatch, universalDispatcher, accDstFctn);
     }
 
-    private Map<RoboTaxi, AVRequest> integerLinearProgramMatch(UniversalDispatcher universalDispatcher, //
+    private Map<RoboTaxi, PassengerRequest> integerLinearProgramMatch(UniversalDispatcher universalDispatcher, //
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
-            Collection<AVRequest> requests, /** <- typically universalDispatcher.getAVRequests() */
+            Collection<PassengerRequest> requests, /** <- typically universalDispatcher.getPassengerRequests() */
             DistanceFunction distanceFunction, Network network) {
         /** reduction of problem size with kd-tree, helps to downsize problems where n << m or m>> n
          * for n number of available taxis and m number of available requests */
