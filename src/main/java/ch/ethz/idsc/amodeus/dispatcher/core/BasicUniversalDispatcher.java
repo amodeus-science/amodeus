@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.matsim.amodeus.components.AVGenerator;
+import org.matsim.amodeus.components.AmodeusGenerator;
 import org.matsim.amodeus.components.dispatcher.AVVehicleAssignmentEvent;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
@@ -93,7 +93,7 @@ import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
                 .collect(Collectors.toList());
     }
 
-    /** Adding a @param vehicle during setup of simulation handled by {@link AVGenerator},
+    /** Adding a @param vehicle during setup of simulation handled by {@link AmodeusGenerator},
      * the parameter @param singleOrShared indicates if multi-passenger ride-sharing case
      * or unit capacity case. */
     protected final void addVehicle(DvrpVehicle vehicle, RoboTaxiUsageType singleOrShared) {

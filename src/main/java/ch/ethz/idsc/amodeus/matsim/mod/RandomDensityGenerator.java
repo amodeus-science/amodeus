@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.apache.log4j.Logger;
-import org.matsim.amodeus.components.AVGenerator;
+import org.matsim.amodeus.components.AmodeusGenerator;
 import org.matsim.amodeus.components.generator.AmodeusIdentifiers;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.Id;
@@ -23,7 +23,7 @@ import org.matsim.core.gbl.MatsimRandom;
  *
  * all vehicles are created in this iteration. after that, no more AVVehiles are
  * added to the system. */
-public class RandomDensityGenerator implements AVGenerator {
+public class RandomDensityGenerator implements AmodeusGenerator {
     private static final Logger LOGGER = Logger.getLogger(RandomDensityGenerator.class);
     // ---
     private final Network network;
@@ -60,9 +60,9 @@ public class RandomDensityGenerator implements AVGenerator {
         return vehicles;
     }
 
-    public static class Factory implements AVGenerator.AVGeneratorFactory {
+    public static class Factory implements AmodeusGenerator.AVGeneratorFactory {
         @Override
-        public AVGenerator createGenerator(InstanceGetter inject) {
+        public AmodeusGenerator createGenerator(InstanceGetter inject) {
             AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
             Network network = inject.getModal(Network.class);
             int capacity = operatorConfig.getGeneratorConfig().getCapacity();

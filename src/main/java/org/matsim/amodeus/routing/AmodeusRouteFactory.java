@@ -7,14 +7,14 @@ import org.matsim.core.population.routes.RouteFactory;
 import com.google.inject.Singleton;
 
 @Singleton
-public class AVRouteFactory implements RouteFactory {
+public class AmodeusRouteFactory implements RouteFactory {
     @Override
-    public AVRoute createRoute(Id<Link> startLinkId, Id<Link> endLinkId) {
-        return new AVRoute(startLinkId, endLinkId);
+    public AmodeusRoute createRoute(Id<Link> startLinkId, Id<Link> endLinkId) {
+        return new AmodeusRoute(startLinkId, endLinkId);
     }
 
     @Override
     public String getCreatedRouteType() {
-        return AVRoute.AV_ROUTE;
+        return AmodeusRoute.AV_ROUTE;
     }
 }

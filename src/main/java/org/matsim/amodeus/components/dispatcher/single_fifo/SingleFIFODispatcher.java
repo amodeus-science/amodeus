@@ -3,8 +3,8 @@ package org.matsim.amodeus.components.dispatcher.single_fifo;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import org.matsim.amodeus.components.AVDispatcher;
-import org.matsim.amodeus.components.AVRouter;
+import org.matsim.amodeus.components.AmodeusDispatcher;
+import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.components.dispatcher.AVVehicleAssignmentEvent;
 import org.matsim.amodeus.components.dispatcher.utils.SingleRideAppender;
 import org.matsim.amodeus.config.AmodeusModeConfig;
@@ -16,7 +16,7 @@ import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.router.util.TravelTime;
 
-public class SingleFIFODispatcher implements AVDispatcher {
+public class SingleFIFODispatcher implements AmodeusDispatcher {
     static public final String TYPE = "SingleFIFO";
 
     final private SingleRideAppender appender;
@@ -74,11 +74,11 @@ public class SingleFIFODispatcher implements AVDispatcher {
 
     static public class Factory implements AVDispatcherFactory {
         @Override
-        public AVDispatcher createDispatcher(InstanceGetter inject) {
+        public AmodeusDispatcher createDispatcher(InstanceGetter inject) {
             EventsManager eventsManager = inject.get(EventsManager.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);
             AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
-            AVRouter router = inject.getModal(AVRouter.class);
+            AmodeusRouter router = inject.getModal(AmodeusRouter.class);
 
             return new SingleFIFODispatcher(operatorConfig.getMode(), eventsManager, new SingleRideAppender(operatorConfig.getTimingConfig(), router, travelTime));
         }

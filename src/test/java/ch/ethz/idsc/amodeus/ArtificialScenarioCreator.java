@@ -1,7 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package ch.ethz.idsc.amodeus;
 
-import org.matsim.amodeus.dvrp.request.AVRequest;
+import org.matsim.amodeus.dvrp.request.AmodeusRequest;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
@@ -26,15 +26,15 @@ public class ArtificialScenarioCreator {
     public final Link linkDepotOut;
     public final Network network;
 
-    public final AVRequest avRequest1;
-    public final AVRequest avRequest2;
-    public final AVRequest avRequest3;
-    public final AVRequest avRequest4;
-    public final AVRequest avRequest5;
-    public final AVRequest avRequest6;
-    public final AVRequest avRequest7;
-    public final AVRequest avRequestDepotOut;
-    public final AVRequest avRequestDepotIn;
+    public final AmodeusRequest avRequest1;
+    public final AmodeusRequest avRequest2;
+    public final AmodeusRequest avRequest3;
+    public final AmodeusRequest avRequest4;
+    public final AmodeusRequest avRequest5;
+    public final AmodeusRequest avRequest6;
+    public final AmodeusRequest avRequest7;
+    public final AmodeusRequest avRequestDepotOut;
+    public final AmodeusRequest avRequestDepotIn;
 
     static final double length = 100.0;
     static final double freespeed = 20.0;
@@ -95,15 +95,15 @@ public class ArtificialScenarioCreator {
         network.addLink(linkDepotIn);
         network.addLink(linkDepotOut);
 
-        avRequest1 = new AVRequest(Id.create("p1", Request.class), null, linkUp, linkDown, 0.0, "av", null);
-        avRequest2 = new AVRequest(Id.create("p2", Request.class), null, linkRight, linkLeft, 0.0, "av", null);
-        avRequest3 = new AVRequest(Id.create("p3", Request.class), null, linkRight, linkUp, 0.0, "av", null);
-        avRequest4 = new AVRequest(Id.create("p4", Request.class), null, linkRight, linkDown, 0.0, "av", null);
-        avRequest5 = new AVRequest(Id.create("p5", Request.class), null, linkUp, linkRight, 0.0, "av", null);
-        avRequest6 = new AVRequest(Id.create("p6", Request.class), null, linkUp, linkLeft, 0.0, "av", null);
-        avRequest7 = new AVRequest(Id.create("p7", Request.class), null, linkRight, linkLeft, 0.0, "av", null);
-        avRequestDepotOut = new AVRequest(Id.create("depotRequestOut", Request.class), null, linkDepotOut, linkDepotOut, 0.0, "av", null);
-        avRequestDepotIn = new AVRequest(Id.create("depotRequestIn", Request.class), null, linkDepotIn, linkDepotIn, 0.0, "av", null);
+        avRequest1 = new AmodeusRequest(Id.create("p1", Request.class), null, linkUp, linkDown, 0.0, "av", null);
+        avRequest2 = new AmodeusRequest(Id.create("p2", Request.class), null, linkRight, linkLeft, 0.0, "av", null);
+        avRequest3 = new AmodeusRequest(Id.create("p3", Request.class), null, linkRight, linkUp, 0.0, "av", null);
+        avRequest4 = new AmodeusRequest(Id.create("p4", Request.class), null, linkRight, linkDown, 0.0, "av", null);
+        avRequest5 = new AmodeusRequest(Id.create("p5", Request.class), null, linkUp, linkRight, 0.0, "av", null);
+        avRequest6 = new AmodeusRequest(Id.create("p6", Request.class), null, linkUp, linkLeft, 0.0, "av", null);
+        avRequest7 = new AmodeusRequest(Id.create("p7", Request.class), null, linkRight, linkLeft, 0.0, "av", null);
+        avRequestDepotOut = new AmodeusRequest(Id.create("depotRequestOut", Request.class), null, linkDepotOut, linkDepotOut, 0.0, "av", null);
+        avRequestDepotIn = new AmodeusRequest(Id.create("depotRequestIn", Request.class), null, linkDepotIn, linkDepotIn, 0.0, "av", null);
 
     }
 }

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.matsim.amodeus.price_model.PriceModel;
-import org.matsim.amodeus.routing.interaction.AVInteractionFinder;
+import org.matsim.amodeus.routing.interaction.AmodeusInteractionFinder;
 import org.matsim.amodeus.waiting_time.WaitingTime;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
@@ -22,10 +22,10 @@ import org.matsim.core.router.util.TravelTime;
 import org.matsim.core.utils.geometry.CoordUtils;
 import org.matsim.facilities.Facility;
 
-public class AVRoutingModule implements RoutingModule {
+public class AmodeusRoutingModule implements RoutingModule {
     static final public String INTERACTION_ACTIVITY_TYPE = "av interaction";
 
-    private final AVRouteFactory routeFactory;
+    private final AmodeusRouteFactory routeFactory;
     private final RoutingModule walkRoutingModule;
     private final PopulationFactory populationFactory;
     private final LeastCostPathCalculator router;
@@ -33,14 +33,14 @@ public class AVRoutingModule implements RoutingModule {
     private final Network network;
     private final TravelTime travelTime;
 
-    private final AVInteractionFinder interactionFinder;
+    private final AmodeusInteractionFinder interactionFinder;
     private final WaitingTime waitingTime;
     private final boolean useAccessEgress;
     private final boolean predictRoute;
 
     private final String mode;
 
-    public AVRoutingModule(AVRouteFactory routeFactory, AVInteractionFinder interactionFinder, WaitingTime waitingTime, PopulationFactory populationFactory,
+    public AmodeusRoutingModule(AmodeusRouteFactory routeFactory, AmodeusInteractionFinder interactionFinder, WaitingTime waitingTime, PopulationFactory populationFactory,
             RoutingModule walkRoutingModule, boolean useAccessEgress, boolean predictRoute, LeastCostPathCalculator router, PriceModel priceCalculator, Network network,
             TravelTime travelTime, String mode) {
         this.routeFactory = routeFactory;
@@ -122,7 +122,7 @@ public class AVRoutingModule implements RoutingModule {
         double totalTravelTime = vehicleTravelTime + vehicleWaitingTime;
 
         // Build Route and Leg
-        AVRoute route = routeFactory.createRoute(pickupFacility.getLinkId(), dropoffFacility.getLinkId());
+        AmodeusRoute route = routeFactory.createRoute(pickupFacility.getLinkId(), dropoffFacility.getLinkId());
         route.setDistance(vehicleDistance);
 
         if (Double.isFinite(totalTravelTime)) {

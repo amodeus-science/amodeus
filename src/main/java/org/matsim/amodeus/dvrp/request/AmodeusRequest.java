@@ -1,13 +1,13 @@
 package org.matsim.amodeus.dvrp.request;
 
-import org.matsim.amodeus.routing.AVRoute;
+import org.matsim.amodeus.routing.AmodeusRoute;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.contrib.dvrp.optimizer.Request;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
-public class AVRequest implements PassengerRequest {
+public class AmodeusRequest implements PassengerRequest {
     private final Id<Request> id;
     private final double submissionTime;
 
@@ -16,9 +16,9 @@ public class AVRequest implements PassengerRequest {
     private final Id<Person> passengerId;
 
     private final String mode;
-    private final AVRoute route;
+    private final AmodeusRoute route;
 
-    public AVRequest(Id<Request> id, Id<Person> passengerId, Link pickupLink, Link dropoffLink, double submissionTime, String mode, AVRoute route) {
+    public AmodeusRequest(Id<Request> id, Id<Person> passengerId, Link pickupLink, Link dropoffLink, double submissionTime, String mode, AmodeusRoute route) {
         this.id = id;
         this.passengerId = passengerId;
         this.pickupLink = pickupLink;
@@ -63,7 +63,7 @@ public class AVRequest implements PassengerRequest {
         return mode;
     }
 
-    public AVRoute getRoute() {
+    public AmodeusRoute getRoute() {
         return route;
     }
 }

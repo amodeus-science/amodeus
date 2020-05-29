@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import org.matsim.amodeus.components.AVDispatcher;
+import org.matsim.amodeus.components.AmodeusDispatcher;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
 import org.matsim.api.core.v01.events.Event;
@@ -26,7 +26,7 @@ import ch.ethz.idsc.amodeus.net.StorageUtils;
  * manages assignments of {@link DirectiveInterface} to {@link AVVehicle}s. path computations
  * attached to assignments are computed in parallel
  * {@link ParallelLeastCostPathCalculator}. */
-/* package */ abstract class RoboTaxiMaintainer implements AVDispatcher {
+/* package */ abstract class RoboTaxiMaintainer implements AmodeusDispatcher {
     protected final EventsManager eventsManager;
     private final List<RoboTaxi> roboTaxis = new ArrayList<>();
     private Double private_now = null;

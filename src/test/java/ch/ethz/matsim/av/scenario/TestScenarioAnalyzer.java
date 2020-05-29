@@ -1,6 +1,6 @@
 package ch.ethz.matsim.av.scenario;
 
-import org.matsim.amodeus.routing.AVRoutingModule;
+import org.matsim.amodeus.routing.AmodeusRoutingModule;
 import org.matsim.api.core.v01.events.ActivityStartEvent;
 import org.matsim.api.core.v01.events.PersonArrivalEvent;
 import org.matsim.api.core.v01.events.PersonDepartureEvent;
@@ -39,7 +39,7 @@ public class TestScenarioAnalyzer extends AbstractModule implements PersonDepart
 
     @Override
     public void handleEvent(ActivityStartEvent event) {
-        if (event.getActType().equals(AVRoutingModule.INTERACTION_ACTIVITY_TYPE)) {
+        if (event.getActType().equals(AmodeusRoutingModule.INTERACTION_ACTIVITY_TYPE)) {
             numberOfInteractionActivities++;
         }
     }

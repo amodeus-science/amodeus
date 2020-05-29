@@ -8,8 +8,8 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.matsim.amodeus.routing.AVRoute;
-import org.matsim.amodeus.routing.AVRouteFactory;
+import org.matsim.amodeus.routing.AmodeusRoute;
+import org.matsim.amodeus.routing.AmodeusRouteFactory;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.population.Leg;
@@ -50,10 +50,10 @@ public class AVRouteTest {
             Plan plan = factory.createPlan();
             person.addPlan(plan);
 
-            AVRouteFactory routeFactory = new AVRouteFactory();
+            AmodeusRouteFactory routeFactory = new AmodeusRouteFactory();
 
             Leg leg;
-            AVRoute route;
+            AmodeusRoute route;
 
             plan.addActivity(factory.createActivityFromLinkId("whatever", Id.createLinkId("somewhere")));
 
@@ -82,7 +82,7 @@ public class AVRouteTest {
             Scenario scenario = ScenarioUtils.createScenario(config);
 
             Population population = scenario.getPopulation();
-            population.getFactory().getRouteFactories().setRouteFactory(AVRoute.class, new AVRouteFactory());
+            population.getFactory().getRouteFactories().setRouteFactory(AmodeusRoute.class, new AmodeusRouteFactory());
             new PopulationReader(scenario).readFile("test_output/test_population.xml.gz");
 
             Person person = population.getPersons().values().iterator().next();
@@ -91,8 +91,8 @@ public class AVRouteTest {
             Leg leg1 = (Leg) plan.getPlanElements().get(1);
             Leg leg2 = (Leg) plan.getPlanElements().get(3);
 
-            AVRoute route1 = (AVRoute) leg1.getRoute();
-            AVRoute route2 = (AVRoute) leg2.getRoute();
+            AmodeusRoute route1 = (AmodeusRoute) leg1.getRoute();
+            AmodeusRoute route2 = (AmodeusRoute) leg2.getRoute();
 
             Assert.assertEquals("S1", route1.getStartLinkId().toString());
             Assert.assertEquals("E1", route1.getEndLinkId().toString());

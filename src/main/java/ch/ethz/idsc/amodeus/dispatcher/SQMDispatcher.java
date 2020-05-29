@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.matsim.amodeus.components.AVDispatcher;
-import org.matsim.amodeus.components.AVRouter;
+import org.matsim.amodeus.components.AmodeusDispatcher;
+import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
@@ -53,7 +53,7 @@ public class SQMDispatcher extends PartitionedDispatcher {
     private final FastLinkLookup fastLinkLookup;
 
     protected SQMDispatcher(Config config, AmodeusModeConfig operatorConfig, //
-            TravelTime travelTime, AVRouter router, //
+            TravelTime travelTime, AmodeusRouter router, //
             EventsManager eventsManager, Network network, //
             VirtualNetwork<Link> virtualNetwork, MatsimAmodeusDatabase db) {
         super(config, operatorConfig, travelTime, router, eventsManager, virtualNetwork, db);
@@ -132,14 +132,14 @@ public class SQMDispatcher extends PartitionedDispatcher {
 
     public static class Factory implements AVDispatcherFactory {
         @Override
-        public AVDispatcher createDispatcher(InstanceGetter inject) {
+        public AmodeusDispatcher createDispatcher(InstanceGetter inject) {
             Config config = inject.get(Config.class);
             MatsimAmodeusDatabase db = inject.get(MatsimAmodeusDatabase.class);
             EventsManager eventsManager = inject.get(EventsManager.class);
 
             AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
             Network network = inject.getModal(Network.class);
-            AVRouter router = inject.getModal(AVRouter.class);
+            AmodeusRouter router = inject.getModal(AmodeusRouter.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);
 
             VirtualNetwork<Link> virtualNetwork = inject.getModal(new TypeLiteral<VirtualNetwork<Link>>() {

@@ -14,7 +14,7 @@ import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.amodeus.config.modal.AmodeusScoringConfig;
 import org.matsim.amodeus.framework.AVModule;
 import org.matsim.amodeus.framework.AVQSimModule;
-import org.matsim.amodeus.routing.AVRoute;
+import org.matsim.amodeus.routing.AmodeusRoute;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Link;
@@ -90,7 +90,7 @@ public class WaitingTimeTest {
             for (PlanElement element : plan.getPlanElements()) {
                 if (element instanceof Leg) {
                     Leg leg = (Leg) element;
-                    AVRoute route = (AVRoute) leg.getRoute();
+                    AmodeusRoute route = (AmodeusRoute) leg.getRoute();
 
                     Assert.assertEquals(route.getWaitingTime().seconds(), 123.0, 1e-2);
                     numberOfRoutes++;
@@ -127,7 +127,7 @@ public class WaitingTimeTest {
             for (PlanElement element : plan.getPlanElements()) {
                 if (element instanceof Leg) {
                     Leg leg = (Leg) element;
-                    AVRoute route = (AVRoute) leg.getRoute();
+                    AmodeusRoute route = (AmodeusRoute) leg.getRoute();
 
                     if (Id.createLinkId("8:9_9:9").equals(route.getStartLinkId())) {
                         Assert.assertEquals(route.getWaitingTime().seconds(), 456.0, 1e-2);
@@ -184,7 +184,7 @@ public class WaitingTimeTest {
                 for (PlanElement element : plan.getPlanElements()) {
                     if (element instanceof Leg) {
                         Leg leg = (Leg) element;
-                        AVRoute route = (AVRoute) leg.getRoute();
+                        AmodeusRoute route = (AmodeusRoute) leg.getRoute();
 
                         if (Id.createLinkId("8:9_9:9").equals(route.getStartLinkId())) {
                             waitingTimes.add(route.getWaitingTime().seconds());
@@ -239,7 +239,7 @@ public class WaitingTimeTest {
                 for (PlanElement element : plan.getPlanElements()) {
                     if (element instanceof Leg) {
                         Leg leg = (Leg) element;
-                        AVRoute route = (AVRoute) leg.getRoute();
+                        AmodeusRoute route = (AmodeusRoute) leg.getRoute();
 
                         if (Id.createLinkId("8:9_9:9").equals(route.getStartLinkId())) {
                             waitingTimes.add(route.getWaitingTime().seconds());

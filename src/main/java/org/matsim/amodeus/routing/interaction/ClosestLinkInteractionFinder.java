@@ -8,7 +8,7 @@ import org.matsim.facilities.Facility;
 
 import com.google.inject.Singleton;
 
-public class ClosestLinkInteractionFinder implements AVInteractionFinder {
+public class ClosestLinkInteractionFinder implements AmodeusInteractionFinder {
     static public final String TYPE = "ClosestLink";
 
     private final Network network;
@@ -38,7 +38,7 @@ public class ClosestLinkInteractionFinder implements AVInteractionFinder {
     @Singleton
     public static class Factory implements AVInteractionFinderFactory {
         @Override
-        public AVInteractionFinder createInteractionFinder(AmodeusModeConfig operatorConfig, Network network) {
+        public AmodeusInteractionFinder createInteractionFinder(AmodeusModeConfig operatorConfig, Network network) {
             return new ClosestLinkInteractionFinder(network);
         }
     }

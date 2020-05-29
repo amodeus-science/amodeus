@@ -2,16 +2,16 @@ package org.matsim.amodeus.framework;
 
 import java.util.Map;
 
-import org.matsim.amodeus.components.AVRouter;
-import org.matsim.amodeus.components.router.AVRouterShutdownListener;
+import org.matsim.amodeus.components.AmodeusRouter;
+import org.matsim.amodeus.components.router.RouterShutdownListener;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.amodeus.config.modal.InteractionFinderConfig;
 import org.matsim.amodeus.framework.registry.RouterRegistry;
 import org.matsim.amodeus.price_model.PriceModel;
 import org.matsim.amodeus.price_model.StaticPriceModel;
-import org.matsim.amodeus.routing.AVRouteFactory;
-import org.matsim.amodeus.routing.AVRoutingModule;
-import org.matsim.amodeus.routing.interaction.AVInteractionFinder;
+import org.matsim.amodeus.routing.AmodeusRouteFactory;
+import org.matsim.amodeus.routing.AmodeusRoutingModule;
+import org.matsim.amodeus.routing.interaction.AmodeusInteractionFinder;
 import org.matsim.amodeus.waiting_time.WaitingTime;
 import org.matsim.amodeus.waiting_time.WaitingTimeEstimationModule;
 import org.matsim.api.core.v01.network.Network;
@@ -55,24 +55,24 @@ public class AVModeModule extends AbstractDvrpModeModule {
         install(new DvrpModeRoutingNetworkModule(getMode(), modeConfig.getUseModeFilteredSubnetwork()));
 
         // Routing module
-        bindModal(AVRoutingModule.class).toProvider(new RoutingModuleProvider(getMode()));
-        bindModal(AVInteractionFinder.class).toProvider(new InteractionFinderProvider(getMode())).in(Singleton.class);
-        addRoutingModuleBinding(getMode()).to(modalKey(AVRoutingModule.class));
+        bindModal(AmodeusRoutingModule.class).toProvider(new RoutingModuleProvider(getMode()));
+        bindModal(AmodeusInteractionFinder.class).toProvider(new InteractionFinderProvider(getMode())).in(Singleton.class);
+        addRoutingModuleBinding(getMode()).to(modalKey(AmodeusRoutingModule.class));
 
         // DVRP dynamics
         bindModal(PassengerRequestValidator.class).toInstance(new DefaultPassengerRequestValidator());
         bindModal(TravelTime.class).to(Key.get(TravelTime.class, Names.named(DvrpTravelTimeModule.DVRP_ESTIMATED)));
 
-        bindModal(AVRouterShutdownListener.class).toProvider(modalProvider(getter -> {
-            return new AVRouterShutdownListener(getter.getModal(AVRouter.class));
+        bindModal(RouterShutdownListener.class).toProvider(modalProvider(getter -> {
+            return new RouterShutdownListener(getter.getModal(AmodeusRouter.class));
         })).in(Singleton.class);
-        addControlerListenerBinding().to(modalKey(AVRouterShutdownListener.class));
+        addControlerListenerBinding().to(modalKey(RouterShutdownListener.class));
 
-        bindModal(AVRouter.class).toProvider(modalProvider(getter -> {
+        bindModal(AmodeusRouter.class).toProvider(modalProvider(getter -> {
             AmodeusModeConfig operatorConfig = getter.getModal(AmodeusModeConfig.class);
             String routerName = operatorConfig.getRouterConfig().getType();
 
-            AVRouter.Factory factory = getter.get(RouterRegistry.class).get(routerName);
+            AmodeusRouter.Factory factory = getter.get(RouterRegistry.class).get(routerName);
             return factory.createRouter(getter);
         })).in(Singleton.class);
 
@@ -82,9 +82,9 @@ public class AVModeModule extends AbstractDvrpModeModule {
         bindModal(PriceModel.class).toProvider(new PriceCalculatorProider(modeConfig));
     }
 
-    static private class RoutingModuleProvider extends ModalProviders.AbstractProvider<AVRoutingModule> {
+    static private class RoutingModuleProvider extends ModalProviders.AbstractProvider<AmodeusRoutingModule> {
         @Inject
-        AVRouteFactory routeFactory;
+        AmodeusRouteFactory routeFactory;
 
         @Inject
         PopulationFactory populationFactory;
@@ -105,12 +105,12 @@ public class AVModeModule extends AbstractDvrpModeModule {
         }
 
         @Override
-        public AVRoutingModule get() {
+        public AmodeusRoutingModule get() {
             AmodeusModeConfig modeConfig = getModalInstance(AmodeusModeConfig.class);
             boolean predictRoute = modeConfig.getPredictRouteTravelTime() || modeConfig.getPredictRoutePrice();
             boolean useAccessEgress = modeConfig.getUseAccessEgress();
 
-            AVInteractionFinder interactionFinder = getModalInstance(AVInteractionFinder.class);
+            AmodeusInteractionFinder interactionFinder = getModalInstance(AmodeusInteractionFinder.class);
             WaitingTime waitingTime = getModalInstance(WaitingTime.class);
             PriceModel priceCalculator = getModalInstance(PriceModel.class);
             Network network = getModalInstance(Network.class);
@@ -118,25 +118,25 @@ public class AVModeModule extends AbstractDvrpModeModule {
             TravelDisutility travelDisutility = new OnlyTimeDependentTravelDisutilityFactory().createTravelDisutility(travelTime);
             LeastCostPathCalculator router = routerFactory.createPathCalculator(network, travelDisutility, travelTime);
 
-            return new AVRoutingModule(routeFactory, interactionFinder, waitingTime, populationFactory, walkRoutingModule, useAccessEgress, predictRoute, router, priceCalculator,
+            return new AmodeusRoutingModule(routeFactory, interactionFinder, waitingTime, populationFactory, walkRoutingModule, useAccessEgress, predictRoute, router, priceCalculator,
                     network, travelTime, getMode());
         }
     };
 
-    static private class InteractionFinderProvider extends ModalProviders.AbstractProvider<AVInteractionFinder> {
+    static private class InteractionFinderProvider extends ModalProviders.AbstractProvider<AmodeusInteractionFinder> {
         @Inject
-        Map<String, AVInteractionFinder.AVInteractionFinderFactory> factories;
+        Map<String, AmodeusInteractionFinder.AVInteractionFinderFactory> factories;
 
         InteractionFinderProvider(String mode) {
             super(mode);
         }
 
         @Override
-        public AVInteractionFinder get() {
+        public AmodeusInteractionFinder get() {
             AmodeusModeConfig modeConfig = getModalInstance(AmodeusModeConfig.class);
 
             InteractionFinderConfig interactionConfig = modeConfig.getInteractionFinderConfig();
-            AVInteractionFinder.AVInteractionFinderFactory factory = factories.get(interactionConfig.getType());
+            AmodeusInteractionFinder.AVInteractionFinderFactory factory = factories.get(interactionConfig.getType());
 
             if (factory == null) {
                 throw new IllegalStateException("AVInteractionFinder with this type does not exist: " + interactionConfig.getType());

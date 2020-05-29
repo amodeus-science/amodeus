@@ -15,13 +15,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-public class AVRoute extends AbstractRoute {
+public class AmodeusRoute extends AbstractRoute {
     public final static String AV_ROUTE = "av";
 
     private OptionalTime waitingTime = OptionalTime.undefined();
     private Optional<Double> price = Optional.empty();
 
-    public AVRoute(Id<Link> startLinkId, Id<Link> endLinkId) {
+    public AmodeusRoute(Id<Link> startLinkId, Id<Link> endLinkId) {
         super(startLinkId, endLinkId);
     }
 

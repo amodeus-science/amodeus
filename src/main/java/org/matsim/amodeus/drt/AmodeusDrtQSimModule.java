@@ -1,8 +1,8 @@
 package org.matsim.amodeus.drt;
 
-import org.matsim.amodeus.components.AVDispatcher;
+import org.matsim.amodeus.components.AmodeusDispatcher;
 import org.matsim.amodeus.config.AmodeusModeConfig;
-import org.matsim.amodeus.dvrp.AVOptimizer;
+import org.matsim.amodeus.dvrp.AmodeusOptimizer;
 import org.matsim.amodeus.dvrp.activity.AmodeusActionCreator;
 import org.matsim.amodeus.framework.registry.DispatcherRegistry;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
@@ -34,11 +34,11 @@ public class AmodeusDrtQSimModule extends AbstractDvrpModeQSimModule {
             return new AmodeusActionCreator(passengerEngine, legFactory, modeConfig.getTimingConfig());
         })).in(Singleton.class);
 
-        bindModal(AVDispatcher.class).toProvider(modalProvider(getter -> {
+        bindModal(AmodeusDispatcher.class).toProvider(modalProvider(getter -> {
             AmodeusModeConfig operatorConfig = getter.getModal(AmodeusModeConfig.class);
             String dispatcherName = operatorConfig.getDispatcherConfig().getType();
 
-            AVDispatcher dispatcher = getter.get(DispatcherRegistry.class).get(dispatcherName).createDispatcher(getter);
+            AmodeusDispatcher dispatcher = getter.get(DispatcherRegistry.class).get(dispatcherName).createDispatcher(getter);
 
             for (DvrpVehicle vehicle : getter.getModal(Fleet.class).getVehicles().values()) {
                 dispatcher.addVehicle(vehicle);
@@ -47,22 +47,22 @@ public class AmodeusDrtQSimModule extends AbstractDvrpModeQSimModule {
             return dispatcher;
         })).in(Singleton.class);
 
-        bindModal(AVOptimizer.class).toProvider(modalProvider(getter -> {
+        bindModal(AmodeusOptimizer.class).toProvider(modalProvider(getter -> {
             EventsManager eventsManager = getter.get(EventsManager.class);
-            AVDispatcher dispatcher = getter.getModal(AVDispatcher.class);
+            AmodeusDispatcher dispatcher = getter.getModal(AmodeusDispatcher.class);
 
-            return new AVOptimizer(dispatcher, eventsManager);
+            return new AmodeusOptimizer(dispatcher, eventsManager);
         })).in(Singleton.class);
-        addModalQSimComponentBinding().to(modalKey(AVOptimizer.class));
+        addModalQSimComponentBinding().to(modalKey(AmodeusOptimizer.class));
 
         bindModal(AmodeusDrtOptimizer.class).toProvider(modalProvider(getter -> {
-            AVOptimizer delegate = getter.getModal(AVOptimizer.class);
+            AmodeusOptimizer delegate = getter.getModal(AmodeusOptimizer.class);
             return new AmodeusDrtOptimizer(delegate);
         })).in(Singleton.class);
         bindModal(VrpOptimizer.class).to(DvrpModes.key(AmodeusDrtOptimizer.class, getMode())).in(Singleton.class);
 
         bindModal(VrpLegFactory.class).toProvider(modalProvider(getter -> {
-            AVOptimizer optimizer = getter.getModal(AVOptimizer.class);
+            AmodeusOptimizer optimizer = getter.getModal(AmodeusOptimizer.class);
             QSim qsim = getter.get(QSim.class);
             DvrpConfigGroup dvrpConfig = getter.get(DvrpConfigGroup.class);
 

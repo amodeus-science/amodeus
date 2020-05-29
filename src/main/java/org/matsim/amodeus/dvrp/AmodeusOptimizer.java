@@ -1,7 +1,7 @@
 package org.matsim.amodeus.dvrp;
 
-import org.matsim.amodeus.components.AVDispatcher;
-import org.matsim.amodeus.dvrp.request.AVRequest;
+import org.matsim.amodeus.components.AmodeusDispatcher;
+import org.matsim.amodeus.dvrp.request.AmodeusRequest;
 import org.matsim.amodeus.dvrp.request.AmodeusRequestEvent;
 import org.matsim.amodeus.dvrp.schedule.AmodeusTaskType;
 import org.matsim.api.core.v01.network.Link;
@@ -19,20 +19,20 @@ import org.matsim.core.mobsim.framework.listeners.MobsimBeforeSimStepListener;
 import com.google.inject.Singleton;
 
 @Singleton
-public class AVOptimizer implements VrpOptimizer, OnlineTrackerListener, MobsimBeforeSimStepListener {
+public class AmodeusOptimizer implements VrpOptimizer, OnlineTrackerListener, MobsimBeforeSimStepListener {
     private double now;
 
     private EventsManager eventsManager;
-    private AVDispatcher dispatcher;
+    private AmodeusDispatcher dispatcher;
 
-    public AVOptimizer(AVDispatcher dispatcher, EventsManager eventsManager) {
+    public AmodeusOptimizer(AmodeusDispatcher dispatcher, EventsManager eventsManager) {
         this.eventsManager = eventsManager;
         this.dispatcher = dispatcher;
     }
 
     @Override
     public void requestSubmitted(Request request) {
-        AVRequest dataRequest = (AVRequest) request;
+        AmodeusRequest dataRequest = (AmodeusRequest) request;
 
         synchronized (dispatcher) {
             AmodeusRequestEvent requestEvent = AmodeusRequestEvent.fromRequest(now, dataRequest);

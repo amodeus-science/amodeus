@@ -4,7 +4,7 @@ import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders;
 
-public interface AVDispatcher {
+public interface AmodeusDispatcher {
     void onRequestSubmitted(PassengerRequest request);
 
     void onNextTaskStarted(DvrpVehicle vehicle);
@@ -14,6 +14,6 @@ public interface AVDispatcher {
     void addVehicle(DvrpVehicle vehicle);
 
     interface AVDispatcherFactory {
-        AVDispatcher createDispatcher(ModalProviders.InstanceGetter inject);
+        AmodeusDispatcher createDispatcher(ModalProviders.InstanceGetter inject);
     }
 }
