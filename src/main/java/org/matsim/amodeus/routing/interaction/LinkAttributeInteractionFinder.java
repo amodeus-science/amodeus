@@ -8,7 +8,7 @@ import org.matsim.facilities.Facility;
 
 import com.google.inject.Singleton;
 
-public class LinkAttributeInteractionFinder implements AVInteractionFinder {
+public class LinkAttributeInteractionFinder implements AmodeusInteractionFinder {
     public final static String TYPE = "LinkAttribute";
 
     private final InteractionLinkData data;
@@ -34,7 +34,7 @@ public class LinkAttributeInteractionFinder implements AVInteractionFinder {
     @Singleton
     public static class Factory implements AVInteractionFinderFactory {
         @Override
-        public AVInteractionFinder createInteractionFinder(AmodeusModeConfig operatorConfig, Network network) {
+        public AmodeusInteractionFinder createInteractionFinder(AmodeusModeConfig operatorConfig, Network network) {
             InteractionFinderConfig interactionConfig = operatorConfig.getInteractionFinderConfig();
 
             String attributeName = interactionConfig.getParams().getOrDefault("allowedLinkAttribute", "avAccessEgress");

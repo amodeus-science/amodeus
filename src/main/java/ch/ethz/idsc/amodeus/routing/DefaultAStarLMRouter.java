@@ -4,7 +4,7 @@ package ch.ethz.idsc.amodeus.routing;
 import java.io.IOException;
 import java.util.concurrent.Future;
 
-import org.matsim.amodeus.components.AVRouter;
+import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.plpc.DefaultParallelLeastCostPathCalculator;
 import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
 import org.matsim.api.core.v01.network.Network;
@@ -19,7 +19,7 @@ import org.matsim.vehicles.Vehicle;
 
 /** The DefaultAStarLMRouter is a standard ParallelLeastCostPathCalculator using
  * A* Landmarks routing algorithm. */
-public class DefaultAStarLMRouter implements AVRouter {
+public class DefaultAStarLMRouter implements AmodeusRouter {
     final private ParallelLeastCostPathCalculator delegate;
 
     DefaultAStarLMRouter(ParallelLeastCostPathCalculator delegate) {
@@ -37,9 +37,9 @@ public class DefaultAStarLMRouter implements AVRouter {
         delegate.close();
     }
 
-    public static class Factory implements AVRouter.Factory {
+    public static class Factory implements AmodeusRouter.Factory {
         @Override
-        public AVRouter createRouter(InstanceGetter inject) {
+        public AmodeusRouter createRouter(InstanceGetter inject) {
             TravelTime travelTime = inject.getModal(TravelTime.class);
             GlobalConfigGroup config = inject.get(GlobalConfigGroup.class);
             Network network = inject.getModal(Network.class);

@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Future;
 
-import org.matsim.amodeus.components.AVRouter;
+import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.plpc.DefaultParallelLeastCostPathCalculator;
 import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
 import org.matsim.api.core.v01.network.Network;
@@ -25,7 +25,7 @@ import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 /** This is a nonfunctional sample demonstrating of how to include a custom
  * router to AMoDeus which is not the standard choice of the Paralllel Djikstra
  * router used normally to calculate the path for {@link RoboTaxi} */
-public class TaxiTravelTimeRouter implements AVRouter {
+public class TaxiTravelTimeRouter implements AmodeusRouter {
     private final ParallelLeastCostPathCalculator delegate;
 
     public TaxiTravelTimeRouter(ParallelLeastCostPathCalculator delegate) {
@@ -42,14 +42,14 @@ public class TaxiTravelTimeRouter implements AVRouter {
         delegate.close();
     }
 
-    public static class Factory implements AVRouter.Factory {
+    public static class Factory implements AmodeusRouter.Factory {
         // // FIXME @sebhoerl get from Inject as above...
         File workingDir = MultiFileTools.getDefaultWorkingDirectory();
         File linkSpeedDataFile = new File(workingDir, "linkSpeedData");
         LinkSpeedDataContainer lsData = LinkSpeedUtils.loadLinkSpeedData(linkSpeedDataFile);
 
         @Override
-        public AVRouter createRouter(InstanceGetter inject) {
+        public AmodeusRouter createRouter(InstanceGetter inject) {
             GlobalConfigGroup config = inject.get(GlobalConfigGroup.class);
             Network network = inject.getModal(Network.class);
 

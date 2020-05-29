@@ -2,14 +2,14 @@ package org.matsim.amodeus.components.router;
 
 import java.io.IOException;
 
-import org.matsim.amodeus.components.AVRouter;
+import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.core.controler.events.ShutdownEvent;
 import org.matsim.core.controler.listener.ShutdownListener;
 
-public class AVRouterShutdownListener implements ShutdownListener {
-    private final AVRouter router;
+public class RouterShutdownListener implements ShutdownListener {
+    private final AmodeusRouter router;
 
-    public AVRouterShutdownListener(AVRouter router) {
+    public RouterShutdownListener(AmodeusRouter router) {
         this.router = router;
     }
 

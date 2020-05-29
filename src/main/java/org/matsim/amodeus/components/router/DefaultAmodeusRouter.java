@@ -3,7 +3,7 @@ package org.matsim.amodeus.components.router;
 import java.io.IOException;
 import java.util.concurrent.Future;
 
-import org.matsim.amodeus.components.AVRouter;
+import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.config.AmodeusConfigGroup;
 import org.matsim.amodeus.plpc.DefaultParallelLeastCostPathCalculator;
 import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
@@ -19,12 +19,12 @@ import org.matsim.vehicles.Vehicle;
 
 /** The DefaultAVRouter is a standard ParallelLeastCostPathCalculator using
  * Djikstra's algorithm. */
-public class DefaultAVRouter implements AVRouter {
+public class DefaultAmodeusRouter implements AmodeusRouter {
     public final static String TYPE = "Default";
 
     final private ParallelLeastCostPathCalculator delegate;
 
-    DefaultAVRouter(ParallelLeastCostPathCalculator delegate) {
+    DefaultAmodeusRouter(ParallelLeastCostPathCalculator delegate) {
         this.delegate = delegate;
     }
 
@@ -38,14 +38,14 @@ public class DefaultAVRouter implements AVRouter {
         delegate.close();
     }
 
-    public static class Factory implements AVRouter.Factory {
+    public static class Factory implements AmodeusRouter.Factory {
         @Override
-        public AVRouter createRouter(InstanceGetter inject) {
+        public AmodeusRouter createRouter(InstanceGetter inject) {
             Network network = inject.getModal(Network.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);
             AmodeusConfigGroup config = inject.get(AmodeusConfigGroup.class);
 
-            return new DefaultAVRouter(DefaultParallelLeastCostPathCalculator.create((int) config.getNumberOfParallelRouters(), new DijkstraFactory(), network,
+            return new DefaultAmodeusRouter(DefaultParallelLeastCostPathCalculator.create((int) config.getNumberOfParallelRouters(), new DijkstraFactory(), network,
                     new OnlyTimeDependentTravelDisutility(travelTime), travelTime));
         }
     }

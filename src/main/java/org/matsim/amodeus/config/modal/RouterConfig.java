@@ -1,6 +1,6 @@
 package org.matsim.amodeus.config.modal;
 
-import org.matsim.amodeus.components.router.DefaultAVRouter;
+import org.matsim.amodeus.components.router.DefaultAmodeusRouter;
 import org.matsim.core.config.ReflectiveConfigGroup;
 
 public class RouterConfig extends ReflectiveConfigGroup {
@@ -8,7 +8,7 @@ public class RouterConfig extends ReflectiveConfigGroup {
 
     static public final String TYPE = "type";
 
-    static public final String DEFAULT_ROUTER = DefaultAVRouter.TYPE;
+    static public final String DEFAULT_ROUTER = DefaultAmodeusRouter.TYPE;
     private String type = DEFAULT_ROUTER;
 
     public RouterConfig() {

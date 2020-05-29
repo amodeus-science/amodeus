@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import org.matsim.amodeus.components.AVGenerator;
+import org.matsim.amodeus.components.AmodeusGenerator;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.amodeus.config.modal.GeneratorConfig;
 import org.matsim.api.core.v01.Id;
@@ -21,7 +21,7 @@ import org.matsim.contrib.dvrp.fleet.ImmutableDvrpVehicleSpecification;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.facilities.ActivityFacilities;
 
-public class PopulationDensityGenerator implements AVGenerator {
+public class PopulationDensityGenerator implements AmodeusGenerator {
     static public final String TYPE = "PopulationDensity";
 
     private final String mode;
@@ -105,9 +105,9 @@ public class PopulationDensityGenerator implements AVGenerator {
         return vehicles;
     }
 
-    static public class Factory implements AVGenerator.AVGeneratorFactory {
+    static public class Factory implements AmodeusGenerator.AVGeneratorFactory {
         @Override
-        public AVGenerator createGenerator(InstanceGetter inject) {
+        public AmodeusGenerator createGenerator(InstanceGetter inject) {
             AmodeusModeConfig modeConfig = inject.getModal(AmodeusModeConfig.class);
             Network network = inject.getModal(Network.class);
 

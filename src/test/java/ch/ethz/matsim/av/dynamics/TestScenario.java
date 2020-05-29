@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.matsim.amodeus.components.AVGenerator;
+import org.matsim.amodeus.components.AmodeusGenerator;
 import org.matsim.amodeus.components.dispatcher.multi_od_heuristic.MultiODHeuristic;
 import org.matsim.amodeus.config.AmodeusConfigGroup;
 import org.matsim.amodeus.config.AmodeusModeConfig;
@@ -158,7 +158,7 @@ public class TestScenario {
         return scenario;
     }
 
-    static public class SingleVehicleGenerator implements AVGenerator {
+    static public class SingleVehicleGenerator implements AmodeusGenerator {
         private final int capacity;
         private final Link link;
 
@@ -182,7 +182,7 @@ public class TestScenario {
         }
     }
 
-    static public class SingleVehicleGeneratorFactory implements AVGenerator.AVGeneratorFactory {
+    static public class SingleVehicleGeneratorFactory implements AmodeusGenerator.AVGeneratorFactory {
         private final int capacity;
         private final Id<Link> linkId;
 
@@ -192,7 +192,7 @@ public class TestScenario {
         }
 
         @Override
-        public AVGenerator createGenerator(InstanceGetter inject) {
+        public AmodeusGenerator createGenerator(InstanceGetter inject) {
             Link link = inject.getModal(Network.class).getLinks().get(linkId);
             return new SingleVehicleGenerator(link, capacity);
         }

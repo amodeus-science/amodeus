@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.matsim.amodeus.components.AVRouter;
+import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
@@ -33,7 +33,7 @@ public abstract class AbstractNoExplicitCommunication extends RebalancingDispatc
 
     protected AbstractNoExplicitCommunication(Network network, Config config, //
             AmodeusModeConfig operatorConfig, TravelTime travelTime, //
-            AVRouter router, EventsManager eventsManager, MatsimAmodeusDatabase db) {
+            AmodeusRouter router, EventsManager eventsManager, MatsimAmodeusDatabase db) {
         super(config, operatorConfig, travelTime, router, eventsManager, db);
         DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(30);

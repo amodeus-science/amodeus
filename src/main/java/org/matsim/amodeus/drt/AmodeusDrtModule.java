@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import org.matsim.amodeus.components.AVRouter;
-import org.matsim.amodeus.components.router.AVRouterShutdownListener;
+import org.matsim.amodeus.components.AmodeusRouter;
+import org.matsim.amodeus.components.router.RouterShutdownListener;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.amodeus.framework.registry.RouterRegistry;
 import org.matsim.api.core.v01.network.Network;
@@ -40,16 +40,16 @@ public class AmodeusDrtModule extends AbstractDvrpModeModule {
 
         bindModal(TravelTime.class).to(Key.get(TravelTime.class, Names.named(DvrpTravelTimeModule.DVRP_ESTIMATED)));
 
-        bindModal(AVRouterShutdownListener.class).toProvider(modalProvider(getter -> {
-            return new AVRouterShutdownListener(getter.getModal(AVRouter.class));
+        bindModal(RouterShutdownListener.class).toProvider(modalProvider(getter -> {
+            return new RouterShutdownListener(getter.getModal(AmodeusRouter.class));
         })).in(Singleton.class);
-        addControlerListenerBinding().to(modalKey(AVRouterShutdownListener.class));
+        addControlerListenerBinding().to(modalKey(RouterShutdownListener.class));
 
-        bindModal(AVRouter.class).toProvider(modalProvider(getter -> {
+        bindModal(AmodeusRouter.class).toProvider(modalProvider(getter -> {
             AmodeusModeConfig operatorConfig = getter.getModal(AmodeusModeConfig.class);
             String routerName = operatorConfig.getRouterConfig().getType();
 
-            AVRouter.Factory factory = getter.get(RouterRegistry.class).get(routerName);
+            AmodeusRouter.Factory factory = getter.get(RouterRegistry.class).get(routerName);
             return factory.createRouter(getter);
         })).in(Singleton.class);
     }

@@ -7,7 +7,7 @@ import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.amodeus.config.modal.AmodeusScoringConfig;
 import org.matsim.amodeus.framework.AVModule;
 import org.matsim.amodeus.framework.AVQSimModule;
-import org.matsim.amodeus.routing.AVRoute;
+import org.matsim.amodeus.routing.AmodeusRoute;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
@@ -68,7 +68,7 @@ public class PreroutingTest {
             for (PlanElement element : plan.getPlanElements()) {
                 if (element instanceof Leg) {
                     Leg leg = (Leg) element;
-                    AVRoute route = (AVRoute) leg.getRoute();
+                    AmodeusRoute route = (AmodeusRoute) leg.getRoute();
 
                     Assert.assertTrue(route.getTravelTime().isDefined() && Double.isFinite(route.getTravelTime().seconds()));
                     Assert.assertTrue(route.getExpectedDistance().isPresent());

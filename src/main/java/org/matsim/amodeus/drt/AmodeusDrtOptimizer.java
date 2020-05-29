@@ -1,10 +1,10 @@
 package org.matsim.amodeus.drt;
 
-import org.matsim.amodeus.dvrp.AVOptimizer;
-import org.matsim.amodeus.dvrp.request.AVRequest;
+import org.matsim.amodeus.dvrp.AmodeusOptimizer;
+import org.matsim.amodeus.dvrp.request.AmodeusRequest;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
-import org.matsim.amodeus.routing.AVRoute;
-import org.matsim.amodeus.routing.AVRouteFactory;
+import org.matsim.amodeus.routing.AmodeusRoute;
+import org.matsim.amodeus.routing.AmodeusRouteFactory;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.drt.optimizer.DrtOptimizer;
 import org.matsim.contrib.drt.passenger.DrtRequest;
@@ -15,9 +15,9 @@ import org.matsim.contrib.dvrp.tracker.OnlineTrackerListener;
 import org.matsim.core.mobsim.framework.events.MobsimBeforeSimStepEvent;
 
 public class AmodeusDrtOptimizer implements DrtOptimizer, OnlineTrackerListener {
-    private AVOptimizer delegate;
+    private AmodeusOptimizer delegate;
 
-    public AmodeusDrtOptimizer(AVOptimizer delegate) {
+    public AmodeusDrtOptimizer(AmodeusOptimizer delegate) {
         this.delegate = delegate;
     }
 
@@ -25,8 +25,8 @@ public class AmodeusDrtOptimizer implements DrtOptimizer, OnlineTrackerListener 
     public void requestSubmitted(Request request) {
         DrtRequest drtRequest = (DrtRequest) request;
 
-        AVRoute avRoute = new AVRouteFactory().createRoute(drtRequest.getFromLink().getId(), drtRequest.getToLink().getId());
-        AVRequest avRequest = new AVRequest(request.getId(), drtRequest.getPassengerId(), drtRequest.getFromLink(), drtRequest.getToLink(), drtRequest.getSubmissionTime(),
+        AmodeusRoute avRoute = new AmodeusRouteFactory().createRoute(drtRequest.getFromLink().getId(), drtRequest.getToLink().getId());
+        AmodeusRequest avRequest = new AmodeusRequest(request.getId(), drtRequest.getPassengerId(), drtRequest.getFromLink(), drtRequest.getToLink(), drtRequest.getSubmissionTime(),
                 drtRequest.getMode(), avRoute);
 
         delegate.requestSubmitted(avRequest);

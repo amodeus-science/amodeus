@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.Future;
 
-import org.matsim.amodeus.components.AVRouter;
+import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.core.router.util.LeastCostPathCalculator.Path;
 
@@ -23,7 +23,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
     /** @param roboTaxi
      * @param now
      * @param router */
-    public static void print(RoboTaxi roboTaxi, double now, AVRouter router) {
+    public static void print(RoboTaxi roboTaxi, double now, AmodeusRouter router) {
         System.out.println("***");
         System.out.println("schedule of roboTaxi " + roboTaxi.getId() + " at " + now + ":");
         Map<String, Scalar> expDropOff = of(roboTaxi, now, router);
@@ -36,7 +36,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
      * @param now
      * @return {@link Map} containing the {@link SharedCourse} ids and the expected
      *         time for completion of the {@link SharedCourse} */
-    public static Map<String, Scalar> of(RoboTaxi roboTaxi, double now, AVRouter router) {
+    public static Map<String, Scalar> of(RoboTaxi roboTaxi, double now, AmodeusRouter router) {
         Map<String, Scalar> expDropoff = new HashMap<>();
         Scalar time = Quantity.of(now, SI.SECOND);
         Link linkCurr = roboTaxi.getDivertableLocation();
@@ -57,9 +57,9 @@ import ch.ethz.idsc.tensor.qty.Quantity;
 
     /** @return time in seconds needed for {@link RoboTaxi} @param roboTaxi to travel from {@link Link}
      * @param from to the {@link Link} @param to starting at {@link Scalar} @param now and using
-     *            the {@link AVRouter} @param router
+     *            the {@link AmodeusRouter} @param router
      * @return null if path calculation unsuccessful */
-    public static Scalar timeFromTo(Link from, Link to, Scalar now, RoboTaxi roboTaxi, AVRouter router) {
+    public static Scalar timeFromTo(Link from, Link to, Scalar now, RoboTaxi roboTaxi, AmodeusRouter router) {
         Future<Path> path = router.calcLeastCostPath(from.getFromNode(), to.getToNode(), now.number().doubleValue(), //
                 null, null);
         Double travelTime = null;

@@ -3,12 +3,12 @@ package org.matsim.amodeus.framework;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.matsim.amodeus.components.AVDispatcher;
-import org.matsim.amodeus.components.AVGenerator;
+import org.matsim.amodeus.components.AmodeusDispatcher;
+import org.matsim.amodeus.components.AmodeusGenerator;
 import org.matsim.amodeus.config.AmodeusModeConfig;
-import org.matsim.amodeus.dvrp.AVOptimizer;
+import org.matsim.amodeus.dvrp.AmodeusOptimizer;
 import org.matsim.amodeus.dvrp.activity.AmodeusActionCreator;
-import org.matsim.amodeus.dvrp.request.AVRequestCreator;
+import org.matsim.amodeus.dvrp.request.AmodeusRequestCreator;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.amodeus.framework.registry.DispatcherRegistry;
 import org.matsim.amodeus.framework.registry.GeneratorRegistry;
@@ -44,7 +44,7 @@ public class AVQSimModeModule extends AbstractDvrpModeQSimModule {
         install(new PassengerEngineQSimModule(getMode()));
 
         bindModal(PassengerRequestCreator.class).toProvider(modalProvider(getter -> {
-            return new AVRequestCreator(getMode());
+            return new AmodeusRequestCreator(getMode());
         })).in(Singleton.class);
 
         bindModal(DynActionCreator.class).toProvider(modalProvider(getter -> {
@@ -57,11 +57,11 @@ public class AVQSimModeModule extends AbstractDvrpModeQSimModule {
 
         install(new VrpAgentSourceQSimModule(getMode()));
 
-        bindModal(AVDispatcher.class).toProvider(modalProvider(getter -> {
+        bindModal(AmodeusDispatcher.class).toProvider(modalProvider(getter -> {
             AmodeusModeConfig operatorConfig = getter.getModal(AmodeusModeConfig.class);
             String dispatcherName = operatorConfig.getDispatcherConfig().getType();
 
-            AVDispatcher dispatcher = getter.get(DispatcherRegistry.class).get(dispatcherName).createDispatcher(getter);
+            AmodeusDispatcher dispatcher = getter.get(DispatcherRegistry.class).get(dispatcherName).createDispatcher(getter);
 
             for (DvrpVehicle vehicle : getter.getModal(Fleet.class).getVehicles().values()) {
                 dispatcher.addVehicle(vehicle);
@@ -70,7 +70,7 @@ public class AVQSimModeModule extends AbstractDvrpModeQSimModule {
             return dispatcher;
         })).in(Singleton.class);
 
-        bindModal(AVGenerator.class).toProvider(modalProvider(getter -> {
+        bindModal(AmodeusGenerator.class).toProvider(modalProvider(getter -> {
             AmodeusModeConfig operatorConfig = getter.getModal(AmodeusModeConfig.class);
             String generatorName = operatorConfig.getGeneratorConfig().getType();
 
@@ -79,17 +79,17 @@ public class AVQSimModeModule extends AbstractDvrpModeQSimModule {
 
         bindModal(Fleet.class).toProvider(new FleetProvider(getMode())).in(Singleton.class);
 
-        bindModal(AVOptimizer.class).toProvider(modalProvider(getter -> {
+        bindModal(AmodeusOptimizer.class).toProvider(modalProvider(getter -> {
             EventsManager eventsManager = getter.get(EventsManager.class);
-            AVDispatcher dispatcher = getter.getModal(AVDispatcher.class);
+            AmodeusDispatcher dispatcher = getter.getModal(AmodeusDispatcher.class);
 
-            return new AVOptimizer(dispatcher, eventsManager);
+            return new AmodeusOptimizer(dispatcher, eventsManager);
         })).in(Singleton.class);
-        addModalQSimComponentBinding().to(modalKey(AVOptimizer.class));
-        bindModal(VrpOptimizer.class).to(DvrpModes.key(AVOptimizer.class, getMode())).in(Singleton.class);
+        addModalQSimComponentBinding().to(modalKey(AmodeusOptimizer.class));
+        bindModal(VrpOptimizer.class).to(DvrpModes.key(AmodeusOptimizer.class, getMode())).in(Singleton.class);
 
         bindModal(VrpLegFactory.class).toProvider(modalProvider(getter -> {
-            AVOptimizer optimizer = getter.getModal(AVOptimizer.class);
+            AmodeusOptimizer optimizer = getter.getModal(AmodeusOptimizer.class);
             QSim qsim = getter.get(QSim.class);
             DvrpConfigGroup dvrpConfig = getter.get(DvrpConfigGroup.class);
 
@@ -104,7 +104,7 @@ public class AVQSimModeModule extends AbstractDvrpModeQSimModule {
 
         @Override
         public Fleet get() {
-            AVGenerator generator = getModalInstance(AVGenerator.class);
+            AmodeusGenerator generator = getModalInstance(AmodeusGenerator.class);
             Network network = getModalInstance(Network.class);
 
             List<DvrpVehicleSpecification> specifications = generator.generateVehicles();

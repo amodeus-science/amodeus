@@ -13,8 +13,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.matsim.amodeus.components.AVDispatcher;
-import org.matsim.amodeus.components.AVGenerator;
+import org.matsim.amodeus.components.AmodeusDispatcher;
+import org.matsim.amodeus.components.AmodeusGenerator;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusDropoffTask;
@@ -42,7 +42,7 @@ import ch.ethz.idsc.amodeus.net.SimulationObjectCompiler;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 
 /** purpose of {@link SharedUniversalDispatcher} is to collect and manage
- * {@link PassengerRequest}s alternative implementation of {@link AVDispatcher};
+ * {@link PassengerRequest}s alternative implementation of {@link AmodeusDispatcher};
  * supersedes {@link AbstractDispatcher}. */
 public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher {
     /** contains all Requests which are not picked Up Yet */
@@ -404,7 +404,7 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
         periodSubmittdRequests.clear();
     }
 
-    /** adding a vehicle during setup of simulation, handeled by {@link AVGenerator} */
+    /** adding a vehicle during setup of simulation, handeled by {@link AmodeusGenerator} */
     @Override
     public final void addVehicle(DvrpVehicle vehicle) {
         super.addVehicle(vehicle, RoboTaxiUsageType.SHARED);

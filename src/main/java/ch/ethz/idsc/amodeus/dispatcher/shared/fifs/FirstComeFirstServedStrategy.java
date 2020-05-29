@@ -5,8 +5,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.matsim.amodeus.components.AVDispatcher;
-import org.matsim.amodeus.components.AVRouter;
+import org.matsim.amodeus.components.AmodeusDispatcher;
+import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Link;
@@ -63,7 +63,7 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
 
     protected FirstComeFirstServedStrategy(Network network, //
             Config config, AmodeusModeConfig operatorConfig, //
-            TravelTime travelTime, AVRouter router, EventsManager eventsManager, MatsimAmodeusDatabase db) {
+            TravelTime travelTime, AmodeusRouter router, EventsManager eventsManager, MatsimAmodeusDatabase db) {
         super(config, operatorConfig, travelTime, router, eventsManager, db);
 
         double[] networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
@@ -155,14 +155,14 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
 
     public static class Factory implements AVDispatcherFactory {
         @Override
-        public AVDispatcher createDispatcher(InstanceGetter inject) {
+        public AmodeusDispatcher createDispatcher(InstanceGetter inject) {
             Config config = inject.get(Config.class);
             MatsimAmodeusDatabase db = inject.get(MatsimAmodeusDatabase.class);
             EventsManager eventsManager = inject.get(EventsManager.class);
 
             AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
             Network network = inject.getModal(Network.class);
-            AVRouter router = inject.getModal(AVRouter.class);
+            AmodeusRouter router = inject.getModal(AmodeusRouter.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);
 
             return new FirstComeFirstServedStrategy(network, config, operatorConfig, travelTime, router, eventsManager, db);

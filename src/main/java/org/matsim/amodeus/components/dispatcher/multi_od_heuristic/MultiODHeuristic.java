@@ -5,8 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.matsim.amodeus.components.AVDispatcher;
-import org.matsim.amodeus.components.AVRouter;
+import org.matsim.amodeus.components.AmodeusDispatcher;
+import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.components.dispatcher.AVVehicleAssignmentEvent;
 import org.matsim.amodeus.components.dispatcher.multi_od_heuristic.aggregation.AggregatedRequest;
 import org.matsim.amodeus.components.dispatcher.multi_od_heuristic.aggregation.AggregationEvent;
@@ -28,7 +28,7 @@ import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.router.util.TravelTime;
 import org.matsim.core.utils.collections.QuadTree;
 
-public class MultiODHeuristic implements AVDispatcher {
+public class MultiODHeuristic implements AmodeusDispatcher {
     public final static String TYPE = "MultiOD";
 
     private boolean reoptimize = true;
@@ -223,12 +223,12 @@ public class MultiODHeuristic implements AVDispatcher {
 
     static public class Factory implements AVDispatcherFactory {
         @Override
-        public AVDispatcher createDispatcher(InstanceGetter inject) {
+        public AmodeusDispatcher createDispatcher(InstanceGetter inject) {
             EventsManager eventsManager = inject.get(EventsManager.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);
             AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
             Network network = inject.getModal(Network.class);
-            AVRouter parallelRouter = inject.getModal(AVRouter.class);
+            AmodeusRouter parallelRouter = inject.getModal(AmodeusRouter.class);
 
             DispatcherConfig dispatcherConfig = operatorConfig.getDispatcherConfig();
 

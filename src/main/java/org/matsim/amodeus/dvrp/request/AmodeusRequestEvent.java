@@ -34,7 +34,7 @@ public class AmodeusRequestEvent extends Event implements HasPersonId {
         this.expectedWaitingTime = expectedWaitingTime;
     }
 
-    static public AmodeusRequestEvent fromRequest(double time, AVRequest request) {
+    static public AmodeusRequestEvent fromRequest(double time, AmodeusRequest request) {
         return new AmodeusRequestEvent( //
                 time, //
                 request.getPassengerId(), //

@@ -2,10 +2,10 @@ package org.matsim.amodeus.framework.registry;
 
 import java.util.Map;
 
-import org.matsim.amodeus.components.AVRouter;
+import org.matsim.amodeus.components.AmodeusRouter;
 
-public class RouterRegistry extends NamedComponentRegistry<AVRouter.Factory> {
-    public RouterRegistry(Map<String, AVRouter.Factory> components) {
+public class RouterRegistry extends NamedComponentRegistry<AmodeusRouter.Factory> {
+    public RouterRegistry(Map<String, AmodeusRouter.Factory> components) {
         super("AVRouter", components);
     }
 }

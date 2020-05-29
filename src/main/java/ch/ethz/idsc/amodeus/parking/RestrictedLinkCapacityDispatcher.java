@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.matsim.amodeus.components.AVDispatcher;
-import org.matsim.amodeus.components.AVRouter;
+import org.matsim.amodeus.components.AmodeusDispatcher;
+import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Network;
@@ -69,7 +69,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
 
     protected RestrictedLinkCapacityDispatcher(Network network, //
             Config config, AmodeusModeConfig operatorConfig, //
-            TravelTime travelTime, AVRouter router, EventsManager eventsManager, //
+            TravelTime travelTime, AmodeusRouter router, EventsManager eventsManager, //
             MatsimAmodeusDatabase db, ParkingStrategy parkingStrategy, //
             ParkingCapacity avSpatialCapacityAmodeus) {
         super(config, operatorConfig, travelTime, router, eventsManager, db);
@@ -171,7 +171,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
 
     public static class Factory implements AVDispatcherFactory {
         @Override
-        public AVDispatcher createDispatcher(InstanceGetter inject) {
+        public AmodeusDispatcher createDispatcher(InstanceGetter inject) {
             Config config = inject.get(Config.class);
             EventsManager eventsManager = inject.get(EventsManager.class);
             MatsimAmodeusDatabase db = inject.get(MatsimAmodeusDatabase.class);
@@ -179,7 +179,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
             Network network = inject.getModal(Network.class);
             AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);
-            AVRouter router = inject.getModal(AVRouter.class);
+            AmodeusRouter router = inject.getModal(AmodeusRouter.class);
 
             // TODO: Eventually, if parking should be configurable per mode, this should be made modal.
             ParkingStrategy parkingStrategy = inject.get(ParkingStrategy.class);

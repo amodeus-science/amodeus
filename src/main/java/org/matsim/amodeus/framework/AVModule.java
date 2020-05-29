@@ -3,20 +3,20 @@ package org.matsim.amodeus.framework;
 import java.util.Map;
 
 import org.matsim.amodeus.analysis.AnalysisOutputListener;
-import org.matsim.amodeus.components.AVDispatcher;
-import org.matsim.amodeus.components.AVGenerator;
-import org.matsim.amodeus.components.AVRouter;
+import org.matsim.amodeus.components.AmodeusDispatcher;
+import org.matsim.amodeus.components.AmodeusGenerator;
+import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.components.dispatcher.multi_od_heuristic.MultiODHeuristic;
 import org.matsim.amodeus.components.dispatcher.single_fifo.SingleFIFODispatcher;
 import org.matsim.amodeus.components.dispatcher.single_heuristic.SingleHeuristicDispatcher;
 import org.matsim.amodeus.components.generator.PopulationDensityGenerator;
-import org.matsim.amodeus.components.router.DefaultAVRouter;
+import org.matsim.amodeus.components.router.DefaultAmodeusRouter;
 import org.matsim.amodeus.config.AmodeusConfigGroup;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.amodeus.framework.registry.DispatcherRegistry;
 import org.matsim.amodeus.framework.registry.GeneratorRegistry;
 import org.matsim.amodeus.framework.registry.RouterRegistry;
-import org.matsim.amodeus.routing.AVRouteFactory;
+import org.matsim.amodeus.routing.AmodeusRouteFactory;
 import org.matsim.amodeus.routing.interaction.ClosestLinkInteractionFinder;
 import org.matsim.amodeus.routing.interaction.LinkAttributeInteractionFinder;
 import org.matsim.amodeus.scoring.AmodeusScoringModule;
@@ -30,13 +30,13 @@ import com.google.inject.Singleton;
 public class AVModule extends AbstractModule {
     @Override
     public void install() {
-        bind(AVRouteFactory.class);
+        bind(AmodeusRouteFactory.class);
 
         configureDispatchmentStrategies();
         configureGeneratorStrategies();
         configureInteractionFinders();
 
-        AVUtils.registerRouterFactory(binder(), DefaultAVRouter.TYPE, DefaultAVRouter.Factory.class);
+        AVUtils.registerRouterFactory(binder(), DefaultAmodeusRouter.TYPE, DefaultAmodeusRouter.Factory.class);
 
         addControlerListenerBinding().to(AnalysisOutputListener.class);
 
@@ -54,19 +54,19 @@ public class AVModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public DispatcherRegistry provideDispatcherRegistry(Map<String, AVDispatcher.AVDispatcherFactory> components) {
+    public DispatcherRegistry provideDispatcherRegistry(Map<String, AmodeusDispatcher.AVDispatcherFactory> components) {
         return new DispatcherRegistry(components);
     }
 
     @Provides
     @Singleton
-    public GeneratorRegistry provideGeneratorRegistry(Map<String, AVGenerator.AVGeneratorFactory> components) {
+    public GeneratorRegistry provideGeneratorRegistry(Map<String, AmodeusGenerator.AVGeneratorFactory> components) {
         return new GeneratorRegistry(components);
     }
 
     @Provides
     @Singleton
-    public RouterRegistry provideRouterRegistry(Map<String, AVRouter.Factory> components) {
+    public RouterRegistry provideRouterRegistry(Map<String, AmodeusRouter.Factory> components) {
         return new RouterRegistry(components);
     }
 

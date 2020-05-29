@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import org.matsim.amodeus.components.AVGenerator;
+import org.matsim.amodeus.components.AmodeusGenerator;
 import org.matsim.amodeus.components.generator.AmodeusIdentifiers;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.Id;
@@ -39,7 +39,7 @@ import ch.ethz.idsc.tensor.sca.Sign;
  * If no distribution is given, an equal distribution is chosen.
  * 
  * CLASS NAME IS USED AS IDENTIFIER - DO NOT RENAME CLASS */
-public class VehicleToVSGenerator implements AVGenerator {
+public class VehicleToVSGenerator implements AmodeusGenerator {
     private static final long DEFAULT_RANDOM_SEED = 4711;
     // ---
     private final VirtualNetwork<Link> virtualNetwork;
@@ -117,9 +117,9 @@ public class VehicleToVSGenerator implements AVGenerator {
         return placedVehicles;
     }
 
-    public static class Factory implements AVGenerator.AVGeneratorFactory {
+    public static class Factory implements AmodeusGenerator.AVGeneratorFactory {
         @Override
-        public AVGenerator createGenerator(InstanceGetter inject) {
+        public AmodeusGenerator createGenerator(InstanceGetter inject) {
             AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
             int capacity = operatorConfig.getGeneratorConfig().getCapacity();
 
