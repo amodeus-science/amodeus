@@ -153,7 +153,7 @@ public class StandardMATSimScenarioTest {
 
         for (Link link : network.getLinks().values()) {
             if (link.getAllowedModes().contains("car")) {
-                link.setAllowedModes(new HashSet<>(Arrays.asList("car", "av")));
+                link.setAllowedModes(new HashSet<>(Arrays.asList("car", AmodeusModeConfig.DEFAULT_MODE)));
             }
         }
     }
@@ -205,7 +205,7 @@ public class StandardMATSimScenarioTest {
         ReferenceFrame referenceFrame = locationSpec.referenceFrame();
         MatsimAmodeusDatabase db = MatsimAmodeusDatabase.initialize(scenario.getNetwork(), referenceFrame);
 
-        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams("av");
+        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams(AmodeusModeConfig.DEFAULT_MODE);
         modeParams.setMonetaryDistanceRate(0.0);
         modeParams.setMarginalUtilityOfTraveling(8.86);
         modeParams.setConstant(0.0);
@@ -226,9 +226,9 @@ public class StandardMATSimScenarioTest {
         // Config
         AmodeusConfigGroup avConfig = AmodeusConfigGroup.get(config);
 
-        AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
+        AmodeusModeConfig operatorConfig = new AmodeusModeConfig(AmodeusModeConfig.DEFAULT_MODE);
         operatorConfig.setUseModeFilteredSubnetwork(true);
-        DvrpConfigGroup.get(config).setNetworkModes(ImmutableSet.of("av"));
+        DvrpConfigGroup.get(config).setNetworkModes(ImmutableSet.of(AmodeusModeConfig.DEFAULT_MODE));
         avConfig.addMode(operatorConfig);
 
         GeneratorConfig generatorConfig = operatorConfig.getGeneratorConfig();
@@ -254,13 +254,13 @@ public class StandardMATSimScenarioTest {
                 // TODO: This is not modalized now!
 
                 bind(DvrpModes.key(new TypeLiteral<VirtualNetwork<Link>>() {
-                }, "av")).toProvider(ModalProviders.createProvider("av", getter -> {
+                }, AmodeusModeConfig.DEFAULT_MODE)).toProvider(ModalProviders.createProvider(AmodeusModeConfig.DEFAULT_MODE, getter -> {
                     Network network = getter.getModal(Network.class);
                     return MatsimKMeansVirtualNetworkCreator.createVirtualNetwork(scenario.getPopulation(), network, 2, true);
                 }));
 
                 bind(DvrpModes.key(new TypeLiteral<TravelData>() {
-                }, "av")).toProvider(ModalProviders.createProvider("av", getter -> {
+                }, AmodeusModeConfig.DEFAULT_MODE)).toProvider(ModalProviders.createProvider(AmodeusModeConfig.DEFAULT_MODE, getter -> {
                     try {
                         LPOptions lpOptions = new LPOptions(simOptions.getWorkingDirectory(), LPOptionsBase.getDefault());
                         lpOptions.setProperty(LPOptionsBase.LPSOLVER, "timeInvariant");

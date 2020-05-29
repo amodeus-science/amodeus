@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
@@ -65,7 +66,7 @@ public class TestScenarioGenerator {
         Scenario scenario = generate(config);
 
         scenario.getPopulation().getPersons().values().forEach(person -> {
-            person.getSelectedPlan().getPlanElements().stream().filter(Leg.class::isInstance).forEach(leg -> ((Leg) leg).setMode("av")); // Refactor av
+            person.getSelectedPlan().getPlanElements().stream().filter(Leg.class::isInstance).forEach(leg -> ((Leg) leg).setMode(AmodeusModeConfig.DEFAULT_MODE)); // Refactor av
         });
 
         return scenario;

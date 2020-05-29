@@ -36,7 +36,7 @@ public class RunAVExampleTest {
     public void testAVExample() {
         AmodeusConfigGroup avConfigGroup = new AmodeusConfigGroup();
 
-        AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
+        AmodeusModeConfig operatorConfig = new AmodeusModeConfig(AmodeusModeConfig.DEFAULT_MODE);
         operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
         operatorConfig.getPricingConfig().setPricePerKm(0.48);
         operatorConfig.getPricingConfig().setSpatialBillingInterval(1000.0);
@@ -50,7 +50,7 @@ public class RunAVExampleTest {
 
         config.controler().setWriteEventsInterval(1);
 
-        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams("av"); // TODO: Refactor
+        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams(AmodeusModeConfig.DEFAULT_MODE); // TODO: Refactor
         modeParams.setMonetaryDistanceRate(0.0);
         modeParams.setMarginalUtilityOfTraveling(8.86);
         modeParams.setConstant(0.0);
@@ -81,7 +81,7 @@ public class RunAVExampleTest {
     public void testStuckScoring() {
         AmodeusConfigGroup avConfigGroup = new AmodeusConfigGroup();
 
-        AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
+        AmodeusModeConfig operatorConfig = new AmodeusModeConfig(AmodeusModeConfig.DEFAULT_MODE);
         operatorConfig.getGeneratorConfig().setNumberOfVehicles(0);
         avConfigGroup.addMode(operatorConfig);
 
@@ -90,7 +90,7 @@ public class RunAVExampleTest {
 
         Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
         Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
-        config.planCalcScore().getOrCreateModeParams("av"); // Refactor av
+        config.planCalcScore().getOrCreateModeParams(AmodeusModeConfig.DEFAULT_MODE); // Refactor av
 
         Controler controler = new Controler(scenario);
         controler.addOverridingModule(new DvrpModule());
@@ -110,7 +110,7 @@ public class RunAVExampleTest {
     public void testMultiOD() {
         AmodeusConfigGroup avConfigGroup = new AmodeusConfigGroup();
 
-        AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
+        AmodeusModeConfig operatorConfig = new AmodeusModeConfig(AmodeusModeConfig.DEFAULT_MODE);
         operatorConfig.getDispatcherConfig().setType(MultiODHeuristic.TYPE);
         operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
         operatorConfig.getPricingConfig().setPricePerKm(0.48);
@@ -123,7 +123,7 @@ public class RunAVExampleTest {
         Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
         Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
 
-        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams("av"); // Refactor av
+        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams(AmodeusModeConfig.DEFAULT_MODE); // Refactor av
         modeParams.setMonetaryDistanceRate(0.0);
         modeParams.setMarginalUtilityOfTraveling(8.86);
         modeParams.setConstant(0.0);
@@ -147,7 +147,7 @@ public class RunAVExampleTest {
     public void testAVExampleWithAccessEgress() {
         AmodeusConfigGroup avConfigGroup = new AmodeusConfigGroup();
 
-        AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
+        AmodeusModeConfig operatorConfig = new AmodeusModeConfig(AmodeusModeConfig.DEFAULT_MODE);
         operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
         operatorConfig.getPricingConfig().setPricePerKm(0.48);
         operatorConfig.getPricingConfig().setSpatialBillingInterval(1000.0);
@@ -173,11 +173,11 @@ public class RunAVExampleTest {
             }
         }
 
-        ActivityParams activityParams = new ActivityParams("av interaction");
+        ActivityParams activityParams = new ActivityParams("amodeus interaction");
         activityParams.setTypicalDuration(1.0);
         config.planCalcScore().addActivityParams(activityParams);
 
-        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams("av"); // Refactor av
+        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams(AmodeusModeConfig.DEFAULT_MODE); // Refactor av
         modeParams.setMonetaryDistanceRate(0.0);
         modeParams.setMarginalUtilityOfTraveling(8.86);
         modeParams.setConstant(0.0);
@@ -202,7 +202,7 @@ public class RunAVExampleTest {
     public void testAVExampleWithAccessEgressAttribute() {
         AmodeusConfigGroup avConfigGroup = new AmodeusConfigGroup();
 
-        AmodeusModeConfig operatorConfig = new AmodeusModeConfig("av");
+        AmodeusModeConfig operatorConfig = new AmodeusModeConfig(AmodeusModeConfig.DEFAULT_MODE);
         operatorConfig.getGeneratorConfig().setNumberOfVehicles(100);
         operatorConfig.getPricingConfig().setPricePerKm(0.48);
         operatorConfig.getPricingConfig().setSpatialBillingInterval(1000.0);
@@ -224,11 +224,11 @@ public class RunAVExampleTest {
             }
         }
 
-        ActivityParams activityParams = new ActivityParams("av interaction");
+        ActivityParams activityParams = new ActivityParams("amodeus interaction");
         activityParams.setTypicalDuration(1.0);
         config.planCalcScore().addActivityParams(activityParams);
 
-        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams("av"); // Refactor av
+        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams(AmodeusModeConfig.DEFAULT_MODE); // Refactor av
         modeParams.setMonetaryDistanceRate(0.0);
         modeParams.setMarginalUtilityOfTraveling(8.86);
         modeParams.setConstant(0.0);

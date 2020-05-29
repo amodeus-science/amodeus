@@ -75,7 +75,7 @@ public class VehicleAnalysisListener implements PersonDepartureEventHandler, Per
     @Override
     public void handleEvent(PersonEntersVehicleEvent event) {
         if (!AmodeusIdentifiers.isValid(event.getPersonId())) {
-            if (event.getVehicleId().toString().startsWith("av:")) {
+            if (AmodeusIdentifiers.isValid(event.getVehicleId())) {
                 passengers.addPassenger(event.getVehicleId(), event.getPersonId());
             }
         }
@@ -84,7 +84,7 @@ public class VehicleAnalysisListener implements PersonDepartureEventHandler, Per
     @Override
     public void handleEvent(PersonLeavesVehicleEvent event) {
         if (!AmodeusIdentifiers.isValid(event.getPersonId())) {
-            if (event.getVehicleId().toString().startsWith("av:")) {
+            if (AmodeusIdentifiers.isValid(event.getVehicleId())) {
                 passengers.removePassenger(event.getVehicleId(), event.getPersonId());
             }
         }

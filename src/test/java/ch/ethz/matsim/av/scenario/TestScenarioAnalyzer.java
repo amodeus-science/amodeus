@@ -1,5 +1,6 @@
 package ch.ethz.matsim.av.scenario;
 
+import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.amodeus.routing.AmodeusRoutingModule;
 import org.matsim.api.core.v01.events.ActivityStartEvent;
 import org.matsim.api.core.v01.events.PersonArrivalEvent;
@@ -16,14 +17,14 @@ public class TestScenarioAnalyzer extends AbstractModule implements PersonDepart
 
     @Override
     public void handleEvent(PersonArrivalEvent event) {
-        if (event.getLegMode().equals("av")) {
+        if (event.getLegMode().equals(AmodeusModeConfig.DEFAULT_MODE)) {
             numberOfArrivals++;
         }
     }
 
     @Override
     public void handleEvent(PersonDepartureEvent event) {
-        if (event.getLegMode().equals("av")) {
+        if (event.getLegMode().equals(AmodeusModeConfig.DEFAULT_MODE)) {
             numberOfDepartures++;
         }
     }

@@ -26,7 +26,8 @@ public class AmodeusModeConfig extends ReflectiveConfigGroup implements Modal {
     static final public String USE_MODE_FILTERED_SUBNETWORK = "useModeFilteredSubnetwork";
     static final public String USE_ACCESS_EGRESS = "useAccessEgress";
 
-    private String mode = "av";
+    static public final String DEFAULT_MODE = "av";
+    private String mode = DEFAULT_MODE;
 
     private boolean predictRouteTravelTime = false;
     private boolean predictRoutePrice = false;

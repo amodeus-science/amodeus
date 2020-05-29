@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Population;
 
@@ -32,7 +33,7 @@ public final class TheRequestApocalypse {
     }
 
     public TheRequestApocalypse toNoMoreThan(int maxRequests, long seed) {
-        final long legCount = LegCount.of(population, "av");
+        final long legCount = LegCount.of(population, AmodeusModeConfig.DEFAULT_MODE);
         GlobalAssert.that(maxRequests <= legCount);
         if (legCount == maxRequests)
             return this;
@@ -45,18 +46,18 @@ public final class TheRequestApocalypse {
         // skip all persons that should completely remain in the population
         Person person = iterator.next();
         int totReq = 0;
-        long req = LegCount.of(person, "av");
+        long req = LegCount.of(person, AmodeusModeConfig.DEFAULT_MODE);
         while (totReq + req <= maxRequests) {
             totReq += req;
             person = iterator.next();
-            req = LegCount.of(person, "av");
+            req = LegCount.of(person, AmodeusModeConfig.DEFAULT_MODE);
         }
 
         // create new person if needed to fill requests
         int split = maxRequests - totReq;
         if (split != 0) {
-            Person splitPerson = SplitUp.of(population, person, split, "av");
-            req = LegCount.of(splitPerson, "av");
+            Person splitPerson = SplitUp.of(population, person, split, AmodeusModeConfig.DEFAULT_MODE);
+            req = LegCount.of(splitPerson, AmodeusModeConfig.DEFAULT_MODE);
             totReq += req;
             GlobalAssert.that(totReq == maxRequests);
             population.addPerson(splitPerson);
@@ -65,7 +66,7 @@ public final class TheRequestApocalypse {
         // remove all remaining persons
         iterator.forEachRemaining(p -> population.removePerson(p.getId()));
         population.removePerson(person.getId());
-        GlobalAssert.that(LegCount.of(population, "av") == maxRequests);
+        GlobalAssert.that(LegCount.of(population, AmodeusModeConfig.DEFAULT_MODE) == maxRequests);
         return this;
     }
 

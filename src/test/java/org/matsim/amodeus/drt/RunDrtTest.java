@@ -42,7 +42,7 @@ import ch.ethz.idsc.amodeus.matsim.mod.AmodeusVirtualNetworkModeModule;
 import ch.ethz.idsc.amodeus.net.DatabaseModule;
 import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
 
-public class RunWithDrt {
+public class RunDrtTest {
     private final static String DRT_MODE = "av";
 
     @BeforeClass

@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Activity;
@@ -44,7 +45,7 @@ public enum PopulationAVRequests {
 
                     if (planElMidl instanceof Leg) {
                         Leg leg = (Leg) planElMidl;
-                        if (leg.getMode().equals("av")) {
+                        if (leg.getMode().equals(AmodeusModeConfig.DEFAULT_MODE)) {
                             // get time and vNode index
 
                             /** if the departure time is not defined for some leg, then

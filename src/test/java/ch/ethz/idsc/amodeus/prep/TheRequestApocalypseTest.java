@@ -9,6 +9,8 @@ import ch.ethz.idsc.amodeus.util.io.Locate;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import junit.framework.TestCase;
+
+import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.population.Population;
 
 public class TheRequestApocalypseTest extends TestCase {
@@ -36,7 +38,7 @@ public class TheRequestApocalypseTest extends TestCase {
         TheRequestApocalypse.reducesThe(population).toNoMoreThan(numReqDes, seed);
 
         /** ensure testing worked correctly */
-        assertEquals(numReqDes, (int) LegCount.of(population, "av"));
+        assertEquals(numReqDes, (int) LegCount.of(population, AmodeusModeConfig.DEFAULT_MODE));
     }
 
     @Override

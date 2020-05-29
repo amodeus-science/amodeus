@@ -16,7 +16,7 @@ import org.matsim.api.core.v01.population.PopulationFactory;
     /** @return {@link Person} identical to @param oldPerson from @param population with
      *         the number of legs in mode @param mode reduced to @param numLegs
      * 
-     *         usage example: Person splitPerson = SplitUp.of(population, personX, 1, "av") */
+     *         usage example: Person splitPerson = SplitUp.of(population, personX, 1, AmodeusModeConfig.DEFAULT_MODE) */
     public static Person of(Population population, Person oldPerson, int numLegs, String mode) {
         System.out.println("split person, num Legs: " + numLegs);
         PopulationFactory factory = population.getFactory();
