@@ -1,4 +1,4 @@
-package ch.ethz.matsim.av.dynamics;
+package org.matsim.amodeus.dynamics;
 
 import java.util.Arrays;
 

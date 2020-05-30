@@ -1,4 +1,4 @@
-package ch.ethz.matsim.av;
+package org.matsim.amodeus;
 
 import java.util.Iterator;
 
@@ -11,6 +11,8 @@ import org.matsim.amodeus.config.modal.AmodeusScoringConfig;
 import org.matsim.amodeus.framework.AmodeusModule;
 import org.matsim.amodeus.framework.AmodeusQSimModule;
 import org.matsim.amodeus.routing.interaction.LinkAttributeInteractionFinder;
+import org.matsim.amodeus.scenario.TestScenarioAnalyzer;
+import org.matsim.amodeus.scenario.TestScenarioGenerator;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Link;
@@ -28,10 +30,7 @@ import org.matsim.core.config.groups.StrategyConfigGroup.StrategySettings;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.utils.geometry.CoordUtils;
 
-import ch.ethz.matsim.av.scenario.TestScenarioAnalyzer;
-import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
-
-public class RunAVExampleTest {
+public class RunTest {
     @Test
     public void testAVExample() {
         AmodeusConfigGroup avConfigGroup = new AmodeusConfigGroup();
@@ -250,5 +249,44 @@ public class RunAVExampleTest {
 
         Assert.assertEquals(0, analyzer.numberOfDepartures - analyzer.numberOfArrivals);
         Assert.assertEquals(163, analyzer.numberOfInteractionActivities);
+    }
+
+    @Test
+    public void testBasicSetup() {
+        // CONFIG PART
+
+        Config config = ConfigUtils.createConfig(new DvrpConfigGroup(), new AmodeusConfigGroup());
+
+        // Add Amodeus mode
+        AmodeusModeConfig modeConfig = new AmodeusModeConfig("av");
+        AmodeusConfigGroup.get(config).addMode(modeConfig);
+
+        config.planCalcScore().getOrCreateModeParams("av");
+
+        // DVRP adjustments
+        config.qsim().setSimStarttimeInterpretation(StarttimeInterpretation.onlyUseStarttime);
+
+        // SCENARIO PART
+
+        // Generates a scenario with "av" legs
+        Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
+
+        // CONTROLLER PART
+        Controler controller = new Controler(scenario);
+
+        controller.addOverridingModule(new DvrpModule());
+        controller.addOverridingModule(new AmodeusModule());
+
+        controller.addOverridingQSimModule(new AmodeusQSimModule());
+        controller.configureQSimComponents(AmodeusQSimModule.activateModes(AmodeusConfigGroup.get(controller.getConfig())));
+
+        // Some analysis listener for testing
+        TestScenarioAnalyzer analyzer = new TestScenarioAnalyzer();
+        controller.addOverridingModule(analyzer);
+
+        controller.run();
+
+        Assert.assertEquals(0, analyzer.numberOfDepartures - analyzer.numberOfArrivals);
+        Assert.assertEquals(100, analyzer.numberOfDepartures);
     }
 }

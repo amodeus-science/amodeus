@@ -1,4 +1,4 @@
-package ch.ethz.matsim.av.drt;
+package org.matsim.amodeus.drt;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +18,7 @@ import org.matsim.amodeus.drt.AmodeusDrtQSimModule;
 import org.matsim.amodeus.drt.MultiModeDrtModuleForAmodeus;
 import org.matsim.amodeus.framework.AmodeusModule;
 import org.matsim.amodeus.framework.VirtualNetworkModeModule;
+import org.matsim.amodeus.scenario.TestScenarioGenerator;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Link;
@@ -40,8 +41,6 @@ import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.PlansConfigGroup.HandlingOfPlansWithoutRoutingMode;
 import org.matsim.core.config.groups.QSimConfigGroup.StarttimeInterpretation;
 import org.matsim.core.controler.Controler;
-
-import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
 
 public class RunDrtTest {
     private final static String DRT_MODE = "av";

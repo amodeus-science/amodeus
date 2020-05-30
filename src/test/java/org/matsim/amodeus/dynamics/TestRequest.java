@@ -1,4 +1,4 @@
-package ch.ethz.matsim.av.dynamics;
+package org.matsim.amodeus.dynamics;
 
 /** Creates a new TestRequest */
 public class TestRequest {

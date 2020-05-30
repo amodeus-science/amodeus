@@ -1,10 +1,9 @@
-package ch.ethz.matsim.av;
+package org.matsim.amodeus;
 
 import org.junit.Test;
+import org.matsim.amodeus.scenario.TestScenarioGenerator;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.controler.Controler;
-
-import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
 
 public class TestTestScenario {
     @Test

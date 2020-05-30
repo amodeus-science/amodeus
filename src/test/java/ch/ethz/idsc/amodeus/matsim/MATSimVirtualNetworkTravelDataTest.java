@@ -15,6 +15,7 @@ import org.matsim.amodeus.config.AmodeusConfigGroup;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.amodeus.config.modal.DispatcherConfig;
 import org.matsim.amodeus.config.modal.GeneratorConfig;
+import org.matsim.amodeus.scenario.TestScenarioGenerator;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
 import org.matsim.core.config.Config;
@@ -35,7 +36,6 @@ import ch.ethz.idsc.amodeus.util.io.Locate;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkGet;
-import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
 
 public class MATSimVirtualNetworkTravelDataTest {
     @Test

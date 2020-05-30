@@ -1,4 +1,4 @@
-package ch.ethz.matsim.av.routing;
+package org.matsim.amodeus.routing;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -8,6 +8,7 @@ import org.matsim.amodeus.config.modal.AmodeusScoringConfig;
 import org.matsim.amodeus.framework.AmodeusModule;
 import org.matsim.amodeus.framework.AmodeusQSimModule;
 import org.matsim.amodeus.routing.AmodeusRoute;
+import org.matsim.amodeus.scenario.TestScenarioGenerator;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
@@ -20,8 +21,6 @@ import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
 import org.matsim.core.config.groups.StrategyConfigGroup.StrategySettings;
 import org.matsim.core.controler.Controler;
-
-import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
 
 public class PreroutingTest {
     @Test

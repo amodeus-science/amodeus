@@ -1,4 +1,4 @@
-package ch.ethz.matsim.av.scenario;
+package org.matsim.amodeus.scenario;
 
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.amodeus.routing.AmodeusRoutingModule;

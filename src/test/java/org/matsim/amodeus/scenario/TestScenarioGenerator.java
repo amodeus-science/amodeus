@@ -1,4 +1,4 @@
-package ch.ethz.matsim.av.scenario;
+package org.matsim.amodeus.scenario;
 
 import java.util.List;
 import java.util.Random;

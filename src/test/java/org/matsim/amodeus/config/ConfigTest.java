@@ -1,4 +1,4 @@
-package ch.ethz.matsim.av.config;
+package org.matsim.amodeus.config;
 
 import java.io.BufferedReader;
 import java.io.File;

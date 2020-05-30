@@ -1,4 +1,4 @@
-package ch.ethz.matsim.av.routing;
+package org.matsim.amodeus.routing;
 
 import java.io.File;
 import java.io.IOException;

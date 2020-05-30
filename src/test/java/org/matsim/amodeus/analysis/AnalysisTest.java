@@ -1,4 +1,4 @@
-package ch.ethz.matsim.av.analysis;
+package org.matsim.amodeus.analysis;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -17,6 +17,8 @@ import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.amodeus.config.modal.AmodeusScoringConfig;
 import org.matsim.amodeus.framework.AmodeusModule;
 import org.matsim.amodeus.framework.AmodeusQSimModule;
+import org.matsim.amodeus.scenario.TestScenarioAnalyzer;
+import org.matsim.amodeus.scenario.TestScenarioGenerator;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
 import org.matsim.contrib.dvrp.run.DvrpModule;
@@ -26,9 +28,6 @@ import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
 import org.matsim.core.config.groups.StrategyConfigGroup.StrategySettings;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.utils.io.IOUtils;
-
-import ch.ethz.matsim.av.scenario.TestScenarioAnalyzer;
-import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
 
 public class AnalysisTest {
     @BeforeClass
