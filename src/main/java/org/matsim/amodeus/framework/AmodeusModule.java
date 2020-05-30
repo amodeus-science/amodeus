@@ -1,5 +1,8 @@
 package org.matsim.amodeus.framework;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Map;
 
 import org.matsim.amodeus.analysis.AnalysisOutputListener;
@@ -22,17 +25,23 @@ import org.matsim.amodeus.routing.interaction.LinkAttributeInteractionFinder;
 import org.matsim.amodeus.scoring.AmodeusScoringModule;
 import org.matsim.amodeus.waiting_time.StandardWaitingTimeFactory;
 import org.matsim.amodeus.waiting_time.WaitingTimeFactory;
+import org.matsim.api.core.v01.network.Network;
+import org.matsim.core.config.ConfigGroup;
 import org.matsim.core.controler.AbstractModule;
+import org.matsim.core.utils.geometry.CoordinateTransformation;
+import org.matsim.core.utils.geometry.transformations.GeotoolsTransformation;
 
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 
+import ch.ethz.idsc.amodeus.data.ReferenceFrame;
 import ch.ethz.idsc.amodeus.matsim.CompatibilityModule;
 import ch.ethz.idsc.amodeus.matsim.DispatcherModule;
 import ch.ethz.idsc.amodeus.matsim.GeneratorModule;
 import ch.ethz.idsc.amodeus.matsim.RouterModule;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
+import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 
 public class AmodeusModule extends AbstractModule {
     private final MatsimAmodeusDatabase database;
@@ -70,16 +79,24 @@ public class AmodeusModule extends AbstractModule {
         }
 
         install(new CompatibilityModule());
+        addControlerListenerBinding().to(MatsimAmodeusDatabase.class);
+    }
 
-        // TODO: Refactor from here
+    @Provides
+    @Singleton
+    public ScenarioOptions provideScenarioOptions() throws IOException {
         if (scenarioOptions != null) {
-            bind(ScenarioOptions.class).toInstance(scenarioOptions);
+            return scenarioOptions;
+        } else {
+            URL workingDirectory = ConfigGroup.getInputFileURL(getConfig().getContext(), ".");
+            return new ScenarioOptions(new File(workingDirectory.getPath()), ScenarioOptionsBase.getDefault());
         }
+    }
 
-        if (database != null) {
-            bind(MatsimAmodeusDatabase.class).toInstance(database);
-            addControlerListenerBinding().to(MatsimAmodeusDatabase.class);
-        }
+    @Provides
+    @Singleton
+    public MatsimAmodeusDatabase provideMatsimAmodeusDatabase(Network network) {
+        return MatsimAmodeusDatabase.initialize(network, new IdentityReferenceFrame());
     }
 
     @Provides
@@ -130,5 +147,20 @@ public class AmodeusModule extends AbstractModule {
 
         AmodeusUtils.registerInteractionFinderFactory(binder(), ClosestLinkInteractionFinder.TYPE, ClosestLinkInteractionFinder.Factory.class);
         AmodeusUtils.registerInteractionFinderFactory(binder(), LinkAttributeInteractionFinder.TYPE, LinkAttributeInteractionFinder.Factory.class);
+    }
+
+    private class IdentityReferenceFrame implements ReferenceFrame {
+        private final CoordinateTransformation coords_toWGS84 = new GeotoolsTransformation("EPSG:21781", "WGS84");
+        private final CoordinateTransformation coords_fromWGS84 = new GeotoolsTransformation("WGS84", "EPSG:21781");
+
+        @Override
+        public CoordinateTransformation coords_fromWGS84() {
+            return coords_fromWGS84;
+        }
+
+        @Override
+        public CoordinateTransformation coords_toWGS84() {
+            return coords_toWGS84;
+        }
     }
 }
