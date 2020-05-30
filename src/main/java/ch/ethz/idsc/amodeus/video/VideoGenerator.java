@@ -21,7 +21,6 @@ import ch.ethz.idsc.amodeus.gfx.TilesLayer;
 import ch.ethz.idsc.amodeus.gfx.VehiclesLayer;
 import ch.ethz.idsc.amodeus.gfx.ViewerConfig;
 import ch.ethz.idsc.amodeus.gfx.VirtualNetworkLayer;
-import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
 import ch.ethz.idsc.amodeus.net.IterationFolder;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
@@ -30,6 +29,7 @@ import ch.ethz.idsc.amodeus.net.StorageUtils;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.amodeus.util.matsim.NetworkLoader;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkGet;
 

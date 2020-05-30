@@ -8,8 +8,8 @@ import org.matsim.amodeus.components.dispatcher.multi_od_heuristic.MultiODHeuris
 import org.matsim.amodeus.config.AmodeusConfigGroup;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.amodeus.config.modal.AmodeusScoringConfig;
-import org.matsim.amodeus.framework.AVModule;
-import org.matsim.amodeus.framework.AVQSimModule;
+import org.matsim.amodeus.framework.AmodeusModule;
+import org.matsim.amodeus.framework.AmodeusQSimModule;
 import org.matsim.amodeus.routing.interaction.LinkAttributeInteractionFinder;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Scenario;
@@ -64,10 +64,10 @@ public class RunAVExampleTest {
 
         Controler controler = new Controler(scenario);
         controler.addOverridingModule(new DvrpModule());
-        controler.addOverridingModule(new AVModule());
-        controler.addOverridingQSimModule(new AVQSimModule());
+        controler.addOverridingModule(new AmodeusModule());
+        controler.addOverridingQSimModule(new AmodeusQSimModule());
 
-        controler.configureQSimComponents(AVQSimModule.activateModes(avConfigGroup));
+        controler.configureQSimComponents(AmodeusQSimModule.activateModes(avConfigGroup));
 
         TestScenarioAnalyzer analyzer = new TestScenarioAnalyzer();
         controler.addOverridingModule(analyzer);
@@ -94,10 +94,10 @@ public class RunAVExampleTest {
 
         Controler controler = new Controler(scenario);
         controler.addOverridingModule(new DvrpModule());
-        controler.addOverridingModule(new AVModule());
-        controler.addOverridingQSimModule(new AVQSimModule());
+        controler.addOverridingModule(new AmodeusModule());
+        controler.addOverridingQSimModule(new AmodeusQSimModule());
 
-        controler.configureQSimComponents(AVQSimModule.activateModes(avConfigGroup));
+        controler.configureQSimComponents(AmodeusQSimModule.activateModes(avConfigGroup));
 
         controler.run();
 
@@ -130,10 +130,10 @@ public class RunAVExampleTest {
 
         Controler controler = new Controler(scenario);
         controler.addOverridingModule(new DvrpModule());
-        controler.addOverridingModule(new AVModule());
-        controler.addOverridingQSimModule(new AVQSimModule());
+        controler.addOverridingModule(new AmodeusModule());
+        controler.addOverridingQSimModule(new AmodeusQSimModule());
 
-        controler.configureQSimComponents(AVQSimModule.activateModes(avConfigGroup));
+        controler.configureQSimComponents(AmodeusQSimModule.activateModes(avConfigGroup));
 
         TestScenarioAnalyzer analyzer = new TestScenarioAnalyzer();
         controler.addOverridingModule(analyzer);
@@ -184,10 +184,10 @@ public class RunAVExampleTest {
 
         Controler controler = new Controler(scenario);
         controler.addOverridingModule(new DvrpModule());
-        controler.addOverridingModule(new AVModule());
-        controler.addOverridingQSimModule(new AVQSimModule());
+        controler.addOverridingModule(new AmodeusModule());
+        controler.addOverridingQSimModule(new AmodeusQSimModule());
 
-        controler.configureQSimComponents(AVQSimModule.activateModes(avConfigGroup));
+        controler.configureQSimComponents(AmodeusQSimModule.activateModes(avConfigGroup));
 
         TestScenarioAnalyzer analyzer = new TestScenarioAnalyzer();
         controler.addOverridingModule(analyzer);
@@ -238,10 +238,10 @@ public class RunAVExampleTest {
 
         Controler controler = new Controler(scenario);
         controler.addOverridingModule(new DvrpModule());
-        controler.addOverridingModule(new AVModule());
-        controler.addOverridingQSimModule(new AVQSimModule());
+        controler.addOverridingModule(new AmodeusModule());
+        controler.addOverridingQSimModule(new AmodeusQSimModule());
 
-        controler.configureQSimComponents(AVQSimModule.activateModes(avConfigGroup));
+        controler.configureQSimComponents(AmodeusQSimModule.activateModes(avConfigGroup));
 
         TestScenarioAnalyzer analyzer = new TestScenarioAnalyzer();
         controler.addOverridingModule(analyzer);

@@ -21,7 +21,7 @@ import org.matsim.amodeus.config.AmodeusConfigGroup;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.amodeus.config.modal.DispatcherConfig;
 import org.matsim.amodeus.config.modal.GeneratorConfig;
-import org.matsim.amodeus.framework.AVQSimModule;
+import org.matsim.amodeus.framework.AmodeusQSimModule;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.events.LinkEnterEvent;
@@ -301,7 +301,7 @@ public class StandardMATSimScenarioTest {
             }
         });
 
-        controller.configureQSimComponents(AVQSimModule.activateModes(avConfig));
+        controller.configureQSimComponents(AmodeusQSimModule.activateModes(avConfig));
 
         controller.run();
 

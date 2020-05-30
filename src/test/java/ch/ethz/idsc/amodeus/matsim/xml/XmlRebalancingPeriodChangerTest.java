@@ -12,6 +12,12 @@ import org.junit.Test;
 import ch.ethz.idsc.amodeus.util.io.CopyFiles;
 import ch.ethz.idsc.amodeus.util.io.Locate;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.amodeus.util.matsim.xml.ConfigDispatcherChanger;
+import ch.ethz.idsc.amodeus.util.matsim.xml.ConfigVehiclesChanger;
+import ch.ethz.idsc.amodeus.util.matsim.xml.XmlDispatchPeriodChanger;
+import ch.ethz.idsc.amodeus.util.matsim.xml.XmlDistanceHeuristicChanger;
+import ch.ethz.idsc.amodeus.util.matsim.xml.XmlGeneratorChanger;
+import ch.ethz.idsc.amodeus.util.matsim.xml.XmlRebalancingPeriodChanger;
 import ch.ethz.idsc.tensor.io.DeleteDirectory;
 
 public class XmlRebalancingPeriodChangerTest {

@@ -5,8 +5,8 @@ import org.junit.Test;
 import org.matsim.amodeus.config.AmodeusConfigGroup;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.amodeus.config.modal.AmodeusScoringConfig;
-import org.matsim.amodeus.framework.AVModule;
-import org.matsim.amodeus.framework.AVQSimModule;
+import org.matsim.amodeus.framework.AmodeusModule;
+import org.matsim.amodeus.framework.AmodeusQSimModule;
 import org.matsim.amodeus.routing.AmodeusRoute;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.population.Leg;
@@ -55,10 +55,10 @@ public class PreroutingTest {
 
         Controler controler = new Controler(scenario);
         controler.addOverridingModule(new DvrpModule());
-        controler.addOverridingModule(new AVModule());
-        controler.addOverridingQSimModule(new AVQSimModule());
+        controler.addOverridingModule(new AmodeusModule());
+        controler.addOverridingQSimModule(new AmodeusQSimModule());
 
-        controler.configureQSimComponents(AVQSimModule.activateModes(avConfigGroup));
+        controler.configureQSimComponents(AmodeusQSimModule.activateModes(avConfigGroup));
 
         controler.run();
 

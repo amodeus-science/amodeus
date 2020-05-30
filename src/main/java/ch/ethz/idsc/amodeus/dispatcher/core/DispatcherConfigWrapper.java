@@ -4,7 +4,7 @@ package ch.ethz.idsc.amodeus.dispatcher.core;
 import org.matsim.core.config.ReflectiveConfigGroup;
 
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
-import ch.ethz.idsc.amodeus.matsim.SafeConfig;
+import ch.ethz.idsc.amodeus.util.matsim.SafeConfig;
 
 public class DispatcherConfigWrapper extends SafeConfig {
 

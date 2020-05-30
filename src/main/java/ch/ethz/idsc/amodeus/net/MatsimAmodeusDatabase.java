@@ -12,6 +12,10 @@ import java.util.stream.Collectors;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.core.controler.events.IterationEndsEvent;
+import org.matsim.core.controler.events.IterationStartsEvent;
+import org.matsim.core.controler.listener.IterationEndsListener;
+import org.matsim.core.controler.listener.IterationStartsListener;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
 
 import ch.ethz.idsc.amodeus.data.ReferenceFrame;
@@ -20,7 +24,7 @@ import ch.ethz.idsc.tensor.alg.TensorMap;
 import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.red.Median;
 
-public class MatsimAmodeusDatabase {
+public class MatsimAmodeusDatabase implements IterationStartsListener, IterationEndsListener {
 
     public static MatsimAmodeusDatabase initialize(Network network, ReferenceFrame referenceFrame) {
         CoordinateTransformation coords_toWGS84 = referenceFrame.coords_toWGS84();
@@ -80,5 +84,15 @@ public class MatsimAmodeusDatabase {
 
     public int getIteration() {
         return iteration;
+    }
+
+    @Override
+    public void notifyIterationEnds(IterationEndsEvent event) {
+        setIteration(null);
+    }
+
+    @Override
+    public void notifyIterationStarts(IterationStartsEvent event) {
+        setIteration(event.getIteration());
     }
 }

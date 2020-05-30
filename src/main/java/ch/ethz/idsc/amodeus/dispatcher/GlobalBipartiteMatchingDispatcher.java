@@ -16,9 +16,9 @@ import ch.ethz.idsc.amodeus.dispatcher.util.BipartiteMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.ConfigurableBipartiteMatcher;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceCost;
 import ch.ethz.idsc.amodeus.dispatcher.util.DistanceHeuristics;
-import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
+import ch.ethz.idsc.amodeus.util.matsim.SafeConfig;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 

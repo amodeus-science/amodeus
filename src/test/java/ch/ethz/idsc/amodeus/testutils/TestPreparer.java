@@ -2,16 +2,21 @@
 package ch.ethz.idsc.amodeus.testutils;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.Objects;
 
 import org.matsim.amodeus.config.AmodeusConfigGroup;
 import org.matsim.amodeus.config.modal.GeneratorConfig;
 import org.matsim.api.core.v01.Scenario;
+import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
+import org.matsim.core.network.NetworkUtils;
+import org.matsim.core.network.algorithms.NetworkCleaner;
+import org.matsim.core.network.algorithms.TransportModeNetworkFilter;
 import org.matsim.core.scenario.ScenarioUtils;
 
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
@@ -23,6 +28,7 @@ import ch.ethz.idsc.amodeus.prep.VirtualNetworkPreparer;
 import ch.ethz.idsc.amodeus.traveldata.StaticTravelData;
 import ch.ethz.idsc.amodeus.traveldata.StaticTravelDataCreator;
 import ch.ethz.idsc.amodeus.traveldata.TravelDataIO;
+import ch.ethz.idsc.amodeus.util.matsim.SnapToClosestNetworkLink;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
 
 public class TestPreparer {
@@ -53,23 +59,34 @@ public class TestPreparer {
         int endTime = (int) config.qsim().getEndTime().seconds();
 
         // 1) cut network (and reduce population to new network)
-        networkPrepared = scenario.getNetwork();
+        networkPrepared = scenario.getNetwork();        
         NetworkPreparer.run(networkPrepared, scenarioOptions);
 
         // 2) adapt the population to new network
         populationPrepared = scenario.getPopulation();
+
+        // To make Test input data consistent (e.g. avoid people departing fom "tram" links)
+        SnapToClosestNetworkLink.run(populationPrepared, networkPrepared, TransportMode.car);
+
         PopulationPreparer.run(networkPrepared, populationPrepared, scenarioOptions, config, 10);
 
         // 3) create virtual Network
+        
+        // Amodeus uses internally a mode-filtered network (default is the car network). The provided
+        // VirtualNetwork needs to be consistent with this node-filtered network.
+        Network roadNetwork = NetworkUtils.createNetwork();
+        new TransportModeNetworkFilter(networkPrepared).filter(roadNetwork, Collections.singleton("car"));
+        new NetworkCleaner().run(roadNetwork);
+        
         VirtualNetworkPreparer virtualNetworkPreparer = VirtualNetworkPreparer.INSTANCE;
         VirtualNetwork<Link> virtualNetwork = //
-                virtualNetworkPreparer.create(networkPrepared, populationPrepared, scenarioOptions, numRt, endTime);
+                virtualNetworkPreparer.create(roadNetwork, populationPrepared, scenarioOptions, numRt, endTime);
 
         // 4) create TravelData
         /** reading the customer requests */
         StaticTravelData travelData = StaticTravelDataCreator.create( //
                 scenarioOptions.getWorkingDirectory(), //
-                virtualNetwork, networkPrepared, populationPrepared, //
+                virtualNetwork, roadNetwork, populationPrepared, //
                 scenarioOptions.getdtTravelData(), numRt, endTime);
         File travelDataFile = new File(scenarioOptions.getVirtualNetworkDirectoryName(), scenarioOptions.getTravelDataName());
         TravelDataIO.writeStatic(travelDataFile, travelData);

@@ -10,9 +10,9 @@ import org.matsim.amodeus.components.dispatcher.multi_od_heuristic.MultiODHeuris
 import org.matsim.amodeus.config.AmodeusConfigGroup;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.amodeus.config.modal.AmodeusScoringConfig;
-import org.matsim.amodeus.framework.AVModule;
-import org.matsim.amodeus.framework.AVQSimModule;
-import org.matsim.amodeus.framework.AVUtils;
+import org.matsim.amodeus.framework.AmodeusModule;
+import org.matsim.amodeus.framework.AmodeusQSimModule;
+import org.matsim.amodeus.framework.AmodeusUtils;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
@@ -224,12 +224,12 @@ public class TestScenario {
 
         controller.addOverridingModule(new DvrpModule());
         controller.addOverridingModule(new DvrpTravelTimeModule());
-        controller.addOverridingModule(new AVModule());
+        controller.addOverridingModule(new AmodeusModule());
 
         controller.addOverridingModule(new AbstractModule() {
             @Override
             public void install() {
-                AVUtils.registerGeneratorFactory(binder(), "Single", SingleVehicleGeneratorFactory.class);
+                AmodeusUtils.registerGeneratorFactory(binder(), "Single", SingleVehicleGeneratorFactory.class);
                 addEventHandlerBinding().toInstance(handler);
             }
 
@@ -239,9 +239,9 @@ public class TestScenario {
             }
         });
 
-        controller.addOverridingQSimModule(new AVQSimModule());
+        controller.addOverridingQSimModule(new AmodeusQSimModule());
 
-        controller.configureQSimComponents(AVQSimModule.activateModes(AmodeusModeConfig.DEFAULT_MODE));
+        controller.configureQSimComponents(AmodeusQSimModule.activateModes(scenario.getConfig()));
 
         return controller;
     }
