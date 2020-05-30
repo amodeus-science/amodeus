@@ -13,10 +13,10 @@ import ch.ethz.idsc.amodeus.data.ReferenceFrame;
 import ch.ethz.idsc.amodeus.gfx.AmodeusComponent;
 import ch.ethz.idsc.amodeus.gfx.AmodeusViewerFrame;
 import ch.ethz.idsc.amodeus.gfx.ViewerConfig;
-import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
+import ch.ethz.idsc.amodeus.util.matsim.NetworkLoader;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkGet;
 
 public class TestViewer {

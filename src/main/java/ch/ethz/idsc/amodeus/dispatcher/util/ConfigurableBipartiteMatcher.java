@@ -9,8 +9,8 @@ import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.UniversalDispatcher;
-import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.routing.DistanceFunction;
+import ch.ethz.idsc.amodeus.util.matsim.SafeConfig;
 
 public class ConfigurableBipartiteMatcher extends BipartiteMatcherInternal {
 

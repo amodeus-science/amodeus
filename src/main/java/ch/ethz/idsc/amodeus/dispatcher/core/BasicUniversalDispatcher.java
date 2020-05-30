@@ -26,7 +26,6 @@ import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
 
-import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationDistribution;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
@@ -34,6 +33,7 @@ import ch.ethz.idsc.amodeus.net.SimulationObjectCompiler;
 import ch.ethz.idsc.amodeus.net.SimulationObjects;
 import ch.ethz.idsc.amodeus.net.StorageUtils;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.amodeus.util.matsim.SafeConfig;
 
 /** This class contains all functionality which is used by both unit capacity
  * dispatchers and shared {@link RoboTaxi} dispatchers. */

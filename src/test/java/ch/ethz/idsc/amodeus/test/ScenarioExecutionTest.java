@@ -24,7 +24,6 @@ import ch.ethz.idsc.amodeus.analysis.element.DistanceDistributionOverDayImage;
 import ch.ethz.idsc.amodeus.analysis.element.OccupancyDistanceRatiosImage;
 import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionImage;
 import ch.ethz.idsc.amodeus.analysis.element.TravelHistory;
-import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.testutils.TestPreparer;
@@ -35,6 +34,7 @@ import ch.ethz.idsc.amodeus.util.io.Locate;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.util.math.SI;
+import ch.ethz.idsc.amodeus.util.matsim.NetworkLoader;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -157,11 +157,11 @@ public class ScenarioExecutionTest {
         assertTrue(Scalars.lessEquals(ZERO_KM, (Scalar) s)));
         assertEquals(Total.of(ate.getDistancElement().totalDistancesPerVehicle), ate.getDistancElement().totalDistance);
 
-        scalarAssert.add((Scalar) Quantity.of(2872.46383, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
-        scalarAssert.add((Scalar) Quantity.of(1054.11900, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
-        scalarAssert.add((Scalar) Quantity.of(279.69730, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistancePicku.map(Round._5));
-        scalarAssert.add((Scalar) Quantity.of(1538.64753, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRebal.map(Round._5));
-        scalarAssert.add((Scalar) RealScalar.of(0.36697).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRatio.map(Round._5));
+        scalarAssert.add((Scalar) Quantity.of(2836.14438, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
+        scalarAssert.add((Scalar) Quantity.of(1043.41812, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
+        scalarAssert.add((Scalar) Quantity.of(272.89791, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistancePicku.map(Round._5));
+        scalarAssert.add((Scalar) Quantity.of(1519.82835, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRebal.map(Round._5));
+        scalarAssert.add((Scalar) RealScalar.of(0.36790).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRatio.map(Round._5));
 
         scalarAssert.add((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle), //
                 ate.getDistancElement().totalDistance);
@@ -185,10 +185,10 @@ public class ScenarioExecutionTest {
                 ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(2)));
         assertTrue(Scalars.lessEquals(Quantity.of(0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1)));
 
-        scalarAssert.add(Quantity.of(379.97975708502025, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1));
-        scalarAssert.add(Quantity.of(1943.0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(2));
-        scalarAssert.add(Quantity.of(RationalScalar.of(215040, 247), SI.SECOND), ate.getTravelTimeAnalysis().getDrveAggrgte().Get(1));
-        scalarAssert.add(Quantity.of(3000, SI.SECOND), ate.getTravelTimeAnalysis().getDrveAggrgte().Get(2));
+        scalarAssert.add(Quantity.of(396.01214574898785, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1));
+        scalarAssert.add(Quantity.of(2397.0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(2));
+        scalarAssert.add(Quantity.of(RationalScalar.of(222840, 247), SI.SECOND), ate.getTravelTimeAnalysis().getDrveAggrgte().Get(1));
+        scalarAssert.add(Quantity.of(3480, SI.SECOND), ate.getTravelTimeAnalysis().getDrveAggrgte().Get(2));
 
         /* TODO @sebhoerl Have a look at {AmodeusModule::install}. At some point the travel time
          * calculation in DVRP has been improved.

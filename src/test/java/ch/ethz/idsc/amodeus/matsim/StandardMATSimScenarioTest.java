@@ -21,7 +21,9 @@ import org.matsim.amodeus.config.AmodeusConfigGroup;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.amodeus.config.modal.DispatcherConfig;
 import org.matsim.amodeus.config.modal.GeneratorConfig;
-import org.matsim.amodeus.framework.AVQSimModule;
+import org.matsim.amodeus.framework.AmodeusQSimModule;
+import org.matsim.amodeus.scenario.TestScenarioAnalyzer;
+import org.matsim.amodeus.scenario.TestScenarioGenerator;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.events.LinkEnterEvent;
@@ -68,8 +70,6 @@ import ch.ethz.idsc.amodeus.util.io.Locate;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
-import ch.ethz.matsim.av.scenario.TestScenarioAnalyzer;
-import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
 
 @RunWith(Parameterized.class)
 public class StandardMATSimScenarioTest {
@@ -301,7 +301,7 @@ public class StandardMATSimScenarioTest {
             }
         });
 
-        controller.configureQSimComponents(AVQSimModule.activateModes(avConfig));
+        controller.configureQSimComponents(AmodeusQSimModule.activateModes(avConfig));
 
         controller.run();
 

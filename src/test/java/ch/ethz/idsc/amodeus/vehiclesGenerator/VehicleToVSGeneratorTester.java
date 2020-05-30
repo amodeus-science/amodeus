@@ -19,7 +19,7 @@ import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.scenario.ScenarioUtils;
 
-import ch.ethz.idsc.amodeus.matsim.mod.VehicleToVSGenerator;
+import ch.ethz.idsc.amodeus.generator.VehicleToVSGenerator;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.prep.VirtualNetworkCreator;

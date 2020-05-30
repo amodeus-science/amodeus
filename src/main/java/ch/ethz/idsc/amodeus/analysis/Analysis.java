@@ -43,7 +43,6 @@ import ch.ethz.idsc.amodeus.analysis.report.TotalValues;
 import ch.ethz.idsc.amodeus.analysis.report.TtlValIdent;
 import ch.ethz.idsc.amodeus.analysis.shared.NumberPassengerStatusDistribution;
 import ch.ethz.idsc.amodeus.analysis.shared.RideSharingDistributionCompositionStack;
-import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.net.SimulationObject;
 import ch.ethz.idsc.amodeus.net.StorageSupplier;
@@ -51,6 +50,7 @@ import ch.ethz.idsc.amodeus.net.StorageUtils;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.amodeus.util.matsim.NetworkLoader;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.io.Timing;
 

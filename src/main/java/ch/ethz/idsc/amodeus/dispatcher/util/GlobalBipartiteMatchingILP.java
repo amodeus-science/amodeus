@@ -8,7 +8,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
-import ch.ethz.idsc.amodeus.matsim.SafeConfig;
+import ch.ethz.idsc.amodeus.util.matsim.SafeConfig;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 

@@ -34,6 +34,7 @@ public enum PopulationPreparer {
         System.out.println("Population after decimation:" + population.getPersons().values().size());
         GlobalAssert.that(0 < population.getPersons().size());
 
+
         final File fileExportGz = new File(scenOptions.getPreparedPopulationName() + ".xml.gz");
         final File fileExport = new File(scenOptions.getPreparedPopulationName() + ".xml");
 

@@ -17,8 +17,8 @@ import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 
-import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.StorageUtils;
+import ch.ethz.idsc.amodeus.util.matsim.SafeConfig;
 
 /** The purpose of RoboTaxiMaintainer is to register {@link AVVehicle} and provide the collection of
  * available vehicles to derived class.

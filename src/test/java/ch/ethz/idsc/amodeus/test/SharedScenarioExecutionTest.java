@@ -23,7 +23,6 @@ import ch.ethz.idsc.amodeus.analysis.element.DistanceDistributionOverDayImage;
 import ch.ethz.idsc.amodeus.analysis.element.NumberPassengersAnalysis;
 import ch.ethz.idsc.amodeus.analysis.element.OccupancyDistanceRatiosImage;
 import ch.ethz.idsc.amodeus.analysis.element.StatusDistributionImage;
-import ch.ethz.idsc.amodeus.matsim.NetworkLoader;
 import ch.ethz.idsc.amodeus.options.ScenarioOptions;
 import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
 import ch.ethz.idsc.amodeus.testutils.SharedTestServer;
@@ -33,6 +32,7 @@ import ch.ethz.idsc.amodeus.util.io.Locate;
 import ch.ethz.idsc.amodeus.util.io.MultiFileTools;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.amodeus.util.math.SI;
+import ch.ethz.idsc.amodeus.util.matsim.NetworkLoader;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
@@ -132,15 +132,15 @@ public class SharedScenarioExecutionTest {
 
         /** fleet distances */
         assertTrue(Scalars.lessEquals(ZERO_KM, ate.getDistancElement().totalDistance));
-        scalarAssert.add((Scalar) Quantity.of(1365.00742, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
+        scalarAssert.add((Scalar) Quantity.of(1341.06222, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
         assertTrue(Scalars.lessEquals(ZERO_KM, ate.getDistancElement().totalDistanceWtCst));
-        scalarAssert.add((Scalar) Quantity.of(1058.79576, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
+        scalarAssert.add((Scalar) Quantity.of(1043.80037, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
         assertTrue(Scalars.lessEquals(ZERO_KM, ate.getDistancElement().totalDistancePicku));
-        scalarAssert.add((Scalar) Quantity.of(306.21165, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistancePicku.map(Round._5));
+        scalarAssert.add((Scalar) Quantity.of(297.26185, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistancePicku.map(Round._5));
         assertTrue(Scalars.lessEquals(ZERO_KM, ate.getDistancElement().totalDistanceRebal));
         scalarAssert.add((Scalar) Quantity.of(0.00000, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRebal.map(Round._5));
         assertTrue(Scalars.lessEquals(RealScalar.ZERO, ate.getDistancElement().totalDistanceRatio));
-        scalarAssert.add((Scalar) RealScalar.of(0.77567).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRatio.map(Round._5));
+        scalarAssert.add((Scalar) RealScalar.of(0.77834).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRatio.map(Round._5));
         scalarAssert.consolidate();
 
         ate.getDistancElement().totalDistancesPerVehicle.flatten(-1).forEach(s -> //

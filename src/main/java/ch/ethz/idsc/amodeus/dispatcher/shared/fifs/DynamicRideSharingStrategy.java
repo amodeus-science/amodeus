@@ -24,12 +24,12 @@ import ch.ethz.idsc.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import ch.ethz.idsc.amodeus.dispatcher.core.RoboTaxi;
 import ch.ethz.idsc.amodeus.dispatcher.core.SharedRebalancingDispatcher;
 import ch.ethz.idsc.amodeus.dispatcher.shared.SharedCourse;
-import ch.ethz.idsc.amodeus.matsim.SafeConfig;
 import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
 import ch.ethz.idsc.amodeus.routing.CachedNetworkTimeDistance;
 import ch.ethz.idsc.amodeus.routing.EasyMinTimePathCalculator;
 import ch.ethz.idsc.amodeus.routing.TimeDistanceProperty;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.amodeus.util.matsim.SafeConfig;
 
 /** Implementation of the ride sharing strategy used ind:
  * Fagnant, D. J., & Kockelman, K. M. (2015). Dynamic ride-sharing and optimal fleet sizing for a

@@ -13,7 +13,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.matsim.amodeus.config.AmodeusConfigGroup;
 import org.matsim.amodeus.config.AmodeusModeConfig;
-import org.matsim.amodeus.framework.AVModule;
+import org.matsim.amodeus.drt.AmodeusDrtModule;
+import org.matsim.amodeus.drt.AmodeusDrtQSimModule;
+import org.matsim.amodeus.drt.MultiModeDrtModuleForAmodeus;
+import org.matsim.amodeus.framework.AmodeusModule;
+import org.matsim.amodeus.framework.VirtualNetworkModeModule;
+import org.matsim.amodeus.scenario.TestScenarioGenerator;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Link;
@@ -36,11 +41,6 @@ import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.PlansConfigGroup.HandlingOfPlansWithoutRoutingMode;
 import org.matsim.core.config.groups.QSimConfigGroup.StarttimeInterpretation;
 import org.matsim.core.controler.Controler;
-
-import ch.ethz.idsc.amodeus.matsim.mod.AmodeusDispatcherModule;
-import ch.ethz.idsc.amodeus.matsim.mod.AmodeusVirtualNetworkModeModule;
-import ch.ethz.idsc.amodeus.net.DatabaseModule;
-import ch.ethz.matsim.av.scenario.TestScenarioGenerator;
 
 public class RunDrtTest {
     private final static String DRT_MODE = "av";
@@ -158,10 +158,8 @@ public class RunDrtTest {
 
             // Add a subset of Amodeus modules which usually would be added automatically
             // in the upper-level AmodeusModule.
-            controller.addOverridingModule(new AmodeusVirtualNetworkModeModule(amodeusModeConfig));
-            controller.addOverridingModule(new AmodeusDispatcherModule());
-            controller.addOverridingModule(new AVModule());
-            controller.addOverridingModule(new DatabaseModule());
+            controller.addOverridingModule(new VirtualNetworkModeModule(amodeusModeConfig));
+            controller.addOverridingModule(new AmodeusModule());
 
             // Add overriding modules for the Drt <-> Amodeus integration, which override some
             // components of DRT. Later on, we would only override DrtOptimizer, but we are

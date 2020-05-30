@@ -8,8 +8,8 @@ import java.util.Random;
 
 import org.matsim.api.core.v01.network.Link;
 
-import ch.ethz.idsc.amodeus.matsim.mod.SortedLinks;
 import ch.ethz.idsc.amodeus.util.math.GlobalAssert;
+import ch.ethz.idsc.amodeus.util.matsim.SortedLinks;
 import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNode;
 
 public class RandomVirtualNodeDest implements AbstractVirtualNodeDest {
