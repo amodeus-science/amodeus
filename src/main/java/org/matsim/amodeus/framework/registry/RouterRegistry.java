@@ -6,6 +6,6 @@ import org.matsim.amodeus.components.AmodeusRouter;
 
 public class RouterRegistry extends NamedComponentRegistry<AmodeusRouter.Factory> {
     public RouterRegistry(Map<String, AmodeusRouter.Factory> components) {
-        super("AVRouter", components);
+        super("AmodeusRouter", components);
     }
 }

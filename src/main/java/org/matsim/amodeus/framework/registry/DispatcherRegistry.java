@@ -6,6 +6,6 @@ import org.matsim.amodeus.components.AmodeusDispatcher;
 
 public class DispatcherRegistry extends NamedComponentRegistry<AmodeusDispatcher.AVDispatcherFactory> {
     public DispatcherRegistry(Map<String, AmodeusDispatcher.AVDispatcherFactory> components) {
-        super("AVDispatcher", components);
+        super("AmodeusDispatcher", components);
     }
 }

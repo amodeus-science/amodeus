@@ -259,6 +259,7 @@ public class RunTest {
 
         // Add Amodeus mode
         AmodeusModeConfig modeConfig = new AmodeusModeConfig("av");
+        modeConfig.getDispatcherConfig().setType("GlobalBipartiteMatchingDispatcher");
         AmodeusConfigGroup.get(config).addMode(modeConfig);
 
         config.planCalcScore().getOrCreateModeParams("av");
