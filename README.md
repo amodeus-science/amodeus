@@ -1,4 +1,4 @@
-# cd.ethz.idsc.amodeus <a href="https://travis-ci.org/amodeus-science/amodeus"><img src="https://travis-ci.org/amodeus-science/amodeus.svg?branch=master" alt="Build Status"></a>
+# amodeus.amodeus <a href="https://travis-ci.org/amodeus-science/amodeus"><img src="https://travis-ci.org/amodeus-science/amodeus.svg?branch=master" alt="Build Status"></a>
 
 Autonomous mobility-on-demand simulation library, version `1.9.3`
 
