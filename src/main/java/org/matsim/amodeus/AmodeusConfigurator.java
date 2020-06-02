@@ -10,8 +10,8 @@ import org.matsim.api.core.v01.Scenario;
 import org.matsim.contrib.dvrp.run.DvrpModule;
 import org.matsim.core.controler.Controler;
 
-import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
-import ch.ethz.idsc.amodeus.options.ScenarioOptions;
+import amodeus.amodeus.net.MatsimAmodeusDatabase;
+import amodeus.amodeus.options.ScenarioOptions;
 
 public class AmodeusConfigurator {
     private final static Logger logger = Logger.getLogger(AmodeusConfigurator.class);
