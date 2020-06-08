@@ -1,3 +1,4 @@
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package amodeus.amodeus.util.matsim;
 
 import java.util.stream.Collectors;
@@ -14,15 +15,16 @@ import org.matsim.core.utils.collections.QuadTrees;
 
 public class SnapToClosestNetworkLink {
     private SnapToClosestNetworkLink() {
+        // ---
     }
 
     static public void run(Population population, Network network, String mode) {
-        QuadTree<? extends Link> index = QuadTrees
-                .createQuadTree(network.getLinks().values().stream().filter(link -> link.getAllowedModes().contains(mode)).collect(Collectors.toList()));
+        QuadTree<? extends Link> index = QuadTrees.createQuadTree( //
+                network.getLinks().values().stream().filter(link -> link.getAllowedModes().contains(mode)).collect(Collectors.toList()));
 
-        for (Person person : population.getPersons().values()) {
-            for (Plan plan : person.getPlans()) {
-                for (PlanElement element : plan.getPlanElements()) {
+        for (Person person : population.getPersons().values())
+            for (Plan plan : person.getPlans())
+                for (PlanElement element : plan.getPlanElements())
                     if (element instanceof Activity) {
                         Activity activity = (Activity) element;
 
@@ -35,8 +37,5 @@ public class SnapToClosestNetworkLink {
                             }
                         }
                     }
-                }
-            }
-        }
     }
 }

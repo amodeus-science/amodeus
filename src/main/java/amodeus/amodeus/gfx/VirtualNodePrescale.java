@@ -4,6 +4,5 @@ package amodeus.amodeus.gfx;
 public enum VirtualNodePrescale {
     IDENTITY, //
     ROOT_AREA, //
-    AREA, //
-    ;
+    AREA;
 }

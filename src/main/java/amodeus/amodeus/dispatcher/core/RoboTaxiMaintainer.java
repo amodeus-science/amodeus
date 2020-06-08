@@ -20,10 +20,10 @@ import org.matsim.core.config.Config;
 import amodeus.amodeus.net.StorageUtils;
 import amodeus.amodeus.util.matsim.SafeConfig;
 
-/** The purpose of RoboTaxiMaintainer is to register {@link AVVehicle} and provide the collection of
+/** The purpose of RoboTaxiMaintainer is to register {@link RoboTaxi} and provide the collection of
  * available vehicles to derived class.
  * <p>
- * manages assignments of {@link DirectiveInterface} to {@link AVVehicle}s. path computations
+ * manages assignments of {@link DirectiveInterface} to {@link RoboTaxi}s. path computations
  * attached to assignments are computed in parallel
  * {@link ParallelLeastCostPathCalculator}. */
 /* package */ abstract class RoboTaxiMaintainer implements AmodeusDispatcher {

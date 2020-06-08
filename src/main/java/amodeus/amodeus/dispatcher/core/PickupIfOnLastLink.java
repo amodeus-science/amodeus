@@ -20,7 +20,7 @@ import amodeus.amodeus.dispatcher.shared.SharedCourse;
             double pickupDurationPerStop, FuturePathFactory futurePathFactory) {
 
         List<SharedCourse> courses = PickupNowCourses.of(roboTaxi);
-        List<PassengerRequest> pickupNowRequests = courses.stream().map(c -> c.getAvRequest())//
+        List<PassengerRequest> pickupNowRequests = courses.stream().map(SharedCourse::getAvRequest) //
                 .collect(Collectors.toList());
 
         // check of roboTaxi is on last task

@@ -123,9 +123,9 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
     // ===================================================================================
     // INTERNAL Methods, do not call from derived dispatchers.
 
-    /** For {@link UniversalDispatcher}, {@link VehicleMaintainer} internal use only.
+    /** For {@link UniversalDispatcher}, {@link RoboTaxiMaintainer} internal use only.
      * Use {@link UniversalDispatcher#setRoboTaxiPickup} or
-     * {@link setRoboTaxiRebalance} from dispatchers. Assigns new destination to
+     * {@link RebalancingDispatcher#setRoboTaxiRebalance} from dispatchers. Assigns new destination to
      * vehicle, if vehicle is already located at destination, nothing happens. In
      * one pass of {@redispatch(...)} in {@VehicleMaintainer}, the function
      * setVehicleDiversion(...) may only be invoked once for a single
@@ -136,7 +136,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
      * @param destination {@link Link} the {@link RoboTaxi} should be diverted to
      * @param status {@link} the {@link RoboTaxiStatus} the {@link RoboTaxi}
      *            has after the diversion, depends if used from
-     *            {@link UniversalDispatcher#setRoboTaxiPickup} or {@link setRoboTaxiRebalance} */
+     *            {@link UniversalDispatcher#setRoboTaxiPickup} or {@link RebalancingDispatcher#setRoboTaxiRebalance} */
     final void setRoboTaxiDiversion(RoboTaxi roboTaxi, Link destination, RoboTaxiStatus status) {
         /** update {@link RoboTaxiStatus} of {@link RoboTaxi} */
         GlobalAssert.that(roboTaxi.isWithoutCustomer());
@@ -191,7 +191,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
 
     /** Function called from {@link UniversalDispatcher#executePickups} if a
      * {@link RoboTaxi} scheduled for pickup has reached the
-     * {@link PassengerRequest#pickupLink} of the {@link PassengerRequest}.
+     * {@link PassengerRequest#getFromLink} of the {@link PassengerRequest}.
      * 
      * @param roboTaxi
      * @param avRequest */
@@ -228,7 +228,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
 
     /** Function called from {@link UniversalDispatcher#executeDropoffs} if a
      * {@link RoboTaxi} scheduled for dropoff has reached the
-     * {@link PassengerRequest#dropoffLink} of the {@link PassengerRequest}.
+     * {@link PassengerRequest#getToLink} of the {@link PassengerRequest}.
      * 
      * @param roboTaxi
      * @param avRequest */
@@ -311,7 +311,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
         GlobalAssert.that(pickupRegister.size() <= pendingRequests.size());
     }
 
-    /** Consistency checks to be called by {@link RoboTaxiHandler.consistencyCheck}
+    /** Consistency checks to be called by {@link RoboTaxiMaintainer#consistencyCheck}
      * in each iteration. */
     @Override
     protected final void consistencySubCheck() {

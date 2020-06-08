@@ -19,7 +19,7 @@ import amodeus.amodeus.util.math.GlobalAssert;
     ;
 
     /** For UniversalDispatcher, VehicleMaintainer internal use only. Use
-     * {@link UniversalDispatcher#setRoboTaxiPickup} or {@link setRoboTaxiRebalance}
+     * {@link UniversalDispatcher#setRoboTaxiPickup} or {@link RebalancingDispatcher#setRoboTaxiRebalance}
      * from dispatchers. Assigns new destination to vehicle, if vehicle is already
      * located at destination, nothing happens. In one pass of {@redispatch(...)} in
      * {@VehicleMaintainer}, the function setVehicleDiversion(...) may only be
@@ -32,7 +32,7 @@ import amodeus.amodeus.util.math.GlobalAssert;
      * @param status
      *            {@link} the {@link AVStatus} the {@link RoboTaxi} has after
      *            the diversion, depends if used from {@link UniversalDispatcher#setRoboTaxiPickup} or
-     *            {@link setRoboTaxiRebalance} */
+     *            {@link RebalancingDispatcher#setRoboTaxiRebalance} */
     /* package */ static void now(RoboTaxi sRoboTaxi, Link destination, FuturePathFactory futurePathFactory, //
             double now, EventsManager eventsManager, boolean reRoute) {
         GlobalAssert.that(SharedCourseAccess.hasStarter(sRoboTaxi));

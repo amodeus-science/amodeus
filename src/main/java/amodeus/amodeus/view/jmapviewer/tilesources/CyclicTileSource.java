@@ -2,9 +2,7 @@
 package amodeus.amodeus.view.jmapviewer.tilesources;
 
 abstract class CyclicTileSource extends AbstractOsmTileSource {
-
     private final String[] SERVER;
-
     private int serverNum;
 
     /** Constructs a new {@code "Mapnik"} tile source. */
@@ -15,7 +13,7 @@ abstract class CyclicTileSource extends AbstractOsmTileSource {
 
     @Override
     public final String getBaseUrl() {
-        String url = String.format(this.baseUrl, new Object[] { SERVER[serverNum] });
+        String url = String.format(this.baseUrl, SERVER[serverNum]);
         serverNum = (serverNum + 1) % SERVER.length;
         return url;
     }

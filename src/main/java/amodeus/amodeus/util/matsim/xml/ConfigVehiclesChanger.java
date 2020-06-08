@@ -11,8 +11,9 @@ import org.matsim.core.config.ConfigWriter;
 public enum ConfigVehiclesChanger {
     ;
 
-    /** Changes the number of vehicles in the {@link Config} at @param configPath
-     * to the value @param vehicleNumber */
+    /** Changes the number of vehicles in the {@link Config} at
+     * @param configPath to the value
+     * @param vehicleNumber */
     public static void change(String configPath, int vehicleNumber) {
         File configFile = new File(configPath);
         Config config = ConfigUtils.loadConfig(configFile.toString(), new AmodeusConfigGroup());

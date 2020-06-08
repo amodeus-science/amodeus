@@ -1,4 +1,4 @@
-// code by ETHZ IDSC
+/* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package amodeus.amodeus.view.gheat;
 
 import java.awt.Graphics2D;
@@ -12,14 +12,13 @@ import ch.ethz.idsc.tensor.io.ImageFormat;
 /** in the original gheat library, these images exists as files
  * however, we can easily procedurally create these "dot" images */
 /* package */ class DotImage {
-
     final int size;
     public final BufferedImage bufferedImage;
     public final BufferedImage bufferedImageRGB;
 
     public DotImage(int zoom) {
         size = 3 * (zoom + 1);
-        double mid = (size - 1) / 2;
+        double mid = (size - 1) / 2; // TODO check integer division desired
         Tensor img = Array.zeros(size, size);
         for (int x = 0; x < size; ++x)
             for (int y = 0; y < size; ++y) {
@@ -47,5 +46,4 @@ import ch.ethz.idsc.tensor.io.ImageFormat;
         g2d.dispose();
         return img;
     }
-
 }

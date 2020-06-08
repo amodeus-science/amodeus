@@ -26,7 +26,7 @@ public abstract class RebalancingDispatcher extends UniversalDispatcher {
 
     /** Command to rebalance {@link RoboTaxi} to a certain {@link Link} destination. The {@link RoboTaxi} will appear as
      * Rebalancing in the visualizer. Can only be used for {@link RoboTaxi} which are without a customer and divertible.
-     * Function can only be invoked one time in each iteration of {@link VehicleMainatainer.redispatch}
+     * Function can only be invoked one time in each iteration of {@link RoboTaxiMaintainer#redispatch}
      * 
      * @param roboTaxi
      * @param destination */

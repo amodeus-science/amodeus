@@ -33,12 +33,12 @@ public class CompatibilityModule extends AbstractModule {
 
                 if (numberOfSeats != generatorConfig.getCapacity()) {
                     generatorConfig.setCapacity(numberOfSeats);
-                    logger.warn(String.format("Overriding 'capacity' attribute of the generator for mode '%s' with the deprecated 'numberOfSeats' attribute.",
+                    logger.warn(String.format("Overriding 'capacity' attribute of the generator for mode '%s' with the deprecated 'numberOfSeats' attribute.", //
                             operatorConfig.getMode()));
                 } else {
                     logger.warn(
-                            String.format("Your are using the deprecated 'numberOfSeats' attribute in the generator for mode. Please replace with the new 'capacity' attribute.",
-                                    operatorConfig.getMode()));
+                            String.format("Your are using the deprecated 'numberOfSeats' attribute in the generator for mode '%s'. " //
+                                            + "Please replace with the new 'capacity' attribute.", operatorConfig.getMode()));
                 }
             }
         }
@@ -69,9 +69,9 @@ public class CompatibilityModule extends AbstractModule {
             }
             if (anyWarnings)
                 throw new RuntimeException(//
-                        "Since the last update of Amodeus it is necessary that each activity in a MATSim popuatlion"
-                                + " has a coordinate and not only a link ID to determine its location. You can either modify the way"
-                                + " you generate your population or use the AddCoordinatesToActivities tool to automatically "
+                        "Since the last update of Amodeus it is necessary that each activity in a MATSim popuatlion" //
+                                + " has a coordinate and not only a link ID to determine its location. You can either modify the way" //
+                                + " you generate your population or use the AddCoordinatesToActivities tool to automatically " //
                                 + "assign to each activity the coordinate of the currently associated link.");
         }
     }

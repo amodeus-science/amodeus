@@ -18,7 +18,7 @@ import org.matsim.contrib.dvrp.fleet.ImmutableDvrpVehicleSpecification;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.gbl.MatsimRandom;
 
-/** class generates {@link AVVehicle}s and places them at a random link.
+/** class generates {@link DvrpVehicle}s and places them at a random link.
  * each link is equally likely.
  *
  * all vehicles are created in this iteration. after that, no more AVVehiles are

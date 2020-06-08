@@ -59,9 +59,8 @@ public class Analysis {
     /** returns an Instance of the Analysis Class can be called with any combination
      * of null and the respective parameter(s).
      * 
-     * @param workingDirectory
-     *            default: current working directory. Is the file where the config
-     *            file, AmodeusOptions file and the outputfolder are located
+     * @param scenarioOptions:
+     *            container for simulation settings to be used
      * @param outputDirectory:
      *            default: value stored in the Simulation Config file. Can be
      *            changed if for example an other outputfolder from the Sequential
@@ -70,6 +69,8 @@ public class Analysis {
      *            default: Network defined in the Config file. Can be used to reduce
      *            runtime if the Network was already loaded in a previous step (e.g.
      *            Scenario Server)
+     * @param db:
+     *            relation between AMoDeus and MATSim objects
      * @throws Exception */
     public static Analysis setup(ScenarioOptions scenarioOptions, File outputDirectory, //
             Network network, MatsimAmodeusDatabase db) throws Exception {
@@ -95,10 +96,9 @@ public class Analysis {
 
     /** Constructor of the Analysis Class can be called with any combination of null
      * and the respective parameter.
-     * 
-     * @param workingDirectory
-     *            default: current working directory. Is the file where the config
-     *            file, AmodeusOptions file and the outputfolder are located
+     *
+     * @param scenarioOptions:
+     *            container for simulation settings to be used
      * @param outputDirectory:
      *            default: value stored in the Simulation Config file. Can be
      *            changed if for example an other outputfolder from the Sequential
@@ -107,8 +107,9 @@ public class Analysis {
      *            default: Network defined in the Config file. Can be used to reduce
      *            runtime if the Network was already loaded in a previous step (e.g.
      *            Scenario Server)
+     * @param db:
+     *            relation between AMoDeus and MATSim objects
      * @throws Exception */
-
     private Analysis(ScenarioOptions scenarioOptions, File outputDirectory, //
             Network network, MatsimAmodeusDatabase db) throws Exception {
         if (Objects.isNull(scenarioOptions))

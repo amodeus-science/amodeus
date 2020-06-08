@@ -3,6 +3,5 @@ package amodeus.amodeus.dispatcher.core;
 
 /* package */ enum RoboTaxiUsageType {
     SHARED, //
-    SINGLEUSED, //
-    ;
+    SINGLEUSED;
 }

@@ -10,6 +10,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
 
 public enum Duration {
     ;
+
     /** @return {@link Scalar} duration of interval [@param ldt1, @param ldt2] in [s]
      * @throws Exception */
     public static Scalar between(LocalDateTime ldt1, LocalDateTime ldt2) throws Exception {

@@ -6,6 +6,7 @@ import java.util.List;
 
 /* package */ enum RebalancePlanGenerator {
     ;
+
     /** RebalancingPlanGenerator.of will generate a list of RebalanceTripWithVehicle. It intakes listOfAllRebalanceTripWithVehicle. The
      * way we assign the re-balancing vehicle is according to the paper (see the dispatcher). We do not use LP since we have found other
      * way to reach the same goal. */

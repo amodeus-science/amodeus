@@ -11,6 +11,7 @@ import amodeus.amodeus.dispatcher.core.RoboTaxi;
 
 /* package */ enum RebalanceExplorer {
     ;
+
     /** the of function in RebalanceExplorer intakes unassigned vehicle and idling taxi, and generate a list of RebalanceTripWithVehicle.
      * It is similar to TripExploerer.of but for different purpose and much simpler. */
     public static List<RebalanceTripWithVehicle> of( //

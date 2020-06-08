@@ -6,6 +6,5 @@ package amodeus.amodeus.dispatcher.shared;
 public enum SharedMealType {
     PICKUP, //
     DROPOFF, //
-    REDIRECT, //
-    ;
+    REDIRECT;
 }

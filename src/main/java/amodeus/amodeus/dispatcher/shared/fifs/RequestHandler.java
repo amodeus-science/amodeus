@@ -23,9 +23,9 @@ import amodeus.amodeus.routing.NetworkTimeDistInterface;
     /** Structure for the Track of Wait times and so on */
     private final Map<PassengerRequest, RequestWrap> requests = new HashMap<>();
     /** unnassigned Requests Sorted in a Navigable Map such that the earliest Request can be found easily */
-    private final TreeMultipleItems<PassengerRequest> unassignedRequests = new TreeMultipleItems<>(r -> r.getSubmissionTime());
+    private final TreeMultipleItems<PassengerRequest> unassignedRequests = new TreeMultipleItems<>(PassengerRequest::getSubmissionTime);
     /** All requests submitted in the last hour. This is used for the Rebalancing. */
-    private final TreeMultipleItems<PassengerRequest> requestsLastHour = new TreeMultipleItems<>(r -> r.getSubmissionTime());
+    private final TreeMultipleItems<PassengerRequest> requestsLastHour = new TreeMultipleItems<>(PassengerRequest::getSubmissionTime);
     /** All the drive Times for each requests if this request would be served directely with a unit capacity robo taxi */
     private final Map<PassengerRequest, Double> driveTimesSingle = new HashMap<>();
     /** All the effective Pickupe Times for each Requests. needed for the Constraints */

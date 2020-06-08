@@ -12,6 +12,7 @@ import ch.ethz.idsc.tensor.opt.ScalarTensorFunction;
 
 /* package */ enum StaticHelper {
     ;
+
     private static final int SIZE = 256;
 
     public static ColorDataIndexed forward(ScalarTensorFunction colorDataGradient) {

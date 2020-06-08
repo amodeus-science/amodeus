@@ -24,11 +24,9 @@ public class AnalysisSummary implements Serializable {
     private final TravelTimeAnalysis travelTimeAnalysis = new TravelTimeAnalysis();
     private final NumberPassengersAnalysis numberPassengersAnalysis;
 
-    /** @param numVehicles - number of vehicles
-     * @param size - not used as of now
+    /** @param vehicleIndices - indices of all vehicles in the fleet
      * @param db - amodeus database, default analysis elements will be computed based on the snapshot information therein
-     * @param scenarioOptions - scenario options
-     * @throws IOException */
+     * @param scenarioOptions - scenario options */
     public AnalysisSummary(Set<Integer> vehicleIndices, MatsimAmodeusDatabase db, ScenarioOptions scenarioOptions) {
         Objects.requireNonNull(db);
         reqInfoElement = new RequestRobotaxiInformationElement();

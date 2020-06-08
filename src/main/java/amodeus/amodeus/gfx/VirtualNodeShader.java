@@ -8,8 +8,7 @@ package amodeus.amodeus.gfx;
     MeanRequestDistance, //
     MeanRequestWaiting, //
     MedianRequestWaiting, //
-    MaxRequestWaiting, //
-    ;
+    MaxRequestWaiting;
 
     public boolean renderBoundary() {
         return !equals(None);

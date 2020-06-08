@@ -32,7 +32,7 @@ import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.Floor;
 import ch.ethz.idsc.tensor.sca.Sign;
 
-/** class generates {@link AVVehicle}s. It takes the required minimal initial vehicle numbers from
+/** class generates {@link DvrpVehicle}s. It takes the required minimal initial vehicle numbers from
  * {@link TravelData}. In each virtual station it places the required number of vehicles.
  * Within the virtual station a random link is chosen as initial destination.
  * If the minimal required vehicle numbers are reached,

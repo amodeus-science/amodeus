@@ -10,6 +10,7 @@ import amodeus.amodeus.dispatcher.core.RoboTaxi;
 
 /* package */ enum RunILP {
     ;
+
     public static List<Double> of(List<TripWithVehicle> grossListOfRTVEdges, List<PassengerRequest> openRequestList, //
             List<RoboTaxi> listOfRoboTaxiWithValidTrip, double costOfIgnoredReuqestNormal, //
             double costOfIgnoredReuqestHigh, Set<PassengerRequest> requestMatchedLastStep) {
