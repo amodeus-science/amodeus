@@ -1,6 +1,6 @@
 # amodeus.amodeus <a href="https://travis-ci.org/amodeus-science/amodeus"><img src="https://travis-ci.org/amodeus-science/amodeus.svg?branch=master" alt="Build Status"></a>
 
-Autonomous mobility-on-demand simulation library, version `1.9.3`
+Autonomous mobility-on-demand simulation library, version `2.0.0`
 
 ## Admins
 
@@ -71,7 +71,7 @@ Specify `repository` and `dependency` of the amodeus library in the `pom.xml` fi
 <repositories>
   <repository>
     <id>amodeus-mvn-repo</id>
-    <url>https://raw.github.com/idsc-frazzoli/amodeus/mvn-repo/</url>
+    <url>https://raw.github.com/amodeus-science/amodeus/mvn-repo/</url>
     <snapshots>
       <enabled>true</enabled>
       <updatePolicy>always</updatePolicy>
@@ -83,7 +83,7 @@ Specify `repository` and `dependency` of the amodeus library in the `pom.xml` fi
   <dependency>
     <groupId>ch.ethz.idsc</groupId>
     <artifactId>amodeus</artifactId>
-    <version>1.9.3</version>
+    <version>2.0.0</version>
   </dependency>
 </dependencies>
 ```
