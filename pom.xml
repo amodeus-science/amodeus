@@ -12,7 +12,7 @@
 		<skipTests>false</skipTests>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<github.global.server>github</github.global.server>
-		<matsim.version>12.0-2020w21-SNAPSHOT</matsim.version>
+		<matsim.version>12.0</matsim.version>
 	</properties>
 
 	<dependencies>
@@ -88,6 +88,10 @@
 		<repository>
 			<id>matsim-snapshot</id>
 			<url>https://oss.jfrog.org/libs-snapshot</url>
+		</repository>
+		<repository>
+			<id>matsim-release</id>
+			<url>https://dl.bintray.com/matsim/matsim</url>
 		</repository>
 	</repositories>
 
