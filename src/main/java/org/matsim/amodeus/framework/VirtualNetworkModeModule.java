@@ -20,16 +20,16 @@ import org.matsim.core.config.ConfigGroup;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
 
-import ch.ethz.idsc.amodeus.options.ScenarioOptions;
-import ch.ethz.idsc.amodeus.prep.VirtualNetworkPreparer;
-import ch.ethz.idsc.amodeus.traveldata.StaticTravelData;
-import ch.ethz.idsc.amodeus.traveldata.StaticTravelDataCreator;
-import ch.ethz.idsc.amodeus.traveldata.TravelData;
-import ch.ethz.idsc.amodeus.traveldata.TravelDataGet;
-import ch.ethz.idsc.amodeus.traveldata.TravelDataIO;
-import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetwork;
-import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkGet;
-import ch.ethz.idsc.amodeus.virtualnetwork.core.VirtualNetworkIO;
+import amodeus.amodeus.options.ScenarioOptions;
+import amodeus.amodeus.prep.VirtualNetworkPreparer;
+import amodeus.amodeus.traveldata.StaticTravelData;
+import amodeus.amodeus.traveldata.StaticTravelDataCreator;
+import amodeus.amodeus.traveldata.TravelData;
+import amodeus.amodeus.traveldata.TravelDataGet;
+import amodeus.amodeus.traveldata.TravelDataIO;
+import amodeus.amodeus.virtualnetwork.core.VirtualNetwork;
+import amodeus.amodeus.virtualnetwork.core.VirtualNetworkGet;
+import amodeus.amodeus.virtualnetwork.core.VirtualNetworkIO;
 
 /** provides the {@link VirtualNetwork} and {@link TravelData} and therefore {@link VirtualNetworkPreparer} has to be run in the Preparer */
 public class VirtualNetworkModeModule extends AbstractDvrpModeModule {

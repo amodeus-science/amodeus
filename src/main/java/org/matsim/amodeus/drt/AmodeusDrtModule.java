@@ -21,10 +21,10 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 
-import ch.ethz.idsc.amodeus.data.ReferenceFrame;
-import ch.ethz.idsc.amodeus.net.MatsimAmodeusDatabase;
-import ch.ethz.idsc.amodeus.options.ScenarioOptions;
-import ch.ethz.idsc.amodeus.options.ScenarioOptionsBase;
+import amodeus.amodeus.data.ReferenceFrame;
+import amodeus.amodeus.net.MatsimAmodeusDatabase;
+import amodeus.amodeus.options.ScenarioOptions;
+import amodeus.amodeus.options.ScenarioOptionsBase;
 
 public class AmodeusDrtModule extends AbstractDvrpModeModule {
     private final AmodeusModeConfig config;
