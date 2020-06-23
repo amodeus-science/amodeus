@@ -81,7 +81,7 @@ Specify `repository` and `dependency` of the amodeus library in the `pom.xml` fi
 
 <dependencies>
   <dependency>
-    <groupId>ch.ethz.idsc</groupId>
+    <groupId>amodeus</groupId>
     <artifactId>amodeus</artifactId>
     <version>2.0.0</version>
   </dependency>
