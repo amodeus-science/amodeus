@@ -207,9 +207,7 @@ public final class RoboTaxi {
         if (avT instanceof AmodeusStayTask) {
             // TODO @ChengQi For now, this works, but probably needs fixing somewhere upfront
             // /sh, apr 2018
-            if (!usageType.equals(RoboTaxiUsageType.SHARED)) { // for shared this is allowed e.g. when a new course is
-                                                               // added but the it has not been executed
-                                                               // yet
+            if (!usageType.equals(RoboTaxiUsageType.SHARED)) { // for shared this is allowed e.g. when a new course is added but it has not been executed yet
                 LOGGER.warn("RoboTaxiStatus != STAY, but Schedule.getCurrentTask() == AVStayTask; probably needs fixing");
                 System.out.println("status: " + status);
             }
@@ -217,11 +215,9 @@ public final class RoboTaxi {
         }
 
         // Added cases when on pickup and dropoff task For shared taxis
-        if (avT instanceof AmodeusDriveTask) {
-            AmodeusDriveTask avDT = (AmodeusDriveTask) avT;
+        if (avT instanceof AmodeusDriveTask)
             // TODO @clruch seems it is different to the same function in AmodeusDriveTaskTracker
-            return avDT.getPath().getLinkCount() != 1;
-        }
+            return ((AmodeusDriveTask) avT).getPath().getLinkCount() != 1;
         if (avT instanceof AmodeusPickupTask || avT instanceof AmodeusDropoffTask)
             return false;
         throw new IllegalArgumentException("Found Unknown type of AVTASK !!");
@@ -325,9 +321,8 @@ public final class RoboTaxi {
      * @param menu */
     private final void setMenu(SharedMenu menu) {
         GlobalAssert.that(Compatibility.of(menu.getCourseList()).forCapacity(getCapacity()));
-        if (dropoffInProgress) {
+        if (dropoffInProgress)
             GlobalAssert.that(this.menu.getCourseList().get(0).equals(menu.getCourseList().get(0)));
-        }
         this.menu = menu;
         this.status = SharedRoboTaxiUtils.calculateStatusFromMenu(this);
     }
@@ -418,5 +413,4 @@ public final class RoboTaxi {
         setMenu(SharedMenu.empty());
         return oldMenu;
     }
-
 }

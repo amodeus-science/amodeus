@@ -6,7 +6,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
+import amodeus.amodeus.net.TensorCoords;
 import org.matsim.amodeus.components.AmodeusDispatcher;
 import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
@@ -31,19 +33,17 @@ import amodeus.amodeus.util.math.GlobalAssert;
 import amodeus.amodeus.util.matsim.SafeConfig;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.opt.Pi;
 
-/** this is a first Shared Dispacher.
+/** this is a first Shared Dispatcher.
  * 
- * It extends the {@link DemandSupplyBalancingDispatcher}. At each pickup it is checked if around this Robotaxi there exist other
- * Open requests with the same direction. Those are then picked up. */
+ * It extends the {@link DemandSupplyBalancingDispatcher}. At each pickup, it is checked if around this Robotaxi there exist other
+ * open requests with the same direction. Those are then picked up. */
 public class ExtDemandSupplyBeamSharing extends SharedRebalancingDispatcher {
-
     private final int dispatchPeriod;
 
     /** ride sharing parameters */
-    /** the sharing period says every how many seconds the dispatcher should chekc if new pickups occured */
+    /** the sharing period says every how many seconds the dispatcher should check if new pickups occurred */
     private final int sharingPeriod; // [s]
     private final BeamExtensionForSharing beamExtensionForSharing;
     /** the maximal angle between the two directions which is allowed that sharing occurs */
@@ -77,22 +77,17 @@ public class ExtDemandSupplyBeamSharing extends SharedRebalancingDispatcher {
             // STANDARD DEMAND SUPPLY IMPLEMENTATION
             /** get open requests and available vehicles */
             Collection<RoboTaxi> robotaxisDivertable = getDivertableUnassignedRoboTaxis();
-            robotaxisDivertable.stream().forEach(rt -> unassignedRoboTaxis.add(rt));
+            robotaxisDivertable.forEach(unassignedRoboTaxis::add);
 
             List<PassengerRequest> requests = getUnassignedPassengerRequests();
-            requests.stream().forEach(r -> requestMaintainer.add(r));
-
-            /** distinguish over- and undersupply cases */
-            boolean oversupply = false;
-            if (unassignedRoboTaxis.size() >= requests.size())
-                oversupply = true;
+            requests.forEach(requestMaintainer::add);
 
             if (unassignedRoboTaxis.size() > 0 && requests.size() > 0) {
                 /** oversupply case */
-                if (oversupply)
+                if (unassignedRoboTaxis.size() >= requests.size())
                     for (PassengerRequest avr : requests) {
                         RoboTaxi closest = unassignedRoboTaxis.getClosest(getLocation(avr));
-                        if (closest != null) {
+                        if (Objects.nonNull(closest)) {
                             addSharedRoboTaxiPickup(closest, avr);
                             unassignedRoboTaxis.remove(closest);
                             requestMaintainer.remove(avr);
@@ -102,7 +97,7 @@ public class ExtDemandSupplyBeamSharing extends SharedRebalancingDispatcher {
                 else
                     for (RoboTaxi roboTaxi : robotaxisDivertable) {
                         PassengerRequest closest = requestMaintainer.getClosest(getRoboTaxiLoc(roboTaxi));
-                        if (closest != null) {
+                        if (Objects.nonNull(closest)) {
                             addSharedRoboTaxiPickup(roboTaxi, closest);
                             unassignedRoboTaxis.remove(roboTaxi);
                             requestMaintainer.remove(closest);
@@ -114,9 +109,8 @@ public class ExtDemandSupplyBeamSharing extends SharedRebalancingDispatcher {
             Collection<RoboTaxi> unassignedRoboTaxisNow = new HashSet<>(unassignedRoboTaxis.getValues());
 
             for (RoboTaxi roboTaxi : unassignedRoboTaxisNow)
-                if (!roboTaxi.getStatus().equals(RoboTaxiStatus.STAY))
-                    if (unassignedRoboTaxis.contains(roboTaxi))
-                        unassignedRoboTaxis.remove(roboTaxi);
+                if (!roboTaxi.getStatus().equals(RoboTaxiStatus.STAY) && unassignedRoboTaxis.contains(roboTaxi))
+                    unassignedRoboTaxis.remove(roboTaxi);
         }
 
         // ADDITIONAL SHARING POSSIBILITY AT EACH PICKUP
@@ -125,8 +119,7 @@ public class ExtDemandSupplyBeamSharing extends SharedRebalancingDispatcher {
             Map<PassengerRequest, RoboTaxi> addedRequests = beamExtensionForSharing.findAssignementAndExecute(getRoboTaxis(), getPassengerRequests(), this);
             for (Entry<PassengerRequest, RoboTaxi> entry : addedRequests.entrySet()) {
                 GlobalAssert.that(!unassignedRoboTaxis.contains(entry.getValue()));
-                /** a avRequest is not contained in the requestMaintainer if the request was already assigned before. in that case a removal is not
-                 * needed */
+                /** a avRequest is not contained in the requestMaintainer if the request was already assigned before. in that case a removal is not needed */
                 if (requestMaintainer.contains(entry.getKey()))
                     requestMaintainer.remove(entry.getKey());
             }
@@ -136,15 +129,13 @@ public class ExtDemandSupplyBeamSharing extends SharedRebalancingDispatcher {
     /** @param request
      * @return {@link Coord} with {@link PassengerRequest} location */
     /* package */ Tensor getLocation(PassengerRequest request) {
-        Coord coord = request.getFromLink().getFromNode().getCoord();
-        return Tensors.vector(coord.getX(), coord.getY());
+        return TensorCoords.toTensor(request.getFromLink().getFromNode().getCoord());
     }
 
     /** @param roboTaxi
      * @return {@link Coord} with {@link RoboTaxi} location */
     /* package */ Tensor getRoboTaxiLoc(RoboTaxi roboTaxi) {
-        Coord coord = roboTaxi.getDivertableLocation().getCoord();
-        return Tensors.vector(coord.getX(), coord.getY());
+        return TensorCoords.toTensor(roboTaxi.getDivertableLocation().getCoord());
     }
 
     public static class Factory implements AVDispatcherFactory {
