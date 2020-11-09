@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import amodeus.amodeus.net.TensorCoords;
 import org.matsim.amodeus.components.AmodeusDispatcher;
 import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
@@ -33,7 +34,6 @@ import amodeus.amodeus.parking.strategies.ParkingStrategy;
 import amodeus.amodeus.util.matsim.SafeConfig;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.opt.Pi;
 
 /** This dispatcher takes the Parking Situation into Account.
@@ -158,15 +158,13 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
     /** @param request
      * @return {@link Coord} with {@link PassengerRequest} location */
     /* package */ Tensor getLocation(PassengerRequest request) {
-        Coord coord = request.getFromLink().getFromNode().getCoord();
-        return Tensors.vector(coord.getX(), coord.getY());
+        return TensorCoords.toTensor(request.getFromLink().getFromNode().getCoord());
     }
 
     /** @param roboTaxi
      * @return {@link Coord} with {@link RoboTaxi} location */
     /* package */ Tensor getRoboTaxiLoc(RoboTaxi roboTaxi) {
-        Coord coord = roboTaxi.getDivertableLocation().getCoord();
-        return Tensors.vector(coord.getX(), coord.getY());
+        return TensorCoords.toTensor(roboTaxi.getDivertableLocation().getCoord());
     }
 
     public static class Factory implements AVDispatcherFactory {
@@ -185,8 +183,8 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
             ParkingStrategy parkingStrategy = inject.get(ParkingStrategy.class);
             ParkingCapacity avSpatialCapacityAmodeus = inject.get(ParkingCapacity.class);
 
-            return new RestrictedLinkCapacityDispatcher(network, config, operatorConfig, travelTime, router, eventsManager, db, Objects.requireNonNull(parkingStrategy),
-                    Objects.requireNonNull(avSpatialCapacityAmodeus));
+            return new RestrictedLinkCapacityDispatcher(network, config, operatorConfig, travelTime, router, eventsManager, db, //
+                    Objects.requireNonNull(parkingStrategy), Objects.requireNonNull(avSpatialCapacityAmodeus));
         }
     }
 }
