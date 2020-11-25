@@ -55,7 +55,7 @@ public class AmodeusPickupActivity extends FirstLastSimStepDynActivity implement
     }
 
     private boolean tryPerformPickup(PassengerRequest request, double now) {
-        if (passengerEngine.pickUpPassenger(this, driver, request, now)) {
+        if (passengerEngine.tryPickUpPassenger(this, driver, request, now)) {
             insidePassengers++;
             passengerEndTime = Math.max(passengerEndTime, now) + durationPerPassenger;
             return true;

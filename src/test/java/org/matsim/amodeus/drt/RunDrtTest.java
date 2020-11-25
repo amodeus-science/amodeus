@@ -23,6 +23,7 @@ import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.drt.optimizer.insertion.ExtensiveInsertionSearchParams;
 import org.matsim.contrib.drt.routing.DrtRoute;
 import org.matsim.contrib.drt.routing.DrtRouteFactory;
 import org.matsim.contrib.drt.run.DrtConfigGroup;
@@ -98,6 +99,9 @@ public class RunDrtTest {
         drtModeConfig.setStopDuration(60);
         drtModeConfig.setRejectRequestIfMaxWaitOrTravelTimeViolated(true);
         drtModeConfig.setOperationalScheme(OperationalScheme.door2door);
+        
+        ExtensiveInsertionSearchParams searchParams = new ExtensiveInsertionSearchParams();
+        drtModeConfig.addParameterSet(searchParams);
 
         MultiModeDrtConfigGroup drtConfig = MultiModeDrtConfigGroup.get(config);
         drtConfig.addParameterSet(drtModeConfig);
