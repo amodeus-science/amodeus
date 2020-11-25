@@ -3,8 +3,9 @@ package amodeus.amodeus.dispatcher.core;
 
 import java.util.Objects;
 
-import org.matsim.amodeus.dvrp.schedule.AmodeusDropoffTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask.StopType;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
@@ -44,12 +45,13 @@ import amodeus.amodeus.util.math.GlobalAssert;
         if (endTimeNextTask < scheduleEndTime) {
             avStayTask.setEndTime(getTimeNow); // finish the last task now
 
-            AmodeusDropoffTask dropoffTaks = new AmodeusDropoffTask( //
+            AmodeusStopTask dropoffTaks = new AmodeusStopTask( //
                     getTimeNow, // start of dropoff
                     getTimeNow + dropoffDurationPerStop, // end of dropoff
-                    currentRequest.getToLink() // location of dropoff
+                    currentRequest.getToLink(), // location of dropoff
+                    StopType.Dropoff
             );
-            dropoffTaks.addRequest(currentRequest);
+            dropoffTaks.addDropoffRequest(currentRequest);
             schedule.addTask(dropoffTaks);
 
             Link destLink = avStayTask.getLink();

@@ -4,9 +4,8 @@ package amodeus.amodeus.dispatcher.core;
 import java.util.Objects;
 
 import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusDropoffTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusPickupTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Task;
@@ -35,13 +34,8 @@ import org.matsim.contrib.dvrp.util.LinkTimePair;
     }
 
     @Override
-    public void handle(AmodeusPickupTask avPickupTask) {
-        link = avPickupTask.getLink();
-    }
-
-    @Override
-    public void handle(AmodeusDropoffTask avDropoffTask) {
-        link = avDropoffTask.getLink();
+    public void handle(AmodeusStopTask avStopTask) {
+        link = avStopTask.getLink();
     }
 
     @Override

@@ -1,8 +1,9 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package amodeus.amodeus.dispatcher.core;
 
-import org.matsim.amodeus.dvrp.schedule.AmodeusPickupTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask.StopType;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
@@ -28,12 +29,13 @@ import amodeus.amodeus.util.math.GlobalAssert;
         if (endTaskTime < scheduleEndTime) {
             avStayTask.setEndTime(getTimeNow); // finish the last task now
 
-            AmodeusPickupTask pickupTask = new AmodeusPickupTask( //
+            AmodeusStopTask pickupTask = new AmodeusStopTask( //
                     getTimeNow, // start of pickup
                     endTaskTime, // end of pickup
                     avRequest.getFromLink(), // location of driving start
-                    0.0);
-            pickupTask.addRequest(avRequest); // serving only one request at a time
+                    StopType.Pickup
+                    );
+            pickupTask.addPickupRequest(avRequest); // serving only one request at a time
             schedule.addTask(pickupTask);
 
             ScheduleUtils.makeWhole(roboTaxi, endTaskTime, scheduleEndTime, avRequest.getFromLink());

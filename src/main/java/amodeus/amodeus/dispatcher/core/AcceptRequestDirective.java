@@ -4,9 +4,9 @@ package amodeus.amodeus.dispatcher.core;
 import java.util.Arrays;
 
 import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusDropoffTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusPickupTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask.StopType;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.schedule.Schedule;
@@ -44,12 +44,13 @@ import amodeus.amodeus.util.math.GlobalAssert;
         if (endDropoffTime < scheduleEndTime) {
             avStayTask.setEndTime(getTimeNow); // finish the last task now
 
-            AmodeusPickupTask pickupTask = new AmodeusPickupTask( //
+            AmodeusStopTask pickupTask = new AmodeusStopTask( //
                     getTimeNow, // start of pickup
                     futurePathContainer.getStartTime(), // end of pickup
                     avRequest.getFromLink(), // location of driving start
-                    0.0);
-            pickupTask.addRequest(avRequest); // serving only one request at a time
+                    StopType.Pickup
+                    );
+            pickupTask.addPickupRequest(avRequest); // serving only one request at a time
             schedule.addTask(pickupTask);
 
             schedule.addTask(new AmodeusDriveTask( //
@@ -57,12 +58,13 @@ import amodeus.amodeus.util.math.GlobalAssert;
 
             // final double endDropoffTime =
             // vrpPathWithTravelData.getArrivalTime() + dropoffDurationPerStop;
-            AmodeusDropoffTask dropoffTask = new AmodeusDropoffTask( //
+            AmodeusStopTask dropoffTask = new AmodeusStopTask( //
                     begDropoffTime, // start of dropoff
                     endDropoffTime, // end of dropoff
-                    avRequest.getToLink() // location of dropoff
+                    avRequest.getToLink(), // location of dropoff
+                    StopType.Dropoff
             );
-            dropoffTask.addRequest(avRequest);
+            dropoffTask.addDropoffRequest(avRequest);
             schedule.addTask(dropoffTask);
 
             ScheduleUtils.makeWhole(roboTaxi, endDropoffTime, scheduleEndTime, avRequest.getToLink());

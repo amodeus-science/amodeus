@@ -3,7 +3,7 @@ package org.matsim.amodeus.dvrp;
 import org.matsim.amodeus.components.AmodeusDispatcher;
 import org.matsim.amodeus.dvrp.request.AmodeusRequest;
 import org.matsim.amodeus.dvrp.request.AmodeusRequestEvent;
-import org.matsim.amodeus.dvrp.schedule.AmodeusTaskType;
+import org.matsim.amodeus.dvrp.schedule.AmodeusTaskTypes;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.optimizer.Request;
@@ -53,7 +53,7 @@ public class AmodeusOptimizer implements VrpOptimizer, OnlineTrackerListener, Mo
     private void ensureNonFinishingSchedule(Schedule schedule) {
         Task lastTask = Schedules.getLastTask(schedule);
 
-        if (!lastTask.getTaskType().equals(AmodeusTaskType.STAY)) {
+        if (!lastTask.getTaskType().equals(AmodeusTaskTypes.STAY)) {
             throw new IllegalStateException("An Amodeus schedule should always end with a STAY task");
         }
 
@@ -78,7 +78,7 @@ public class AmodeusOptimizer implements VrpOptimizer, OnlineTrackerListener, Mo
         for (int index = nextTask.getTaskIdx(); index < schedule.getTaskCount(); index++) {
             Task task = schedule.getTasks().get(index);
 
-            if (task.getTaskType().equals(AmodeusTaskType.STAY)) {
+            if (task.getTaskType().equals(AmodeusTaskTypes.STAY)) {
                 // Stay tasks should always end when planned (e.g. pre-planned trips)
                 task.setEndTime(Math.max(task.getEndTime(), startTime));
             } else {

@@ -2,9 +2,8 @@
 package amodeus.amodeus.dispatcher.core;
 
 import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusDropoffTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusPickupTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Task;
@@ -82,17 +81,29 @@ import amodeus.amodeus.util.math.GlobalAssert;
                     }
                 }
             }
-
+            
             @Override
-            public void handle(AmodeusPickupTask avPickupTask) {
+            public void handle(AmodeusStopTask avStopTask) {
+                switch (avStopTask.getStopType()) {
+                case Dropoff:
+                    handleDropoff(avStopTask);
+                    break;
+                case Pickup:
+                    handlePickup(avStopTask);
+                    break;
+                default:
+                    throw new IllegalStateException();
+                }
+            }
+
+            private void handlePickup(AmodeusStopTask avPickupTask) {
                 GlobalAssert.that(SharedCourseAccess.hasStarter(sRoboTaxi));
                 Link nextLink = SharedRoboTaxiUtils.getStarterLink(sRoboTaxi);
                 GlobalAssert.that(nextLink == destination);
                 handlePickupAndDropoff(sRoboTaxi, task, nextLink, now);
             }
 
-            @Override
-            public void handle(AmodeusDropoffTask dropOffTask) {
+            private void handleDropoff(AmodeusStopTask dropOffTask) {
                 GlobalAssert.that(SharedCourseAccess.hasStarter(sRoboTaxi));
                 // THIS Would mean the dropoffs of this time Step did not take place. And thus the menu still has dropof
                 // as next course (in dropof case)

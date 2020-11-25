@@ -6,9 +6,8 @@ import java.util.Objects;
 
 import org.apache.log4j.Logger;
 import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusDropoffTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusPickupTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
@@ -218,7 +217,7 @@ public final class RoboTaxi {
         if (avT instanceof AmodeusDriveTask)
             // TODO @clruch seems it is different to the same function in AmodeusDriveTaskTracker
             return ((AmodeusDriveTask) avT).getPath().getLinkCount() != 1;
-        if (avT instanceof AmodeusPickupTask || avT instanceof AmodeusDropoffTask)
+        if (avT instanceof AmodeusStopTask)
             return false;
         throw new IllegalArgumentException("Found Unknown type of AVTASK !!");
     }
@@ -384,6 +383,10 @@ public final class RoboTaxi {
     /* package */ void startDropoff() {
         checkAbilityToDropOff();
         dropoffInProgress = true;
+    }
+    
+    public boolean isDroppingOff() {
+        return dropoffInProgress;
     }
 
     /* package */ void finishRedirection() {

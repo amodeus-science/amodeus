@@ -3,8 +3,9 @@ package amodeus.amodeus.dispatcher.core;
 
 import java.util.List;
 
-import org.matsim.amodeus.dvrp.schedule.AmodeusPickupTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask.StopType;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.schedule.Schedule;
@@ -41,12 +42,13 @@ import amodeus.amodeus.util.math.GlobalAssert;
         if (endTaskTime < scheduleEndTime) {
             avStayTask.setEndTime(getTimeNow); // finish the last task now
 
-            AmodeusPickupTask pickupTask = new AmodeusPickupTask( //
+            AmodeusStopTask pickupTask = new AmodeusStopTask( //
                     getTimeNow, // start of pickup
                     futurePathContainer.getStartTime(), // end of pickup
                     sameOriginRequests.get(0).getFromLink(), // location of driving start
-                    0.0);
-            sameOriginRequests.forEach(pickupTask::addRequest);
+                    StopType.Pickup
+                    );
+            sameOriginRequests.forEach(pickupTask::addPickupRequest);
             schedule.addTask(pickupTask);
 
             GlobalAssert.that(futurePathContainer.getStartTime() < scheduleEndTime);

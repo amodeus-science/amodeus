@@ -2,14 +2,11 @@
 package amodeus.amodeus.dispatcher.core;
 
 import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusDropoffTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusPickupTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
 
 /* package */ interface RoboTaxiTaskListener {
-    void handle(AmodeusPickupTask avPickupTask);
-
-    void handle(AmodeusDropoffTask avDropoffTask);
+    void handle(AmodeusStopTask avStopTask);
 
     void handle(AmodeusDriveTask avDriveTask);
 

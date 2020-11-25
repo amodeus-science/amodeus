@@ -16,12 +16,12 @@ import org.matsim.amodeus.components.AmodeusDispatcher;
 import org.matsim.amodeus.components.AmodeusGenerator;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusDropoffTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusPickupTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
 import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
+import org.matsim.contrib.dvrp.passenger.PassengerRequestScheduledEvent;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.contrib.dvrp.tracker.OnlineDriveTaskTracker;
@@ -127,6 +127,8 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
         roboTaxi.addPassengerRequestToMenu(avRequest);
         GlobalAssert.that(SharedCourseUtil.getUniquePassengerRequests(roboTaxi.getUnmodifiableViewOfCourses()).contains(avRequest));
         reqStatuses.put(avRequest, RequestStatus.ASSIGNED);
+        
+        eventsManager.processEvent(new PassengerRequestScheduledEvent(getTimeNow(), mode, avRequest.getId(), avRequest.getPassengerId(), roboTaxi.getId(), 0.0, 0.0));
     }
 
     /** Function to abort an assignment of a request to a roboTaxi.
@@ -403,12 +405,7 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
                 }
 
                 @Override
-                public void handle(AmodeusPickupTask avPickupTask) {
-                    GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
-                }
-
-                @Override
-                public void handle(AmodeusDropoffTask avDropOffTask) {
+                public void handle(AmodeusStopTask avStopTask) {
                     GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
                 }
 

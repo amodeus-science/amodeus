@@ -6,9 +6,9 @@ import java.util.Queue;
 import org.matsim.amodeus.components.dispatcher.multi_od_heuristic.aggregation.AggregatedRequest;
 import org.matsim.amodeus.config.modal.TimingConfig;
 import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusDropoffTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusPickupTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask.StopType;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
@@ -126,13 +126,12 @@ public class SerialAggregateRideAppender implements AggregateRideAppender {
                 currentTime = path.getArrivalTime();
             }
 
-            if (currentTask instanceof AmodeusPickupTask) {
-                ((AmodeusPickupTask) currentTask).addRequest(pickup);
+            if (currentTask instanceof AmodeusStopTask) {
+                ((AmodeusStopTask) currentTask).addPickupRequest(pickup);
                 currentRequests.add(pickup);
             } else {
-                AmodeusPickupTask pickupTask = new AmodeusPickupTask(currentTime, currentTime + timing.getMinimumPickupDurationPerStop(), pickup.getFromLink(),
-                        Double.NEGATIVE_INFINITY);
-                pickupTask.addRequest(pickup);
+                AmodeusStopTask pickupTask = new AmodeusStopTask(currentTime, currentTime + timing.getMinimumPickupDurationPerStop(), pickup.getFromLink(), StopType.Pickup);
+                pickupTask.addPickupRequest(pickup);
 
                 schedule.addTask(pickupTask);
                 currentTask = pickupTask;
@@ -155,13 +154,13 @@ public class SerialAggregateRideAppender implements AggregateRideAppender {
                 currentTime = path.getArrivalTime();
             }
 
-            if (currentTask instanceof AmodeusDropoffTask) {
-                ((AmodeusDropoffTask) currentTask).addRequest(dropoff);
+            if (currentTask instanceof AmodeusStopTask) {
+                ((AmodeusStopTask) currentTask).addDropoffRequest(dropoff);
                 currentRequests.remove(dropoff);
                 // System.err.println("Request added to dropoff");
             } else {
-                AmodeusDropoffTask dropoffTask = new AmodeusDropoffTask(currentTime, currentTime + timing.getMinimumDropoffDurationPerStop(), dropoff.getToLink());
-                dropoffTask.addRequest(dropoff);
+                AmodeusStopTask dropoffTask = new AmodeusStopTask(currentTime, currentTime + timing.getMinimumDropoffDurationPerStop(), dropoff.getToLink(), StopType.Dropoff);
+                dropoffTask.addDropoffRequest(dropoff);
 
                 schedule.addTask(dropoffTask);
                 currentTask = dropoffTask;

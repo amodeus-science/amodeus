@@ -12,7 +12,7 @@ public class AmodeusDriveTask extends DriveTask {
     private final Set<PassengerRequest> requests = new HashSet<>();
 
     public AmodeusDriveTask(VrpPathWithTravelData path) {
-        super(AmodeusTaskType.DRIVE, path);
+        super(AmodeusTaskTypes.DRIVE, path);
     }
 
     public AmodeusDriveTask(VrpPathWithTravelData path, Collection<PassengerRequest> requests) {

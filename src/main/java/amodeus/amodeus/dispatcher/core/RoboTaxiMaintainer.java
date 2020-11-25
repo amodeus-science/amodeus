@@ -32,6 +32,7 @@ import amodeus.amodeus.util.matsim.SafeConfig;
     private Double private_now = null;
     public InfoLine infoLine = null;
     private final StorageUtils storageUtils;
+    protected final String mode;
 
     RoboTaxiMaintainer(EventsManager eventsManager, Config config, AmodeusModeConfig operatorConfig) {
         SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
@@ -39,6 +40,7 @@ import amodeus.amodeus.util.matsim.SafeConfig;
         this.infoLine = new InfoLine(safeConfig.getInteger("infoLinePeriod", 10));
         String outputdirectory = config.controler().getOutputDirectory();
         this.storageUtils = new StorageUtils(new File(outputdirectory));
+        this.mode = operatorConfig.getMode();
     }
 
     /** @return time of current re-dispatching iteration step

@@ -8,9 +8,9 @@ import java.util.concurrent.Future;
 
 import org.matsim.amodeus.config.modal.TimingConfig;
 import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusDropoffTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusPickupTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask.StopType;
 import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
@@ -85,13 +85,13 @@ public class SingleRideAppender {
                 plainDropoffPath, travelTime);
 
         AmodeusDriveTask pickupDriveTask = new AmodeusDriveTask(pickupPath);
-        AmodeusPickupTask pickupTask = new AmodeusPickupTask(pickupPath.getArrivalTime(), pickupPath.getArrivalTime() + timing.getMinimumPickupDurationPerStop(),
-                request.getFromLink(), Double.NEGATIVE_INFINITY);
-        pickupTask.addRequest(request);
+        AmodeusStopTask pickupTask = new AmodeusStopTask(pickupPath.getArrivalTime(), pickupPath.getArrivalTime() + timing.getMinimumPickupDurationPerStop(), request.getFromLink(),
+                StopType.Pickup);
+        pickupTask.addPickupRequest(request);
         AmodeusDriveTask dropoffDriveTask = new AmodeusDriveTask(dropoffPath, Arrays.asList(request));
-        AmodeusDropoffTask dropoffTask = new AmodeusDropoffTask(dropoffPath.getArrivalTime(), dropoffPath.getArrivalTime() + timing.getMinimumDropoffDurationPerStop(),
-                request.getToLink());
-        dropoffTask.addRequest(request);
+        AmodeusStopTask dropoffTask = new AmodeusStopTask(dropoffPath.getArrivalTime(), dropoffPath.getArrivalTime() + timing.getMinimumDropoffDurationPerStop(),
+                request.getToLink(), StopType.Dropoff);
+        dropoffTask.addDropoffRequest(request);
 
         if (stayTask.getStatus() == Task.TaskStatus.STARTED) {
             stayTask.setEndTime(startTime);

@@ -4,8 +4,12 @@ package amodeus.amodeus.dispatcher.core;
 import java.util.Optional;
 
 import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusTaskType;
+import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusTaskTypes;
+import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask.StopType;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.drt.schedule.DrtTaskBaseType;
+import org.matsim.contrib.drt.schedule.DrtTaskType;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
 import org.matsim.contrib.dvrp.schedule.Task;
@@ -41,7 +45,7 @@ import amodeus.amodeus.util.math.GlobalAssert;
                 // SECOND A): IF We are on a Stay Task currently, we should have changed is already in the first step above
 
                 // SECOND B): If We are on a Drive Task currently, we have to see if the planed direction still fits our needs
-                if (currentTask.getTaskType().equals(AmodeusTaskType.DRIVE)) {
+                if (currentTask.getTaskType().equals(AmodeusTaskTypes.DRIVE)) {
                     GlobalAssert.that(isSecondLastTask);
                     Link planedToLink = ((AmodeusDriveTask) currentTask).getPath().getToLink();
                     if (!planedToLink.equals(currentCourse.get().getLink()))
@@ -72,8 +76,7 @@ import amodeus.amodeus.util.math.GlobalAssert;
                 GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.STAY));
             } else if (isSecondLastTask) {
                 if (taskEndsNow) { // FIRST b): if we will finish the second last task now then the next status will be stay. As we have nothing to do.
-                    switch ((AmodeusTaskType) currentTask.getTaskType()) {
-                    case DRIVE:
+                    if (AmodeusTaskTypes.DRIVE.equals(currentTask.getTaskType())) {
                         // AS there is no task after this one and the currend destinadtion is not the current location we have to divert the robo taxi to the
                         // current location
                         if (!roboTaxi.getDivertableLocation().equals(((AmodeusDriveTask) currentTask).getPath().getToLink())) {
@@ -82,16 +85,15 @@ import amodeus.amodeus.util.math.GlobalAssert;
                             roboTaxi.addRedirectCourseToMenuAtBegining(redirectCourse);
                             return Optional.of(roboTaxi.getDivertableLocation());
                         }
-                    case DROPOFF:
+                    } else if (AmodeusTaskTypes.STOP.equals(currentTask.getTaskType()) && ((AmodeusStopTask) currentTask).getStopType() == StopType.Dropoff) {
                         // TODO @clruch 20190901 remove soon if no errors
                         GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.STAY));
-                        break;
-                    default:
+                    } else {
                         throw new RuntimeException("no can do: " + currentTask.getTaskType());
                     }
                 } else { // SECOND: if we are on the second last task but it does not end yet then we have to stop the current task if that's possible
                     // Lets consider the Case were we are in a drive Task
-                    if (currentTask.getTaskType() == AmodeusTaskType.DRIVE) {
+                    if (AmodeusTaskTypes.DRIVE.equals(currentTask.getTaskType())) {
                         AmodeusDriveTask driveTask = (AmodeusDriveTask) currentTask;
                         // AS there is no task after this one and the currend destinadtion is not the current location we have to divert the robo taxi to the
                         // current location
@@ -108,7 +110,7 @@ import amodeus.amodeus.util.math.GlobalAssert;
                         // a) A dropoff Task already finishes by default with a stay task afterwards. Thus The only reason we reach this part is because we are
                         // in
                         // Dropoff
-                        GlobalAssert.that(currentTask.getTaskType() == AmodeusTaskType.DROPOFF);
+                        GlobalAssert.that(currentTask.getTaskType() == AmodeusTaskTypes.STOP);
                         GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
                         // b) A stay task should never be the second last Task.
                         // c) A pickup Task always needs to have a next course in the menu. but that we can check as well

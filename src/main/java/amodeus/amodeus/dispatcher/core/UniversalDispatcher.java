@@ -16,13 +16,13 @@ import org.matsim.amodeus.components.AmodeusDispatcher;
 import org.matsim.amodeus.components.AmodeusGenerator;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusDropoffTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusPickupTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
 import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
+import org.matsim.contrib.dvrp.passenger.PassengerRequestScheduledEvent;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
 import org.matsim.contrib.dvrp.schedule.Task;
@@ -115,6 +115,8 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
         }
         pickupRegister.put(avRequest, roboTaxi); // add new pair
         GlobalAssert.that(pickupRegister.size() == pickupRegister.values().stream().distinct().count());
+
+        eventsManager.processEvent(new PassengerRequestScheduledEvent(getTimeNow(), mode, avRequest.getId(), avRequest.getPassengerId(), roboTaxi.getId(), 0.0, 0.0));
 
         // 2) set vehicle diversion
         setRoboTaxiDiversion(roboTaxi, avRequest.getFromLink(), RoboTaxiStatus.DRIVETOCUSTOMER);
@@ -386,12 +388,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
                 }
 
                 @Override
-                public void handle(AmodeusPickupTask avPickupTask) {
-                    GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
-                }
-
-                @Override
-                public void handle(AmodeusDropoffTask avDropOffTask) {
+                public void handle(AmodeusStopTask avPickupTask) {
                     GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
                 }
 

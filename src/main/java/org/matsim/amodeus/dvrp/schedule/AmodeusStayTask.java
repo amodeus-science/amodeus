@@ -5,6 +5,6 @@ import org.matsim.contrib.dvrp.schedule.StayTask;
 
 public class AmodeusStayTask extends StayTask {
     public AmodeusStayTask(double beginTime, double endTime, Link link) {
-        super(AmodeusTaskType.STAY, beginTime, endTime, link);
+        super(AmodeusTaskTypes.STAY, beginTime, endTime, link);
     }
 }

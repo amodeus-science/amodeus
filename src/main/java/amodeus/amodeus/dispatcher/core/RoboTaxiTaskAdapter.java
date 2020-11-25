@@ -2,10 +2,9 @@
 package amodeus.amodeus.dispatcher.core;
 
 import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusDropoffTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusPickupTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusTaskType;
+import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusTaskTypes;
 import org.matsim.contrib.dvrp.schedule.Task;
 
 /** An {@link RoboTaxiTaskAdapter} is created using a {@link Task}, which is casted to
@@ -15,28 +14,19 @@ import org.matsim.contrib.dvrp.schedule.Task;
 /* package */ class RoboTaxiTaskAdapter implements RoboTaxiTaskListener {
 
     public RoboTaxiTaskAdapter(Task task) {
-        switch ((AmodeusTaskType) task.getTaskType()) {
-        case PICKUP:
-            handle((AmodeusPickupTask) task);
-            break;
-        case DROPOFF:
-            handle((AmodeusDropoffTask) task);
-            break;
-        case DRIVE:
+        if (AmodeusTaskTypes.STOP.equals(task.getTaskType())) {
+            handle((AmodeusStopTask) task);
+        } else if (AmodeusTaskTypes.DRIVE.equals(task.getTaskType())) {
             handle((AmodeusDriveTask) task);
-            break;
-        case STAY:
+        } else if (AmodeusTaskTypes.STAY.equals(task.getTaskType())) {
             handle((AmodeusStayTask) task);
+        } else {
+            throw new IllegalStateException();
         }
     }
 
     @Override
-    public void handle(AmodeusPickupTask avPickupTask) {
-        // empty by design
-    }
-
-    @Override
-    public void handle(AmodeusDropoffTask avDropoffTask) {
+    public void handle(AmodeusStopTask avStopTask) {
         // empty by design
     }
 
