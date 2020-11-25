@@ -131,12 +131,7 @@ public class RetrieveToLinkTest extends TestCase {
         double now = 5.0;
 
         // Case 1a) No course present
-        try { // Impossible because if a pickup task is going on there has always to be a dropoff course
-            RetrieveToLink.forShared(roboTaxi, now);
-            fail();
-        } catch (Exception exception) {
-            // ---
-        }
+        assertFalse(RetrieveToLink.forShared(roboTaxi, now).isPresent());
 
         // Case 1b) Next course is on same link
         roboTaxi.addPassengerRequestToMenu(artificialScenarioCreator.avRequestDepotOut);
@@ -221,12 +216,7 @@ public class RetrieveToLinkTest extends TestCase {
         double now = 5.0;
 
         // Case 1a) No course present
-        try { // Impossible because if a pickup task is going on there has always to be a dropoff course
-            RetrieveToLink.forShared(roboTaxi, now);
-            fail();
-        } catch (Exception exception) {
-            // ---
-        }
+        assertFalse(RetrieveToLink.forShared(roboTaxi, now).isPresent());
 
         // Case 1b) Next course is on same link
         roboTaxi.addPassengerRequestToMenu(s.avRequestDepotOut);

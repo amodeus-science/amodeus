@@ -3,14 +3,17 @@ package amodeus.amodeus.dispatcher.core;
 
 import java.util.Objects;
 
+import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusTaskTypes;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask.StopType;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
+import org.matsim.contrib.dvrp.schedule.Task;
 
 import amodeus.amodeus.util.math.GlobalAssert;
 
@@ -43,11 +46,27 @@ import amodeus.amodeus.util.math.GlobalAssert;
         GlobalAssert.that(avStayTask.getLink().equals(currentRequest.getToLink()));
 
         if (endTimeNextTask < scheduleEndTime) {
-            avStayTask.setEndTime(getTimeNow); // finish the last task now
+            Task currentTask = Schedules.getNextToLastTask(schedule);
+            
+            double startTime = getTimeNow;
+            
+            if (currentTask.getTaskType().equals(AmodeusTaskTypes.DRIVE)) {
+                AmodeusDriveTask driveTask = (AmodeusDriveTask) currentTask;
+                
+                driveTask.setEndTime(startTime);
+                schedule.removeLastTask();
+            } else {
+                AmodeusStopTask stopTask = (AmodeusStopTask) currentTask;
+                
+                startTime = stopTask.getEndTime();
+                schedule.removeLastTask();
+            }
+            
+            // avStayTask.setEndTime(getTimeNow); // finish the last task now
 
             AmodeusStopTask dropoffTaks = new AmodeusStopTask( //
-                    getTimeNow, // start of dropoff
-                    getTimeNow + dropoffDurationPerStop, // end of dropoff
+                    startTime, // start of dropoff
+                    startTime + dropoffDurationPerStop, // end of dropoff
                     currentRequest.getToLink(), // location of dropoff
                     StopType.Dropoff
             );
@@ -55,7 +74,7 @@ import amodeus.amodeus.util.math.GlobalAssert;
             schedule.addTask(dropoffTaks);
 
             Link destLink = avStayTask.getLink();
-            ScheduleUtils.makeWhole(roboTaxi, getTimeNow + dropoffDurationPerStop, scheduleEndTime, destLink);
+            ScheduleUtils.makeWhole(roboTaxi, startTime + dropoffDurationPerStop, scheduleEndTime, destLink);
 
             // jan: following computation is mandatory for the internal scoring
             // function

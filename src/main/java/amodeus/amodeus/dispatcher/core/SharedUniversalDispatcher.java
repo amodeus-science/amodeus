@@ -204,6 +204,7 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
         /** First the Tasks are assigned. This makes sure the dropoff takes place */
         Map<RoboTaxi, Map<String, PassengerRequest>> requestRegisterCopy = new HashMap<>(requestRegister.getRegister());
         for (RoboTaxi roboTaxi : requestRegisterCopy.keySet()) {
+            if (roboTaxi.isDroppingOff()) continue;
             Optional<PassengerRequest> avRequest = AssignSharedDropoffDirective.apply(roboTaxi, getTimeNow(), dropoffDurationPerStop, futurePathFactory);
             if (avRequest.isPresent()) {
                 GlobalAssert.that(requestRegister.contains(roboTaxi, avRequest.get()));
@@ -406,7 +407,7 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
 
                 @Override
                 public void handle(AmodeusStopTask avStopTask) {
-                    GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
+                    //GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
                 }
 
                 @Override

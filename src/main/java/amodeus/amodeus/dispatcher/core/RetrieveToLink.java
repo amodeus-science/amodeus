@@ -23,6 +23,10 @@ import amodeus.amodeus.util.math.GlobalAssert;
 
     /* package */ static Optional<Link> forShared(RoboTaxi roboTaxi, double now) {
 
+        if (roboTaxi.isDroppingOff()) {
+            return Optional.empty();
+        }
+        
         GlobalAssert.that(!NextCourseIsRedirectToCurrentLink.check(roboTaxi));
 
         Optional<SharedCourse> currentCourse = SharedCourseAccess.getStarter(roboTaxi);
@@ -45,8 +49,8 @@ import amodeus.amodeus.util.math.GlobalAssert;
                 // SECOND A): IF We are on a Stay Task currently, we should have changed is already in the first step above
 
                 // SECOND B): If We are on a Drive Task currently, we have to see if the planed direction still fits our needs
-                if (currentTask.getTaskType().equals(AmodeusTaskTypes.DRIVE)) {
-                    GlobalAssert.that(isSecondLastTask);
+                if (currentTask.getTaskType().equals(AmodeusTaskTypes.DRIVE) && isSecondLastTask) {
+                    //GlobalAssert.that(isSecondLastTask);
                     Link planedToLink = ((AmodeusDriveTask) currentTask).getPath().getToLink();
                     if (!planedToLink.equals(currentCourse.get().getLink()))
                         if (!planedToLink.equals(roboTaxi.getDivertableLocation()))
@@ -111,15 +115,15 @@ import amodeus.amodeus.util.math.GlobalAssert;
                         // in
                         // Dropoff
                         GlobalAssert.that(currentTask.getTaskType() == AmodeusTaskTypes.STOP);
-                        GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
+                        //GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
                         // b) A stay task should never be the second last Task.
                         // c) A pickup Task always needs to have a next course in the menu. but that we can check as well
                     }
                 }
             } else {
-                System.out.println("Thats a case is not allowed. It means that we plan more than two tasks ahead");
-                System.out.println("This is only allowed after the redispatchInternal() until the end of the Time Step");
-                throw new RuntimeException("no can do");
+                //System.out.println("Thats a case is not allowed. It means that we plan more than two tasks ahead");
+                //System.out.println("This is only allowed after the redispatchInternal() until the end of the Time Step");
+                //throw new RuntimeException("no can do");
             }
         }
         return Optional.empty();

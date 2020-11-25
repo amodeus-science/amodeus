@@ -21,7 +21,8 @@ import amodeus.amodeus.util.math.GlobalAssert;
         // SHARED note that waiting for last staytask adds a one second staytask before
         // switching to dropoffTask
         // This excludes as well that Requests are droped off a second time and dropping off during pickup
-        if (roboTaxi.getSchedule().getCurrentTask() == Schedules.getLastTask(roboTaxi.getSchedule())) {
+        //if (roboTaxi.getSchedule().getCurrentTask() == Schedules.getLastTask(roboTaxi.getSchedule())) {
+        if (roboTaxi.getSchedule().getTaskCount() > 1 && roboTaxi.getSchedule().getCurrentTask() == Schedules.getNextToLastTask(roboTaxi.getSchedule())) {
             Optional<SharedCourse> currentCourse = SharedCourseAccess.getStarter(roboTaxi);
             GlobalAssert.that(currentCourse.isPresent());
             if (currentCourse.get().getMealType().equals(SharedMealType.DROPOFF)) {
@@ -45,7 +46,7 @@ import amodeus.amodeus.util.math.GlobalAssert;
         GlobalAssert.that(currentCourse.get().getLink().equals(avRequest.getToLink()));
         GlobalAssert.that(currentCourse.get().getLink().equals(roboTaxi.getDivertableLocation()));
         final Schedule schedule = roboTaxi.getSchedule();
-        GlobalAssert.that(schedule.getCurrentTask() == Schedules.getLastTask(schedule)); // instanceof AVDriveTask);
+        GlobalAssert.that(schedule.getCurrentTask() == Schedules.getNextToLastTask(schedule)); // instanceof AVDriveTask);
 
         // Assign Directive To roboTaxi
         final double endDropOffTime = now + dropoffDurationPerStop;
