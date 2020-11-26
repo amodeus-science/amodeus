@@ -46,14 +46,18 @@ public class DefaultParallelLeastCostPathCalculator implements ParallelLeastCost
         executor.shutdownNow();
     }
 
-    static public DefaultParallelLeastCostPathCalculator create(int numberOfInstances, LeastCostPathCalculatorFactory factory, Network network, TravelDisutility travelDisutility,
+    static public ParallelLeastCostPathCalculator create(int numberOfInstances, LeastCostPathCalculatorFactory factory, Network network, TravelDisutility travelDisutility,
             TravelTime travelTime) {
         List<LeastCostPathCalculator> instances = new LinkedList<>();
 
         for (int i = 0; i < numberOfInstances; i++) {
             instances.add(factory.createPathCalculator(network, travelDisutility, travelTime));
         }
-
+        
         return new DefaultParallelLeastCostPathCalculator(instances);
+        
+        // return new SerialLeastCostPathCalculator(factory.createPathCalculator(network, travelDisutility, travelTime));
+
+        
     }
 }

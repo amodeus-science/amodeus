@@ -22,7 +22,11 @@ import amodeus.amodeus.dispatcher.shared.SharedCourse;
 
         // check of roboTaxi is on last task
         Schedule schedule = roboTaxi.getSchedule();
-        if (!courses.isEmpty() && schedule.getCurrentTask() == Schedules.getLastTask(schedule)) { // TODO check whether empty courses is allowed behaviour
+        
+        boolean isLast = schedule.getCurrentTask() == Schedules.getLastTask(schedule);
+        boolean isNextToLast = schedule.getTaskCount() > 1 && schedule.getCurrentTask() == Schedules.getNextToLastTask(schedule);
+        
+        if (!courses.isEmpty() && (isLast || isNextToLast)) { // TODO check whether empty courses is allowed behaviour
             PickupAndAssignDirective.using(roboTaxi, pickupNowRequests, timeNow, pickupDurationPerStop, futurePathFactory);
             return pickupNowRequests;
         }

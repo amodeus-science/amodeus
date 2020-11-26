@@ -27,21 +27,16 @@ import amodeus.amodeus.util.math.GlobalAssert;
         roboTaxi.setCurrentDriveDestination(commonFromLink);
 
         // ensure that the pickup tasks are removed from the menu
-        roboTaxi.pickupOf(commonOriginRequests);
+        // roboTaxi.pickupOf(commonOriginRequests);
 
         // Assign Directive
-        final double endPickupTime = now + pickupDurationPerStop;
-        FuturePathContainer futurePathContainer = //
-                futurePathFactory.createFuturePathContainer(commonFromLink, //
-                        SharedRoboTaxiUtils.getStarterLink(roboTaxi), endPickupTime);
         roboTaxi.assignDirective(new SharedGeneralPickupDirective(roboTaxi, commonOriginRequests, //
-                futurePathContainer, now));
+                pickupDurationPerStop, now));
 
         GlobalAssert.that(!roboTaxi.isDivertable());
 
-        // ensure that pickup is not in taxi schedule, drop-off still is
         for (PassengerRequest avRequest2 : commonOriginRequests) {
-            GlobalAssert.that(!roboTaxi.getUnmodifiableViewOfCourses().contains(SharedCourse.pickupCourse(avRequest2)));
+            GlobalAssert.that(roboTaxi.getUnmodifiableViewOfCourses().contains(SharedCourse.pickupCourse(avRequest2)));
             GlobalAssert.that(roboTaxi.getUnmodifiableViewOfCourses().contains(SharedCourse.dropoffCourse(avRequest2)));
         }
 

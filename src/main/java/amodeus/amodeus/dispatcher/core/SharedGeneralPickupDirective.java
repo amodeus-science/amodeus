@@ -15,48 +15,60 @@ import amodeus.amodeus.util.math.GlobalAssert;
 
 /** for vehicles that are in stay task and should pickup a customer at the link:
  * 1) finish stay task 2) append pickup task 3) append drive task 4) append new stay task */
-/* package */ final class SharedGeneralPickupDirective extends FuturePathDirective {
+/* package */ final class SharedGeneralPickupDirective implements DirectiveInterface {
     final RoboTaxi roboTaxi;
     final List<PassengerRequest> sameOriginRequests;
     final double getTimeNow;
+    final private double pickupDurationPerStop;
 
     public SharedGeneralPickupDirective(RoboTaxi roboTaxi, List<PassengerRequest> sameOriginRequests, //
-            FuturePathContainer futurePathContainer, final double getTimeNow) {
-        super(futurePathContainer);
+            double pickupDurationPerStop, final double getTimeNow) {
         this.roboTaxi = roboTaxi;
         this.sameOriginRequests = sameOriginRequests;
         this.getTimeNow = getTimeNow;
+        this.pickupDurationPerStop = pickupDurationPerStop;
 
         // all requests must have same from link
         GlobalAssert.that(sameOriginRequests.stream().map(PassengerRequest::getFromLink).distinct().count() == 1);
     }
 
     @Override
-    void executeWithPath(final VrpPathWithTravelData vrpPathWithTravelData) {
+    public void execute() {
         final Schedule schedule = roboTaxi.getSchedule();
         final AmodeusStayTask avStayTask = (AmodeusStayTask) Schedules.getLastTask(schedule);
         final double scheduleEndTime = avStayTask.getEndTime();
         GlobalAssert.that(scheduleEndTime == schedule.getEndTime());
-        final double endTaskTime = vrpPathWithTravelData.getArrivalTime();
+        
+        boolean isLast = schedule.getCurrentTask() == Schedules.getLastTask(schedule);
+        
+        double startTime = getTimeNow;
+        
+        if (isLast) {
+            schedule.getCurrentTask().setEndTime(getTimeNow);
+        } else {
+            schedule.removeLastTask();
+            startTime = Schedules.getLastTask(schedule).getEndTime();
+        }
+        
+        double endTaskTime = pickupDurationPerStop + startTime;
 
         if (endTaskTime < scheduleEndTime) {
-            avStayTask.setEndTime(getTimeNow); // finish the last task now
 
             AmodeusStopTask pickupTask = new AmodeusStopTask( //
-                    getTimeNow, // start of pickup
-                    futurePathContainer.getStartTime(), // end of pickup
+                    startTime, // start of pickup
+                    endTaskTime, // end of pickup
                     sameOriginRequests.get(0).getFromLink(), // location of driving start
                     StopType.Pickup
                     );
             sameOriginRequests.forEach(pickupTask::addPickupRequest);
             schedule.addTask(pickupTask);
 
-            GlobalAssert.that(futurePathContainer.getStartTime() < scheduleEndTime);
-            ScheduleUtils.makeWhole(roboTaxi, futurePathContainer.getStartTime(), scheduleEndTime, //
+            GlobalAssert.that(endTaskTime < scheduleEndTime);
+            ScheduleUtils.makeWhole(roboTaxi, endTaskTime, scheduleEndTime, //
                     sameOriginRequests.get(0).getFromLink());
 
         } else
-            reportExecutionBypass(endTaskTime - scheduleEndTime);
+            throw new IllegalStateException();
     }
 
 }

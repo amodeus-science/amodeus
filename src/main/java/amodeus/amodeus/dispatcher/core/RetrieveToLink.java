@@ -23,7 +23,7 @@ import amodeus.amodeus.util.math.GlobalAssert;
 
     /* package */ static Optional<Link> forShared(RoboTaxi roboTaxi, double now) {
 
-        if (roboTaxi.isDroppingOff()) {
+        if (roboTaxi.isDroppingOff() || roboTaxi.isPickingUp()) {
             return Optional.empty();
         }
         

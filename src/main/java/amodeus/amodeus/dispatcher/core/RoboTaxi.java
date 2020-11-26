@@ -363,6 +363,7 @@ public final class RoboTaxi {
     }
 
     /* package */ void pickupOf(List<PassengerRequest> avrs) {
+        this.isPickingUp = false;
         for (PassengerRequest avr : avrs)
             setMenu(SharedCourseRemove.several(menu, SharedCourse.pickupCourse(avr)));
     }
@@ -415,5 +416,15 @@ public final class RoboTaxi {
         List<SharedCourse> oldMenu = SharedCourseUtil.copy(menu.getCourseList());
         setMenu(SharedMenu.empty());
         return oldMenu;
+    }
+    
+    private boolean isPickingUp = false;
+    
+    public void startPickup() {
+        isPickingUp = true;
+    }
+    
+    public boolean isPickingUp() {
+        return isPickingUp;
     }
 }
