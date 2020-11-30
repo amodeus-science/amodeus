@@ -1,12 +1,10 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package amodeus.amodeus.dispatcher.core;
 
-import java.util.Arrays;
-
-import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask.StopType;
+import org.matsim.contrib.drt.schedule.DrtDriveTask;
+import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.schedule.Schedule;
@@ -35,7 +33,7 @@ import amodeus.amodeus.util.math.GlobalAssert;
     @Override
     void executeWithPath(final VrpPathWithTravelData vrpPathWithTravelData) {
         final Schedule schedule = roboTaxi.getSchedule();
-        final AmodeusStayTask avStayTask = (AmodeusStayTask) Schedules.getLastTask(schedule);
+        final DrtStayTask avStayTask = (DrtStayTask) Schedules.getLastTask(schedule);
         final double scheduleEndTime = avStayTask.getEndTime();
         GlobalAssert.that(scheduleEndTime == schedule.getEndTime());
         final double begDropoffTime = vrpPathWithTravelData.getArrivalTime();
@@ -53,8 +51,8 @@ import amodeus.amodeus.util.math.GlobalAssert;
             pickupTask.addPickupRequest(avRequest); // serving only one request at a time
             schedule.addTask(pickupTask);
 
-            schedule.addTask(new AmodeusDriveTask( //
-                    vrpPathWithTravelData, Arrays.asList(avRequest)));
+            schedule.addTask(new DrtDriveTask( //
+                    vrpPathWithTravelData, DrtDriveTask.TYPE));
 
             // final double endDropoffTime =
             // vrpPathWithTravelData.getArrivalTime() + dropoffDurationPerStop;

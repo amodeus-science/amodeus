@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.Objects;
 
 import org.apache.log4j.Logger;
-import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.drt.schedule.DrtDriveTask;
+import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.schedule.Schedule;
@@ -203,7 +203,7 @@ public final class RoboTaxi {
         Task avT = getSchedule().getCurrentTask();
 
         // TODO @ChengQi check why this appears often
-        if (avT instanceof AmodeusStayTask) {
+        if (avT instanceof DrtStayTask) {
             // TODO @ChengQi For now, this works, but probably needs fixing somewhere upfront
             // /sh, apr 2018
             if (!usageType.equals(RoboTaxiUsageType.SHARED)) { // for shared this is allowed e.g. when a new course is added but it has not been executed yet
@@ -214,9 +214,9 @@ public final class RoboTaxi {
         }
 
         // Added cases when on pickup and dropoff task For shared taxis
-        if (avT instanceof AmodeusDriveTask)
+        if (avT instanceof DrtDriveTask)
             // TODO @clruch seems it is different to the same function in AmodeusDriveTaskTracker
-            return ((AmodeusDriveTask) avT).getPath().getLinkCount() != 1;
+            return ((DrtDriveTask) avT).getPath().getLinkCount() != 1;
         if (avT instanceof AmodeusStopTask)
             return false;
         throw new IllegalArgumentException("Found Unknown type of AVTASK !!");

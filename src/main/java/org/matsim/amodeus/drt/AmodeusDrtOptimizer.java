@@ -2,12 +2,12 @@ package org.matsim.amodeus.drt;
 
 import org.matsim.amodeus.dvrp.AmodeusOptimizer;
 import org.matsim.amodeus.dvrp.request.AmodeusRequest;
-import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.amodeus.routing.AmodeusRoute;
 import org.matsim.amodeus.routing.AmodeusRouteFactory;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.drt.optimizer.DrtOptimizer;
 import org.matsim.contrib.drt.passenger.DrtRequest;
+import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.optimizer.Request;
 import org.matsim.contrib.dvrp.schedule.Schedule;
@@ -41,7 +41,7 @@ public class AmodeusDrtOptimizer implements DrtOptimizer, OnlineTrackerListener 
             schedule.removeLastTask();
 
             // ... and add the one we want for Amodeus.
-            schedule.addTask(new AmodeusStayTask(vehicle.getServiceBeginTime(), Double.POSITIVE_INFINITY, vehicle.getStartLink()));
+            schedule.addTask(new DrtStayTask(vehicle.getServiceBeginTime(), Double.POSITIVE_INFINITY, vehicle.getStartLink()));
         }
 
         delegate.nextTask(vehicle);

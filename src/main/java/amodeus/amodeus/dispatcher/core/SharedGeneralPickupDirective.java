@@ -3,11 +3,10 @@ package amodeus.amodeus.dispatcher.core;
 
 import java.util.List;
 
-import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask.StopType;
+import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
-import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
 
@@ -35,7 +34,7 @@ import amodeus.amodeus.util.math.GlobalAssert;
     @Override
     public void execute() {
         final Schedule schedule = roboTaxi.getSchedule();
-        final AmodeusStayTask avStayTask = (AmodeusStayTask) Schedules.getLastTask(schedule);
+        final DrtStayTask avStayTask = (DrtStayTask) Schedules.getLastTask(schedule);
         final double scheduleEndTime = avStayTask.getEndTime();
         GlobalAssert.that(scheduleEndTime == schedule.getEndTime());
         

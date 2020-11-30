@@ -1,17 +1,16 @@
 package org.matsim.amodeus.components.dispatcher.utils;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import org.matsim.amodeus.config.modal.TimingConfig;
-import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask.StopType;
 import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
+import org.matsim.contrib.drt.schedule.DrtDriveTask;
+import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
@@ -55,7 +54,7 @@ public class SingleRideAppender {
 
     public void schedule(PassengerRequest request, DvrpVehicle vehicle, double now) {
         Schedule schedule = vehicle.getSchedule();
-        AmodeusStayTask stayTask = (AmodeusStayTask) Schedules.getLastTask(schedule);
+        DrtStayTask stayTask = (DrtStayTask) Schedules.getLastTask(schedule);
 
         Future<Path> pickup = router.calcLeastCostPath(stayTask.getLink().getToNode(), request.getFromLink().getFromNode(), now, null, null);
         Future<Path> dropoff = router.calcLeastCostPath(request.getFromLink().getToNode(), request.getToLink().getFromNode(), now, null, null);
@@ -69,7 +68,7 @@ public class SingleRideAppender {
         double now = task.time;
 
         Schedule schedule = vehicle.getSchedule();
-        AmodeusStayTask stayTask = (AmodeusStayTask) Schedules.getLastTask(schedule);
+        DrtStayTask stayTask = (DrtStayTask) Schedules.getLastTask(schedule);
 
         double startTime = 0.0;
         double scheduleEndTime = schedule.getEndTime();
@@ -84,11 +83,11 @@ public class SingleRideAppender {
         VrpPathWithTravelData dropoffPath = VrpPaths.createPath(request.getFromLink(), request.getToLink(), pickupPath.getArrivalTime() + timing.getMinimumPickupDurationPerStop(),
                 plainDropoffPath, travelTime);
 
-        AmodeusDriveTask pickupDriveTask = new AmodeusDriveTask(pickupPath);
+        DrtDriveTask pickupDriveTask = new DrtDriveTask(pickupPath, DrtDriveTask.TYPE);
         AmodeusStopTask pickupTask = new AmodeusStopTask(pickupPath.getArrivalTime(), pickupPath.getArrivalTime() + timing.getMinimumPickupDurationPerStop(), request.getFromLink(),
                 StopType.Pickup);
         pickupTask.addPickupRequest(request);
-        AmodeusDriveTask dropoffDriveTask = new AmodeusDriveTask(dropoffPath, Arrays.asList(request));
+        DrtDriveTask dropoffDriveTask = new DrtDriveTask(dropoffPath, DrtDriveTask.TYPE);
         AmodeusStopTask dropoffTask = new AmodeusStopTask(dropoffPath.getArrivalTime(), dropoffPath.getArrivalTime() + timing.getMinimumDropoffDurationPerStop(),
                 request.getToLink(), StopType.Dropoff);
         dropoffTask.addDropoffRequest(request);
@@ -105,7 +104,7 @@ public class SingleRideAppender {
         schedule.addTask(dropoffTask);
 
         if (dropoffTask.getEndTime() < scheduleEndTime) {
-            schedule.addTask(new AmodeusStayTask(dropoffTask.getEndTime(), scheduleEndTime, dropoffTask.getLink()));
+            schedule.addTask(new DrtStayTask(dropoffTask.getEndTime(), scheduleEndTime, dropoffTask.getLink()));
         }
     }
 

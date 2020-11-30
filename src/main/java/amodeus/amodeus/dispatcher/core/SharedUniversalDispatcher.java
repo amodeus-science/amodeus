@@ -16,10 +16,10 @@ import java.util.stream.Collectors;
 import org.matsim.amodeus.components.AmodeusDispatcher;
 import org.matsim.amodeus.components.AmodeusGenerator;
 import org.matsim.amodeus.config.AmodeusModeConfig;
-import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
 import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
+import org.matsim.contrib.drt.schedule.DrtDriveTask;
+import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.passenger.PassengerRequestScheduledEvent;
@@ -436,7 +436,7 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
             Schedule schedule = roboTaxi.getSchedule();
             new RoboTaxiTaskAdapter(schedule.getCurrentTask()) {
                 @Override
-                public void handle(AmodeusDriveTask avDriveTask) {
+                public void handle(DrtDriveTask avDriveTask) {
                     OnlineDriveTaskTracker taskTracker = (OnlineDriveTaskTracker) avDriveTask.getTaskTracker();
                     LinkTimePair linkTimePair = Objects.requireNonNull(taskTracker.getDiversionPoint());
                     roboTaxi.setDivertableLinkTime(linkTimePair); // contains null check
@@ -449,7 +449,7 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
                 }
 
                 @Override
-                public void handle(AmodeusStayTask avStayTask) {
+                public void handle(DrtStayTask avStayTask) {
                     // for empty vehicles the current task has to be the last task
                     if (ScheduleUtils.isLastTask(schedule, avStayTask) && !requestRegister.contains(roboTaxi) && !periodFulfilledRequests.containsValue(roboTaxi)) {
                         GlobalAssert.that(avStayTask.getBeginTime() <= getTimeNow());

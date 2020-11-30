@@ -3,10 +3,10 @@ package amodeus.amodeus.dispatcher.core;
 
 import java.util.Objects;
 
-import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.drt.schedule.DrtDriveTask;
+import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.contrib.dvrp.tracker.OnlineDriveTaskTracker;
@@ -39,7 +39,7 @@ import org.matsim.contrib.dvrp.util.LinkTimePair;
     }
 
     @Override
-    public void handle(AmodeusDriveTask avDriveTask) {
+    public void handle(DrtDriveTask avDriveTask) {
         TaskTracker taskTracker = avDriveTask.getTaskTracker();
         OnlineDriveTaskTracker onlineDriveTaskTracker = (OnlineDriveTaskTracker) taskTracker;
         // there is a slim chance that function getDiversionPoint() returns null
@@ -49,7 +49,7 @@ import org.matsim.contrib.dvrp.util.LinkTimePair;
     }
 
     @Override
-    public void handle(AmodeusStayTask avStayTask) {
+    public void handle(DrtStayTask avStayTask) {
         link = avStayTask.getLink();
     }
 }

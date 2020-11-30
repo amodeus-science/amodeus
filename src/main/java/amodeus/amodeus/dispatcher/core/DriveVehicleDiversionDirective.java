@@ -3,9 +3,9 @@ package amodeus.amodeus.dispatcher.core;
 
 import java.util.Objects;
 
-import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.drt.schedule.DrtDriveTask;
+import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
@@ -27,8 +27,8 @@ import amodeus.amodeus.util.math.GlobalAssert;
     @Override
     void executeWithPath(VrpPathWithTravelData vrpPathWithTravelData) {
         final Schedule schedule = roboTaxi.getSchedule();
-        final AmodeusDriveTask avDriveTask = (AmodeusDriveTask) schedule.getCurrentTask(); // <- implies that task is started
-        final AmodeusStayTask avStayTask = (AmodeusStayTask) Schedules.getLastTask(schedule);
+        final DrtDriveTask avDriveTask = (DrtDriveTask) schedule.getCurrentTask(); // <- implies that task is started
+        final DrtStayTask avStayTask = (DrtStayTask) Schedules.getLastTask(schedule);
         final double scheduleEndTime = avStayTask.getEndTime();
 
         OnlineDriveTaskTracker taskTracker = (OnlineDriveTaskTracker) avDriveTask.getTaskTracker();

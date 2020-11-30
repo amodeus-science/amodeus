@@ -7,12 +7,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask.StopType;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.drt.schedule.DrtDriveTask;
+import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicleImpl;
 import org.matsim.contrib.dvrp.fleet.ImmutableDvrpVehicleSpecification;
@@ -45,7 +45,7 @@ import amodeus.amodeus.util.math.GlobalAssert;
 
     private static void setFirstTaskStay(RoboTaxi roboTaxi, Link link) {
         Schedule schedule = roboTaxi.getSchedule();
-        schedule.addTask(new AmodeusStayTask(0.0, Double.POSITIVE_INFINITY, link));
+        schedule.addTask(new DrtStayTask(0.0, Double.POSITIVE_INFINITY, link));
         schedule.nextTask();
     }
 
@@ -58,7 +58,7 @@ import amodeus.amodeus.util.math.GlobalAssert;
     private static void setFirstPickupTask(RoboTaxi roboTaxi) {
         Schedule schedule = roboTaxi.getSchedule();
         schedule.addTask(new AmodeusStopTask(0.0, TASK_END, roboTaxi.getDivertableLocation(), StopType.Pickup));
-        schedule.addTask(new AmodeusStayTask(TASK_END, Double.POSITIVE_INFINITY, roboTaxi.getDivertableLocation()));
+        schedule.addTask(new DrtStayTask(TASK_END, Double.POSITIVE_INFINITY, roboTaxi.getDivertableLocation()));
         schedule.nextTask();
     }
 
@@ -71,7 +71,7 @@ import amodeus.amodeus.util.math.GlobalAssert;
     private static void setFirstDropoffTask(RoboTaxi roboTaxi) {
         Schedule schedule = roboTaxi.getSchedule();
         schedule.addTask(new AmodeusStopTask(0.0, TASK_END, roboTaxi.getDivertableLocation(), StopType.Dropoff));
-        schedule.addTask(new AmodeusStayTask(TASK_END, Double.POSITIVE_INFINITY, roboTaxi.getDivertableLocation()));
+        schedule.addTask(new DrtStayTask(TASK_END, Double.POSITIVE_INFINITY, roboTaxi.getDivertableLocation()));
         schedule.nextTask();
     }
 
@@ -84,8 +84,8 @@ import amodeus.amodeus.util.math.GlobalAssert;
 
     private static void setFirstDriveTask(RoboTaxi roboTaxi, VrpPathWithTravelData vrpPathWithTravelData) {
         Schedule schedule = roboTaxi.getSchedule();
-        schedule.addTask(new AmodeusDriveTask(vrpPathWithTravelData));
-        schedule.addTask(new AmodeusStayTask(vrpPathWithTravelData.getArrivalTime(), Double.POSITIVE_INFINITY, vrpPathWithTravelData.getToLink()));
+        schedule.addTask(new DrtDriveTask(vrpPathWithTravelData, DrtDriveTask.TYPE));
+        schedule.addTask(new DrtStayTask(vrpPathWithTravelData.getArrivalTime(), Double.POSITIVE_INFINITY, vrpPathWithTravelData.getToLink()));
         schedule.nextTask();
     }
 

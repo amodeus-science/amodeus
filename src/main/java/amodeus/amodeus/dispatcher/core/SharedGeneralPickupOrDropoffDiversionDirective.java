@@ -1,8 +1,8 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package amodeus.amodeus.dispatcher.core;
 
-import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
+import org.matsim.contrib.drt.schedule.DrtDriveTask;
+import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
@@ -27,7 +27,7 @@ import amodeus.amodeus.util.math.GlobalAssert;
     @Override
     void executeWithPath(final VrpPathWithTravelData vrpPathWithTravelData) {
         final Schedule schedule = roboTaxi.getSchedule();
-        final AmodeusStayTask avStayTask = (AmodeusStayTask) Schedules.getLastTask(schedule);
+        final DrtStayTask avStayTask = (DrtStayTask) Schedules.getLastTask(schedule);
         final double scheduleEndTime = avStayTask.getEndTime();
         final double endTaskTime = vrpPathWithTravelData.getArrivalTime();
         GlobalAssert.that(scheduleEndTime == schedule.getEndTime());
@@ -42,8 +42,8 @@ import amodeus.amodeus.util.math.GlobalAssert;
             GlobalAssert.that(counter == 1); // WE make sure that there was only the stay Task at the end removed.
 
             // Add new drive task
-            schedule.addTask(new AmodeusDriveTask( //
-                    vrpPathWithTravelData));
+            schedule.addTask(new DrtDriveTask( //
+                    vrpPathWithTravelData, DrtDriveTask.TYPE));
 
             ScheduleUtils.makeWhole(roboTaxi, endTaskTime, scheduleEndTime, vrpPathWithTravelData.getToLink());
 

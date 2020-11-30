@@ -1,7 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package amodeus.amodeus.dispatcher.core;
 
-import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
+import org.matsim.contrib.drt.schedule.DrtDriveTask;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.tracker.OnlineDriveTaskTracker;
@@ -20,7 +20,7 @@ import org.matsim.contrib.dvrp.tracker.TaskTracker;
     @Override
     void executeWithPath(VrpPathWithTravelData vrpPathWithTravelData) {
         final Schedule schedule = roboTaxi.getSchedule();
-        final AmodeusDriveTask avDriveTask = (AmodeusDriveTask) schedule.getCurrentTask(); // <- implies that task is started
+        final DrtDriveTask avDriveTask = (DrtDriveTask) schedule.getCurrentTask(); // <- implies that task is started
         TaskTracker taskTracker = avDriveTask.getTaskTracker();
         OnlineDriveTaskTracker onlineDriveTaskTracker = (OnlineDriveTaskTracker) taskTracker;
         onlineDriveTaskTracker.divertPath(vrpPathWithTravelData);

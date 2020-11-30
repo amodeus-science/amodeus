@@ -9,10 +9,10 @@ import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.amodeus.dvrp.AmodeusOptimizer;
 import org.matsim.amodeus.dvrp.activity.AmodeusActionCreator;
 import org.matsim.amodeus.dvrp.request.AmodeusRequestCreator;
-import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.amodeus.framework.registry.DispatcherRegistry;
 import org.matsim.amodeus.framework.registry.GeneratorRegistry;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicleImpl;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicleSpecification;
@@ -119,7 +119,7 @@ public class AmodeusModeQSimModule extends AbstractDvrpModeQSimModule {
             }
 
             for (DvrpVehicle vehicle : vehicles) {
-                vehicle.getSchedule().addTask(new AmodeusStayTask(vehicle.getServiceBeginTime(), vehicle.getServiceEndTime(), vehicle.getStartLink()));
+                vehicle.getSchedule().addTask(new DrtStayTask(vehicle.getServiceBeginTime(), vehicle.getServiceEndTime(), vehicle.getStartLink()));
             }
 
             return () -> vehicles.stream().collect(ImmutableMap.toImmutableMap(DvrpVehicle::getId, v -> v));

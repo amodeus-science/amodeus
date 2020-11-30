@@ -1,10 +1,10 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
 package amodeus.amodeus.dispatcher.core;
 
-import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.drt.schedule.DrtDriveTask;
+import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -44,7 +44,7 @@ import amodeus.amodeus.util.math.GlobalAssert;
         new RoboTaxiTaskAdapter(task) {
 
             @Override
-            public void handle(AmodeusDriveTask avDriveTask) {
+            public void handle(DrtDriveTask avDriveTask) {
                 if (reRoute || !avDriveTask.getPath().getToLink().equals(destination)) { // ignore when vehicle is already going
                     FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer( //
                             sRoboTaxi.getDivertableLocation(), destination, sRoboTaxi.getDivertableTime());
@@ -57,7 +57,7 @@ import amodeus.amodeus.util.math.GlobalAssert;
             }
 
             @Override
-            public void handle(AmodeusStayTask avStayTask) {
+            public void handle(DrtStayTask avStayTask) {
                 if (!avStayTask.getLink().equals(destination)) { // ignore request where location == target
                     FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer( //
                             sRoboTaxi.getDivertableLocation(), destination, sRoboTaxi.getDivertableTime());

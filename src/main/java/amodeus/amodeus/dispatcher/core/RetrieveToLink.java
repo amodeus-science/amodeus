@@ -3,13 +3,11 @@ package amodeus.amodeus.dispatcher.core;
 
 import java.util.Optional;
 
-import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusTaskTypes;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask.StopType;
+import org.matsim.amodeus.dvrp.schedule.AmodeusTaskTypes;
 import org.matsim.api.core.v01.network.Link;
-import org.matsim.contrib.drt.schedule.DrtTaskBaseType;
-import org.matsim.contrib.drt.schedule.DrtTaskType;
+import org.matsim.contrib.drt.schedule.DrtDriveTask;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedules;
 import org.matsim.contrib.dvrp.schedule.Task;
@@ -49,9 +47,9 @@ import amodeus.amodeus.util.math.GlobalAssert;
                 // SECOND A): IF We are on a Stay Task currently, we should have changed is already in the first step above
 
                 // SECOND B): If We are on a Drive Task currently, we have to see if the planed direction still fits our needs
-                if (currentTask.getTaskType().equals(AmodeusTaskTypes.DRIVE) && isSecondLastTask) {
+                if (currentTask.getTaskType().equals(DrtDriveTask.TYPE) && isSecondLastTask) {
                     //GlobalAssert.that(isSecondLastTask);
-                    Link planedToLink = ((AmodeusDriveTask) currentTask).getPath().getToLink();
+                    Link planedToLink = ((DrtDriveTask) currentTask).getPath().getToLink();
                     if (!planedToLink.equals(currentCourse.get().getLink()))
                         if (!planedToLink.equals(roboTaxi.getDivertableLocation()))
                             divert = true;
@@ -80,10 +78,10 @@ import amodeus.amodeus.util.math.GlobalAssert;
                 GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.STAY));
             } else if (isSecondLastTask) {
                 if (taskEndsNow) { // FIRST b): if we will finish the second last task now then the next status will be stay. As we have nothing to do.
-                    if (AmodeusTaskTypes.DRIVE.equals(currentTask.getTaskType())) {
+                    if (DrtDriveTask.TYPE.equals(currentTask.getTaskType())) {
                         // AS there is no task after this one and the currend destinadtion is not the current location we have to divert the robo taxi to the
                         // current location
-                        if (!roboTaxi.getDivertableLocation().equals(((AmodeusDriveTask) currentTask).getPath().getToLink())) {
+                        if (!roboTaxi.getDivertableLocation().equals(((DrtDriveTask) currentTask).getPath().getToLink())) {
                             SharedCourse redirectCourse = SharedCourse.redirectCourse(roboTaxi.getDivertableLocation(),
                                     Double.toString(now) + "_currentLink_" + roboTaxi.getId().toString());
                             roboTaxi.addRedirectCourseToMenuAtBegining(redirectCourse);
@@ -97,8 +95,8 @@ import amodeus.amodeus.util.math.GlobalAssert;
                     }
                 } else { // SECOND: if we are on the second last task but it does not end yet then we have to stop the current task if that's possible
                     // Lets consider the Case were we are in a drive Task
-                    if (AmodeusTaskTypes.DRIVE.equals(currentTask.getTaskType())) {
-                        AmodeusDriveTask driveTask = (AmodeusDriveTask) currentTask;
+                    if (DrtDriveTask.TYPE.equals(currentTask.getTaskType())) {
+                        DrtDriveTask driveTask = (DrtDriveTask) currentTask;
                         // AS there is no task after this one and the currend destinadtion is not the current location we have to divert the robo taxi to the
                         // current location
                         if (!roboTaxi.getDivertableLocation().equals(driveTask.getPath().getToLink())) {

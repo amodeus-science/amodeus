@@ -1,10 +1,10 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package amodeus.amodeus.dispatcher.core;
 
-import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusTaskTypes;
+import org.matsim.contrib.drt.schedule.DrtDriveTask;
+import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.schedule.Task;
 
 /** An {@link RoboTaxiTaskAdapter} is created using a {@link Task}, which is casted to
@@ -16,10 +16,10 @@ import org.matsim.contrib.dvrp.schedule.Task;
     public RoboTaxiTaskAdapter(Task task) {
         if (AmodeusTaskTypes.STOP.equals(task.getTaskType())) {
             handle((AmodeusStopTask) task);
-        } else if (AmodeusTaskTypes.DRIVE.equals(task.getTaskType())) {
-            handle((AmodeusDriveTask) task);
-        } else if (AmodeusTaskTypes.STAY.equals(task.getTaskType())) {
-            handle((AmodeusStayTask) task);
+        } else if (DrtDriveTask.TYPE.equals(task.getTaskType())) {
+            handle((DrtDriveTask) task);
+        } else if (DrtStayTask.TYPE.equals(task.getTaskType())) {
+            handle((DrtStayTask) task);
         } else {
             throw new IllegalStateException();
         }
@@ -31,12 +31,12 @@ import org.matsim.contrib.dvrp.schedule.Task;
     }
 
     @Override
-    public void handle(AmodeusDriveTask avDriveTask) {
+    public void handle(DrtDriveTask avDriveTask) {
         // empty by design
     }
 
     @Override
-    public void handle(AmodeusStayTask avStayTask) {
+    public void handle(DrtStayTask avStayTask) {
         // empty by design
     }
 

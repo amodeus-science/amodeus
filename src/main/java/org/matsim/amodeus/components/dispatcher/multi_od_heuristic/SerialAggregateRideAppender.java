@@ -5,11 +5,11 @@ import java.util.Queue;
 
 import org.matsim.amodeus.components.dispatcher.multi_od_heuristic.aggregation.AggregatedRequest;
 import org.matsim.amodeus.config.modal.TimingConfig;
-import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask.StopType;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.drt.schedule.DrtDriveTask;
+import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
@@ -35,7 +35,7 @@ public class SerialAggregateRideAppender implements AggregateRideAppender {
 
     public void schedule(AggregatedRequest request, DvrpVehicle vehicle, double now) {
         Schedule schedule = vehicle.getSchedule();
-        AmodeusStayTask stayTask = (AmodeusStayTask) Schedules.getLastTask(schedule);
+        DrtStayTask stayTask = (DrtStayTask) Schedules.getLastTask(schedule);
 
         double startTime = 0.0;
         double scheduleEndTime = schedule.getEndTime();
@@ -104,7 +104,7 @@ public class SerialAggregateRideAppender implements AggregateRideAppender {
         LinkedList<PassengerRequest> currentRequests = new LinkedList<>();
 
         LinkedList<VrpPathWithTravelData> paths = new LinkedList<>();
-        LinkedList<AmodeusDriveTask> driveTasks = new LinkedList<>();
+        LinkedList<DrtDriveTask> driveTasks = new LinkedList<>();
 
         if (stayTask.getStatus() == Task.TaskStatus.STARTED) {
             stayTask.setEndTime(startTime);
@@ -117,7 +117,7 @@ public class SerialAggregateRideAppender implements AggregateRideAppender {
                 VrpPathWithTravelData path = VrpPaths.calcAndCreatePath(currentLink, pickup.getFromLink(), currentTime, router, travelTime);
                 paths.add(path);
 
-                AmodeusDriveTask driveTask = new AmodeusDriveTask(path, currentRequests);
+                DrtDriveTask driveTask = new DrtDriveTask(path, DrtDriveTask.TYPE);
                 driveTasks.add(driveTask);
                 schedule.addTask(driveTask);
 
@@ -145,7 +145,7 @@ public class SerialAggregateRideAppender implements AggregateRideAppender {
                 VrpPathWithTravelData path = VrpPaths.calcAndCreatePath(currentLink, dropoff.getToLink(), currentTime, router, travelTime);
                 paths.add(path);
 
-                AmodeusDriveTask driveTask = new AmodeusDriveTask(path, currentRequests);
+                DrtDriveTask driveTask = new DrtDriveTask(path, DrtDriveTask.TYPE);
                 driveTasks.add(driveTask);
                 schedule.addTask(driveTask);
 
@@ -171,7 +171,7 @@ public class SerialAggregateRideAppender implements AggregateRideAppender {
         }
 
         if (currentTask.getEndTime() < scheduleEndTime) {
-            schedule.addTask(new AmodeusStayTask(currentTime, scheduleEndTime, currentLink));
+            schedule.addTask(new DrtStayTask(currentTime, scheduleEndTime, currentLink));
         }
     }
 

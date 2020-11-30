@@ -15,11 +15,11 @@ import java.util.stream.Collectors;
 import org.matsim.amodeus.components.AmodeusDispatcher;
 import org.matsim.amodeus.components.AmodeusGenerator;
 import org.matsim.amodeus.config.AmodeusModeConfig;
-import org.matsim.amodeus.dvrp.schedule.AmodeusDriveTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
 import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.drt.schedule.DrtDriveTask;
+import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.passenger.PassengerRequestScheduledEvent;
@@ -164,7 +164,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
         Task task = schedule.getCurrentTask();
         new RoboTaxiTaskAdapter(task) {
             @Override
-            public void handle(AmodeusDriveTask avDriveTask) {
+            public void handle(DrtDriveTask avDriveTask) {
                 if (reRoute || !avDriveTask.getPath().getToLink().equals(destination)) { // ignore when vehicle is
                                                                                          // already going there
                     FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer( //
@@ -178,7 +178,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
             }
 
             @Override
-            public void handle(AmodeusStayTask avStayTask) {
+            public void handle(DrtStayTask avStayTask) {
                 // if (!reRoute) {/** a staying vehicle cannot be rerouted */
                 if (!avStayTask.getLink().equals(destination)) { // ignore request where location == target
                     FuturePathContainer futurePathContainer = futurePathFactory.createFuturePathContainer( //
@@ -378,7 +378,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
             Schedule schedule = roboTaxi.getSchedule();
             new RoboTaxiTaskAdapter(schedule.getCurrentTask()) {
                 @Override
-                public void handle(AmodeusDriveTask avDriveTask) {
+                public void handle(DrtDriveTask avDriveTask) {
                     // for empty cars the drive task is second to last task
                     OnlineDriveTaskTracker taskTracker = (OnlineDriveTaskTracker) avDriveTask.getTaskTracker();
                     LinkTimePair linkTimePair = Objects.requireNonNull(taskTracker.getDiversionPoint());
@@ -393,7 +393,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
                 }
 
                 @Override
-                public void handle(AmodeusStayTask avStayTask) {
+                public void handle(DrtStayTask avStayTask) {
                     // for empty vehicles the current task has to be the last task
                     if (ScheduleUtils.isLastTask(schedule, avStayTask) && !isInPickupRegister(roboTaxi)) {
                         GlobalAssert.that(avStayTask.getBeginTime() <= getTimeNow());

@@ -1,10 +1,11 @@
 package org.matsim.amodeus.dvrp.activity;
 
 import org.matsim.amodeus.config.modal.TimingConfig;
-import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusTaskTypes;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask.StopType;
+import org.matsim.amodeus.dvrp.schedule.AmodeusTaskTypes;
+import org.matsim.contrib.drt.schedule.DrtDriveTask;
+import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.passenger.PassengerEngine;
 import org.matsim.contrib.dvrp.schedule.Task;
@@ -47,10 +48,10 @@ public class AmodeusActionCreator implements VrpAgentLogic.DynActionCreator {
 
             return new AmodeusStopActivity(passengerEngine, dynAgent, vehicle, stopTask.getPickupRequests(), expectedEndTime, durationPerPassenger, stopTask.getDropoffRequests(),
                     dropoffEndTime);
-        } else if (AmodeusTaskTypes.DRIVE.equals(task.getTaskType())) {
+        } else if (DrtDriveTask.TYPE.equals(task.getTaskType())) {
             return legFactory.create(vehicle);
-        } else if (AmodeusTaskTypes.STAY.equals(task.getTaskType())) {
-            return new AmodeusStayActivity((AmodeusStayTask) task);
+        } else if (DrtStayTask.TYPE.equals(task.getTaskType())) {
+            return new AmodeusStayActivity((DrtStayTask) task);
         } else {
             throw new IllegalStateException();
         }
