@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
-import amodeus.amodeus.dispatcher.shared.SharedMealType;
 import amodeus.amodeus.dispatcher.util.TreeMultipleItems;
 import amodeus.amodeus.routing.NetworkTimeDistInterface;
 
@@ -102,18 +101,18 @@ import amodeus.amodeus.routing.NetworkTimeDistInterface;
         // Preparation
         Map<PassengerRequest, Double> thisPickupTimes = new HashMap<>();
         route.getRoute().stream() //
-                .filter(srp -> srp.getMealType().equals(SharedMealType.PICKUP)) //
-                .forEach(srp -> thisPickupTimes.put(srp.getAvRequest(), srp.getArrivalTime()));
+                .filter(srp -> srp.isPickup()) //
+                .forEach(srp -> thisPickupTimes.put(srp.getRequest(), srp.getArrivalTime()));
         //
         Map<PassengerRequest, Double> driveTimes = new HashMap<>();
         for (SharedRoutePoint sharedRoutePoint : route.getRoute())
-            if (sharedRoutePoint.getMealType().equals(SharedMealType.DROPOFF))
-                if (thisPickupTimes.containsKey(sharedRoutePoint.getAvRequest()))
+            if (!sharedRoutePoint.isPickup())
+                if (thisPickupTimes.containsKey(sharedRoutePoint.getRequest()))
                     // TODO @ChengQi does it include the dropoff or not?
-                    driveTimes.put(sharedRoutePoint.getAvRequest(), sharedRoutePoint.getEndTime() - thisPickupTimes.get(sharedRoutePoint.getAvRequest()));
+                    driveTimes.put(sharedRoutePoint.getRequest(), sharedRoutePoint.getEndTime() - thisPickupTimes.get(sharedRoutePoint.getRequest()));
                 else
-                    driveTimes.put(sharedRoutePoint.getAvRequest(), //
-                            sharedRoutePoint.getEndTime() - requests.get(sharedRoutePoint.getAvRequest()).getPickupTime());
+                    driveTimes.put(sharedRoutePoint.getRequest(), //
+                            sharedRoutePoint.getEndTime() - requests.get(sharedRoutePoint.getRequest()).getPickupTime());
         return driveTimes;
     }
 

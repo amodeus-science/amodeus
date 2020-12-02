@@ -5,8 +5,9 @@ import java.util.List;
 
 import org.matsim.api.core.v01.network.Link;
 
-import amodeus.amodeus.dispatcher.shared.SharedCourse;
-import amodeus.amodeus.dispatcher.shared.SharedMealType;
+import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
+import amodeus.amodeus.dispatcher.core.schedule.directives.DriveDirective;
+import amodeus.amodeus.dispatcher.core.schedule.directives.StopDirective;
 import amodeus.amodeus.routing.NetworkTimeDistInterface;
 import amodeus.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Scalar;
@@ -21,31 +22,50 @@ import ch.ethz.idsc.tensor.qty.Quantity;
      *         for the domputation the current time @param timeNow,
      *         the {@link NetworkTimeDistInterface} @param travelTimeCashed and
      *         a {@link List} @param startLocation are needed */
-    public static boolean of(double timeNow, List<SharedCourse> newMenu, //
+    public static boolean of(double timeNow, List<Directive> newMenu, //
             NetworkTimeDistInterface travelTimeCashed, Link startLocation, //
             Scalar pickupDelayMax, Scalar drpoffDelayMax) {
         boolean timeComp = true;
         Scalar timePrev = Quantity.of(timeNow, SI.SECOND);
 
-        for (SharedCourse course : newMenu) {
+        for (Directive course : newMenu) {
+            Link courseLink = null;
+            
+            if (course instanceof StopDirective) {
+                StopDirective stopDirective = (StopDirective) course;
+                
+                if (stopDirective.isPickup()) {
+                    courseLink = stopDirective.getRequest().getFromLink();
+                } else {
+                    courseLink = stopDirective.getRequest().getToLink();
+                }
+            } else {
+                courseLink = ((DriveDirective) course).getDestination();
+            }
+            
             Scalar travelTime = //
-                    travelTimeCashed.travelTime(startLocation, course.getLink(), timeNow);
+                    travelTimeCashed.travelTime(startLocation, courseLink, timeNow);
             Scalar timeofCourse = timePrev.add(travelTime);
-            if (course.getMealType().equals(SharedMealType.PICKUP)) {
-                Scalar latestPickup = LatestPickup.of(course.getAvRequest(), pickupDelayMax);
-                if (Scalars.lessThan(latestPickup, timeofCourse)) {
-                    timeComp = false;
-                    break;
+            
+            if (course instanceof StopDirective) {
+                StopDirective stopDirective = (StopDirective) course;
+                
+                if (stopDirective.isPickup()) {
+                    Scalar latestPickup = LatestPickup.of(stopDirective.getRequest(), pickupDelayMax);
+                    if (Scalars.lessThan(latestPickup, timeofCourse)) {
+                        timeComp = false;
+                        break;
+                    }
+                } else {
+                    Scalar latestDropoff = //
+                            LatestArrival.of(stopDirective.getRequest(), drpoffDelayMax, travelTimeCashed, timeNow);
+                    if (Scalars.lessThan(latestDropoff, timeofCourse)) {
+                        timeComp = false;
+                        break;
+                    }
                 }
             }
-            if (course.getMealType().equals(SharedMealType.DROPOFF)) {
-                Scalar latestDropoff = //
-                        LatestArrival.of(course.getAvRequest(), drpoffDelayMax, travelTimeCashed, timeNow);
-                if (Scalars.lessThan(latestDropoff, timeofCourse)) {
-                    timeComp = false;
-                    break;
-                }
-            }
+            
             timePrev = timeofCourse;
         }
         return timeComp;

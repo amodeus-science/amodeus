@@ -8,10 +8,8 @@ import java.util.Objects;
 
 import org.matsim.api.core.v01.network.Link;
 
-import amodeus.amodeus.dispatcher.shared.SharedCourse;
-import amodeus.amodeus.dispatcher.shared.SharedMealType;
-import amodeus.amodeus.dispatcher.shared.SharedMenu;
-import amodeus.amodeus.dispatcher.shared.SharedMenuCheck;
+import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
+import amodeus.amodeus.dispatcher.core.schedule.directives.StopDirective;
 import amodeus.amodeus.routing.CachedNetworkTimeDistance;
 import amodeus.amodeus.util.math.GlobalAssert;
 import amodeus.amodeus.util.math.SI;
@@ -23,20 +21,20 @@ import ch.ethz.idsc.tensor.qty.Quantity;
  * But it has more information stored such as the predicted travel time. */
 /* package */ class SharedAvRoute {
     public static SharedAvRoute of( //
-            List<SharedCourse> list, Link currentLink, //
+            List<Directive> list, Link currentLink, //
             double now, double pickupTime, double dropofftime, //
             CachedNetworkTimeDistance timeDb) {
         List<SharedRoutePoint> routePoints = new ArrayList<>();
         Scalar departureTime = Quantity.of(now, SI.SECOND);
         for (int i = 0; i < list.size(); i++) {
-            double stopDuration = getStopDuration(list.get(i).getMealType(), pickupTime, dropofftime);
-            Link fromLink = (i == 0) ? currentLink : list.get(i - 1).getLink();
-            Link toLink = list.get(i).getLink();
+            double stopDuration = getStopDuration(list.get(i), pickupTime, dropofftime);
+            Link fromLink = (i == 0) ? currentLink : Directive.getLink(list.get(i - 1));
+            Link toLink = Directive.getLink(list.get(i));
             Scalar driveTime = timeDb.travelTime(fromLink, toLink, now);
             // TODO @ChengQi after checking with Jan,
             // If the speed becomes to low in the future, here we could improve it by checking
             // the constraints here already to abort a route generation if the constraints are not fulfilled.
-            SharedRoutePoint sharedRoutePoint = new SharedRoutePoint(list.get(i), departureTime.add(driveTime).number().doubleValue(), stopDuration);
+            SharedRoutePoint sharedRoutePoint = new SharedRoutePoint((StopDirective) list.get(i), departureTime.add(driveTime).number().doubleValue(), stopDuration);
             routePoints.add(sharedRoutePoint);
             departureTime = Quantity.of(sharedRoutePoint.getEndTime(), SI.SECOND);
         }
@@ -49,8 +47,8 @@ import ch.ethz.idsc.tensor.qty.Quantity;
      * @param list of {@link SharedCourse}
      * @return */
     private static SharedAvRoute of(List<SharedRoutePoint> list) {
-        GlobalAssert.that(SharedMenuCheck.coursesAppearOnce(castToCourseList(list)));
-        GlobalAssert.that(SharedMenuCheck.eachPickupAfterDropoff(castToCourseList(list)));
+        // GlobalAssert.that(SharedMenuCheck.coursesAppearOnce(castToCourseList(list)));
+        // GlobalAssert.that(SharedMenuCheck.eachPickupAfterDropoff(castToCourseList(list)));
         return new SharedAvRoute(list);
     }
 
@@ -66,22 +64,25 @@ import ch.ethz.idsc.tensor.qty.Quantity;
     }
 
     /** @return an unmodifiable view of the menu */
-    public List<SharedCourse> getRoboTaxiMenu() {
+    public List<Directive> getRoboTaxiMenu() {
         return castToCourseList(route);
     }
 
-    private static double getStopDuration(SharedMealType sharedMealType, double pickupDuration, double dropoFfDuration) {
-        switch (sharedMealType) {
-        case PICKUP:
-            return pickupDuration;
-        case DROPOFF:
-            return dropoFfDuration;
-        default:
-            return 0.0;
+    private static double getStopDuration(Directive directive, double pickupDuration, double dropoFfDuration) {
+        if (directive instanceof StopDirective) {
+            StopDirective stopDirective = (StopDirective) directive;
+            
+            if (stopDirective.isPickup()) {
+                return pickupDuration;
+            } else {
+                return dropoFfDuration;
+            }
         }
+        
+        return 0.0;
     }
 
-    private static List<SharedCourse> castToCourseList(List<SharedRoutePoint> list) {
+    private static List<Directive> castToCourseList(List<SharedRoutePoint> list) {
         return new ArrayList<>(list);
     }
 

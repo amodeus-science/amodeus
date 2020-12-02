@@ -29,8 +29,7 @@ import com.google.inject.TypeLiteral;
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.SharedPartitionedDispatcher;
-import amodeus.amodeus.dispatcher.shared.OnMenuRequests;
-import amodeus.amodeus.dispatcher.shared.SharedMenu;
+import amodeus.amodeus.dispatcher.shared.backup.SharedMenu;
 import amodeus.amodeus.dispatcher.util.DistanceHeuristics;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
 import amodeus.amodeus.routing.CachedNetworkTimeDistance;
@@ -123,12 +122,16 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
                     getUnassignedPassengerRequests(), distanceCashed, now);
         }
     }
+    
+    private static boolean canPickupAdditionalCustomer(RoboTaxi robotaxi) {
+        return robotaxi.getScheduleManager().getNumberOfOnBoardRequests() + 1 <= robotaxi.getCapacity();
+    }
 
     private void doTShareRidesharing(double now) {
         /** update the roboTaxi planned locations */
         Collection<RoboTaxi> occupiedNotFull = getDivertableRoboTaxis().stream() //
                 .filter(rt -> rt.getOnBoardPassengers() >= 1) // at least 1 passenger on board
-                .filter(OnMenuRequests::canPickupAdditionalCustomer) // still capacity left
+                .filter(TShareDispatcher::canPickupAdditionalCustomer) // still capacity left
                 .collect(Collectors.toList());
 
         Map<VirtualNode<Link>, Set<RoboTaxi>> plannedLocs = //

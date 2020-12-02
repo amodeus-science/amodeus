@@ -4,6 +4,7 @@ package amodeus.amodeus.dispatcher.shared.fifs;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -14,10 +15,9 @@ import java.util.Set;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
+import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
+import amodeus.amodeus.dispatcher.core.schedule.directives.StopDirective;
 import amodeus.amodeus.dispatcher.shared.Compatibility;
-import amodeus.amodeus.dispatcher.shared.SharedCourse;
-import amodeus.amodeus.dispatcher.shared.SharedCourseAccess;
-import amodeus.amodeus.dispatcher.shared.SharedCourseUtil;
 import amodeus.amodeus.routing.CachedNetworkTimeDistance;
 import amodeus.amodeus.util.math.GlobalAssert;
 
@@ -78,26 +78,26 @@ import amodeus.amodeus.util.math.GlobalAssert;
      * @param requestMaintainer
      * @param roboTaxiMaintainer
      * @return The Closest RoboTaxi with a Shared Menu associated with it. */
-    /* package */ Optional<Entry<RoboTaxi, List<SharedCourse>>> getClosestValidSharingRoboTaxi(Set<RoboTaxi> robotaxisWithMenu, PassengerRequest avRequest, double now, //
+    /* package */ Optional<Entry<RoboTaxi, List<Directive>>> getClosestValidSharingRoboTaxi(Set<RoboTaxi> robotaxisWithMenu, PassengerRequest avRequest, double now, //
             CachedNetworkTimeDistance timeDb, RequestHandler requestMaintainer, RoboTaxiHandler roboTaxiMaintainer) {
 
-        GlobalAssert.that(robotaxisWithMenu.stream().allMatch(SharedCourseAccess::hasStarter));
+        GlobalAssert.that(robotaxisWithMenu.stream().allMatch(r -> r.getScheduleManager().getDirectives().size() > 0));
 
         NavigableMap<Double, RoboTaxi> roboTaxisWithinMaxPickup = RoboTaxiUtilsFagnant.getRoboTaxisWithinMaxTime(avRequest.getFromLink(), //
                 robotaxisWithMenu, timeDb, maxPickupTime, roboTaxiMaintainer, now);
 
         AvRouteHandler avRouteHandler = new AvRouteHandler();
-        SharedCourse pickupCourse = SharedCourse.pickupCourse(avRequest);
-        SharedCourse dropoffCourse = SharedCourse.dropoffCourse(avRequest);
+        Directive pickupCourse = Directive.pickup(avRequest);
+        Directive dropoffCourse = Directive.dropoff(avRequest);
         Map<RoboTaxi, SharedAvRoute> oldRoutes = new HashMap<>();
 
         // Calculate all routes and times
         for (RoboTaxi roboTaxi : roboTaxisWithinMaxPickup.values()) {
-            List<SharedCourse> currentMenu = roboTaxi.getUnmodifiableViewOfCourses();
+            List<Directive> currentMenu = roboTaxi.getUnmodifiableViewOfCourses();
             for (int i = 0; i < currentMenu.size(); i++) {
                 for (int j = i + 1; j < currentMenu.size() + 1; j++) {
                     GlobalAssert.that(i < j);
-                    List<SharedCourse> newMenu = new ArrayList<>(currentMenu);
+                    List<Directive> newMenu = new ArrayList<>(currentMenu);
                     newMenu.add(i, pickupCourse);
                     newMenu.add(j, dropoffCourse);
                     SharedAvRoute sharedAvRoute = SharedAvRoute.of(newMenu, roboTaxi.getDivertableLocation(), now, pickupDuration, dropoffDuration, timeDb);
@@ -106,12 +106,12 @@ import amodeus.amodeus.util.math.GlobalAssert;
             }
             oldRoutes.put(roboTaxi, SharedAvRoute.of(roboTaxi.getUnmodifiableViewOfCourses(), roboTaxi.getDivertableLocation(), now, pickupDuration, dropoffDuration, timeDb));
         }
-        Optional<Entry<RoboTaxi, List<SharedCourse>>> rt = getFastestValidEntry(avRouteHandler, avRequest, oldRoutes, now, requestMaintainer);
-        rt.ifPresent(rtle -> GlobalAssert.that(Compatibility.of(rtle.getValue()).forCapacity(rtle.getKey().getCapacity())));
+        Optional<Entry<RoboTaxi, List<Directive>>> rt = getFastestValidEntry(avRouteHandler, avRequest, oldRoutes, now, requestMaintainer);
+        rt.ifPresent(rtle -> GlobalAssert.that(Compatibility.of(rtle.getValue()).forCapacity(rtle.getKey().getScheduleManager(), rtle.getKey().getCapacity())));
         return rt;
     }
 
-    private Optional<Entry<RoboTaxi, List<SharedCourse>>> getFastestValidEntry(AvRouteHandler avRouteHandler, PassengerRequest avRequest, Map<RoboTaxi, SharedAvRoute> oldRoutes,
+    private Optional<Entry<RoboTaxi, List<Directive>>> getFastestValidEntry(AvRouteHandler avRouteHandler, PassengerRequest avRequest, Map<RoboTaxi, SharedAvRoute> oldRoutes,
             double now, RequestHandler requestMaintainer) {
         int numberEntries = avRouteHandler.getNumbervalues();
         for (int i = 0; i < numberEntries; i++) {
@@ -121,7 +121,7 @@ import amodeus.amodeus.util.math.GlobalAssert;
             for (Entry<RoboTaxi, Set<SharedAvRoute>> entry : map.entrySet())
                 for (SharedAvRoute sharedAvRoute : entry.getValue())
                     if (isValidRoute(sharedAvRoute, oldRoutes.get(entry.getKey()), requestMaintainer.getRequestWrap(avRequest), now, requestMaintainer))
-                        if (Compatibility.of(sharedAvRoute.getRoboTaxiMenu()).forCapacity(entry.getKey().getCapacity()))
+                        if (Compatibility.of(sharedAvRoute.getRoboTaxiMenu()).forCapacity(entry.getKey().getScheduleManager(), entry.getKey().getCapacity()))
                             return Optional.of(new SimpleEntry<>(entry.getKey(), sharedAvRoute.getRoboTaxiMenu()));
 
             avRouteHandler.remove(nextValue);
@@ -131,11 +131,27 @@ import amodeus.amodeus.util.math.GlobalAssert;
     }
 
     public boolean menuFulfillsConstraints( //
-            RoboTaxi roboTaxi, List<SharedCourse> newRoute, //
+            RoboTaxi roboTaxi, List<Directive> newRoute, //
             PassengerRequest avRequest, double now, //
             CachedNetworkTimeDistance timeDb, RequestHandler requestMaintainer) {
-        Set<PassengerRequest> currentRequests = SharedCourseUtil.getUniquePassengerRequests(roboTaxi.getUnmodifiableViewOfCourses());
-        GlobalAssert.that(SharedCourseUtil.getUniquePassengerRequests(newRoute).containsAll(currentRequests));
+        Set<PassengerRequest> uniqueRequests = new HashSet<>();
+        
+        for (Directive directive : roboTaxi.getScheduleManager().getDirectives()) {
+            if (directive instanceof StopDirective) {
+                uniqueRequests.add(((StopDirective) directive).getRequest());
+            }
+        }
+        
+        Set<PassengerRequest> newRouteRequests = new HashSet<>();
+        
+        for (Directive directive : newRoute) {
+            if (directive instanceof StopDirective) {
+                newRouteRequests.add(((StopDirective) directive).getRequest());
+            }
+        }
+        
+        Set<PassengerRequest> currentRequests = uniqueRequests;
+        GlobalAssert.that(newRouteRequests.containsAll(currentRequests));
         SharedAvRoute sharedAvRoute = SharedAvRoute.of(newRoute, roboTaxi.getDivertableLocation(), now, pickupDuration, dropoffDuration, timeDb);
         SharedAvRoute oldRoute = SharedAvRoute.of(roboTaxi.getUnmodifiableViewOfCourses(), roboTaxi.getDivertableLocation(), now, pickupDuration, dropoffDuration, timeDb);
         return isValidRoute(sharedAvRoute, oldRoute, requestMaintainer.getRequestWrap(avRequest), now, requestMaintainer);

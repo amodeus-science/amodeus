@@ -2,15 +2,21 @@
 package amodeus.amodeus.dispatcher.shared.fifs;
 
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
-import amodeus.amodeus.dispatcher.shared.OnMenuRequests;
-import amodeus.amodeus.dispatcher.shared.SharedCourseAccess;
-import amodeus.amodeus.dispatcher.shared.SharedMealType;
+import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
+import amodeus.amodeus.dispatcher.core.schedule.directives.StopDirective;
 
 /* package */ enum StaticHelper {
     ;
 
     public static boolean plansPickupsOrDropoffs(RoboTaxi roboTaxi) {
-        return SharedCourseAccess.hasStarter(roboTaxi.getUnmodifiableViewOfCourses()) && //
-                OnMenuRequests.getNumberMealTypes(roboTaxi.getUnmodifiableViewOfCourses(), SharedMealType.DROPOFF) > 0;
+        if (roboTaxi.getScheduleManager().getDirectives().size() > 0) {
+            for (Directive directive : roboTaxi.getScheduleManager().getDirectives()) {
+                if (directive instanceof StopDirective) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
     }
 }

@@ -23,7 +23,7 @@ import org.matsim.core.router.util.TravelTime;
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.SharedRebalancingDispatcher;
-import amodeus.amodeus.dispatcher.shared.SharedCourse;
+import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
 import amodeus.amodeus.routing.CachedNetworkTimeDistance;
 import amodeus.amodeus.routing.EasyMinTimePathCalculator;
@@ -134,7 +134,7 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
                         .collect(Collectors.toSet());
 
                 /** THIS IS WHERE WE CALCULATE THE SHARING POSSIBILITIES */
-                Optional<Entry<RoboTaxi, List<SharedCourse>>> rideSharingRoboTaxi = routeValidation.getClosestValidSharingRoboTaxi(robotaxisWithMenu, avRequest, now, timeDb, //
+                Optional<Entry<RoboTaxi, List<Directive>>> rideSharingRoboTaxi = routeValidation.getClosestValidSharingRoboTaxi(robotaxisWithMenu, avRequest, now, timeDb, //
                         requestHandler, roboTaxiHandler);
 
                 if (rideSharingRoboTaxi.isPresent()) {

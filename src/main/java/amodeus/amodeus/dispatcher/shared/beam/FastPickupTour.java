@@ -8,31 +8,29 @@ import java.util.stream.Collectors;
 
 import org.matsim.api.core.v01.Coord;
 
-import amodeus.amodeus.dispatcher.shared.SharedCourse;
-import amodeus.amodeus.dispatcher.shared.SharedCourseAdd;
-import amodeus.amodeus.dispatcher.shared.SharedMealType;
+import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
 import amodeus.amodeus.util.math.GlobalAssert;
 
 /* package */ enum FastPickupTour {
     ;
 
-    public static List<SharedCourse> fastPickupTour(List<SharedCourse> unmodifiableSharedMenu, Coord startCoord) {
-        List<SharedCourse> originalSharedCourses = new ArrayList<>(unmodifiableSharedMenu);
+    public static List<Directive> fastPickupTour(List<Directive> unmodifiableSharedMenu, Coord startCoord) {
+        List<Directive> originalSharedCourses = new ArrayList<>(unmodifiableSharedMenu);
 
         GlobalAssert.that(StaticHelper.checkAllPickupsFirst(originalSharedCourses));
         final int originalSize = originalSharedCourses.size();
-        Collection<SharedCourse> sharedCourses = originalSharedCourses.stream() //
-                .filter(sc -> sc.getMealType().equals(SharedMealType.PICKUP)).collect(Collectors.toList());
+        Collection<Directive> sharedCourses = originalSharedCourses.stream() //
+                .filter(FastDropoffTour::isPickup).collect(Collectors.toList());
 
         originalSharedCourses.removeAll(sharedCourses);
 
         int currentIndex = 0;
         Coord nextCoord = startCoord;
         while (!sharedCourses.isEmpty()) {
-            SharedCourse closestCourse = StaticHelper.getClosestCourse(sharedCourses, nextCoord);
-            SharedCourseAdd.atIndexList(originalSharedCourses, closestCourse, currentIndex);
+            Directive closestCourse = StaticHelper.getClosestCourse(sharedCourses, nextCoord);
+            originalSharedCourses.add(currentIndex, closestCourse);
             currentIndex++;
-            nextCoord = closestCourse.getLink().getCoord();
+            nextCoord = Directive.getLink(closestCourse).getCoord();
             sharedCourses.remove(closestCourse);
         }
 

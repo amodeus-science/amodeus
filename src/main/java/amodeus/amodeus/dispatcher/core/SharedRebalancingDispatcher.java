@@ -11,10 +11,10 @@ import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
 
-import amodeus.amodeus.dispatcher.shared.SharedCourse;
-import amodeus.amodeus.dispatcher.shared.SharedCourseAccess;
-import amodeus.amodeus.dispatcher.shared.SharedMealType;
-import amodeus.amodeus.dispatcher.shared.SharedMenu;
+import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
+import amodeus.amodeus.dispatcher.core.schedule.directives.DriveDirective;
+import amodeus.amodeus.dispatcher.shared.backup.SharedCourse;
+import amodeus.amodeus.dispatcher.shared.backup.SharedMenu;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
 import amodeus.amodeus.util.math.GlobalAssert;
 
@@ -35,16 +35,17 @@ public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatc
         GlobalAssert.that(roboTaxi.isWithoutCustomer());
         /** clear menu and put requests back to pending requests */
         cleanAndAbondon(roboTaxi);
-        GlobalAssert.that(!SharedCourseAccess.hasStarter(roboTaxi));
-        SharedCourse redirectCourse = SharedCourse.redirectCourse(destination, Double.toString(getTimeNow()) + roboTaxi.getId().toString());
-        addSharedRoboTaxiRedirect(roboTaxi, redirectCourse);
+        GlobalAssert.that(roboTaxi.getScheduleManager().getDirectives().size() == 0);
+        Directive directive = Directive.drive(destination);
+        // SharedCourse redirectCourse = SharedCourse.redirectCourse(destination, Double.toString(getTimeNow()) + roboTaxi.getId().toString());
+        addSharedRoboTaxiRedirect(roboTaxi, directive);
     }
 
     /** {@link RoboTaxi} @param roboTaxi is redirected to the {@link Link} of the {@link SharedCourse}
      * the course can be moved to another position in the {@link SharedMenu} of the {@link} RoboTaxi */
-    protected static void addSharedRoboTaxiRedirect(RoboTaxi roboTaxi, SharedCourse redirectCourse) {
-        GlobalAssert.that(redirectCourse.getMealType().equals(SharedMealType.REDIRECT));
-        roboTaxi.addRedirectCourseToMenu(redirectCourse);
+    protected static void addSharedRoboTaxiRedirect(RoboTaxi roboTaxi, Directive directive) {
+        GlobalAssert.that(directive instanceof DriveDirective);
+        roboTaxi.addRedirectCourseToMenu((DriveDirective) directive);
     }
 
     /** @return {@link List } of all {@link RoboTaxi} which are currently rebalancing. */

@@ -1,15 +1,12 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package amodeus.amodeus.dispatcher.core;
 
-import java.util.Optional;
-
 import org.matsim.api.core.v01.network.Link;
 
-import amodeus.amodeus.dispatcher.shared.OnMenuRequests;
-import amodeus.amodeus.dispatcher.shared.SharedCourse;
-import amodeus.amodeus.dispatcher.shared.SharedCourseAccess;
-import amodeus.amodeus.dispatcher.shared.SharedMealType;
-import amodeus.amodeus.dispatcher.shared.SharedMenu;
+import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
+import amodeus.amodeus.dispatcher.core.schedule.directives.DriveDirective;
+import amodeus.amodeus.dispatcher.core.schedule.directives.StopDirective;
+import amodeus.amodeus.dispatcher.shared.backup.SharedMenu;
 
 /** Package internal helper class to do computations for {@link} {@link RoboTaxi} which
  * are in shared use. */
@@ -18,36 +15,59 @@ import amodeus.amodeus.dispatcher.shared.SharedMenu;
 
     /** @return the {@link} Link the (shared) {@link RoboTaxi} @param roboTaxi is travelling to next. */
     public static Link getStarterLink(RoboTaxi roboTaxi) {
-        Optional<SharedCourse> currentCourse = SharedCourseAccess.getStarter(roboTaxi);
-        return currentCourse.map(SharedCourse::getLink).orElse(null);
-    }
-
-    /** @return true of the next {@link SharedCourse} of the {@link RoboTaxi} @param roboTaxi
-     *         is of {@link SharedMealType} @param sharedMealType, otherwise @return false */
-    public static boolean isNextCourseOfType(RoboTaxi roboTaxi, SharedMealType sharedMealType) {
-        Optional<SharedCourse> nextcourse = SharedCourseAccess.getStarter(roboTaxi);
-        return nextcourse.map(SharedCourse::getMealType).map(type -> type.equals(sharedMealType)).orElse(false);
+        Directive starter = roboTaxi.getScheduleManager().getDirectives().get(0);
+        
+        if (starter instanceof StopDirective) {
+            StopDirective stopDirective = (StopDirective) starter;
+            
+            if (stopDirective.isPickup()) {
+                return stopDirective.getRequest().getFromLink();
+            } else {
+                return stopDirective.getRequest().getToLink();
+            }
+        } else {
+            return ((DriveDirective) starter).getDestination();
+        }
     }
 
     /** @return {@link RoboTaxiStatus} of {@link RoboTaxi} @param roboTaxi computed according
      *         to its {@link SharedMenu} */
     public static RoboTaxiStatus calculateStatusFromMenu(RoboTaxi roboTaxi) {
-        Optional<SharedCourse> nextCourseOptional = SharedCourseAccess.getStarter(roboTaxi);
-        if (nextCourseOptional.isPresent()) {
-            if (roboTaxi.getOnBoardPassengers() > 0)
-                return RoboTaxiStatus.DRIVEWITHCUSTOMER;
-
-            switch (nextCourseOptional.get().getMealType()) {
-            case PICKUP:
+        if (roboTaxi.getScheduleManager().getDirectives().size() == 0) {
+            return RoboTaxiStatus.STAY;
+        }
+        
+        Directive starter = roboTaxi.getScheduleManager().getDirectives().get(0);
+    
+        if (roboTaxi.getOnBoardPassengers() > 0)
+            return RoboTaxiStatus.DRIVEWITHCUSTOMER;
+        
+        if (starter instanceof StopDirective) {
+            StopDirective stopDirective = (StopDirective) starter;
+            
+            if (stopDirective.isPickup()) {
                 return RoboTaxiStatus.DRIVETOCUSTOMER;
-            case REDIRECT:
-                if (OnMenuRequests.getNumberMealTypes(roboTaxi.getUnmodifiableViewOfCourses(), SharedMealType.PICKUP) > 0)
-                    return RoboTaxiStatus.DRIVETOCUSTOMER;
+            }
+        } else if (starter instanceof DriveDirective) {
+            boolean foundPickup = false;
+            
+            for (Directive directive : roboTaxi.getScheduleManager().getDirectives()) {
+                if (directive instanceof StopDirective) {
+                    StopDirective stopDirective = (StopDirective) directive;
+                    
+                    if (stopDirective.isPickup()) {
+                        foundPickup = true;
+                    }
+                }
+            }
+            
+            if (foundPickup) {
+                return RoboTaxiStatus.DRIVETOCUSTOMER;
+            } else {
                 return RoboTaxiStatus.REBALANCEDRIVE;
-            default:
-                throw new RuntimeException("We have a not Covered Status of the Robotaxi");
             }
         }
-        return RoboTaxiStatus.STAY;
+        
+        throw new RuntimeException("We have a not Covered Status of the Robotaxi");
     }
 }

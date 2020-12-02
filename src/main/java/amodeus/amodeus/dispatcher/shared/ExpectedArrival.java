@@ -12,6 +12,9 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.core.router.util.LeastCostPathCalculator.Path;
 
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
+import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
+import amodeus.amodeus.dispatcher.core.schedule.directives.DriveDirective;
+import amodeus.amodeus.dispatcher.core.schedule.directives.StopDirective;
 import amodeus.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.qty.Quantity;
@@ -41,16 +44,33 @@ import ch.ethz.idsc.tensor.qty.Quantity;
         Scalar time = Quantity.of(now, SI.SECOND);
         Link linkCurr = roboTaxi.getDivertableLocation();
         boolean failFlag = false;
-        for (SharedCourse course : roboTaxi.getUnmodifiableViewOfCourses()) {
-            Scalar timeTo = timeFromTo(linkCurr, course.getLink(), time, roboTaxi, router);
+        
+        for (Directive directive : roboTaxi.getScheduleManager().getDirectives()) {
+            Link toLink = null;
+            String courseId = null;
+            
+            if (directive instanceof StopDirective) {
+                StopDirective stopDirective = (StopDirective) directive;
+                
+                if (stopDirective.isPickup()) {
+                    toLink = stopDirective.getRequest().getFromLink();
+                } else {
+                    toLink = stopDirective.getRequest().getToLink();
+                    courseId = stopDirective.getRequest().getId().toString();
+                }
+            } else {
+                toLink = ((DriveDirective) directive).getDestination();
+            }
+            
+            Scalar timeTo = timeFromTo(linkCurr, toLink, time, roboTaxi, router);
             if (Objects.isNull(timeTo))
                 failFlag = true;
             if (!failFlag) {
                 time = time.add(timeTo);
-                linkCurr = course.getLink();
-                expDropoff.put(course.getCourseId(), time);
+                linkCurr = toLink;
+                expDropoff.put(courseId, time);
             } else
-                expDropoff.put(course.getCourseId(), null);
+                expDropoff.put(courseId, null);
         }
         return expDropoff;
     }

@@ -7,17 +7,17 @@ import java.util.List;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.core.network.NetworkUtils;
 
-import amodeus.amodeus.dispatcher.shared.SharedCourse;
-import amodeus.amodeus.dispatcher.shared.SharedMealType;
+import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
+import amodeus.amodeus.dispatcher.core.schedule.directives.StopDirective;
 import amodeus.amodeus.util.math.GlobalAssert;
 
 /* package */ enum StaticHelper {
     ;
 
-    public static boolean checkAllPickupsFirst(List<SharedCourse> sharedMenu) {
+    public static boolean checkAllPickupsFirst(List<Directive> sharedMenu) {
         boolean justPickupsSoFar = true;
-        for (SharedCourse sharedCourse : sharedMenu)
-            if (sharedCourse.getMealType().equals(SharedMealType.PICKUP)) {
+        for (Directive sharedCourse : sharedMenu)
+            if (sharedCourse instanceof StopDirective && ((StopDirective) sharedCourse).isPickup()) {
                 if (!justPickupsSoFar)
                     return false;
             } else
@@ -25,12 +25,12 @@ import amodeus.amodeus.util.math.GlobalAssert;
         return true;
     }
 
-    public static SharedCourse getClosestCourse(Collection<SharedCourse> sharedCourses, Coord coord) {
+    public static Directive getClosestCourse(Collection<Directive> sharedCourses, Coord coord) {
         GlobalAssert.that(!sharedCourses.isEmpty());
-        SharedCourse closestCourse = null;
+        Directive closestCourse = null;
         Double distance = null;
-        for (SharedCourse sharedCourse : sharedCourses) {
-            double d = NetworkUtils.getEuclideanDistance(sharedCourse.getLink().getCoord(), coord);
+        for (Directive sharedCourse : sharedCourses) {
+            double d = NetworkUtils.getEuclideanDistance(Directive.getLink(sharedCourse).getCoord(), coord);
 
             if (closestCourse == null) {
                 closestCourse = sharedCourse;

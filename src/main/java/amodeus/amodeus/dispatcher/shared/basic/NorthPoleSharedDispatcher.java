@@ -22,9 +22,8 @@ import org.matsim.core.router.util.TravelTime;
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.SharedRebalancingDispatcher;
+import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
 import amodeus.amodeus.dispatcher.shared.Compatibility;
-import amodeus.amodeus.dispatcher.shared.SharedCourse;
-import amodeus.amodeus.dispatcher.shared.SharedCourseUtil;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
 import amodeus.amodeus.util.math.GlobalAssert;
 
@@ -73,29 +72,29 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
 
                     /** add pickup for request 2 and move to first location */
                     addSharedRoboTaxiPickup(sharedRoboTaxi, secondRequest);
-                    SharedCourse sharedAVCourse = SharedCourse.pickupCourse(secondRequest);
-                    sharedRoboTaxi.moveAVCourseToPrev(sharedAVCourse);
+                    Directive sharedAVCourse = Directive.pickup(secondRequest);
+                    sharedRoboTaxi.moveToPrevious(sharedAVCourse);
 
                     /** add pickup for request 3 and move to first location */
                     addSharedRoboTaxiPickup(sharedRoboTaxi, thirdRequest);
-                    SharedCourse sharedAVCourse3 = SharedCourse.pickupCourse(thirdRequest);
-                    sharedRoboTaxi.moveAVCourseToPrev(sharedAVCourse3);
-                    sharedRoboTaxi.moveAVCourseToPrev(sharedAVCourse3);
+                    Directive sharedAVCourse3 = Directive.pickup(thirdRequest);
+                    sharedRoboTaxi.moveToPrevious(sharedAVCourse3);
+                    sharedRoboTaxi.moveToPrevious(sharedAVCourse3);
 
                     /** add pickup for request 4 and reorder the menu based on a list of Shared Courses */
-                    List<SharedCourse> courses = SharedCourseUtil.copy(sharedRoboTaxi.getUnmodifiableViewOfCourses());
-                    courses.add(3, SharedCourse.pickupCourse(fourthRequest));
-                    courses.add(SharedCourse.dropoffCourse(fourthRequest));
+                    List<Directive> courses = new ArrayList<>(sharedRoboTaxi.getUnmodifiableViewOfCourses());
+                    courses.add(3, Directive.pickup(fourthRequest));
+                    courses.add(Directive.dropoff(fourthRequest));
                     addSharedRoboTaxiPickup(sharedRoboTaxi, fourthRequest);
                     sharedRoboTaxi.updateMenu(courses);
 
                     /** add a redirect task (to the north pole) and move to prev */
-                    SharedCourse redirectCourse = SharedCourse.redirectCourse(cityNorthPole, Double.toString(now) + sharedRoboTaxi.getId().toString());
+                    Directive redirectCourse = Directive.drive(cityNorthPole);
                     addSharedRoboTaxiRedirect(sharedRoboTaxi, redirectCourse);
-                    sharedRoboTaxi.moveAVCourseToPrev(redirectCourse);
+                    sharedRoboTaxi.moveToPrevious(redirectCourse);
 
                     /** check consistency and end */
-                    GlobalAssert.that(Compatibility.of(sharedRoboTaxi.getUnmodifiableViewOfCourses()).forCapacity(sharedRoboTaxi.getCapacity()));
+                    GlobalAssert.that(Compatibility.of(sharedRoboTaxi.getUnmodifiableViewOfCourses()).forCapacity(sharedRoboTaxi.getScheduleManager(), sharedRoboTaxi.getCapacity()));
                 } else
                     break;
 

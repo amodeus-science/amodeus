@@ -13,8 +13,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.matsim.api.core.v01.network.Link;
 
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
-import amodeus.amodeus.dispatcher.shared.SharedCourse;
-import amodeus.amodeus.dispatcher.shared.SharedMenu;
+import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
+import amodeus.amodeus.dispatcher.shared.backup.SharedMenu;
 import amodeus.amodeus.virtualnetwork.core.VirtualLink;
 import amodeus.amodeus.virtualnetwork.core.VirtualNetwork;
 import amodeus.amodeus.virtualnetwork.core.VirtualNode;
@@ -47,8 +47,8 @@ import amodeus.amodeus.virtualnetwork.core.VirtualNode;
             // add location
             relevantVNodes.add(virtualNetwork.getVirtualNode(roboTaxi.getDivertableLocation()));
             // add location of all planned courses
-            for (SharedCourse course : roboTaxi.getUnmodifiableViewOfCourses())
-                relevantVNodes.add(virtualNetwork.getVirtualNode(course.getLink()));
+            for (Directive course : roboTaxi.getUnmodifiableViewOfCourses())
+                relevantVNodes.add(virtualNetwork.getVirtualNode(Directive.getLink(course)));
 
             /** get current location and add */
             Set<VirtualNode<Link>> allNeighbors = new HashSet<>();

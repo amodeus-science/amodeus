@@ -29,8 +29,7 @@ import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.RoboTaxiStatus;
 import amodeus.amodeus.dispatcher.core.SharedRebalancingDispatcher;
-import amodeus.amodeus.dispatcher.shared.SharedCourse;
-import amodeus.amodeus.dispatcher.shared.SharedCourseUtil;
+import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
 import amodeus.amodeus.dispatcher.util.DistanceHeuristics;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
 import amodeus.amodeus.parking.capacities.ParkingCapacity;
@@ -158,7 +157,9 @@ import amodeus.amodeus.routing.EasyMinTimePathCalculator;
                     now, ttc, requestKeyInfoMap);
 
             // RTV diagram construction (generate a list of edges between trip and vehicle)
-            List<TripWithVehicle> grossListOfRTVEdges = rtvGG.generateRTV(getRoboTaxis(), newAddedValidRequests, //
+            List<RoboTaxi> avaialbleRts = getRoboTaxis().stream().filter(rt -> !isPickingUp(rt)).collect(Collectors.toList());
+            
+            List<TripWithVehicle> grossListOfRTVEdges = rtvGG.generateRTV(avaialbleRts, newAddedValidRequests, //
                     removedRequests, now, requestKeyInfoMap, //
                     rvEdges, ttc, lastAssignment, trafficTimeAllowance);
 
@@ -187,7 +188,7 @@ import amodeus.amodeus.routing.EasyMinTimePathCalculator;
                 List<StopInRoute> routeToAssign = tripWithVehicle.getRoute();
 
                 // assign
-                List<SharedCourse> courseForThisTaxi = routeToAssign.stream() //
+                List<Directive> courseForThisTaxi = routeToAssign.stream() //
                         .map(StopInRoute::getSharedCourse) //
                         .collect(Collectors.toList());
                 for (PassengerRequest avRequest : tripWithVehicle.getTrip())
@@ -196,7 +197,7 @@ import amodeus.amodeus.routing.EasyMinTimePathCalculator;
                 Set<PassengerRequest> setOfPassengerRequestInRoute = routeToAssign.stream() //
                         .map(StopInRoute::getavRequest) //
                         .collect(Collectors.toSet());
-                for (PassengerRequest avRequest : SharedCourseUtil.getUniquePassengerRequests(roboTaxiToAssign.getUnmodifiableViewOfCourses()))
+                for (PassengerRequest avRequest : getUniqueRequests(roboTaxiToAssign))
                     if (!setOfPassengerRequestInRoute.contains(avRequest))
                         abortAvRequest(avRequest);
 

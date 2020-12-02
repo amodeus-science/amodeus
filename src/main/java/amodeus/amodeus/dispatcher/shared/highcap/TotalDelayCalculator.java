@@ -7,8 +7,6 @@ import java.util.Objects;
 
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
-import amodeus.amodeus.dispatcher.shared.SharedMealType;
-
 /* package */ enum TotalDelayCalculator {
 
     ;
@@ -30,7 +28,7 @@ import amodeus.amodeus.dispatcher.shared.SharedMealType;
         // List<StopInRoute> thisRoute = new ArrayList<>(route); //in order not to modify the original route, we copy it to thisRoute.
 
         for (StopInRoute stopInRoute : route)
-            if (stopInRoute.getStopType() == SharedMealType.DROPOFF) {
+            if (!stopInRoute.isPickup()) {
                 PassengerRequest requestOfTheStop = stopInRoute.getavRequest();
                 double modifiedSubmissionTime = requestKeyInfoMap.get(requestOfTheStop).getModifiableSubmissionTime();
                 double timeToTravel = ttc.of(requestOfTheStop.getFromLink(), //

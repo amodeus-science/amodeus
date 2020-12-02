@@ -1,16 +1,16 @@
-package amodeus.amodeus.dispatcher.core.schedule;
+package amodeus.amodeus.dispatcher.core.schedule.directives;
 
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
-public class DefaultStop implements Stop {
+public class DefaultStopDirective extends AbstractDirective implements StopDirective {
     private final PassengerRequest request;
     private final boolean isPickup;
-    private final boolean isModifiable;
 
-    public DefaultStop(PassengerRequest request, boolean isPickup, boolean isModifiable) {
+    public DefaultStopDirective(PassengerRequest request, boolean isPickup, boolean isModifiable) {
+        super(isModifiable);
+
         this.request = request;
         this.isPickup = isPickup;
-        this.isModifiable = isModifiable;
     }
 
     @Override
@@ -22,10 +22,4 @@ public class DefaultStop implements Stop {
     public boolean isPickup() {
         return isPickup;
     }
-
-    @Override
-    public boolean isModifiable() {
-        return isModifiable;
-    }
-
 }

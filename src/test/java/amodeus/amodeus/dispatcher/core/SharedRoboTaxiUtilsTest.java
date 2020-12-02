@@ -1,24 +1,11 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package amodeus.amodeus.dispatcher.core;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-
-import org.matsim.contrib.dvrp.util.LinkTimePair;
-
-import amodeus.amodeus.dispatcher.shared.OnMenuRequests;
-import amodeus.amodeus.dispatcher.shared.SharedCourse;
-import amodeus.amodeus.dispatcher.shared.SharedCourseAccess;
-import amodeus.amodeus.dispatcher.shared.SharedCourseUtil;
-import amodeus.amodeus.dispatcher.shared.SharedMealType;
 import junit.framework.TestCase;
 
 public class SharedRoboTaxiUtilsTest extends TestCase {
     public void testSimple() {
-        ArtificialSharedScenarioCreator s = new ArtificialSharedScenarioCreator();
+        /*ArtificialSharedScenarioCreator s = new ArtificialSharedScenarioCreator();
 
         assertEquals(SharedRoboTaxiUtils.calculateStatusFromMenu(s.roboTaxi1), RoboTaxiStatus.STAY);
         s.roboTaxi1.addRedirectCourseToMenu(SharedCourse.redirectCourse(s.linkUp, "redirect0"));
@@ -187,7 +174,7 @@ public class SharedRoboTaxiUtilsTest extends TestCase {
             // ---
         }
         System.out.println("Robo Taxi Test done");
-
+        */
     }
 
 }

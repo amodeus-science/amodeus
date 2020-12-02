@@ -18,11 +18,9 @@ import org.matsim.core.network.NetworkUtils;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.RoboTaxiStatus;
 import amodeus.amodeus.dispatcher.core.SharedUniversalDispatcher;
+import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
+import amodeus.amodeus.dispatcher.core.schedule.directives.StopDirective;
 import amodeus.amodeus.dispatcher.shared.Compatibility;
-import amodeus.amodeus.dispatcher.shared.OnMenuRequests;
-import amodeus.amodeus.dispatcher.shared.SharedCourse;
-import amodeus.amodeus.dispatcher.shared.SharedCourseAccess;
-import amodeus.amodeus.dispatcher.shared.SharedMealType;
 import amodeus.amodeus.util.math.GlobalAssert;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -101,13 +99,19 @@ public class BeamExtensionForSharing {
         for (RoboTaxi roboTaxi : addedAvRequests.values()) {
             roboTaxi.updateMenu(Reorder.firstAllPickupsThenDropoffs(roboTaxi.getUnmodifiableViewOfCourses()));
             /** lets improve the menu a bit */
-            Optional<SharedCourse> nextCourse = SharedCourseAccess.getStarter(roboTaxi);
-            if (nextCourse.isPresent())
-                if (nextCourse.get().getMealType().equals(SharedMealType.PICKUP)) {
-                    roboTaxi.updateMenu(FastPickupTour.fastPickupTour(roboTaxi.getUnmodifiableViewOfCourses(), roboTaxi.getDivertableLocation().getCoord()));
-                    roboTaxi.updateMenu(FastDropoffTour.fastDropoffTour(roboTaxi.getUnmodifiableViewOfCourses()));
-                    GlobalAssert.that(Compatibility.of(roboTaxi.getUnmodifiableViewOfCourses()).forCapacity(roboTaxi.getCapacity()));
+            if (roboTaxi.getScheduleManager().getDirectives().size() > 0) {
+                Directive nextCourse = roboTaxi.getScheduleManager().getDirectives().get(0);
+
+                if (nextCourse instanceof StopDirective) {
+                    StopDirective stopDirective = (StopDirective) nextCourse;
+
+                    if (stopDirective.isPickup()) {
+                        roboTaxi.updateMenu(FastPickupTour.fastPickupTour(roboTaxi.getUnmodifiableViewOfCourses(), roboTaxi.getDivertableLocation().getCoord()));
+                        roboTaxi.updateMenu(FastDropoffTour.fastDropoffTour(roboTaxi.getUnmodifiableViewOfCourses()));
+                        GlobalAssert.that(Compatibility.of(roboTaxi.getUnmodifiableViewOfCourses()).forCapacity(roboTaxi.getScheduleManager(), roboTaxi.getCapacity()));
+                    }
                 }
+            }
         }
     }
 
@@ -131,7 +135,19 @@ public class BeamExtensionForSharing {
      * @param numberAdded
      * @return */
     private static boolean oneMorePickupPossible(RoboTaxi roboTaxi, AtomicInteger numberAdded) {
-        return OnMenuRequests.getNumberMealTypes(roboTaxi.getUnmodifiableViewOfCourses(), SharedMealType.DROPOFF)//
+        int numberOfDropoff = 0;
+
+        for (Directive directive : roboTaxi.getScheduleManager().getDirectives()) {
+            if (directive instanceof StopDirective) {
+                StopDirective stopDirective = (StopDirective) directive;
+
+                if (!stopDirective.isPickup()) {
+                    numberOfDropoff++;
+                }
+            }
+        }
+
+        return numberOfDropoff//
                 + numberAdded.get() < roboTaxi.getCapacity();
     }
 
@@ -146,7 +162,7 @@ public class BeamExtensionForSharing {
     }
 
     private static Coord getDirectionOfTrip(RoboTaxi roboTaxi) {
-        List<SharedCourse> menu = roboTaxi.getUnmodifiableViewOfCourses();
-        return menu.get(menu.size() - 1).getAvRequest().getToLink().getCoord();
+        List<Directive> menu = roboTaxi.getUnmodifiableViewOfCourses();
+        return ((StopDirective) menu.get(menu.size() - 1)).getRequest().getToLink().getCoord();
     }
 }

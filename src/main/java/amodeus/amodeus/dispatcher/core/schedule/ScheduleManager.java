@@ -25,52 +25,23 @@ import org.matsim.contrib.dvrp.tracker.OnlineDriveTaskTracker;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
+import amodeus.amodeus.dispatcher.core.schedule.directives.DefaultDriveDirective;
+import amodeus.amodeus.dispatcher.core.schedule.directives.DefaultStopDirective;
+import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
+import amodeus.amodeus.dispatcher.core.schedule.directives.DriveDirective;
+import amodeus.amodeus.dispatcher.core.schedule.directives.StopDirective;
 
 public class ScheduleManager {
     private final Schedule schedule;
     private final FutureVrpPathCalculator router;
 
-    private final List<InternalStop> stopSequence = new LinkedList<>();
+    private final List<InternalDirective> directiveSequence = new LinkedList<>();
     private final Set<PassengerRequest> onboard = new HashSet<>();
-    private Link destinationLink;
 
     private double now = 0.0;
-
-    private class InternalStop implements Stop {
-        private final PassengerRequest request;
-        private final boolean isPickup;
-        private AmodeusStopTask task;
-
-        InternalStop(PassengerRequest request, boolean isPickup) {
-            this.request = request;
-            this.isPickup = isPickup;
-        }
-
-        void setTask(AmodeusStopTask task) {
-            this.task = task;
-        }
-
-        AmodeusStopTask getTask() {
-            return task;
-        }
-
-        @Override
-        public PassengerRequest getRequest() {
-            return request;
-        }
-
-        @Override
-        public boolean isPickup() {
-            return isPickup;
-        }
-
-        @Override
-        public boolean isModifiable() {
-            return task.getStatus() == TaskStatus.PLANNED;
-        }
-    }
 
     public ScheduleManager(RoboTaxi vehicle, FutureVrpPathCalculator router) {
         this.schedule = vehicle.getSchedule();
@@ -91,30 +62,34 @@ public class ScheduleManager {
 
     public void updateSequence(double now) {
         this.now = now;
-        Iterator<InternalStop> iterator = stopSequence.iterator();
+        Iterator<InternalDirective> iterator = directiveSequence.iterator();
 
         while (iterator.hasNext()) {
-            InternalStop stop = iterator.next();
+            InternalDirective directive = iterator.next();
 
-            if (stop.task == null) {
-                if (stop.task.getStatus() != TaskStatus.PLANNED) {
-                    if (stop.isPickup()) {
-                        boolean wasPresent = !onboard.add(stop.getRequest());
+            if (directive.hasTask()) {
+                if (directive.getTask().getStatus() == TaskStatus.PERFORMED) {
+                    if (directive instanceof StopDirective) {
+                        StopDirective stopDirective = (StopDirective) directive;
 
-                        if (wasPresent) {
-                            throw new IllegalStateException("Request is already on board");
-                        }
-                    } else {
-                        boolean wasPresent = onboard.remove(stop.getRequest());
+                        if (stopDirective.isPickup()) {
+                            boolean wasPresent = !onboard.add(stopDirective.getRequest());
 
-                        if (!wasPresent) {
-                            throw new IllegalStateException("Request is not on board");
+                            if (wasPresent) {
+                                throw new IllegalStateException("Request is already on board");
+                            }
+                        } else {
+                            boolean wasPresent = onboard.remove(stopDirective.getRequest());
+
+                            if (!wasPresent) {
+                                throw new IllegalStateException("Request is not on board");
+                            }
                         }
                     }
-                }
 
-                if (stop.task.getStatus() == TaskStatus.PERFORMED) {
                     iterator.remove();
+                } else {
+                    break;
                 }
             }
         }
@@ -131,7 +106,7 @@ public class ScheduleManager {
             schedule.removeLastTask();
         }
 
-        List<InternalStop> sequence = new LinkedList<>(stopSequence);
+        List<InternalDirective> sequence = new LinkedList<>(directiveSequence);
 
         if (sequence.size() > 0) {
             if (isStop(currentTask)) {
@@ -139,32 +114,46 @@ public class ScheduleManager {
                 DrtStopTask stopTask = (DrtStopTask) currentTask;
 
                 while (sequence.size() > 0) {
-                    InternalStop stop = sequence.get(0);
+                    InternalDirective directive = sequence.get(0);
 
-                    if (stop.isPickup() && stopTask.getPickupRequests().containsKey(stop.getRequest().getId())) {
-                        sequence.remove(0);
-                        continue;
-                    }
+                    if (directive instanceof StopDirective) {
+                        StopDirective stopDirective = (StopDirective) directive;
 
-                    if (!stop.isPickup() && stopTask.getDropoffRequests().containsKey(stop.getRequest().getId())) {
-                        sequence.remove(0);
-                        continue;
+                        if (stopDirective.isPickup() && stopTask.getPickupRequests().containsKey(stopDirective.getRequest().getId())) {
+                            sequence.remove(0);
+                            continue;
+                        }
+
+                        if (!stopDirective.isPickup() && stopTask.getDropoffRequests().containsKey(stopDirective.getRequest().getId())) {
+                            sequence.remove(0);
+                            continue;
+                        }
                     }
 
                     break;
                 }
             } else if (isDrive(currentTask)) {
                 // If driving, make sure we're driving to the first stop. If needed, divert.
-                InternalStop stop = sequence.get(0);
-                Link stopLink = stop.isPickup() ? stop.getRequest().getFromLink() : stop.getRequest().getToLink();
+                Directive directive = sequence.get(0);
+                Link destination = null;
+
+                if (directive instanceof DriveDirective) {
+                    InternalDriveDirective driveDirective = (InternalDriveDirective) directive;
+                    destination = driveDirective.getDestination();
+                    driveDirective.setTask(currentTask);
+                    sequence.remove(0);
+                } else {
+                    InternalStopDirective stopDirective = (InternalStopDirective) directive;
+                    destination = stopDirective.isPickup ? stopDirective.getRequest().getFromLink() : stopDirective.getRequest().getToLink();
+                }
 
                 DrtDriveTask driveTask = (DrtDriveTask) currentTask;
 
-                if (stopLink != driveTask.getPath().getToLink()) {
+                if (destination != driveTask.getPath().getToLink()) {
                     OnlineDriveTaskTracker tracker = (OnlineDriveTaskTracker) driveTask.getTaskTracker();
                     LinkTimePair diversionPoint = tracker.getDiversionPoint();
 
-                    VrpPathWithTravelData path = router.calculatePath(diversionPoint.link, stopLink, diversionPoint.time);
+                    VrpPathWithTravelData path = router.calculatePath(diversionPoint.link, destination, diversionPoint.time);
                     tracker.divertPath(path);
                 }
             } else if (isStay(currentTask)) {
@@ -177,7 +166,7 @@ public class ScheduleManager {
 
             Task previousTask = currentTask;
 
-            for (InternalStop stop : sequence) {
+            for (InternalDirective directive : sequence) {
                 double previousEndTime = previousTask.getEndTime();
                 Link previousLink = null;
 
@@ -189,88 +178,76 @@ public class ScheduleManager {
                     previousLink = ((AmodeusStopTask) previousTask).getLink();
                 }
 
-                Link stopLink = stop.isPickup() ? stop.getRequest().getFromLink() : stop.getRequest().getToLink();
+                if (directive instanceof StopDirective) {
+                    InternalStopDirective stopDirective = (InternalStopDirective) directive;
+                    Link stopLink = stopDirective.isPickup() ? stopDirective.getRequest().getFromLink() : stopDirective.getRequest().getToLink();
 
-                if (stopLink != previousLink) {
-                    // We need to add a drive in between
+                    if (stopLink != previousLink) {
+                        // We need to add a drive in between
 
-                    VrpPathWithTravelData path = router.calculatePath(previousLink, stopLink, previousEndTime);
-                    DrtDriveTask driveTask = new DrtDriveTask(path, DrtDriveTask.TYPE);
-                    schedule.addTask(driveTask);
-
-                    previousEndTime = driveTask.getEndTime();
-                    previousLink = driveTask.getPath().getToLink();
-                    previousTask = driveTask;
-                }
-
-                boolean addStopTask = false;
-
-                // TODO: Simplify with generalized StopTask instead of StopType discrimination
-
-                if (isStop(previousTask)) {
-                    // If we're already at the stop, so we can add the passenger
-                    AmodeusStopTask stopTask = (AmodeusStopTask) previousTask;
-
-                    if (stop.isPickup() && stopTask.getStopType() == StopType.Pickup) {
-                        stopTask.addPickupRequest(stop.getRequest());
-                        stop.task = stopTask;
-                    } else if (!stop.isPickup() && stopTask.getStopType() == StopType.Dropoff) {
-                        stopTask.addDropoffRequest(stop.getRequest());
-                        stop.task = stopTask;
-                    } else {
-                        addStopTask = true;
-                    }
-
-                    // TODO: Can it happen that we pick up and drop off a customer at the same stop? In that case, we can handle this special case here.
-                }
-
-                if (addStopTask) {
-                    // We need to add a new stop task
-
-                    double ESTIMATED_STOP_TIME = 600.0; // TODO: We don't really care.
-
-                    AmodeusStopTask task = new AmodeusStopTask(now, now + ESTIMATED_STOP_TIME, stopLink, stop.isPickup() ? StopType.Pickup : StopType.Dropoff);
-                    stop.task = task;
-                    schedule.addTask(task);
-
-                    previousTask = task;
-                }
-            }
-
-            // Finally, add a diversion if requested
-
-            if (destinationLink != null) {
-                DrtStopTask stopTask = (DrtStopTask) previousTask;
-
-                if (stopTask.getLink() != destinationLink) {
-                    VrpPathWithTravelData path = router.calculatePath(stopTask.getLink(), destinationLink, stopTask.getEndTime());
-                    DrtDriveTask driveTask = new DrtDriveTask(path, DrtDriveTask.TYPE);
-                    schedule.addTask(driveTask);
-                }
-            }
-        } else { // There were not stops in the sequence
-            if (destinationLink != null) { // But we may want to add a diversion
-                if (isDrive(currentTask)) {
-                    DrtDriveTask driveTask = (DrtDriveTask) currentTask;
-
-                    if (driveTask.getPath().getToLink() != destinationLink) {
-                        // We need a diversion
-
-                        OnlineDriveTaskTracker tracker = (OnlineDriveTaskTracker) driveTask.getTaskTracker();
-                        LinkTimePair diversionPoint = tracker.getDiversionPoint();
-
-                        VrpPathWithTravelData path = router.calculatePath(diversionPoint.link, destinationLink, diversionPoint.time);
-                        tracker.divertPath(path);
-                    }
-                } else {
-                    StayTask stayTask = (StayTask) currentTask;
-
-                    if (stayTask.getLink() != destinationLink) {
-                        // We need to add a new task
-
-                        VrpPathWithTravelData path = router.calculatePath(stayTask.getLink(), destinationLink, stayTask.getEndTime());
+                        VrpPathWithTravelData path = router.calculatePath(previousLink, stopLink, previousEndTime);
                         DrtDriveTask driveTask = new DrtDriveTask(path, DrtDriveTask.TYPE);
                         schedule.addTask(driveTask);
+
+                        previousEndTime = driveTask.getEndTime();
+                        previousLink = driveTask.getPath().getToLink();
+                        previousTask = driveTask;
+                    }
+
+                    boolean addStopTask = true;
+
+                    // TODO: Simplify with generalized StopTask instead of StopType discrimination
+
+                    if (isStop(previousTask)) {
+                        // If we're already at the stop, so we can add the passenger
+                        AmodeusStopTask stopTask = (AmodeusStopTask) previousTask;
+
+                        if (stopDirective.isPickup() && stopTask.getStopType() == StopType.Pickup) {
+                            stopTask.addPickupRequest(stopDirective.getRequest());
+                            stopDirective.setTask(stopTask);
+                            addStopTask = false;
+                        } else if (!stopDirective.isPickup() && stopTask.getStopType() == StopType.Dropoff) {
+                            stopTask.addDropoffRequest(stopDirective.getRequest());
+                            stopDirective.setTask(stopTask);
+                            addStopTask = false;
+                        }
+
+                        // TODO: Can it happen that we pick up and drop off a customer at the same stop? In that case, we can handle this special case here.
+                    }
+
+                    if (addStopTask) {
+                        // We need to add a new stop task
+
+                        double ESTIMATED_STOP_TIME = 600.0; // TODO: We don't really care.
+
+                        AmodeusStopTask task = new AmodeusStopTask(previousEndTime, previousEndTime + ESTIMATED_STOP_TIME, stopLink,
+                                stopDirective.isPickup() ? StopType.Pickup : StopType.Dropoff);
+
+                        if (stopDirective.isPickup()) {
+                            task.addPickupRequest(stopDirective.getRequest());
+                        } else {
+                            task.addDropoffRequest(stopDirective.getRequest());
+                        }
+
+                        stopDirective.setTask(task);
+                        schedule.addTask(task);
+
+                        previousTask = task;
+                    }
+                } else {
+                    InternalDriveDirective driveDirective = (InternalDriveDirective) directive;
+                    Link destination = driveDirective.getDestination();
+
+                    if (destination != previousLink) {
+                        // We need to add a drive in between
+
+                        VrpPathWithTravelData path = router.calculatePath(previousLink, destination, previousEndTime);
+                        DrtDriveTask driveTask = new DrtDriveTask(path, DrtDriveTask.TYPE);
+                        schedule.addTask(driveTask);
+
+                        previousEndTime = driveTask.getEndTime();
+                        previousLink = driveTask.getPath().getToLink();
+                        previousTask = driveTask;
                     }
                 }
             }
@@ -292,119 +269,276 @@ public class ScheduleManager {
             DrtStayTask stayTask = new DrtStayTask(lastTask.getEndTime(), Double.POSITIVE_INFINITY, lastLink);
             schedule.addTask(stayTask);
         }
+
+        for (InternalDirective directive : directiveSequence) {
+            if (!directive.hasTask()) {
+                throw new IllegalStateException("Found directive without task!");
+            }
+        }
+    }
+
+    private List<InternalStopDirective> getStopDirectives() {
+        return directiveSequence.stream().filter(InternalStopDirective.class::isInstance).map(InternalStopDirective.class::cast).collect(Collectors.toList());
     }
 
     public void addRequest(PassengerRequest request) {
-        for (InternalStop stop : stopSequence) {
-            if (stop.getRequest() == request) {
-                throw new IllegalStateException("Request is already registered");
-            }
-        }
+        List<Directive> directives = new LinkedList<>(getDirectives());
 
-        stopSequence.add(new InternalStop(request, true));
-        stopSequence.add(new InternalStop(request, false));
+        directives.add(new InternalStopDirective(request, true));
+        directives.add(new InternalStopDirective(request, false));
 
-        updateSchedule();
+        setDirectives(directives);
     }
 
     public void removeRequest(PassengerRequest request) {
-        Iterator<InternalStop> iterator = stopSequence.iterator();
-
-        Task currentTask = schedule.getCurrentTask();
-
-        if (isStay(currentTask)) {
-            AmodeusStopTask stopTask = (AmodeusStopTask) currentTask;
-
-            if (stopTask.getPickupRequests().containsKey(request.getId())) {
-                throw new IllegalStateException("Pick-up is already ongoing");
-            }
-        }
-
-        if (onboard.contains(request)) {
-            throw new IllegalStateException("Passenger is already on board");
-        }
+        List<Directive> directives = new LinkedList<>(getDirectives());
+        Iterator<Directive> iterator = directives.iterator();
 
         while (iterator.hasNext()) {
-            InternalStop stop = iterator.next();
+            Directive directive = iterator.next();
 
-            if (stop.getRequest() == request) {
-                iterator.remove();
+            if (directive instanceof StopDirective) {
+                StopDirective stopDirective = (StopDirective) directive;
+
+                if (stopDirective.getRequest().equals(request)) {
+                    iterator.remove();
+                }
             }
         }
 
         updateSchedule();
     }
 
-    public ImmutableList<Stop> getStopSequence() {
-        return ImmutableList.copyOf(stopSequence.stream().map(s -> new DefaultStop(s.getRequest(), s.isPickup(), s.isModifiable())).collect(Collectors.toList()));
+    public ImmutableList<Directive> getDirectives() {
+        ImmutableList.Builder<Directive> builder = new ImmutableList.Builder<>();
+
+        for (InternalDirective directive : directiveSequence) {
+            if (directive instanceof StopDirective) {
+                StopDirective stopDirective = (StopDirective) directive;
+                builder.add(new DefaultStopDirective(stopDirective.getRequest(), stopDirective.isPickup(), stopDirective.isModifiable()));
+            } else {
+                DriveDirective driveDirective = (DriveDirective) directive;
+                builder.add(new DefaultDriveDirective(driveDirective.getDestination(), driveDirective.isModifiable()));
+            }
+        }
+
+        return builder.build();
     }
 
-    public void setStopSequence(ImmutableList<Stop> sequence) {
+    public void setDirectives(List<Directive> sequence) {
         // All stops that are currently handled need to be replicated exactly!
 
         int index = 0;
 
-        while (stopSequence.get(index).task.getStatus() != TaskStatus.PLANNED) {
+        if (directiveSequence.size() > 0) {
+            while (!directiveSequence.get(index).isModifiable()) {
+                if (!directiveSequence.get(index).isEqaul(sequence.get(index))) {
+                    throw new IllegalStateException("Element " + index + " can not be changed anymore!");
+                }
 
-            if (!stopSequence.get(index).equals(sequence.get(index))) {
-                throw new IllegalStateException("Element " + index + " can not be changed anymore!");
+                index++;
             }
-
-            index++;
         }
 
         // Check sequence of pickups and dropoffs
 
-        Set<PassengerRequest> pickups = new HashSet<>();
+        Set<PassengerRequest> pickups = new HashSet<>(onboard);
 
-        for (Stop stop : sequence) {
-            if (stop.isPickup()) {
-                boolean wasRegistered = !pickups.add(stop.getRequest());
+        for (Directive directive : sequence) {
+            if (directive instanceof StopDirective) {
+                StopDirective stopDirective = (StopDirective) directive;
 
-                if (wasRegistered) {
-                    throw new IllegalStateException("Pick-up added twice");
-                }
-            } else {
-                boolean wasRegistered = pickups.remove(stop.getRequest());
+                if (stopDirective.isPickup()) {
+                    boolean wasRegistered = !pickups.add(stopDirective.getRequest());
 
-                if (!wasRegistered) {
-                    throw new IllegalStateException("Pick-up was not registered");
+                    if (wasRegistered) {
+                        throw new IllegalStateException("Pick-up added twice");
+                    }
+                } else {
+                    boolean wasRegistered = pickups.remove(stopDirective.getRequest());
+
+                    if (!wasRegistered) {
+                        throw new IllegalStateException("Pick-up was not registered");
+                    }
                 }
             }
         }
 
+        if (pickups.size() > 0) {
+            throw new IllegalStateException("Some pick-ups do not have a drop-off");
+        }
+
         // Update internal sequence
 
-        while (stopSequence.size() >= index) {
-            stopSequence.remove(stopSequence.size() - 1);
+        while (directiveSequence.size() > index) {
+            directiveSequence.remove(directiveSequence.size() - 1);
         }
 
         for (int i = index; i < sequence.size(); i++) {
-            Stop stop = sequence.get(i);
-            stopSequence.add(new InternalStop(stop.getRequest(), stop.isPickup()));
+            Directive directive = sequence.get(i);
+
+            if (directive instanceof StopDirective) {
+                StopDirective stopDirective = (StopDirective) directive;
+                directiveSequence.add(new InternalStopDirective(stopDirective.getRequest(), stopDirective.isPickup()));
+            } else {
+                DriveDirective driveDirective = (DriveDirective) directive;
+                directiveSequence.add(new InternalDriveDirective(driveDirective.getDestination()));
+            }
         }
 
-        if (stopSequence.size() != sequence.size()) {
+        if (directiveSequence.size() != sequence.size()) {
             throw new IllegalStateException("Sequences must have same length");
         }
 
         updateSchedule();
     }
 
-    public static int findIndex(ImmutableList<Stop> sequence, PassengerRequest request, boolean findPickup) {
+    public static int findIndex(List<Directive> sequence, PassengerRequest request, boolean findPickup) {
         for (int index = 0; index < sequence.size(); index++) {
-            Stop stop = sequence.get(index);
+            Directive directive = sequence.get(index);
 
-            if (findPickup == stop.isPickup() && request == stop.getRequest()) {
-                return index;
+            if (directive instanceof StopDirective) {
+                StopDirective stopDirective = (StopDirective) directive;
+
+                if (findPickup == stopDirective.isPickup() && request == stopDirective.getRequest()) {
+                    return index;
+                }
             }
         }
 
         throw new IllegalStateException("Request not found");
     }
 
-    public static Stop findStop(ImmutableList<Stop> sequence, PassengerRequest request, boolean findPickup) {
+    public static Directive findStop(List<Directive> sequence, PassengerRequest request, boolean findPickup) {
         int index = findIndex(sequence, request, findPickup);
         return sequence.get(index);
+    }
+
+    public ImmutableSet<PassengerRequest> getOnBoardRequests() {
+        return ImmutableSet.copyOf(onboard);
+    }
+
+    public int getNumberOfOnBoardRequests() {
+        return onboard.size();
+    }
+
+    private interface InternalDirective extends Directive {
+        void setTask(Task task);
+
+        Task getTask();
+
+        boolean hasTask();
+
+        boolean isEqaul(Directive other);
+    }
+
+    private class InternalStopDirective implements StopDirective, InternalDirective {
+        private final PassengerRequest request;
+        private final boolean isPickup;
+        private AmodeusStopTask task;
+
+        InternalStopDirective(PassengerRequest request, boolean isPickup) {
+            this.request = request;
+            this.isPickup = isPickup;
+        }
+
+        @Override
+        public void setTask(Task task) {
+            if (!(task instanceof AmodeusStopTask)) {
+                throw new IllegalStateException("Expected AmodeusStopTask");
+            }
+
+            this.task = (AmodeusStopTask) task;
+        }
+
+        public AmodeusStopTask getTask() {
+            return task;
+        }
+
+        @Override
+        public PassengerRequest getRequest() {
+            return request;
+        }
+
+        @Override
+        public boolean isPickup() {
+            return isPickup;
+        }
+
+        @Override
+        public boolean isModifiable() {
+            return task.getStatus() == TaskStatus.PLANNED;
+        }
+
+        @Override
+        public boolean hasTask() {
+            return task != null;
+        }
+
+        @Override
+        public boolean isEqaul(Directive other) {
+            if (other instanceof StopDirective) {
+                StopDirective stopDirective = (StopDirective) other;
+
+                boolean isEqual = true;
+                isEqual &= request.getId().equals(stopDirective.getRequest().getId());
+                isEqual &= isPickup == stopDirective.isPickup();
+
+                return isEqual;
+            }
+
+            return false;
+        }
+    }
+
+    private class InternalDriveDirective implements DriveDirective, InternalDirective {
+        private final Link destination;
+        private DrtDriveTask task;
+
+        InternalDriveDirective(Link destination) {
+            this.destination = destination;
+        }
+
+        @Override
+        public void setTask(Task task) {
+            if (!(task instanceof DrtDriveTask)) {
+                throw new IllegalStateException("Expected DrtDriveTask");
+            }
+
+            this.task = (DrtDriveTask) task;
+        }
+
+        @Override
+        public DrtDriveTask getTask() {
+            return task;
+        }
+
+        @Override
+        public Link getDestination() {
+            return destination;
+        }
+
+        @Override
+        public boolean isModifiable() {
+            return task.getStatus() == TaskStatus.PLANNED;
+        }
+
+        @Override
+        public boolean hasTask() {
+            return task != null;
+        }
+
+        @Override
+        public boolean isEqaul(Directive other) {
+            if (other instanceof DriveDirective) {
+                DriveDirective driveDirective = (DriveDirective) other;
+
+                boolean isEqual = true;
+                isEqual &= destination.equals(driveDirective.getDestination());
+                return isEqual;
+            }
+
+            return false;
+        }
     }
 }

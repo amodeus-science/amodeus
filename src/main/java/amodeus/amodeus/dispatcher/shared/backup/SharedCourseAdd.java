@@ -1,5 +1,5 @@
 /* amodeus - Copyright (c) 2019, ETH Zurich, Institute for Dynamic Systems and Control */
-package amodeus.amodeus.dispatcher.shared;
+package amodeus.amodeus.dispatcher.shared.backup;
 
 import java.util.List;
 import java.util.function.BiConsumer;
