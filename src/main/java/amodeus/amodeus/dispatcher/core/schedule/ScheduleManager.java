@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask.StopType;
@@ -23,26 +24,51 @@ import org.matsim.contrib.dvrp.schedule.Task.TaskStatus;
 import org.matsim.contrib.dvrp.tracker.OnlineDriveTaskTracker;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 
+import com.google.common.collect.ImmutableList;
+
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 
 public class ScheduleManager {
     private final Schedule schedule;
     private final FutureVrpPathCalculator router;
 
-    private final List<Stop> stopSequence = new LinkedList<>();
+    private final List<InternalStop> stopSequence = new LinkedList<>();
     private final Set<PassengerRequest> onboard = new HashSet<>();
     private Link destinationLink;
 
     private double now = 0.0;
 
-    private class Stop {
-        final boolean isPickup;
-        final PassengerRequest request;
-        AmodeusStopTask task;
+    private class InternalStop implements Stop {
+        private final PassengerRequest request;
+        private final boolean isPickup;
+        private AmodeusStopTask task;
 
-        Stop(PassengerRequest request, boolean isPickup) {
+        InternalStop(PassengerRequest request, boolean isPickup) {
             this.request = request;
             this.isPickup = isPickup;
+        }
+
+        void setTask(AmodeusStopTask task) {
+            this.task = task;
+        }
+
+        AmodeusStopTask getTask() {
+            return task;
+        }
+
+        @Override
+        public PassengerRequest getRequest() {
+            return request;
+        }
+
+        @Override
+        public boolean isPickup() {
+            return isPickup;
+        }
+
+        @Override
+        public boolean isModifiable() {
+            return task.getStatus() == TaskStatus.PLANNED;
         }
     }
 
@@ -65,21 +91,21 @@ public class ScheduleManager {
 
     public void updateSequence(double now) {
         this.now = now;
-        Iterator<Stop> iterator = stopSequence.iterator();
+        Iterator<InternalStop> iterator = stopSequence.iterator();
 
         while (iterator.hasNext()) {
-            Stop stop = iterator.next();
+            InternalStop stop = iterator.next();
 
             if (stop.task == null) {
                 if (stop.task.getStatus() != TaskStatus.PLANNED) {
-                    if (stop.isPickup) {
-                        boolean wasPresent = !onboard.add(stop.request);
+                    if (stop.isPickup()) {
+                        boolean wasPresent = !onboard.add(stop.getRequest());
 
                         if (wasPresent) {
                             throw new IllegalStateException("Request is already on board");
                         }
                     } else {
-                        boolean wasPresent = onboard.remove(stop.request);
+                        boolean wasPresent = onboard.remove(stop.getRequest());
 
                         if (!wasPresent) {
                             throw new IllegalStateException("Request is not on board");
@@ -105,7 +131,7 @@ public class ScheduleManager {
             schedule.removeLastTask();
         }
 
-        List<Stop> sequence = new LinkedList<>(stopSequence);
+        List<InternalStop> sequence = new LinkedList<>(stopSequence);
 
         if (sequence.size() > 0) {
             if (isStop(currentTask)) {
@@ -113,14 +139,14 @@ public class ScheduleManager {
                 DrtStopTask stopTask = (DrtStopTask) currentTask;
 
                 while (sequence.size() > 0) {
-                    Stop stop = sequence.get(0);
+                    InternalStop stop = sequence.get(0);
 
-                    if (stop.isPickup && stopTask.getPickupRequests().containsKey(stop.request.getId())) {
+                    if (stop.isPickup() && stopTask.getPickupRequests().containsKey(stop.getRequest().getId())) {
                         sequence.remove(0);
                         continue;
                     }
 
-                    if (!stop.isPickup && stopTask.getDropoffRequests().containsKey(stop.request.getId())) {
+                    if (!stop.isPickup() && stopTask.getDropoffRequests().containsKey(stop.getRequest().getId())) {
                         sequence.remove(0);
                         continue;
                     }
@@ -129,8 +155,8 @@ public class ScheduleManager {
                 }
             } else if (isDrive(currentTask)) {
                 // If driving, make sure we're driving to the first stop. If needed, divert.
-                Stop stop = sequence.get(0);
-                Link stopLink = stop.isPickup ? stop.request.getFromLink() : stop.request.getToLink();
+                InternalStop stop = sequence.get(0);
+                Link stopLink = stop.isPickup() ? stop.getRequest().getFromLink() : stop.getRequest().getToLink();
 
                 DrtDriveTask driveTask = (DrtDriveTask) currentTask;
 
@@ -151,7 +177,7 @@ public class ScheduleManager {
 
             Task previousTask = currentTask;
 
-            for (Stop stop : sequence) {
+            for (InternalStop stop : sequence) {
                 double previousEndTime = previousTask.getEndTime();
                 Link previousLink = null;
 
@@ -163,7 +189,7 @@ public class ScheduleManager {
                     previousLink = ((AmodeusStopTask) previousTask).getLink();
                 }
 
-                Link stopLink = stop.isPickup ? stop.request.getFromLink() : stop.request.getToLink();
+                Link stopLink = stop.isPickup() ? stop.getRequest().getFromLink() : stop.getRequest().getToLink();
 
                 if (stopLink != previousLink) {
                     // We need to add a drive in between
@@ -185,11 +211,11 @@ public class ScheduleManager {
                     // If we're already at the stop, so we can add the passenger
                     AmodeusStopTask stopTask = (AmodeusStopTask) previousTask;
 
-                    if (stop.isPickup && stopTask.getStopType() == StopType.Pickup) {
-                        stopTask.addPickupRequest(stop.request);
+                    if (stop.isPickup() && stopTask.getStopType() == StopType.Pickup) {
+                        stopTask.addPickupRequest(stop.getRequest());
                         stop.task = stopTask;
-                    } else if (!stop.isPickup && stopTask.getStopType() == StopType.Dropoff) {
-                        stopTask.addDropoffRequest(stop.request);
+                    } else if (!stop.isPickup() && stopTask.getStopType() == StopType.Dropoff) {
+                        stopTask.addDropoffRequest(stop.getRequest());
                         stop.task = stopTask;
                     } else {
                         addStopTask = true;
@@ -203,7 +229,7 @@ public class ScheduleManager {
 
                     double ESTIMATED_STOP_TIME = 600.0; // TODO: We don't really care.
 
-                    AmodeusStopTask task = new AmodeusStopTask(now, now + ESTIMATED_STOP_TIME, stopLink, stop.isPickup ? StopType.Pickup : StopType.Dropoff);
+                    AmodeusStopTask task = new AmodeusStopTask(now, now + ESTIMATED_STOP_TIME, stopLink, stop.isPickup() ? StopType.Pickup : StopType.Dropoff);
                     stop.task = task;
                     schedule.addTask(task);
 
@@ -269,20 +295,20 @@ public class ScheduleManager {
     }
 
     public void addRequest(PassengerRequest request) {
-        for (Stop stop : stopSequence) {
-            if (stop.request == request) {
+        for (InternalStop stop : stopSequence) {
+            if (stop.getRequest() == request) {
                 throw new IllegalStateException("Request is already registered");
             }
         }
 
-        stopSequence.add(new Stop(request, true));
-        stopSequence.add(new Stop(request, false));
+        stopSequence.add(new InternalStop(request, true));
+        stopSequence.add(new InternalStop(request, false));
 
         updateSchedule();
     }
 
     public void removeRequest(PassengerRequest request) {
-        Iterator<Stop> iterator = stopSequence.iterator();
+        Iterator<InternalStop> iterator = stopSequence.iterator();
 
         Task currentTask = schedule.getCurrentTask();
 
@@ -299,9 +325,9 @@ public class ScheduleManager {
         }
 
         while (iterator.hasNext()) {
-            Stop stop = iterator.next();
+            InternalStop stop = iterator.next();
 
-            if (stop.request == request) {
+            if (stop.getRequest() == request) {
                 iterator.remove();
             }
         }
@@ -309,103 +335,76 @@ public class ScheduleManager {
         updateSchedule();
     }
 
-    private int findPickupIndex(PassengerRequest request) {
-        int i = 0;
+    public ImmutableList<Stop> getStopSequence() {
+        return ImmutableList.copyOf(stopSequence.stream().map(s -> new DefaultStop(s.getRequest(), s.isPickup(), s.isModifiable())).collect(Collectors.toList()));
+    }
 
-        for (Stop stop : stopSequence) {
-            if (stop.isPickup && stop.request == request) {
-                return i;
+    public void setStopSequence(ImmutableList<Stop> sequence) {
+        // All stops that are currently handled need to be replicated exactly!
+
+        int index = 0;
+
+        while (stopSequence.get(index).task.getStatus() != TaskStatus.PLANNED) {
+
+            if (!stopSequence.get(index).equals(sequence.get(index))) {
+                throw new IllegalStateException("Element " + index + " can not be changed anymore!");
             }
 
-            i++;
+            index++;
         }
 
-        throw new IllegalStateException("Request cannot be found");
-    }
+        // Check sequence of pickups and dropoffs
 
-    private int findDropoffIndex(PassengerRequest request) {
-        int i = 0;
+        Set<PassengerRequest> pickups = new HashSet<>();
 
-        for (Stop stop : stopSequence) {
-            if (!stop.isPickup && stop.request == request) {
-                return i;
+        for (Stop stop : sequence) {
+            if (stop.isPickup()) {
+                boolean wasRegistered = !pickups.add(stop.getRequest());
+
+                if (wasRegistered) {
+                    throw new IllegalStateException("Pick-up added twice");
+                }
+            } else {
+                boolean wasRegistered = pickups.remove(stop.getRequest());
+
+                if (!wasRegistered) {
+                    throw new IllegalStateException("Pick-up was not registered");
+                }
             }
-
-            i++;
         }
 
-        throw new IllegalStateException("Request cannot be found");
+        // Update internal sequence
+
+        while (stopSequence.size() >= index) {
+            stopSequence.remove(stopSequence.size() - 1);
+        }
+
+        for (int i = index; i < sequence.size(); i++) {
+            Stop stop = sequence.get(i);
+            stopSequence.add(new InternalStop(stop.getRequest(), stop.isPickup()));
+        }
+
+        if (stopSequence.size() != sequence.size()) {
+            throw new IllegalStateException("Sequences must have same length");
+        }
+
+        updateSchedule();
     }
 
-    public void shiftPickupLeft(PassengerRequest request) {
-        if (onboard.contains(request)) {
-            throw new IllegalStateException("Passenger is already picked up");
+    public static int findIndex(ImmutableList<Stop> sequence, PassengerRequest request, boolean findPickup) {
+        for (int index = 0; index < sequence.size(); index++) {
+            Stop stop = sequence.get(index);
+
+            if (findPickup == stop.isPickup() && request == stop.getRequest()) {
+                return index;
+            }
         }
 
-        int currentIndex = findPickupIndex(request);
-
-        if (currentIndex == 0) {
-            throw new IllegalStateException("Cannot shift further");
-        }
-
-        Stop stop = stopSequence.remove(currentIndex);
-
-        if (stop.task.getStatus() != TaskStatus.PLANNED) {
-            throw new IllegalStateException("Pick-up has already happened");
-        }
-
-        stopSequence.add(currentIndex - 1, stop);
+        throw new IllegalStateException("Request not found");
     }
 
-    public void shiftPickupRight(PassengerRequest request) {
-        if (onboard.contains(request)) {
-            throw new IllegalStateException("Passenger is already picked up");
-        }
-
-        int currentIndex = findPickupIndex(request);
-
-        if (currentIndex == stopSequence.size() - 1) {
-            throw new IllegalStateException("Cannot shift further");
-        }
-
-        Stop stop = stopSequence.remove(currentIndex);
-
-        if (stop.task.getStatus() != TaskStatus.PLANNED) {
-            throw new IllegalStateException("Pick-up has already happened");
-        }
-
-        stopSequence.add(currentIndex + 2, stop);
-    }
-
-    public void shiftDropoffLeft(PassengerRequest request) {
-        int currentIndex = findDropoffIndex(request);
-
-        if (currentIndex == 0) {
-            throw new IllegalStateException("Cannot shift further");
-        }
-
-        Stop stop = stopSequence.remove(currentIndex);
-
-        if (stop.task.getStatus() != TaskStatus.PLANNED) {
-            throw new IllegalStateException("Dropoff has already happened");
-        }
-
-        stopSequence.add(currentIndex - 1, stop);
-    }
-
-    public void shiftDropoffRight(PassengerRequest request) {
-        int currentIndex = findDropoffIndex(request);
-
-        if (currentIndex == stopSequence.size() - 1) {
-            throw new IllegalStateException("Cannot shift further");
-        }
-
-        Stop stop = stopSequence.remove(currentIndex);
-
-        if (stop.task.getStatus() != TaskStatus.PLANNED) {
-            throw new IllegalStateException("Dropoff has already happened");
-        }
-
-        stopSequence.add(currentIndex + 2, stop);
+    public static Stop findStop(ImmutableList<Stop> sequence, PassengerRequest request, boolean findPickup) {
+        int index = findIndex(sequence, request, findPickup);
+        return sequence.get(index);
     }
 }
