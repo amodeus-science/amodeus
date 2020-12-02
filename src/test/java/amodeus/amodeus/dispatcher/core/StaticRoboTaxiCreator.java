@@ -99,7 +99,7 @@ import amodeus.amodeus.util.math.GlobalAssert;
                 .capacity(seats) //
                 .startLinkId(vehicleLink.getId()) //
                 .build(), vehicleLink);
-        return new RoboTaxi(vehicle, divertableLinkTime, divertableLinkTime.link, RoboTaxiUsageType.SHARED);
+        return new RoboTaxi(vehicle, divertableLinkTime, divertableLinkTime.link, RoboTaxiUsageType.SHARED, null);
     }
 
     /* package */ static void updateRoboTaxiMenuTo(RoboTaxi roboTaxi, List<SharedCourse> courses) {

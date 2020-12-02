@@ -26,6 +26,7 @@ import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
 
+import amodeus.amodeus.dispatcher.core.schedule.FutureVrpPathCalculator;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
 import amodeus.amodeus.net.SimulationDistribution;
 import amodeus.amodeus.net.SimulationObject;
@@ -44,6 +45,7 @@ import amodeus.amodeus.util.matsim.SafeConfig;
     final Set<PassengerRequest> pendingRequests = new LinkedHashSet<>();
     final MatsimAmodeusDatabase db;
     final FuturePathFactory futurePathFactory;
+    final FutureVrpPathCalculator router;
     protected final double pickupDurationPerStop;
     protected final double dropoffDurationPerStop;
     int total_matchedRequests = 0;
@@ -63,6 +65,7 @@ import amodeus.amodeus.util.matsim.SafeConfig;
         SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
         publishPeriod = operatorConfig.getDispatcherConfig().getPublishPeriod();
         dispatcherMode = operatorConfig.getMode();
+        this.router = new FutureVrpPathCalculator(parallelLeastCostPathCalculator, travelTime);
     }
 
     /** @return {@Collection} of all {@PassengerRequests} which are currently open.
@@ -97,7 +100,7 @@ import amodeus.amodeus.util.matsim.SafeConfig;
      * the parameter @param singleOrShared indicates if multi-passenger ride-sharing case
      * or unit capacity case. */
     protected final void addVehicle(DvrpVehicle vehicle, RoboTaxiUsageType singleOrShared) {
-        RoboTaxi roboTaxi = new RoboTaxi(vehicle, new LinkTimePair(vehicle.getStartLink(), 0.0), vehicle.getStartLink(), singleOrShared);
+        RoboTaxi roboTaxi = new RoboTaxi(vehicle, new LinkTimePair(vehicle.getStartLink(), 0.0), vehicle.getStartLink(), singleOrShared, router);
         Event event = new AVVehicleAssignmentEvent(dispatcherMode, vehicle.getId(), 0);
         addRoboTaxi(roboTaxi, event);
         tempLocationTrace.put(roboTaxi, new ArrayList<>());

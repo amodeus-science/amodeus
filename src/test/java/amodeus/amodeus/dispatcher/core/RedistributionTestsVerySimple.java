@@ -9,7 +9,12 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
+import org.matsim.contrib.dvrp.fleet.DvrpVehicleImpl;
+import org.matsim.contrib.dvrp.fleet.DvrpVehicleSpecification;
+import org.matsim.contrib.dvrp.fleet.ImmutableDvrpVehicleSpecification;
 
 import amodeus.amodeus.ArtificialScenarioCreator;
 import amodeus.amodeus.lp.RedistributionProblemHelper;
@@ -30,7 +35,19 @@ public class RedistributionTestsVerySimple {
         link1 = scenario.linkDown;
         link2 = scenario.linkUp;
         link3 = scenario.linkLeft;
-        roboTaxi = new RoboTaxi(null, null, link3, null);
+        
+        DvrpVehicleSpecification specification = ImmutableDvrpVehicleSpecification
+                .newBuilder()
+                .id(Id.create("abc", DvrpVehicle.class))
+                .capacity(4)
+                .serviceBeginTime(0.0)
+                .serviceEndTime(Double.POSITIVE_INFINITY)
+                .startLinkId(link3.getId())
+                .build();
+        
+        DvrpVehicle vehicle = new DvrpVehicleImpl(specification, link3);
+        
+        roboTaxi = new RoboTaxi(vehicle, null, link3, null, null);
     }
 
     @Test

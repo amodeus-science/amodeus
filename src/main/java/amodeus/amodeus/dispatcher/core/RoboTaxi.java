@@ -16,6 +16,8 @@ import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 
+import amodeus.amodeus.dispatcher.core.schedule.FutureVrpPathCalculator;
+import amodeus.amodeus.dispatcher.core.schedule.ScheduleManager;
 import amodeus.amodeus.dispatcher.shared.Compatibility;
 import amodeus.amodeus.dispatcher.shared.SharedCourse;
 import amodeus.amodeus.dispatcher.shared.SharedCourseAccess;
@@ -52,6 +54,8 @@ public final class RoboTaxi {
      * extracted with the Utils functions in RoboTaxiUtils and SharedCourseLItsUtils */
     private SharedMenu menu = SharedMenu.empty();
     private boolean dropoffInProgress = false;
+    
+    private final ScheduleManager scheduleManager;
 
     /** Standard constructor
      * 
@@ -59,13 +63,15 @@ public final class RoboTaxi {
      * @param divertableLinkTime
      * @param driveDestination
      * @param usageType */
-    /* package */ RoboTaxi(DvrpVehicle avVehicle, LinkTimePair divertableLinkTime, Link driveDestination, RoboTaxiUsageType usageType) {
+    /* package */ RoboTaxi(DvrpVehicle avVehicle, LinkTimePair divertableLinkTime, Link driveDestination, RoboTaxiUsageType usageType, FutureVrpPathCalculator router) {
         this.avVehicle = avVehicle;
         this.divertableLinkTime = divertableLinkTime;
         this.driveDestination = Objects.requireNonNull(driveDestination);
         this.directive = null;
         this.status = RoboTaxiStatus.STAY;
         this.usageType = usageType;
+        
+        this.scheduleManager = new ScheduleManager(this, router);
     }
 
     // **********************************************
