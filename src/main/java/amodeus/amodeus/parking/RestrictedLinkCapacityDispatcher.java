@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import amodeus.amodeus.net.TensorCoords;
@@ -103,7 +104,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
 
             robotaxisDivertable.forEach(unassignedRoboTaxis::add);
 
-            List<PassengerRequest> requests = getUnassignedPassengerRequests();
+            Set<PassengerRequest> requests = getUnassignedRequests();
             requests.forEach(requestMaintainer::add);
 
             /** distinguish over- and undersupply cases */

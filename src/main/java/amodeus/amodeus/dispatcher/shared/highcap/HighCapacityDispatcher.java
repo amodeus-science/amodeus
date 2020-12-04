@@ -197,7 +197,7 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
         /** Re-balance */
         if (round_now % rebalancePeriod == 2) { // in order to avoid dispatch and re-balance happen at same time
             // check if there are both idling vehicles and unassigned requests at same time
-            List<PassengerRequest> listOfUnassignedRequest = getUnassignedPassengerRequests();
+            List<PassengerRequest> listOfUnassignedRequest = new ArrayList(getUnassignedRequests());
             List<RoboTaxi> listOfIdlingTaxi = new ArrayList<>(getDivertableUnassignedRoboTaxis());
 
             // for (RoboTaxi roboTaxi : getRoboTaxis()) {

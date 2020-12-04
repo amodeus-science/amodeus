@@ -110,7 +110,7 @@ import amodeus.amodeus.util.matsim.SafeConfig;
      * {@link #pendingRequests}, needs to be public because called from other not
      * derived MATSim functions which are located in another package */
     @Override
-    public void onRequestSubmitted(PassengerRequest request) {
+    public synchronized void onRequestSubmitted(PassengerRequest request) {
         boolean added = pendingRequests.add(request);
         GlobalAssert.that(added);
     }

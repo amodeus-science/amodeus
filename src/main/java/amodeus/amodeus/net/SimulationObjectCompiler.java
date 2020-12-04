@@ -37,6 +37,10 @@ public class SimulationObjectCompiler {
     }
 
     public void insertRequests(Collection<PassengerRequest> requests, RequestStatus status) {
+        if (status == RequestStatus.PICKUP && requests.size() > 0) {
+            System.err.println("HERE");
+        }
+        
         requests.forEach(r -> insertRequest(r, status));
     }
 
@@ -52,13 +56,26 @@ public class SimulationObjectCompiler {
         tempLocationTrace.forEach(this::insertVehicle);
     }
 
-    private void insertRequest(PassengerRequest avRequest, RequestStatus requestStatus) {
+    public void insertRequest(PassengerRequest avRequest, RequestStatus requestStatus) {
         String id = avRequest.getId().toString();
+        
+        if (requestStatus == RequestStatus.PICKUP) {
+            System.err.println("HERE");
+        }
+        
         if (requestMap.containsKey(id)) {
             requestMap.get(id).requestStatus.add(requestStatus);
+            
+            if (requestStatus == RequestStatus.PICKUP) {
+                System.err.println("HERE");
+            }
         } else {
             RequestContainer requestContainer = RequestContainerCompiler.compile(avRequest, requestStatus);
             requestMap.put(id, requestContainer);
+            
+            if (requestStatus == RequestStatus.PICKUP) {
+                System.err.println("HERE");
+            }
         }
     }
 

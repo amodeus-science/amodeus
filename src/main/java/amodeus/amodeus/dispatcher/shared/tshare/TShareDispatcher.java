@@ -119,7 +119,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
                     .filter(rt -> (rt.getUnmodifiableViewOfCourses().size() == 0)) //
                     .collect(Collectors.toList());
             printInfo = bipartiteMatchingUtils.executePickup(this, this::getCurrentPickupTaxi, divertableAndEmpty, //
-                    getUnassignedPassengerRequests(), distanceCashed, now);
+                    getUnassignedRequests(), distanceCashed, now);
         }
     }
     

@@ -309,6 +309,7 @@ public class ScheduleManager {
             }
         }
 
+        setDirectives(directives);
         updateSchedule();
     }
 
@@ -330,17 +331,17 @@ public class ScheduleManager {
 
     public void setDirectives(List<Directive> sequence) {
         // All stops that are currently handled need to be replicated exactly!
-        
-        /*Set<String> ids = new HashSet<>();
-        
-        for (Directive directive : sequence) {
-            if (directive instanceof StopDirective) {
-                StopDirective stopDirective = (StopDirective) directive;
-                ids.add(stopDirective.getRequest().getId().toString());
-            }
-        }
-        
-        System.err.println("    setDirectives with " + String.join(", ", ids));*/
+
+        /* Set<String> ids = new HashSet<>();
+         * 
+         * for (Directive directive : sequence) {
+         * if (directive instanceof StopDirective) {
+         * StopDirective stopDirective = (StopDirective) directive;
+         * ids.add(stopDirective.getRequest().getId().toString());
+         * }
+         * }
+         * 
+         * System.err.println("    setDirectives with " + String.join(", ", ids)); */
 
         int index = 0;
 

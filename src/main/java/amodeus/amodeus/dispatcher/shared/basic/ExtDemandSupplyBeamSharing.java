@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 
 import amodeus.amodeus.net.TensorCoords;
 import org.matsim.amodeus.components.AmodeusDispatcher;
@@ -79,7 +80,7 @@ public class ExtDemandSupplyBeamSharing extends SharedRebalancingDispatcher {
             Collection<RoboTaxi> robotaxisDivertable = getDivertableUnassignedRoboTaxis();
             robotaxisDivertable.forEach(unassignedRoboTaxis::add);
 
-            List<PassengerRequest> requests = getUnassignedPassengerRequests();
+            Set<PassengerRequest> requests = getUnassignedRequests();
             requests.forEach(requestMaintainer::add);
 
             if (unassignedRoboTaxis.size() > 0 && requests.size() > 0) {

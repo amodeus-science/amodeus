@@ -118,7 +118,7 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
         if (round_now % dispatchPeriod == 0) {
             /** prepare the registers for the dispatching */
             roboTaxiHandler.update(getRoboTaxis(), getDivertableUnassignedRoboTaxis());
-            requestHandler.addUnassignedRequests(getUnassignedPassengerRequests(), timeDb, now);
+            requestHandler.addUnassignedRequests(getUnassignedRequests(), timeDb, now);
             requestHandler.updateLastHourRequests(now, BINSIZETRAVELDEMAND);
 
             /** calculate Rebalance before (!) dispatching */

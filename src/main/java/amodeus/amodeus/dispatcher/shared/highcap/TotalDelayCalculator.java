@@ -36,6 +36,10 @@ import org.matsim.contrib.dvrp.passenger.PassengerRequest;
                 double bestArrivalTime = modifiedSubmissionTime + timeToTravel;
                 double delayOfThisStop = stopInRoute.getTime() - bestArrivalTime;
                 totalDelay = totalDelay + delayOfThisStop;
+                
+                if (delayOfThisStop < 0.0) {
+                    throw new IllegalStateException();
+                }
             }
         if (totalDelay < 0)
             System.err.println("something may be wrong with the total Delay");

@@ -57,15 +57,19 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
     protected void redispatch(double now) {
         final long round_now = Math.round(now);
 
-        if (round_now % dispatchPeriod == 0)
+        if (round_now % dispatchPeriod == 0) {
             /** assignment of {@link RoboTaxi}s */
-            for (RoboTaxi sharedRoboTaxi : getDivertableUnassignedRoboTaxis())
-                if (getUnassignedPassengerRequests().size() >= 4) {
+            //System.err.println("DIVERTABLE TAXIS DISPATCH " + getDivertableUnassignedRoboTaxis().size());
+            for (RoboTaxi sharedRoboTaxi : getDivertableUnassignedRoboTaxis()) {
+                List<PassengerRequest> unassignedRequests = new ArrayList<>(getUnassignedRequests());
+                //System.err.println("UNASSIGNED REQUESTS " + unassignedRequests.size());
+                
+                if (unassignedRequests.size() >= 4) {
                     /** select 4 requests */
-                    PassengerRequest firstRequest = getUnassignedPassengerRequests().get(0);
-                    PassengerRequest secondRequest = getUnassignedPassengerRequests().get(1);
-                    PassengerRequest thirdRequest = getUnassignedPassengerRequests().get(2);
-                    PassengerRequest fourthRequest = getUnassignedPassengerRequests().get(3);
+                    PassengerRequest firstRequest = unassignedRequests.get(0);
+                    PassengerRequest secondRequest = unassignedRequests.get(1);
+                    PassengerRequest thirdRequest = unassignedRequests.get(2);
+                    PassengerRequest fourthRequest = unassignedRequests.get(3);
 
                     /** add pickup for request 1 */
                     addSharedRoboTaxiPickup(sharedRoboTaxi, firstRequest);
@@ -95,16 +99,21 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
 
                     /** check consistency and end */
                     GlobalAssert.that(Compatibility.of(sharedRoboTaxi.getUnmodifiableViewOfCourses()).forCapacity(sharedRoboTaxi.getScheduleManager(), sharedRoboTaxi.getCapacity()));
-                } else
+                } else {
                     break;
+                }
+            }
+        }
 
         /** dispatching of available {@link RoboTaxi}s to the equator */
-        if (round_now % rebalancePeriod == 0)
+        if (round_now % rebalancePeriod == 0) {
+            //System.err.println("DIVERTABLE TAXIS REBALANCE " + getDivertableUnassignedRoboTaxis().size());
             /** relocation of empty {@link RoboTaxi}s to a random link on the equator */
             for (RoboTaxi roboTaxi : getDivertableUnassignedRoboTaxis()) {
                 Link rebalanceLink = equatorLinks.get(randGen.nextInt(equatorLinks.size()));
                 setRoboTaxiRebalance(roboTaxi, rebalanceLink);
             }
+        }
     }
 
     /** @param network
