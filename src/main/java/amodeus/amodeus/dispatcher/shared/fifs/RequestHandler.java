@@ -106,7 +106,7 @@ import amodeus.amodeus.routing.NetworkTimeDistInterface;
         //
         Map<PassengerRequest, Double> driveTimes = new HashMap<>();
         for (SharedRoutePoint sharedRoutePoint : route.getRoute())
-            if (!sharedRoutePoint.isPickup())
+            if (sharedRoutePoint.isDropoff())
                 if (thisPickupTimes.containsKey(sharedRoutePoint.getRequest()))
                     // TODO @ChengQi does it include the dropoff or not?
                     driveTimes.put(sharedRoutePoint.getRequest(), sharedRoutePoint.getEndTime() - thisPickupTimes.get(sharedRoutePoint.getRequest()));

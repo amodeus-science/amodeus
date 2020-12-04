@@ -97,7 +97,7 @@ public class StandardMATSimScenarioTest {
 
                 // This one doesn't finish all requests. Bug or not enough of time? Also it's not good in an automated unit test because it
                 // produces large amounts of log output.
-                // { "HighCapacityDispatcher" },
+                { "HighCapacityDispatcher" },
 
                 // Also has not enough of time to finish all requests
                 // { "NorthPoleSharedDispatcher" },
@@ -234,6 +234,7 @@ public class StandardMATSimScenarioTest {
         GeneratorConfig generatorConfig = operatorConfig.getGeneratorConfig();
         generatorConfig.setType("VehicleToVSGenerator");
         generatorConfig.setNumberOfVehicles(50);
+        generatorConfig.setCapacity(4);
 
         int endTime = (int) config.qsim().getEndTime().seconds();
 

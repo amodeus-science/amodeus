@@ -238,16 +238,19 @@ public class ScheduleManager {
                     InternalDriveDirective driveDirective = (InternalDriveDirective) directive;
                     Link destination = driveDirective.getDestination();
 
-                    if (destination != previousLink) {
+                    if (true) { // destination != previousLink) {
                         // We need to add a drive in between
 
                         VrpPathWithTravelData path = router.calculatePath(previousLink, destination, previousEndTime);
                         DrtDriveTask driveTask = new DrtDriveTask(path, DrtDriveTask.TYPE);
+                        driveDirective.setTask(driveTask);
                         schedule.addTask(driveTask);
 
                         previousEndTime = driveTask.getEndTime();
                         previousLink = driveTask.getPath().getToLink();
                         previousTask = driveTask;
+                    } else {
+                        // TODO: Would make sense to put here the previous task to the directive, no matter what type!
                     }
                 }
             }
@@ -327,12 +330,27 @@ public class ScheduleManager {
 
     public void setDirectives(List<Directive> sequence) {
         // All stops that are currently handled need to be replicated exactly!
+        
+        /*Set<String> ids = new HashSet<>();
+        
+        for (Directive directive : sequence) {
+            if (directive instanceof StopDirective) {
+                StopDirective stopDirective = (StopDirective) directive;
+                ids.add(stopDirective.getRequest().getId().toString());
+            }
+        }
+        
+        System.err.println("    setDirectives with " + String.join(", ", ids));*/
 
         int index = 0;
 
         if (directiveSequence.size() > 0) {
-            while (!directiveSequence.get(index).isModifiable()) {
-                if (!directiveSequence.get(index).isEqaul(sequence.get(index))) {
+            while (index < directiveSequence.size() && !directiveSequence.get(index).isModifiable()) {
+                if (sequence.size() <= index) {
+                    throw new IllegalStateException("Element " + index + " can not be deleted anymore!");
+                }
+
+                if (!directiveSequence.get(index).isEqual(sequence.get(index))) {
                     throw new IllegalStateException("Element " + index + " can not be changed anymore!");
                 }
 
@@ -429,7 +447,7 @@ public class ScheduleManager {
 
         boolean hasTask();
 
-        boolean isEqaul(Directive other);
+        boolean isEqual(Directive other);
     }
 
     private class InternalStopDirective implements StopDirective, InternalDirective {
@@ -476,7 +494,7 @@ public class ScheduleManager {
         }
 
         @Override
-        public boolean isEqaul(Directive other) {
+        public boolean isEqual(Directive other) {
             if (other instanceof StopDirective) {
                 StopDirective stopDirective = (StopDirective) other;
 
@@ -520,7 +538,13 @@ public class ScheduleManager {
 
         @Override
         public boolean isModifiable() {
-            return task.getStatus() == TaskStatus.PLANNED;
+            if (task.getStatus() == TaskStatus.PLANNED) {
+                return true;
+            } else if (task.getStatus() == TaskStatus.STARTED) {
+                return ((OnlineDriveTaskTracker) task.getTaskTracker()).getDiversionPoint() != null;
+            } else {
+                return false;
+            }
         }
 
         @Override
@@ -529,7 +553,7 @@ public class ScheduleManager {
         }
 
         @Override
-        public boolean isEqaul(Directive other) {
+        public boolean isEqual(Directive other) {
             if (other instanceof DriveDirective) {
                 DriveDirective driveDirective = (DriveDirective) other;
 

@@ -21,11 +21,14 @@ import amodeus.amodeus.util.math.GlobalAssert;
 
     /** Adding and removing */
     /* package */ void add(RoboTaxi roboTaxi, PassengerRequest avRequest) {
+        // System.err.print("  ADD " + avRequest.getId() + " to " + roboTaxi.getId());
+        // System.err.println("");
         register.computeIfAbsent(roboTaxi, roboTaxi1 -> new HashMap<>()) //
                 /* register.get(roboTaxi) */ .put(avRequest.getId().toString(), avRequest);
     }
 
     /* package */ void remove(RoboTaxi roboTaxi, PassengerRequest avRequest) {
+        // System.err.println("  REMOVE " + avRequest.getId() + " from " + roboTaxi.getId());
         GlobalAssert.that(register.containsKey(roboTaxi));
         GlobalAssert.that(register.get(roboTaxi).containsKey(avRequest.getId().toString()));
         Objects.requireNonNull(register.get(roboTaxi).remove(avRequest.getId().toString()));
@@ -34,6 +37,7 @@ import amodeus.amodeus.util.math.GlobalAssert;
     }
 
     /* package */ void remove(RoboTaxi roboTaxi) {
+        // System.err.println("  ADD " + roboTaxi.getId());
         GlobalAssert.that(register.containsKey(roboTaxi));
         Objects.requireNonNull(register.remove(roboTaxi));
     }

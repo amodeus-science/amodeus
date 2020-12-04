@@ -40,12 +40,13 @@ public class Compatibility {
                 if (stopDirective.isPickup()) {
                     onBoardPassengers++;
                 } else {
-                    onBoardPassengers++;
+                    onBoardPassengers--;
                 }
             }
 
-            if (onBoardPassengers > capacity)
+            if (onBoardPassengers > capacity) {
                 return false;
+            }
         }
         return true;
     }

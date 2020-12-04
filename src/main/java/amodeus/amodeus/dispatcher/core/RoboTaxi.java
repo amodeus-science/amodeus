@@ -467,6 +467,8 @@ public final class RoboTaxi {
      * 
      * @return all the courses which have been removed */
     /* package */ List<Directive> cleanAndAbandonMenu() {
+        // System.err.println(" -> clean and abandon");
+        
         GlobalAssert.that(scheduleManager.getNumberOfOnBoardRequests() == 0);
         GlobalAssert.that(isDivertable());
 

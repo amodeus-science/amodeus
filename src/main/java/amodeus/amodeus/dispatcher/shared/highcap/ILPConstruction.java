@@ -43,7 +43,7 @@ import amodeus.amodeus.dispatcher.core.RoboTaxi;
         try {
             // Create problem
             lp = GLPK.glp_create_prob();
-            System.out.println("Problem created");
+            // System.out.println("Problem created");
 
             GLPK.glp_set_prob_name(lp, "TripAssignment");
             // Define columns
@@ -121,6 +121,7 @@ import amodeus.amodeus.dispatcher.core.RoboTaxi;
         parm.setPresolve(GLPK.GLP_ON); // GLPK documentation at p. 59
         int ret = GLPK.glp_intopt(lp, parm); // different in MIP -> other method for solving
         int stat = GLPK.glp_mip_status(lp); // different in MIP
+        GLPK.glp_term_out(GLPK.GLP_OFF);
 
         try {
             if (ret != 0) // ret==0 indicates of the algorithm ran correctly
@@ -136,7 +137,7 @@ import amodeus.amodeus.dispatcher.core.RoboTaxi;
     }
 
     public List<Double> writeLPSolution() {
-        System.out.println("\nThe solution is:\n");
+        //System.out.println("\nThe solution is:\n");
 
         /* double val = */ GLPK.glp_mip_obj_val(lp); // different in MIP
         // System.out.println("Objective value:");

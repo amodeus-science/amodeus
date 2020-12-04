@@ -157,7 +157,7 @@ import amodeus.amodeus.routing.EasyMinTimePathCalculator;
                     now, ttc, requestKeyInfoMap);
 
             // RTV diagram construction (generate a list of edges between trip and vehicle)
-            List<RoboTaxi> avaialbleRts = getRoboTaxis().stream().filter(rt -> !isPickingUp(rt)).collect(Collectors.toList());
+            List<RoboTaxi> avaialbleRts = getRoboTaxis().stream().filter(rt -> !isBusy(rt)).collect(Collectors.toList());
             
             List<TripWithVehicle> grossListOfRTVEdges = rtvGG.generateRTV(avaialbleRts, newAddedValidRequests, //
                     removedRequests, now, requestKeyInfoMap, //

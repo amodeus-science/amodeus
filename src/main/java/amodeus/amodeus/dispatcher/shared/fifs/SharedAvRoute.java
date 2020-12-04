@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.drt.optimizer.VehicleData.Stop;
 
 import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
 import amodeus.amodeus.dispatcher.core.schedule.directives.StopDirective;
@@ -34,7 +36,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
             // TODO @ChengQi after checking with Jan,
             // If the speed becomes to low in the future, here we could improve it by checking
             // the constraints here already to abort a route generation if the constraints are not fulfilled.
-            SharedRoutePoint sharedRoutePoint = new SharedRoutePoint((StopDirective) list.get(i), departureTime.add(driveTime).number().doubleValue(), stopDuration);
+            SharedRoutePoint sharedRoutePoint = new SharedRoutePoint(list.get(i), departureTime.add(driveTime).number().doubleValue(), stopDuration);
             routePoints.add(sharedRoutePoint);
             departureTime = Quantity.of(sharedRoutePoint.getEndTime(), SI.SECOND);
         }
@@ -83,7 +85,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
     }
 
     private static List<Directive> castToCourseList(List<SharedRoutePoint> list) {
-        return new ArrayList<>(list);
+        return list.stream().map(i -> i.getDirective()).collect(Collectors.toList());
     }
 
     public double getEndTime() {

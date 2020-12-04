@@ -132,7 +132,7 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
                     now, ttc, requestKeyInfoMap);
 
             // RTV diagram construction (generate a list of edges between trip and vehicle)
-            List<RoboTaxi> avaialbleRts = getRoboTaxis().stream().filter(rt -> !isPickingUp(rt)).collect(Collectors.toList());
+            List<RoboTaxi> avaialbleRts = getRoboTaxis().stream().filter(rt -> !isBusy(rt)).collect(Collectors.toList());
             
             List<TripWithVehicle> grossListOfRTVEdges = rtvGG.generateRTV(avaialbleRts, newAddedValidRequests, //
                     removedRequests, now, requestKeyInfoMap, //
@@ -158,7 +158,7 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
             for (TripWithVehicle tripWithVehicle : sharedTaxiAssignmentPlan) {
                 // get roboTaxi
                 RoboTaxi roboTaxiToAssign = tripWithVehicle.getRoboTaxi();
-
+                
                 // get route (generated before)
                 List<StopInRoute> routeToAssign = tripWithVehicle.getRoute();
 
@@ -172,12 +172,19 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
                 Set<PassengerRequest> setOfPassengerRequestInRoute = routeToAssign.stream() //
                         .map(StopInRoute::getavRequest) //
                         .collect(Collectors.toSet());
-                for (PassengerRequest avRequest : getUniqueRequests(roboTaxiToAssign))
-                    if (!setOfPassengerRequestInRoute.contains(avRequest))
+                
+                boolean needsUpdate = false;
+                
+                for (PassengerRequest avRequest : getUniqueRequests(roboTaxiToAssign)) {
+                    if (!setOfPassengerRequestInRoute.contains(avRequest)) {
                         abortAvRequest(avRequest);
+                        needsUpdate = true;
+                    }
+                }
 
-                if (checkingUpdateMenuOrNot.updateMenuOrNot(roboTaxiToAssign, setOfPassengerRequestInRoute))
+                if (checkingUpdateMenuOrNot.updateMenuOrNot(roboTaxiToAssign, setOfPassengerRequestInRoute) || needsUpdate) {
                     roboTaxiToAssign.updateMenu(courseForThisTaxi);
+                }
             }
 
             lastRequestPool.clear();
@@ -218,6 +225,8 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
                 }
             }
         }
+        
+        // System.err.println("-------------- ITERATION --------------");
     }
 
     public static class Factory implements AVDispatcherFactory {

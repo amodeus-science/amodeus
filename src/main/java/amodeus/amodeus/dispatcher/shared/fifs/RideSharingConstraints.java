@@ -106,7 +106,7 @@ import org.matsim.contrib.dvrp.passenger.PassengerRequest;
     private static Map<PassengerRequest, Double> getRemainingTimes(SharedAvRoute route, double now) {
         Map<PassengerRequest, Double> remainingTimes = new HashMap<>();
         for (SharedRoutePoint sharedRoutePoint : route.getRoute())
-            if (!sharedRoutePoint.isPickup())
+            if (sharedRoutePoint.isDropoff())
                 remainingTimes.put(sharedRoutePoint.getRequest(), sharedRoutePoint.getArrivalTime() - now);
         return remainingTimes;
     }
