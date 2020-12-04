@@ -65,7 +65,7 @@ import amodeus.amodeus.dispatcher.core.RoboTaxi;
             // determine sharedMealType
             boolean isPickup = true;
             if (chosenNextStop.getOnboardStatus())
-                isPickup = false;
+                isPickup = false; // if request is on board, then it will be drop off task
             // determine time (expected arrival time at that stop)
             double arrivalTime = nowInThisFunction + ttc.of(currentLink, chosenNextStop.getLink(), //
                     nowInThisFunction, true);

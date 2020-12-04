@@ -80,20 +80,20 @@ public class StandardMATSimScenarioTest {
 
         // ATTENTION: DriveByDispatcher is not tested, because of long runtime.
         return Arrays.asList(new Object[][] { //
-                //{ "SingleHeuristic" }, //
-                //{ "DemandSupplyBalancingDispatcher" }, //
-                //{ "GlobalBipartiteMatchingDispatcher" }, //
-                //{ "FeedforwardFluidicRebalancingPolicy" }, //
-                //{ "AdaptiveRealTimeRebalancingPolicy" }, //
-                //{ "ExtDemandSupplyBeamSharing" }, //
-                // { "TShareDispatcher" }, //
-                //{ "FirstComeFirstServedStrategy" }, //
-                // { "DynamicRideSharingStrategy" }, //
-                //{ "RestrictedLinkCapacityDispatcher" }, //
-                //{ "ModelFreeAdaptiveRepositioning" }, //
-                //{ "DFRStrategy" }, //
-                //{ "NoExplicitCommunication" }, //
-                //{ "SBNoExplicitCommunication" }, //
+                { "SingleHeuristic" }, //
+                { "DemandSupplyBalancingDispatcher" }, //
+                { "GlobalBipartiteMatchingDispatcher" }, //
+                { "FeedforwardFluidicRebalancingPolicy" }, //
+                { "AdaptiveRealTimeRebalancingPolicy" }, //
+                { "ExtDemandSupplyBeamSharing" }, //
+                { "TShareDispatcher" }, //
+                { "FirstComeFirstServedStrategy" }, //
+                { "DynamicRideSharingStrategy" }, //
+                { "RestrictedLinkCapacityDispatcher" }, //
+                { "ModelFreeAdaptiveRepositioning" }, //
+                { "DFRStrategy" }, //
+                { "NoExplicitCommunication" }, //
+                { "SBNoExplicitCommunication" }, //
 
                 // This one doesn't finish all requests. Bug or not enough of time? Also it's not good in an automated unit test because it
                 // produces large amounts of log output.
@@ -199,6 +199,7 @@ public class StandardMATSimScenarioTest {
         Config config = ConfigUtils.createConfig(new AmodeusConfigGroup(), new DvrpConfigGroup());
         Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
         // config.qsim().setEndTime(30.0 * 3600.0);
+        config.qsim().setEndTime(40.0 * 3600.0);
 
         File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         ScenarioOptions simOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());

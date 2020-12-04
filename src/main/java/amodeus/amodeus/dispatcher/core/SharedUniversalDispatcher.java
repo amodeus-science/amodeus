@@ -125,6 +125,12 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
         GlobalAssert.that(divertableUnassignedRoboTaxis.stream().allMatch(RoboTaxi::isWithoutCustomer));
         return divertableUnassignedRoboTaxis;
     }
+    
+    protected final List<RoboTaxi> getInteractionlessRoboTaxis() {
+        return getDivertableRoboTaxis().stream()
+                .filter(rt -> !isBusy(rt))
+                .collect(Collectors.toList());
+    }
 
     // **********************************************************************************************
     // ********************* EXTERNAL METHODS TO BE USED BY DISPATCHERS *****************************

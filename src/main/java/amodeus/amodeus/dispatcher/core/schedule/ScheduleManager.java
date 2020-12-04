@@ -111,7 +111,7 @@ public class ScheduleManager {
         if (sequence.size() > 0) {
             if (isStop(currentTask)) {
                 // Skip all stops in the sequence which are handled by the current task
-                DrtStopTask stopTask = (DrtStopTask) currentTask;
+                AmodeusStopTask stopTask = (AmodeusStopTask) currentTask;
 
                 while (sequence.size() > 0) {
                     InternalDirective directive = sequence.get(0);
