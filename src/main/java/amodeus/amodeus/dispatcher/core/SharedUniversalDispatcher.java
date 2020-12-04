@@ -529,6 +529,8 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
                 simulationObjectCompiler.insertRequest(entry.getKey(), status);
             }
         }
+        
+        requestStatusChanges.clear();
 
         /* simulationObjectCompiler.insertRequests(reqStatuses);
          * simulationObjectCompiler.insertRequests(periodAssignedRequests, RequestStatus.ASSIGNED);
