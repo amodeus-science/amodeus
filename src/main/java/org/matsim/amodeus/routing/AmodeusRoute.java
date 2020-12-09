@@ -21,6 +21,8 @@ public class AmodeusRoute extends AbstractRoute {
     private OptionalTime waitingTime = OptionalTime.undefined();
     private Optional<Double> price = Optional.empty();
 
+    private double maximumWaitTime = Double.MAX_VALUE;
+
     public AmodeusRoute(Id<Link> startLinkId, Id<Link> endLinkId) {
         super(startLinkId, endLinkId);
     }
@@ -97,5 +99,13 @@ public class AmodeusRoute extends AbstractRoute {
     @Override
     public String getRouteType() {
         return AMODEUS_ROUTE;
+    }
+
+    public double getMaximumWaitTime() {
+        return maximumWaitTime;
+    }
+
+    public void setMaximumWaitTime(double maximumWaitTime) {
+        this.maximumWaitTime = maximumWaitTime;
     }
 }

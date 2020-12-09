@@ -13,6 +13,7 @@ public class DispatcherConfig extends ReflectiveConfigGroup {
     static public final String REGENERATE_TRAVEL_DATA = "regenerateTravelData";
 
     static public final String PUBLISH_PERIOD = "publishPeriod";
+    static public final String IS_REJECTING_REQUESTS = "isRejectingRequests";
 
     static public final String TYPE = "type";
 
@@ -26,6 +27,8 @@ public class DispatcherConfig extends ReflectiveConfigGroup {
     private boolean regenerateTravelData = false;
 
     private int publishPeriod = 10;
+
+    private boolean isRejectingRequests = false;
 
     public DispatcherConfig() {
         super(GROUP_NAME, true);
@@ -89,5 +92,15 @@ public class DispatcherConfig extends ReflectiveConfigGroup {
     @StringSetter(PUBLISH_PERIOD)
     public void setPublishPeriod(int publishPeriod) {
         this.publishPeriod = publishPeriod;
+    }
+
+    @StringGetter(IS_REJECTING_REQUESTS)
+    public boolean getIsRejectingRequests() {
+        return isRejectingRequests;
+    }
+
+    @StringSetter(IS_REJECTING_REQUESTS)
+    public void setIsRejectingRequests(boolean isRejectingRequests) {
+        this.isRejectingRequests = isRejectingRequests;
     }
 }

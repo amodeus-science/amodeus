@@ -198,8 +198,11 @@ public class StandardMATSimScenarioTest {
         // Set up
         Config config = ConfigUtils.createConfig(new AmodeusConfigGroup(), new DvrpConfigGroup());
         Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
-        // config.qsim().setEndTime(30.0 * 3600.0);
-        config.qsim().setEndTime(40.0 * 3600.0);
+        
+        if (dispatcher.equals("HighCapacityDispatcher")) {
+            // TODO: It finishes, but takes really long for some few remaining requests.
+            config.qsim().setEndTime(60.0 * 3600.0);
+        }
 
         File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         ScenarioOptions simOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());

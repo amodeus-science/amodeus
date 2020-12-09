@@ -100,6 +100,7 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
     @Override
     protected void redispatch(double now) {
         final long round_now = Math.round(now);
+        ttc.clearDataMap();
 
         /** main part of the dispatcher */
         /** Construct RTV graph and use ILP to find optimal assignment */

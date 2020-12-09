@@ -20,6 +20,7 @@ import org.matsim.contrib.drt.schedule.DrtDriveTask;
 import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
+import org.matsim.contrib.dvrp.passenger.PassengerRequestRejectedEvent;
 import org.matsim.contrib.dvrp.passenger.PassengerRequestScheduledEvent;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Task;
@@ -64,20 +65,18 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
     private final Map<PassengerRequest, RoboTaxi> periodFulfilledRequests = new HashMap<>();
     private final Set<PassengerRequest> periodAssignedRequests = new HashSet<>();
     private final Set<PassengerRequest> periodSubmittdRequests = new HashSet<>();
-    // private final Map<PassengerRequest, RequestStatus> reqStatuses = new HashMap<>(); // Storing the Request Statuses for the SimObjects
-    // Variables for consistency sub check
-    private int total_dropedOffRequests = 0;//
-
-    private final OnboardPassengerCheck onboardPassengerCheck = //
-            new OnboardPassengerCheck(total_matchedRequests, total_dropedOffRequests);
 
     /* package */ static final double SIMTIMESTEP = 1.0; // This is used in the Shared Universal Dispatcher to see if a task will end in the next timestep.
     private Double lastTime = null;
+
+    private final boolean isRejectingRequests;
 
     protected SharedUniversalDispatcher(Config config, AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, //
             EventsManager eventsManager, MatsimAmodeusDatabase db) {
         super(eventsManager, config, operatorConfig, travelTime, parallelLeastCostPathCalculator, db);
+
+        isRejectingRequests = operatorConfig.getDispatcherConfig().getIsRejectingRequests();
     }
 
     // ===================================================================================
@@ -124,11 +123,9 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
         GlobalAssert.that(divertableUnassignedRoboTaxis.stream().allMatch(RoboTaxi::isWithoutCustomer));
         return divertableUnassignedRoboTaxis;
     }
-    
+
     protected final List<RoboTaxi> getInteractionlessRoboTaxis() {
-        return getDivertableRoboTaxis().stream()
-                .filter(rt -> !isBusy(rt))
-                .collect(Collectors.toList());
+        return getDivertableRoboTaxis().stream().filter(rt -> !isBusy(rt)).collect(Collectors.toList());
     }
 
     // **********************************************************************************************
@@ -141,7 +138,8 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
      * @param roboTaxi
      * @param avRequest */
     public final void addSharedRoboTaxiPickup(RoboTaxi roboTaxi, PassengerRequest avRequest) {
-        if (showRegistry) System.err.println("addSharedRoboTaxiPickup");
+        if (showRegistry)
+            System.err.println("addSharedRoboTaxiPickup");
         indent++;
         // System.err.println("ADD " + avRequest.getId() + " TO " + roboTaxi.getId());
         GlobalAssert.that(pendingRequests.contains(avRequest));
@@ -149,7 +147,8 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
         if (requestAssignments.containsKey(avRequest)) {
             if (requestAssignments.get(avRequest) == roboTaxi) {
                 // Do nothing as it is already registered for this vehicle
-                if (showRegistry) System.err.println(makeIndent() + "Already added ...");
+                if (showRegistry)
+                    System.err.println(makeIndent() + "Already added ...");
                 indent--;
                 return;
             }
@@ -164,7 +163,8 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
         }
 
         // update the registers
-        if (showRegistry) System.err.println(makeIndent() + "Assigned " + avRequest.getId() + " to " + roboTaxi.getId());
+        if (showRegistry)
+            System.err.println(makeIndent() + "Assigned " + avRequest.getId() + " to " + roboTaxi.getId());
         indent--;
         requestAssignments.put(avRequest, roboTaxi);
         roboTaxi.addPassengerRequestToMenu(avRequest);
@@ -219,12 +219,14 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
      * 
      * @param avRequest avRequest to abort */
     public final void abortAvRequest(PassengerRequest avRequest) {
-        if (showRegistry) System.err.println(makeIndent() + "abortAvRequest");
+        if (showRegistry)
+            System.err.println(makeIndent() + "abortAvRequest");
         indent++;
         GlobalAssert.that(requestAssignments.containsKey(avRequest)); // Only already assigned RoboTaxis are considered else you can not call this function
         GlobalAssert.that(pendingRequests.contains(avRequest)); // only if a request is not picked up it makes sense to abort it.
         RoboTaxi roboTaxi = requestAssignments.remove(avRequest);
-        if (showRegistry) System.err.println(makeIndent() + "Remove " + avRequest.getId() + " from " + roboTaxi.getId());
+        if (showRegistry)
+            System.err.println(makeIndent() + "Remove " + avRequest.getId() + " from " + roboTaxi.getId());
         roboTaxi.removePassengerRequestFromMenu(avRequest);
         GlobalAssert.that(Compatibility.of(roboTaxi.getScheduleManager().getDirectives()).forCapacity(roboTaxi.getScheduleManager(), roboTaxi.getCapacity()));
         addStatusChange(avRequest, RequestStatus.REQUESTED);
@@ -295,6 +297,32 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
         }
 
         pickupsFromRegisters();
+        
+        // TODO: This is at an arbitrary location here
+
+        if (isRejectingRequests) {
+            Set<PassengerRequest> exceededRequests = new HashSet<>();
+
+            for (PassengerRequest request : getPassengerRequests()) {
+                if (request.getLatestStartTime() < getTimeNow()) {
+                    if (!getUnassignedRequests().contains(request)) {
+                        abortAvRequest(request);
+                    }
+
+                    exceededRequests.add(request);
+                }
+            }
+
+            exceededRequests.forEach(this::cancelRequest);
+        }
+    }
+
+    protected void cancelRequest(PassengerRequest request) {
+        GlobalAssert.that(pendingRequests.contains(request));
+        GlobalAssert.that(!requestAssignments.containsKey(request));
+
+        pendingRequests.remove(request);
+        eventsManager.processEvent(new PassengerRequestRejectedEvent(getTimeNow(), mode, request.getId(), request.getPassengerId(), "Canceled by dispatcher"));
     }
 
     private void pickupsFromRegisters() {
@@ -322,9 +350,9 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
     /** complete all matchings if a {@link RoboTaxi} has arrived at the toLink of an {@link PassengerRequest} */
     @Override
     final void executeDropoffs() {
-        // TODO: This is at an arbitrary location here
 
         for (RoboTaxi roboTaxi : getRoboTaxis()) {
+            // TODO: This is at an arbitrary location here
             roboTaxi.getScheduleManager().updateSequence(getTimeNow());
         }
 
@@ -366,7 +394,6 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
                 for (PassengerRequest request : task.getDropoffRequests().values()) {
                     requestAssignments.remove(request);
                     periodFulfilledRequests.put(request, roboTaxi);
-                    total_dropedOffRequests++;
                     addStatusChange(request, null);
                 }
 
@@ -409,7 +436,8 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
     /** Cleans menu for {@link RoboTaxi} and moves all previously assigned {@link PassengerRequest} back to pending
      * requests taking them out fromrequest- and pickup-registers. */
     /* package */ final void cleanAndAbondon(RoboTaxi roboTaxi) {
-        if (showRegistry) System.err.println(makeIndent() + "cleanAndAbandon( " + roboTaxi.getId() + ")");
+        if (showRegistry)
+            System.err.println(makeIndent() + "cleanAndAbandon( " + roboTaxi.getId() + ")");
         GlobalAssert.that(roboTaxi.isWithoutCustomer());
         Objects.requireNonNull(roboTaxi);
 
@@ -419,7 +447,7 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
             if (directive instanceof StopDirective) {
                 StopDirective stopDirective = (StopDirective) directive;
 
-                pendingRequests.add(stopDirective.getRequest());
+                // pendingRequests.add(stopDirective.getRequest());
                 requestAssignments.remove(stopDirective.getRequest());
                 addStatusChange(stopDirective.getRequest(), RequestStatus.REQUESTED);
             }
@@ -528,7 +556,7 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
                 simulationObjectCompiler.insertRequest(entry.getKey(), status);
             }
         }
-        
+
         requestStatusChanges.clear();
 
         /* simulationObjectCompiler.insertRequests(reqStatuses);
