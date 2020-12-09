@@ -13,8 +13,6 @@ import org.matsim.core.router.util.TravelTime;
 
 import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
 import amodeus.amodeus.dispatcher.core.schedule.directives.DriveDirective;
-import amodeus.amodeus.dispatcher.shared.backup.SharedCourse;
-import amodeus.amodeus.dispatcher.shared.backup.SharedMenu;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
 import amodeus.amodeus.util.math.GlobalAssert;
 

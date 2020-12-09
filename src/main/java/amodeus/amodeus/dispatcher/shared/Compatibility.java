@@ -8,7 +8,6 @@ import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.schedule.ScheduleManager;
 import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
 import amodeus.amodeus.dispatcher.core.schedule.directives.StopDirective;
-import amodeus.amodeus.dispatcher.shared.backup.SharedMenu;
 
 /** Checks if a {@link SharedMenu} for a {@link RoboTaxi} is compatible with its
  * capacity, i.e., if at no point in time there are more passengers on board that

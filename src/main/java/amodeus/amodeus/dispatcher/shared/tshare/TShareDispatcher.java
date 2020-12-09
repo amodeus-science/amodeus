@@ -29,7 +29,6 @@ import com.google.inject.TypeLiteral;
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.SharedPartitionedDispatcher;
-import amodeus.amodeus.dispatcher.shared.backup.SharedMenu;
 import amodeus.amodeus.dispatcher.util.DistanceHeuristics;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
 import amodeus.amodeus.routing.CachedNetworkTimeDistance;

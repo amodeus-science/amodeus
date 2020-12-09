@@ -26,8 +26,6 @@ import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
 import amodeus.amodeus.dispatcher.core.schedule.directives.DriveDirective;
 import amodeus.amodeus.dispatcher.core.schedule.directives.StopDirective;
 import amodeus.amodeus.dispatcher.shared.Compatibility;
-import amodeus.amodeus.dispatcher.shared.backup.SharedCourse;
-import amodeus.amodeus.dispatcher.shared.backup.SharedCourseAccess;
 import amodeus.amodeus.util.math.GlobalAssert;
 
 /** RoboTaxi is central class to be used in all dispatchers. Dispatchers control

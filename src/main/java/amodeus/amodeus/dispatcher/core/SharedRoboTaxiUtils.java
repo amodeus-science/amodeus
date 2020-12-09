@@ -6,7 +6,6 @@ import org.matsim.api.core.v01.network.Link;
 import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
 import amodeus.amodeus.dispatcher.core.schedule.directives.DriveDirective;
 import amodeus.amodeus.dispatcher.core.schedule.directives.StopDirective;
-import amodeus.amodeus.dispatcher.shared.backup.SharedMenu;
 
 /** Package internal helper class to do computations for {@link} {@link RoboTaxi} which
  * are in shared use. */

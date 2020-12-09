@@ -8,7 +8,6 @@ import org.matsim.api.core.v01.network.Link;
 import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
 import amodeus.amodeus.dispatcher.core.schedule.directives.DriveDirective;
 import amodeus.amodeus.dispatcher.core.schedule.directives.StopDirective;
-import amodeus.amodeus.dispatcher.shared.backup.SharedCourse;
 import amodeus.amodeus.routing.NetworkTimeDistInterface;
 import amodeus.amodeus.util.math.SI;
 import ch.ethz.idsc.tensor.Scalar;
