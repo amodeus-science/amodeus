@@ -9,6 +9,7 @@ import org.matsim.contrib.drt.schedule.DrtDriveTask;
 import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Task;
+import org.matsim.contrib.dvrp.schedule.Schedule.ScheduleStatus;
 import org.matsim.contrib.dvrp.tracker.OnlineDriveTaskTracker;
 import org.matsim.contrib.dvrp.tracker.TaskTracker;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
@@ -22,7 +23,12 @@ import org.matsim.contrib.dvrp.util.LinkTimePair;
         /** {@link ScheduleImpl.failIfNotStarted} triggers, very likely you have
          * entered a simulation start time other than 0:00. Check that in the
          * av_config.xml file. */
-        return new RoboTaxiLocation(schedule.getCurrentTask()).link;
+        
+        if (schedule.getStatus().equals(ScheduleStatus.STARTED)) {
+            return new RoboTaxiLocation(schedule.getCurrentTask()).link;
+        } else {
+            return roboTaxi.getDvrpVehicle().getStartLink();
+        }        
     }
 
     // ---

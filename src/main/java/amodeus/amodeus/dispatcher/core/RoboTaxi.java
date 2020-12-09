@@ -15,6 +15,7 @@ import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.schedule.Schedule;
+import org.matsim.contrib.dvrp.schedule.Schedule.ScheduleStatus;
 import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.contrib.dvrp.util.LinkTimePair;
 
@@ -85,6 +86,10 @@ public final class RoboTaxi {
     /** @return time when robotaxi can be diverted */
     /* package */ double getDivertableTime() {
         return divertableLinkTime.time;
+    }
+    
+    public DvrpVehicle getDvrpVehicle() {
+        return avVehicle;
     }
 
     /** @return null if vehicle is currently not driving, else the final {@link Link}

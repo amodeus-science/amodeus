@@ -109,8 +109,7 @@ import amodeus.amodeus.util.matsim.SafeConfig;
 
     private void beforeStepTasks() {
         updateDivertableLocations();
-        if (private_now > 0) // at time 0, tasks are not started.
-            updateCurrentLocations();
+        updateCurrentLocations();
     }
 
     /** {@link RoboTaxi} on a pickup ride which are sent to another location are
