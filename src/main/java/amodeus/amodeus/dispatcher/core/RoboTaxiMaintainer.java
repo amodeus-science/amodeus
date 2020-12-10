@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.matsim.amodeus.components.AmodeusDispatcher;
 import org.matsim.amodeus.config.AmodeusModeConfig;
@@ -13,7 +14,7 @@ import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
 import org.matsim.api.core.v01.events.Event;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
-import org.matsim.contrib.dvrp.schedule.Schedule;
+import org.matsim.contrib.dvrp.schedule.Schedule.ScheduleStatus;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 
@@ -52,9 +53,10 @@ import amodeus.amodeus.util.matsim.SafeConfig;
 
     /** @return {@link List} of {@link RoboTaxi} */
     protected final List<RoboTaxi> getRoboTaxis() {
-        if (roboTaxis.isEmpty() || !roboTaxis.get(0).getSchedule().getStatus().equals(Schedule.ScheduleStatus.STARTED))
+        if (roboTaxis.isEmpty())
             return Collections.emptyList();
-        return Collections.unmodifiableList(roboTaxis);
+
+        return roboTaxis.stream().filter(rt -> rt.getSchedule().getStatus().equals(ScheduleStatus.STARTED)).collect(Collectors.toList());
     }
 
     protected abstract void updateDivertableLocations();
