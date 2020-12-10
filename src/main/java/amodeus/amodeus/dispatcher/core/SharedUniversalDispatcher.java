@@ -194,6 +194,10 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
         if (schedule.getStatus() != Schedule.ScheduleStatus.STARTED) {
             return true;
         }
+        
+        if (getTimeNow() >= robotaxi.getDvrpVehicle().getServiceEndTime()) {
+            return true;
+        }
 
         Task currentTask = schedule.getCurrentTask();
 
