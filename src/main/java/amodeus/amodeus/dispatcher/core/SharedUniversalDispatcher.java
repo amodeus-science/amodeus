@@ -118,7 +118,7 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
     /** @return divertable RoboTaxis which currently are not on a pickup drive */
     protected final Collection<RoboTaxi> getDivertableUnassignedRoboTaxis() {
         Collection<RoboTaxi> divertableUnassignedRoboTaxis = getDivertableRoboTaxis().stream() //
-                .filter(rt -> !requestAssignments.containsValue(rt)) //
+                .filter(rt -> getTimeNow() < rt.getDvrpVehicle().getServiceEndTime()).filter(rt -> !requestAssignments.containsValue(rt)) //
                 .collect(Collectors.toList());
         GlobalAssert.that(divertableUnassignedRoboTaxis.stream().allMatch(RoboTaxi::isWithoutCustomer));
         return divertableUnassignedRoboTaxis;
@@ -194,7 +194,7 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
         if (schedule.getStatus() != Schedule.ScheduleStatus.STARTED) {
             return true;
         }
-        
+
         if (getTimeNow() >= robotaxi.getDvrpVehicle().getServiceEndTime()) {
             return true;
         }
@@ -301,7 +301,7 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
         }
 
         pickupsFromRegisters();
-        
+
         // TODO: This is at an arbitrary location here
 
         if (isRejectingRequests) {

@@ -35,7 +35,6 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 
 import amodeus.amodeus.data.ReferenceFrame;
-import amodeus.amodeus.matsim.CompatibilityModule;
 import amodeus.amodeus.matsim.DispatcherModule;
 import amodeus.amodeus.matsim.GeneratorModule;
 import amodeus.amodeus.matsim.RouterModule;
@@ -78,7 +77,6 @@ public class AmodeusModule extends AbstractModule {
             install(new AmodeusScoringModule());
         }
 
-        install(new CompatibilityModule());
         addControlerListenerBinding().to(MatsimAmodeusDatabase.class);
     }
 
