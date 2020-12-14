@@ -10,7 +10,6 @@ import org.matsim.api.core.v01.Scenario;
 import org.matsim.contrib.dvrp.run.DvrpModule;
 import org.matsim.core.controler.Controler;
 
-import amodeus.amodeus.net.MatsimAmodeusDatabase;
 import amodeus.amodeus.options.ScenarioOptions;
 
 public class AmodeusConfigurator {
@@ -30,14 +29,14 @@ public class AmodeusConfigurator {
     }
 
     /** Configures a MATSim controller for a standard use case of AMoDeus. */
-    static public void configureController(Controler controller, MatsimAmodeusDatabase db, ScenarioOptions scenarioOptions) {
+    static public void configureController(Controler controller, ScenarioOptions scenarioOptions) {
         if (controller.getConfig().getModules().containsKey("av")) {
             logger.warn(configurationChangedMessage);
             throw new RuntimeException();
         }
 
         controller.addOverridingModule(new DvrpModule());
-        controller.addOverridingModule(new AmodeusModule(db, scenarioOptions));
+        controller.addOverridingModule(new AmodeusModule(scenarioOptions));
 
         controller.addOverridingQSimModule(new AmodeusQSimModule());
         controller.configureQSimComponents(AmodeusQSimModule.activateModes(AmodeusConfigGroup.get(controller.getConfig())));

@@ -86,7 +86,7 @@ public class TestServer {
 
         MatsimAmodeusDatabase db = MatsimAmodeusDatabase.initialize(network, referenceFrame);
         Controler controller = new Controler(scenario);
-        AmodeusConfigurator.configureController(controller, db, scenarioOptions);
+        AmodeusConfigurator.configureController(controller, scenarioOptions);
 
         // run simulation
         controller.run();

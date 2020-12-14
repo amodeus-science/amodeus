@@ -19,8 +19,8 @@ import org.matsim.core.mobsim.qsim.QSim;
 
 import com.google.inject.Singleton;
 
-public class AmodeusDrtQSimModule extends AbstractDvrpModeQSimModule {
-    public AmodeusDrtQSimModule(String mode) {
+public class AmodeusDrtQSimModeModule extends AbstractDvrpModeQSimModule {
+    public AmodeusDrtQSimModeModule(String mode) {
         super(mode);
     }
 

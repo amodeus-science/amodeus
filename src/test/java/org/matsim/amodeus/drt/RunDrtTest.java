@@ -158,8 +158,8 @@ public class RunDrtTest {
             // components of DRT. Later on, we would only override DrtOptimizer, but we are
             // not there yet, because Amodeus internally still works with AmodeusStayTask, etc.
             // and does not understand DrtStayTask, etc.
-            controller.addOverridingModule(new AmodeusDrtModule(amodeusModeConfig));
-            controller.addOverridingQSimModule(new AmodeusDrtQSimModule(drtModeConfig.getMode()));
+            controller.addOverridingModule(new AmodeusDrtModule());
+            AmodeusDrtModule.overrideDispatchers(controller, config);
         }
 
         controller.run();

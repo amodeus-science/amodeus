@@ -198,7 +198,7 @@ public class StandardMATSimScenarioTest {
         // Set up
         Config config = ConfigUtils.createConfig(new AmodeusConfigGroup(), new DvrpConfigGroup());
         Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
-        
+
         if (dispatcher.equals("HighCapacityDispatcher")) {
             // TODO: It finishes, but takes really long for some few remaining requests.
             config.qsim().setEndTime(60.0 * 3600.0);
@@ -221,7 +221,7 @@ public class StandardMATSimScenarioTest {
         simOptions.setProperty("parkingCapacityGenerator", ParkingCapacityGenerators.values()[j].name());
 
         Controler controller = new Controler(scenario);
-        AmodeusConfigurator.configureController(controller, db, simOptions);
+        AmodeusConfigurator.configureController(controller, simOptions);
         controller.addOverridingModule(new AmodeusParkingModule(simOptions, new Random()));
 
         // Make the scenario multimodal
