@@ -8,6 +8,7 @@ import java.util.Objects;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
@@ -29,8 +30,8 @@ public abstract class SharedPartitionedDispatcher extends SharedRebalancingDispa
             ParallelLeastCostPathCalculator router, //
             EventsManager eventsManager, //
             VirtualNetwork<Link> virtualNetwork, //
-            MatsimAmodeusDatabase db) {
-        super(config, operatorConfig, travelTime, router, eventsManager, db);
+            MatsimAmodeusDatabase db, RebalancingStrategy rebalancingStrategy) {
+        super(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy);
 
         if (virtualNetwork == null)
             throw new IllegalStateException(

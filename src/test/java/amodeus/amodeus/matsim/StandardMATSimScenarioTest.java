@@ -194,6 +194,7 @@ public class StandardMATSimScenarioTest {
          * sure that all 100 generated agents arrive */
         StaticHelper.setup();
         MatsimRandom.reset();
+        Id.resetCaches();
 
         // Set up
         Config config = ConfigUtils.createConfig(new AmodeusConfigGroup(), new DvrpConfigGroup());

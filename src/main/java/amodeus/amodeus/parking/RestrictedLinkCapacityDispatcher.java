@@ -2,18 +2,17 @@
 package amodeus.amodeus.parking;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import amodeus.amodeus.net.TensorCoords;
 import org.matsim.amodeus.components.AmodeusDispatcher;
 import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -30,6 +29,7 @@ import amodeus.amodeus.dispatcher.shared.beam.BeamExtensionForSharing;
 import amodeus.amodeus.dispatcher.util.DistanceHeuristics;
 import amodeus.amodeus.dispatcher.util.TreeMaintainer;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
+import amodeus.amodeus.net.TensorCoords;
 import amodeus.amodeus.parking.capacities.ParkingCapacity;
 import amodeus.amodeus.parking.strategies.ParkingStrategy;
 import amodeus.amodeus.util.matsim.SafeConfig;
@@ -72,8 +72,8 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
             Config config, AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, AmodeusRouter router, EventsManager eventsManager, //
             MatsimAmodeusDatabase db, ParkingStrategy parkingStrategy, //
-            ParkingCapacity avSpatialCapacityAmodeus) {
-        super(config, operatorConfig, travelTime, router, eventsManager, db);
+            ParkingCapacity avSpatialCapacityAmodeus, RebalancingStrategy rebalancingStrategy) {
+        super(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy);
         DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(60);
         SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
@@ -184,8 +184,10 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
             ParkingStrategy parkingStrategy = inject.get(ParkingStrategy.class);
             ParkingCapacity avSpatialCapacityAmodeus = inject.get(ParkingCapacity.class);
 
+            RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
+
             return new RestrictedLinkCapacityDispatcher(network, config, operatorConfig, travelTime, router, eventsManager, db, //
-                    Objects.requireNonNull(parkingStrategy), Objects.requireNonNull(avSpatialCapacityAmodeus));
+                    Objects.requireNonNull(parkingStrategy), Objects.requireNonNull(avSpatialCapacityAmodeus), rebalancingStrategy);
         }
     }
 }

@@ -18,6 +18,10 @@ public interface Directive {
         return new DefaultDriveDirective(link, true);
     }
 
+    static public DriveDirective unmodifiableDrive(Link link) {
+        return new DefaultDriveDirective(link, false);
+    }
+
     static public Link getLink(Directive directive) {
         if (directive instanceof StopDirective) {
             StopDirective stopDirective = (StopDirective) directive;

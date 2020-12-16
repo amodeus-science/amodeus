@@ -16,6 +16,8 @@ import org.matsim.amodeus.waiting_time.WaitingTime;
 import org.matsim.amodeus.waiting_time.WaitingTimeEstimationModule;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.PopulationFactory;
+import org.matsim.contrib.drt.optimizer.rebalancing.NoRebalancingStrategy;
+import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
 import org.matsim.contrib.dvrp.passenger.DefaultPassengerRequestValidator;
 import org.matsim.contrib.dvrp.passenger.PassengerRequestValidator;
 import org.matsim.contrib.dvrp.router.DvrpModeRoutingNetworkModule;
@@ -82,6 +84,8 @@ public class AmodeusModeModule extends AbstractDvrpModeModule {
         bindModal(PriceModel.class).toProvider(new PriceCalculatorProider(modeConfig));
 
         install(new VirtualNetworkModeModule(modeConfig));
+        
+        bindModal(RebalancingStrategy.class).toInstance(new NoRebalancingStrategy());
     }
 
     static private class RoutingModuleProvider extends ModalProviders.AbstractProvider<AmodeusRoutingModule> {

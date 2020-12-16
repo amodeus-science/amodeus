@@ -13,6 +13,7 @@ import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -43,8 +44,8 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
     protected NorthPoleSharedDispatcher(Network network, //
             Config config, AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, AmodeusRouter router, EventsManager eventsManager, //
-            MatsimAmodeusDatabase db) {
-        super(config, operatorConfig, travelTime, router, eventsManager, db);
+            MatsimAmodeusDatabase db, RebalancingStrategy rebalancingStrategy) {
+        super(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy);
         this.cityNorthPole = getNorthPole(network);
         this.equatorLinks = getEquator(network);
         DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
@@ -59,11 +60,11 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
 
         if (round_now % dispatchPeriod == 0) {
             /** assignment of {@link RoboTaxi}s */
-            //System.err.println("DIVERTABLE TAXIS DISPATCH " + getDivertableUnassignedRoboTaxis().size());
+            // System.err.println("DIVERTABLE TAXIS DISPATCH " + getDivertableUnassignedRoboTaxis().size());
             for (RoboTaxi sharedRoboTaxi : getDivertableUnassignedRoboTaxis()) {
                 List<PassengerRequest> unassignedRequests = new ArrayList<>(getUnassignedRequests());
-                //System.err.println("UNASSIGNED REQUESTS " + unassignedRequests.size());
-                
+                // System.err.println("UNASSIGNED REQUESTS " + unassignedRequests.size());
+
                 if (unassignedRequests.size() >= 4) {
                     /** select 4 requests */
                     PassengerRequest firstRequest = unassignedRequests.get(0);
@@ -98,7 +99,8 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
                     sharedRoboTaxi.moveToPrevious(redirectCourse);
 
                     /** check consistency and end */
-                    GlobalAssert.that(Compatibility.of(sharedRoboTaxi.getUnmodifiableViewOfCourses()).forCapacity(sharedRoboTaxi.getScheduleManager(), sharedRoboTaxi.getCapacity()));
+                    GlobalAssert
+                            .that(Compatibility.of(sharedRoboTaxi.getUnmodifiableViewOfCourses()).forCapacity(sharedRoboTaxi.getScheduleManager(), sharedRoboTaxi.getCapacity()));
                 } else {
                     break;
                 }
@@ -107,7 +109,7 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
 
         /** dispatching of available {@link RoboTaxi}s to the equator */
         if (round_now % rebalancePeriod == 0) {
-            //System.err.println("DIVERTABLE TAXIS REBALANCE " + getDivertableUnassignedRoboTaxis().size());
+            // System.err.println("DIVERTABLE TAXIS REBALANCE " + getDivertableUnassignedRoboTaxis().size());
             /** relocation of empty {@link RoboTaxi}s to a random link on the equator */
             for (RoboTaxi roboTaxi : getDivertableUnassignedRoboTaxis()) {
                 Link rebalanceLink = equatorLinks.get(randGen.nextInt(equatorLinks.size()));
@@ -158,7 +160,9 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
             AmodeusRouter router = inject.getModal(AmodeusRouter.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);
 
-            return new NorthPoleSharedDispatcher(network, config, operatorConfig, travelTime, router, eventsManager, db);
+            RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
+
+            return new NorthPoleSharedDispatcher(network, config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy);
         }
     }
 }

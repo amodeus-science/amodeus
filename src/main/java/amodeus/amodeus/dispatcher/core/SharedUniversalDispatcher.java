@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -16,6 +17,12 @@ import org.matsim.amodeus.components.AmodeusGenerator;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
 import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
+import org.matsim.contrib.drt.optimizer.rebalancing.NoRebalancingStrategy;
+import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingParams;
+import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
+import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy.Relocation;
+import org.matsim.contrib.drt.run.DrtConfigGroup;
+import org.matsim.contrib.drt.run.MultiModeDrtConfigGroup;
 import org.matsim.contrib.drt.schedule.DrtDriveTask;
 import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
@@ -38,6 +45,7 @@ import amodeus.amodeus.dispatcher.shared.Compatibility;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
 import amodeus.amodeus.net.SimulationObjectCompiler;
 import amodeus.amodeus.util.math.GlobalAssert;
+import amodeus.amodeus.util.matsim.SafeConfig;
 
 /** purpose of {@link SharedUniversalDispatcher} is to collect and manage
  * {@link PassengerRequest}s alternative implementation of {@link AmodeusDispatcher};
@@ -70,13 +78,35 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
     private Double lastTime = null;
 
     private final boolean isRejectingRequests;
+    private final RebalancingStrategy drtRebalancing;
+    private Integer drtRebalancingInterval = null;
+    private boolean usesStaticDrtRebalancing = false;
 
     protected SharedUniversalDispatcher(Config config, AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, //
-            EventsManager eventsManager, MatsimAmodeusDatabase db) {
+            EventsManager eventsManager, MatsimAmodeusDatabase db, RebalancingStrategy drtRebalancing) {
         super(eventsManager, config, operatorConfig, travelTime, parallelLeastCostPathCalculator, db);
 
-        isRejectingRequests = operatorConfig.getDispatcherConfig().getIsRejectingRequests();
+        this.isRejectingRequests = operatorConfig.getDispatcherConfig().getIsRejectingRequests();
+        this.drtRebalancing = drtRebalancing;
+
+        if (drtRebalancing != null) {
+            MultiModeDrtConfigGroup multiConfig = MultiModeDrtConfigGroup.get(config);
+
+            if (multiConfig != null) {
+                for (DrtConfigGroup drtConfig : MultiModeDrtConfigGroup.get(config).getModalElements()) {
+                    if (drtConfig.getMode().equals(operatorConfig.getMode())) {
+                        Optional<RebalancingParams> params = drtConfig.getRebalancingParams();
+
+                        if (params.isPresent()) {
+                            this.drtRebalancingInterval = params.get().getInterval();
+                        }
+                    }
+                }
+            }
+
+            usesStaticDrtRebalancing = SafeConfig.wrap(operatorConfig.getDispatcherConfig()).getBool("usesStaticDrtRebalancing", true);
+        }
     }
 
     // ===================================================================================
@@ -257,6 +287,10 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
     // ********************* INTERNAL Methods, do not call from derived dispatchers*******************
     // ***********************************************************************************************
 
+    protected boolean hasDrtRebalancing() {
+        return drtRebalancing != null && !(drtRebalancing instanceof NoRebalancingStrategy);
+    }
+
     /** carries out the redispatching defined in the {@link SharedMenu} and executes the
      * directives after a check of the menus. */
     @Override
@@ -266,6 +300,34 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
          * a) if they have a starter:
          * - do not yet Plan to go to the link of this starter
          * b) if they do not have a starter but are on the way to a location they are stoped */
+
+        // Start DRT Rebalancing if active
+
+        if (hasDrtRebalancing()) {
+            if (drtRebalancingInterval != null && (getTimeNow() + 1) % drtRebalancingInterval == 0) {
+                Map<DvrpVehicle, RoboTaxi> vehicles = new HashMap<>();
+                getDivertableUnassignedRoboTaxis().stream().filter(rt -> rt.getSchedule().getCurrentTask().getTaskType().equals(DrtStayTask.TYPE))
+                        .forEach(rt -> vehicles.put(rt.getDvrpVehicle(), rt));
+
+                List<Relocation> relocations = drtRebalancing.calcRelocations(vehicles.values().stream().map(rt -> rt.getDvrpVehicle()), getTimeNow());
+
+                for (Relocation relocation : relocations) {
+                    RoboTaxi robotaxi = vehicles.get(relocation.vehicle);
+
+                    GlobalAssert.that(robotaxi.isWithoutCustomer());
+                    cleanAndAbondon(robotaxi);
+                    GlobalAssert.that(robotaxi.getScheduleManager().getDirectives().size() == 0);
+
+                    if (usesStaticDrtRebalancing) {
+                        Directive directive = Directive.unmodifiableDrive(relocation.link);
+                        robotaxi.addRedirectCourseToMenu((DriveDirective) directive);
+                    } else {
+                        Directive directive = Directive.drive(relocation.link);
+                        robotaxi.addRedirectCourseToMenu((DriveDirective) directive);
+                    }
+                }
+            }
+        }
 
         // AdaptMenuToDirective.now(roboTaxi, futurePathFactory, now, eventsManager, timeStepReroute.contains(roboTaxi));
         timeStepReroute.clear();

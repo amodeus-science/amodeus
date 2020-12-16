@@ -16,6 +16,7 @@ import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -72,8 +73,8 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
 
     protected TShareDispatcher(Network network, Config config, AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, AmodeusRouter router, EventsManager eventsManager, //
-            MatsimAmodeusDatabase db, VirtualNetwork<Link> virtualNetwork) {
-        super(config, operatorConfig, travelTime, router, eventsManager, virtualNetwork, db);
+            MatsimAmodeusDatabase db, VirtualNetwork<Link> virtualNetwork, RebalancingStrategy rebalancingStrategy) {
+        super(config, operatorConfig, travelTime, router, eventsManager, virtualNetwork, db, rebalancingStrategy);
         DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(30);
         DistanceHeuristics distanceHeuristics = dispatcherConfig.getDistanceHeuristics(DistanceHeuristics.EUCLIDEAN);
@@ -121,7 +122,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
                     getUnassignedRequests(), distanceCashed, now);
         }
     }
-    
+
     private static boolean canPickupAdditionalCustomer(RoboTaxi robotaxi) {
         return robotaxi.getScheduleManager().getNumberOfOnBoardRequests() + 1 <= robotaxi.getCapacity();
     }
@@ -196,8 +197,10 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
             VirtualNetwork<Link> virtualNetwork = inject.getModal(new TypeLiteral<VirtualNetwork<Link>>() {
             });
 
+            RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
+
             return new TShareDispatcher(network, config, operatorConfig, travelTime, router, eventsManager, //
-                    db, virtualNetwork);
+                    db, virtualNetwork, rebalancingStrategy);
         }
     }
 }
