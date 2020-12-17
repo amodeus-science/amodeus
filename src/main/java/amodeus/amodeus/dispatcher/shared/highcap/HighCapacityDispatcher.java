@@ -166,8 +166,20 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
                 List<Directive> courseForThisTaxi = routeToAssign.stream() //
                         .map(StopInRoute::getSharedCourse) //
                         .collect(Collectors.toList());
+                
+                Map<PassengerRequest, Double> pickupTimes = new HashMap<>();
+                Map<PassengerRequest, Double> dropoffTimes = new HashMap<>();
+                
+                for (StopInRoute stop : tripWithVehicle.getRoute()) {
+                    if (stop.isPickup()) {
+                        pickupTimes.put(stop.getavRequest(), stop.getTime());
+                    } else {
+                        dropoffTimes.put(stop.getavRequest(), stop.getTime());
+                    }
+                }
+                
                 for (PassengerRequest avRequest : tripWithVehicle.getTrip())
-                    addSharedRoboTaxiPickup(roboTaxiToAssign, avRequest);
+                    addSharedRoboTaxiPickup(roboTaxiToAssign, avRequest, pickupTimes.get(avRequest), dropoffTimes.get(avRequest));
                 // create set of requests in the route
                 Set<PassengerRequest> setOfPassengerRequestInRoute = routeToAssign.stream() //
                         .map(StopInRoute::getavRequest) //
@@ -188,7 +200,7 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
         }
 
         /** Re-balance */
-        if (round_now % rebalancePeriod == 2) { // in order to avoid dispatch and re-balance happen at same time
+        if (rebalancePeriod > 0 && round_now % rebalancePeriod == 2) { // in order to avoid dispatch and re-balance happen at same time
             // check if there are both idling vehicles and unassigned requests at same time
             List<PassengerRequest> listOfUnassignedRequest = new ArrayList<>(getUnassignedRequests());
             List<RoboTaxi> listOfIdlingTaxi = new ArrayList<>(getDivertableUnassignedRoboTaxis());

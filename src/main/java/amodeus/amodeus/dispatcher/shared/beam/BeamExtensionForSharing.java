@@ -90,7 +90,7 @@ public class BeamExtensionForSharing {
      * 
      * @param sud */
     public void assignTo(SharedUniversalDispatcher sud) {
-        addedAvRequests.forEach((avr, rt) -> sud.addSharedRoboTaxiPickup(rt, avr));
+        addedAvRequests.forEach((avr, rt) -> sud.addSharedRoboTaxiPickup(rt, avr, Double.NaN, Double.NaN));
     }
 
     /** Once the reorders the menu of each robotaxi in the last assignment which was produced from the {@link #getSharingAssignements}

@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import org.matsim.amodeus.components.AmodeusDispatcher;
 import org.matsim.amodeus.components.AmodeusGenerator;
 import org.matsim.amodeus.config.AmodeusModeConfig;
+import org.matsim.amodeus.dvrp.passenger.PassengerRequestUnscheduledEvent;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
 import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
 import org.matsim.contrib.drt.optimizer.rebalancing.NoRebalancingStrategy;
@@ -167,7 +168,7 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
      * 
      * @param roboTaxi
      * @param avRequest */
-    public final void addSharedRoboTaxiPickup(RoboTaxi roboTaxi, PassengerRequest avRequest) {
+    public final void addSharedRoboTaxiPickup(RoboTaxi roboTaxi, PassengerRequest avRequest, double expectedPickupTime, double expectedDropoffTime) {
         if (showRegistry)
             System.err.println("addSharedRoboTaxiPickup");
         indent++;
@@ -202,7 +203,8 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
 
         addStatusChange(avRequest, RequestStatus.ASSIGNED);
         // pendingRequests.remove(avRequest);
-        eventsManager.processEvent(new PassengerRequestScheduledEvent(getTimeNow(), mode, avRequest.getId(), avRequest.getPassengerId(), roboTaxi.getId(), 0.0, 0.0));
+        eventsManager.processEvent(
+                new PassengerRequestScheduledEvent(getTimeNow(), mode, avRequest.getId(), avRequest.getPassengerId(), roboTaxi.getId(), expectedPickupTime, expectedDropoffTime));
     }
 
     protected Set<PassengerRequest> getUniqueRequests(RoboTaxi robotaxi) {
@@ -262,6 +264,7 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
         if (showRegistry)
             System.err.println(makeIndent() + "Remove " + avRequest.getId() + " from " + roboTaxi.getId());
         roboTaxi.removePassengerRequestFromMenu(avRequest);
+        eventsManager.processEvent(new PassengerRequestUnscheduledEvent(getTimeNow(), mode, avRequest.getId(), avRequest.getPassengerId(), roboTaxi.getId()));
         GlobalAssert.that(Compatibility.of(roboTaxi.getScheduleManager().getDirectives()).forCapacity(roboTaxi.getScheduleManager(), roboTaxi.getCapacity()));
         addStatusChange(avRequest, RequestStatus.REQUESTED);
         indent--;

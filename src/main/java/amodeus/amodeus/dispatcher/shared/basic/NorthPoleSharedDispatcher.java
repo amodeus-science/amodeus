@@ -73,15 +73,15 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
                     PassengerRequest fourthRequest = unassignedRequests.get(3);
 
                     /** add pickup for request 1 */
-                    addSharedRoboTaxiPickup(sharedRoboTaxi, firstRequest);
+                    addSharedRoboTaxiPickup(sharedRoboTaxi, firstRequest, Double.NaN, Double.NaN);
 
                     /** add pickup for request 2 and move to first location */
-                    addSharedRoboTaxiPickup(sharedRoboTaxi, secondRequest);
+                    addSharedRoboTaxiPickup(sharedRoboTaxi, secondRequest, Double.NaN, Double.NaN);
                     Directive sharedAVCourse = Directive.pickup(secondRequest);
                     sharedRoboTaxi.moveToPrevious(sharedAVCourse);
 
                     /** add pickup for request 3 and move to first location */
-                    addSharedRoboTaxiPickup(sharedRoboTaxi, thirdRequest);
+                    addSharedRoboTaxiPickup(sharedRoboTaxi, thirdRequest, Double.NaN, Double.NaN);
                     Directive sharedAVCourse3 = Directive.pickup(thirdRequest);
                     sharedRoboTaxi.moveToPrevious(sharedAVCourse3);
                     sharedRoboTaxi.moveToPrevious(sharedAVCourse3);
@@ -90,7 +90,7 @@ public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
                     List<Directive> courses = new ArrayList<>(sharedRoboTaxi.getUnmodifiableViewOfCourses());
                     courses.add(3, Directive.pickup(fourthRequest));
                     courses.add(Directive.dropoff(fourthRequest));
-                    addSharedRoboTaxiPickup(sharedRoboTaxi, fourthRequest);
+                    addSharedRoboTaxiPickup(sharedRoboTaxi, fourthRequest, Double.NaN, Double.NaN);
                     sharedRoboTaxi.updateMenu(courses);
 
                     /** add a redirect task (to the north pole) and move to prev */

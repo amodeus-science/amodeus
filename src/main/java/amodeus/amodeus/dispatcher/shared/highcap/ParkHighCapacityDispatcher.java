@@ -190,8 +190,21 @@ import amodeus.amodeus.routing.EasyMinTimePathCalculator;
                 List<Directive> courseForThisTaxi = routeToAssign.stream() //
                         .map(StopInRoute::getSharedCourse) //
                         .collect(Collectors.toList());
+                
+                Map<PassengerRequest, Double> pickupTimes = new HashMap<>();
+                Map<PassengerRequest, Double> dropoffTimes = new HashMap<>();
+                
+                for (StopInRoute stop : tripWithVehicle.getRoute()) {
+                    if (stop.isPickup()) {
+                        pickupTimes.put(stop.getavRequest(), stop.getTime());
+                    } else {
+                        dropoffTimes.put(stop.getavRequest(), stop.getTime());
+                    }
+                }
+                
                 for (PassengerRequest avRequest : tripWithVehicle.getTrip())
-                    addSharedRoboTaxiPickup(roboTaxiToAssign, avRequest);
+                    addSharedRoboTaxiPickup(roboTaxiToAssign, avRequest, pickupTimes.get(avRequest), dropoffTimes.get(avRequest));
+                
                 // create set of requests in the route
                 Set<PassengerRequest> setOfPassengerRequestInRoute = routeToAssign.stream() //
                         .map(StopInRoute::getavRequest) //

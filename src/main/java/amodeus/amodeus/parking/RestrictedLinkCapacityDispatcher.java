@@ -116,7 +116,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
                     for (PassengerRequest avr : requests) {
                         RoboTaxi closest = unassignedRoboTaxis.getClosest(getLocation(avr));
                         if (Objects.nonNull(closest)) {
-                            addSharedRoboTaxiPickup(closest, avr);
+                            addSharedRoboTaxiPickup(closest, avr, Double.NaN, Double.NaN);
 
                             unassignedRoboTaxis.remove(closest);
                             requestMaintainer.remove(avr);
@@ -127,7 +127,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
                     for (RoboTaxi roboTaxi : robotaxisDivertable) {
                         PassengerRequest closest = requestMaintainer.getClosest(getRoboTaxiLoc(roboTaxi));
                         if (Objects.nonNull(closest)) {
-                            addSharedRoboTaxiPickup(roboTaxi, closest);
+                            addSharedRoboTaxiPickup(roboTaxi, closest, Double.NaN, Double.NaN);
 
                             unassignedRoboTaxis.remove(roboTaxi);
                             requestMaintainer.remove(closest);

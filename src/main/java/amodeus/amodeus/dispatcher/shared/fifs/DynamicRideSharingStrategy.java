@@ -142,7 +142,7 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
                     /** in Case we have a sharing possibility we assign */
                     RoboTaxi roboTaxi = rideSharingRoboTaxi.get().getKey();
                     GlobalAssert.that(routeValidation.menuFulfillsConstraints(roboTaxi, rideSharingRoboTaxi.get().getValue(), avRequest, now, timeDb, requestHandler));
-                    addSharedRoboTaxiPickup(roboTaxi, avRequest);
+                    addSharedRoboTaxiPickup(roboTaxi, avRequest, Double.NaN, Double.NaN);
                     requestHandler.removeFromUnasignedRequests(avRequest);
                     rebalanceDirectives.removefromDirectives(roboTaxi);
                     roboTaxi.updateMenu(rideSharingRoboTaxi.get().getValue());
@@ -153,7 +153,7 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
                             requestHandler.calculateWaitTime(avRequest), now, timeDb);
                     if (emptyRoboTaxi.isPresent()) {
                         /** In case we have a close vehicle which is free lets assign it */
-                        addSharedRoboTaxiPickup(emptyRoboTaxi.get(), avRequest); // give directive
+                        addSharedRoboTaxiPickup(emptyRoboTaxi.get(), avRequest, Double.NaN, Double.NaN); // give directive
                         roboTaxiHandler.assign(emptyRoboTaxi.get()); // the assigned RoboTaxi is not unassigned anymore
                         rebalanceDirectives.removefromDirectives(emptyRoboTaxi.get()); // this taxi can not be rebalanced anymore
                         requestHandler.removeFromUnasignedRequests(avRequest); // the request is not unassigned anymore

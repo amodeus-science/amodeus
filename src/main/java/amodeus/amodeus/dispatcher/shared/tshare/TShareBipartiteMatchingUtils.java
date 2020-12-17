@@ -30,7 +30,7 @@ import ch.ethz.idsc.tensor.Tensors;
                 .match(roboTaxis, requests));
 
         /** perform dispatching */
-        matching.forEach(universalDispatcher::addSharedRoboTaxiPickup);
+        matching.forEach((rt, avreq) -> universalDispatcher.addSharedRoboTaxiPickup(rt, avreq, Double.NaN, Double.NaN));
         return infoLine; // TODO @clruch always empty?
     }
 

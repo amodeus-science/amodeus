@@ -169,7 +169,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
 
                 /** plan update: insert the request into the plan of the {@link RoboTaxi} */
                 if (Objects.nonNull(insertions.firstEntry()))
-                    insertions.firstEntry().getValue().executeBest(this::addSharedRoboTaxiPickup);
+                    insertions.firstEntry().getValue().executeBest((rt, avreq) -> addSharedRoboTaxiPickup(rt, avreq, Double.NaN, Double.NaN));
             }
         }
     }
