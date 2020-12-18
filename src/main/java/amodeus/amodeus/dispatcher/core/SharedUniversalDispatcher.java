@@ -15,9 +15,13 @@ import java.util.stream.Collectors;
 import org.matsim.amodeus.components.AmodeusDispatcher;
 import org.matsim.amodeus.components.AmodeusGenerator;
 import org.matsim.amodeus.config.AmodeusModeConfig;
+import org.matsim.amodeus.drt.relocation.RelocationEndEvent;
+import org.matsim.amodeus.drt.relocation.RelocationScheduledEvent;
+import org.matsim.amodeus.drt.relocation.RelocationStartEvent;
 import org.matsim.amodeus.dvrp.passenger.PassengerRequestUnscheduledEvent;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
 import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
+import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.drt.optimizer.rebalancing.NoRebalancingStrategy;
 import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingParams;
 import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
@@ -39,6 +43,8 @@ import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
 
+import com.google.common.collect.ImmutableList;
+
 import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
 import amodeus.amodeus.dispatcher.core.schedule.directives.DriveDirective;
 import amodeus.amodeus.dispatcher.core.schedule.directives.StopDirective;
@@ -58,6 +64,7 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
 
     private final Map<RoboTaxi, AmodeusStopTask> pickupTaxis = new HashMap<>();
     private final Map<RoboTaxi, AmodeusStopTask> dropoffTaxis = new HashMap<>();
+    private final Map<RoboTaxi, Link> rebalancingDestinations = new HashMap<>();
 
     private final Map<PassengerRequest, RoboTaxi> requestAssignments = new HashMap<>();
     private final Map<PassengerRequest, List<RequestStatus>> requestStatusChanges = new HashMap<>();
@@ -328,6 +335,11 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
                         Directive directive = Directive.drive(relocation.link);
                         robotaxi.addRedirectCourseToMenu((DriveDirective) directive);
                     }
+
+                    Link originLink = robotaxi.getDivertableLocation();
+                    Link destinationLink = relocation.link;
+                    eventsManager.processEvent(
+                            new RelocationScheduledEvent(getTimeNow(), mode, robotaxi.getId(), robotaxi.getLastKnownLocation().getId(), originLink.getId(), destinationLink.getId()));
                 }
             }
         }
@@ -423,6 +435,44 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
         for (RoboTaxi roboTaxi : getRoboTaxis()) {
             // TODO: This is at an arbitrary location here
             roboTaxi.getScheduleManager().updateSequence(getTimeNow());
+        }
+
+        // Here we track rebalancing information
+
+        for (RoboTaxi roboTaxi : getRoboTaxis()) {
+            ImmutableList<Directive> directives = roboTaxi.getScheduleManager().getDirectives();
+
+            Link previousDestination = rebalancingDestinations.get(roboTaxi);
+            Link currentDestination = null;
+
+            if (directives.size() == 1) {
+                Directive directive = directives.get(0);
+
+                if (directive instanceof DriveDirective) {
+                    // This is a drive without anything else after
+                    currentDestination = Directive.getLink(directive);
+                }
+            }
+
+            if (previousDestination != currentDestination) {
+                // Something has changed!
+
+                if (previousDestination != null) {
+                    // We were rebalancing before, but have changed destination
+
+                    RelocationEndEvent endEvent = new RelocationEndEvent(getTimeNow(), mode, roboTaxi.getId(), roboTaxi.getLastKnownLocation().getId());
+                    eventsManager.processEvent(endEvent);
+                }
+
+                if (currentDestination != null) {
+                    RelocationStartEvent startEvent = new RelocationStartEvent(getTimeNow(), mode, roboTaxi.getId(), roboTaxi.getLastKnownLocation().getId(), currentDestination.getId());
+                    eventsManager.processEvent(startEvent);
+
+                    rebalancingDestinations.put(roboTaxi, currentDestination);
+                } else {
+                    rebalancingDestinations.remove(roboTaxi);
+                }
+            }
         }
 
         /** First the Tasks are assigned. This makes sure the dropoff takes place */

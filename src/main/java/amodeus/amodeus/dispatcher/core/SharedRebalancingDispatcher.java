@@ -5,12 +5,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.matsim.amodeus.config.AmodeusModeConfig;
+import org.matsim.amodeus.drt.relocation.RelocationScheduledEvent;
 import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
+
+import com.google.common.collect.ImmutableList;
 
 import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
 import amodeus.amodeus.dispatcher.core.schedule.directives.DriveDirective;
@@ -42,8 +45,16 @@ public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatc
 
     /** {@link RoboTaxi} @param roboTaxi is redirected to the {@link Link} of the {@link SharedCourse}
      * the course can be moved to another position in the {@link SharedMenu} of the {@link} RoboTaxi */
-    protected static void addSharedRoboTaxiRedirect(RoboTaxi roboTaxi, Directive directive) {
+    protected void addSharedRoboTaxiRedirect(RoboTaxi roboTaxi, Directive directive) {
         GlobalAssert.that(directive instanceof DriveDirective);
+
+        ImmutableList<Directive> directives = roboTaxi.getScheduleManager().getDirectives();
+        Link originLink = Directive.getLink(directives.get(directives.size() - 1));
+        Link destinationLink = Directive.getLink(directive);
+
+        eventsManager
+                .processEvent(new RelocationScheduledEvent(getTimeNow(), mode, roboTaxi.getId(), roboTaxi.getLastKnownLocation().getId(), originLink.getId(), destinationLink.getId()));
+
         roboTaxi.addRedirectCourseToMenu((DriveDirective) directive);
     }
 
