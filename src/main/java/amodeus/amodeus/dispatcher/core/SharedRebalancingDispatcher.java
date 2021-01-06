@@ -49,11 +49,11 @@ public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatc
         GlobalAssert.that(directive instanceof DriveDirective);
 
         ImmutableList<Directive> directives = roboTaxi.getScheduleManager().getDirectives();
-        Link originLink = Directive.getLink(directives.get(directives.size() - 1));
+        Link originLink = directives.size() > 0 ? Directive.getLink(directives.get(directives.size() - 1)) : roboTaxi.getDvrpVehicle().getStartLink();
         Link destinationLink = Directive.getLink(directive);
 
-        eventsManager
-                .processEvent(new RelocationScheduledEvent(getTimeNow(), mode, roboTaxi.getId(), roboTaxi.getLastKnownLocation().getId(), originLink.getId(), destinationLink.getId()));
+        eventsManager.processEvent(
+                new RelocationScheduledEvent(getTimeNow(), mode, roboTaxi.getId(), roboTaxi.getLastKnownLocation().getId(), originLink.getId(), destinationLink.getId()));
 
         roboTaxi.addRedirectCourseToMenu((DriveDirective) directive);
     }
