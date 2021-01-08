@@ -13,7 +13,7 @@ import org.matsim.core.router.util.TravelTime;
 
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
-import amodeus.amodeus.dispatcher.core.SharedRebalancingDispatcher;
+import amodeus.amodeus.dispatcher.core.RebalancingDispatcher;
 import amodeus.amodeus.dispatcher.util.BipartiteMatcher;
 import amodeus.amodeus.dispatcher.util.ConfigurableBipartiteMatcher;
 import amodeus.amodeus.dispatcher.util.DistanceCost;
@@ -31,7 +31,7 @@ import ch.ethz.idsc.tensor.Tensors;
  * This dispatcher is not a dispatcher with rebalancing functionality, it could also be derived from
  * the UniversalDispatcher, but in order to allow extended versions to use the setRoboTaxiRebalance
  * functionality, it was extended from the abstract RebalancingDispatcher. */
-public class GlobalBipartiteMatchingDispatcher extends SharedRebalancingDispatcher {
+public class GlobalBipartiteMatchingDispatcher extends RebalancingDispatcher {
 
     private final int dispatchPeriod;
     private Tensor printVals = Tensors.empty();

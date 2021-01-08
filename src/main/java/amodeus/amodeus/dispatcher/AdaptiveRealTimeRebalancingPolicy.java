@@ -22,7 +22,7 @@ import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.RoboTaxiStatus;
 import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
-import amodeus.amodeus.dispatcher.core.SharedPartitionedDispatcher;
+import amodeus.amodeus.dispatcher.core.PartitionedDispatcher;
 import amodeus.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import amodeus.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import amodeus.amodeus.dispatcher.util.ConfigurableBipartiteMatcher;
@@ -54,7 +54,7 @@ import ch.ethz.idsc.tensor.sca.Sign;
  * Pavone, M., Smith, S.L., Frazzoli, E. and Rus, D., 2012.
  * Robotic load balancing for mobility-on-demand systems.
  * The International Journal of Robotics Research, 31(7), pp.839-854. */
-public class AdaptiveRealTimeRebalancingPolicy extends SharedPartitionedDispatcher {
+public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
     private final AbstractVirtualNodeDest virtualNodeDest;
     private final AbstractRoboTaxiDestMatcher vehicleDestMatcher;
     private final LPMinFlow lpMinFlow;

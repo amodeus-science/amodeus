@@ -7,13 +7,13 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
-import amodeus.amodeus.dispatcher.core.SharedUniversalDispatcher;
+import amodeus.amodeus.dispatcher.core.UniversalDispatcher;
 import amodeus.amodeus.routing.DistanceFunction;
 import ch.ethz.idsc.tensor.Tensor;
 
 @FunctionalInterface
 public interface BipartiteMatcher {
-    Tensor executePickup(SharedUniversalDispatcher universalDispatcher, //
+    Tensor executePickup(UniversalDispatcher universalDispatcher, //
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
             Collection<PassengerRequest> requests, /** <- typically universalDispatcher.getPassengerRequests() */
             DistanceFunction distanceFunction, Network network);

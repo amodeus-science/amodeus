@@ -23,7 +23,7 @@ import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.RoboTaxiStatus;
 import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
-import amodeus.amodeus.dispatcher.core.SharedRebalancingDispatcher;
+import amodeus.amodeus.dispatcher.core.RebalancingDispatcher;
 import amodeus.amodeus.dispatcher.util.TreeMaintainer;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
 import amodeus.amodeus.net.TensorCoords;
@@ -37,7 +37,7 @@ import ch.ethz.idsc.tensor.Tensors;
  * This dispatcher is not a dispatcher with rebalancing functionality, it could also be derived from
  * the UniversalDispatcher, but in order to allow extended versions to use the setRoboTaxiRebalance
  * functionality, it was extended from the abstract RebalancingDispatcher. */
-public class DemandSupplyBalancingDispatcher extends SharedRebalancingDispatcher {
+public class DemandSupplyBalancingDispatcher extends RebalancingDispatcher {
 
     private final int dispatchPeriod;
     /** data structures are used to enable fast "contains" searching */

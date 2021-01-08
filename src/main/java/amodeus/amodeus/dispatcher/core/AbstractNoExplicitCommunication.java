@@ -25,7 +25,7 @@ import amodeus.amodeus.util.io.MultiFileTools;
 
 /** Arsie, Alessandro, Ketan Savla, and Emilio Frazzoli. "Efficient routing algorithms for multiple
  * vehicles with no explicit communications." IEEE Transactions on Automatic Control 54.10 (2009): 2302-2317. */
-public abstract class AbstractNoExplicitCommunication extends SharedRebalancingDispatcher {
+public abstract class AbstractNoExplicitCommunication extends RebalancingDispatcher {
     private final int dispatchPeriod;
     private final Network network;
     private final CyclePreventer cyclePreventer = new CyclePreventer();

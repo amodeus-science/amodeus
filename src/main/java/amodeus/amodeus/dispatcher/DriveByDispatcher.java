@@ -21,13 +21,13 @@ import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import amodeus.amodeus.dispatcher.core.DispatcherUtils;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
-import amodeus.amodeus.dispatcher.core.SharedRebalancingDispatcher;
+import amodeus.amodeus.dispatcher.core.RebalancingDispatcher;
 import amodeus.amodeus.dispatcher.util.DrivebyRequestStopper;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
 
 /** Dispatcher sends vehicles to random links in the network and lets them pickup
  * any customers which are waiting along the road. */
-public class DriveByDispatcher extends SharedRebalancingDispatcher {
+public class DriveByDispatcher extends RebalancingDispatcher {
     private final List<Link> links;
     private final double rebPos = 0.99;
     private final Random randGen = new Random(1234);

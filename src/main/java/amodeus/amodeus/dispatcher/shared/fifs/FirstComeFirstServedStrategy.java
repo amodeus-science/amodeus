@@ -23,7 +23,7 @@ import org.matsim.core.router.util.TravelTime;
 
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
-import amodeus.amodeus.dispatcher.core.SharedRebalancingDispatcher;
+import amodeus.amodeus.dispatcher.core.RebalancingDispatcher;
 import amodeus.amodeus.dispatcher.util.TreeMaintainer;
 import amodeus.amodeus.dispatcher.util.TreeMultipleItems;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
@@ -37,7 +37,7 @@ import ch.ethz.idsc.tensor.Tensor;
  * Fagnant, D. J., Kockelman, K. M., & Bansal, P. (2015). Operations of shared autonomous vehicle fleet for
  * Austin, Texas, market. Transportation Research
  * Record: Journal of the Transportation Research Board, (2536), 98-106. */
-public class FirstComeFirstServedStrategy extends SharedRebalancingDispatcher {
+public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
 
     private final int dispatchPeriod = 300;
 

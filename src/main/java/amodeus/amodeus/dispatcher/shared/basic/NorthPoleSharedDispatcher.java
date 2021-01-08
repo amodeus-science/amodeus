@@ -23,7 +23,7 @@ import org.matsim.core.router.util.TravelTime;
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
-import amodeus.amodeus.dispatcher.core.SharedRebalancingDispatcher;
+import amodeus.amodeus.dispatcher.core.RebalancingDispatcher;
 import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
 import amodeus.amodeus.dispatcher.shared.Compatibility;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
@@ -35,7 +35,7 @@ import amodeus.amodeus.util.math.GlobalAssert;
  * it first picks up passengers 1,2,3,4 and then starts to bring passengers 1,2,3 to their destinations.
  * Passenger 4 is less lucky as the {@link RoboTaxi} first visits the city's North pole (northern most link)
  * before passenger 4 is finally dropped of and the procedure starts from beginning. */
-public class NorthPoleSharedDispatcher extends SharedRebalancingDispatcher {
+public class NorthPoleSharedDispatcher extends RebalancingDispatcher {
     private final int dispatchPeriod;
     private final int rebalancePeriod;
     private final Random randGen = new Random(1234);

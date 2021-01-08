@@ -30,7 +30,7 @@ import com.google.inject.TypeLiteral;
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
-import amodeus.amodeus.dispatcher.core.SharedPartitionedDispatcher;
+import amodeus.amodeus.dispatcher.core.PartitionedDispatcher;
 import amodeus.amodeus.dispatcher.util.DistanceHeuristics;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
 import amodeus.amodeus.routing.CachedNetworkTimeDistance;
@@ -57,7 +57,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
  * version the time windows of all requests already in a taxi are checked before the insertion of a
  * new request is allowed.
  * - To limit computation time, a maximum length of the planned {@link SharedMenu} was introduced. */
-public class TShareDispatcher extends SharedPartitionedDispatcher {
+public class TShareDispatcher extends PartitionedDispatcher {
 
     /** general */
     private final int dispatchPeriod;

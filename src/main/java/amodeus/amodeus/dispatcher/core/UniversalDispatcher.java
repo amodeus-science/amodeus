@@ -55,10 +55,10 @@ import amodeus.amodeus.net.SimulationObjectCompiler;
 import amodeus.amodeus.util.math.GlobalAssert;
 import amodeus.amodeus.util.matsim.SafeConfig;
 
-/** purpose of {@link SharedUniversalDispatcher} is to collect and manage
+/** purpose of {@link UniversalDispatcher} is to collect and manage
  * {@link PassengerRequest}s alternative implementation of {@link AmodeusDispatcher};
  * supersedes {@link AbstractDispatcher}. */
-public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher {
+public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
     /** contains all Requests which are not picked Up Yet */
     // private final Map<Double, Map<RoboTaxi, PassengerRequest>> dropOffTimes = new HashMap<>();
     // private final Map<Double, Map<RoboTaxi, Set<PassengerRequest>>> pickUpTimes = new HashMap<>();
@@ -92,7 +92,7 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
     private boolean usesStaticDrtRebalancing = false;
     protected final RoboTaxiUsageType usageType;
 
-    protected SharedUniversalDispatcher(Config config, AmodeusModeConfig operatorConfig, //
+    protected UniversalDispatcher(Config config, AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, //
             EventsManager eventsManager, MatsimAmodeusDatabase db, RebalancingStrategy drtRebalancing, RoboTaxiUsageType usageType) {
         super(eventsManager, config, operatorConfig, travelTime, parallelLeastCostPathCalculator, db);

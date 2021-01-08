@@ -9,7 +9,7 @@ import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.core.router.FastAStarLandmarksFactory;
 
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
-import amodeus.amodeus.dispatcher.core.SharedUniversalDispatcher;
+import amodeus.amodeus.dispatcher.core.UniversalDispatcher;
 import amodeus.amodeus.routing.CachedNetworkTimeDistance;
 import amodeus.amodeus.routing.DistanceFunction;
 import amodeus.amodeus.routing.NetworkMinTimeDistanceFunction;
@@ -26,14 +26,14 @@ import ch.ethz.idsc.tensor.Tensors;
     }
 
     @Override
-    public final Tensor executePickup(SharedUniversalDispatcher universalDispatcher, //
+    public final Tensor executePickup(UniversalDispatcher universalDispatcher, //
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
             Collection<PassengerRequest> requests, /** <- typically universalDispatcher.getPassengerRequests() */
             DistanceFunction distanceFunction, Network network) {
         return executeGeneralPickup(universalDispatcher, roboTaxis, requests, distanceFunction, null, network);
     }
 
-    protected final Tensor executeGeneralPickup(SharedUniversalDispatcher universalDispatcher, //
+    protected final Tensor executeGeneralPickup(UniversalDispatcher universalDispatcher, //
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
             Collection<PassengerRequest> requests, /** <- typically universalDispatcher.getPassengerRequests() */
             DistanceFunction distanceFunction, CachedNetworkTimeDistance distanceCashed, Network network) {
@@ -44,7 +44,7 @@ import ch.ethz.idsc.tensor.Tensors;
         return infoLine;
     }
 
-    public abstract Map<RoboTaxi, PassengerRequest> getGBPMatch(SharedUniversalDispatcher universalDispatcher, //
+    public abstract Map<RoboTaxi, PassengerRequest> getGBPMatch(UniversalDispatcher universalDispatcher, //
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
             Collection<PassengerRequest> requests, /** <- typically universalDispatcher.getPassengerRequests() */
             DistanceFunction distanceFunction, Network network);

@@ -17,7 +17,7 @@ import org.matsim.core.network.NetworkUtils;
 
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.RoboTaxiStatus;
-import amodeus.amodeus.dispatcher.core.SharedUniversalDispatcher;
+import amodeus.amodeus.dispatcher.core.UniversalDispatcher;
 import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
 import amodeus.amodeus.dispatcher.core.schedule.directives.StopDirective;
 import amodeus.amodeus.dispatcher.shared.Compatibility;
@@ -49,7 +49,7 @@ public class BeamExtensionForSharing {
      * 
      * @return the newly added Requests */
     public Map<PassengerRequest, RoboTaxi> findAssignementAndExecute(Collection<RoboTaxi> roboTaxis, Collection<PassengerRequest> openRideSharingRequests,
-            SharedUniversalDispatcher sud) {
+            UniversalDispatcher sud) {
         getSharingAssignements(roboTaxis, openRideSharingRequests);
         assignTo(sud);
         reorderMenus();
@@ -89,7 +89,7 @@ public class BeamExtensionForSharing {
      * to the shared Universal dispatcher
      * 
      * @param sud */
-    public void assignTo(SharedUniversalDispatcher sud) {
+    public void assignTo(UniversalDispatcher sud) {
         addedAvRequests.forEach((avr, rt) -> sud.addSharedRoboTaxiPickup(rt, avr, Double.NaN, Double.NaN));
     }
 

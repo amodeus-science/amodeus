@@ -23,7 +23,7 @@ import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.RoboTaxiStatus;
 import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
-import amodeus.amodeus.dispatcher.core.SharedRebalancingDispatcher;
+import amodeus.amodeus.dispatcher.core.RebalancingDispatcher;
 import amodeus.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import amodeus.amodeus.dispatcher.util.BipartiteMatcher;
 import amodeus.amodeus.dispatcher.util.ConfigurableBipartiteMatcher;
@@ -41,7 +41,7 @@ import ch.ethz.idsc.tensor.Tensors;
 /** Implementation of the "+1 method" presented in
  * Ruch, C., Gächter, J., Hakenberg, J. and Frazzoli, E., 2019.
  * The +1 Method: Model-Free Adaptive Repositioning Policies for Robotic Multi-Agent Systems. */
-public class ModelFreeAdaptiveRepositioning extends SharedRebalancingDispatcher {
+public class ModelFreeAdaptiveRepositioning extends RebalancingDispatcher {
     private final Network network;
     private final BipartiteMatcher assignmentMatcher;
     private final AbstractRoboTaxiDestMatcher rebalanceMatcher;

@@ -11,7 +11,7 @@ import java.util.function.BiConsumer;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
-import amodeus.amodeus.dispatcher.core.SharedUniversalDispatcher;
+import amodeus.amodeus.dispatcher.core.UniversalDispatcher;
 import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
 import amodeus.amodeus.dispatcher.shared.Compatibility;
 import amodeus.amodeus.routing.CachedNetworkTimeDistance;
@@ -124,7 +124,7 @@ import ch.ethz.idsc.tensor.Scalar;
     }
 
     /** Function add the request to the optimal menu with the {@link BiConsumer} @param addSharedPickup
-     * supplied by the dispatcher, normally from {@link SharedUniversalDispatcher} */
+     * supplied by the dispatcher, normally from {@link UniversalDispatcher} */
     public void executeBest(BiConsumer<RoboTaxi, PassengerRequest> addSharedPickup) {
         if (Objects.nonNull(optimalMenu)) {
             addSharedPickup.accept(roboTaxi, request);

@@ -28,7 +28,7 @@ import org.matsim.core.router.util.TravelTime;
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
-import amodeus.amodeus.dispatcher.core.SharedRebalancingDispatcher;
+import amodeus.amodeus.dispatcher.core.RebalancingDispatcher;
 import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
 import amodeus.amodeus.routing.EasyMinTimePathCalculator;
@@ -38,7 +38,7 @@ import amodeus.amodeus.routing.EasyMinTimePathCalculator;
  * 
  * at each time dispatcher is called, for each vehicle, all possible trips (adding additional open request to the vehicle) is explored
  * and then ILP is called to choose the optimal assignment. */
-public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
+public class HighCapacityDispatcher extends RebalancingDispatcher {
     /** parameters */
 
     private static final double MAX_DELAY = 600.0;

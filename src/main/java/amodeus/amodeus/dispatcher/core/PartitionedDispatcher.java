@@ -20,10 +20,10 @@ import amodeus.amodeus.virtualnetwork.core.VirtualNode;
 
 /** All dispatchers wich perform rebalancing and use a virtualNetwork dividing the city into zones are derived from {@link PartitionedDispatcher}.
  * A {@link PartitionedDispatcher} always has a {@link VirtualNetwork} */
-public abstract class SharedPartitionedDispatcher extends SharedRebalancingDispatcher {
+public abstract class PartitionedDispatcher extends RebalancingDispatcher {
     protected final VirtualNetwork<Link> virtualNetwork; //
 
-    protected SharedPartitionedDispatcher( //
+    protected PartitionedDispatcher( //
             Config config, //
             AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, //

@@ -24,7 +24,7 @@ import org.matsim.core.router.util.TravelTime;
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
-import amodeus.amodeus.dispatcher.core.SharedRebalancingDispatcher;
+import amodeus.amodeus.dispatcher.core.RebalancingDispatcher;
 import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
 import amodeus.amodeus.routing.CachedNetworkTimeDistance;
@@ -50,7 +50,7 @@ import amodeus.amodeus.util.matsim.SafeConfig;
  * 4. New travelers will be picked up at least within the next 5 minutes;
  * 5. Total planned trip time to serve all passengers ≤ remaining time to serve
  * the current trips + time to serve the new trip + drop-off time, if not pooled. */
-public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
+public class DynamicRideSharingStrategy extends RebalancingDispatcher {
 
     /** general Dispatcher Settings */
     private final int dispatchPeriod; // [s]

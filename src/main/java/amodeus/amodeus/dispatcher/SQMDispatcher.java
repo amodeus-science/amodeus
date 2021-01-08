@@ -26,7 +26,7 @@ import com.google.inject.TypeLiteral;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.RoboTaxiStatus;
 import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
-import amodeus.amodeus.dispatcher.core.SharedPartitionedDispatcher;
+import amodeus.amodeus.dispatcher.core.PartitionedDispatcher;
 import amodeus.amodeus.net.FastLinkLookup;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
 import amodeus.amodeus.net.TensorCoords;
@@ -46,7 +46,7 @@ import amodeus.amodeus.virtualnetwork.core.VirtualNode;
  * The number of vehicles and virtual nodes have to be equal.
  * 
  * @author fluric */
-public class SQMDispatcher extends SharedPartitionedDispatcher {
+public class SQMDispatcher extends PartitionedDispatcher {
     private final MatsimAmodeusDatabase db;
     private final Map<VirtualNode<Link>, RoboTaxi> nodeToTaxi = new HashMap<>();
     private final Map<RoboTaxi, VirtualNode<Link>> taxiToNode = new HashMap<>();

@@ -8,7 +8,7 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
-import amodeus.amodeus.dispatcher.core.SharedUniversalDispatcher;
+import amodeus.amodeus.dispatcher.core.UniversalDispatcher;
 import amodeus.amodeus.routing.DistanceFunction;
 import amodeus.amodeus.util.matsim.SafeConfig;
 
@@ -50,7 +50,7 @@ public class ConfigurableBipartiteMatcher extends BipartiteMatcherInternal {
     }
 
     @Override
-    public Map<RoboTaxi, PassengerRequest> getGBPMatch(SharedUniversalDispatcher universalDispatcher, //
+    public Map<RoboTaxi, PassengerRequest> getGBPMatch(UniversalDispatcher universalDispatcher, //
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
             Collection<PassengerRequest> requests, /** <- typically universalDispatcher.getPassengerRequests() */
             DistanceFunction distanceFunction, Network network) {
@@ -59,7 +59,7 @@ public class ConfigurableBipartiteMatcher extends BipartiteMatcherInternal {
         return integerLinearProgramMatch(universalDispatcher, roboTaxis, requests, distanceFunction, network);
     }
 
-    private Map<RoboTaxi, PassengerRequest> hungarianMatch(SharedUniversalDispatcher universalDispatcher, //
+    private Map<RoboTaxi, PassengerRequest> hungarianMatch(UniversalDispatcher universalDispatcher, //
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
             Collection<PassengerRequest> requests, /** <- typically universalDispatcher.getPassengerRequests() */
             DistanceFunction distanceFunction, Network network) {
@@ -71,7 +71,7 @@ public class ConfigurableBipartiteMatcher extends BipartiteMatcherInternal {
         return CyclicSolutionPreventer.apply(gbpMatch, universalDispatcher, accDstFctn);
     }
 
-    private Map<RoboTaxi, PassengerRequest> integerLinearProgramMatch(SharedUniversalDispatcher universalDispatcher, //
+    private Map<RoboTaxi, PassengerRequest> integerLinearProgramMatch(UniversalDispatcher universalDispatcher, //
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
             Collection<PassengerRequest> requests, /** <- typically universalDispatcher.getPassengerRequests() */
             DistanceFunction distanceFunction, Network network) {

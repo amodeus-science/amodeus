@@ -23,7 +23,7 @@ import com.google.inject.TypeLiteral;
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
-import amodeus.amodeus.dispatcher.core.SharedPartitionedDispatcher;
+import amodeus.amodeus.dispatcher.core.PartitionedDispatcher;
 import amodeus.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import amodeus.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import amodeus.amodeus.dispatcher.util.ConfigurableBipartiteMatcher;
@@ -58,7 +58,7 @@ import ch.ethz.idsc.tensor.red.Mean;
  * Albert, M., Ruch, C. and Frazzoli, E., 2019.
  * Imbalance in Mobility-on-Demand Systems: A Stochastic Model and Distributed Control Approach.
  * ACM Transactions on Spatial Algorithms and Systems (TSAS) - Special Issue on Urban Mobility: Algorithms and Systems, 5(2), article no. 13. */
-public class DFRStrategy extends SharedPartitionedDispatcher {
+public class DFRStrategy extends PartitionedDispatcher {
     private final int dispatchPeriod;
     private final int rebalancingPeriod;
     private Tensor printVals = Tensors.empty();

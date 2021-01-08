@@ -23,9 +23,9 @@ import amodeus.amodeus.util.math.GlobalAssert;
 /** abstract base class for dispatchers that perform relocation of empty
  * vehicles (rebalancing) or redirect vehicles during customer journeys
  * to links which are not a dropoff or pickup location */
-public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatcher {
+public abstract class RebalancingDispatcher extends UniversalDispatcher {
 
-    protected SharedRebalancingDispatcher(Config config, AmodeusModeConfig operatorConfig, TravelTime travelTime, ParallelLeastCostPathCalculator parallelLeastCostPathCalculator,
+    protected RebalancingDispatcher(Config config, AmodeusModeConfig operatorConfig, TravelTime travelTime, ParallelLeastCostPathCalculator parallelLeastCostPathCalculator,
             EventsManager eventsManager, //
             MatsimAmodeusDatabase db, RebalancingStrategy rebalancingStrategy, RoboTaxiUsageType usageType) {
         super(config, operatorConfig, travelTime, parallelLeastCostPathCalculator, eventsManager, db, rebalancingStrategy, usageType);

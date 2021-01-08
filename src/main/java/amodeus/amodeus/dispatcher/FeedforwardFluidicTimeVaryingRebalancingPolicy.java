@@ -20,7 +20,7 @@ import com.google.inject.TypeLiteral;
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
-import amodeus.amodeus.dispatcher.core.SharedPartitionedDispatcher;
+import amodeus.amodeus.dispatcher.core.PartitionedDispatcher;
 import amodeus.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import amodeus.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import amodeus.amodeus.dispatcher.util.BipartiteMatcher;
@@ -53,7 +53,7 @@ import ch.ethz.idsc.tensor.sca.Floor;
  * Spieser, Kevin, Samitha Samaranayake, and Emilio Frazzoli.
  * "Vehicle routing for shared-mobility systems with time-varying demand."
  * American Control Conference (ACC), 2016. IEEE, 2016. */
-public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends SharedPartitionedDispatcher {
+public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedDispatcher {
     private final AbstractVirtualNodeDest virtualNodeDest;
     private final AbstractRoboTaxiDestMatcher vehicleDestMatcher;
     private final Network network;
