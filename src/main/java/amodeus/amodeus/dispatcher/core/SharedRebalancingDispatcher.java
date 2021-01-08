@@ -27,8 +27,8 @@ public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatc
 
     protected SharedRebalancingDispatcher(Config config, AmodeusModeConfig operatorConfig, TravelTime travelTime, ParallelLeastCostPathCalculator parallelLeastCostPathCalculator,
             EventsManager eventsManager, //
-            MatsimAmodeusDatabase db, RebalancingStrategy rebalancingStrategy) {
-        super(config, operatorConfig, travelTime, parallelLeastCostPathCalculator, eventsManager, db, rebalancingStrategy);
+            MatsimAmodeusDatabase db, RebalancingStrategy rebalancingStrategy, RoboTaxiUsageType usageType) {
+        super(config, operatorConfig, travelTime, parallelLeastCostPathCalculator, eventsManager, db, rebalancingStrategy, usageType);
     }
 
     /** @param roboTaxi is rebalanced to
@@ -56,6 +56,10 @@ public abstract class SharedRebalancingDispatcher extends SharedUniversalDispatc
                 new RelocationScheduledEvent(getTimeNow(), mode, roboTaxi.getId(), roboTaxi.getLastKnownLocation().getId(), originLink.getId(), destinationLink.getId()));
 
         roboTaxi.addRedirectCourseToMenu((DriveDirective) directive);
+        
+        if (usageType.equals(RoboTaxiUsageType.SINGLEUSED)) {
+            roboTaxi.lock();
+        }
     }
 
     /** @return {@link List } of all {@link RoboTaxi} which are currently rebalancing. */

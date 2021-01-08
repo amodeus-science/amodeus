@@ -11,6 +11,7 @@ import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
@@ -18,14 +19,15 @@ import org.matsim.core.router.util.TravelTime;
 
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import amodeus.amodeus.dispatcher.core.DispatcherUtils;
-import amodeus.amodeus.dispatcher.core.RebalancingDispatcher;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
+import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
+import amodeus.amodeus.dispatcher.core.SharedRebalancingDispatcher;
 import amodeus.amodeus.dispatcher.util.DrivebyRequestStopper;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
 
 /** Dispatcher sends vehicles to random links in the network and lets them pickup
  * any customers which are waiting along the road. */
-public class DriveByDispatcher extends RebalancingDispatcher {
+public class DriveByDispatcher extends SharedRebalancingDispatcher {
     private final List<Link> links;
     private final double rebPos = 0.99;
     private final Random randGen = new Random(1234);
@@ -34,8 +36,8 @@ public class DriveByDispatcher extends RebalancingDispatcher {
 
     private DriveByDispatcher(Config config, AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, AmodeusRouter router, EventsManager eventsManager, //
-            Network network, MatsimAmodeusDatabase db) {
-        super(config, operatorConfig, travelTime, router, eventsManager, db);
+            Network network, MatsimAmodeusDatabase db, RebalancingStrategy rebalancingStrategy) {
+        super(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy, RoboTaxiUsageType.SINGLEUSED);
         links = new ArrayList<>(network.getLinks().values());
         Collections.shuffle(links, randGen);
         DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
@@ -47,7 +49,7 @@ public class DriveByDispatcher extends RebalancingDispatcher {
 
         // stop all vehicles which are driving by an open request
         total_abortTrip += DrivebyRequestStopper //
-                .stopDrivingBy(DispatcherUtils.getPassengerRequestsAtLinks(getPassengerRequests()), getDivertableRoboTaxis(), this::setRoboTaxiPickup).size();
+                .stopDrivingBy(DispatcherUtils.getPassengerRequestsAtLinks(getPassengerRequests()), getDivertableRoboTaxis(), (rt, avr) -> setRoboTaxiPickup(rt, avr, Double.NaN, Double.NaN)).size();
 
         // send vehicles to travel around the city to random links (random
         // loitering)
@@ -82,8 +84,9 @@ public class DriveByDispatcher extends RebalancingDispatcher {
             Network network = inject.getModal(Network.class);
             AmodeusRouter router = inject.getModal(AmodeusRouter.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);
-
-            return new DriveByDispatcher(config, operatorConfig, travelTime, router, eventsManager, network, db);
+            RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
+            
+            return new DriveByDispatcher(config, operatorConfig, travelTime, router, eventsManager, network, db, rebalancingStrategy);
         }
     }
 

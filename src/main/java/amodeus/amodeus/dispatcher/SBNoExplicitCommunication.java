@@ -9,6 +9,7 @@ import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -30,8 +31,8 @@ public class SBNoExplicitCommunication extends AbstractNoExplicitCommunication {
     private SBNoExplicitCommunication(Network network, Config config, //
             AmodeusModeConfig operatorConfig, TravelTime travelTime, //
             AmodeusRouter router, EventsManager eventsManager, //
-            MatsimAmodeusDatabase db) {
-        super(network, config, operatorConfig, travelTime, router, eventsManager, db);
+            MatsimAmodeusDatabase db, RebalancingStrategy rebalancingStrategy) {
+        super(network, config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy);
         voronoiPartition = new VoronoiPartition<>(network, this::getRTLocation);
     }
 
@@ -58,8 +59,9 @@ public class SBNoExplicitCommunication extends AbstractNoExplicitCommunication {
                  * serviced in the past by each agent */
                 Link link = weberMaintainers.get(roboTaxi).getClosestMinimizer(roboTaxi.getDivertableLocation());
                 /** excessive computation is avoided if rebalancing command given only once */
-                if (!roboTaxi.getCurrentDriveDestination().equals(link))
+                if (!roboTaxi.getCurrentDriveDestination().equals(link)) {
                     setRoboTaxiRebalance(roboTaxi, link);
+                }
                 continue;
             }
             if (voronoiPartition.of(roboTaxi).contains(closest.getFromLink())) {
@@ -67,15 +69,17 @@ public class SBNoExplicitCommunication extends AbstractNoExplicitCommunication {
                  * agents move towards the open targets, i.e., there can be more than
                  * one agent moving towards a target */
                 /** excessive computation is avoided if rebalancing command given only once */
-                if (!roboTaxi.getCurrentDriveDestination().equals(closest.getFromLink()))
+                if (!roboTaxi.getCurrentDriveDestination().equals(closest.getFromLink())) {
                     setRoboTaxiRebalance(roboTaxi, closest.getFromLink());
+                }
             } else {
                 /** move towards the point minimizing the average distance to targets
                  * serviced in the past by each agent */
                 Link link = weberMaintainers.get(roboTaxi).getClosestMinimizer(roboTaxi.getDivertableLocation());
                 /** excessive computation is avoided if rebalancing command given only once */
-                if (!roboTaxi.getCurrentDriveDestination().equals(link))
+                if (!roboTaxi.getCurrentDriveDestination().equals(link)) {
                     setRoboTaxiRebalance(roboTaxi, link);
+                }
             }
         }
     }
@@ -95,8 +99,9 @@ public class SBNoExplicitCommunication extends AbstractNoExplicitCommunication {
             Network network = inject.getModal(Network.class);
             AmodeusRouter router = inject.getModal(AmodeusRouter.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);
+            RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
 
-            return new SBNoExplicitCommunication(network, config, operatorConfig, travelTime, router, eventsManager, db);
+            return new SBNoExplicitCommunication(network, config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy);
         }
     }
 }

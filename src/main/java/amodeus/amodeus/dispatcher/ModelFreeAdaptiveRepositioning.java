@@ -7,10 +7,12 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.matsim.amodeus.components.AmodeusDispatcher;
+import org.matsim.amodeus.components.AmodeusDispatcher.AVDispatcherFactory;
 import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -18,9 +20,10 @@ import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
 
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
-import amodeus.amodeus.dispatcher.core.RebalancingDispatcher;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.RoboTaxiStatus;
+import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
+import amodeus.amodeus.dispatcher.core.SharedRebalancingDispatcher;
 import amodeus.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import amodeus.amodeus.dispatcher.util.BipartiteMatcher;
 import amodeus.amodeus.dispatcher.util.ConfigurableBipartiteMatcher;
@@ -38,7 +41,7 @@ import ch.ethz.idsc.tensor.Tensors;
 /** Implementation of the "+1 method" presented in
  * Ruch, C., Gächter, J., Hakenberg, J. and Frazzoli, E., 2019.
  * The +1 Method: Model-Free Adaptive Repositioning Policies for Robotic Multi-Agent Systems. */
-public class ModelFreeAdaptiveRepositioning extends RebalancingDispatcher {
+public class ModelFreeAdaptiveRepositioning extends SharedRebalancingDispatcher {
     private final Network network;
     private final BipartiteMatcher assignmentMatcher;
     private final AbstractRoboTaxiDestMatcher rebalanceMatcher;
@@ -54,8 +57,8 @@ public class ModelFreeAdaptiveRepositioning extends RebalancingDispatcher {
 
     private ModelFreeAdaptiveRepositioning(Network network, Config config, AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, AmodeusRouter router, EventsManager eventsManager, //
-            MatsimAmodeusDatabase db) {
-        super(config, operatorConfig, travelTime, router, eventsManager, db);
+            MatsimAmodeusDatabase db, RebalancingStrategy rebalancingStrategy) {
+        super(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy, RoboTaxiUsageType.SINGLEUSED);
         this.network = network;
         DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(30);
@@ -130,9 +133,10 @@ public class ModelFreeAdaptiveRepositioning extends RebalancingDispatcher {
             Network network = inject.getModal(Network.class);
             AmodeusRouter router = inject.getModal(AmodeusRouter.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);
-
+            RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
+            
             return new ModelFreeAdaptiveRepositioning( //
-                    network, config, operatorConfig, travelTime, router, eventsManager, db);
+                    network, config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy);
         }
     }
 }

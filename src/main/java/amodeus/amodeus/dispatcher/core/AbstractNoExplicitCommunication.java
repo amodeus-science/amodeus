@@ -8,6 +8,7 @@ import java.util.Map;
 import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
@@ -24,7 +25,7 @@ import amodeus.amodeus.util.io.MultiFileTools;
 
 /** Arsie, Alessandro, Ketan Savla, and Emilio Frazzoli. "Efficient routing algorithms for multiple
  * vehicles with no explicit communications." IEEE Transactions on Automatic Control 54.10 (2009): 2302-2317. */
-public abstract class AbstractNoExplicitCommunication extends RebalancingDispatcher {
+public abstract class AbstractNoExplicitCommunication extends SharedRebalancingDispatcher {
     private final int dispatchPeriod;
     private final Network network;
     private final CyclePreventer cyclePreventer = new CyclePreventer();
@@ -33,8 +34,8 @@ public abstract class AbstractNoExplicitCommunication extends RebalancingDispatc
 
     protected AbstractNoExplicitCommunication(Network network, Config config, //
             AmodeusModeConfig operatorConfig, TravelTime travelTime, //
-            AmodeusRouter router, EventsManager eventsManager, MatsimAmodeusDatabase db) {
-        super(config, operatorConfig, travelTime, router, eventsManager, db);
+            AmodeusRouter router, EventsManager eventsManager, MatsimAmodeusDatabase db, RebalancingStrategy rebalancingStrategy) {
+        super(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy, RoboTaxiUsageType.SINGLEUSED);
         DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(30);
         this.network = network;
@@ -50,7 +51,7 @@ public abstract class AbstractNoExplicitCommunication extends RebalancingDispatc
         /** get set D(t), the open requests */
         Collection<PassengerRequest> d = getPassengerRequests();
         d.forEach(requestMaintainer::add);
-
+        
         /** as soon as {@link RoboTaxi}s appear, initialize with present location */
         if (weberMaintainers.isEmpty())
             getRoboTaxis().forEach(rt -> weberMaintainers.put(rt, new WeberMaintainer(rt.getDivertableLocation(), network)));
@@ -58,7 +59,7 @@ public abstract class AbstractNoExplicitCommunication extends RebalancingDispatc
         /** if a {@link RoboTaxi} is on the same {@link Link} as a {@link AVRquest}, a pickup
          * is executed */
         Map<RoboTaxi, PassengerRequest> matched = DrivebyRequestStopper.stopDrivingBy(DispatcherUtils.getPassengerRequestsAtLinks(getPassengerRequests()), //
-                getDivertableRoboTaxis(), this::setRoboTaxiPickup);
+                getDivertableRoboTaxis(), (rt, avr) -> setRoboTaxiPickup(rt, avr, Double.NaN, Double.NaN));
         matched.values().forEach(requestMaintainer::remove);
 
         /** add all successful pickups to the {@link WeberMaintainer}s */

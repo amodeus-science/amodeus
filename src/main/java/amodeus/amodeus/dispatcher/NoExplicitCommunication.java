@@ -8,6 +8,7 @@ import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -26,8 +27,8 @@ public class NoExplicitCommunication extends AbstractNoExplicitCommunication {
 
     private NoExplicitCommunication(Network network, Config config, //
             AmodeusModeConfig operatorConfig, TravelTime travelTime, //
-            AmodeusRouter router, EventsManager eventsManager, MatsimAmodeusDatabase db) {
-        super(network, config, operatorConfig, travelTime, router, eventsManager, db);
+            AmodeusRouter router, EventsManager eventsManager, MatsimAmodeusDatabase db, RebalancingStrategy rebalancingStrategy) {
+        super(network, config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy);
     }
 
     @Override
@@ -65,8 +66,9 @@ public class NoExplicitCommunication extends AbstractNoExplicitCommunication {
             Network network = inject.getModal(Network.class);
             AmodeusRouter router = inject.getModal(AmodeusRouter.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);
-
-            return new NoExplicitCommunication(network, config, operatorConfig, travelTime, router, eventsManager, db);
+            RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
+            
+            return new NoExplicitCommunication(network, config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy);
         }
     }
 }

@@ -14,6 +14,7 @@ import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -22,9 +23,10 @@ import org.matsim.core.router.util.TravelTime;
 
 import com.google.inject.TypeLiteral;
 
-import amodeus.amodeus.dispatcher.core.PartitionedDispatcher;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.RoboTaxiStatus;
+import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
+import amodeus.amodeus.dispatcher.core.SharedPartitionedDispatcher;
 import amodeus.amodeus.net.FastLinkLookup;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
 import amodeus.amodeus.net.TensorCoords;
@@ -44,7 +46,7 @@ import amodeus.amodeus.virtualnetwork.core.VirtualNode;
  * The number of vehicles and virtual nodes have to be equal.
  * 
  * @author fluric */
-public class SQMDispatcher extends PartitionedDispatcher {
+public class SQMDispatcher extends SharedPartitionedDispatcher {
     private final MatsimAmodeusDatabase db;
     private final Map<VirtualNode<Link>, RoboTaxi> nodeToTaxi = new HashMap<>();
     private final Map<RoboTaxi, VirtualNode<Link>> taxiToNode = new HashMap<>();
@@ -55,8 +57,8 @@ public class SQMDispatcher extends PartitionedDispatcher {
     protected SQMDispatcher(Config config, AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, AmodeusRouter router, //
             EventsManager eventsManager, Network network, //
-            VirtualNetwork<Link> virtualNetwork, MatsimAmodeusDatabase db) {
-        super(config, operatorConfig, travelTime, router, eventsManager, virtualNetwork, db);
+            VirtualNetwork<Link> virtualNetwork, MatsimAmodeusDatabase db, RebalancingStrategy rebalancingStrategy) {
+        super(config, operatorConfig, travelTime, router, eventsManager, virtualNetwork, db, rebalancingStrategy, RoboTaxiUsageType.SINGLEUSED);
         // <- virtualNetwork is non-null here
         GlobalAssert.that(operatorConfig.getGeneratorConfig().getNumberOfVehicles() == virtualNetwork.getvNodesCount());
         this.db = db;
@@ -74,7 +76,7 @@ public class SQMDispatcher extends PartitionedDispatcher {
         if (nodeToTaxi.isEmpty())
             assignVirtualNodes();
 
-        List<PassengerRequest> unassigned_requests = getUnassignedPassengerRequests();
+        List<PassengerRequest> unassigned_requests = new ArrayList<>(getUnassignedRequests());
 
         for (RoboTaxi taxi : getRoboTaxiSubset(RoboTaxiStatus.STAY)) {
             // move unassigned taxis back to their virtual station
@@ -93,7 +95,7 @@ public class SQMDispatcher extends PartitionedDispatcher {
                     }
                 }
                 if (Objects.nonNull(earliestAvr))
-                    setRoboTaxiPickup(taxi, earliestAvr);
+                    setRoboTaxiPickup(taxi, earliestAvr, Double.NaN, Double.NaN);
             }
         }
     }
@@ -144,9 +146,11 @@ public class SQMDispatcher extends PartitionedDispatcher {
 
             VirtualNetwork<Link> virtualNetwork = inject.getModal(new TypeLiteral<VirtualNetwork<Link>>() {
             });
+            
+            RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
 
             return new SQMDispatcher(config, operatorConfig, travelTime, router, eventsManager, network, //
-                    virtualNetwork, db);
+                    virtualNetwork, db, rebalancingStrategy);
         }
     }
 

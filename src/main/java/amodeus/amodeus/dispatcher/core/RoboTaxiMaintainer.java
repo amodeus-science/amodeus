@@ -86,7 +86,6 @@ import amodeus.amodeus.util.matsim.SafeConfig;
         redispatch(now);
         redispatchInternal(now);
         afterStepTasks();
-        executeDirectives();
         consistencyCheck();
     }
 
@@ -123,10 +122,6 @@ import amodeus.amodeus.util.matsim.SafeConfig;
 
     private void consistencyCheck() {
         consistencySubCheck();
-    }
-
-    private void executeDirectives() {
-        roboTaxis.stream().filter(rt -> !rt.isWithoutDirective()).forEach(RoboTaxi::executeDirective);
     }
 
     private void updateCurrentLocations() {

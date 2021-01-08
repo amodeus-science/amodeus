@@ -89,14 +89,16 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
     private final RebalancingStrategy drtRebalancing;
     private Integer drtRebalancingInterval = null;
     private boolean usesStaticDrtRebalancing = false;
+    protected final RoboTaxiUsageType usageType;
 
     protected SharedUniversalDispatcher(Config config, AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, ParallelLeastCostPathCalculator parallelLeastCostPathCalculator, //
-            EventsManager eventsManager, MatsimAmodeusDatabase db, RebalancingStrategy drtRebalancing) {
+            EventsManager eventsManager, MatsimAmodeusDatabase db, RebalancingStrategy drtRebalancing, RoboTaxiUsageType usageType) {
         super(eventsManager, config, operatorConfig, travelTime, parallelLeastCostPathCalculator, db);
 
         this.isRejectingRequests = operatorConfig.getDispatcherConfig().getIsRejectingRequests();
         this.drtRebalancing = drtRebalancing;
+        this.usageType = usageType;
 
         if (drtRebalancing != null) {
             MultiModeDrtConfigGroup multiConfig = MultiModeDrtConfigGroup.get(config);
@@ -213,6 +215,15 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
         eventsManager.processEvent(
                 new PassengerRequestScheduledEvent(getTimeNow(), mode, avRequest.getId(), avRequest.getPassengerId(), roboTaxi.getId(), expectedPickupTime, expectedDropoffTime));
     }
+    
+    /*
+     * Shortcut for unit capacity dispatchers
+     */
+    public final void setRoboTaxiPickup(RoboTaxi roboTaxi, PassengerRequest avRequest, double expectedPickupTime, double expectedDropoffTime) {
+        cleanAndAbondon(roboTaxi);
+        addSharedRoboTaxiPickup(roboTaxi, avRequest, expectedPickupTime, expectedDropoffTime);
+        roboTaxi.lock();
+    }
 
     protected Set<PassengerRequest> getUniqueRequests(RoboTaxi robotaxi) {
         Set<PassengerRequest> requests = new HashSet<>();
@@ -287,12 +298,6 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
         return s;
     }
 
-    /** this function will re-route the taxi if it is not in stay task (for congestion relieving purpose) */
-    protected final void reRoute(RoboTaxi roboTaxi) {
-        if (!roboTaxi.isInStayTask() && roboTaxi.canReroute())
-            timeStepReroute.add(roboTaxi);
-    }
-
     // ***********************************************************************************************
     // ********************* INTERNAL Methods, do not call from derived dispatchers*******************
     // ***********************************************************************************************
@@ -338,8 +343,8 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
 
                     Link originLink = robotaxi.getDivertableLocation();
                     Link destinationLink = relocation.link;
-                    eventsManager.processEvent(
-                            new RelocationScheduledEvent(getTimeNow(), mode, robotaxi.getId(), robotaxi.getLastKnownLocation().getId(), originLink.getId(), destinationLink.getId()));
+                    eventsManager.processEvent(new RelocationScheduledEvent(getTimeNow(), mode, robotaxi.getId(), robotaxi.getLastKnownLocation().getId(), originLink.getId(),
+                            destinationLink.getId()));
                 }
             }
         }
@@ -465,7 +470,8 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
                 }
 
                 if (currentDestination != null) {
-                    RelocationStartEvent startEvent = new RelocationStartEvent(getTimeNow(), mode, roboTaxi.getId(), roboTaxi.getLastKnownLocation().getId(), currentDestination.getId());
+                    RelocationStartEvent startEvent = new RelocationStartEvent(getTimeNow(), mode, roboTaxi.getId(), roboTaxi.getLastKnownLocation().getId(),
+                            currentDestination.getId());
                     eventsManager.processEvent(startEvent);
 
                     rebalancingDestinations.put(roboTaxi, currentDestination);
@@ -589,7 +595,7 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
     @Override
     protected final void consistencySubCheck() {
         // TODO @clruch disable or reduce computational complexity of entire subcheck once API tested for a longer amount of time.
-
+        
         for (RoboTaxi roboTaxi : getRoboTaxis()) {
             Schedule schedule = roboTaxi.getSchedule();
             Task task = schedule.getCurrentTask();
@@ -702,7 +708,7 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
     /** adding a vehicle during setup of simulation, handled by {@link AmodeusGenerator} */
     @Override
     public final void addVehicle(DvrpVehicle vehicle) {
-        super.addVehicle(vehicle, RoboTaxiUsageType.SHARED);
+        super.addVehicle(vehicle, usageType);
     }
 
     @Override
@@ -715,6 +721,8 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
 
         // Update the divertable Location
         for (RoboTaxi roboTaxi : getRoboTaxis()) {
+            roboTaxi.unlock();
+            
             Schedule schedule = roboTaxi.getSchedule();
             new RoboTaxiTaskAdapter(schedule.getCurrentTask()) {
                 @Override
@@ -744,5 +752,9 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
                 }
             };
         }
+    }
+
+    public Optional<RoboTaxi> getPickupTaxi(PassengerRequest request) {
+        return Optional.ofNullable(requestAssignments.get(request));
     }
 }

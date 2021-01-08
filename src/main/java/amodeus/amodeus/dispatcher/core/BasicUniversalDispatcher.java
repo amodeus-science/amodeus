@@ -155,8 +155,9 @@ import amodeus.amodeus.util.matsim.SafeConfig;
     /* package */ void updateLocationTrace(RoboTaxi roboTaxi, Link lastLoc) {
         List<LinkStatusPair> trace = tempLocationTrace.get(roboTaxi);
         /** trace is empty or the position has changed */
-        if (trace.isEmpty() || !lastLoc.equals(trace.get(trace.size() - 1).link))
+        if (trace.isEmpty() || !lastLoc.equals(trace.get(trace.size() - 1).link)) {
             trace.add(new LinkStatusPair(lastLoc, roboTaxi.getStatus()));
+        }
     }
 
     private void flushLocationTraces() {

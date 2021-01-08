@@ -13,7 +13,6 @@ import org.matsim.amodeus.dvrp.schedule.AmodeusTaskTypes;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.drt.schedule.DrtDriveTask;
 import org.matsim.contrib.drt.schedule.DrtStayTask;
-import org.matsim.contrib.drt.schedule.DrtStopTask;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.schedule.Schedule;
@@ -238,20 +237,16 @@ public class ScheduleManager {
                     InternalDriveDirective driveDirective = (InternalDriveDirective) directive;
                     Link destination = driveDirective.getDestination();
 
-                    if (true) { // destination != previousLink) {
-                        // We need to add a drive in between
+                    // We need to add a drive in between
 
-                        VrpPathWithTravelData path = router.calculatePath(previousLink, destination, previousEndTime);
-                        DrtDriveTask driveTask = new DrtDriveTask(path, DrtDriveTask.TYPE);
-                        driveDirective.setTask(driveTask);
-                        schedule.addTask(driveTask);
+                    VrpPathWithTravelData path = router.calculatePath(previousLink, destination, previousEndTime);
+                    DrtDriveTask driveTask = new DrtDriveTask(path, DrtDriveTask.TYPE);
+                    driveDirective.setTask(driveTask);
+                    schedule.addTask(driveTask);
 
-                        previousEndTime = driveTask.getEndTime();
-                        previousLink = driveTask.getPath().getToLink();
-                        previousTask = driveTask;
-                    } else {
-                        // TODO: Would make sense to put here the previous task to the directive, no matter what type!
-                    }
+                    previousEndTime = driveTask.getEndTime();
+                    previousLink = driveTask.getPath().getToLink();
+                    previousTask = driveTask;
                 }
             }
         }
@@ -439,6 +434,10 @@ public class ScheduleManager {
 
     public int getNumberOfOnBoardRequests() {
         return onboard.size();
+    }
+
+    public boolean isTopModifiable() {
+        return directiveSequence.size() == 0 || directiveSequence.get(0).isModifiable();
     }
 
     private interface InternalDirective extends Directive {

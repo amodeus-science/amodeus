@@ -11,7 +11,7 @@ import java.util.function.Function;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
-import amodeus.amodeus.dispatcher.core.UniversalDispatcher;
+import amodeus.amodeus.dispatcher.core.SharedUniversalDispatcher;
 import amodeus.amodeus.routing.DistanceFunction;
 import amodeus.amodeus.routing.EuclideanDistanceFunction;
 import amodeus.amodeus.util.math.GlobalAssert;
@@ -27,7 +27,7 @@ public enum CyclicSolutionPreventer {
     // TODO @clruch eliminate duplicate code, only difference is universalDispatcher,
     // shareduniversaldispatcher
 
-    public static Map<RoboTaxi, PassengerRequest> apply(Map<RoboTaxi, PassengerRequest> assgnmt, UniversalDispatcher universalDispatcher, //
+    public static Map<RoboTaxi, PassengerRequest> apply(Map<RoboTaxi, PassengerRequest> assgnmt, SharedUniversalDispatcher universalDispatcher, //
             DistanceFunction accDstFctn) {
 
         Map<RoboTaxi, PassengerRequest> assgnmtCopy = new HashMap<>(assgnmt);

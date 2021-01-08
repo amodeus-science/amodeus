@@ -12,6 +12,7 @@ import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
@@ -20,8 +21,9 @@ import org.matsim.core.router.util.TravelTime;
 import com.google.inject.TypeLiteral;
 
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
-import amodeus.amodeus.dispatcher.core.PartitionedDispatcher;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
+import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
+import amodeus.amodeus.dispatcher.core.SharedPartitionedDispatcher;
 import amodeus.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import amodeus.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import amodeus.amodeus.dispatcher.util.ConfigurableBipartiteMatcher;
@@ -56,7 +58,7 @@ import ch.ethz.idsc.tensor.red.Mean;
  * Albert, M., Ruch, C. and Frazzoli, E., 2019.
  * Imbalance in Mobility-on-Demand Systems: A Stochastic Model and Distributed Control Approach.
  * ACM Transactions on Spatial Algorithms and Systems (TSAS) - Special Issue on Urban Mobility: Algorithms and Systems, 5(2), article no. 13. */
-public class DFRStrategy extends PartitionedDispatcher {
+public class DFRStrategy extends SharedPartitionedDispatcher {
     private final int dispatchPeriod;
     private final int rebalancingPeriod;
     private Tensor printVals = Tensors.empty();
@@ -81,8 +83,8 @@ public class DFRStrategy extends PartitionedDispatcher {
     private DFRStrategy(Network network, VirtualNetwork<Link> virtualNetwork, Config config, //
             AmodeusModeConfig operatorConfig, TravelTime travelTime, //
             AmodeusRouter router, EventsManager eventsManager, TravelData travelData, //
-            MatsimAmodeusDatabase db) {
-        super(config, operatorConfig, travelTime, router, eventsManager, virtualNetwork, db);
+            MatsimAmodeusDatabase db, RebalancingStrategy rebalancingStrategy) {
+        super(config, operatorConfig, travelTime, router, eventsManager, virtualNetwork, db, rebalancingStrategy, RoboTaxiUsageType.SINGLEUSED);
         DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(30);
         rebalancingPeriod = dispatcherConfig.getRebalancingPeriod(300);
@@ -228,9 +230,10 @@ public class DFRStrategy extends PartitionedDispatcher {
             });
 
             TravelData travelData = inject.getModal(TravelData.class);
+            RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
 
             return new DFRStrategy(network, virtualNetwork, config, operatorConfig, travelTime, router, //
-                    eventsManager, travelData, db);
+                    eventsManager, travelData, db, rebalancingStrategy);
         }
     }
 }

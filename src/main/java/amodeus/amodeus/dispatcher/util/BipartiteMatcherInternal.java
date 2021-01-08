@@ -9,7 +9,7 @@ import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.core.router.FastAStarLandmarksFactory;
 
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
-import amodeus.amodeus.dispatcher.core.UniversalDispatcher;
+import amodeus.amodeus.dispatcher.core.SharedUniversalDispatcher;
 import amodeus.amodeus.routing.CachedNetworkTimeDistance;
 import amodeus.amodeus.routing.DistanceFunction;
 import amodeus.amodeus.routing.NetworkMinTimeDistanceFunction;
@@ -26,25 +26,25 @@ import ch.ethz.idsc.tensor.Tensors;
     }
 
     @Override
-    public final Tensor executePickup(UniversalDispatcher universalDispatcher, //
+    public final Tensor executePickup(SharedUniversalDispatcher universalDispatcher, //
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
             Collection<PassengerRequest> requests, /** <- typically universalDispatcher.getPassengerRequests() */
             DistanceFunction distanceFunction, Network network) {
         return executeGeneralPickup(universalDispatcher, roboTaxis, requests, distanceFunction, null, network);
     }
 
-    protected final Tensor executeGeneralPickup(UniversalDispatcher universalDispatcher, //
+    protected final Tensor executeGeneralPickup(SharedUniversalDispatcher universalDispatcher, //
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
             Collection<PassengerRequest> requests, /** <- typically universalDispatcher.getPassengerRequests() */
             DistanceFunction distanceFunction, CachedNetworkTimeDistance distanceCashed, Network network) {
         Tensor infoLine = Tensors.empty();
         Map<RoboTaxi, PassengerRequest> gbpMatchCleaned = getGBPMatch(universalDispatcher, roboTaxis, requests, distanceFunction, network);
         /** perform dispatching */
-        gbpMatchCleaned.forEach(universalDispatcher::setRoboTaxiPickup);
+        gbpMatchCleaned.forEach((rt, req) -> universalDispatcher.setRoboTaxiPickup(rt, req, Double.NaN, Double.NaN));
         return infoLine;
     }
 
-    public abstract Map<RoboTaxi, PassengerRequest> getGBPMatch(UniversalDispatcher universalDispatcher, //
+    public abstract Map<RoboTaxi, PassengerRequest> getGBPMatch(SharedUniversalDispatcher universalDispatcher, //
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
             Collection<PassengerRequest> requests, /** <- typically universalDispatcher.getPassengerRequests() */
             DistanceFunction distanceFunction, Network network);

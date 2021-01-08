@@ -23,6 +23,7 @@ import org.matsim.core.router.util.TravelTime;
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.RoboTaxiStatus;
+import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
 import amodeus.amodeus.dispatcher.core.SharedRebalancingDispatcher;
 import amodeus.amodeus.dispatcher.shared.basic.ExtDemandSupplyBeamSharing;
 import amodeus.amodeus.dispatcher.shared.beam.BeamExtensionForSharing;
@@ -73,7 +74,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
             TravelTime travelTime, AmodeusRouter router, EventsManager eventsManager, //
             MatsimAmodeusDatabase db, ParkingStrategy parkingStrategy, //
             ParkingCapacity avSpatialCapacityAmodeus, RebalancingStrategy rebalancingStrategy) {
-        super(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy);
+        super(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy, RoboTaxiUsageType.SHARED);
         DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(60);
         SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());

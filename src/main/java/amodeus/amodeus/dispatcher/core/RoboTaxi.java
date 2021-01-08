@@ -37,9 +37,9 @@ public final class RoboTaxi {
     private static final Logger LOGGER = Logger.getLogger(RoboTaxi.class);
 
     private final DvrpVehicle avVehicle;
-    private RoboTaxiStatus status;
     private final RoboTaxiUsageType usageType; // final might be removed if dispatchers can modify usage
-
+    private boolean isLocked;
+    
     /** last known location of the RoboTaxi */
     private Link lastKnownLocation;
 
@@ -47,7 +47,6 @@ public final class RoboTaxi {
     private Link driveDestination;
     /** location/time pair from where / when RoboTaxi path can be altered. */
     private LinkTimePair divertableLinkTime;
-    private DirectiveInterface directive;
 
     // private boolean dropoffInProgress = false;
 
@@ -63,8 +62,6 @@ public final class RoboTaxi {
         this.avVehicle = avVehicle;
         this.divertableLinkTime = divertableLinkTime;
         this.driveDestination = Objects.requireNonNull(driveDestination);
-        this.directive = null;
-        this.status = RoboTaxiStatus.STAY;
         this.usageType = usageType;
 
         this.scheduleManager = new ScheduleManager(this, router);
@@ -108,7 +105,11 @@ public final class RoboTaxi {
 
     /** @return true if vehicle is staying */
     public boolean isInStayTask() {
-        return status.equals(RoboTaxiStatus.STAY);
+        if (getSchedule().getStatus().equals(ScheduleStatus.STARTED)) {
+            return getSchedule().getCurrentTask() instanceof DrtStayTask;
+        }
+        
+        return true;
     }
 
     /** @return {@Id<Link>} of the RoboTaxi, robotaxi ID is the same as AVVehicle ID */
@@ -119,31 +120,28 @@ public final class RoboTaxi {
     /** @return RoboTaxiStatus of the vehicle */
     public RoboTaxiStatus getStatus() {
         // TODO: Probably a huge performance bottleneck! /SH
-        if (usageType == RoboTaxiUsageType.SHARED) {
-            if (scheduleManager.getDirectives().size() == 0) {
-                return RoboTaxiStatus.STAY;
-            }
-
-            if (scheduleManager.getNumberOfOnBoardRequests() > 0) {
-                return RoboTaxiStatus.DRIVEWITHCUSTOMER;
-            } else {
-                for (Directive directive : scheduleManager.getDirectives()) {
-                    if (directive instanceof StopDirective) {
-                        StopDirective stopDirective = (StopDirective) directive;
-
-                        if (stopDirective.isPickup()) {
-                            return RoboTaxiStatus.DRIVETOCUSTOMER;
-                        }
-                    }
-                }
-
-                return RoboTaxiStatus.REBALANCEDRIVE;
-            }
+        //if (usageType == RoboTaxiUsageType.SHARED) {
+        if (scheduleManager.getDirectives().size() == 0) {
+            return RoboTaxiStatus.STAY;
         }
 
-        return status;
-    }
+        if (scheduleManager.getNumberOfOnBoardRequests() > 0) {
+            return RoboTaxiStatus.DRIVEWITHCUSTOMER;
+        } else {
+            for (Directive directive : scheduleManager.getDirectives()) {
+                if (directive instanceof StopDirective) {
+                    StopDirective stopDirective = (StopDirective) directive;
 
+                    if (stopDirective.isPickup()) {
+                        return RoboTaxiStatus.DRIVETOCUSTOMER;
+                    }
+                }
+            }
+
+            return RoboTaxiStatus.REBALANCEDRIVE;
+        }
+    }        
+        
     /** Gets the capacity of the avVehicle. Now its an Integer and not a double as in
      * MATSim, the current number of people on board can be accessed with
      * {@link RoboTaxiUtils.getNumberOnBoardRequests(roboTaxi)}
@@ -183,21 +181,12 @@ public final class RoboTaxi {
         this.driveDestination = Objects.requireNonNull(currentDriveDestination);
     }
 
-    /** @param {@AVStatus} for robotaxi to be updated to, to be used only by core
-     *            package, in dispatcher implementations, status will be adapted
-     *            automatically. */
-    /* package */ void setStatus(RoboTaxiStatus status) {
-        // TODO @ChengQi which code handles shared taxi status?????
-        GlobalAssert.that(!usageType.equals(RoboTaxiUsageType.SHARED));
-        this.status = Objects.requireNonNull(status);
-    }
-
     /** @return true if robotaxi is without a customer */
     /* package */ boolean isWithoutCustomer() {
         // For now this works with universal dispatcher i.e. single used robotaxis as
         // number of customers is never changed
-        return !status.equals(RoboTaxiStatus.DRIVEWITHCUSTOMER) && //
-                scheduleManager.getNumberOfOnBoardRequests() == 0;
+        
+        return scheduleManager.getNumberOfOnBoardRequests() == 0;
     }
 
     /** @return {@Schedule} of the RoboTaxi, to be used only inside core package, the
@@ -207,28 +196,10 @@ public final class RoboTaxi {
         return avVehicle.getSchedule();
     }
 
-    /** @param abstractDirective to be issued to RoboTaxi when commands change, to be
-     *            used only in the core package, directives will be
-     *            issued automatically when setVehiclePickup,
-     *            setVehicleRebalance are called. */
-    /* package */ void assignDirective(DirectiveInterface abstractDirective) {
-        GlobalAssert.that(isWithoutDirective());
-        this.directive = abstractDirective;
-    }
-
-    /** @return true if RoboTaxi is without an unexecuted directive, to be used only
-     *         inside core package */
-    /* package */ boolean isWithoutDirective() {
-        return directive == null;
-    }
-
     /** @return true if robotaxi is not driving on the last link of its drive task,
      *         used for filtering purposes as currently the roboTaxis cannot be
      *         rerouted when driving on the last link of their route */
     /* package */ boolean notDrivingOnLastLink() {
-        if (status.equals(RoboTaxiStatus.STAY))
-            return true;
-
         Task avT = getSchedule().getCurrentTask();
 
         // TODO @ChengQi check why this appears often
@@ -237,7 +208,7 @@ public final class RoboTaxi {
             // /sh, apr 2018
             if (!usageType.equals(RoboTaxiUsageType.SHARED)) { // for shared this is allowed e.g. when a new course is added but it has not been executed yet
                 LOGGER.warn("RoboTaxiStatus != STAY, but Schedule.getCurrentTask() == AVStayTask; probably needs fixing");
-                System.out.println("status: " + status);
+                //System.out.println("status: " + status);
             }
             return true;
         }
@@ -251,12 +222,6 @@ public final class RoboTaxi {
         throw new IllegalArgumentException("Found Unknown type of AVTASK !!");
     }
 
-    /** execute the directive of a RoboTaxi, to be used only inside core package */
-    /* package */ void executeDirective() {
-        directive.execute();
-        directive = null;
-    }
-
     public RoboTaxiUsageType getUsageType() {
         return usageType;
     }
@@ -266,12 +231,11 @@ public final class RoboTaxi {
     // **********************************************
 
     public boolean isDivertable() {
-        return canReroute() && (usageType.equals(RoboTaxiUsageType.SHARED) || isWithoutCustomer());
-    }
-
-    // added by luc for rerouting purpose
-    public boolean canReroute() {
-        return isWithoutDirective() && notDrivingOnLastLink();
+        if (usageType.equals(RoboTaxiUsageType.SINGLEUSED) && !isWithoutCustomer()) {
+            return false;
+        }
+        
+        return scheduleManager.isTopModifiable() && !isLocked;
     }
 
     // **********************************************
@@ -490,4 +454,12 @@ public final class RoboTaxi {
      * public boolean isPickingUp() {
      * return isPickingUp;
      * } */
+    
+    public void lock() {
+        this.isLocked = true;
+    }
+    
+    public void unlock() {
+        this.isLocked = false;
+    }
 }

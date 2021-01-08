@@ -30,8 +30,8 @@ public abstract class SharedPartitionedDispatcher extends SharedRebalancingDispa
             ParallelLeastCostPathCalculator router, //
             EventsManager eventsManager, //
             VirtualNetwork<Link> virtualNetwork, //
-            MatsimAmodeusDatabase db, RebalancingStrategy rebalancingStrategy) {
-        super(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy);
+            MatsimAmodeusDatabase db, RebalancingStrategy rebalancingStrategy, RoboTaxiUsageType usageType) {
+        super(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy, usageType);
 
         if (virtualNetwork == null)
             throw new IllegalStateException(
