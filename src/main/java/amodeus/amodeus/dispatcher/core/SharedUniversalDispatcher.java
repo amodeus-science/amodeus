@@ -35,6 +35,7 @@ import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.passenger.PassengerRequestRejectedEvent;
 import org.matsim.contrib.dvrp.passenger.PassengerRequestScheduledEvent;
 import org.matsim.contrib.dvrp.schedule.Schedule;
+import org.matsim.contrib.dvrp.schedule.Schedule.ScheduleStatus;
 import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.contrib.dvrp.schedule.Task.TaskStatus;
 import org.matsim.contrib.dvrp.tracker.OnlineDriveTaskTracker;
@@ -215,10 +216,8 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
         eventsManager.processEvent(
                 new PassengerRequestScheduledEvent(getTimeNow(), mode, avRequest.getId(), avRequest.getPassengerId(), roboTaxi.getId(), expectedPickupTime, expectedDropoffTime));
     }
-    
-    /*
-     * Shortcut for unit capacity dispatchers
-     */
+
+    /* Shortcut for unit capacity dispatchers */
     public final void setRoboTaxiPickup(RoboTaxi roboTaxi, PassengerRequest avRequest, double expectedPickupTime, double expectedDropoffTime) {
         cleanAndAbondon(roboTaxi);
         addSharedRoboTaxiPickup(roboTaxi, avRequest, expectedPickupTime, expectedDropoffTime);
@@ -595,7 +594,7 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
     @Override
     protected final void consistencySubCheck() {
         // TODO @clruch disable or reduce computational complexity of entire subcheck once API tested for a longer amount of time.
-        
+
         for (RoboTaxi roboTaxi : getRoboTaxis()) {
             Schedule schedule = roboTaxi.getSchedule();
             Task task = schedule.getCurrentTask();
@@ -722,35 +721,32 @@ public abstract class SharedUniversalDispatcher extends BasicUniversalDispatcher
         // Update the divertable Location
         for (RoboTaxi roboTaxi : getRoboTaxis()) {
             roboTaxi.unlock();
-            
+
             Schedule schedule = roboTaxi.getSchedule();
-            new RoboTaxiTaskAdapter(schedule.getCurrentTask()) {
-                @Override
-                public void handle(DrtDriveTask avDriveTask) {
-                    OnlineDriveTaskTracker taskTracker = (OnlineDriveTaskTracker) avDriveTask.getTaskTracker();
+
+            if (schedule.getStatus().equals(ScheduleStatus.STARTED)) {
+                Task currentTask = schedule.getCurrentTask();
+
+                if (currentTask instanceof DrtDriveTask) {
+                    DrtDriveTask driveTask = (DrtDriveTask) currentTask;
+
+                    OnlineDriveTaskTracker taskTracker = (OnlineDriveTaskTracker) driveTask.getTaskTracker();
                     LinkTimePair linkTimePair = Objects.requireNonNull(taskTracker.getDiversionPoint());
                     roboTaxi.setDivertableLinkTime(linkTimePair); // contains null check
-                    roboTaxi.setCurrentDriveDestination(avDriveTask.getPath().getToLink());
-                }
+                    roboTaxi.setCurrentDriveDestination(driveTask.getPath().getToLink());
+                } else if (currentTask instanceof DrtStayTask) {
+                    DrtStayTask stayTask = (DrtStayTask) currentTask;
 
-                @Override
-                public void handle(AmodeusStopTask avStopTask) {
-                    // GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.DRIVEWITHCUSTOMER));
-                }
-
-                @Override
-                public void handle(DrtStayTask avStayTask) {
-                    // for empty vehicles the current task has to be the last task
-                    if (ScheduleUtils.isLastTask(schedule, avStayTask) && !requestAssignments.containsValue(roboTaxi) && !periodFulfilledRequests.containsValue(roboTaxi)) {
-                        GlobalAssert.that(avStayTask.getBeginTime() <= getTimeNow());
-                        GlobalAssert.that(Objects.nonNull(avStayTask.getLink()));
-                        roboTaxi.setDivertableLinkTime(new LinkTimePair(avStayTask.getLink(), getTimeNow()));
-                        roboTaxi.setCurrentDriveDestination(avStayTask.getLink());
+                    if (ScheduleUtils.isLastTask(schedule, stayTask) && !requestAssignments.containsValue(roboTaxi) && !periodFulfilledRequests.containsValue(roboTaxi)) {
+                        GlobalAssert.that(stayTask.getBeginTime() <= getTimeNow());
+                        GlobalAssert.that(Objects.nonNull(stayTask.getLink()));
+                        roboTaxi.setDivertableLinkTime(new LinkTimePair(stayTask.getLink(), getTimeNow()));
+                        roboTaxi.setCurrentDriveDestination(stayTask.getLink());
                         if (roboTaxi.getScheduleManager().getDirectives().size() == 0)
                             GlobalAssert.that(roboTaxi.getStatus().equals(RoboTaxiStatus.STAY));
                     }
                 }
-            };
+            }
         }
     }
 

@@ -10,11 +10,19 @@ import java.util.stream.Collectors;
 
 import org.matsim.amodeus.components.AmodeusDispatcher;
 import org.matsim.amodeus.config.AmodeusModeConfig;
+import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
 import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
 import org.matsim.api.core.v01.events.Event;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.drt.schedule.DrtDriveTask;
+import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
+import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Schedule.ScheduleStatus;
+import org.matsim.contrib.dvrp.schedule.Task;
+import org.matsim.contrib.dvrp.tracker.OnlineDriveTaskTracker;
+import org.matsim.contrib.dvrp.tracker.TaskTracker;
+import org.matsim.contrib.dvrp.util.LinkTimePair;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 
@@ -128,12 +136,33 @@ import amodeus.amodeus.util.matsim.SafeConfig;
         @SuppressWarnings("unused")
         int failed = 0;
         for (RoboTaxi roboTaxi : roboTaxis) {
-            final Link link = RoboTaxiLocation.of(roboTaxi);
-            if (Objects.nonNull(link)) {
-                roboTaxi.setLastKnownLocation(link);
-                updateLocationTrace(roboTaxi, link);
-            } else
-                ++failed;
+            Link link = roboTaxi.getDvrpVehicle().getStartLink();
+
+            Schedule schedule = roboTaxi.getSchedule();
+
+            if (schedule.getStatus().equals(ScheduleStatus.STARTED)) {
+                Task currentTask = schedule.getCurrentTask();
+
+                if (currentTask instanceof AmodeusStopTask) {
+                    AmodeusStopTask stopTask = (AmodeusStopTask) currentTask;
+                    link = stopTask.getLink();
+                } else if (currentTask instanceof DrtDriveTask) {
+                    DrtDriveTask driveTask = (DrtDriveTask) currentTask;
+
+                    TaskTracker taskTracker = driveTask.getTaskTracker();
+                    OnlineDriveTaskTracker onlineDriveTaskTracker = (OnlineDriveTaskTracker) taskTracker;
+                    // there is a slim chance that function getDiversionPoint() returns null
+                    LinkTimePair linkTimePair = onlineDriveTaskTracker.getDiversionPoint();
+                    if (Objects.nonNull(linkTimePair))
+                        link = linkTimePair.link;
+                } else if (currentTask instanceof DrtStayTask) {
+                    DrtStayTask stayTask = (DrtStayTask) currentTask;
+                    link = stayTask.getLink();
+                }
+            }
+
+            roboTaxi.setLastKnownLocation(link);
+            updateLocationTrace(roboTaxi, link);
         }
     }
 
