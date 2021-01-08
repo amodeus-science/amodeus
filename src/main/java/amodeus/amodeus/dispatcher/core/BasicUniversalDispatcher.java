@@ -44,7 +44,6 @@ import amodeus.amodeus.util.matsim.SafeConfig;
 
     final Set<PassengerRequest> pendingRequests = new LinkedHashSet<>();
     final MatsimAmodeusDatabase db;
-    final FuturePathFactory futurePathFactory;
     final FutureVrpPathCalculator router;
     protected final double pickupDurationPerStop;
     protected final double dropoffDurationPerStop;
@@ -59,7 +58,6 @@ import amodeus.amodeus.util.matsim.SafeConfig;
             MatsimAmodeusDatabase db) {
         super(eventsManager, config, operatorConfig);
         this.db = db;
-        futurePathFactory = new FuturePathFactory(parallelLeastCostPathCalculator, travelTime);
         pickupDurationPerStop = operatorConfig.getTimingConfig().getMinimumPickupDurationPerStop();
         dropoffDurationPerStop = operatorConfig.getTimingConfig().getMinimumDropoffDurationPerStop();
         SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
