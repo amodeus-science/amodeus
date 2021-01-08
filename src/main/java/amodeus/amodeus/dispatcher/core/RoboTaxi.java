@@ -161,12 +161,6 @@ public final class RoboTaxi {
         this.divertableLinkTime = Objects.requireNonNull(divertableLinkTime);
     }
 
-    /** @return RoboTaxiPlan with RoboTaxiPlan.plans() Navigable Map containing all
-     *         RoboTaxiPlanEntry elements sorted according to begin time */
-    /* package */ RoboTaxiPlan getCurrentPlans(double time) {
-        return RoboTaxiPlan.of(getSchedule(), time);
-    }
-
     /** function only used from VehicleMaintainer in update steps
      * 
      * @param currentLocation last known link of RoboTaxi location */
