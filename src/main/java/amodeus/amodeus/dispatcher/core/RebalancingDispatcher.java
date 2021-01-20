@@ -35,31 +35,65 @@ public abstract class RebalancingDispatcher extends UniversalDispatcher {
      * @param destination and all the oustanding pickup and dropoff tasks are deleted */
     protected final void setRoboTaxiRebalance(RoboTaxi roboTaxi, final Link destination) {
         GlobalAssert.that(roboTaxi.isWithoutCustomer());
-        /** clear menu and put requests back to pending requests */
-        cleanAndAbondon(roboTaxi);
-        GlobalAssert.that(roboTaxi.getScheduleManager().getDirectives().size() == 0);
-        Directive directive = Directive.drive(destination);
-        // SharedCourse redirectCourse = SharedCourse.redirectCourse(destination, Double.toString(getTimeNow()) + roboTaxi.getId().toString());
-        addSharedRoboTaxiRedirect(roboTaxi, directive);
+
+        if (!isRebalancingTo(roboTaxi, destination)) {
+            /** clear menu and put requests back to pending requests */
+            cleanAndAbondon(roboTaxi);
+            GlobalAssert.that(roboTaxi.getScheduleManager().getDirectives().size() == 0);
+            Directive directive = Directive.drive(destination);
+
+            Link originLink = roboTaxi.getDivertableLocation();
+            Link destinationLink = Directive.getLink(directive);
+
+            eventsManager.processEvent(
+                    new RelocationScheduledEvent(getTimeNow(), mode, roboTaxi.getId(), roboTaxi.getDivertableLocation().getId(), originLink.getId(), destinationLink.getId()));
+
+            roboTaxi.addRedirectCourseToMenu((DriveDirective) directive);
+        }
+
+        if (usageType.equals(RoboTaxiUsageType.SINGLEUSED)) {
+            roboTaxi.lock();
+        }
     }
 
     /** {@link RoboTaxi} @param roboTaxi is redirected to the {@link Link} of the {@link SharedCourse}
      * the course can be moved to another position in the {@link SharedMenu} of the {@link} RoboTaxi */
     protected void addSharedRoboTaxiRedirect(RoboTaxi roboTaxi, Directive directive) {
         GlobalAssert.that(directive instanceof DriveDirective);
+        boolean isReblancingToDestination = isRebalancingTo(roboTaxi, Directive.getLink(directive));
 
-        ImmutableList<Directive> directives = roboTaxi.getScheduleManager().getDirectives();
-        Link originLink = directives.size() > 0 ? Directive.getLink(directives.get(directives.size() - 1)) : roboTaxi.getDvrpVehicle().getStartLink();
-        Link destinationLink = Directive.getLink(directive);
+        if (!isReblancingToDestination) {
+            ImmutableList<Directive> directives = roboTaxi.getScheduleManager().getDirectives();
+            Link originLink = directives.size() > 0 ? Directive.getLink(directives.get(directives.size() - 1)) : roboTaxi.getDivertableLocation();
+            Link destinationLink = Directive.getLink(directive);
 
-        eventsManager.processEvent(
-                new RelocationScheduledEvent(getTimeNow(), mode, roboTaxi.getId(), roboTaxi.getLastKnownLocation().getId(), originLink.getId(), destinationLink.getId()));
+            eventsManager.processEvent(
+                    new RelocationScheduledEvent(getTimeNow(), mode, roboTaxi.getId(), roboTaxi.getDivertableLocation().getId(), originLink.getId(), destinationLink.getId()));
 
-        roboTaxi.addRedirectCourseToMenu((DriveDirective) directive);
-        
+            roboTaxi.addRedirectCourseToMenu((DriveDirective) directive);
+        }
+
         if (usageType.equals(RoboTaxiUsageType.SINGLEUSED)) {
             roboTaxi.lock();
         }
+    }
+
+    private boolean isRebalancingTo(RoboTaxi vehicle, Link destinationLink) {
+        List<Directive> directives = vehicle.getScheduleManager().getDirectives();
+
+        if (directives.size() > 0) {
+            Directive lastDirective = directives.get(directives.size() - 1);
+
+            if (lastDirective instanceof DriveDirective) {
+                DriveDirective driveDirective = (DriveDirective) lastDirective;
+
+                if (driveDirective.getDestination().equals(destinationLink)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /** @return {@link List } of all {@link RoboTaxi} which are currently rebalancing. */

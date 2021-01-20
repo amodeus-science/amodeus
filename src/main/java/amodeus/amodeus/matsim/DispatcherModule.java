@@ -15,6 +15,7 @@ import amodeus.amodeus.dispatcher.ModelFreeAdaptiveRepositioning;
 import amodeus.amodeus.dispatcher.NoExplicitCommunication;
 import amodeus.amodeus.dispatcher.SBNoExplicitCommunication;
 import amodeus.amodeus.dispatcher.SQMDispatcher;
+import amodeus.amodeus.dispatcher.alonso_mora_2016.AlonsoMoraDispatcher;
 import amodeus.amodeus.dispatcher.shared.basic.ExtDemandSupplyBeamSharing;
 import amodeus.amodeus.dispatcher.shared.basic.NorthPoleSharedDispatcher;
 import amodeus.amodeus.dispatcher.shared.fifs.DynamicRideSharingStrategy;
@@ -83,6 +84,9 @@ public class DispatcherModule extends AbstractModule {
 
         bind(HighCapacityDispatcher.Factory.class);
         AmodeusUtils.bindDispatcherFactory(binder(), HighCapacityDispatcher.class.getSimpleName()).to(HighCapacityDispatcher.Factory.class);
+
+        bind(AlonsoMoraDispatcher.Factory.class);
+        AmodeusUtils.bindDispatcherFactory(binder(), AlonsoMoraDispatcher.class.getSimpleName()).to(AlonsoMoraDispatcher.Factory.class);
 
         /** dispatchers which take Parking Spaces into account */
 

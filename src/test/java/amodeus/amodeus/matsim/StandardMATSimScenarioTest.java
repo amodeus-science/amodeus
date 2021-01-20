@@ -101,6 +101,8 @@ public class StandardMATSimScenarioTest {
 
                 // Also has not enough of time to finish all requests
                 // { "NorthPoleSharedDispatcher" },
+
+                { "AlonsoMoraDispatcher" } //
         });
     }
 

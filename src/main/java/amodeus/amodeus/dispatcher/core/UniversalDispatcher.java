@@ -21,6 +21,7 @@ import org.matsim.amodeus.drt.relocation.RelocationStartEvent;
 import org.matsim.amodeus.dvrp.passenger.PassengerRequestUnscheduledEvent;
 import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
 import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
+import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.drt.optimizer.rebalancing.NoRebalancingStrategy;
 import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingParams;
@@ -31,6 +32,7 @@ import org.matsim.contrib.drt.run.MultiModeDrtConfigGroup;
 import org.matsim.contrib.drt.schedule.DrtDriveTask;
 import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
+import org.matsim.contrib.dvrp.optimizer.Request;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.passenger.PassengerRequestRejectedEvent;
 import org.matsim.contrib.dvrp.passenger.PassengerRequestScheduledEvent;
@@ -86,7 +88,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
     /* package */ static final double SIMTIMESTEP = 1.0; // This is used in the Shared Universal Dispatcher to see if a task will end in the next timestep.
     private Double lastTime = null;
 
-    private final boolean isRejectingRequests;
+    protected final boolean isRejectingRequests;
     private final RebalancingStrategy drtRebalancing;
     private Integer drtRebalancingInterval = null;
     private boolean usesStaticDrtRebalancing = false;
@@ -305,6 +307,47 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
         return drtRebalancing != null && !(drtRebalancing instanceof NoRebalancingStrategy);
     }
 
+    public void setDirectives(RoboTaxi vehicle, List<Directive> directives) {
+        Set<PassengerRequest> initialRequests = new HashSet<>();
+        
+        Map<Id<Request>, Double> expectedPickupTimes = new HashMap<>();
+        Map<Id<Request>, Double> expectedDropoffTimes = new HashMap<>();
+        
+        for (Directive directive : vehicle.getScheduleManager().getDirectives()) {
+            if (directive instanceof StopDirective) {
+                StopDirective stopDirective = (StopDirective) directive;
+                initialRequests.add(stopDirective.getRequest());
+            }
+        }
+        
+        Set<PassengerRequest> updatedRequests = new HashSet<>();
+        
+        for (Directive directive : directives) {
+            if (directive instanceof StopDirective) {
+                StopDirective stopDirective = (StopDirective) directive;
+                updatedRequests.add(stopDirective.getRequest());
+                
+                if (stopDirective.isPickup()) {
+                    
+                }
+            }
+        }
+        
+        Set<PassengerRequest> addedRequests = new HashSet<>(updatedRequests);
+        addedRequests.removeAll(initialRequests);
+        
+        Set<PassengerRequest> removedRequests = new HashSet<>(initialRequests);
+        removedRequests.removeAll(updatedRequests);
+        
+        for (PassengerRequest request : removedRequests) {
+            abortAvRequest(request);
+        }
+        
+        for (PassengerRequest request : addedRequests) {
+            addSharedRoboTaxiPickup(vehicle, request, indent, SIMTIMESTEP);
+        }
+    }
+    
     /** carries out the redispatching defined in the {@link SharedMenu} and executes the
      * directives after a check of the menus. */
     @Override
@@ -386,23 +429,19 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
         // TODO: This is at an arbitrary location here
 
         if (isRejectingRequests) {
-            Set<PassengerRequest> exceededRequests = new HashSet<>();
-
             for (PassengerRequest request : getPassengerRequests()) {
                 if (request.getLatestStartTime() < getTimeNow()) {
-                    if (!getUnassignedRequests().contains(request)) {
-                        abortAvRequest(request);
-                    }
-
-                    exceededRequests.add(request);
+                    cancelRequest(request);
                 }
             }
-
-            exceededRequests.forEach(this::cancelRequest);
         }
     }
 
-    protected void cancelRequest(PassengerRequest request) {
+    public void cancelRequest(PassengerRequest request) {
+        if (!getUnassignedRequests().contains(request)) {
+            abortAvRequest(request);
+        }
+
         GlobalAssert.that(pendingRequests.contains(request));
         GlobalAssert.that(!requestAssignments.containsKey(request));
 

@@ -324,7 +324,7 @@ public class ScheduleManager {
         return builder.build();
     }
 
-    public void setDirectives(List<Directive> sequence) {
+    public void setDirectives(List<? extends Directive> sequence) {
         // All stops that are currently handled need to be replicated exactly!
 
         /* Set<String> ids = new HashSet<>();

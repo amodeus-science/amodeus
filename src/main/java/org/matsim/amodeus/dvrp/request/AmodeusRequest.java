@@ -19,9 +19,10 @@ public class AmodeusRequest implements PassengerRequest {
     private final AmodeusRoute route;
 
     private final double maximumWaitTime;
+    private final double maximumDetourTime;
 
-    public AmodeusRequest(Id<Request> id, Id<Person> passengerId, Link pickupLink, Link dropoffLink, double submissionTime, String mode, AmodeusRoute route,
-            double maximumWaitTime) {
+    public AmodeusRequest(Id<Request> id, Id<Person> passengerId, Link pickupLink, Link dropoffLink, double submissionTime, String mode, AmodeusRoute route, double maximumWaitTime,
+            double maximumDetourTime) {
         this.id = id;
         this.passengerId = passengerId;
         this.pickupLink = pickupLink;
@@ -30,6 +31,7 @@ public class AmodeusRequest implements PassengerRequest {
         this.mode = mode;
         this.route = route;
         this.maximumWaitTime = maximumWaitTime;
+        this.maximumDetourTime = maximumDetourTime;
     }
 
     @Override
@@ -73,6 +75,10 @@ public class AmodeusRequest implements PassengerRequest {
 
     public double getMaximumWaitTime() {
         return maximumWaitTime;
+    }
+
+    public double getMaximumDetourTime() {
+        return maximumDetourTime;
     }
 
     @Override
