@@ -23,7 +23,7 @@ public interface AlonsoMoraTravelFunction {
         public final List<StopDirective> directives;
         public final double cost;
 
-        Result(List<StopDirective> directives, double cost) {
+        public Result(List<StopDirective> directives, double cost) {
             this.cost = cost;
             this.directives = directives;
         }

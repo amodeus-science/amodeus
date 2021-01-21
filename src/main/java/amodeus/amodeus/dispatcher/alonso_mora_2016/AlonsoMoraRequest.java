@@ -13,13 +13,18 @@ public class AlonsoMoraRequest {
     private final double directDropoffTime;
 
     private double activePickupTime;
-    private boolean activePickupTimeUpdated = false;
+    private double activeDropoffTime;
+
+    private boolean isAssigned = false;
 
     public AlonsoMoraRequest(PassengerRequest request, double latestPickupTime, double latestDropoffTime, double directDropoffTime) {
         this.request = request;
         this.latestDropoffTime = latestDropoffTime;
+        this.activeDropoffTime = latestDropoffTime;
+
         this.latestPickupTime = latestPickupTime;
         this.activePickupTime = latestPickupTime;
+
         this.directDropoffTime = directDropoffTime;
     }
 
@@ -43,15 +48,28 @@ public class AlonsoMoraRequest {
         return activePickupTime;
     }
 
-    public void updateActivePickupTime(double activePickupTime) {
-        if (!activePickupTimeUpdated) {
-            this.activePickupTime = activePickupTime;
-            this.activePickupTimeUpdated = true;
-        }
+    public void setActivePickupTime(double activePickupTime) {
+        this.activePickupTime = activePickupTime;
+    }
+
+    public double getActiveDropoffTime() {
+        return activeDropoffTime;
+    }
+
+    public void setActiveDropoffTime(double activeDropoffTime) {
+        this.activeDropoffTime = activeDropoffTime;
     }
 
     public double getDirectDropoffTime() {
         return directDropoffTime;
+    }
+
+    public boolean isAssigned() {
+        return isAssigned;
+    }
+
+    public void setAssigned(boolean isAssigned) {
+        this.isAssigned = isAssigned;
     }
 
     @Override

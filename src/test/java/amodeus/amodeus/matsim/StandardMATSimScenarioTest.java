@@ -80,7 +80,7 @@ public class StandardMATSimScenarioTest {
 
         // ATTENTION: DriveByDispatcher is not tested, because of long runtime.
         return Arrays.asList(new Object[][] { //
-                { "SingleHeuristic" }, //
+                /*{ "SingleHeuristic" }, //
                 { "DemandSupplyBalancingDispatcher" }, //
                 { "GlobalBipartiteMatchingDispatcher" }, //
                 { "FeedforwardFluidicRebalancingPolicy" }, //
@@ -100,7 +100,7 @@ public class StandardMATSimScenarioTest {
                 { "HighCapacityDispatcher" },
 
                 // Also has not enough of time to finish all requests
-                // { "NorthPoleSharedDispatcher" },
+                // { "NorthPoleSharedDispatcher" },*/
 
                 { "AlonsoMoraDispatcher" } //
         });

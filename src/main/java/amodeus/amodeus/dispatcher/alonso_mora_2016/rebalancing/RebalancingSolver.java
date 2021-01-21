@@ -9,7 +9,6 @@ import org.gnu.glpk.GLPK;
 import org.gnu.glpk.GLPKConstants;
 import org.gnu.glpk.SWIGTYPE_p_double;
 import org.gnu.glpk.SWIGTYPE_p_int;
-import org.gnu.glpk.glp_cpxcp;
 import org.gnu.glpk.glp_iptcp;
 import org.gnu.glpk.glp_prob;
 import org.matsim.api.core.v01.network.Link;
@@ -90,14 +89,14 @@ public class RebalancingSolver {
 
         // Write problem
 
-        glp_cpxcp p = new glp_cpxcp();
-        GLPK.glp_write_lp(problem, p, "rebalancing_problem");
+        // glp_cpxcp p = new glp_cpxcp();
+        // GLPK.glp_write_lp(problem, p, "rebalancing_problem");
 
         // Solve problem
 
         glp_iptcp parameters = new glp_iptcp();
         GLPK.glp_init_iptcp(parameters);
-        // GLPK.glp_term_out(GLPK.GLP_OFF);
+        GLPK.glp_term_out(GLPK.GLP_OFF);
 
         int returnCode = GLPK.glp_interior(problem, parameters);
         Map<AlonsoMoraVehicle, Link> result = new HashMap<>();

@@ -32,6 +32,7 @@ import amodeus.amodeus.dispatcher.alonso_mora_2016.rtv.RequestTripVehicleGraph.T
 import amodeus.amodeus.dispatcher.alonso_mora_2016.rtv.RequestTripVehicleGraphBuilder;
 import amodeus.amodeus.dispatcher.alonso_mora_2016.rv.RequestVehicleGraph;
 import amodeus.amodeus.dispatcher.alonso_mora_2016.rv.RequestVehicleGraphBuilder;
+import amodeus.amodeus.dispatcher.alonso_mora_2016.sequence.ExtensiveTravelFunction;
 import amodeus.amodeus.dispatcher.alonso_mora_2016.sequence.ExtensiveSequenceGenerator;
 import amodeus.amodeus.dispatcher.alonso_mora_2016.sequence.MinimumEuclideanDistanceGenerator;
 import amodeus.amodeus.dispatcher.alonso_mora_2016.sequence.SequenceGeneratorFactory;
@@ -269,7 +270,7 @@ public class DefaultAlonsoMoraTravelFunction implements AlonsoMoraTravelFunction
 
         AlonsoMoraParameters parameters = new AlonsoMoraParameters();
 
-        DefaultAlonsoMoraTravelFunction travelFunction = new DefaultAlonsoMoraTravelFunction(travelTimeCalculator, parameters, requests, 0.0, 0.0, 0.0);
+        AlonsoMoraTravelFunction travelFunction = new ExtensiveTravelFunction(parameters, 0.0, travelTimeCalculator, requests, 60.0, 60.0);
 
         {
             Optional<Result> result = travelFunction.calculate(amRequest1, amRequest2);

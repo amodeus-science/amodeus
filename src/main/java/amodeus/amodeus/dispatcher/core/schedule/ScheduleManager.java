@@ -197,7 +197,7 @@ public class ScheduleManager {
 
                     // TODO: Simplify with generalized StopTask instead of StopType discrimination
 
-                    if (isStop(previousTask)) {
+                    if (isStop(previousTask) && previousTask != currentTask) {
                         // If we're already at the stop, so we can add the passenger
                         AmodeusStopTask stopTask = (AmodeusStopTask) previousTask;
 
@@ -507,6 +507,11 @@ public class ScheduleManager {
 
             return false;
         }
+
+        @Override
+        public String toString() {
+            return "InternalStopDirective[" + request.getId() + ", " + (isPickup ? "Pickup" : "Dropoff") + ", " + (isModifiable() ? "Modifiable" : "Not modifiable") + "]";
+        }
     }
 
     private class InternalDriveDirective implements DriveDirective, InternalDirective {
@@ -563,6 +568,11 @@ public class ScheduleManager {
             }
 
             return false;
+        }
+
+        @Override
+        public String toString() {
+            return "InternalDriveDirective[" + destination.getId() + ", " + (isModifiable() ? "Modifiable" : "Not modifiable") + "]";
         }
     }
 }

@@ -22,4 +22,9 @@ public class DefaultStopDirective extends AbstractDirective implements StopDirec
     public boolean isPickup() {
         return isPickup;
     }
+
+    @Override
+    public String toString() {
+        return "StopDirective[" + request.getId() + ", " + (isPickup ? "Pickup" : "Dropoff") + "]";
+    }
 }

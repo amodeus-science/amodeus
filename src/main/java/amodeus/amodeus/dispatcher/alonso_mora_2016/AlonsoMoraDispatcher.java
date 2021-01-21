@@ -39,6 +39,7 @@ import amodeus.amodeus.dispatcher.alonso_mora_2016.rtv.RequestTripVehicleGraph.T
 import amodeus.amodeus.dispatcher.alonso_mora_2016.rtv.RequestTripVehicleGraphBuilder;
 import amodeus.amodeus.dispatcher.alonso_mora_2016.rv.RequestVehicleGraph;
 import amodeus.amodeus.dispatcher.alonso_mora_2016.rv.RequestVehicleGraphBuilder;
+import amodeus.amodeus.dispatcher.alonso_mora_2016.sequence.ExtensiveTravelFunction;
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import amodeus.amodeus.dispatcher.core.RebalancingDispatcher;
 import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
@@ -117,8 +118,13 @@ public class AlonsoMoraDispatcher extends RebalancingDispatcher {
 
         // ASSIGNMENT
 
-        AlonsoMoraTravelFunction travelFunction = new DefaultAlonsoMoraTravelFunction(travelTimeCalculator, parameters, requests, pickupDurationPerStop, dropoffDurationPerStop,
-                now);
+        // TODO: Clean this up, we also want Euclidean-based travel function!
+
+        // AlonsoMoraTravelFunction travelFunction = new DefaultAlonsoMoraTravelFunction(travelTimeCalculator, parameters, requests, pickupDurationPerStop,
+        // dropoffDurationPerStop,
+        // now);
+
+        AlonsoMoraTravelFunction travelFunction = new ExtensiveTravelFunction(parameters, now, travelTimeCalculator, requests, pickupDurationPerStop, dropoffDurationPerStop);
 
         RequestVehicleGraphBuilder rvBuilder = new RequestVehicleGraphBuilder(travelFunction);
         RequestVehicleGraph rvGraph = rvBuilder.build(now, vehicles, assignmentRequests);
@@ -131,6 +137,8 @@ public class AlonsoMoraDispatcher extends RebalancingDispatcher {
 
         IdSet<Request> assignedRequestIds = new IdSet<>(Request.class);
         IdSet<DvrpVehicle> assignedVehicleIds = new IdSet<>(DvrpVehicle.class);
+
+        requests.values().forEach(r -> r.setAssigned(false));
 
         for (TripVehicleEdge edge : edges) {
             AlonsoMoraVehicle vehicle = rtvGraph.getVehicles().get(edge.getVehicleIndex());
@@ -158,21 +166,28 @@ public class AlonsoMoraDispatcher extends RebalancingDispatcher {
                 currentLink = Directive.getLink(directive);
 
                 AlonsoMoraRequest request = requests.get(directive.getRequest().getId());
+                request.setAssigned(true);
 
                 if (directive.isPickup()) {
-                    if (parameters.useActivePickupTime) {
-                        request.updateActivePickupTime(currentTime);
+                    if (parameters.updateActivePickupTime) {
+                        request.setActivePickupTime(Math.min(currentTime, request.getActivePickupTime()));
                     }
 
                     expectedPickupTimes.put(directive.getRequest().getId(), currentTime);
+                    currentTime += pickupDurationPerStop;
                 } else {
                     if (expectedPickupTimes.containsKey(directive.getRequest().getId())) {
                         double pickupTime = expectedPickupTimes.get(directive.getRequest().getId());
                         addSharedRoboTaxiPickup(vehicle.getVehicle(), directive.getRequest(), pickupTime, currentTime);
                     }
 
+                    if (parameters.updateActiveDropoffTime) {
+                        request.setActiveDropoffTime(Math.min(currentTime, request.getActiveDropoffTime()));
+                    }
+
                     assignedRequestIds.add(request.getId());
                     removedRequests.remove(request.getRequest());
+                    currentTime += dropoffDurationPerStop;
                 }
             }
 
@@ -181,7 +196,22 @@ public class AlonsoMoraDispatcher extends RebalancingDispatcher {
             }
 
             // Set directives
-            vehicle.getVehicle().getScheduleManager().setDirectives(sequence);
+            List<Directive> fullSequence = new LinkedList<>();
+
+            for (Directive directive : vehicle.getVehicle().getScheduleManager().getDirectives()) {
+                if (!directive.isModifiable()) {
+                    // TODO: Structurally, this is not ideal. In ExtensiveTravelFunction we look at
+                    // everything that is modifiable (i.e. ignoring unmodifiable pickup or dropoff
+                    // directives). Here we add them back. Ideally, we handle all of this outside
+                    // here, so we need to pass all te modifiable stuff to the travel function (maybe
+                    // even just the requests as "onboard requests" and "additional requests").
+                    fullSequence.add(directive);
+                }
+            }
+
+            fullSequence.addAll(sequence);
+
+            vehicle.getVehicle().getScheduleManager().setDirectives(fullSequence);
         }
 
         List<Link> unassignedDestinations = new LinkedList<>();
@@ -189,11 +219,15 @@ public class AlonsoMoraDispatcher extends RebalancingDispatcher {
         for (PassengerRequest request : new HashSet<>(getUnassignedRequests())) {
             // If no match was found, the request should be canceled
 
-            if (isRejectingRequests) {
-                cancelRequest(request);
-            } else {
-                // If we don't want to reject, we make sure we regenerate the AlonsoMoraRequest next round
-                requests.remove(request.getId());
+            AlonsoMoraRequest amRequest = requests.get(request.getId());
+
+            if (now > amRequest.getLatestPickupTime()) {
+                if (isRejectingRequests) {
+                    cancelRequest(request);
+                } else {
+                    // If we don't want to reject, we make sure we regenerate the AlonsoMoraRequest next round
+                    requests.remove(request.getId());
+                }
             }
 
             unassignedDestinations.add(request.getFromLink());
@@ -231,9 +265,13 @@ public class AlonsoMoraDispatcher extends RebalancingDispatcher {
             RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
 
             AlonsoMoraParameters parameters = new AlonsoMoraParameters();
-            parameters.useActivePickupTime = false;
-            parameters.useSoftConstraintsAfterAssignment = true;
+
+            parameters.useSoftConstraintsAfterAssignment = false;
             parameters.useEuclideanTripProposals = true;
+
+            parameters.updateActiveDropoffTime = false;
+            parameters.updateActivePickupTime = false;
+            parameters.routeOptimizationLimit = 100;
 
             TravelDisutility travelDisutility = new OnlyTimeDependentTravelDisutility(travelTime);
             LeastCostPathCalculator travelTimeRouter = new DijkstraFactory().createPathCalculator(network, travelDisutility, travelTime);
