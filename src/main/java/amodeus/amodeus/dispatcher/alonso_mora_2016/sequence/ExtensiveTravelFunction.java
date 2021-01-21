@@ -87,112 +87,102 @@ public class ExtensiveTravelFunction implements AlonsoMoraTravelFunction {
 
         for (Link startLink : startLinks) {
             List<PartialSolution> queue = new LinkedList<>();
-            queue.add(new PartialSolution(Arrays.asList(), now, 0.0));
+
+            // Initialize queue
+            for (int i = 0; i < numberOfDirectives; i++) {
+                queue.add(new PartialSolution(Arrays.asList(), i, now, 0.0));
+            }
 
             while (queue.size() > 0 && numberOfSolutions < parameters.routeOptimizationLimit) {
                 PartialSolution partial = queue.remove(queue.size() - 1); // Depth first
 
-                // TODO: Switch order here. Here, we draw from the stack, create all potential
-                // solutions and evalate them. Better would be to evaluate one proposed solution
-                // that is drawn from the stack, evaluating it, and adding child solutions if
-                // the current one is feasible!
+                // First, we need to check if the added index does not introduce a pickup after a dropoff
+                StopDirective addedDirective = directives.get(partial.addedIndex);
 
-                // Find indices all that can be added
-                List<Integer> indices = new ArrayList<>(partial.indices.size() + 1);
+                if (addedDirective.isPickup()) {
+                    for (int pastIndex : partial.indices) {
+                        StopDirective pastDirective = directives.get(pastIndex);
 
-                for (int i = 0; i < numberOfDirectives; i++) {
-                    if (!partial.indices.contains(i)) {
-                        indices.add(i);
-                    }
-                }
-
-                // Advance existing solutions
-                for (int index : indices) {
-                    // First, we need to check if the added index does not introduce a pickup after a dropoff
-                    StopDirective addedDirective = directives.get(index);
-
-                    if (addedDirective.isPickup()) {
-                        for (int pastIndex : partial.indices) {
-                            StopDirective pastDirective = directives.get(pastIndex);
-
-                            if (!pastDirective.isPickup() && pastDirective.getRequest().equals(addedDirective.getRequest())) {
-                                continue; // Not a feasible solution
-                            }
-                        }
-                    }
-
-                    // Second, check capacity constraint (TODO: not sure if it is necessary)
-                    if (vehicle.isPresent() && addedDirective.isPickup()) {
-                        if (partial.passengers + 1 > capacity) {
+                        if (!pastDirective.isPickup() && pastDirective.getRequest().equals(addedDirective.getRequest())) {
                             continue; // Not a feasible solution
                         }
                     }
+                }
 
-                    // Third, check timing constraints
-                    Link originLink = startLink;
+                // Second, check capacity constraint (TODO: not sure if it is necessary)
+                if (vehicle.isPresent() && addedDirective.isPickup()) {
+                    if (partial.passengers + 1 > capacity) {
+                        continue; // Not a feasible solution
+                    }
+                }
 
-                    if (partial.indices.size() > 0) {
-                        int precedingIndex = partial.indices.get(partial.indices.size() - 1);
-                        StopDirective precedingDirective = directives.get(precedingIndex);
-                        originLink = Directive.getLink(precedingDirective);
+                // Third, check timing constraints
+                Link originLink = startLink;
+
+                if (partial.indices.size() > 0) {
+                    int precedingIndex = partial.indices.get(partial.indices.size() - 1);
+                    StopDirective precedingDirective = directives.get(precedingIndex);
+                    originLink = Directive.getLink(precedingDirective);
+                }
+
+                AlonsoMoraRequest addedRequest = associatedRequests.get(partial.addedIndex);
+
+                Link destinationLink = Directive.getLink(addedDirective);
+                double updatedTime = partial.time + travelTimeCalculator.getTravelTime(partial.time, originLink, destinationLink);
+                double updatedCost = partial.cost;
+
+                if (addedDirective.isPickup()) {
+                    double activePickupTime = addedRequest.getActivePickupTime();
+
+                    if (parameters.useSoftConstraintsAfterAssignment && addedRequest.isAssigned()) {
+                        updatedCost += Math.max(0.0, updatedTime - activePickupTime);
+                    } else if (updatedTime > activePickupTime) {
+                        continue; // Not feasible because pickup will be too late!
                     }
 
-                    StopDirective directive = directives.get(index);
-                    AlonsoMoraRequest request = associatedRequests.get(index);
+                    updatedTime += pickupDuration;
+                } else {
+                    double activeDropoffTime = addedRequest.getActiveDropoffTime();
 
-                    Link destinationLink = Directive.getLink(directive);
-                    double updatedTime = partial.time + travelTimeCalculator.getTravelTime(partial.time, originLink, destinationLink);
-                    double updatedCost = partial.cost;
+                    if (parameters.useSoftConstraintsAfterAssignment && addedRequest.isAssigned()) {
+                        updatedCost += Math.max(0.0, updatedTime - activeDropoffTime);
+                    } else if (updatedTime > activeDropoffTime) {
+                        continue; // Not feasible because dropoff will be too late!
+                    }
 
-                    if (directive.isPickup()) {
-                        double activePickupTime = request.getActivePickupTime();
+                    updatedTime += dropoffDuration;
+                    updatedCost += Math.max(0.0, updatedTime - addedRequest.getDirectDropoffTime());
+                }
 
-                        if (parameters.useSoftConstraintsAfterAssignment && request.isAssigned()) {
-                            updatedCost += Math.max(0.0, updatedTime - activePickupTime);
-                        } else if (updatedTime > activePickupTime) {
-                            continue; // Not feasible because pickup will be too late!
+                // Finally, establish new cost
+                if (updatedCost >= minimumCost) {
+                    continue; // Early stopping of exploration if cost gets too large
+                }
+
+                // We have a new feasible partial solution!
+                List<Integer> updatedIndices = new ArrayList<>(partial.indices.size() + 1);
+                updatedIndices.addAll(partial.indices);
+                updatedIndices.add(partial.addedIndex);
+
+                if (updatedIndices.size() < numberOfDirectives) {
+                    // Find indices all that can be added
+                    for (int i = 0; i < numberOfDirectives; i++) {
+                        if (!updatedIndices.contains(i)) {
+                            queue.add(new PartialSolution(updatedIndices, i, updatedTime, updatedCost));
                         }
+                    }
+                } else {
+                    // We have a full sequence with cost better than the current minimum
+                    minimumCost = updatedCost;
 
-                        updatedTime += pickupDuration;
-                    } else {
-                        double activeDropoffTime = request.getActiveDropoffTime();
+                    List<StopDirective> sequence = new ArrayList<>(numberOfDirectives);
 
-                        if (parameters.useSoftConstraintsAfterAssignment && request.isAssigned()) {
-                            updatedCost += Math.max(0.0, updatedTime - activeDropoffTime);
-                        } else if (updatedTime > activeDropoffTime) {
-                            continue; // Not feasible because dropoff will be too late!
-                        }
-
-                        updatedTime += dropoffDuration;
-                        updatedCost += Math.max(0.0, updatedTime - request.getDirectDropoffTime());
+                    for (int k = 0; k < numberOfDirectives; k++) {
+                        sequence.add(directives.get(updatedIndices.get(k)));
                     }
 
-                    // Finally, establish new cost
-                    if (updatedCost >= minimumCost) {
-                        continue; // Early stopping of exploration if cost gets too large
-                    }
-
-                    // We have a new feasible partial solution!
-                    List<Integer> updatedIndices = new ArrayList<>(partial.indices.size() + 1);
-                    updatedIndices.addAll(partial.indices);
-                    updatedIndices.add(index);
-
-                    if (updatedIndices.size() < numberOfDirectives) {
-                        // Needs to be expanded further
-                        queue.add(new PartialSolution(updatedIndices, updatedTime, updatedCost));
-                    } else {
-                        // We have a full sequence with cost better than the current minimum
-                        minimumCost = updatedCost;
-
-                        List<StopDirective> sequence = new ArrayList<>(numberOfDirectives);
-
-                        for (int k = 0; k < numberOfDirectives; k++) {
-                            sequence.add(directives.get(updatedIndices.get(k)));
-                        }
-
-                        minimumCostSolution = new Result(directives, updatedCost);
-                        numberOfSolutions++;
-                    }
+                    minimumCostSolution = new Result(directives, updatedCost);
+                    numberOfSolutions++;
                 }
             }
         }
@@ -223,14 +213,16 @@ public class ExtensiveTravelFunction implements AlonsoMoraTravelFunction {
         return new ArrayList<>(existingRequests);
     }
 
-    private class PartialSolution {
+    public static class PartialSolution {
         List<Integer> indices;
+        int addedIndex;
         double time;
         double cost;
         int passengers;
 
-        PartialSolution(List<Integer> indices, double time, double cost) {
+        PartialSolution(List<Integer> indices, int addedIndex, double time, double cost) {
             this.indices = indices;
+            this.addedIndex = addedIndex;
             this.time = time;
             this.cost = cost;
         }
