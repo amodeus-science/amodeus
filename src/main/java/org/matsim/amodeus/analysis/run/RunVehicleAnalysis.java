@@ -34,8 +34,11 @@ public class RunVehicleAnalysis {
 
         EventsManager eventsManager = EventsUtils.createEventsManager();
         eventsManager.addHandler(listener);
+        
+        eventsManager.initProcessing();
         new MatsimEventsReader(eventsManager).readFile(eventsPath);
-
+        eventsManager.finishProcessing();
+        
         new VehicleAnalysisWriter(listener).writeMovements(new File(movementsOutputPath));
         new VehicleAnalysisWriter(listener).writeActivities(new File(activitiesOutputPath));
     }

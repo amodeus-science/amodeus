@@ -20,17 +20,17 @@ public class AmodeusIdentifiers {
     }
 
     public static String getMode(String vehicleId) {
-        if (!vehicleId.startsWith("amodeus:")) {
+        if (!vehicleId.startsWith("av_")) {
             throw new IllegalStateException("Not a valid AMoDeus vehicle: " + vehicleId);
         }
 
-        String[] segments = vehicleId.split(":");
+        String[] segments = vehicleId.split("_");
 
-        if (segments.length != 3) {
+        if (segments.length != 4) {
             throw new IllegalStateException("Not a valid AMoDeus vehicle: " + vehicleId);
         }
 
-        return segments[1];
+        return segments[2];
     }
 
     // TODO: Try to factor out these functions ...
@@ -43,6 +43,6 @@ public class AmodeusIdentifiers {
     }
 
     public static boolean isValid(String id) {
-        return id.startsWith("amodeus:");
+        return id.startsWith("av_");
     }
 }

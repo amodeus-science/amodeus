@@ -32,14 +32,17 @@ import org.matsim.core.router.util.LeastCostPathCalculator;
 import org.matsim.core.router.util.TravelDisutility;
 import org.matsim.core.router.util.TravelTime;
 
+import com.google.inject.TypeLiteral;
+
+import amodeus.amodeus.dispatcher.alonso_mora_2016.AlonsoMoraParameters.RejectionType;
 import amodeus.amodeus.dispatcher.alonso_mora_2016.ilp.ILPSolver;
 import amodeus.amodeus.dispatcher.alonso_mora_2016.rebalancing.RebalancingSolver;
+import amodeus.amodeus.dispatcher.alonso_mora_2016.routing.DefaultTravelFunction;
 import amodeus.amodeus.dispatcher.alonso_mora_2016.rtv.RequestTripVehicleGraph;
 import amodeus.amodeus.dispatcher.alonso_mora_2016.rtv.RequestTripVehicleGraph.TripVehicleEdge;
 import amodeus.amodeus.dispatcher.alonso_mora_2016.rtv.RequestTripVehicleGraphBuilder;
 import amodeus.amodeus.dispatcher.alonso_mora_2016.rv.RequestVehicleGraph;
 import amodeus.amodeus.dispatcher.alonso_mora_2016.rv.RequestVehicleGraphBuilder;
-import amodeus.amodeus.dispatcher.alonso_mora_2016.sequence.ExtensiveTravelFunction;
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import amodeus.amodeus.dispatcher.core.RebalancingDispatcher;
 import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
@@ -52,11 +55,13 @@ import amodeus.amodeus.net.MatsimAmodeusDatabase;
  * @author shoerl */
 public class AlonsoMoraDispatcher extends RebalancingDispatcher {
     protected AlonsoMoraDispatcher(Config config, AmodeusModeConfig operatorConfig, TravelTime travelTime, ParallelLeastCostPathCalculator parallelLeastCostPathCalculator,
-            EventsManager eventsManager, MatsimAmodeusDatabase db, RebalancingStrategy drtRebalancing, AlonsoMoraParameters parameters, TravelTimeCalculator travelTimeCalculator) {
+            EventsManager eventsManager, MatsimAmodeusDatabase db, RebalancingStrategy drtRebalancing, AlonsoMoraParameters parameters, TravelTimeCalculator travelTimeCalculator,
+            Set<DefaultTravelFunction.Constraint> constraints) {
         super(config, operatorConfig, travelTime, parallelLeastCostPathCalculator, eventsManager, db, drtRebalancing, RoboTaxiUsageType.SHARED);
 
         this.travelTimeCalculator = travelTimeCalculator;
         this.parameters = parameters;
+        this.constraints = constraints;
 
         DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(30); // if want to change value, change in av file, here only for backup
@@ -65,6 +70,7 @@ public class AlonsoMoraDispatcher extends RebalancingDispatcher {
 
     private final TravelTimeCalculator travelTimeCalculator;
     private final AlonsoMoraParameters parameters;
+    private final Set<DefaultTravelFunction.Constraint> constraints;
 
     private final IdMap<Request, AlonsoMoraRequest> requests = new IdMap<>(Request.class);
 
@@ -120,25 +126,26 @@ public class AlonsoMoraDispatcher extends RebalancingDispatcher {
 
         // TODO: Clean this up, we also want Euclidean-based travel function!
 
-        // AlonsoMoraTravelFunction travelFunction = new DefaultAlonsoMoraTravelFunction(travelTimeCalculator, parameters, requests, pickupDurationPerStop,
-        // dropoffDurationPerStop,
-        // now);
+        AlonsoMoraTravelFunction travelFunction = new DefaultAlonsoMoraTravelFunction(travelTimeCalculator, parameters, requests, pickupDurationPerStop, dropoffDurationPerStop,
+                now);
 
-        AlonsoMoraTravelFunction travelFunction = new ExtensiveTravelFunction(parameters, now, travelTimeCalculator, requests, pickupDurationPerStop, dropoffDurationPerStop);
+         //AlonsoMoraTravelFunction travelFunction = new DefaultTravelFunction(parameters, now, travelTimeCalculator, requests, pickupDurationPerStop,
+         //dropoffDurationPerStop,
+         //constraints);
 
         RequestVehicleGraphBuilder rvBuilder = new RequestVehicleGraphBuilder(travelFunction);
         RequestVehicleGraph rvGraph = rvBuilder.build(now, vehicles, assignmentRequests);
 
         RequestTripVehicleGraphBuilder rtvBuilder = new RequestTripVehicleGraphBuilder(travelFunction, parameters);
         RequestTripVehicleGraph rtvGraph = rtvBuilder.build(rvGraph);
+        
+        System.err.println("RR=" + rvGraph.getRequestRequestEdges().size() + " RV=" + rvGraph.getRequestVehicleEdges().size() + " RT=" + rtvGraph.getRequestTripEdges().size() + " TV=" + rtvGraph.getTripVehicleEdges().size() + " T=" + rtvGraph.getTrips().size());
 
         ILPSolver ilpSolver = new ILPSolver(parameters);
         Collection<TripVehicleEdge> edges = ilpSolver.solve(rtvGraph, rvGraph);
 
         IdSet<Request> assignedRequestIds = new IdSet<>(Request.class);
         IdSet<DvrpVehicle> assignedVehicleIds = new IdSet<>(DvrpVehicle.class);
-
-        requests.values().forEach(r -> r.setAssigned(false));
 
         for (TripVehicleEdge edge : edges) {
             AlonsoMoraVehicle vehicle = rtvGraph.getVehicles().get(edge.getVehicleIndex());
@@ -166,7 +173,6 @@ public class AlonsoMoraDispatcher extends RebalancingDispatcher {
                 currentLink = Directive.getLink(directive);
 
                 AlonsoMoraRequest request = requests.get(directive.getRequest().getId());
-                request.setAssigned(true);
 
                 if (directive.isPickup()) {
                     if (parameters.updateActivePickupTime) {
@@ -217,15 +223,15 @@ public class AlonsoMoraDispatcher extends RebalancingDispatcher {
         List<Link> unassignedDestinations = new LinkedList<>();
 
         for (PassengerRequest request : new HashSet<>(getUnassignedRequests())) {
-            // If no match was found, the request should be canceled
-
-            AlonsoMoraRequest amRequest = requests.get(request.getId());
-
-            if (now > amRequest.getLatestPickupTime()) {
-                if (isRejectingRequests) {
+            if (parameters.rejectionType.equals(RejectionType.FirstUnsuccessulAssignment)) {
+                cancelRequest(request);
+            } else if (parameters.rejectionType.equals(RejectionType.AfterInitialPickupTime)) {
+                if (now > requests.get(request.getId()).getLatestPickupTime()) {
                     cancelRequest(request);
-                } else {
-                    // If we don't want to reject, we make sure we regenerate the AlonsoMoraRequest next round
+                }
+            } else if (parameters.rejectionType.equals(RejectionType.ResubmitAfterInitialPickupTime)) {
+                if (now > requests.get(request.getId()).getLatestPickupTime()) {
+                    // AlsonoMoraRequest will be regenerated based on current time
                     requests.remove(request.getId());
                 }
             }
@@ -264,20 +270,15 @@ public class AlonsoMoraDispatcher extends RebalancingDispatcher {
             TravelTime travelTime = inject.getModal(TravelTime.class);
             RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
 
-            AlonsoMoraParameters parameters = new AlonsoMoraParameters();
-
-            parameters.useSoftConstraintsAfterAssignment = false;
-            parameters.useEuclideanTripProposals = true;
-
-            parameters.updateActiveDropoffTime = false;
-            parameters.updateActivePickupTime = false;
-            parameters.routeOptimizationLimit = 100;
+            AlonsoMoraParameters parameters = inject.get(AlonsoMoraParameters.class);
+            Set<DefaultTravelFunction.Constraint> constraints = inject.get(new TypeLiteral<Set<DefaultTravelFunction.Constraint>>() {
+            });
 
             TravelDisutility travelDisutility = new OnlyTimeDependentTravelDisutility(travelTime);
             LeastCostPathCalculator travelTimeRouter = new DijkstraFactory().createPathCalculator(network, travelDisutility, travelTime);
             TravelTimeCalculator travelTimeCalculator = new DefaultTravelTimeCalculator(travelTimeRouter);
 
-            return new AlonsoMoraDispatcher(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy, parameters, travelTimeCalculator);
+            return new AlonsoMoraDispatcher(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy, parameters, travelTimeCalculator, constraints);
         }
     }
 }

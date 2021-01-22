@@ -38,7 +38,7 @@ public class RequestTripVehicleGraphBuilder {
     private final List<Trip> tripList = new LinkedList<>();
 
     // TODO: Avoid this class variable!
-    private Trip registerTrip(Collection<AlonsoMoraRequest> requests) {
+    private Trip registerTrip(Set<AlonsoMoraRequest> requests) {
         Trip trip = new Trip(requests, tripList.size());
         Integer index = tripIndices.get(trip);
 
@@ -90,7 +90,7 @@ public class RequestTripVehicleGraphBuilder {
                 Trip trip = registerTrip(Collections.singleton(edge.getRequest()));
                 vehicleTrips.get(0).add(trip);
 
-                requestTripEdges.add(new RequestTripEdge(edge.getRequest(), trip, edge.getCost(), trip.getIndex()));
+                requestTripEdges.add(new RequestTripEdge(edge.getRequest(), trip, trip.getIndex()));
                 tripVehicleEdges.add(new TripVehicleEdge(trip.getIndex(), vehicleIndex, edge.getCost(), edge.getSequence()));
                 vehicleEdgeCount++;
                 fleetEdgeCount++;
@@ -117,15 +117,15 @@ public class RequestTripVehicleGraphBuilder {
                         Optional<Result> result = travelFunction.calculate(vehicle, Arrays.asList(firstRequest, secondRequest));
 
                         if (result.isPresent()) {
-                            Trip trip = registerTrip(Arrays.asList(firstRequest, secondRequest));
+                            Trip trip = registerTrip(new HashSet<>(Arrays.asList(firstRequest, secondRequest)));
                             vehicleTrips.get(1).add(trip);
 
                             tripVehicleEdges.add(new TripVehicleEdge(trip.getIndex(), vehicleIndex, result.get().cost, result.get().directives));
                             vehicleEdgeCount++;
                             fleetEdgeCount++;
 
-                            requestTripEdges.add(new RequestTripEdge(firstRequest, trip, result.get().cost, trip.getIndex()));
-                            requestTripEdges.add(new RequestTripEdge(secondRequest, trip, result.get().cost, trip.getIndex()));
+                            requestTripEdges.add(new RequestTripEdge(firstRequest, trip, trip.getIndex()));
+                            requestTripEdges.add(new RequestTripEdge(secondRequest, trip, trip.getIndex()));
                         }
                     }
                 }
@@ -171,7 +171,7 @@ public class RequestTripVehicleGraphBuilder {
                                     fleetEdgeCount++;
 
                                     for (AlonsoMoraRequest request : combinedRequests) {
-                                        requestTripEdges.add(new RequestTripEdge(request, trip, result.get().cost, trip.getIndex()));
+                                        requestTripEdges.add(new RequestTripEdge(request, trip, trip.getIndex()));
                                     }
                                 }
                             }
@@ -191,7 +191,7 @@ public class RequestTripVehicleGraphBuilder {
             List<AlonsoMoraRequest> residual = new ArrayList<>(requestsList);
             residual.remove(i);
 
-            Trip trip = new Trip(residual, 0);
+            Trip trip = new Trip(new HashSet<>(residual), 0);
 
             if (!previousTrips.contains(trip)) {
                 return false;

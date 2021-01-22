@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package amodeus.amodeus.dispatcher.core;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -429,7 +430,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
         // TODO: This is at an arbitrary location here
 
         if (isRejectingRequests) {
-            for (PassengerRequest request : getPassengerRequests()) {
+            for (PassengerRequest request : new ArrayList<>(getPassengerRequests())) {
                 if (request.getLatestStartTime() < getTimeNow()) {
                     cancelRequest(request);
                 }

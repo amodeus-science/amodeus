@@ -96,12 +96,10 @@ public class RequestTripVehicleGraph {
     static public class RequestTripEdge {
         private final AlonsoMoraRequest request;
 
-        private final double cost;
         private final int tripIndex;
 
-        RequestTripEdge(AlonsoMoraRequest request, Trip trip, double cost, int tripIndex) {
+        RequestTripEdge(AlonsoMoraRequest request, Trip trip, int tripIndex) {
             this.request = request;
-            this.cost = cost;
             this.tripIndex = tripIndex;
         }
 

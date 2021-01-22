@@ -3,6 +3,7 @@ package amodeus.amodeus.dispatcher.alonso_mora_2016;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -27,12 +28,12 @@ import org.matsim.utils.objectattributes.attributable.Attributes;
 
 import amodeus.amodeus.dispatcher.alonso_mora_2016.ilp.ILPSolver;
 import amodeus.amodeus.dispatcher.alonso_mora_2016.rebalancing.RebalancingSolver;
+import amodeus.amodeus.dispatcher.alonso_mora_2016.routing.DefaultTravelFunction;
 import amodeus.amodeus.dispatcher.alonso_mora_2016.rtv.RequestTripVehicleGraph;
 import amodeus.amodeus.dispatcher.alonso_mora_2016.rtv.RequestTripVehicleGraph.TripVehicleEdge;
 import amodeus.amodeus.dispatcher.alonso_mora_2016.rtv.RequestTripVehicleGraphBuilder;
 import amodeus.amodeus.dispatcher.alonso_mora_2016.rv.RequestVehicleGraph;
 import amodeus.amodeus.dispatcher.alonso_mora_2016.rv.RequestVehicleGraphBuilder;
-import amodeus.amodeus.dispatcher.alonso_mora_2016.sequence.ExtensiveTravelFunction;
 import amodeus.amodeus.dispatcher.alonso_mora_2016.sequence.ExtensiveSequenceGenerator;
 import amodeus.amodeus.dispatcher.alonso_mora_2016.sequence.MinimumEuclideanDistanceGenerator;
 import amodeus.amodeus.dispatcher.alonso_mora_2016.sequence.SequenceGeneratorFactory;
@@ -59,7 +60,7 @@ public class DefaultAlonsoMoraTravelFunction implements AlonsoMoraTravelFunction
         this.pickupDuration = pickupDuration;
         this.dropoffDuration = dropoffDuration;
 
-        if (parameters.useEuclideanTripProposals) {
+        if (true) {
             this.generatorFactory = new MinimumEuclideanDistanceGenerator.Factory();
         } else {
             this.generatorFactory = new ExtensiveSequenceGenerator.Factory();
@@ -84,16 +85,18 @@ public class DefaultAlonsoMoraTravelFunction implements AlonsoMoraTravelFunction
             Set<Id<Request>> pickupRequestIds = new HashSet<>();
 
             for (Directive directive : vehicle.get().getDirectives()) {
-                if (directive instanceof StopDirective) {
-                    StopDirective stopDirective = (StopDirective) directive;
+                if (directive.isModifiable()) {
+                    if (directive instanceof StopDirective) {
+                        StopDirective stopDirective = (StopDirective) directive;
 
-                    if (stopDirective.isPickup()) {
-                        pickupRequestIds.add(stopDirective.getRequest().getId());
-                    } else {
-                        if (!pickupRequestIds.contains(stopDirective.getRequest().getId())) {
-                            // We only keep Dropoff directives that are on board
-                            initialSequence.add((StopDirective) directive);
-                            existingRequests.add(stopDirective.getRequest());
+                        if (stopDirective.isPickup()) {
+                            pickupRequestIds.add(stopDirective.getRequest().getId());
+                        } else {
+                            if (!pickupRequestIds.contains(stopDirective.getRequest().getId())) {
+                                // We only keep Dropoff directives that are on board
+                                initialSequence.add((StopDirective) directive);
+                                existingRequests.add(stopDirective.getRequest());
+                            }
                         }
                     }
                 }
@@ -142,6 +145,10 @@ public class DefaultAlonsoMoraTravelFunction implements AlonsoMoraTravelFunction
                             break;
                         }
                     }
+
+                    /* System.out.println(AlonsoMoraUtils.printSequence(proposedSequence));
+                     * System.out.println(cost);
+                     * System.out.println("---"); */
 
                     if (cost < minimumCost) {
                         minimumCost = cost;
@@ -229,11 +236,11 @@ public class DefaultAlonsoMoraTravelFunction implements AlonsoMoraTravelFunction
     }
 
     static public void main(String[] args) {
-        Link link1 = new MockLink(Id.createLinkId("L1"));
-        Link link2 = new MockLink(Id.createLinkId("L2"));
-        Link link3 = new MockLink(Id.createLinkId("L3"));
-        Link link4 = new MockLink(Id.createLinkId("L4"));
-        Link link5 = new MockLink(Id.createLinkId("L5"));
+        Link link1 = new MockLink(Id.createLinkId("L1"), 100.0);
+        Link link2 = new MockLink(Id.createLinkId("L2"), 200.0);
+        Link link3 = new MockLink(Id.createLinkId("L3"), 300.0);
+        Link link4 = new MockLink(Id.createLinkId("L4"), 400.0);
+        Link link5 = new MockLink(Id.createLinkId("L5"), 500.0);
 
         MockTravelTimeCalculator travelTimeCalculator = new MockTravelTimeCalculator();
         travelTimeCalculator.addBidirectionalTravelTime(link1, link1, 0.0);
@@ -270,7 +277,8 @@ public class DefaultAlonsoMoraTravelFunction implements AlonsoMoraTravelFunction
 
         AlonsoMoraParameters parameters = new AlonsoMoraParameters();
 
-        AlonsoMoraTravelFunction travelFunction = new ExtensiveTravelFunction(parameters, 0.0, travelTimeCalculator, requests, 60.0, 60.0);
+        // AlonsoMoraTravelFunction travelFunction = new DefaultAlonsoMoraTravelFunction(travelTimeCalculator, parameters, requests, 60.0, 60.0, 0.0);
+        AlonsoMoraTravelFunction travelFunction = new DefaultTravelFunction(parameters, 0.0, travelTimeCalculator, requests, 60.0, 60.0, Collections.emptySet());
 
         {
             Optional<Result> result = travelFunction.calculate(amRequest1, amRequest2);
@@ -337,14 +345,16 @@ public class DefaultAlonsoMoraTravelFunction implements AlonsoMoraTravelFunction
 
     static public class MockLink implements Link {
         private final Id<Link> linkId;
+        private final Coord coord;
 
-        public MockLink(Id<Link> linkId) {
+        public MockLink(Id<Link> linkId, double x) {
             this.linkId = linkId;
+            this.coord = new Coord(x, 0.0);
         }
 
         @Override
         public Coord getCoord() {
-            return null;
+            return coord;
         }
 
         @Override

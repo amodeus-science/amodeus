@@ -15,8 +15,6 @@ public class AlonsoMoraRequest {
     private double activePickupTime;
     private double activeDropoffTime;
 
-    private boolean isAssigned = false;
-
     public AlonsoMoraRequest(PassengerRequest request, double latestPickupTime, double latestDropoffTime, double directDropoffTime) {
         this.request = request;
         this.latestDropoffTime = latestDropoffTime;
@@ -62,14 +60,6 @@ public class AlonsoMoraRequest {
 
     public double getDirectDropoffTime() {
         return directDropoffTime;
-    }
-
-    public boolean isAssigned() {
-        return isAssigned;
-    }
-
-    public void setAssigned(boolean isAssigned) {
-        this.isAssigned = isAssigned;
     }
 
     @Override
