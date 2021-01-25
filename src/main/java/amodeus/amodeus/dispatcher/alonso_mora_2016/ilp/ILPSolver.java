@@ -42,7 +42,7 @@ public class ILPSolver {
 
         int numberOfConstraints = numberOfVehicles + numberOfRequests;
         int numberOfVariables = numberOfEdges + numberOfRequests;
-        
+
         if (numberOfRequests == 0) {
             return Collections.emptySet();
         }

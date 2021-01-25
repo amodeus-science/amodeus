@@ -71,6 +71,7 @@ public class RequestTripVehicleGraphBuilder {
             int vehicleIndex = vehicles.size();
             vehicles.add(vehicle);
 
+            int vehicleCapacity = vehicle.getCapacity() - vehicle.getVehicle().getScheduleManager().getNumberOfOnBoardRequests();
             int vehicleEdgeCount = 0;
 
             List<Set<Trip>> vehicleTrips = new ArrayList<>(vehicle.getCapacity());
@@ -82,57 +83,63 @@ public class RequestTripVehicleGraphBuilder {
 
             // Trips of length 1
 
-            for (RequestVehicleEdge edge : vehicleEdges) {
-                if (fleetEdgeCount >= parameters.rtvLimitPerFleet || vehicleEdgeCount >= parameters.rtvLimitPerVehicle) {
-                    break;
-                }
-
-                Trip trip = registerTrip(Collections.singleton(edge.getRequest()));
-                vehicleTrips.get(0).add(trip);
-
-                requestTripEdges.add(new RequestTripEdge(edge.getRequest(), trip, trip.getIndex()));
-                tripVehicleEdges.add(new TripVehicleEdge(trip.getIndex(), vehicleIndex, edge.getCost(), edge.getSequence()));
-                vehicleEdgeCount++;
-                fleetEdgeCount++;
-
-                vehicleRequests.add(edge.getRequest());
-            }
-
-            // Trips of length 2
-
-            for (int i = 0; i < vehicleRequests.size(); i++) {
-                if (fleetEdgeCount >= parameters.rtvLimitPerFleet || vehicleEdgeCount >= parameters.rtvLimitPerVehicle) {
-                    break;
-                }
-
-                for (int j = i + 1; j < vehicleRequests.size(); j++) {
+            if (vehicleCapacity > 0) {
+                for (RequestVehicleEdge edge : vehicleEdges) {
                     if (fleetEdgeCount >= parameters.rtvLimitPerFleet || vehicleEdgeCount >= parameters.rtvLimitPerVehicle) {
                         break;
                     }
 
-                    AlonsoMoraRequest firstRequest = vehicleRequests.get(i);
-                    AlonsoMoraRequest secondRequest = vehicleRequests.get(j);
+                    Trip trip = registerTrip(Collections.singleton(edge.getRequest()));
+                    vehicleTrips.get(0).add(trip);
 
-                    if (requestVehicleGraph.hasEdge(firstRequest, secondRequest)) {
-                        Optional<Result> result = travelFunction.calculate(vehicle, Arrays.asList(firstRequest, secondRequest));
+                    requestTripEdges.add(new RequestTripEdge(edge.getRequest(), trip, trip.getIndex()));
+                    tripVehicleEdges.add(new TripVehicleEdge(trip.getIndex(), vehicleIndex, edge.getCost(), edge.getSequence()));
+                    vehicleEdgeCount++;
+                    fleetEdgeCount++;
 
-                        if (result.isPresent()) {
-                            Trip trip = registerTrip(new HashSet<>(Arrays.asList(firstRequest, secondRequest)));
-                            vehicleTrips.get(1).add(trip);
+                    vehicleRequests.add(edge.getRequest());
+                }
+            }
 
-                            tripVehicleEdges.add(new TripVehicleEdge(trip.getIndex(), vehicleIndex, result.get().cost, result.get().directives));
-                            vehicleEdgeCount++;
-                            fleetEdgeCount++;
+            // Trips of length 2
 
-                            requestTripEdges.add(new RequestTripEdge(firstRequest, trip, trip.getIndex()));
-                            requestTripEdges.add(new RequestTripEdge(secondRequest, trip, trip.getIndex()));
+            if (vehicleCapacity > 1) {
+                for (int i = 0; i < vehicleRequests.size(); i++) {
+                    if (fleetEdgeCount >= parameters.rtvLimitPerFleet || vehicleEdgeCount >= parameters.rtvLimitPerVehicle) {
+                        break;
+                    }
+
+                    for (int j = i + 1; j < vehicleRequests.size(); j++) {
+                        if (fleetEdgeCount >= parameters.rtvLimitPerFleet || vehicleEdgeCount >= parameters.rtvLimitPerVehicle) {
+                            break;
+                        }
+
+                        AlonsoMoraRequest firstRequest = vehicleRequests.get(i);
+                        AlonsoMoraRequest secondRequest = vehicleRequests.get(j);
+
+                        if (requestVehicleGraph.hasEdge(firstRequest, secondRequest)) {
+                            Optional<Result> result = travelFunction.calculate(vehicle, Arrays.asList(firstRequest, secondRequest));
+
+                            if (result.isPresent()) {
+                                Trip trip = registerTrip(new HashSet<>(Arrays.asList(firstRequest, secondRequest)));
+                                vehicleTrips.get(1).add(trip);
+
+                                // System.err.println(String.join(", ", result.get().directives.stream().map(d -> d.toString()).collect(Collectors.toList())));
+
+                                tripVehicleEdges.add(new TripVehicleEdge(trip.getIndex(), vehicleIndex, result.get().cost, result.get().directives));
+                                vehicleEdgeCount++;
+                                fleetEdgeCount++;
+
+                                requestTripEdges.add(new RequestTripEdge(firstRequest, trip, trip.getIndex()));
+                                requestTripEdges.add(new RequestTripEdge(secondRequest, trip, trip.getIndex()));
+                            }
                         }
                     }
                 }
             }
 
             // Longer trips
-            for (int k = 2; k < vehicle.getCapacity(); k++) {
+            for (int k = 2; k < vehicleCapacity; k++) {
                 if (fleetEdgeCount >= parameters.rtvLimitPerFleet || vehicleEdgeCount >= parameters.rtvLimitPerVehicle) {
                     break;
                 }
@@ -156,7 +163,7 @@ public class RequestTripVehicleGraphBuilder {
                         combinedRequests.addAll(firstTrip.getRequests());
                         combinedRequests.addAll(secondTrip.getRequests());
 
-                        Trip unassignedTrip = new Trip(combinedRequests, vehicleIndex);
+                        Trip unassignedTrip = new Trip(combinedRequests, -1);
 
                         if (combinedRequests.size() == k + 1) {
                             if (!vehicleTrips.get(k).contains(unassignedTrip) && checkSubtrips(combinedRequests, previousTrips)) {

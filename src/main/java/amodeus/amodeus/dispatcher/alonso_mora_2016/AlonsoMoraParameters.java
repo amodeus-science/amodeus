@@ -4,29 +4,31 @@ public class AlonsoMoraParameters {
     public boolean updateActivePickupTime = false;
     public boolean updateActiveDropoffTime = false;
 
-    public boolean useSoftConstraintsAfterAssignment = false;
-    public double unassignedPenalty = 1e9;
+    public boolean useSoftConstraintsAfterAssignment = true;
+    public double unassignedPenalty = 72000;
 
-    public int rtvLimitPerVehicle = 10000;
+    public int rtvLimitPerVehicle = Integer.MAX_VALUE;
     public int rtvLimitPerFleet = Integer.MAX_VALUE;
 
     public int routeOptimizationLimit = Integer.MAX_VALUE;
+
+    public int travelTimeCacheInterval = 1200;
 
     public enum RejectionType {
         FirstUnsuccessulAssignment, AfterInitialPickupTime, ResubmitAfterInitialPickupTime
     }
 
-    public RejectionType rejectionType = RejectionType.ResubmitAfterInitialPickupTime;
+    public RejectionType rejectionType = RejectionType.FirstUnsuccessulAssignment;
 
     public enum RouteSearchType {
         Extensive, Euclidean
     }
 
-    public RouteSearchType routeSearchType = RouteSearchType.Extensive;
+    public RouteSearchType routeSearchType = RouteSearchType.Euclidean;
 
     public class ExtensiveSearchParameters {
         public boolean useDepthFirst = true;
-        public int searchLimit = 10000;
+        public int searchLimit = Integer.MAX_VALUE; // 10000;
     }
 
     public ExtensiveSearchParameters extensiveSearch = new ExtensiveSearchParameters();

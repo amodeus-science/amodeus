@@ -17,6 +17,6 @@ public class DefaultDriveDirective extends AbstractDirective implements DriveDir
     
     @Override
     public String toString() {
-        return "DriveDirective[" + destination.getId() + "]";
+        return "DD[" + destination.getId() + "]";
     }
 }

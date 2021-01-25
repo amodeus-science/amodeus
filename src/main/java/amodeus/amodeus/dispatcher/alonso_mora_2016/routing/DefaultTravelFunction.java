@@ -90,7 +90,7 @@ public class DefaultTravelFunction implements AlonsoMoraTravelFunction {
         }
 
         // Prepare optimization queue
-        double minimumCost = Double.POSITIVE_INFINITY;
+        double minimumCost = parameters.unassignedPenalty;
         Result minimumCostSolution = null;
         int numberOfSolutions = 0;
 
@@ -117,9 +117,11 @@ public class DefaultTravelFunction implements AlonsoMoraTravelFunction {
                     for (int pastIndex : partial.indices) {
                         StopDirective pastDirective = directives.get(pastIndex);
 
-                        if (!pastDirective.isPickup() && pastDirective.getRequest().getId().equals(addedDirective.getRequest().getId())) {
-                            invalidStructure = true;
-                            break; // Not a feasible solution
+                        if (!pastDirective.isPickup()) {
+                            if (pastDirective.getRequest().getId().equals(addedDirective.getRequest().getId())) {
+                                invalidStructure = true;
+                                break; // Not a feasible solution
+                            }
                         }
                     }
                 }
@@ -157,12 +159,15 @@ public class DefaultTravelFunction implements AlonsoMoraTravelFunction {
                 Link destinationLink = Directive.getLink(addedDirective);
                 double updatedTime = partial.time + travelTimeCalculator.getTravelTime(partial.time, originLink, destinationLink);
                 double updatedCost = partial.cost;
+                
+                double trafficAllowance = 60.0; // TODO CHECK
 
                 if (addedDirective.isPickup()) {
                     TimeInfo plannedTiming = timeInfo.get(addedDirective.getRequest().getId());
 
                     if (parameters.useSoftConstraintsAfterAssignment && plannedTiming != null) {
                         if (updatedTime > plannedTiming.plannedPickupTime) {
+                        //if (updatedTime > addedRequest.getActivePickupTime() + trafficAllowance) {
                             continue;
                         }
                     } else {
@@ -177,6 +182,7 @@ public class DefaultTravelFunction implements AlonsoMoraTravelFunction {
 
                     if (parameters.useSoftConstraintsAfterAssignment && plannedTiming != null) {
                         if (updatedTime > plannedTiming.plannedDropoffTime) {
+                        //if (updatedTime > addedRequest.getActiveDropoffTime() + trafficAllowance) {
                             continue;
                         }
                     } else {
@@ -224,6 +230,20 @@ public class DefaultTravelFunction implements AlonsoMoraTravelFunction {
 
                     minimumCostSolution = new Result(directives, updatedCost);
                     numberOfSolutions++;
+                }
+            }
+        }
+
+        if (minimumCostSolution != null) {
+            List<StopDirective> dd = minimumCostSolution.directives;
+
+            if (dd.size() >= 3) {
+                if (dd.get(0).isPickup()) {
+                    if (!dd.get(1).isPickup()) {
+                        if (dd.get(2).isPickup()) {
+                            System.err.println("HERE HERE HERE HERE HERE HERE HERE");
+                        }
+                    }
                 }
             }
         }

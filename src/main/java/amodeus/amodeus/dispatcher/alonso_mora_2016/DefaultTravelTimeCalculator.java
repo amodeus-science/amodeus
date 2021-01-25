@@ -29,4 +29,9 @@ public class DefaultTravelTimeCalculator implements TravelTimeCalculator {
             return path.travelTime;
         }
     }
+
+    @Override
+    public void clear() {
+        cache.clear();
+    }
 }

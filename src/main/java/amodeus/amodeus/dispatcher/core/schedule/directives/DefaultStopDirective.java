@@ -25,6 +25,6 @@ public class DefaultStopDirective extends AbstractDirective implements StopDirec
 
     @Override
     public String toString() {
-        return "StopDirective[" + request.getId() + ", " + (isPickup ? "Pickup" : "Dropoff") + "]";
+        return "SD[" + request.getId() + ", " + (isPickup ? "Pickup" : "Dropoff") + "]";
     }
 }

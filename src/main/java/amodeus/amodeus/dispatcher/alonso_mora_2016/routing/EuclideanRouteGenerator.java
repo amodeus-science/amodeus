@@ -2,7 +2,8 @@ package amodeus.amodeus.dispatcher.alonso_mora_2016.routing;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -22,7 +23,7 @@ public class EuclideanRouteGenerator implements RouteGenerator {
     private final int numberOfDirectives;
 
     private PartialSolution partial;
-    private final Set<Integer> alternatives = new HashSet<>();
+    private final List<Integer> alternatives = new LinkedList<>();
 
     private final boolean failEarly;
     private boolean expanded = true;
@@ -61,7 +62,14 @@ public class EuclideanRouteGenerator implements RouteGenerator {
             }
         }
 
-        alternatives.remove(minimumDistanceIndex);
+        Iterator<Integer> indexIterator = alternatives.iterator();
+
+        while (indexIterator.hasNext()) {
+            if (indexIterator.next() == minimumDistanceIndex) {
+                indexIterator.remove(); // We cannot call remove because integer is ambiguous
+            }
+        }
+
         expanded = false;
 
         return new PartialSolution(partial.indices, minimumDistanceIndex, partial.time, partial.cost, partial.passengers);

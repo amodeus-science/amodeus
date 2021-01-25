@@ -79,6 +79,10 @@ public class AlonsoMoraDispatcher extends RebalancingDispatcher {
 
     @Override
     protected void redispatch(double now) {
+        if (now % parameters.travelTimeCacheInterval == 0) {
+            travelTimeCalculator.clear();
+        }
+
         if (now % dispatchPeriod != 0) {
             return;
         }
@@ -126,20 +130,21 @@ public class AlonsoMoraDispatcher extends RebalancingDispatcher {
 
         // TODO: Clean this up, we also want Euclidean-based travel function!
 
-        AlonsoMoraTravelFunction travelFunction = new DefaultAlonsoMoraTravelFunction(travelTimeCalculator, parameters, requests, pickupDurationPerStop, dropoffDurationPerStop,
-                now);
+        // AlonsoMoraTravelFunction travelFunction = new DefaultAlonsoMoraTravelFunction(travelTimeCalculator, parameters, requests, pickupDurationPerStop,
+        // dropoffDurationPerStop,
+        // now);
 
-         //AlonsoMoraTravelFunction travelFunction = new DefaultTravelFunction(parameters, now, travelTimeCalculator, requests, pickupDurationPerStop,
-         //dropoffDurationPerStop,
-         //constraints);
+        AlonsoMoraTravelFunction travelFunction = new DefaultTravelFunction(parameters, now, travelTimeCalculator, requests, pickupDurationPerStop, dropoffDurationPerStop,
+                constraints);
 
         RequestVehicleGraphBuilder rvBuilder = new RequestVehicleGraphBuilder(travelFunction);
         RequestVehicleGraph rvGraph = rvBuilder.build(now, vehicles, assignmentRequests);
 
         RequestTripVehicleGraphBuilder rtvBuilder = new RequestTripVehicleGraphBuilder(travelFunction, parameters);
         RequestTripVehicleGraph rtvGraph = rtvBuilder.build(rvGraph);
-        
-        System.err.println("RR=" + rvGraph.getRequestRequestEdges().size() + " RV=" + rvGraph.getRequestVehicleEdges().size() + " RT=" + rtvGraph.getRequestTripEdges().size() + " TV=" + rtvGraph.getTripVehicleEdges().size() + " T=" + rtvGraph.getTrips().size());
+
+        System.err.println("RR=" + rvGraph.getRequestRequestEdges().size() + " RV=" + rvGraph.getRequestVehicleEdges().size() + " RT=" + rtvGraph.getRequestTripEdges().size()
+                + " TV=" + rtvGraph.getTripVehicleEdges().size() + " T=" + rtvGraph.getTrips().size());
 
         ILPSolver ilpSolver = new ILPSolver(parameters);
         Collection<TripVehicleEdge> edges = ilpSolver.solve(rtvGraph, rvGraph);
@@ -147,9 +152,13 @@ public class AlonsoMoraDispatcher extends RebalancingDispatcher {
         IdSet<Request> assignedRequestIds = new IdSet<>(Request.class);
         IdSet<DvrpVehicle> assignedVehicleIds = new IdSet<>(DvrpVehicle.class);
 
+        requests.values().forEach(r -> r.setAssigned(false));
+
         for (TripVehicleEdge edge : edges) {
             AlonsoMoraVehicle vehicle = rtvGraph.getVehicles().get(edge.getVehicleIndex());
             assignedVehicleIds.add(vehicle.getId());
+
+            // System.err.println(String.join(",", vehicle.getDirectives().stream().map(d -> d.toString()).collect(Collectors.toList())));
 
             List<StopDirective> sequence = edge.getSequence();
 
@@ -194,6 +203,7 @@ public class AlonsoMoraDispatcher extends RebalancingDispatcher {
                     assignedRequestIds.add(request.getId());
                     removedRequests.remove(request.getRequest());
                     currentTime += dropoffDurationPerStop;
+                    request.setAssigned(true);
                 }
             }
 
@@ -218,6 +228,13 @@ public class AlonsoMoraDispatcher extends RebalancingDispatcher {
             fullSequence.addAll(sequence);
 
             vehicle.getVehicle().getScheduleManager().setDirectives(fullSequence);
+        }
+
+        for (AlonsoMoraVehicle vehicle : vehicles) {
+            if (vehicle.getId().toString().equals("drt_veh_1_1")) {
+                // System.err.println(String.join(", ", vehicle.getDirectives().stream().map(d -> d.toString()).collect(Collectors.toList())));
+
+            }
         }
 
         List<Link> unassignedDestinations = new LinkedList<>();

@@ -133,11 +133,15 @@ public class HighCapacityDispatcher extends RebalancingDispatcher {
             // RV diagram construction
             Set<Set<PassengerRequest>> rvEdges = rvGenerator.generateRVGraph(newAddedValidRequests, removedRequests, remainedRequests, //
                     now, ttc, requestKeyInfoMap);
+            
+            // System.err.println("EDGE COUNT " + rvEdges.stream().mapToInt(x -> x.size()).sum());
 
             // RTV diagram construction (generate a list of edges between trip and vehicle)
             List<TripWithVehicle> grossListOfRTVEdges = rtvGG.generateRTV(getInteractionlessRoboTaxis(), newAddedValidRequests, //
                     removedRequests, now, requestKeyInfoMap, //
                     rvEdges, ttc, lastAssignment, trafficTimeAllowance);
+            
+            // System.err.println("EDGE COUNT " + grossListOfRTVEdges.size());
 
             // ILP
             // start

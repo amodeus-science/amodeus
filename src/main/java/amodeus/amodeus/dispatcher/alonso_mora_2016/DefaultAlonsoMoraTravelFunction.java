@@ -60,7 +60,7 @@ public class DefaultAlonsoMoraTravelFunction implements AlonsoMoraTravelFunction
         this.pickupDuration = pickupDuration;
         this.dropoffDuration = dropoffDuration;
 
-        if (true) {
+        if (false) {
             this.generatorFactory = new MinimumEuclideanDistanceGenerator.Factory();
         } else {
             this.generatorFactory = new ExtensiveSequenceGenerator.Factory();
@@ -484,6 +484,12 @@ public class DefaultAlonsoMoraTravelFunction implements AlonsoMoraTravelFunction
         public void addBidirectionalTravelTime(Link origin, Link destination, double travelTime) {
             travelTimes.put(new Tuple<>(origin.getId(), destination.getId()), travelTime);
             travelTimes.put(new Tuple<>(destination.getId(), origin.getId()), travelTime);
+        }
+
+        @Override
+        public void clear() {
+            // TODO Auto-generated method stub
+            
         }
     }
 
