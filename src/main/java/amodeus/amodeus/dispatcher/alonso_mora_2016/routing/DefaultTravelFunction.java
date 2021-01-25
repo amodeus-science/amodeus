@@ -50,16 +50,20 @@ public class DefaultTravelFunction implements AlonsoMoraTravelFunction {
     private Optional<Result> optimize(List<AlonsoMoraRequest> proposedRequests, Optional<AlonsoMoraVehicle> vehicle) {
         // Prepare vehicle information
         int capacity = Integer.MAX_VALUE;
+
         List<Link> startLinks = new LinkedList<>();
+        double startTime = now;
 
         List<AlonsoMoraRequest> onboardRequests = Collections.emptyList();
         IdMap<Request, TimeInfo> timeInfo = new IdMap<>(Request.class);
 
         if (vehicle.isPresent()) {
+            InitialState initial = getInitialState(vehicle.get());
             capacity = vehicle.get().getCapacity();
-            onboardRequests = getExistingRequests(vehicle.get());
-            startLinks.add(vehicle.get().getLocation());
-            timeInfo = getCurrentTimeInfo(vehicle.get());
+            onboardRequests = initial.requests;
+            startLinks.add(initial.link);
+            startTime = initial.time;
+            timeInfo = getCurrentTimeInfo(vehicle.get(), initial.link, initial.time);
         } else {
             for (AlonsoMoraRequest request : proposedRequests) {
                 startLinks.add(request.getRequest().getFromLink());
@@ -99,9 +103,9 @@ public class DefaultTravelFunction implements AlonsoMoraTravelFunction {
 
             if (parameters.routeSearchType.equals(RouteSearchType.Euclidean)) {
                 List<Link> directiveLinks = directives.stream().map(Directive::getLink).collect(Collectors.toList());
-                generator = new EuclideanRouteGenerator(parameters.euclideanSearch.failEarly, startLink, directiveLinks, now, onboardRequests.size());
+                generator = new EuclideanRouteGenerator(parameters.euclideanSearch.failEarly, startLink, directiveLinks, startTime, onboardRequests.size());
             } else if (parameters.routeSearchType.equals(RouteSearchType.Extensive)) {
-                generator = new ExtensiveRouteGenerator(now, numberOfDirectives, onboardRequests.size(), parameters.extensiveSearch.useDepthFirst);
+                generator = new ExtensiveRouteGenerator(startTime, numberOfDirectives, onboardRequests.size(), parameters.extensiveSearch.useDepthFirst);
             } else {
                 throw new IllegalStateException();
             }
@@ -130,7 +134,7 @@ public class DefaultTravelFunction implements AlonsoMoraTravelFunction {
                     continue;
                 }
 
-                // Second, check capacity constraint (TODO: not sure if it is necessary)
+                // Second, check capacity constraint
                 int updatedPassengers = partial.passengers;
 
                 if (addedDirective.isPickup()) {
@@ -159,15 +163,14 @@ public class DefaultTravelFunction implements AlonsoMoraTravelFunction {
                 Link destinationLink = Directive.getLink(addedDirective);
                 double updatedTime = partial.time + travelTimeCalculator.getTravelTime(partial.time, originLink, destinationLink);
                 double updatedCost = partial.cost;
-                
-                double trafficAllowance = 60.0; // TODO CHECK
 
                 if (addedDirective.isPickup()) {
                     TimeInfo plannedTiming = timeInfo.get(addedDirective.getRequest().getId());
+                    updatedTime += pickupDuration;
 
                     if (parameters.useSoftConstraintsAfterAssignment && plannedTiming != null) {
                         if (updatedTime > plannedTiming.plannedPickupTime) {
-                        //if (updatedTime > addedRequest.getActivePickupTime() + trafficAllowance) {
+                            // if (updatedTime > addedRequest.getActivePickupTime() + trafficAllowance) {
                             continue;
                         }
                     } else {
@@ -175,14 +178,12 @@ public class DefaultTravelFunction implements AlonsoMoraTravelFunction {
                             continue; // Not feasible because pickup will be too late!
                         }
                     }
-
-                    updatedTime += pickupDuration;
                 } else {
                     TimeInfo plannedTiming = timeInfo.get(addedDirective.getRequest().getId());
 
                     if (parameters.useSoftConstraintsAfterAssignment && plannedTiming != null) {
                         if (updatedTime > plannedTiming.plannedDropoffTime) {
-                        //if (updatedTime > addedRequest.getActiveDropoffTime() + trafficAllowance) {
+                            // if (updatedTime > addedRequest.getActiveDropoffTime() + trafficAllowance) {
                             continue;
                         }
                     } else {
@@ -251,9 +252,24 @@ public class DefaultTravelFunction implements AlonsoMoraTravelFunction {
         return Optional.ofNullable(minimumCostSolution);
     }
 
-    private List<AlonsoMoraRequest> getExistingRequests(AlonsoMoraVehicle vehicle) {
+    private class InitialState {
+        final Link link;
+        final double time;
+        final List<AlonsoMoraRequest> requests;
+
+        InitialState(Link link, double time, List<AlonsoMoraRequest> requests) {
+            this.link = link;
+            this.time = time;
+            this.requests = requests;
+        }
+    }
+
+    private InitialState getInitialState(AlonsoMoraVehicle vehicle) {
         List<AlonsoMoraRequest> existingRequests = new LinkedList<>();
         IdSet<Request> pickedUpIds = new IdSet<>(Request.class);
+
+        double startTime = now;
+        Link startLink = vehicle.getLocation();
 
         for (Directive directive : vehicle.getDirectives()) {
             if (directive.isModifiable()) { // If not modifiable we ignore it
@@ -268,10 +284,23 @@ public class DefaultTravelFunction implements AlonsoMoraTravelFunction {
                         }
                     }
                 }
+            } else {
+                startTime += travelTimeCalculator.getTravelTime(startTime, startLink, Directive.getLink(directive));
+                startLink = Directive.getLink(directive);
+
+                if (directive instanceof StopDirective) {
+                    StopDirective stopDirective = (StopDirective) directive;
+
+                    if (stopDirective.isPickup()) {
+                        startTime += pickupDuration;
+                    } else {
+                        startTime += dropoffDuration;
+                    }
+                }
             }
         }
 
-        return new ArrayList<>(existingRequests);
+        return new InitialState(startLink, startTime, new ArrayList<>(existingRequests));
     }
 
     public static class PartialSolution {
@@ -295,11 +324,11 @@ public class DefaultTravelFunction implements AlonsoMoraTravelFunction {
         double plannedDropoffTime = Double.NaN;
     }
 
-    private IdMap<Request, TimeInfo> getCurrentTimeInfo(AlonsoMoraVehicle vehicle) {
+    private IdMap<Request, TimeInfo> getCurrentTimeInfo(AlonsoMoraVehicle vehicle, Link startLink, double startTime) {
         IdMap<Request, TimeInfo> timing = new IdMap<>(Request.class);
 
-        double currentTime = now;
-        Link currentLink = vehicle.getLocation();
+        double currentTime = startTime;
+        Link currentLink = startLink;
 
         for (Directive directive : vehicle.getDirectives()) {
             if (directive instanceof StopDirective) {
@@ -311,8 +340,8 @@ public class DefaultTravelFunction implements AlonsoMoraTravelFunction {
                 TimeInfo info = timing.get(stopDirective.getRequest().getId());
 
                 if (stopDirective.isPickup()) {
-                    info.plannedPickupTime = currentTime;
                     currentTime += pickupDuration;
+                    info.plannedPickupTime = currentTime;
                 } else {
                     info.plannedDropoffTime = currentTime;
                     currentTime += dropoffDuration;

@@ -23,8 +23,6 @@ import amodeus.amodeus.dispatcher.alonso_mora_2016.rtv.RequestTripVehicleGraph.T
 import amodeus.amodeus.dispatcher.alonso_mora_2016.rv.RequestVehicleGraph;
 import amodeus.amodeus.dispatcher.alonso_mora_2016.rv.RequestVehicleGraph.RequestVehicleEdge;
 
-// TODO: Should we here consider vehicle capacity or capacity - on board requests?
-
 public class RequestTripVehicleGraphBuilder {
     private final AlonsoMoraTravelFunction travelFunction;
     private final AlonsoMoraParameters parameters;
@@ -71,13 +69,13 @@ public class RequestTripVehicleGraphBuilder {
             int vehicleIndex = vehicles.size();
             vehicles.add(vehicle);
 
-            int vehicleCapacity = vehicle.getCapacity() - vehicle.getVehicle().getScheduleManager().getNumberOfOnBoardRequests();
+            int vehicleCapacity = vehicle.getCapacity();
             int vehicleEdgeCount = 0;
 
-            List<Set<Trip>> vehicleTrips = new ArrayList<>(vehicle.getCapacity());
+            List<Set<Trip>> vehicleTrips = new ArrayList<>(vehicleCapacity);
             List<AlonsoMoraRequest> vehicleRequests = new LinkedList<>();
 
-            for (int k = 0; k < vehicle.getCapacity(); k++) {
+            for (int k = 0; k < vehicleCapacity; k++) {
                 vehicleTrips.add(new HashSet<>());
             }
 

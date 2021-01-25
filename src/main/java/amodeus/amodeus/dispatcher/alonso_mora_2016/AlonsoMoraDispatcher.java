@@ -73,6 +73,7 @@ public class AlonsoMoraDispatcher extends RebalancingDispatcher {
     private final Set<DefaultTravelFunction.Constraint> constraints;
 
     private final IdMap<Request, AlonsoMoraRequest> requests = new IdMap<>(Request.class);
+    private final IdMap<Request, Double> resubmissionTimes = new IdMap<>(Request.class);
 
     private final int dispatchPeriod;
     private final boolean useRebalancing;
@@ -93,12 +94,13 @@ public class AlonsoMoraDispatcher extends RebalancingDispatcher {
             if (!requests.containsKey(request.getId())) {
                 AmodeusRequest amodeusRequest = (AmodeusRequest) request;
 
-                // TODO: Make travel time calculation based on congestion
-                double directTravelTime = travelTimeCalculator.getTravelTime(now, request.getFromLink(), request.getToLink());
-                double directDropoffTime = now + directTravelTime;
+                double submissionTime = resubmissionTimes.getOrDefault(request.getId(), request.getSubmissionTime());
 
-                double latestPickupTime = now + amodeusRequest.getMaximumWaitTime();
-                double latestDropoffTime = now + directTravelTime + amodeusRequest.getMaximumWaitTime() + amodeusRequest.getMaximumDetourTime();
+                double directTravelTime = travelTimeCalculator.getTravelTime(now, request.getFromLink(), request.getToLink());
+                double directDropoffTime = submissionTime + directTravelTime;
+
+                double latestPickupTime = submissionTime + amodeusRequest.getMaximumWaitTime();
+                double latestDropoffTime = submissionTime + amodeusRequest.getMaximumTravelTime();
 
                 requests.put(request.getId(), new AlonsoMoraRequest(request, latestPickupTime, latestDropoffTime, directDropoffTime));
             }
@@ -143,8 +145,9 @@ public class AlonsoMoraDispatcher extends RebalancingDispatcher {
         RequestTripVehicleGraphBuilder rtvBuilder = new RequestTripVehicleGraphBuilder(travelFunction, parameters);
         RequestTripVehicleGraph rtvGraph = rtvBuilder.build(rvGraph);
 
-        System.err.println("RR=" + rvGraph.getRequestRequestEdges().size() + " RV=" + rvGraph.getRequestVehicleEdges().size() + " RT=" + rtvGraph.getRequestTripEdges().size()
-                + " TV=" + rtvGraph.getTripVehicleEdges().size() + " T=" + rtvGraph.getTrips().size());
+        // System.err.println("RR=" + rvGraph.getRequestRequestEdges().size() + " RV=" + rvGraph.getRequestVehicleEdges().size() + " RT=" +
+        // rtvGraph.getRequestTripEdges().size()
+        // + " TV=" + rtvGraph.getTripVehicleEdges().size() + " T=" + rtvGraph.getTrips().size());
 
         ILPSolver ilpSolver = new ILPSolver(parameters);
         Collection<TripVehicleEdge> edges = ilpSolver.solve(rtvGraph, rvGraph);
@@ -163,6 +166,7 @@ public class AlonsoMoraDispatcher extends RebalancingDispatcher {
             List<StopDirective> sequence = edge.getSequence();
 
             // TODO: Put this into a RequestScheduleCalculator
+            // Can't we pass this through from the optimizer?
             double currentTime = now;
             Link currentLink = vehicle.getLocation();
 
@@ -188,8 +192,8 @@ public class AlonsoMoraDispatcher extends RebalancingDispatcher {
                         request.setActivePickupTime(Math.min(currentTime, request.getActivePickupTime()));
                     }
 
-                    expectedPickupTimes.put(directive.getRequest().getId(), currentTime);
                     currentTime += pickupDurationPerStop;
+                    expectedPickupTimes.put(directive.getRequest().getId(), currentTime);
                 } else {
                     if (expectedPickupTimes.containsKey(directive.getRequest().getId())) {
                         double pickupTime = expectedPickupTimes.get(directive.getRequest().getId());
@@ -250,6 +254,7 @@ public class AlonsoMoraDispatcher extends RebalancingDispatcher {
                 if (now > requests.get(request.getId()).getLatestPickupTime()) {
                     // AlsonoMoraRequest will be regenerated based on current time
                     requests.remove(request.getId());
+                    resubmissionTimes.put(request.getId(), now);
                 }
             }
 
