@@ -93,6 +93,10 @@
 			<id>matsim-release</id>
 			<url>https://dl.bintray.com/matsim/matsim</url>
 		</repository>
+		<repository>
+			<id>ch.sbb</id>
+			<url>https://schweizerischebundesbahnen.bintray.com/simba.mvn</url>
+		</repository>
 	</repositories>
 
 	<build>
