@@ -28,7 +28,7 @@ public class AmodeusDrtOptimizer implements DrtOptimizer, OnlineTrackerListener 
         AmodeusRoute avRoute = new AmodeusRouteFactory().createRoute(drtRequest.getFromLink().getId(), drtRequest.getToLink().getId());
         AmodeusRequest avRequest = new AmodeusRequest(request.getId(), drtRequest.getPassengerId(), drtRequest.getFromLink(), drtRequest.getToLink(),
                 drtRequest.getSubmissionTime(), drtRequest.getMode(), avRoute, drtRequest.getLatestStartTime() - drtRequest.getEarliestStartTime(),
-                drtRequest.getLatestArrivalTime() - drtRequest.getSubmissionTime());
+                drtRequest.getLatestArrivalTime() - drtRequest.getEarliestStartTime());
 
         delegate.requestSubmitted(avRequest);
     }

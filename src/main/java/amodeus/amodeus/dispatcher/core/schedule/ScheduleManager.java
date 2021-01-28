@@ -36,15 +36,21 @@ import amodeus.amodeus.dispatcher.core.schedule.directives.StopDirective;
 public class ScheduleManager {
     private final Schedule schedule;
     private final FutureVrpPathCalculator router;
+    private final double serviceEndTime;
 
     private final List<InternalDirective> directiveSequence = new LinkedList<>();
     private final Set<PassengerRequest> onboard = new HashSet<>();
 
     private double now = 0.0;
 
-    public ScheduleManager(RoboTaxi vehicle, FutureVrpPathCalculator router) {
+    public ScheduleManager(RoboTaxi vehicle, FutureVrpPathCalculator router, double serviceEndTime) {
         this.schedule = vehicle.getSchedule();
         this.router = router;
+        this.serviceEndTime = serviceEndTime;
+    }
+    
+    private boolean isOther(Task task) {
+        return !isStop(task) && !isDrive(task) && !isStay(task);
     }
 
     private boolean isStop(Task task) {
@@ -255,7 +261,7 @@ public class ScheduleManager {
 
         Task lastTask = Schedules.getLastTask(schedule);
 
-        if (!isStay(lastTask)) {
+        if (!isStay(lastTask) && serviceEndTime > lastTask.getEndTime()) {
             Link lastLink = null;
 
             if (isDrive(lastTask)) {
@@ -264,7 +270,7 @@ public class ScheduleManager {
                 lastLink = ((StayTask) lastTask).getLink();
             }
 
-            DrtStayTask stayTask = new DrtStayTask(lastTask.getEndTime(), Double.POSITIVE_INFINITY, lastLink);
+            DrtStayTask stayTask = new DrtStayTask(lastTask.getEndTime(), serviceEndTime, lastLink);
             schedule.addTask(stayTask);
         }
 
@@ -325,6 +331,14 @@ public class ScheduleManager {
     }
 
     public void setDirectives(List<? extends Directive> sequence) {
+        for (int i = schedule.getCurrentTask().getTaskIdx(); i < schedule.getTaskCount(); i++) {
+            Task task = schedule.getTasks().get(i);
+            
+            if (isOther(task)) {
+                throw new IllegalStateException("Cannot override unknown tasks!");
+            }
+        }
+        
         // All stops that are currently handled need to be replicated exactly!
 
         /* Set<String> ids = new HashSet<>();
@@ -438,6 +452,10 @@ public class ScheduleManager {
 
     public boolean isTopModifiable() {
         return directiveSequence.size() == 0 || directiveSequence.get(0).isModifiable();
+    }
+    
+    public boolean isActive() {
+        return true;
     }
 
     private interface InternalDirective extends Directive {

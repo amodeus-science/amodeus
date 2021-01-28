@@ -234,13 +234,6 @@ public class AlonsoMoraDispatcher extends RebalancingDispatcher {
             vehicle.getVehicle().getScheduleManager().setDirectives(fullSequence);
         }
 
-        for (AlonsoMoraVehicle vehicle : vehicles) {
-            if (vehicle.getId().toString().equals("drt_veh_1_1")) {
-                // System.err.println(String.join(", ", vehicle.getDirectives().stream().map(d -> d.toString()).collect(Collectors.toList())));
-
-            }
-        }
-
         List<Link> unassignedDestinations = new LinkedList<>();
 
         for (PassengerRequest request : new HashSet<>(getUnassignedRequests())) {

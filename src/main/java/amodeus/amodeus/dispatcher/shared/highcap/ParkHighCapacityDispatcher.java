@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import org.matsim.amodeus.components.AmodeusDispatcher;
 import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
+import org.matsim.amodeus.dvrp.request.AmodeusRequest;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
@@ -47,8 +48,6 @@ import amodeus.amodeus.routing.EasyMinTimePathCalculator;
 /* package */ class ParkHighCapacityDispatcher extends RebalancingDispatcher {
     /** parameters */
 
-    private static final double MAX_DELAY = 600.0;
-    private static final double maxWaitTime = 300.0;
     private static final double costOfIgnoredReuqestNormal = 7200;
     private static final double costOfIgnoredReuqestHigh = 72000;
 
@@ -85,6 +84,9 @@ import amodeus.amodeus.routing.EasyMinTimePathCalculator;
 
     private Map<PassengerRequest, RequestKeyInfo> requestKeyInfoMap = new HashMap<>();
 
+    private final double constantMaximumWaitTime;
+    private final double constantMaximumDelay;
+
     /** PARKING EXTENSION */
     private final ParkingStrategy parkingStrategy;
 
@@ -93,6 +95,34 @@ import amodeus.amodeus.routing.EasyMinTimePathCalculator;
      * @param parkingStrategy
      * @param avSpatialCapacityAmodeus */
 
+    private double getMaximumWaitTime(PassengerRequest request_) {
+        AmodeusRequest request = (AmodeusRequest) request_;
+
+        if (Double.isNaN(constantMaximumWaitTime)) {
+            return request.getMaximumWaitTime();
+        } else {
+            return constantMaximumWaitTime;
+        }
+    }
+
+    private double getMaximumTravelTime(PassengerRequest request_, TravelTimeComputation ttc) {
+        AmodeusRequest request = (AmodeusRequest) request_;
+
+        if (Double.isNaN(constantMaximumDelay)) {
+            double value = request.getMaximumTravelTime();
+
+            if (Double.isNaN(value)) {
+                return ttc.of(request.getFromLink(), request.getToLink(), //
+                        request.getSubmissionTime(), true) + 600.0;
+            } else {
+                return value;
+            }
+        } else {
+            return ttc.of(request.getFromLink(), request.getToLink(), //
+                    request.getSubmissionTime(), true) + constantMaximumDelay;
+        }
+    }
+    
     public ParkHighCapacityDispatcher(Network network, //
             Config config, AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, AmodeusRouter router, EventsManager eventsManager, //
@@ -120,7 +150,10 @@ import amodeus.amodeus.routing.EasyMinTimePathCalculator;
         DistanceHeuristics distanceHeuristics = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig()).getDistanceHeuristics(DistanceHeuristics.ASTARLANDMARKS);
         this.parkingStrategy.setRuntimeParameters(avSpatialCapacityAmodeus, network, distanceHeuristics.getDistanceFunction(network));
         /** PARKING EXTENSION */
+        
 
+        constantMaximumWaitTime = dispatcherConfig.getDouble("constantMaximumWaitTime", Double.NaN);
+        constantMaximumDelay = dispatcherConfig.getDouble("constantMaximumDelay", Double.NaN);
     }
 
     @Override
@@ -139,12 +172,12 @@ import amodeus.amodeus.routing.EasyMinTimePathCalculator;
             for (PassengerRequest avRequest : getPassengerRequests()) {
                 if (requestPool.size() < sizeLimit && !overduedRequests.contains(avRequest))
                     requestPool.add(avRequest);
-                requestKeyInfoMap.computeIfAbsent(avRequest, avr -> new RequestKeyInfo(avr, maxWaitTime, MAX_DELAY, ttc));
+                requestKeyInfoMap.computeIfAbsent(avRequest, avr -> new RequestKeyInfo(avr, getMaximumWaitTime(avr), getMaximumTravelTime(avr, ttc)));
             }
             // modify the request key info (submission time and pickup deadline)
             requestKeyInfoMap.forEach(((avRequest, requestKeyInfo) -> {
-                requestKeyInfo.modifySubmissionTime(now, maxWaitTime, avRequest, overduedRequests); // see notes inside
-                requestKeyInfo.modifyDeadlinePickUp(lastAssignment, avRequest, maxWaitTime); // according to paper
+                requestKeyInfo.modifySubmissionTime(now, getMaximumWaitTime(avRequest), avRequest, overduedRequests); // see notes inside
+                requestKeyInfo.modifyDeadlinePickUp(lastAssignment, avRequest, getMaximumWaitTime(avRequest)); // according to paper
             }));
 
             Set<PassengerRequest> newAddedValidRequests = RequestTracker.getNewAddedValidRequests(requestPool, lastRequestPool); // write down new added requests

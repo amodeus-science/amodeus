@@ -44,22 +44,22 @@ public class AmodeusOptimizer implements VrpOptimizer, OnlineTrackerListener, Mo
 
     private void prepareFirstTask(DvrpVehicle vehicle, Schedule schedule) {
         if (schedule.getTaskCount() != 1) {
-            throw new IllegalStateException("Amodeus vehicle schedule should be empty initially.");
+            // throw new IllegalStateException("Amodeus vehicle schedule should be empty initially.");
         }
 
         schedule.nextTask();
     }
 
-    private void ensureNonFinishingSchedule(Schedule schedule) {
+    private void ensureNonFinishingSchedule(Schedule schedule, DvrpVehicle vehicle) {
         Task lastTask = Schedules.getLastTask(schedule);
 
         if (!lastTask.getTaskType().equals(DrtStayTask.TYPE)) {
             throw new IllegalStateException("An Amodeus schedule should always end with a STAY task");
         }
 
-        if (!Double.isInfinite(lastTask.getEndTime())) {
+        /*if (!(Double.isInfinite(lastTask.getEndTime()) || lastTask.getEndTime() == Double.MAX_VALUE)) {
             throw new IllegalStateException("An Amodeus schedule should always end at time Infinity");
-        }
+        }*/
     }
 
     private void advanceSchedule(DvrpVehicle vehicle, Schedule schedule) {
@@ -68,7 +68,9 @@ public class AmodeusOptimizer implements VrpOptimizer, OnlineTrackerListener, Mo
         currentTask.setEndTime(now);
 
         if (currentTask == Schedules.getLastTask(schedule)) {
-            throw new IllegalStateException("An Amodeus schedule should never end!");
+            //throw new IllegalStateException("An Amodeus schedule should never end!");
+            currentTask.setEndTime(Double.POSITIVE_INFINITY);
+            return;
         }
 
         // Adjust begin and end time of the next tasks
@@ -91,7 +93,7 @@ public class AmodeusOptimizer implements VrpOptimizer, OnlineTrackerListener, Mo
         }
 
         // Make sure schedule does not end and start next task
-        ensureNonFinishingSchedule(schedule);
+        ensureNonFinishingSchedule(schedule, vehicle);
         schedule.nextTask();
 
         // Notify the dispatcher that a new task has started

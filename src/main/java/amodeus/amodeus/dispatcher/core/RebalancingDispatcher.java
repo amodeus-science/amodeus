@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package amodeus.amodeus.dispatcher.core;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,7 +34,7 @@ public abstract class RebalancingDispatcher extends UniversalDispatcher {
 
     /** @param roboTaxi is rebalanced to
      * @param destination and all the oustanding pickup and dropoff tasks are deleted */
-    protected final void setRoboTaxiRebalance(RoboTaxi roboTaxi, final Link destination) {
+    public final void setRoboTaxiRebalance(RoboTaxi roboTaxi, final Link destination) {
         GlobalAssert.that(roboTaxi.isWithoutCustomer());
 
         if (!isRebalancingTo(roboTaxi, destination)) {
@@ -54,6 +55,22 @@ public abstract class RebalancingDispatcher extends UniversalDispatcher {
         if (usageType.equals(RoboTaxiUsageType.SINGLEUSED)) {
             roboTaxi.lock();
         }
+    }
+
+    @Deprecated
+    protected void reRoute(RoboTaxi vehicle) {
+        // Not sure if this is correct, needed to be reimplemented to keep amodidsc consistent
+
+        if (vehicle.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE)) {
+            this.setRoboTaxiRebalance(vehicle, vehicle.getCurrentDriveDestination());
+        }
+    }
+
+    @Deprecated
+    protected Collection<RoboTaxi> getStayingTaxi() {
+        // Not sure if this is correct, needed to be reimplemented to keep amodidsc consistent
+
+        return getRoboTaxis().stream().filter(r -> r.getStatus().equals(RoboTaxiStatus.STAY)).collect(Collectors.toSet());
     }
 
     /** {@link RoboTaxi} @param roboTaxi is redirected to the {@link Link} of the {@link SharedCourse}

@@ -12,11 +12,10 @@ public class RequestKeyInfo {
     private double deadlineDropOff;
     private boolean allowanceGiven;
     
-    public RequestKeyInfo(PassengerRequest avRequest, double maxWaitTime, double maxDelay, TravelTimeComputation ttc) {
+    public RequestKeyInfo(PassengerRequest avRequest, double maxWaitTime, double maxTravelTime) {
         modifiableSubmissionTime = avRequest.getSubmissionTime();
         deadlinePickUp = avRequest.getSubmissionTime() + maxWaitTime;
-        deadlineDropOff = avRequest.getSubmissionTime() + ttc.of(avRequest.getFromLink(), avRequest.getToLink(), //
-                avRequest.getSubmissionTime(), true) + maxDelay;
+        deadlineDropOff = avRequest.getSubmissionTime() + maxTravelTime;
         allowanceGiven = false;
     }
 

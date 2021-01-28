@@ -64,7 +64,7 @@ public final class RoboTaxi {
         this.driveDestination = Objects.requireNonNull(driveDestination);
         this.usageType = usageType;
 
-        this.scheduleManager = new ScheduleManager(this, router);
+        this.scheduleManager = new ScheduleManager(this, router, avVehicle.getServiceEndTime());
     }
 
     // **********************************************
@@ -225,6 +225,10 @@ public final class RoboTaxi {
     // **********************************************
 
     public boolean isDivertable() {
+        if (!scheduleManager.isActive()) {
+            return false;
+        }
+        
         if (usageType.equals(RoboTaxiUsageType.SINGLEUSED) && !isWithoutCustomer()) {
             return false;
         }

@@ -18,7 +18,6 @@ public class AmodeusRequestCreator implements PassengerRequestCreator {
 
     @Override
     public PassengerRequest createRequest(Id<Request> id, Id<Person> passengerId, Route route, Link pickupLink, Link dropoffLink, double departureTime, double submissionTime) {
-        return new AmodeusRequest(id, passengerId, pickupLink, dropoffLink, submissionTime, mode, (AmodeusRoute) route, ((AmodeusRoute) route).getMaximumWaitTime(),
-                ((AmodeusRoute) route).getMaximumDetourTime());
+        return new AmodeusRequest(id, passengerId, pickupLink, dropoffLink, submissionTime, mode, (AmodeusRoute) route, ((AmodeusRoute) route).getMaximumWaitTime(), Double.NaN);
     }
 }

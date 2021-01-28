@@ -3,6 +3,7 @@ package amodeus.amodeus.dispatcher.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -137,6 +138,23 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
     protected final Set<PassengerRequest> getWaitingRequests() {
         return pendingRequests;
     }
+    
+    @Deprecated
+    protected final Map<RoboTaxi, PassengerRequest> getPickupRoboTaxisAndRequests() {
+        // Re-implemented because MPC dispatcher needs it, but not sure if it is really what was expected there.
+        
+        if (usageType.equals(RoboTaxiUsageType.SHARED)) {
+            throw new IllegalStateException();
+        }
+        
+        Map<RoboTaxi, PassengerRequest> result = new HashMap<>();
+        
+        for (Map.Entry<RoboTaxi, AmodeusStopTask> entry : pickupTaxis.entrySet()) {
+            result.put(entry.getKey(), entry.getValue().getPickupRequests().values().iterator().next());
+        }
+        
+        return result;
+    }
 
     /** @return {@link Map} of {@link PassengerRequest}s which have an assigned {@link RoboTaxi}
      *         but are not Picked up yet. Associated value is the corresponding {@link RoboTaxi} */
@@ -162,7 +180,8 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
     /** @return divertable RoboTaxis which currently are not on a pickup drive */
     protected final Collection<RoboTaxi> getDivertableUnassignedRoboTaxis() {
         Collection<RoboTaxi> divertableUnassignedRoboTaxis = getDivertableRoboTaxis().stream() //
-                .filter(rt -> getTimeNow() < rt.getDvrpVehicle().getServiceEndTime()).filter(rt -> !requestAssignments.containsValue(rt)) //
+                .filter(rt -> getTimeNow() < rt.getDvrpVehicle().getServiceEndTime() && getTimeNow() >= rt.getDvrpVehicle().getServiceBeginTime())
+                .filter(rt -> !requestAssignments.containsValue(rt)) //
                 .collect(Collectors.toList());
         GlobalAssert.that(divertableUnassignedRoboTaxis.stream().allMatch(RoboTaxi::isWithoutCustomer));
         return divertableUnassignedRoboTaxis;
@@ -219,11 +238,21 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
         eventsManager.processEvent(
                 new PassengerRequestScheduledEvent(getTimeNow(), mode, avRequest.getId(), avRequest.getPassengerId(), roboTaxi.getId(), expectedPickupTime, expectedDropoffTime));
     }
+    
+    public final void addSharedRoboTaxiPickup(RoboTaxi roboTaxi, PassengerRequest avRequest) {
+        addSharedRoboTaxiPickup(roboTaxi, avRequest, Double.NaN, Double.NaN);
+    }
 
     /* Shortcut for unit capacity dispatchers */
     public final void setRoboTaxiPickup(RoboTaxi roboTaxi, PassengerRequest avRequest, double expectedPickupTime, double expectedDropoffTime) {
         cleanAndAbondon(roboTaxi);
         addSharedRoboTaxiPickup(roboTaxi, avRequest, expectedPickupTime, expectedDropoffTime);
+        roboTaxi.lock();
+    }
+    
+    public final void setRoboTaxiPickup(RoboTaxi roboTaxi, PassengerRequest avRequest) {
+        cleanAndAbondon(roboTaxi);
+        addSharedRoboTaxiPickup(roboTaxi, avRequest, Double.NaN, Double.NaN);
         roboTaxi.lock();
     }
 
@@ -310,45 +339,45 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
 
     public void setDirectives(RoboTaxi vehicle, List<Directive> directives) {
         Set<PassengerRequest> initialRequests = new HashSet<>();
-        
+
         Map<Id<Request>, Double> expectedPickupTimes = new HashMap<>();
         Map<Id<Request>, Double> expectedDropoffTimes = new HashMap<>();
-        
+
         for (Directive directive : vehicle.getScheduleManager().getDirectives()) {
             if (directive instanceof StopDirective) {
                 StopDirective stopDirective = (StopDirective) directive;
                 initialRequests.add(stopDirective.getRequest());
             }
         }
-        
+
         Set<PassengerRequest> updatedRequests = new HashSet<>();
-        
+
         for (Directive directive : directives) {
             if (directive instanceof StopDirective) {
                 StopDirective stopDirective = (StopDirective) directive;
                 updatedRequests.add(stopDirective.getRequest());
-                
+
                 if (stopDirective.isPickup()) {
-                    
+
                 }
             }
         }
-        
+
         Set<PassengerRequest> addedRequests = new HashSet<>(updatedRequests);
         addedRequests.removeAll(initialRequests);
-        
+
         Set<PassengerRequest> removedRequests = new HashSet<>(initialRequests);
         removedRequests.removeAll(updatedRequests);
-        
+
         for (PassengerRequest request : removedRequests) {
             abortAvRequest(request);
         }
-        
+
         for (PassengerRequest request : addedRequests) {
             addSharedRoboTaxiPickup(vehicle, request, indent, SIMTIMESTEP);
         }
     }
-    
+
     /** carries out the redispatching defined in the {@link SharedMenu} and executes the
      * directives after a check of the menus. */
     @Override
