@@ -3,17 +3,17 @@ package amodeus.amodeus.dispatcher.shared.basic;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 
-import amodeus.amodeus.net.TensorCoords;
 import org.matsim.amodeus.components.AmodeusDispatcher;
 import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -25,10 +25,12 @@ import amodeus.amodeus.dispatcher.DemandSupplyBalancingDispatcher;
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.RoboTaxiStatus;
-import amodeus.amodeus.dispatcher.core.SharedRebalancingDispatcher;
+import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
+import amodeus.amodeus.dispatcher.core.RebalancingDispatcher;
 import amodeus.amodeus.dispatcher.shared.beam.BeamExtensionForSharing;
 import amodeus.amodeus.dispatcher.util.TreeMaintainer;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
+import amodeus.amodeus.net.TensorCoords;
 import amodeus.amodeus.util.math.GlobalAssert;
 import amodeus.amodeus.util.matsim.SafeConfig;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -39,7 +41,7 @@ import ch.ethz.idsc.tensor.opt.Pi;
  * 
  * It extends the {@link DemandSupplyBalancingDispatcher}. At each pickup, it is checked if around this Robotaxi there exist other
  * open requests with the same direction. Those are then picked up. */
-public class ExtDemandSupplyBeamSharing extends SharedRebalancingDispatcher {
+public class ExtDemandSupplyBeamSharing extends RebalancingDispatcher {
     private final int dispatchPeriod;
 
     /** ride sharing parameters */
@@ -55,8 +57,8 @@ public class ExtDemandSupplyBeamSharing extends SharedRebalancingDispatcher {
     protected ExtDemandSupplyBeamSharing(Network network, //
             Config config, AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, AmodeusRouter router, EventsManager eventsManager, //
-            MatsimAmodeusDatabase db) {
-        super(config, operatorConfig, travelTime, router, eventsManager, db);
+            MatsimAmodeusDatabase db, RebalancingStrategy rebalancingStrategy) {
+        super(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy, RoboTaxiUsageType.SHARED);
         DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(60);
         SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
@@ -79,7 +81,7 @@ public class ExtDemandSupplyBeamSharing extends SharedRebalancingDispatcher {
             Collection<RoboTaxi> robotaxisDivertable = getDivertableUnassignedRoboTaxis();
             robotaxisDivertable.forEach(unassignedRoboTaxis::add);
 
-            List<PassengerRequest> requests = getUnassignedPassengerRequests();
+            Set<PassengerRequest> requests = getUnassignedRequests();
             requests.forEach(requestMaintainer::add);
 
             if (unassignedRoboTaxis.size() > 0 && requests.size() > 0) {
@@ -88,7 +90,7 @@ public class ExtDemandSupplyBeamSharing extends SharedRebalancingDispatcher {
                     for (PassengerRequest avr : requests) {
                         RoboTaxi closest = unassignedRoboTaxis.getClosest(getLocation(avr));
                         if (Objects.nonNull(closest)) {
-                            addSharedRoboTaxiPickup(closest, avr);
+                            addSharedRoboTaxiPickup(closest, avr, Double.NaN, Double.NaN);
                             unassignedRoboTaxis.remove(closest);
                             requestMaintainer.remove(avr);
                         }
@@ -98,7 +100,7 @@ public class ExtDemandSupplyBeamSharing extends SharedRebalancingDispatcher {
                     for (RoboTaxi roboTaxi : robotaxisDivertable) {
                         PassengerRequest closest = requestMaintainer.getClosest(getRoboTaxiLoc(roboTaxi));
                         if (Objects.nonNull(closest)) {
-                            addSharedRoboTaxiPickup(roboTaxi, closest);
+                            addSharedRoboTaxiPickup(roboTaxi, closest, Double.NaN, Double.NaN);
                             unassignedRoboTaxis.remove(roboTaxi);
                             requestMaintainer.remove(closest);
                         }
@@ -150,7 +152,9 @@ public class ExtDemandSupplyBeamSharing extends SharedRebalancingDispatcher {
             AmodeusRouter router = inject.getModal(AmodeusRouter.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);
 
-            return new ExtDemandSupplyBeamSharing(network, config, operatorConfig, travelTime, router, eventsManager, db);
+            RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
+
+            return new ExtDemandSupplyBeamSharing(network, config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy);
         }
     }
 }

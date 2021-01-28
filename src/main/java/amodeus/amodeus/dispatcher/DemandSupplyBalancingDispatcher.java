@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package amodeus.amodeus.dispatcher;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -10,6 +11,7 @@ import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -18,9 +20,10 @@ import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.router.util.TravelTime;
 
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
-import amodeus.amodeus.dispatcher.core.RebalancingDispatcher;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.RoboTaxiStatus;
+import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
+import amodeus.amodeus.dispatcher.core.RebalancingDispatcher;
 import amodeus.amodeus.dispatcher.util.TreeMaintainer;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
 import amodeus.amodeus.net.TensorCoords;
@@ -43,8 +46,8 @@ public class DemandSupplyBalancingDispatcher extends RebalancingDispatcher {
 
     protected DemandSupplyBalancingDispatcher(Config config, AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, AmodeusRouter router, EventsManager eventsManager, Network network, //
-            MatsimAmodeusDatabase db) {
-        super(config, operatorConfig, travelTime, router, eventsManager, db);
+            MatsimAmodeusDatabase db, RebalancingStrategy rebalancingStrategy) {
+        super(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy, RoboTaxiUsageType.SINGLEUSED);
         DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(10);
         double[] networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
@@ -60,7 +63,7 @@ public class DemandSupplyBalancingDispatcher extends RebalancingDispatcher {
             /** get open requests and available vehicles */
             Collection<RoboTaxi> roboTaxisDivertable = getDivertableUnassignedRoboTaxis();
             getRoboTaxiSubset(RoboTaxiStatus.STAY).forEach(unassignedRoboTaxis::add);
-            List<PassengerRequest> requests = getUnassignedPassengerRequests();
+            List<PassengerRequest> requests = new ArrayList<>(getUnassignedRequests());
             requests.forEach(requestMaintainer::add);
 
             /** distinguish over- and undersupply cases */
@@ -74,7 +77,7 @@ public class DemandSupplyBalancingDispatcher extends RebalancingDispatcher {
                     for (PassengerRequest avr : requests) {
                         RoboTaxi closest = unassignedRoboTaxis.getClosest(getLocation(avr));
                         if (closest != null) {
-                            setRoboTaxiPickup(closest, avr);
+                            setRoboTaxiPickup(closest, avr, Double.NaN, Double.NaN);
                             unassignedRoboTaxis.remove(closest);
                             requestMaintainer.remove(avr);
                         }
@@ -86,7 +89,7 @@ public class DemandSupplyBalancingDispatcher extends RebalancingDispatcher {
                         Tensor tCoord = Tensors.vector(coord.getX(), coord.getY());
                         PassengerRequest closest = requestMaintainer.getClosest(tCoord);
                         if (Objects.nonNull(closest)) {
-                            setRoboTaxiPickup(roboTaxi, closest);
+                            addSharedRoboTaxiPickup(roboTaxi, closest, Double.NaN, Double.NaN);
                             unassignedRoboTaxis.remove(roboTaxi);
                             requestMaintainer.remove(closest);
                         }
@@ -117,10 +120,12 @@ public class DemandSupplyBalancingDispatcher extends RebalancingDispatcher {
             Network network = inject.getModal(Network.class);
             AmodeusRouter router = inject.getModal(AmodeusRouter.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);
+            
+            RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
 
             return new DemandSupplyBalancingDispatcher( //
                     config, operatorConfig, travelTime, //
-                    router, eventsManager, network, db);
+                    router, eventsManager, network, db, rebalancingStrategy);
         }
     }
 }

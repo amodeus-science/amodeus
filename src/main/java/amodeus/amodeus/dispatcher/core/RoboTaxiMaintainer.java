@@ -6,14 +6,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.matsim.amodeus.components.AmodeusDispatcher;
 import org.matsim.amodeus.config.AmodeusModeConfig;
+import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
 import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
 import org.matsim.api.core.v01.events.Event;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.drt.schedule.DrtDriveTask;
+import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.schedule.Schedule;
+import org.matsim.contrib.dvrp.schedule.Schedule.ScheduleStatus;
+import org.matsim.contrib.dvrp.schedule.Task;
+import org.matsim.contrib.dvrp.tracker.OnlineDriveTaskTracker;
+import org.matsim.contrib.dvrp.tracker.TaskTracker;
+import org.matsim.contrib.dvrp.util.LinkTimePair;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 
@@ -32,6 +41,7 @@ import amodeus.amodeus.util.matsim.SafeConfig;
     private Double private_now = null;
     public InfoLine infoLine = null;
     private final StorageUtils storageUtils;
+    protected final String mode;
 
     RoboTaxiMaintainer(EventsManager eventsManager, Config config, AmodeusModeConfig operatorConfig) {
         SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
@@ -39,6 +49,7 @@ import amodeus.amodeus.util.matsim.SafeConfig;
         this.infoLine = new InfoLine(safeConfig.getInteger("infoLinePeriod", 10));
         String outputdirectory = config.controler().getOutputDirectory();
         this.storageUtils = new StorageUtils(new File(outputdirectory));
+        this.mode = operatorConfig.getMode();
     }
 
     /** @return time of current re-dispatching iteration step
@@ -50,9 +61,10 @@ import amodeus.amodeus.util.matsim.SafeConfig;
 
     /** @return {@link List} of {@link RoboTaxi} */
     protected final List<RoboTaxi> getRoboTaxis() {
-        if (roboTaxis.isEmpty() || !roboTaxis.get(0).getSchedule().getStatus().equals(Schedule.ScheduleStatus.STARTED))
+        if (roboTaxis.isEmpty())
             return Collections.emptyList();
-        return Collections.unmodifiableList(roboTaxis);
+
+        return roboTaxis.stream().filter(rt -> rt.getSchedule().getStatus().equals(ScheduleStatus.STARTED)).collect(Collectors.toList());
     }
 
     protected abstract void updateDivertableLocations();
@@ -82,7 +94,6 @@ import amodeus.amodeus.util.matsim.SafeConfig;
         redispatch(now);
         redispatchInternal(now);
         afterStepTasks();
-        executeDirectives();
         consistencyCheck();
     }
 
@@ -107,8 +118,7 @@ import amodeus.amodeus.util.matsim.SafeConfig;
 
     private void beforeStepTasks() {
         updateDivertableLocations();
-        if (private_now > 0) // at time 0, tasks are not started.
-            updateCurrentLocations();
+        updateCurrentLocations();
     }
 
     /** {@link RoboTaxi} on a pickup ride which are sent to another location are
@@ -122,20 +132,37 @@ import amodeus.amodeus.util.matsim.SafeConfig;
         consistencySubCheck();
     }
 
-    private void executeDirectives() {
-        roboTaxis.stream().filter(rt -> !rt.isWithoutDirective()).forEach(RoboTaxi::executeDirective);
-    }
-
     private void updateCurrentLocations() {
         @SuppressWarnings("unused")
         int failed = 0;
         for (RoboTaxi roboTaxi : roboTaxis) {
-            final Link link = RoboTaxiLocation.of(roboTaxi);
-            if (Objects.nonNull(link)) {
-                roboTaxi.setLastKnownLocation(link);
-                updateLocationTrace(roboTaxi, link);
-            } else
-                ++failed;
+            Link link = roboTaxi.getDvrpVehicle().getStartLink();
+
+            Schedule schedule = roboTaxi.getSchedule();
+
+            if (schedule.getStatus().equals(ScheduleStatus.STARTED)) {
+                Task currentTask = schedule.getCurrentTask();
+
+                if (currentTask instanceof AmodeusStopTask) {
+                    AmodeusStopTask stopTask = (AmodeusStopTask) currentTask;
+                    link = stopTask.getLink();
+                } else if (currentTask instanceof DrtDriveTask) {
+                    DrtDriveTask driveTask = (DrtDriveTask) currentTask;
+
+                    TaskTracker taskTracker = driveTask.getTaskTracker();
+                    OnlineDriveTaskTracker onlineDriveTaskTracker = (OnlineDriveTaskTracker) taskTracker;
+                    // there is a slim chance that function getDiversionPoint() returns null
+                    LinkTimePair linkTimePair = onlineDriveTaskTracker.getDiversionPoint();
+                    if (Objects.nonNull(linkTimePair))
+                        link = linkTimePair.link;
+                } else if (currentTask instanceof DrtStayTask) {
+                    DrtStayTask stayTask = (DrtStayTask) currentTask;
+                    link = stayTask.getLink();
+                }
+            }
+
+            roboTaxi.setLastKnownLocation(link);
+            updateLocationTrace(roboTaxi, link);
         }
     }
 

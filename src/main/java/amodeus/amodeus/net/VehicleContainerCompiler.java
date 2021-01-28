@@ -1,6 +1,7 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package amodeus.amodeus.net;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -33,6 +34,7 @@ import amodeus.amodeus.util.math.GlobalAssert;
             statii.add(roboTaxi.getStatus());
             vc.statii = statii.toArray(RoboTaxiStatus[]::new);
         }
+        
         Link toLink = roboTaxi.getCurrentDriveDestination();
         vc.destinationLinkIndex = Objects.requireNonNull(toLink).getId().index();
         return vc;

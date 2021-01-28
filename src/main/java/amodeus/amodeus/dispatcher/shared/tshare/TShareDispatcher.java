@@ -16,6 +16,7 @@ import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -28,9 +29,8 @@ import com.google.inject.TypeLiteral;
 
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
-import amodeus.amodeus.dispatcher.core.SharedPartitionedDispatcher;
-import amodeus.amodeus.dispatcher.shared.OnMenuRequests;
-import amodeus.amodeus.dispatcher.shared.SharedMenu;
+import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
+import amodeus.amodeus.dispatcher.core.PartitionedDispatcher;
 import amodeus.amodeus.dispatcher.util.DistanceHeuristics;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
 import amodeus.amodeus.routing.CachedNetworkTimeDistance;
@@ -57,7 +57,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
  * version the time windows of all requests already in a taxi are checked before the insertion of a
  * new request is allowed.
  * - To limit computation time, a maximum length of the planned {@link SharedMenu} was introduced. */
-public class TShareDispatcher extends SharedPartitionedDispatcher {
+public class TShareDispatcher extends PartitionedDispatcher {
 
     /** general */
     private final int dispatchPeriod;
@@ -74,8 +74,8 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
 
     protected TShareDispatcher(Network network, Config config, AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, AmodeusRouter router, EventsManager eventsManager, //
-            MatsimAmodeusDatabase db, VirtualNetwork<Link> virtualNetwork) {
-        super(config, operatorConfig, travelTime, router, eventsManager, virtualNetwork, db);
+            MatsimAmodeusDatabase db, VirtualNetwork<Link> virtualNetwork, RebalancingStrategy rebalancingStrategy) {
+        super(config, operatorConfig, travelTime, router, eventsManager, virtualNetwork, db, rebalancingStrategy, RoboTaxiUsageType.SHARED);
         DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(30);
         DistanceHeuristics distanceHeuristics = dispatcherConfig.getDistanceHeuristics(DistanceHeuristics.EUCLIDEAN);
@@ -120,15 +120,19 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
                     .filter(rt -> (rt.getUnmodifiableViewOfCourses().size() == 0)) //
                     .collect(Collectors.toList());
             printInfo = bipartiteMatchingUtils.executePickup(this, this::getCurrentPickupTaxi, divertableAndEmpty, //
-                    getUnassignedPassengerRequests(), distanceCashed, now);
+                    getUnassignedRequests(), distanceCashed, now);
         }
+    }
+
+    private static boolean canPickupAdditionalCustomer(RoboTaxi robotaxi) {
+        return robotaxi.getScheduleManager().getNumberOfOnBoardRequests() + 1 <= robotaxi.getCapacity();
     }
 
     private void doTShareRidesharing(double now) {
         /** update the roboTaxi planned locations */
         Collection<RoboTaxi> occupiedNotFull = getDivertableRoboTaxis().stream() //
                 .filter(rt -> rt.getOnBoardPassengers() >= 1) // at least 1 passenger on board
-                .filter(OnMenuRequests::canPickupAdditionalCustomer) // still capacity left
+                .filter(TShareDispatcher::canPickupAdditionalCustomer) // still capacity left
                 .collect(Collectors.toList());
 
         Map<VirtualNode<Link>, Set<RoboTaxi>> plannedLocs = //
@@ -166,7 +170,7 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
 
                 /** plan update: insert the request into the plan of the {@link RoboTaxi} */
                 if (Objects.nonNull(insertions.firstEntry()))
-                    insertions.firstEntry().getValue().executeBest(this::addSharedRoboTaxiPickup);
+                    insertions.firstEntry().getValue().executeBest((rt, avreq) -> addSharedRoboTaxiPickup(rt, avreq, Double.NaN, Double.NaN));
             }
         }
     }
@@ -194,8 +198,10 @@ public class TShareDispatcher extends SharedPartitionedDispatcher {
             VirtualNetwork<Link> virtualNetwork = inject.getModal(new TypeLiteral<VirtualNetwork<Link>>() {
             });
 
+            RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
+
             return new TShareDispatcher(network, config, operatorConfig, travelTime, router, eventsManager, //
-                    db, virtualNetwork);
+                    db, virtualNetwork, rebalancingStrategy);
         }
     }
 }

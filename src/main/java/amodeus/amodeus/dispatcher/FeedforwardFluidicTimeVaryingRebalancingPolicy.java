@@ -9,6 +9,7 @@ import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
@@ -17,8 +18,9 @@ import org.matsim.core.router.util.TravelTime;
 import com.google.inject.TypeLiteral;
 
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
-import amodeus.amodeus.dispatcher.core.PartitionedDispatcher;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
+import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
+import amodeus.amodeus.dispatcher.core.PartitionedDispatcher;
 import amodeus.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import amodeus.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import amodeus.amodeus.dispatcher.util.BipartiteMatcher;
@@ -77,8 +79,8 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
             EventsManager eventsManager, Network network, VirtualNetwork<Link> virtualNetwork, //
             AbstractVirtualNodeDest abstractVirtualNodeDest, //
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher, TravelData travelData, //
-            MatsimAmodeusDatabase db) {
-        super(config, operatorConfig, travelTime, router, eventsManager, virtualNetwork, db);
+            MatsimAmodeusDatabase db, RebalancingStrategy rebalancingStrategy) {
+        super(config, operatorConfig, travelTime, router, eventsManager, virtualNetwork, db, rebalancingStrategy, RoboTaxiUsageType.SINGLEUSED);
         virtualNodeDest = abstractVirtualNodeDest;
         vehicleDestMatcher = abstractVehicleDestMatcher;
         this.network = network;
@@ -189,11 +191,12 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
             });
 
             TravelData travelData = inject.getModal(TravelData.class);
-
+            RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
+            
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceCost.INSTANCE);
             return new FeedforwardFluidicTimeVaryingRebalancingPolicy(config, operatorConfig, travelTime, router, eventsManager, network, virtualNetwork, abstractVirtualNodeDest,
-                    abstractVehicleDestMatcher, travelData, db);
+                    abstractVehicleDestMatcher, travelData, db, rebalancingStrategy);
         }
     }
 }

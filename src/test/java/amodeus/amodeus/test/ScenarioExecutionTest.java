@@ -157,11 +157,11 @@ public class ScenarioExecutionTest {
         assertTrue(Scalars.lessEquals(ZERO_KM, (Scalar) s)));
         assertEquals(Total.of(ate.getDistancElement().totalDistancesPerVehicle), ate.getDistancElement().totalDistance);
 
-        scalarAssert.add((Scalar) Quantity.of(2836.14438, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
-        scalarAssert.add((Scalar) Quantity.of(1043.41812, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
-        scalarAssert.add((Scalar) Quantity.of(272.89791, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistancePicku.map(Round._5));
-        scalarAssert.add((Scalar) Quantity.of(1519.82835, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRebal.map(Round._5));
-        scalarAssert.add((Scalar) RealScalar.of(0.36790).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRatio.map(Round._5));
+        scalarAssert.add((Scalar) Quantity.of(2826.02084, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
+        scalarAssert.add((Scalar) Quantity.of(1043.56479, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
+        scalarAssert.add((Scalar) Quantity.of(269.22377, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistancePicku.map(Round._5));
+        scalarAssert.add((Scalar) Quantity.of(1513.23228, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRebal.map(Round._5));
+        scalarAssert.add((Scalar) RealScalar.of(0.36927).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRatio.map(Round._5));
 
         scalarAssert.add((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle), //
                 ate.getDistancElement().totalDistance);
@@ -185,9 +185,9 @@ public class ScenarioExecutionTest {
                 ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(2)));
         assertTrue(Scalars.lessEquals(Quantity.of(0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1)));
 
-        scalarAssert.add(Quantity.of(396.01214574898785, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1));
+        scalarAssert.add(Quantity.of(389.2105263157895, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1));
         scalarAssert.add(Quantity.of(2397.0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(2));
-        scalarAssert.add(Quantity.of(RationalScalar.of(222840, 247), SI.SECOND), ate.getTravelTimeAnalysis().getDrveAggrgte().Get(1));
+        scalarAssert.add(Quantity.of(RationalScalar.of(221400, 247), SI.SECOND), ate.getTravelTimeAnalysis().getDrveAggrgte().Get(1));
         scalarAssert.add(Quantity.of(3480, SI.SECOND), ate.getTravelTimeAnalysis().getDrveAggrgte().Get(2));
 
         /* TODO @sebhoerl Have a look at {AmodeusModule::install}. At some point the travel time

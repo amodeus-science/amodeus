@@ -3,8 +3,8 @@ package org.matsim.amodeus.dvrp;
 import org.matsim.amodeus.components.AmodeusDispatcher;
 import org.matsim.amodeus.dvrp.request.AmodeusRequest;
 import org.matsim.amodeus.dvrp.request.AmodeusRequestEvent;
-import org.matsim.amodeus.dvrp.schedule.AmodeusTaskType;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.optimizer.Request;
 import org.matsim.contrib.dvrp.optimizer.VrpOptimizer;
@@ -44,22 +44,22 @@ public class AmodeusOptimizer implements VrpOptimizer, OnlineTrackerListener, Mo
 
     private void prepareFirstTask(DvrpVehicle vehicle, Schedule schedule) {
         if (schedule.getTaskCount() != 1) {
-            throw new IllegalStateException("Amodeus vehicle schedule should be empty initially.");
+            // throw new IllegalStateException("Amodeus vehicle schedule should be empty initially.");
         }
 
         schedule.nextTask();
     }
 
-    private void ensureNonFinishingSchedule(Schedule schedule) {
+    private void ensureNonFinishingSchedule(Schedule schedule, DvrpVehicle vehicle) {
         Task lastTask = Schedules.getLastTask(schedule);
 
-        if (!lastTask.getTaskType().equals(AmodeusTaskType.STAY)) {
+        if (!lastTask.getTaskType().equals(DrtStayTask.TYPE)) {
             throw new IllegalStateException("An Amodeus schedule should always end with a STAY task");
         }
 
-        if (!Double.isInfinite(lastTask.getEndTime())) {
+        /*if (!(Double.isInfinite(lastTask.getEndTime()) || lastTask.getEndTime() == Double.MAX_VALUE)) {
             throw new IllegalStateException("An Amodeus schedule should always end at time Infinity");
-        }
+        }*/
     }
 
     private void advanceSchedule(DvrpVehicle vehicle, Schedule schedule) {
@@ -68,7 +68,9 @@ public class AmodeusOptimizer implements VrpOptimizer, OnlineTrackerListener, Mo
         currentTask.setEndTime(now);
 
         if (currentTask == Schedules.getLastTask(schedule)) {
-            throw new IllegalStateException("An Amodeus schedule should never end!");
+            //throw new IllegalStateException("An Amodeus schedule should never end!");
+            currentTask.setEndTime(Double.POSITIVE_INFINITY);
+            return;
         }
 
         // Adjust begin and end time of the next tasks
@@ -78,7 +80,7 @@ public class AmodeusOptimizer implements VrpOptimizer, OnlineTrackerListener, Mo
         for (int index = nextTask.getTaskIdx(); index < schedule.getTaskCount(); index++) {
             Task task = schedule.getTasks().get(index);
 
-            if (task.getTaskType().equals(AmodeusTaskType.STAY)) {
+            if (task.getTaskType().equals(DrtStayTask.TYPE)) {
                 // Stay tasks should always end when planned (e.g. pre-planned trips)
                 task.setEndTime(Math.max(task.getEndTime(), startTime));
             } else {
@@ -91,7 +93,7 @@ public class AmodeusOptimizer implements VrpOptimizer, OnlineTrackerListener, Mo
         }
 
         // Make sure schedule does not end and start next task
-        ensureNonFinishingSchedule(schedule);
+        ensureNonFinishingSchedule(schedule, vehicle);
         schedule.nextTask();
 
         // Notify the dispatcher that a new task has started

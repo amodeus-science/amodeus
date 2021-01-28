@@ -11,11 +11,14 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.Logger;
 import org.matsim.amodeus.components.AmodeusDispatcher;
 import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
+import org.matsim.amodeus.dvrp.request.AmodeusRequest;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -25,10 +28,10 @@ import org.matsim.core.router.util.LeastCostPathCalculator;
 import org.matsim.core.router.util.TravelTime;
 
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
+import amodeus.amodeus.dispatcher.core.RebalancingDispatcher;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
-import amodeus.amodeus.dispatcher.core.SharedRebalancingDispatcher;
-import amodeus.amodeus.dispatcher.shared.SharedCourse;
-import amodeus.amodeus.dispatcher.shared.SharedCourseUtil;
+import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
+import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
 import amodeus.amodeus.routing.EasyMinTimePathCalculator;
 
@@ -37,11 +40,11 @@ import amodeus.amodeus.routing.EasyMinTimePathCalculator;
  * 
  * at each time dispatcher is called, for each vehicle, all possible trips (adding additional open request to the vehicle) is explored
  * and then ILP is called to choose the optimal assignment. */
-public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
+public class HighCapacityDispatcher extends RebalancingDispatcher {
+    private final Logger logger = Logger.getLogger(HighCapacityDispatcher.class);
+
     /** parameters */
 
-    private static final double MAX_DELAY = 600.0;
-    private static final double maxWaitTime = 300.0;
     private static final double costOfIgnoredReuqestNormal = 7200;
     private static final double costOfIgnoredReuqestHigh = 72000;
 
@@ -76,12 +79,15 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
 
     private Map<PassengerRequest, RequestKeyInfo> requestKeyInfoMap = new HashMap<>();
 
+    private final double constantMaximumWaitTime;
+    private final double constantMaximumDelay;
+
     public HighCapacityDispatcher(Network network, //
             Config config, AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, AmodeusRouter router, EventsManager eventsManager, //
-            MatsimAmodeusDatabase db) {
+            MatsimAmodeusDatabase db, RebalancingStrategy rebalancingStrategy) {
 
-        super(config, operatorConfig, travelTime, router, eventsManager, db);
+        super(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy, RoboTaxiUsageType.SHARED);
         DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(30); // if want to change value, change in av file, here only for backup
         rebalancePeriod = dispatcherConfig.getRebalancingPeriod(60); // same as above
@@ -96,11 +102,51 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
         rtvGG = new AdvancedRTVGenerator(capacityOfTaxi, pickupDurationPerStop, dropoffDurationPerStop);
         rvGenerator = new AdvanceTVRVGenerator(pickupDurationPerStop, dropoffDurationPerStop);
         checkingUpdateMenuOrNot = new CheckingUpdateMenuOrNot();
+
+        constantMaximumWaitTime = dispatcherConfig.getDouble("constantMaximumWaitTime", Double.NaN);
+        constantMaximumDelay = dispatcherConfig.getDouble("constantMaximumDelay", Double.NaN);
+
+        if (Double.isNaN(constantMaximumWaitTime)) {
+            logger.warn("No constantMaximumWaitTime set for HighCapacityDispatcher -> Using MATSIm provided value (default 300 in Amodeus without DRT).");
+        }
+
+        if (Double.isNaN(constantMaximumDelay)) {
+            logger.warn("No constantMaximumDelay set for HighCapacityDispatcher -> Using MATSIm provided value (default 600 in Amodeus without DRT).");
+        }
+    }
+
+    private double getMaximumWaitTime(PassengerRequest request_) {
+        AmodeusRequest request = (AmodeusRequest) request_;
+
+        if (Double.isNaN(constantMaximumWaitTime)) {
+            return request.getMaximumWaitTime();
+        } else {
+            return constantMaximumWaitTime;
+        }
+    }
+
+    private double getMaximumTravelTime(PassengerRequest request_, TravelTimeComputation ttc) {
+        AmodeusRequest request = (AmodeusRequest) request_;
+
+        if (Double.isNaN(constantMaximumDelay)) {
+            double value = request.getMaximumTravelTime();
+
+            if (Double.isNaN(value)) {
+                return ttc.of(request.getFromLink(), request.getToLink(), //
+                        request.getSubmissionTime(), true) + 600.0;
+            } else {
+                return value;
+            }
+        } else {
+            return ttc.of(request.getFromLink(), request.getToLink(), //
+                    request.getSubmissionTime(), true) + constantMaximumDelay;
+        }
     }
 
     @Override
     protected void redispatch(double now) {
         final long round_now = Math.round(now);
+        ttc.clearDataMap();
 
         /** main part of the dispatcher */
         /** Construct RTV graph and use ILP to find optimal assignment */
@@ -113,12 +159,12 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
             for (PassengerRequest avRequest : getPassengerRequests()) {
                 if (requestPool.size() < sizeLimit && !overduedRequests.contains(avRequest))
                     requestPool.add(avRequest);
-                requestKeyInfoMap.computeIfAbsent(avRequest, avr -> new RequestKeyInfo(avr, maxWaitTime, MAX_DELAY, ttc));
+                requestKeyInfoMap.computeIfAbsent(avRequest, avr -> new RequestKeyInfo(avr, getMaximumWaitTime(avr), getMaximumTravelTime(avr, ttc)));
             }
             // modify the request key info (submission time and pickup deadline)
             requestKeyInfoMap.forEach(((avRequest, requestKeyInfo) -> {
-                requestKeyInfo.modifySubmissionTime(now, maxWaitTime, avRequest, overduedRequests); // see notes inside
-                requestKeyInfo.modifyDeadlinePickUp(lastAssignment, avRequest, maxWaitTime); // according to paper
+                requestKeyInfo.modifySubmissionTime(now, getMaximumWaitTime(avRequest), avRequest, overduedRequests); // see notes inside
+                requestKeyInfo.modifyDeadlinePickUp(lastAssignment, avRequest, getMaximumWaitTime(avRequest)); // according to paper
             }));
 
             Set<PassengerRequest> newAddedValidRequests = RequestTracker.getNewAddedValidRequests(requestPool, lastRequestPool); // write down new added requests
@@ -132,10 +178,14 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
             Set<Set<PassengerRequest>> rvEdges = rvGenerator.generateRVGraph(newAddedValidRequests, removedRequests, remainedRequests, //
                     now, ttc, requestKeyInfoMap);
 
+            // System.err.println("EDGE COUNT " + rvEdges.stream().mapToInt(x -> x.size()).sum());
+
             // RTV diagram construction (generate a list of edges between trip and vehicle)
-            List<TripWithVehicle> grossListOfRTVEdges = rtvGG.generateRTV(getRoboTaxis(), newAddedValidRequests, //
+            List<TripWithVehicle> grossListOfRTVEdges = rtvGG.generateRTV(getInteractionlessRoboTaxis(), newAddedValidRequests, //
                     removedRequests, now, requestKeyInfoMap, //
                     rvEdges, ttc, lastAssignment, trafficTimeAllowance);
+
+            // System.err.println("EDGE COUNT " + grossListOfRTVEdges.size());
 
             // ILP
             // start
@@ -162,16 +212,28 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
                 List<StopInRoute> routeToAssign = tripWithVehicle.getRoute();
 
                 // assign
-                List<SharedCourse> courseForThisTaxi = routeToAssign.stream() //
+                List<Directive> courseForThisTaxi = routeToAssign.stream() //
                         .map(StopInRoute::getSharedCourse) //
                         .collect(Collectors.toList());
+
+                Map<PassengerRequest, Double> pickupTimes = new HashMap<>();
+                Map<PassengerRequest, Double> dropoffTimes = new HashMap<>();
+
+                for (StopInRoute stop : tripWithVehicle.getRoute()) {
+                    if (stop.isPickup()) {
+                        pickupTimes.put(stop.getavRequest(), stop.getTime());
+                    } else {
+                        dropoffTimes.put(stop.getavRequest(), stop.getTime());
+                    }
+                }
+
                 for (PassengerRequest avRequest : tripWithVehicle.getTrip())
-                    addSharedRoboTaxiPickup(roboTaxiToAssign, avRequest);
+                    addSharedRoboTaxiPickup(roboTaxiToAssign, avRequest, pickupTimes.get(avRequest), dropoffTimes.get(avRequest));
                 // create set of requests in the route
                 Set<PassengerRequest> setOfPassengerRequestInRoute = routeToAssign.stream() //
                         .map(StopInRoute::getavRequest) //
                         .collect(Collectors.toSet());
-                for (PassengerRequest avRequest : SharedCourseUtil.getUniquePassengerRequests(roboTaxiToAssign.getUnmodifiableViewOfCourses()))
+                for (PassengerRequest avRequest : getUniqueRequests(roboTaxiToAssign))
                     if (!setOfPassengerRequestInRoute.contains(avRequest))
                         abortAvRequest(avRequest);
 
@@ -187,9 +249,9 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
         }
 
         /** Re-balance */
-        if (round_now % rebalancePeriod == 2) { // in order to avoid dispatch and re-balance happen at same time
+        if (rebalancePeriod > 0 && round_now % rebalancePeriod == 2) { // in order to avoid dispatch and re-balance happen at same time
             // check if there are both idling vehicles and unassigned requests at same time
-            List<PassengerRequest> listOfUnassignedRequest = getUnassignedPassengerRequests();
+            List<PassengerRequest> listOfUnassignedRequest = new ArrayList<>(getUnassignedRequests());
             List<RoboTaxi> listOfIdlingTaxi = new ArrayList<>(getDivertableUnassignedRoboTaxis());
 
             // for (RoboTaxi roboTaxi : getRoboTaxis()) {
@@ -231,7 +293,9 @@ public class HighCapacityDispatcher extends SharedRebalancingDispatcher {
             AmodeusRouter router = inject.getModal(AmodeusRouter.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);
 
-            return new HighCapacityDispatcher(network, config, operatorConfig, travelTime, router, eventsManager, db);
+            RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
+
+            return new HighCapacityDispatcher(network, config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy);
         }
     }
 }

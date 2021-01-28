@@ -15,8 +15,10 @@ import java.util.stream.Collectors;
 import org.matsim.amodeus.components.AmodeusDispatcher;
 import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
+import org.matsim.amodeus.dvrp.request.AmodeusRequest;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -28,9 +30,9 @@ import org.matsim.core.router.util.TravelTime;
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.RoboTaxiStatus;
-import amodeus.amodeus.dispatcher.core.SharedRebalancingDispatcher;
-import amodeus.amodeus.dispatcher.shared.SharedCourse;
-import amodeus.amodeus.dispatcher.shared.SharedCourseUtil;
+import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
+import amodeus.amodeus.dispatcher.core.RebalancingDispatcher;
+import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
 import amodeus.amodeus.dispatcher.util.DistanceHeuristics;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
 import amodeus.amodeus.parking.capacities.ParkingCapacity;
@@ -43,11 +45,9 @@ import amodeus.amodeus.routing.EasyMinTimePathCalculator;
  * at each time dispatcher is called, for each vehicle, all possible trips (adding additional open request to the vehicle) is explored
  * and then ILP is called to choose the optimal assignment. */
 // TODO @ChengQi extend from HighCapacityDispatcher see PARKING EXTENSIONs
-/* package */ class ParkHighCapacityDispatcher extends SharedRebalancingDispatcher {
+/* package */ class ParkHighCapacityDispatcher extends RebalancingDispatcher {
     /** parameters */
 
-    private static final double MAX_DELAY = 600.0;
-    private static final double maxWaitTime = 300.0;
     private static final double costOfIgnoredReuqestNormal = 7200;
     private static final double costOfIgnoredReuqestHigh = 72000;
 
@@ -84,6 +84,9 @@ import amodeus.amodeus.routing.EasyMinTimePathCalculator;
 
     private Map<PassengerRequest, RequestKeyInfo> requestKeyInfoMap = new HashMap<>();
 
+    private final double constantMaximumWaitTime;
+    private final double constantMaximumDelay;
+
     /** PARKING EXTENSION */
     private final ParkingStrategy parkingStrategy;
 
@@ -92,13 +95,41 @@ import amodeus.amodeus.routing.EasyMinTimePathCalculator;
      * @param parkingStrategy
      * @param avSpatialCapacityAmodeus */
 
+    private double getMaximumWaitTime(PassengerRequest request_) {
+        AmodeusRequest request = (AmodeusRequest) request_;
+
+        if (Double.isNaN(constantMaximumWaitTime)) {
+            return request.getMaximumWaitTime();
+        } else {
+            return constantMaximumWaitTime;
+        }
+    }
+
+    private double getMaximumTravelTime(PassengerRequest request_, TravelTimeComputation ttc) {
+        AmodeusRequest request = (AmodeusRequest) request_;
+
+        if (Double.isNaN(constantMaximumDelay)) {
+            double value = request.getMaximumTravelTime();
+
+            if (Double.isNaN(value)) {
+                return ttc.of(request.getFromLink(), request.getToLink(), //
+                        request.getSubmissionTime(), true) + 600.0;
+            } else {
+                return value;
+            }
+        } else {
+            return ttc.of(request.getFromLink(), request.getToLink(), //
+                    request.getSubmissionTime(), true) + constantMaximumDelay;
+        }
+    }
+    
     public ParkHighCapacityDispatcher(Network network, //
             Config config, AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, AmodeusRouter router, EventsManager eventsManager, //
             MatsimAmodeusDatabase db, ParkingStrategy parkingStrategy, //
-            ParkingCapacity avSpatialCapacityAmodeus) {
+            ParkingCapacity avSpatialCapacityAmodeus, RebalancingStrategy rebalancingStrategy) {
 
-        super(config, operatorConfig, travelTime, router, eventsManager, db);
+        super(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy, RoboTaxiUsageType.SHARED);
         DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(30); // if want to change value, change in av file, here only for backup
         rebalancePeriod = dispatcherConfig.getRebalancingPeriod(60); // same as above
@@ -119,7 +150,10 @@ import amodeus.amodeus.routing.EasyMinTimePathCalculator;
         DistanceHeuristics distanceHeuristics = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig()).getDistanceHeuristics(DistanceHeuristics.ASTARLANDMARKS);
         this.parkingStrategy.setRuntimeParameters(avSpatialCapacityAmodeus, network, distanceHeuristics.getDistanceFunction(network));
         /** PARKING EXTENSION */
+        
 
+        constantMaximumWaitTime = dispatcherConfig.getDouble("constantMaximumWaitTime", Double.NaN);
+        constantMaximumDelay = dispatcherConfig.getDouble("constantMaximumDelay", Double.NaN);
     }
 
     @Override
@@ -138,12 +172,12 @@ import amodeus.amodeus.routing.EasyMinTimePathCalculator;
             for (PassengerRequest avRequest : getPassengerRequests()) {
                 if (requestPool.size() < sizeLimit && !overduedRequests.contains(avRequest))
                     requestPool.add(avRequest);
-                requestKeyInfoMap.computeIfAbsent(avRequest, avr -> new RequestKeyInfo(avr, maxWaitTime, MAX_DELAY, ttc));
+                requestKeyInfoMap.computeIfAbsent(avRequest, avr -> new RequestKeyInfo(avr, getMaximumWaitTime(avr), getMaximumTravelTime(avr, ttc)));
             }
             // modify the request key info (submission time and pickup deadline)
             requestKeyInfoMap.forEach(((avRequest, requestKeyInfo) -> {
-                requestKeyInfo.modifySubmissionTime(now, maxWaitTime, avRequest, overduedRequests); // see notes inside
-                requestKeyInfo.modifyDeadlinePickUp(lastAssignment, avRequest, maxWaitTime); // according to paper
+                requestKeyInfo.modifySubmissionTime(now, getMaximumWaitTime(avRequest), avRequest, overduedRequests); // see notes inside
+                requestKeyInfo.modifyDeadlinePickUp(lastAssignment, avRequest, getMaximumWaitTime(avRequest)); // according to paper
             }));
 
             Set<PassengerRequest> newAddedValidRequests = RequestTracker.getNewAddedValidRequests(requestPool, lastRequestPool); // write down new added requests
@@ -187,16 +221,29 @@ import amodeus.amodeus.routing.EasyMinTimePathCalculator;
                 List<StopInRoute> routeToAssign = tripWithVehicle.getRoute();
 
                 // assign
-                List<SharedCourse> courseForThisTaxi = routeToAssign.stream() //
+                List<Directive> courseForThisTaxi = routeToAssign.stream() //
                         .map(StopInRoute::getSharedCourse) //
                         .collect(Collectors.toList());
+                
+                Map<PassengerRequest, Double> pickupTimes = new HashMap<>();
+                Map<PassengerRequest, Double> dropoffTimes = new HashMap<>();
+                
+                for (StopInRoute stop : tripWithVehicle.getRoute()) {
+                    if (stop.isPickup()) {
+                        pickupTimes.put(stop.getavRequest(), stop.getTime());
+                    } else {
+                        dropoffTimes.put(stop.getavRequest(), stop.getTime());
+                    }
+                }
+                
                 for (PassengerRequest avRequest : tripWithVehicle.getTrip())
-                    addSharedRoboTaxiPickup(roboTaxiToAssign, avRequest);
+                    addSharedRoboTaxiPickup(roboTaxiToAssign, avRequest, pickupTimes.get(avRequest), dropoffTimes.get(avRequest));
+                
                 // create set of requests in the route
                 Set<PassengerRequest> setOfPassengerRequestInRoute = routeToAssign.stream() //
                         .map(StopInRoute::getavRequest) //
                         .collect(Collectors.toSet());
-                for (PassengerRequest avRequest : SharedCourseUtil.getUniquePassengerRequests(roboTaxiToAssign.getUnmodifiableViewOfCourses()))
+                for (PassengerRequest avRequest : getUniqueRequests(roboTaxiToAssign))
                     if (!setOfPassengerRequestInRoute.contains(avRequest))
                         abortAvRequest(avRequest);
 
@@ -217,7 +264,7 @@ import amodeus.amodeus.routing.EasyMinTimePathCalculator;
         /** Re-balance */
         if (round_now % rebalancePeriod == 2) { // in order to avoid dispatch and re-balance happen at same time
             // check if there are both idling vehicles and unassigned requests at same time
-            List<PassengerRequest> listOfUnassignedRequest = getUnassignedPassengerRequests();
+            List<PassengerRequest> listOfUnassignedRequest = new ArrayList<>(getUnassignedRequests());
             List<RoboTaxi> listOfIdlingTaxi = new ArrayList<>(getDivertableUnassignedRoboTaxis());
 
             // for (RoboTaxi roboTaxi : getRoboTaxis()) {
@@ -269,8 +316,10 @@ import amodeus.amodeus.routing.EasyMinTimePathCalculator;
             ParkingStrategy parkingStrategy = inject.get(ParkingStrategy.class);
             ParkingCapacity avSpatialCapacityAmodeus = inject.get(ParkingCapacity.class);
 
+            RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
+
             return new ParkHighCapacityDispatcher(network, config, operatorConfig, travelTime, router, eventsManager, db, Objects.requireNonNull(parkingStrategy),
-                    Objects.requireNonNull(avSpatialCapacityAmodeus));
+                    Objects.requireNonNull(avSpatialCapacityAmodeus), rebalancingStrategy);
         }
     }
 }

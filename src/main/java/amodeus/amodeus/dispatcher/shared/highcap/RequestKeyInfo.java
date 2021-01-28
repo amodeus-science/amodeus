@@ -6,19 +6,16 @@ import java.util.Set;
 
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
-import amodeus.amodeus.dispatcher.shared.SharedMealType;
-
 public class RequestKeyInfo {
     private double deadlinePickUp;
     private double modifiableSubmissionTime;
     private double deadlineDropOff;
     private boolean allowanceGiven;
-
-    public RequestKeyInfo(PassengerRequest avRequest, double maxWaitTime, double maxDelay, TravelTimeComputation ttc) {
+    
+    public RequestKeyInfo(PassengerRequest avRequest, double maxWaitTime, double maxTravelTime) {
         modifiableSubmissionTime = avRequest.getSubmissionTime();
         deadlinePickUp = avRequest.getSubmissionTime() + maxWaitTime;
-        deadlineDropOff = avRequest.getSubmissionTime() + ttc.of(avRequest.getFromLink(), avRequest.getToLink(), //
-                avRequest.getSubmissionTime(), true) + maxDelay;
+        deadlineDropOff = avRequest.getSubmissionTime() + maxTravelTime;
         allowanceGiven = false;
     }
 
@@ -40,7 +37,7 @@ public class RequestKeyInfo {
         for (TripWithVehicle tripWithVehicle : lastAssignment)
             if (tripWithVehicle.getTrip().contains(avRequest)) {
                 for (StopInRoute stopInRoute : tripWithVehicle.getRoute()) {
-                    if (stopInRoute.getavRequest() == avRequest && stopInRoute.getStopType() == SharedMealType.PICKUP) {
+                    if (stopInRoute.getavRequest() == avRequest && stopInRoute.isPickup()) {
                         if (stopInRoute.getTime() < deadlinePickUp) // since we have added traffic allowance, we need to make sure this one
                             deadlinePickUp = stopInRoute.getTime();
                         break;

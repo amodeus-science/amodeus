@@ -4,20 +4,21 @@ package amodeus.amodeus.dispatcher.shared.highcap;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
-import amodeus.amodeus.dispatcher.shared.SharedCourse;
-import amodeus.amodeus.dispatcher.shared.SharedMealType;
+import amodeus.amodeus.dispatcher.core.schedule.directives.DefaultStopDirective;
+import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
+import amodeus.amodeus.dispatcher.core.schedule.directives.StopDirective;
 
 // TODO @sebhoerl might be an extension of the Shared Course instead, see the StopInRouteAsCourseExtension
 /* package */ class StopInRoute {
     private final double time;
     private final Link stopLink;
-    private final SharedMealType stopType;
+    private final boolean isPickup;
     private final PassengerRequest avRequest;
 
-    public StopInRoute(double time, Link stopLink, SharedMealType stopType, PassengerRequest avRequest) {
+    public StopInRoute(double time, Link stopLink, boolean isPickup, PassengerRequest avRequest) {
         this.time = time;
         this.stopLink = stopLink;
-        this.stopType = stopType;
+        this.isPickup = isPickup;
         this.avRequest = avRequest;
     }
 
@@ -25,8 +26,8 @@ import amodeus.amodeus.dispatcher.shared.SharedMealType;
         return stopLink;
     }
 
-    public SharedMealType getStopType() {
-        return stopType;
+    public boolean isPickup() {
+        return isPickup;
     }
 
     public double getTime() {
@@ -37,13 +38,11 @@ import amodeus.amodeus.dispatcher.shared.SharedMealType;
         return avRequest;
     }
 
-    public SharedCourse getSharedCourse() {
-        if (stopType.equals(SharedMealType.PICKUP))
-            return SharedCourse.pickupCourse(avRequest);
-
-        if (stopType.equals(SharedMealType.DROPOFF))
-            return SharedCourse.dropoffCourse(avRequest);
-
-        throw new RuntimeException("my problem is ...");
+    public Directive getSharedCourse() {
+        if (isPickup) {
+            return Directive.pickup(avRequest);
+        } else {
+            return Directive.dropoff(avRequest);
+        }
     }
 }

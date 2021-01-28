@@ -8,7 +8,7 @@ import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.components.dispatcher.AVVehicleAssignmentEvent;
 import org.matsim.amodeus.components.dispatcher.utils.SingleRideAppender;
 import org.matsim.amodeus.config.AmodeusModeConfig;
-import org.matsim.amodeus.dvrp.schedule.AmodeusTaskType;
+import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
@@ -44,7 +44,7 @@ public class SingleFIFODispatcher implements AmodeusDispatcher {
     @Override
     public void onNextTaskStarted(DvrpVehicle vehicle) {
         Task task = vehicle.getSchedule().getCurrentTask();
-        if (task.getTaskType() == AmodeusTaskType.STAY) {
+        if (DrtStayTask.TYPE.equals(task.getTaskType())) {
             availableVehicles.add(vehicle);
         }
     }

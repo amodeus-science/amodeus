@@ -9,6 +9,7 @@ import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -18,9 +19,10 @@ import org.matsim.core.router.util.TravelTime;
 import com.google.inject.TypeLiteral;
 
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
-import amodeus.amodeus.dispatcher.core.PartitionedDispatcher;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.RoboTaxiStatus;
+import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
+import amodeus.amodeus.dispatcher.core.PartitionedDispatcher;
 import amodeus.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import amodeus.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import amodeus.amodeus.dispatcher.util.ConfigurableBipartiteMatcher;
@@ -75,8 +77,8 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
             Network network, VirtualNetwork<Link> virtualNetwork, //
             AbstractVirtualNodeDest abstractVirtualNodeDest, //
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher, //
-            MatsimAmodeusDatabase db) {
-        super(config, operatorConfig, travelTime, router, eventsManager, virtualNetwork, db);
+            MatsimAmodeusDatabase db, RebalancingStrategy rebalancingStrategy) {
+        super(config, operatorConfig, travelTime, router, eventsManager, virtualNetwork, db, rebalancingStrategy, RoboTaxiUsageType.SINGLEUSED);
         virtualNodeDest = abstractVirtualNodeDest;
         vehicleDestMatcher = abstractVehicleDestMatcher;
         numRobotaxi = operatorConfig.getGeneratorConfig().getNumberOfVehicles();
@@ -210,13 +212,15 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
 
             VirtualNetwork<Link> virtualNetwork = inject.getModal(new TypeLiteral<VirtualNetwork<Link>>() {
             });
+            
+            RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
 
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceCost.INSTANCE);
             return new AdaptiveRealTimeRebalancingPolicy( //
                     config, operatorConfig, travelTime, //
                     router, eventsManager, network, virtualNetwork, //
-                    abstractVirtualNodeDest, abstractVehicleDestMatcher, db);
+                    abstractVirtualNodeDest, abstractVehicleDestMatcher, db, rebalancingStrategy);
         }
     }
 }

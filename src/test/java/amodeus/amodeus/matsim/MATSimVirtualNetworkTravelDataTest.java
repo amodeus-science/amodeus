@@ -134,7 +134,7 @@ public class MATSimVirtualNetworkTravelDataTest {
 
         // Controller
         Controler controller = new Controler(scenario);
-        AmodeusConfigurator.configureController(controller, db, simOptions);
+        AmodeusConfigurator.configureController(controller, simOptions);
 
         // Run
         return controller;

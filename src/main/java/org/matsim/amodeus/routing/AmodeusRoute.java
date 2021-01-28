@@ -98,4 +98,8 @@ public class AmodeusRoute extends AbstractRoute {
     public String getRouteType() {
         return AMODEUS_ROUTE;
     }
+
+    public double getMaximumWaitTime() {
+        return 300.0;
+    }
 }

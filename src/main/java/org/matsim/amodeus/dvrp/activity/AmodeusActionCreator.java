@@ -1,10 +1,11 @@
 package org.matsim.amodeus.dvrp.activity;
 
 import org.matsim.amodeus.config.modal.TimingConfig;
-import org.matsim.amodeus.dvrp.schedule.AmodeusDropoffTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusPickupTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusTaskType;
+import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask;
+import org.matsim.amodeus.dvrp.schedule.AmodeusStopTask.StopType;
+import org.matsim.amodeus.dvrp.schedule.AmodeusTaskTypes;
+import org.matsim.contrib.drt.schedule.DrtDriveTask;
+import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.passenger.PassengerEngine;
 import org.matsim.contrib.dvrp.schedule.Task;
@@ -28,24 +29,30 @@ public class AmodeusActionCreator implements VrpAgentLogic.DynActionCreator {
     public DynAction createAction(DynAgent dynAgent, DvrpVehicle vehicle, double now) {
         Task task = vehicle.getSchedule().getCurrentTask();
 
-        switch ((AmodeusTaskType) task.getTaskType()) {
-        case PICKUP:
-            AmodeusPickupTask mpt = (AmodeusPickupTask) task;
+        if (AmodeusTaskTypes.STOP.equals(task.getTaskType())) {
+            AmodeusStopTask stopTask = (AmodeusStopTask) task;
 
             double expectedEndTime = now + timingConfig.getMinimumPickupDurationPerStop();
             double durationPerPassenger = timingConfig.getPickupDurationPerPassenger();
 
-            return new AmodeusPickupActivity(passengerEngine, dynAgent, vehicle, mpt.getRequests(), expectedEndTime, durationPerPassenger);
-        case DROPOFF:
-            AmodeusDropoffTask mdt = (AmodeusDropoffTask) task;
-            double endTime = now + Math.max(timingConfig.getMinimumDropoffDurationPerStop(), mdt.getRequests().size() * timingConfig.getDropoffDurationPerPassenger());
+            double dropoffEndTime = now
+                    + Math.max(timingConfig.getMinimumDropoffDurationPerStop(), stopTask.getDropoffRequests().size() * timingConfig.getDropoffDurationPerPassenger());
 
-            return new AmodeusDropoffActivity(passengerEngine, dynAgent, vehicle, mdt.getRequests(), endTime);
-        case DRIVE:
+            if (stopTask.getStopType() == StopType.Dropoff) {
+                expectedEndTime = 0.0;
+            }
+
+            if (stopTask.getStopType() == StopType.Pickup) {
+                dropoffEndTime = 0.0;
+            }
+
+            return new AmodeusStopActivity(passengerEngine, dynAgent, vehicle, stopTask.getPickupRequests(), expectedEndTime, durationPerPassenger, stopTask.getDropoffRequests(),
+                    dropoffEndTime);
+        } else if (DrtDriveTask.TYPE.equals(task.getTaskType())) {
             return legFactory.create(vehicle);
-        case STAY:
-            return new AmodeusStayActivity((AmodeusStayTask) task);
-        default:
+        } else if (DrtStayTask.TYPE.equals(task.getTaskType())) {
+            return new AmodeusStayActivity((DrtStayTask) task);
+        } else {
             throw new IllegalStateException();
         }
     }

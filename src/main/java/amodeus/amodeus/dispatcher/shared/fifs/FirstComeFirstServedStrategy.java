@@ -11,6 +11,7 @@ import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -20,8 +21,9 @@ import org.matsim.core.router.FastAStarLandmarksFactory;
 import org.matsim.core.router.util.LeastCostPathCalculator;
 import org.matsim.core.router.util.TravelTime;
 
-import amodeus.amodeus.dispatcher.core.RebalancingDispatcher;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
+import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
+import amodeus.amodeus.dispatcher.core.RebalancingDispatcher;
 import amodeus.amodeus.dispatcher.util.TreeMaintainer;
 import amodeus.amodeus.dispatcher.util.TreeMultipleItems;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
@@ -63,8 +65,8 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
 
     protected FirstComeFirstServedStrategy(Network network, //
             Config config, AmodeusModeConfig operatorConfig, //
-            TravelTime travelTime, AmodeusRouter router, EventsManager eventsManager, MatsimAmodeusDatabase db) {
-        super(config, operatorConfig, travelTime, router, eventsManager, db);
+            TravelTime travelTime, AmodeusRouter router, EventsManager eventsManager, MatsimAmodeusDatabase db, RebalancingStrategy rebalancingStrategy) {
+        super(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy, RoboTaxiUsageType.SINGLEUSED);
 
         double[] networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
         this.unassignedRoboTaxis = new TreeMaintainer<>(networkBounds, this::getRoboTaxiLoc);
@@ -89,7 +91,7 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
 
             /** prepare the registers for the dispatching */
             getDivertableUnassignedRoboTaxis().forEach(unassignedRoboTaxis::add);
-            getUnassignedPassengerRequests().forEach(r -> {
+            getUnassignedRequests().forEach(r -> {
                 unassignedRequests.add(r);
                 requestsLastHour.add(r);
             });
@@ -110,7 +112,7 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
                     RoboTaxi closestRoboTaxi = unassignedRoboTaxis.getClosest(getLocation(avRequest));
                     double travelTime = timeDb.travelTime(closestRoboTaxi.getDivertableLocation(), avRequest.getFromLink(), now).number().doubleValue();
                     if (travelTime < WAITTIME.calculate(avRequest, waitList, extremWaitList)) {
-                        setRoboTaxiPickup(closestRoboTaxi, avRequest);
+                        setRoboTaxiPickup(closestRoboTaxi, avRequest, Double.NaN, Double.NaN);
                         unassignedRoboTaxis.remove(closestRoboTaxi);
                         rebalanceDirectives.removefromDirectives(closestRoboTaxi);
                         assigned = true;
@@ -164,8 +166,10 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
             Network network = inject.getModal(Network.class);
             AmodeusRouter router = inject.getModal(AmodeusRouter.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);
+            
+            RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
 
-            return new FirstComeFirstServedStrategy(network, config, operatorConfig, travelTime, router, eventsManager, db);
+            return new FirstComeFirstServedStrategy(network, config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy);
         }
     }
 }

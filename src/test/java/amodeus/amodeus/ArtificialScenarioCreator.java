@@ -96,15 +96,17 @@ public class ArtificialScenarioCreator {
         network.addLink(linkDepotIn);
         network.addLink(linkDepotOut);
 
-        avRequest1 = new AmodeusRequest(Id.create("p1", Request.class), null, linkUp, linkDown, 0.0, AmodeusModeConfig.DEFAULT_MODE, null);
-        avRequest2 = new AmodeusRequest(Id.create("p2", Request.class), null, linkRight, linkLeft, 0.0, AmodeusModeConfig.DEFAULT_MODE, null);
-        avRequest3 = new AmodeusRequest(Id.create("p3", Request.class), null, linkRight, linkUp, 0.0, AmodeusModeConfig.DEFAULT_MODE, null);
-        avRequest4 = new AmodeusRequest(Id.create("p4", Request.class), null, linkRight, linkDown, 0.0, AmodeusModeConfig.DEFAULT_MODE, null);
-        avRequest5 = new AmodeusRequest(Id.create("p5", Request.class), null, linkUp, linkRight, 0.0, AmodeusModeConfig.DEFAULT_MODE, null);
-        avRequest6 = new AmodeusRequest(Id.create("p6", Request.class), null, linkUp, linkLeft, 0.0, AmodeusModeConfig.DEFAULT_MODE, null);
-        avRequest7 = new AmodeusRequest(Id.create("p7", Request.class), null, linkRight, linkLeft, 0.0, AmodeusModeConfig.DEFAULT_MODE, null);
-        avRequestDepotOut = new AmodeusRequest(Id.create("depotRequestOut", Request.class), null, linkDepotOut, linkDepotOut, 0.0, AmodeusModeConfig.DEFAULT_MODE, null);
-        avRequestDepotIn = new AmodeusRequest(Id.create("depotRequestIn", Request.class), null, linkDepotIn, linkDepotIn, 0.0, AmodeusModeConfig.DEFAULT_MODE, null);
+        avRequest1 = new AmodeusRequest(Id.create("p1", Request.class), null, linkUp, linkDown, 0.0, AmodeusModeConfig.DEFAULT_MODE, null, Double.MAX_VALUE, Double.MAX_VALUE);
+        avRequest2 = new AmodeusRequest(Id.create("p2", Request.class), null, linkRight, linkLeft, 0.0, AmodeusModeConfig.DEFAULT_MODE, null, Double.MAX_VALUE, Double.MAX_VALUE);
+        avRequest3 = new AmodeusRequest(Id.create("p3", Request.class), null, linkRight, linkUp, 0.0, AmodeusModeConfig.DEFAULT_MODE, null, Double.MAX_VALUE, Double.MAX_VALUE);
+        avRequest4 = new AmodeusRequest(Id.create("p4", Request.class), null, linkRight, linkDown, 0.0, AmodeusModeConfig.DEFAULT_MODE, null, Double.MAX_VALUE, Double.MAX_VALUE);
+        avRequest5 = new AmodeusRequest(Id.create("p5", Request.class), null, linkUp, linkRight, 0.0, AmodeusModeConfig.DEFAULT_MODE, null, Double.MAX_VALUE, Double.MAX_VALUE);
+        avRequest6 = new AmodeusRequest(Id.create("p6", Request.class), null, linkUp, linkLeft, 0.0, AmodeusModeConfig.DEFAULT_MODE, null, Double.MAX_VALUE, Double.MAX_VALUE);
+        avRequest7 = new AmodeusRequest(Id.create("p7", Request.class), null, linkRight, linkLeft, 0.0, AmodeusModeConfig.DEFAULT_MODE, null, Double.MAX_VALUE, Double.MAX_VALUE);
+        avRequestDepotOut = new AmodeusRequest(Id.create("depotRequestOut", Request.class), null, linkDepotOut, linkDepotOut, 0.0, AmodeusModeConfig.DEFAULT_MODE, null,
+                Double.MAX_VALUE, Double.MAX_VALUE);
+        avRequestDepotIn = new AmodeusRequest(Id.create("depotRequestIn", Request.class), null, linkDepotIn, linkDepotIn, 0.0, AmodeusModeConfig.DEFAULT_MODE, null,
+                Double.MAX_VALUE, Double.MAX_VALUE);
 
     }
 }

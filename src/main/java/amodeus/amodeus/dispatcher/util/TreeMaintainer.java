@@ -105,9 +105,7 @@ public class TreeMaintainer<T> {
 
     /** Clears the whole tree. After this method is called no elements will remain */
     public void clear() {
-        set.forEach(t -> GlobalAssert.that(quadTree.remove( //
-                location.apply(t).Get(0).number().doubleValue(), //
-                location.apply(t).Get(1).number().doubleValue(), t)));
+        quadTree.clear();
         set.clear();
     }
 }

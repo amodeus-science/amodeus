@@ -2,17 +2,17 @@
 package amodeus.amodeus.parking;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import amodeus.amodeus.net.TensorCoords;
 import org.matsim.amodeus.components.AmodeusDispatcher;
 import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -23,12 +23,14 @@ import org.matsim.core.router.util.TravelTime;
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.RoboTaxiStatus;
-import amodeus.amodeus.dispatcher.core.SharedRebalancingDispatcher;
+import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
+import amodeus.amodeus.dispatcher.core.RebalancingDispatcher;
 import amodeus.amodeus.dispatcher.shared.basic.ExtDemandSupplyBeamSharing;
 import amodeus.amodeus.dispatcher.shared.beam.BeamExtensionForSharing;
 import amodeus.amodeus.dispatcher.util.DistanceHeuristics;
 import amodeus.amodeus.dispatcher.util.TreeMaintainer;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
+import amodeus.amodeus.net.TensorCoords;
 import amodeus.amodeus.parking.capacities.ParkingCapacity;
 import amodeus.amodeus.parking.strategies.ParkingStrategy;
 import amodeus.amodeus.util.matsim.SafeConfig;
@@ -47,7 +49,7 @@ import ch.ethz.idsc.tensor.opt.Pi;
  * It extends the {@link ExtDemandSupplyBeamSharing}. At each pickup it is
  * checked if around this {@link RoboTaxi} there exist other Open requests with the same
  * direction. Those are then picked up. */
-public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatcher {
+public class RestrictedLinkCapacityDispatcher extends RebalancingDispatcher {
     private final int dispatchPeriod;
 
     /** ride sharing parameters */
@@ -71,8 +73,8 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
             Config config, AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, AmodeusRouter router, EventsManager eventsManager, //
             MatsimAmodeusDatabase db, ParkingStrategy parkingStrategy, //
-            ParkingCapacity avSpatialCapacityAmodeus) {
-        super(config, operatorConfig, travelTime, router, eventsManager, db);
+            ParkingCapacity avSpatialCapacityAmodeus, RebalancingStrategy rebalancingStrategy) {
+        super(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy, RoboTaxiUsageType.SHARED);
         DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(60);
         SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
@@ -103,7 +105,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
 
             robotaxisDivertable.forEach(unassignedRoboTaxis::add);
 
-            List<PassengerRequest> requests = getUnassignedPassengerRequests();
+            Set<PassengerRequest> requests = getUnassignedRequests();
             requests.forEach(requestMaintainer::add);
 
             /** distinguish over- and undersupply cases */
@@ -115,7 +117,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
                     for (PassengerRequest avr : requests) {
                         RoboTaxi closest = unassignedRoboTaxis.getClosest(getLocation(avr));
                         if (Objects.nonNull(closest)) {
-                            addSharedRoboTaxiPickup(closest, avr);
+                            addSharedRoboTaxiPickup(closest, avr, Double.NaN, Double.NaN);
 
                             unassignedRoboTaxis.remove(closest);
                             requestMaintainer.remove(avr);
@@ -126,7 +128,7 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
                     for (RoboTaxi roboTaxi : robotaxisDivertable) {
                         PassengerRequest closest = requestMaintainer.getClosest(getRoboTaxiLoc(roboTaxi));
                         if (Objects.nonNull(closest)) {
-                            addSharedRoboTaxiPickup(roboTaxi, closest);
+                            addSharedRoboTaxiPickup(roboTaxi, closest, Double.NaN, Double.NaN);
 
                             unassignedRoboTaxis.remove(roboTaxi);
                             requestMaintainer.remove(closest);
@@ -183,8 +185,10 @@ public class RestrictedLinkCapacityDispatcher extends SharedRebalancingDispatche
             ParkingStrategy parkingStrategy = inject.get(ParkingStrategy.class);
             ParkingCapacity avSpatialCapacityAmodeus = inject.get(ParkingCapacity.class);
 
+            RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
+
             return new RestrictedLinkCapacityDispatcher(network, config, operatorConfig, travelTime, router, eventsManager, db, //
-                    Objects.requireNonNull(parkingStrategy), Objects.requireNonNull(avSpatialCapacityAmodeus));
+                    Objects.requireNonNull(parkingStrategy), Objects.requireNonNull(avSpatialCapacityAmodeus), rebalancingStrategy);
         }
     }
 }

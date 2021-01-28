@@ -1,8 +1,8 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package amodeus.amodeus.dispatcher.core;
 
-import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.api.core.v01.Id;
+import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicleImpl;
 import org.matsim.contrib.dvrp.fleet.ImmutableDvrpVehicleSpecification;
@@ -35,7 +35,7 @@ import amodeus.amodeus.ArtificialScenarioCreator;
                 .capacity(3) //
                 .startLinkId(linkDepotOut.getId()) //
                 .build(), linkDepotOut);
-        roboTaxi1 = new RoboTaxi(vehicle1, divertableLinkTime, linkDepotOut, RoboTaxiUsageType.SHARED);
+        roboTaxi1 = new RoboTaxi(vehicle1, divertableLinkTime, linkDepotOut, RoboTaxiUsageType.SHARED, null);
         setFirstStayTask(vehicle1);
 
         Id<DvrpVehicle> idAv2 = Id.create("av2", DvrpVehicle.class);
@@ -46,14 +46,14 @@ import amodeus.amodeus.ArtificialScenarioCreator;
                 .capacity(3) //
                 .startLinkId(linkDepotOut.getId()) //
                 .build(), linkDepotOut);
-        roboTaxi2 = new RoboTaxi(vehicle2, divertableLinkTime, linkDepotOut, RoboTaxiUsageType.SHARED);
+        roboTaxi2 = new RoboTaxi(vehicle2, divertableLinkTime, linkDepotOut, RoboTaxiUsageType.SHARED, null);
         setFirstStayTask(vehicle2);
         System.out.println("ArtificialScenario Created");
     }
 
     private static void setFirstStayTask(DvrpVehicle vehicle) {
         Schedule schedule = vehicle.getSchedule();
-        schedule.addTask(new AmodeusStayTask(vehicle.getServiceBeginTime(), vehicle.getServiceEndTime(), vehicle.getStartLink()));
+        schedule.addTask(new DrtStayTask(vehicle.getServiceBeginTime(), vehicle.getServiceEndTime(), vehicle.getStartLink()));
         schedule.nextTask();
     }
 }

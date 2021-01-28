@@ -1,8 +1,8 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package amodeus.amodeus.dispatcher.core;
 
-import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.schedule.Schedule;
 import org.matsim.contrib.dvrp.schedule.Task;
 
@@ -29,7 +29,7 @@ import org.matsim.contrib.dvrp.schedule.Task;
             RoboTaxi roboTaxi, double taskEndTime, double scheduleEndTime, Link destination) {
         if (taskEndTime < scheduleEndTime) {
             Schedule schedule = roboTaxi.getSchedule();
-            schedule.addTask(new AmodeusStayTask(taskEndTime, scheduleEndTime, destination));
+            schedule.addTask(new DrtStayTask(taskEndTime, scheduleEndTime, destination));
         } else
             throw new IllegalArgumentException("taskEndTime " + taskEndTime + " > scheduleEndTime " + scheduleEndTime);
     }

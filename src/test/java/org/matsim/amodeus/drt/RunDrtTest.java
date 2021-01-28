@@ -13,9 +13,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.matsim.amodeus.config.AmodeusConfigGroup;
 import org.matsim.amodeus.config.AmodeusModeConfig;
-import org.matsim.amodeus.drt.AmodeusDrtModule;
-import org.matsim.amodeus.drt.AmodeusDrtQSimModule;
-import org.matsim.amodeus.drt.MultiModeDrtModuleForAmodeus;
 import org.matsim.amodeus.framework.AmodeusModule;
 import org.matsim.amodeus.framework.VirtualNetworkModeModule;
 import org.matsim.amodeus.scenario.TestScenarioGenerator;
@@ -23,6 +20,7 @@ import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.drt.optimizer.insertion.ExtensiveInsertionSearchParams;
 import org.matsim.contrib.drt.routing.DrtRoute;
 import org.matsim.contrib.drt.routing.DrtRouteFactory;
 import org.matsim.contrib.drt.run.DrtConfigGroup;
@@ -99,6 +97,9 @@ public class RunDrtTest {
         drtModeConfig.setRejectRequestIfMaxWaitOrTravelTimeViolated(true);
         drtModeConfig.setOperationalScheme(OperationalScheme.door2door);
 
+        ExtensiveInsertionSearchParams searchParams = new ExtensiveInsertionSearchParams();
+        drtModeConfig.addParameterSet(searchParams);
+
         MultiModeDrtConfigGroup drtConfig = MultiModeDrtConfigGroup.get(config);
         drtConfig.addParameterSet(drtModeConfig);
         DrtConfigs.adjustDrtConfig(drtModeConfig, config.planCalcScore(), config.plansCalcRoute());
@@ -121,16 +122,8 @@ public class RunDrtTest {
 
         // Add DVRP and activate modes
         controller.addOverridingModule(new DvrpModule());
+        controller.addOverridingModule(new MultiModeDrtModule());
         controller.configureQSimComponents(DvrpQSimComponents.activateModes(drtModeConfig.getMode()));
-
-        if (!useAmodeus) {
-            // No Amodeus, so we use standard MultiModeDrtModule
-            controller.addOverridingModule(new MultiModeDrtModule());
-        } else {
-            // Add DRT, but NOT with MultiModeDrtModule, but with MultiModeDrtModuleForAmodeus
-            // because right now we remove DRT's analysis components as they are not compatible yet
-            controller.addOverridingModule(new MultiModeDrtModuleForAmodeus());
-        }
 
         // Here we start overriding things of DRT with Amodeus
         if (useAmodeus) {
@@ -165,8 +158,8 @@ public class RunDrtTest {
             // components of DRT. Later on, we would only override DrtOptimizer, but we are
             // not there yet, because Amodeus internally still works with AmodeusStayTask, etc.
             // and does not understand DrtStayTask, etc.
-            controller.addOverridingModule(new AmodeusDrtModule(amodeusModeConfig));
-            controller.addOverridingQSimModule(new AmodeusDrtQSimModule(drtModeConfig.getMode()));
+            controller.addOverridingModule(new AmodeusDrtModule());
+            AmodeusDrtModule.overrideDispatchers(controller, config);
         }
 
         controller.run();

@@ -14,11 +14,11 @@ import org.matsim.amodeus.components.dispatcher.single_heuristic.ModeChangeEvent
 import org.matsim.amodeus.components.dispatcher.single_heuristic.SingleHeuristicDispatcher;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.amodeus.config.modal.DispatcherConfig;
-import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusTaskType;
+import org.matsim.amodeus.dvrp.schedule.AmodeusTaskTypes;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
@@ -79,12 +79,12 @@ public class MultiODHeuristic implements AmodeusDispatcher {
     @Override
     public void onNextTaskStarted(DvrpVehicle vehicle) {
         Task task = vehicle.getSchedule().getCurrentTask();
-        if (task.getTaskType() == AmodeusTaskType.PICKUP) {
+        if (task.getTaskType() == AmodeusTaskTypes.STOP) {
             assignableRequests.remove(vehicle2Request.remove(vehicle));
         }
 
-        if (task.getTaskType() == AmodeusTaskType.STAY) {
-            addVehicle(vehicle, ((AmodeusStayTask) task).getLink());
+        if (DrtStayTask.TYPE.equals(task.getTaskType())) {
+            addVehicle(vehicle, ((DrtStayTask) task).getLink());
         }
     }
 

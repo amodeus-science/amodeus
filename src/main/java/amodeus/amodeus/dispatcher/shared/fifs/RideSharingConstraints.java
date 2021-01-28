@@ -7,8 +7,6 @@ import java.util.Map.Entry;
 
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
-import amodeus.amodeus.dispatcher.shared.SharedMealType;
-
 /** In this class the constraints of ride sharing are defined. */
 /* package */ class RideSharingConstraints {
 
@@ -85,7 +83,7 @@ import amodeus.amodeus.dispatcher.shared.SharedMealType;
      * @return */
     public boolean waitTimesExceeded(SharedAvRoute sharedAvRoute, double now) {
         for (SharedRoutePoint sharedRoutePoint : sharedAvRoute.getRoute())
-            if (sharedRoutePoint.getMealType().equals(SharedMealType.PICKUP))
+            if (sharedRoutePoint.isPickup())
                 // TODO @ChengQi Check this constraint could be that from submission to this time
                 if (sharedRoutePoint.getArrivalTime() >= now + maxPickupTime)
                     return true;
@@ -108,8 +106,8 @@ import amodeus.amodeus.dispatcher.shared.SharedMealType;
     private static Map<PassengerRequest, Double> getRemainingTimes(SharedAvRoute route, double now) {
         Map<PassengerRequest, Double> remainingTimes = new HashMap<>();
         for (SharedRoutePoint sharedRoutePoint : route.getRoute())
-            if (sharedRoutePoint.getMealType().equals(SharedMealType.DROPOFF))
-                remainingTimes.put(sharedRoutePoint.getAvRequest(), sharedRoutePoint.getArrivalTime() - now);
+            if (sharedRoutePoint.isDropoff())
+                remainingTimes.put(sharedRoutePoint.getRequest(), sharedRoutePoint.getArrivalTime() - now);
         return remainingTimes;
     }
 }

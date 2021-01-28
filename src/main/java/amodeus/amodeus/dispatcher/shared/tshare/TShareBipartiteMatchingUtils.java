@@ -10,7 +10,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
-import amodeus.amodeus.dispatcher.core.SharedUniversalDispatcher;
+import amodeus.amodeus.dispatcher.core.UniversalDispatcher;
 import amodeus.amodeus.dispatcher.util.GlobalBipartiteCost;
 import amodeus.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import amodeus.amodeus.routing.CachedNetworkTimeDistance;
@@ -19,7 +19,7 @@ import ch.ethz.idsc.tensor.Tensors;
 
 /* package */ class TShareBipartiteMatchingUtils {
 
-    public Tensor executePickup(SharedUniversalDispatcher universalDispatcher, //
+    public Tensor executePickup(UniversalDispatcher universalDispatcher, //
             Function<PassengerRequest, RoboTaxi> getPickupTaxi, //
             Collection<RoboTaxi> roboTaxis, /** <- typically universalDispatcher.getDivertableRoboTaxis() */
             Collection<PassengerRequest> requests, /** <- typically universalDispatcher.getPassengerRequests() */
@@ -30,7 +30,7 @@ import ch.ethz.idsc.tensor.Tensors;
                 .match(roboTaxis, requests));
 
         /** perform dispatching */
-        matching.forEach(universalDispatcher::addSharedRoboTaxiPickup);
+        matching.forEach((rt, avreq) -> universalDispatcher.addSharedRoboTaxiPickup(rt, avreq, Double.NaN, Double.NaN));
         return infoLine; // TODO @clruch always empty?
     }
 

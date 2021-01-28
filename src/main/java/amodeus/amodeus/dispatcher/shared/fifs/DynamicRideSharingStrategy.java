@@ -12,6 +12,7 @@ import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -22,8 +23,9 @@ import org.matsim.core.router.util.TravelTime;
 
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
-import amodeus.amodeus.dispatcher.core.SharedRebalancingDispatcher;
-import amodeus.amodeus.dispatcher.shared.SharedCourse;
+import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
+import amodeus.amodeus.dispatcher.core.RebalancingDispatcher;
+import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
 import amodeus.amodeus.routing.CachedNetworkTimeDistance;
 import amodeus.amodeus.routing.EasyMinTimePathCalculator;
@@ -48,7 +50,7 @@ import amodeus.amodeus.util.matsim.SafeConfig;
  * 4. New travelers will be picked up at least within the next 5 minutes;
  * 5. Total planned trip time to serve all passengers ≤ remaining time to serve
  * the current trips + time to serve the new trip + drop-off time, if not pooled. */
-public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
+public class DynamicRideSharingStrategy extends RebalancingDispatcher {
 
     /** general Dispatcher Settings */
     private final int dispatchPeriod; // [s]
@@ -87,8 +89,8 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
     protected DynamicRideSharingStrategy(Network network, //
             Config config, AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, AmodeusRouter router, EventsManager eventsManager, //
-            MatsimAmodeusDatabase db) {
-        super(config, operatorConfig, travelTime, router, eventsManager, db);
+            MatsimAmodeusDatabase db, RebalancingStrategy rebalancingStrategy) {
+        super(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy, RoboTaxiUsageType.SHARED);
         DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(300);
 
@@ -118,7 +120,7 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
         if (round_now % dispatchPeriod == 0) {
             /** prepare the registers for the dispatching */
             roboTaxiHandler.update(getRoboTaxis(), getDivertableUnassignedRoboTaxis());
-            requestHandler.addUnassignedRequests(getUnassignedPassengerRequests(), timeDb, now);
+            requestHandler.addUnassignedRequests(getUnassignedRequests(), timeDb, now);
             requestHandler.updateLastHourRequests(now, BINSIZETRAVELDEMAND);
 
             /** calculate Rebalance before (!) dispatching */
@@ -134,14 +136,14 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
                         .collect(Collectors.toSet());
 
                 /** THIS IS WHERE WE CALCULATE THE SHARING POSSIBILITIES */
-                Optional<Entry<RoboTaxi, List<SharedCourse>>> rideSharingRoboTaxi = routeValidation.getClosestValidSharingRoboTaxi(robotaxisWithMenu, avRequest, now, timeDb, //
+                Optional<Entry<RoboTaxi, List<Directive>>> rideSharingRoboTaxi = routeValidation.getClosestValidSharingRoboTaxi(robotaxisWithMenu, avRequest, now, timeDb, //
                         requestHandler, roboTaxiHandler);
 
                 if (rideSharingRoboTaxi.isPresent()) {
                     /** in Case we have a sharing possibility we assign */
                     RoboTaxi roboTaxi = rideSharingRoboTaxi.get().getKey();
                     GlobalAssert.that(routeValidation.menuFulfillsConstraints(roboTaxi, rideSharingRoboTaxi.get().getValue(), avRequest, now, timeDb, requestHandler));
-                    addSharedRoboTaxiPickup(roboTaxi, avRequest);
+                    addSharedRoboTaxiPickup(roboTaxi, avRequest, Double.NaN, Double.NaN);
                     requestHandler.removeFromUnasignedRequests(avRequest);
                     rebalanceDirectives.removefromDirectives(roboTaxi);
                     roboTaxi.updateMenu(rideSharingRoboTaxi.get().getValue());
@@ -152,7 +154,7 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
                             requestHandler.calculateWaitTime(avRequest), now, timeDb);
                     if (emptyRoboTaxi.isPresent()) {
                         /** In case we have a close vehicle which is free lets assign it */
-                        addSharedRoboTaxiPickup(emptyRoboTaxi.get(), avRequest); // give directive
+                        addSharedRoboTaxiPickup(emptyRoboTaxi.get(), avRequest, Double.NaN, Double.NaN); // give directive
                         roboTaxiHandler.assign(emptyRoboTaxi.get()); // the assigned RoboTaxi is not unassigned anymore
                         rebalanceDirectives.removefromDirectives(emptyRoboTaxi.get()); // this taxi can not be rebalanced anymore
                         requestHandler.removeFromUnasignedRequests(avRequest); // the request is not unassigned anymore
@@ -194,7 +196,9 @@ public class DynamicRideSharingStrategy extends SharedRebalancingDispatcher {
             AmodeusRouter router = inject.getModal(AmodeusRouter.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);
 
-            return new DynamicRideSharingStrategy(network, config, operatorConfig, travelTime, router, eventsManager, db);
+            RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
+
+            return new DynamicRideSharingStrategy(network, config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy);
         }
     }
 }

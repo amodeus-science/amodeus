@@ -40,7 +40,7 @@ import ch.ethz.idsc.tensor.Tensors;
         Tensor infoLine = Tensors.empty();
         Map<RoboTaxi, PassengerRequest> gbpMatchCleaned = getGBPMatch(universalDispatcher, roboTaxis, requests, distanceFunction, network);
         /** perform dispatching */
-        gbpMatchCleaned.forEach(universalDispatcher::setRoboTaxiPickup);
+        gbpMatchCleaned.forEach((rt, req) -> universalDispatcher.setRoboTaxiPickup(rt, req, Double.NaN, Double.NaN));
         return infoLine;
     }
 

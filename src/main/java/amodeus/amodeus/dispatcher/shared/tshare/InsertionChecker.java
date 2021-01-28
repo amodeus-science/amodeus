@@ -11,9 +11,9 @@ import java.util.function.BiConsumer;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
-import amodeus.amodeus.dispatcher.core.SharedUniversalDispatcher;
+import amodeus.amodeus.dispatcher.core.UniversalDispatcher;
+import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
 import amodeus.amodeus.dispatcher.shared.Compatibility;
-import amodeus.amodeus.dispatcher.shared.SharedCourse;
 import amodeus.amodeus.routing.CachedNetworkTimeDistance;
 import amodeus.amodeus.routing.NetworkTimeDistInterface;
 import amodeus.amodeus.util.math.GlobalAssert;
@@ -43,7 +43,7 @@ import ch.ethz.idsc.tensor.Scalar;
 
     private final RoboTaxi roboTaxi;
     private final PassengerRequest request;
-    private List<SharedCourse> optimalMenu = null;
+    private List<Directive> optimalMenu = null;
     private Scalar optimalLength;
     private Scalar originalLength;
 
@@ -53,7 +53,7 @@ import ch.ethz.idsc.tensor.Scalar;
         this.request = request;
 
         /** get robotaxi menu */
-        List<SharedCourse> originalMenu = roboTaxi.getUnmodifiableViewOfCourses();
+        List<Directive> originalMenu = roboTaxi.getUnmodifiableViewOfCourses();
         int length = originalMenu.size();
 
         /** we should only be here if the {@link RoboTaxi} has a {@link PassengerRequest} on board */
@@ -68,16 +68,16 @@ import ch.ethz.idsc.tensor.Scalar;
         originalLength = Length.of(roboTaxi.getDivertableLocation(), originalMenu, distance, timeNow);
 
         /** create new courses to add to existing menu */
-        SharedCourse pickupCourse = SharedCourse.pickupCourse(request);
-        SharedCourse drpoffCourse = SharedCourse.dropoffCourse(request);
+        Directive pickupCourse = Directive.pickup(request);
+        Directive drpoffCourse = Directive.dropoff(request);
 
         /** calculate length of each modification, two indices show how many
          * times the Course was moved forward from the end of the menu */
-        NavigableMap<Scalar, List<SharedCourse>> menuOptions = new TreeMap<>();
+        NavigableMap<Scalar, List<Directive>> menuOptions = new TreeMap<>();
         for (int i = 0; i <= length; ++i) {
             for (int j = length; j >= i; j--) {
                 /** creation of new menu */
-                List<SharedCourse> newMenu = new ArrayList<>();
+                List<Directive> newMenu = new ArrayList<>();
                 for (int k = 0; k <= length; ++k) {
                     if (i == k)
                         newMenu.add(pickupCourse);
@@ -88,7 +88,7 @@ import ch.ethz.idsc.tensor.Scalar;
                 }
 
                 /** check compatibility with {@link RoboTaxi} capacity for newMenu */
-                boolean capacityCompatible = Compatibility.of(newMenu).forCapacity(roboTaxi.getCapacity());
+                boolean capacityCompatible = Compatibility.of(newMenu).forCapacity(roboTaxi.getScheduleManager(), roboTaxi.getCapacity());
                 if (!capacityCompatible)
                     continue;
 
@@ -111,7 +111,7 @@ import ch.ethz.idsc.tensor.Scalar;
             /** if the routine ran correctly, the number of {@link SharedCourse}s should
              * be increased by exactly 2 */
             GlobalAssert.that(optimalMenu.size() == originalMenu.size() + 2);
-            GlobalAssert.that(Compatibility.of(optimalMenu).forCapacity(roboTaxi.getCapacity()));
+            GlobalAssert.that(Compatibility.of(optimalMenu).forCapacity(roboTaxi.getScheduleManager(), roboTaxi.getCapacity()));
         }
     }
 
@@ -124,7 +124,7 @@ import ch.ethz.idsc.tensor.Scalar;
     }
 
     /** Function add the request to the optimal menu with the {@link BiConsumer} @param addSharedPickup
-     * supplied by the dispatcher, normally from {@link SharedUniversalDispatcher} */
+     * supplied by the dispatcher, normally from {@link UniversalDispatcher} */
     public void executeBest(BiConsumer<RoboTaxi, PassengerRequest> addSharedPickup) {
         if (Objects.nonNull(optimalMenu)) {
             addSharedPickup.accept(roboTaxi, request);

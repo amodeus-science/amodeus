@@ -1,21 +1,11 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package amodeus.amodeus.dispatcher.core;
 
-import java.util.Arrays;
-import java.util.List;
-
-import amodeus.amodeus.dispatcher.shared.Compatibility;
-import amodeus.amodeus.dispatcher.shared.SharedCourse;
-import amodeus.amodeus.dispatcher.shared.SharedCourseAccess;
-import amodeus.amodeus.dispatcher.shared.SharedCourseMove;
-import amodeus.amodeus.dispatcher.shared.SharedMealType;
-import amodeus.amodeus.dispatcher.shared.SharedMenu;
-import amodeus.amodeus.dispatcher.shared.SharedMenuCheck;
 import junit.framework.TestCase;
 
 public class SharedMenuTest extends TestCase {
     public void testSimple() {
-        ArtificialSharedScenarioCreator artificialScenarioCreator = new ArtificialSharedScenarioCreator();
+        /*ArtificialSharedScenarioCreator artificialScenarioCreator = new ArtificialSharedScenarioCreator();
         SharedCourse pickupCourse1 = SharedCourse.pickupCourse(artificialScenarioCreator.avRequest1);
         assertEquals(pickupCourse1.getLink(), artificialScenarioCreator.avRequest1.getFromLink());
         assertEquals(pickupCourse1.getMealType(), SharedMealType.PICKUP);
@@ -56,7 +46,7 @@ public class SharedMenuTest extends TestCase {
         }
 
         System.out.println("");
-        System.out.println("Shared Menu Test Done");
+        System.out.println("Shared Menu Test Done");*/
     }
 
 }

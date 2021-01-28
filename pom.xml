@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>amodeus</groupId>
 	<artifactId>amodeus</artifactId>
-	<version>2.0.0</version>
+	<version>2.1.0</version>
 
 	<properties>
 		<maven.compiler.source>11</maven.compiler.source>
@@ -12,7 +12,7 @@
 		<skipTests>false</skipTests>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<github.global.server>github</github.global.server>
-		<matsim.version>12.0</matsim.version>
+		<matsim.version>13.0-2020w45-SNAPSHOT</matsim.version>
 	</properties>
 
 	<dependencies>
@@ -92,6 +92,10 @@
 		<repository>
 			<id>matsim-release</id>
 			<url>https://dl.bintray.com/matsim/matsim</url>
+		</repository>
+		<repository>
+			<id>ch.sbb</id>
+			<url>https://schweizerischebundesbahnen.bintray.com/simba.mvn</url>
 		</repository>
 	</repositories>
 

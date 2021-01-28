@@ -5,12 +5,14 @@ import org.matsim.amodeus.components.AmodeusDispatcher;
 import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
 
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
+import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
 import amodeus.amodeus.dispatcher.core.RebalancingDispatcher;
 import amodeus.amodeus.dispatcher.util.BipartiteMatcher;
 import amodeus.amodeus.dispatcher.util.ConfigurableBipartiteMatcher;
@@ -40,8 +42,8 @@ public class GlobalBipartiteMatchingDispatcher extends RebalancingDispatcher {
     protected GlobalBipartiteMatchingDispatcher(Network network, Config config, //
             AmodeusModeConfig operatorConfig, TravelTime travelTime, //
             AmodeusRouter router, EventsManager eventsManager, //
-            MatsimAmodeusDatabase db) {
-        super(config, operatorConfig, travelTime, router, eventsManager, db);
+            MatsimAmodeusDatabase db, RebalancingStrategy rebalancingStrategy) {
+        super(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy, RoboTaxiUsageType.SINGLEUSED);
         DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(30);
         DistanceHeuristics distanceHeuristics = //
@@ -82,8 +84,9 @@ public class GlobalBipartiteMatchingDispatcher extends RebalancingDispatcher {
             Network network = inject.getModal(Network.class);
             AmodeusRouter router = inject.getModal(AmodeusRouter.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);
-
-            return new GlobalBipartiteMatchingDispatcher(network, config, operatorConfig, travelTime, router, eventsManager, db);
+            RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
+            
+            return new GlobalBipartiteMatchingDispatcher(network, config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy);
         }
     }
 }

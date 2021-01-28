@@ -11,8 +11,6 @@ import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.core.network.NetworkUtils;
 
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
-import amodeus.amodeus.dispatcher.shared.OnMenuRequests;
-import amodeus.amodeus.dispatcher.shared.SharedMealType;
 
 /* package */ enum RouteGenerator {
     ;
@@ -33,7 +31,7 @@ import amodeus.amodeus.dispatcher.shared.SharedMealType;
         List<NextPossibleStop> nextPossibleStopsList = new ArrayList<>();
         int numberOfPassengerOnboard = (int) roboTaxi.getOnBoardPassengers(); // get initial no. passenger on board.
 
-        for (PassengerRequest avRequest : OnMenuRequests.getOnBoardRequests(roboTaxi.getUnmodifiableViewOfCourses()))
+        for (PassengerRequest avRequest : roboTaxi.getScheduleManager().getOnBoardRequests())
             nextPossibleStopsList.add(new NextPossibleStop(avRequest, true));// add all on board request to the set
 
         for (PassengerRequest avRequest : additionalRequest)
@@ -65,9 +63,9 @@ import amodeus.amodeus.dispatcher.shared.SharedMealType;
             NextPossibleStop chosenNextStop = nextPossibleStopsList.get(indexOfStop);
             // add this stop to the output list
             // determine sharedMealType
-            SharedMealType stopType = SharedMealType.PICKUP;
+            boolean isPickup = true;
             if (chosenNextStop.getOnboardStatus())
-                stopType = SharedMealType.DROPOFF; // if request is on board, then it will be drop off task
+                isPickup = false; // if request is on board, then it will be drop off task
             // determine time (expected arrival time at that stop)
             double arrivalTime = nowInThisFunction + ttc.of(currentLink, chosenNextStop.getLink(), //
                     nowInThisFunction, true);
@@ -79,11 +77,11 @@ import amodeus.amodeus.dispatcher.shared.SharedMealType;
                 return null;
 
             // modify number of passenger in vehicle
-            if (stopType == SharedMealType.PICKUP) {
+            if (isPickup) {
                 numberOfPassengerOnboard = numberOfPassengerOnboard + 1;
                 nowInThisFunction = arrivalTime + pickupDurationPerStop;
             }
-            if (stopType == SharedMealType.DROPOFF) {
+            if (!isPickup) {
                 numberOfPassengerOnboard = numberOfPassengerOnboard - 1;
                 nowInThisFunction = arrivalTime + dropoffDurationPerStop;
             }
@@ -93,7 +91,7 @@ import amodeus.amodeus.dispatcher.shared.SharedMealType;
 
             // If it reached here, this stop is valid. Write it down in the list
             StopInRoute nextStopInRoute = new StopInRoute(arrivalTime, chosenNextStop.getLink(), //
-                    stopType, chosenNextStop.getPassengerRequest());
+                    isPickup, chosenNextStop.getPassengerRequest());
             finalRoute.add(nextStopInRoute);
 
             // "move" the taxi to that stop and calculate the next stop (loop)

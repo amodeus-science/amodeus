@@ -10,11 +10,10 @@ import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.components.dispatcher.AVVehicleAssignmentEvent;
 import org.matsim.amodeus.components.dispatcher.utils.SingleRideAppender;
 import org.matsim.amodeus.config.AmodeusModeConfig;
-import org.matsim.amodeus.dvrp.schedule.AmodeusStayTask;
-import org.matsim.amodeus.dvrp.schedule.AmodeusTaskType;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
@@ -70,8 +69,8 @@ public class SingleHeuristicDispatcher implements AmodeusDispatcher {
     @Override
     public void onNextTaskStarted(DvrpVehicle vehicle) {
         Task task = vehicle.getSchedule().getCurrentTask();
-        if (task.getTaskType() == AmodeusTaskType.STAY) {
-            addVehicle(vehicle, ((AmodeusStayTask) task).getLink());
+        if (DrtStayTask.TYPE.equals(task.getTaskType())) {
+            addVehicle(vehicle, ((DrtStayTask) task).getLink());
         }
     }
 
