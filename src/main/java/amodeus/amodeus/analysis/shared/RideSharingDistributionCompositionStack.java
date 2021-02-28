@@ -12,12 +12,12 @@ import amodeus.amodeus.analysis.element.AnalysisExport;
 import amodeus.amodeus.analysis.element.NumberPassengersAnalysis;
 import amodeus.amodeus.analysis.plot.AmodeusChartUtils;
 import amodeus.amodeus.util.math.GlobalAssert;
+import amodeus.tensor.fig.StackedHistogram;
+import amodeus.tensor.fig.VisualSet;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import amodeus.tensor.fig.StackedHistogram;
-import amodeus.tensor.fig.VisualSet;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.red.Total;
 
@@ -46,7 +46,7 @@ public enum RideSharingDistributionCompositionStack implements AnalysisExport {
         }
         // ---
         VisualSet visualSet = new VisualSet(colorDataCreator.getColorDataIndexed());
-        Scalar totalNumberPassengers = Total.of(sharedDistribution).Get();
+        Scalar totalNumberPassengers = Total.ofVector(sharedDistribution);
         sharedDistribution.forEach(s -> visualSet.add( //
                 Tensors.matrix(new Scalar[][] { //
                         { RealScalar.ONE, (Scalar) s.divide(totalNumberPassengers) } })) //

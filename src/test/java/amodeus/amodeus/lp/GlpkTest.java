@@ -3,7 +3,7 @@ package amodeus.amodeus.lp;
 
 import org.gnu.glpk.GLPK;
 
-import ch.ethz.idsc.tensor.io.HomeDirectory;
+import ch.ethz.idsc.tensor.ext.HomeDirectory;
 import junit.framework.TestCase;
 
 public class GlpkTest extends TestCase {

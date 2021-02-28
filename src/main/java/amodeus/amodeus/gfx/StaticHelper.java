@@ -17,13 +17,13 @@ import ch.ethz.idsc.tensor.red.Median;
     public static Scalar meanOrZero(Tensor vector) {
         if (Tensors.isEmpty(vector))
             return RealScalar.ZERO;
-        return Mean.of(vector).Get();
+        return (Scalar) Mean.of(vector);
     }
 
     public static Scalar medianOrZero(Tensor vector) {
         if (vector.length() == 0)
             return RealScalar.ZERO;
-        return Median.of(vector).Get();
+        return (Scalar) Median.of(vector);
     }
 
     public static Scalar maxOrZero(Tensor vector) {

@@ -12,8 +12,8 @@ import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
 
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
-import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
 import amodeus.amodeus.dispatcher.core.RebalancingDispatcher;
+import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
 import amodeus.amodeus.dispatcher.util.BipartiteMatcher;
 import amodeus.amodeus.dispatcher.util.ConfigurableBipartiteMatcher;
 import amodeus.amodeus.dispatcher.util.DistanceCost;

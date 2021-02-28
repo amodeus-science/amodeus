@@ -9,8 +9,6 @@ import java.util.Set;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
-import amodeus.amodeus.dispatcher.core.schedule.directives.DefaultDriveDirective;
-import amodeus.amodeus.dispatcher.core.schedule.directives.DefaultStopDirective;
 import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
 
 /* package */ class CheckingUpdateMenuOrNot {

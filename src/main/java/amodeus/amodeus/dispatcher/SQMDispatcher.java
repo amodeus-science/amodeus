@@ -23,10 +23,10 @@ import org.matsim.core.router.util.TravelTime;
 
 import com.google.inject.TypeLiteral;
 
+import amodeus.amodeus.dispatcher.core.PartitionedDispatcher;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.RoboTaxiStatus;
 import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
-import amodeus.amodeus.dispatcher.core.PartitionedDispatcher;
 import amodeus.amodeus.net.FastLinkLookup;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
 import amodeus.amodeus.net.TensorCoords;

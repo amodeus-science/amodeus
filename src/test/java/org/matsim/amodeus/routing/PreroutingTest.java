@@ -7,7 +7,6 @@ import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.amodeus.config.modal.AmodeusScoringConfig;
 import org.matsim.amodeus.framework.AmodeusModule;
 import org.matsim.amodeus.framework.AmodeusQSimModule;
-import org.matsim.amodeus.routing.AmodeusRoute;
 import org.matsim.amodeus.scenario.TestScenarioGenerator;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.population.Leg;

@@ -8,10 +8,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.zip.DataFormatException;
 
-import amodeus.amodeus.analysis.Analysis;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 
+import amodeus.amodeus.analysis.Analysis;
 import amodeus.amodeus.options.ScenarioOptions;
 
 public enum VirtualNetworkGet {

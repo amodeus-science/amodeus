@@ -60,9 +60,9 @@ public class VehicleToVSGenerator implements AmodeusGenerator {
 
         /** get distribution from travelData */
         Tensor v0 = travelData.getV0();
-        GlobalAssert.that(Total.of(v0).Get().number().intValue() <= operatorConfig.getGeneratorConfig().getNumberOfVehicles());
+        GlobalAssert.that(Total.ofVector(v0).number().intValue() <= operatorConfig.getGeneratorConfig().getNumberOfVehicles());
 
-        boolean noDistribution = Scalars.isZero(Total.of(v0).Get());
+        boolean noDistribution = Scalars.isZero(Total.ofVector(v0));
         long average = operatorConfig.getGeneratorConfig().getNumberOfVehicles() / virtualNetwork.getvNodesCount();
         int vNodes = virtualNetwork.getvNodesCount();
 

@@ -1,17 +1,16 @@
 /* amodeus - Copyright (c) 2018, ETH Zurich, Institute for Dynamic Systems and Control */
 package amodeus.amodeus.net;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import amodeus.amodeus.dispatcher.core.LinkStatusPair;
-import amodeus.amodeus.dispatcher.core.RoboTaxiStatus;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 
+import amodeus.amodeus.dispatcher.core.LinkStatusPair;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
+import amodeus.amodeus.dispatcher.core.RoboTaxiStatus;
 import amodeus.amodeus.util.math.GlobalAssert;
 
 /* package */ enum VehicleContainerCompiler {

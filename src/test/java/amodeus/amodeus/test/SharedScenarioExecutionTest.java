@@ -162,7 +162,7 @@ public class SharedScenarioExecutionTest {
 
         /** number of passengers */
         NumberPassengersAnalysis npa = ate.getNumberPassengersAnalysis();
-        assertEquals(Total.of(npa.getSharedOthersDistribution()).Get().number().intValue(), npa.getSharedOthersPerRequest().length());
+        assertEquals(Total.ofVector(npa.getSharedOthersDistribution()).number().intValue(), npa.getSharedOthersPerRequest().length());
 
         /** presence of plot files */
         File data = new File("output/001/data");

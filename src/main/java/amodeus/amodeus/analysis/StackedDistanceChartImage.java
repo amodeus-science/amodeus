@@ -10,10 +10,10 @@ import amodeus.amodeus.analysis.element.AnalysisExport;
 import amodeus.amodeus.analysis.element.DistanceElement;
 import amodeus.amodeus.analysis.plot.AmodeusChartUtils;
 import amodeus.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.Tensors;
 import amodeus.tensor.fig.StackedHistogram;
 import amodeus.tensor.fig.VisualSet;
+import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
 public enum StackedDistanceChartImage implements AnalysisExport {

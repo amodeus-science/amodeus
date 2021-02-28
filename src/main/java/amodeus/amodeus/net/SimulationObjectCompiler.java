@@ -9,11 +9,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.matsim.contrib.dvrp.passenger.PassengerRequest;
+
 import amodeus.amodeus.dispatcher.core.LinkStatusPair;
 import amodeus.amodeus.dispatcher.core.RequestStatus;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.util.math.GlobalAssert;
-import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 public class SimulationObjectCompiler {
     private final SimulationObject simulationObject;

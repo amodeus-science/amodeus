@@ -4,9 +4,7 @@ package amodeus.amodeus.dispatcher.shared.highcap;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
-import amodeus.amodeus.dispatcher.core.schedule.directives.DefaultStopDirective;
 import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
-import amodeus.amodeus.dispatcher.core.schedule.directives.StopDirective;
 
 // TODO @sebhoerl might be an extension of the Shared Course instead, see the StopInRouteAsCourseExtension
 /* package */ class StopInRoute {

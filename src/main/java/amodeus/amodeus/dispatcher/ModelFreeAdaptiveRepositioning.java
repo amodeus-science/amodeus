@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.matsim.amodeus.components.AmodeusDispatcher;
-import org.matsim.amodeus.components.AmodeusDispatcher.AVDispatcherFactory;
 import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.network.Link;
@@ -20,10 +19,10 @@ import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
 
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
+import amodeus.amodeus.dispatcher.core.RebalancingDispatcher;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.RoboTaxiStatus;
 import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
-import amodeus.amodeus.dispatcher.core.RebalancingDispatcher;
 import amodeus.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import amodeus.amodeus.dispatcher.util.BipartiteMatcher;
 import amodeus.amodeus.dispatcher.util.ConfigurableBipartiteMatcher;

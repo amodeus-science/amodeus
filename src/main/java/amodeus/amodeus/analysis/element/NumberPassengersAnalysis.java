@@ -74,8 +74,9 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
     @Override
     public void consolidate() {
         /** calculate standard dropoff time. */
-        Scalar maxLengthNumberPassengers = Tensor.of(passengerDistribution.stream()//
-                .map(t -> RealScalar.of(t.length()))).flatten(-1).reduce(Max::of).get().Get();
+    	// TODO can simplify
+        Scalar maxLengthNumberPassengers = (Scalar) Tensor.of(passengerDistribution.stream()//
+                .map(t -> RealScalar.of(t.length()))).flatten(-1).reduce(Max::of).get();
         passengerDistribution = //
                 PadRight.zeros(passengerDistribution.length(), maxLengthNumberPassengers.number().intValue())//
                         .apply(passengerDistribution);

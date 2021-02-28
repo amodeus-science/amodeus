@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import amodeus.amodeus.util.io.CopyFiles;
-import ch.ethz.idsc.tensor.io.DeleteDirectory;
+import ch.ethz.idsc.tensor.ext.DeleteDirectory;
 
 public enum TestFileHandling {
     ;

@@ -54,9 +54,6 @@ import com.google.inject.TypeLiteral;
 
 import amodeus.amodeus.data.LocationSpec;
 import amodeus.amodeus.data.ReferenceFrame;
-import amodeus.amodeus.dispatcher.alonso_mora_2016.AlonsoMoraParameters;
-import amodeus.amodeus.dispatcher.alonso_mora_2016.AlonsoMoraParameters.RejectionType;
-import amodeus.amodeus.dispatcher.alonso_mora_2016.AlonsoMoraParameters.RouteSearchType;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
 import amodeus.amodeus.options.LPOptions;
 import amodeus.amodeus.options.LPOptionsBase;

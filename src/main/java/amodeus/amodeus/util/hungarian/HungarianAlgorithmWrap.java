@@ -2,7 +2,7 @@
 package amodeus.amodeus.util.hungarian;
 
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.io.HomeDirectory;
+import ch.ethz.idsc.tensor.ext.HomeDirectory;
 import ch.ethz.idsc.tensor.io.Put;
 
 public enum HungarianAlgorithmWrap {

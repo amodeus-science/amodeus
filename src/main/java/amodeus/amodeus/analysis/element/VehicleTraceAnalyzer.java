@@ -13,6 +13,8 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import org.matsim.api.core.v01.network.Link;
+
 import amodeus.amodeus.dispatcher.core.LinkStatusPair;
 import amodeus.amodeus.dispatcher.core.RoboTaxiStatus;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
@@ -23,7 +25,6 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.qty.Unit;
-import org.matsim.api.core.v01.network.Link;
 
 /* package */ class VehicleTraceAnalyzer {
     private static final List<RoboTaxiStatus> DRIVING_STATII = //

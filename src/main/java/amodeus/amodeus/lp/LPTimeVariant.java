@@ -18,6 +18,7 @@ import amodeus.amodeus.options.LPOptions;
 import amodeus.amodeus.util.math.GlobalAssert;
 import amodeus.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Array;
 
@@ -132,7 +133,7 @@ public class LPTimeVariant extends LPTimeVariantBase {
                     // set upper bound
                     double upperBound = 0;
                     for (int k = 0; k < t; k++)
-                        upperBound += lambdaAbsolute_ij.Get(k, i, j).number().doubleValue();
+                        upperBound += ((Scalar) lambdaAbsolute_ij.get(k, i, j)).number().doubleValue();
                     GLPK.glp_set_row_bnds(lp, rowId, GLPKConstants.GLP_UP, 0.0, upperBound); // Upper bound: first number irrelevant
 
                     // set all coefficient entries of matrix A to zero first
@@ -166,7 +167,7 @@ public class LPTimeVariant extends LPTimeVariantBase {
                 // set fixed bound
                 double fixedBound = 0;
                 for (int k = 0; k < timeSteps; k++)
-                    fixedBound += lambdaAbsolute_ij.Get(k, i, j).number().doubleValue();
+                    fixedBound += ((Scalar) lambdaAbsolute_ij.get(k, i, j)).number().doubleValue();
                 GLPK.glp_set_row_bnds(lp, rowId, GLPKConstants.GLP_FX, fixedBound, fixedBound);
 
                 // set all coefficient entries of matrix A to zero first

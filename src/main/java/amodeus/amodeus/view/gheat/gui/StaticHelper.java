@@ -6,9 +6,9 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Subdivide;
+import ch.ethz.idsc.tensor.api.ScalarTensorFunction;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.img.StrictColorDataIndexed;
-import ch.ethz.idsc.tensor.opt.ScalarTensorFunction;
 
 /* package */ enum StaticHelper {
     ;

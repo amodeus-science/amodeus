@@ -33,8 +33,8 @@
 		</dependency>
 		<dependency>
 			<groupId>ch.ethz.idsc</groupId>
-			<artifactId>tensor</artifactId>
-			<version>0.8.4</version>
+			<artifactId>sophus</artifactId>
+			<version>0.0.3</version>
 		</dependency>
 		<dependency>
 			<groupId>de.lmu.ifi.dbs.elki</groupId>
@@ -71,8 +71,8 @@
 
 	<repositories>
 		<repository>
-			<id>tensor-mvn-repo</id>
-			<url>https://raw.github.com/amodeus-science/tensor/mvn-repo/</url>
+			<id>sophus-mvn-repo</id>
+			<url>https://raw.github.com/datahaki/sophus/mvn-repo/</url>
 		</repository>
 		<repository>
 			<id>XypronRelease</id>

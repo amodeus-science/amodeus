@@ -18,9 +18,9 @@ import org.matsim.core.router.util.TravelTime;
 import com.google.inject.TypeLiteral;
 
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
+import amodeus.amodeus.dispatcher.core.PartitionedDispatcher;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
-import amodeus.amodeus.dispatcher.core.PartitionedDispatcher;
 import amodeus.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import amodeus.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import amodeus.amodeus.dispatcher.util.BipartiteMatcher;
