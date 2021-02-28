@@ -133,7 +133,7 @@ public class ModelFreeAdaptiveRepositioning extends RebalancingDispatcher {
             AmodeusRouter router = inject.getModal(AmodeusRouter.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);
             RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
-            
+
             return new ModelFreeAdaptiveRepositioning( //
                     network, config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy);
         }

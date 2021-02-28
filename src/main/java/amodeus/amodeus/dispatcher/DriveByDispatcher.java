@@ -49,7 +49,9 @@ public class DriveByDispatcher extends RebalancingDispatcher {
 
         // stop all vehicles which are driving by an open request
         total_abortTrip += DrivebyRequestStopper //
-                .stopDrivingBy(DispatcherUtils.getPassengerRequestsAtLinks(getPassengerRequests()), getDivertableRoboTaxis(), (rt, avr) -> setRoboTaxiPickup(rt, avr, Double.NaN, Double.NaN)).size();
+                .stopDrivingBy(DispatcherUtils.getPassengerRequestsAtLinks(getPassengerRequests()), getDivertableRoboTaxis(),
+                        (rt, avr) -> setRoboTaxiPickup(rt, avr, Double.NaN, Double.NaN))
+                .size();
 
         // send vehicles to travel around the city to random links (random
         // loitering)
@@ -85,7 +87,7 @@ public class DriveByDispatcher extends RebalancingDispatcher {
             AmodeusRouter router = inject.getModal(AmodeusRouter.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);
             RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
-            
+
             return new DriveByDispatcher(config, operatorConfig, travelTime, router, eventsManager, network, db, rebalancingStrategy);
         }
     }

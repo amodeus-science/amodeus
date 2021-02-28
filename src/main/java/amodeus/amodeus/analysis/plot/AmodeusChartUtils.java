@@ -12,7 +12,7 @@ import org.jfree.chart.JFreeChart;
 public class AmodeusChartUtils {
     static public void saveAsPNG(JFreeChart chart, String filename, int width, int height) {
         // ChartSaveUtils.saveAsPNG(chart, filename.replace(".png", ""), width, height); // FIXME stream is not properly closed, causing problems on Windows
-        try(FileOutputStream fout = new FileOutputStream(filename)) {
+        try (FileOutputStream fout = new FileOutputStream(filename)) {
             ChartUtils.writeChartAsPNG(fout, chart, width, height);
         } catch (IOException e) {
             e.printStackTrace();

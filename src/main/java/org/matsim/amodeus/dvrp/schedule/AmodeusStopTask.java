@@ -13,10 +13,10 @@ public class AmodeusStopTask extends StayTask {
     public enum StopType {
         Pickup, Dropoff
     }
-    
+
     private final Map<Id<Request>, PassengerRequest> pickupRequests = new HashMap<>();
     private final Map<Id<Request>, PassengerRequest> dropoffRequests = new HashMap<>();
-    
+
     private final StopType stopType;
 
     public AmodeusStopTask(double beginTime, double endTime, Link link, StopType stopType) {
@@ -39,7 +39,7 @@ public class AmodeusStopTask extends StayTask {
     public Map<Id<Request>, PassengerRequest> getDropoffRequests() {
         return dropoffRequests;
     }
-    
+
     public StopType getStopType() {
         return stopType;
     }

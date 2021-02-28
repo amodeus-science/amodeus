@@ -11,7 +11,7 @@ public class RequestKeyInfo {
     private double modifiableSubmissionTime;
     private double deadlineDropOff;
     private boolean allowanceGiven;
-    
+
     public RequestKeyInfo(PassengerRequest avRequest, double maxWaitTime, double maxTravelTime) {
         modifiableSubmissionTime = avRequest.getSubmissionTime();
         deadlinePickUp = avRequest.getSubmissionTime() + maxWaitTime;

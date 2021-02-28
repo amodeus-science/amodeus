@@ -64,22 +64,24 @@ import ch.ethz.idsc.tensor.qty.Unit;
                 } else
                     // sh: Not sure what is happening here... ?
                     GlobalAssert.that(true);
-                    // GlobalAssert.that(history.isEmpty()); // TODO remove if proven, maybe reblace check by isDriving
+                // GlobalAssert.that(history.isEmpty()); // TODO remove if proven, maybe reblace check by isDriving
             }
         }
     }
 
     // alternative
     // public void register(VehicleContainer vc, long now) {
-    //     times.add(now);
-    //     for (int i = 0; i < vc.linkTrace.length; i++)
-    //         history.computeIfAbsent(now, t -> new ArrayList<>()).add(new LinkStatusPair(db.getOsmLink(vc.linkTrace[i]).link, vc.statii[i]));
+    // times.add(now);
+    // for (int i = 0; i < vc.linkTrace.length; i++)
+    // history.computeIfAbsent(now, t -> new ArrayList<>()).add(new LinkStatusPair(db.getOsmLink(vc.linkTrace[i]).link, vc.statii[i]));
     // }
 
     /* package */ void consolidate() {
         /** compute distance at every time step */
         distances = history.entrySet().stream().collect(Collectors.toMap( //
-                Entry::getKey, e -> distance(e.getValue()), (v1, v2) -> { throw new RuntimeException(); }, TreeMap::new));
+                Entry::getKey, e -> distance(e.getValue()), (v1, v2) -> {
+                    throw new RuntimeException();
+                }, TreeMap::new));
 
         /** compute total distances */
         Tensor totalDistances = distances.values().stream().reduce(Tensor::add).orElse(emptyDistance());
@@ -91,39 +93,39 @@ import ch.ethz.idsc.tensor.qty.Unit;
 
     // alternative
     // /* package */ void consolidate() {
-    //     /** clean history */
-    //     // correct wrongly labeled stay
-    //     history.values().forEach(pairs -> IntStream.rangeClosed(2, pairs.size()).map(i -> pairs.size() - i) //
-    //             .filter(i -> pairs.get(i).roboTaxiStatus == RoboTaxiStatus.STAY) //
-    //             .filter(i -> pairs.get(i + 1).roboTaxiStatus != RoboTaxiStatus.STAY) //
-    //             .filter(i -> pairs.get(i).link !=  pairs.get(i + 1).link) //
-    //             .forEach(i -> pairs.set(i, new LinkStatusPair(pairs.get(i).link, pairs.get(i + 1).roboTaxiStatus))));
+    // /** clean history */
+    // // correct wrongly labeled stay
+    // history.values().forEach(pairs -> IntStream.rangeClosed(2, pairs.size()).map(i -> pairs.size() - i) //
+    // .filter(i -> pairs.get(i).roboTaxiStatus == RoboTaxiStatus.STAY) //
+    // .filter(i -> pairs.get(i + 1).roboTaxiStatus != RoboTaxiStatus.STAY) //
+    // .filter(i -> pairs.get(i).link != pairs.get(i + 1).link) //
+    // .forEach(i -> pairs.set(i, new LinkStatusPair(pairs.get(i).link, pairs.get(i + 1).roboTaxiStatus))));
     //
-    //     // remove stay
-    //     history.values().forEach(pairs -> pairs.removeIf(p -> p.roboTaxiStatus == RoboTaxiStatus.STAY));
+    // // remove stay
+    // history.values().forEach(pairs -> pairs.removeIf(p -> p.roboTaxiStatus == RoboTaxiStatus.STAY));
     //
-    //     // remove duplicate links
-    //     AtomicInteger pastLink = new AtomicInteger(-1);
-    //     history.values().forEach(pairs -> pairs.removeIf(p -> {
-    //         int id = p.link.getId().index();
-    //         return id == pastLink.getAndSet(id);
-    //     }));
+    // // remove duplicate links
+    // AtomicInteger pastLink = new AtomicInteger(-1);
+    // history.values().forEach(pairs -> pairs.removeIf(p -> {
+    // int id = p.link.getId().index();
+    // return id == pastLink.getAndSet(id);
+    // }));
     //
-    //     // remove empty entries
-    //     history.entrySet().removeIf(e -> e.getValue().isEmpty());
+    // // remove empty entries
+    // history.entrySet().removeIf(e -> e.getValue().isEmpty());
     //
-    //     /** compute distance at every time step */
-    //     distances = history.entrySet().stream().collect(Collectors.toMap( //
-    //             Entry::getKey, e -> distance(e.getValue()), (v1, v2) -> { throw new RuntimeException(); }, TreeMap::new));
+    // /** compute distance at every time step */
+    // distances = history.entrySet().stream().collect(Collectors.toMap( //
+    // Entry::getKey, e -> distance(e.getValue()), (v1, v2) -> { throw new RuntimeException(); }, TreeMap::new));
     //
-    //     // System.out.println("fut: " + Accumulate.of(Tensor.of(distances.values().stream().map(t -> t.Get(0)).map(Round._6))));
+    // // System.out.println("fut: " + Accumulate.of(Tensor.of(distances.values().stream().map(t -> t.Get(0)).map(Round._6))));
     //
-    //     /** compute total distances */
-    //     Tensor totalDistances = distances.values().stream().reduce(Tensor::add).orElse(emptyDistance());
-    //     vehicleTotalDistance = totalDistances.Get(0);
-    //     vehicleCustomerDist = totalDistances.Get(DRIVING_STATII.indexOf(RoboTaxiStatus.DRIVEWITHCUSTOMER) + 1);
-    //     vehiclePickupDist = totalDistances.Get(DRIVING_STATII.indexOf(RoboTaxiStatus.DRIVETOCUSTOMER) + 1);
-    //     vehicleRebalancedist = totalDistances.Get(DRIVING_STATII.indexOf(RoboTaxiStatus.REBALANCEDRIVE) + 1);
+    // /** compute total distances */
+    // Tensor totalDistances = distances.values().stream().reduce(Tensor::add).orElse(emptyDistance());
+    // vehicleTotalDistance = totalDistances.Get(0);
+    // vehicleCustomerDist = totalDistances.Get(DRIVING_STATII.indexOf(RoboTaxiStatus.DRIVEWITHCUSTOMER) + 1);
+    // vehiclePickupDist = totalDistances.Get(DRIVING_STATII.indexOf(RoboTaxiStatus.DRIVETOCUSTOMER) + 1);
+    // vehicleRebalancedist = totalDistances.Get(DRIVING_STATII.indexOf(RoboTaxiStatus.REBALANCEDRIVE) + 1);
     // }
 
     private Tensor distance(Collection<LinkStatusPair> pairs) {
@@ -150,104 +152,104 @@ import ch.ethz.idsc.tensor.qty.Unit;
 }
 
 // /* package */ class VehicleTraceAnalyzer {
-//     private final MatsimAmodeusDatabase db;
-//     private final Unit unit;
-//     private final List<Integer> linkTrace = new ArrayList<>();
-//     private final List<Long> timeTrace = new ArrayList<>();
-//     /* package */ Scalar vehicleTotalDistance;
-//     /* package */ Scalar vehicleCustomerDist;
-//     /* package */ Scalar vehiclePickupDist;
-//     /* package */ Scalar vehicleRebalancedist;
-//     /* package */ NavigableMap<Long, Scalar> distanceAtTime;
-//     /* package */ NavigableMap<Long, RoboTaxiStatus> statusAtTime = new TreeMap<>();
+// private final MatsimAmodeusDatabase db;
+// private final Unit unit;
+// private final List<Integer> linkTrace = new ArrayList<>();
+// private final List<Long> timeTrace = new ArrayList<>();
+// /* package */ Scalar vehicleTotalDistance;
+// /* package */ Scalar vehicleCustomerDist;
+// /* package */ Scalar vehiclePickupDist;
+// /* package */ Scalar vehicleRebalancedist;
+// /* package */ NavigableMap<Long, Scalar> distanceAtTime;
+// /* package */ NavigableMap<Long, RoboTaxiStatus> statusAtTime = new TreeMap<>();
 //
-//     public VehicleTraceAnalyzer(MatsimAmodeusDatabase db) {
-//         this.db = db;
-//         unit = db.referenceFrame.unit();
-//         vehicleCustomerDist = Quantity.of(0, unit);
-//         vehiclePickupDist = Quantity.of(0, unit);
-//         vehicleRebalancedist = Quantity.of(0, unit);
-//     }
+// public VehicleTraceAnalyzer(MatsimAmodeusDatabase db) {
+// this.db = db;
+// unit = db.referenceFrame.unit();
+// vehicleCustomerDist = Quantity.of(0, unit);
+// vehiclePickupDist = Quantity.of(0, unit);
+// vehicleRebalancedist = Quantity.of(0, unit);
+// }
 //
-//     public void register(VehicleContainer vc, long now) {
-//         // recording link and time trace
-//         for (int linkID : vc.linkTrace)
-//             if (linkTrace.size() == 0 || linkTrace.get(linkTrace.size() - 1) != linkID) {
-//                 linkTrace.add(linkID);
-//                 timeTrace.add(now);
-//             }
+// public void register(VehicleContainer vc, long now) {
+// // recording link and time trace
+// for (int linkID : vc.linkTrace)
+// if (linkTrace.size() == 0 || linkTrace.get(linkTrace.size() - 1) != linkID) {
+// linkTrace.add(linkID);
+// timeTrace.add(now);
+// }
 //
-//         // recording status at time
-//         statusAtTime.put(now, vc.roboTaxiStatus);
-//     }
+// // recording status at time
+// statusAtTime.put(now, vc.roboTaxiStatus);
+// }
 //
-//     /* package */ void consolidate() {
-//         /** compute distance at every time step */
-//         GlobalAssert.that(linkTrace.size() == timeTrace.size());
-//         distanceAtTime = new TreeMap<>();
-//         distanceAtTime.put((long) 0, Quantity.of(0, unit));
-//         for (int i = 1; i < linkTrace.size(); ++i)  // last link is forgotten
-//             if (linkTrace.get(i - 1) != linkTrace.get(i)) { // link has changed
-//                 Scalar distanceLink = Quantity.of(db.getOsmLink(linkTrace.get(i - 1)).link.getLength(), unit);
-//                 Scalar distanceBefore = distanceAtTime.lastEntry().getValue();
-//                 distanceAtTime.put(timeTrace.get(i - 1), distanceBefore.add(distanceLink));
-//             }
+// /* package */ void consolidate() {
+// /** compute distance at every time step */
+// GlobalAssert.that(linkTrace.size() == timeTrace.size());
+// distanceAtTime = new TreeMap<>();
+// distanceAtTime.put((long) 0, Quantity.of(0, unit));
+// for (int i = 1; i < linkTrace.size(); ++i) // last link is forgotten
+// if (linkTrace.get(i - 1) != linkTrace.get(i)) { // link has changed
+// Scalar distanceLink = Quantity.of(db.getOsmLink(linkTrace.get(i - 1)).link.getLength(), unit);
+// Scalar distanceBefore = distanceAtTime.lastEntry().getValue();
+// distanceAtTime.put(timeTrace.get(i - 1), distanceBefore.add(distanceLink));
+// }
 //
-//         /** compute total distances */
-//         vehicleTotalDistance = distanceAtTime.lastEntry().getValue();
-//         Entry<Long, Scalar> prevEntry = null;
-//         for (Entry<Long, Scalar> entry : distanceAtTime.entrySet()) {
-//             if (Objects.nonNull(prevEntry)) {
-//                 Scalar dist = entry.getValue().subtract(prevEntry.getValue());
-//                 RoboTaxiStatus status = statusAtTime.get(entry.getKey());
-//                 switch (status) {
-//                 case DRIVEWITHCUSTOMER:
-//                     vehicleCustomerDist = vehicleCustomerDist.add(dist);
-//                     break;
-//                 case DRIVETOCUSTOMER:
-//                     vehiclePickupDist = vehiclePickupDist.add(dist);
-//                     break;
-//                 case REBALANCEDRIVE:
-//                     vehicleRebalancedist = vehicleRebalancedist.add(dist);
-//                     break;
-//                 default:
-//                     break;
-//                 }
-//             }
-//             prevEntry = entry;
-//         }
-//     }
+// /** compute total distances */
+// vehicleTotalDistance = distanceAtTime.lastEntry().getValue();
+// Entry<Long, Scalar> prevEntry = null;
+// for (Entry<Long, Scalar> entry : distanceAtTime.entrySet()) {
+// if (Objects.nonNull(prevEntry)) {
+// Scalar dist = entry.getValue().subtract(prevEntry.getValue());
+// RoboTaxiStatus status = statusAtTime.get(entry.getKey());
+// switch (status) {
+// case DRIVEWITHCUSTOMER:
+// vehicleCustomerDist = vehicleCustomerDist.add(dist);
+// break;
+// case DRIVETOCUSTOMER:
+// vehiclePickupDist = vehiclePickupDist.add(dist);
+// break;
+// case REBALANCEDRIVE:
+// vehicleRebalancedist = vehicleRebalancedist.add(dist);
+// break;
+// default:
+// break;
+// }
+// }
+// prevEntry = entry;
+// }
+// }
 //
-//     /** @return at time step {@link Long} @param time1 encoded
-//      *         as {total distance, with customer,pickup,rebalance} */
-//     /* package */ Tensor labeledIntervalDistance(Long time1, Long time2) {
-//         Scalar distance = distanceInInterval(time1, time2);
-//         RoboTaxiStatus status = statusAtTime.floorEntry(time1).getValue();
-//         if (status.equals(RoboTaxiStatus.DRIVEWITHCUSTOMER))
-//             return Tensors.of(distance, distance, RealScalar.ZERO, RealScalar.ZERO);
-//         if (status.equals(RoboTaxiStatus.DRIVETOCUSTOMER))
-//             return Tensors.of(distance, RealScalar.ZERO, distance, RealScalar.ZERO);
-//         if (status.equals(RoboTaxiStatus.REBALANCEDRIVE))
-//             return Tensors.of(distance, RealScalar.ZERO, RealScalar.ZERO, distance);
-//         return Tensors.of(distance, RealScalar.ZERO, RealScalar.ZERO, RealScalar.ZERO);
-//     }
+// /** @return at time step {@link Long} @param time1 encoded
+// * as {total distance, with customer,pickup,rebalance} */
+// /* package */ Tensor labeledIntervalDistance(Long time1, Long time2) {
+// Scalar distance = distanceInInterval(time1, time2);
+// RoboTaxiStatus status = statusAtTime.floorEntry(time1).getValue();
+// if (status.equals(RoboTaxiStatus.DRIVEWITHCUSTOMER))
+// return Tensors.of(distance, distance, RealScalar.ZERO, RealScalar.ZERO);
+// if (status.equals(RoboTaxiStatus.DRIVETOCUSTOMER))
+// return Tensors.of(distance, RealScalar.ZERO, distance, RealScalar.ZERO);
+// if (status.equals(RoboTaxiStatus.REBALANCEDRIVE))
+// return Tensors.of(distance, RealScalar.ZERO, RealScalar.ZERO, distance);
+// return Tensors.of(distance, RealScalar.ZERO, RealScalar.ZERO, RealScalar.ZERO);
+// }
 //
-//     /* package */ Scalar distanceInInterval(Long timeLow, Long timeHigh) {
-//         // get lower and ceiling entry
-//         // Entry<Long, Scalar> entryLower = distanceAtTime.lowerEntry(timeLow); // why lower and not floor? prevents exact queries
-//         Entry<Long, Scalar> entryLower = distanceAtTime.floorEntry(timeLow);
-//         Entry<Long, Scalar> entryHigher = Objects.nonNull(distanceAtTime.ceilingEntry(timeHigh)) ? //
-//                 distanceAtTime.ceilingEntry(timeHigh) : //
-//                 entryLower;
+// /* package */ Scalar distanceInInterval(Long timeLow, Long timeHigh) {
+// // get lower and ceiling entry
+// // Entry<Long, Scalar> entryLower = distanceAtTime.lowerEntry(timeLow); // why lower and not floor? prevents exact queries
+// Entry<Long, Scalar> entryLower = distanceAtTime.floorEntry(timeLow);
+// Entry<Long, Scalar> entryHigher = Objects.nonNull(distanceAtTime.ceilingEntry(timeHigh)) ? //
+// distanceAtTime.ceilingEntry(timeHigh) : //
+// entryLower;
 //
-//         // compute distance at timeLow and timeHigh with linear interpolation
-//         Scalar dLow = VehicleTraceHelper.distanceAt(timeLow, entryLower, entryHigher);
-//         Scalar dHigh = VehicleTraceHelper.distanceAt(timeHigh, entryLower, entryHigher);
+// // compute distance at timeLow and timeHigh with linear interpolation
+// Scalar dLow = VehicleTraceHelper.distanceAt(timeLow, entryLower, entryHigher);
+// Scalar dHigh = VehicleTraceHelper.distanceAt(timeHigh, entryLower, entryHigher);
 //
-//         GlobalAssert.that(Scalars.lessEquals(dLow, vehicleTotalDistance));
-//         GlobalAssert.that(Scalars.lessEquals(dHigh, vehicleTotalDistance));
+// GlobalAssert.that(Scalars.lessEquals(dLow, vehicleTotalDistance));
+// GlobalAssert.that(Scalars.lessEquals(dHigh, vehicleTotalDistance));
 //
-//         // return the difference
-//         return dHigh.subtract(dLow);
-//     }
+// // return the difference
+// return dHigh.subtract(dLow);
+// }
 // }

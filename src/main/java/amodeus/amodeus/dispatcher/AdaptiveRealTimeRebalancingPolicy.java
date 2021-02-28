@@ -212,7 +212,7 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
 
             VirtualNetwork<Link> virtualNetwork = inject.getModal(new TypeLiteral<VirtualNetwork<Link>>() {
             });
-            
+
             RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
 
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();

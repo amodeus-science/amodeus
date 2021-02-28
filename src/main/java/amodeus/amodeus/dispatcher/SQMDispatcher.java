@@ -146,7 +146,7 @@ public class SQMDispatcher extends PartitionedDispatcher {
 
             VirtualNetwork<Link> virtualNetwork = inject.getModal(new TypeLiteral<VirtualNetwork<Link>>() {
             });
-            
+
             RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
 
             return new SQMDispatcher(config, operatorConfig, travelTime, router, eventsManager, network, //

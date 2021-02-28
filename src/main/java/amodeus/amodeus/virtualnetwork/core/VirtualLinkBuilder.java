@@ -55,7 +55,7 @@ import ch.ethz.idsc.tensor.nrm.Vector2Norm;
             VirtualNode<T> vNto = virtualNetwork.getVirtualNode(point.y);
             String indexStr = "vLink_" + Integer.toString(index + 1);
             virtualNetwork.addVirtualLink(indexStr, vNfrom, vNto, //
-            		Vector2Norm.between(vNfrom.getCoord(), vNto.getCoord()).number().doubleValue());
+                    Vector2Norm.between(vNfrom.getCoord(), vNto.getCoord()).number().doubleValue());
             ++index;
         }
     }

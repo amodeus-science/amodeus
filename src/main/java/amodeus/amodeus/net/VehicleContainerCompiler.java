@@ -18,9 +18,9 @@ import amodeus.amodeus.util.math.GlobalAssert;
 
     /** @return a {@link VehicleContainer} that is used to save the result to the disk for current
      *         or later processing, e.g., in amod's the ScenarioViewer. The information is taken from the
-     *         @param roboTaxi {@link RoboTaxi}, and the
-     *         @param linkStatusPairs {@link List<LinkStatusPair>} containing all {@link Link}s passed since the last
-     *         {@link SimulationObject} was saved with respective {@link RoboTaxiStatus}*/
+     * @param roboTaxi {@link RoboTaxi}, and the
+     * @param linkStatusPairs {@link List<LinkStatusPair>} containing all {@link Link}s passed since the last
+     *            {@link SimulationObject} was saved with respective {@link RoboTaxiStatus} */
     public static VehicleContainer compile(RoboTaxi roboTaxi, List<LinkStatusPair> linkStatusPairs) {
         VehicleContainer vc = new VehicleContainer();
         vc.vehicleIndex = roboTaxi.getId().index();
@@ -33,7 +33,7 @@ import amodeus.amodeus.util.math.GlobalAssert;
             statii.add(roboTaxi.getStatus());
             vc.statii = statii.toArray(RoboTaxiStatus[]::new);
         }
-        
+
         Link toLink = roboTaxi.getCurrentDriveDestination();
         vc.destinationLinkIndex = Objects.requireNonNull(toLink).getId().index();
         return vc;

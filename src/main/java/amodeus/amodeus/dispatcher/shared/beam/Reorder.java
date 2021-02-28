@@ -15,33 +15,33 @@ import amodeus.amodeus.dispatcher.core.schedule.directives.StopDirective;
      * The order is kept. The Redirect Courses are put at the end */
     public static List<Directive> firstAllPickupsThenDropoffs(List<Directive> roboTaxiMenu) {
         List<Directive> newList = new LinkedList<>();
-        
+
         for (Directive directive : roboTaxiMenu) {
             if (directive instanceof StopDirective) {
                 StopDirective stopDirective = (StopDirective) directive;
-                
+
                 if (stopDirective.isPickup()) {
                     newList.add(directive);
                 }
             }
         }
-        
+
         for (Directive directive : roboTaxiMenu) {
             if (directive instanceof StopDirective) {
                 StopDirective stopDirective = (StopDirective) directive;
-                
+
                 if (!stopDirective.isPickup()) {
                     newList.add(directive);
                 }
             }
         }
-        
+
         for (Directive directive : roboTaxiMenu) {
             if (directive instanceof DriveDirective) {
                 newList.add(directive);
             }
         }
-        
+
         return newList;
     }
 }

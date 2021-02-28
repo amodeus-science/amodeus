@@ -91,5 +91,4 @@ import org.matsim.contrib.dvrp.util.LinkTimePair;
         return new RoboTaxi(vehicle, divertableLinkTime, divertableLinkTime.link, RoboTaxiUsageType.SHARED, null);
     }
 
-
 }

@@ -166,7 +166,7 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
             Network network = inject.getModal(Network.class);
             AmodeusRouter router = inject.getModal(AmodeusRouter.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);
-            
+
             RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
 
             return new FirstComeFirstServedStrategy(network, config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy);

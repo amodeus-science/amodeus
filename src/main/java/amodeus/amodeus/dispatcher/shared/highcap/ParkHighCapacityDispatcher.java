@@ -122,7 +122,7 @@ import amodeus.amodeus.routing.EasyMinTimePathCalculator;
                     request.getSubmissionTime(), true) + constantMaximumDelay;
         }
     }
-    
+
     public ParkHighCapacityDispatcher(Network network, //
             Config config, AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, AmodeusRouter router, EventsManager eventsManager, //
@@ -150,7 +150,6 @@ import amodeus.amodeus.routing.EasyMinTimePathCalculator;
         DistanceHeuristics distanceHeuristics = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig()).getDistanceHeuristics(DistanceHeuristics.ASTARLANDMARKS);
         this.parkingStrategy.setRuntimeParameters(avSpatialCapacityAmodeus, network, distanceHeuristics.getDistanceFunction(network));
         /** PARKING EXTENSION */
-        
 
         constantMaximumWaitTime = dispatcherConfig.getDouble("constantMaximumWaitTime", Double.NaN);
         constantMaximumDelay = dispatcherConfig.getDouble("constantMaximumDelay", Double.NaN);
@@ -224,10 +223,10 @@ import amodeus.amodeus.routing.EasyMinTimePathCalculator;
                 List<Directive> courseForThisTaxi = routeToAssign.stream() //
                         .map(StopInRoute::getSharedCourse) //
                         .collect(Collectors.toList());
-                
+
                 Map<PassengerRequest, Double> pickupTimes = new HashMap<>();
                 Map<PassengerRequest, Double> dropoffTimes = new HashMap<>();
-                
+
                 for (StopInRoute stop : tripWithVehicle.getRoute()) {
                     if (stop.isPickup()) {
                         pickupTimes.put(stop.getavRequest(), stop.getTime());
@@ -235,10 +234,10 @@ import amodeus.amodeus.routing.EasyMinTimePathCalculator;
                         dropoffTimes.put(stop.getavRequest(), stop.getTime());
                     }
                 }
-                
+
                 for (PassengerRequest avRequest : tripWithVehicle.getTrip())
                     addSharedRoboTaxiPickup(roboTaxiToAssign, avRequest, pickupTimes.get(avRequest), dropoffTimes.get(avRequest));
-                
+
                 // create set of requests in the route
                 Set<PassengerRequest> setOfPassengerRequestInRoute = routeToAssign.stream() //
                         .map(StopInRoute::getavRequest) //

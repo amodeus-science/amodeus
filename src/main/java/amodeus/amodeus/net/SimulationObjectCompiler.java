@@ -55,7 +55,7 @@ public class SimulationObjectCompiler {
 
     public void insertRequest(PassengerRequest avRequest, RequestStatus requestStatus) {
         String id = avRequest.getId().toString();
-        
+
         if (requestMap.containsKey(id)) {
             requestMap.get(id).requestStatus.add(requestStatus);
         } else {

@@ -53,11 +53,10 @@ public class DefaultParallelLeastCostPathCalculator implements ParallelLeastCost
         for (int i = 0; i < numberOfInstances; i++) {
             instances.add(factory.createPathCalculator(network, travelDisutility, travelTime));
         }
-        
+
         return new DefaultParallelLeastCostPathCalculator(instances);
-        
+
         // return new SerialLeastCostPathCalculator(factory.createPathCalculator(network, travelDisutility, travelTime));
 
-        
     }
 }

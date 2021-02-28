@@ -24,11 +24,11 @@ public enum ConvertAVServicesFromEvents {
 
         EventsManager eventsManager = EventsUtils.createEventsManager();
         eventsManager.addHandler(listener);
-        
+
         eventsManager.initProcessing();
         new MatsimEventsReader(eventsManager).readFile(eventsPath);
         eventsManager.finishProcessing();
-        
+
         new PassengerAnalysisWriter(listener).writeRides(new File(outputPath));
 
         System.out.println("Exported " + outputPath);

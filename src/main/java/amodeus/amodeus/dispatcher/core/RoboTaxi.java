@@ -39,7 +39,7 @@ public final class RoboTaxi {
     private final DvrpVehicle avVehicle;
     private final RoboTaxiUsageType usageType; // final might be removed if dispatchers can modify usage
     private boolean isLocked;
-    
+
     /** last known location of the RoboTaxi */
     private Link lastKnownLocation;
 
@@ -84,7 +84,7 @@ public final class RoboTaxi {
     /* package */ double getDivertableTime() {
         return divertableLinkTime.time;
     }
-    
+
     public DvrpVehicle getDvrpVehicle() {
         return avVehicle;
     }
@@ -108,7 +108,7 @@ public final class RoboTaxi {
         if (getSchedule().getStatus().equals(ScheduleStatus.STARTED)) {
             return getSchedule().getCurrentTask() instanceof DrtStayTask;
         }
-        
+
         return true;
     }
 
@@ -120,7 +120,7 @@ public final class RoboTaxi {
     /** @return RoboTaxiStatus of the vehicle */
     public RoboTaxiStatus getStatus() {
         // TODO: Probably a huge performance bottleneck! /SH
-        //if (usageType == RoboTaxiUsageType.SHARED) {
+        // if (usageType == RoboTaxiUsageType.SHARED) {
         if (scheduleManager.getDirectives().size() == 0) {
             return RoboTaxiStatus.STAY;
         }
@@ -140,8 +140,8 @@ public final class RoboTaxi {
 
             return RoboTaxiStatus.REBALANCEDRIVE;
         }
-    }        
-        
+    }
+
     /** Gets the capacity of the avVehicle. Now its an Integer and not a double as in
      * MATSim, the current number of people on board can be accessed with
      * {@link RoboTaxiUtils.getNumberOnBoardRequests(roboTaxi)}
@@ -179,7 +179,7 @@ public final class RoboTaxi {
     /* package */ boolean isWithoutCustomer() {
         // For now this works with universal dispatcher i.e. single used robotaxis as
         // number of customers is never changed
-        
+
         return scheduleManager.getNumberOfOnBoardRequests() == 0;
     }
 
@@ -202,7 +202,7 @@ public final class RoboTaxi {
             // /sh, apr 2018
             if (!usageType.equals(RoboTaxiUsageType.SHARED)) { // for shared this is allowed e.g. when a new course is added but it has not been executed yet
                 LOGGER.warn("RoboTaxiStatus != STAY, but Schedule.getCurrentTask() == AVStayTask; probably needs fixing");
-                //System.out.println("status: " + status);
+                // System.out.println("status: " + status);
             }
             return true;
         }
@@ -228,11 +228,11 @@ public final class RoboTaxi {
         if (!scheduleManager.isActive()) {
             return false;
         }
-        
+
         if (usageType.equals(RoboTaxiUsageType.SINGLEUSED) && !isWithoutCustomer()) {
             return false;
         }
-        
+
         return scheduleManager.isTopModifiable() && !isLocked;
     }
 
@@ -433,7 +433,7 @@ public final class RoboTaxi {
      * @return all the courses which have been removed */
     /* package */ List<Directive> cleanAndAbandonMenu() {
         // System.err.println(" -> clean and abandon");
-        
+
         GlobalAssert.that(scheduleManager.getNumberOfOnBoardRequests() == 0);
         GlobalAssert.that(isDivertable());
 
@@ -452,11 +452,11 @@ public final class RoboTaxi {
      * public boolean isPickingUp() {
      * return isPickingUp;
      * } */
-    
+
     public void lock() {
         this.isLocked = true;
     }
-    
+
     public void unlock() {
         this.isLocked = false;
     }

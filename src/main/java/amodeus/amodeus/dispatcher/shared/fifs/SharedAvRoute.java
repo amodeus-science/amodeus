@@ -71,14 +71,14 @@ import ch.ethz.idsc.tensor.qty.Quantity;
     private static double getStopDuration(Directive directive, double pickupDuration, double dropoFfDuration) {
         if (directive instanceof StopDirective) {
             StopDirective stopDirective = (StopDirective) directive;
-            
+
             if (stopDirective.isPickup()) {
                 return pickupDuration;
             } else {
                 return dropoFfDuration;
             }
         }
-        
+
         return 0.0;
     }
 

@@ -137,21 +137,21 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
     protected final Set<PassengerRequest> getWaitingRequests() {
         return pendingRequests;
     }
-    
+
     @Deprecated
     protected final Map<RoboTaxi, PassengerRequest> getPickupRoboTaxisAndRequests() {
         // Re-implemented because MPC dispatcher needs it, but not sure if it is really what was expected there.
-        
+
         if (usageType.equals(RoboTaxiUsageType.SHARED)) {
             throw new IllegalStateException();
         }
-        
+
         Map<RoboTaxi, PassengerRequest> result = new HashMap<>();
-        
+
         for (Map.Entry<RoboTaxi, AmodeusStopTask> entry : pickupTaxis.entrySet()) {
             result.put(entry.getKey(), entry.getValue().getPickupRequests().values().iterator().next());
         }
-        
+
         return result;
     }
 
@@ -237,7 +237,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
         eventsManager.processEvent(
                 new PassengerRequestScheduledEvent(getTimeNow(), mode, avRequest.getId(), avRequest.getPassengerId(), roboTaxi.getId(), expectedPickupTime, expectedDropoffTime));
     }
-    
+
     public final void addSharedRoboTaxiPickup(RoboTaxi roboTaxi, PassengerRequest avRequest) {
         addSharedRoboTaxiPickup(roboTaxi, avRequest, Double.NaN, Double.NaN);
     }
@@ -248,7 +248,7 @@ public abstract class UniversalDispatcher extends BasicUniversalDispatcher {
         addSharedRoboTaxiPickup(roboTaxi, avRequest, expectedPickupTime, expectedDropoffTime);
         roboTaxi.lock();
     }
-    
+
     public final void setRoboTaxiPickup(RoboTaxi roboTaxi, PassengerRequest avRequest) {
         cleanAndAbondon(roboTaxi);
         addSharedRoboTaxiPickup(roboTaxi, avRequest, Double.NaN, Double.NaN);

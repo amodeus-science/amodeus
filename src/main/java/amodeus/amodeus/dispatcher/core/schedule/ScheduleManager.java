@@ -48,7 +48,7 @@ public class ScheduleManager {
         this.router = router;
         this.serviceEndTime = serviceEndTime;
     }
-    
+
     private boolean isOther(Task task) {
         return !isStop(task) && !isDrive(task) && !isStay(task);
     }
@@ -333,12 +333,12 @@ public class ScheduleManager {
     public void setDirectives(List<? extends Directive> sequence) {
         for (int i = schedule.getCurrentTask().getTaskIdx(); i < schedule.getTaskCount(); i++) {
             Task task = schedule.getTasks().get(i);
-            
+
             if (isOther(task)) {
                 throw new IllegalStateException("Cannot override unknown tasks!");
             }
         }
-        
+
         // All stops that are currently handled need to be replicated exactly!
 
         /* Set<String> ids = new HashSet<>();
@@ -453,7 +453,7 @@ public class ScheduleManager {
     public boolean isTopModifiable() {
         return directiveSequence.size() == 0 || directiveSequence.get(0).isModifiable();
     }
-    
+
     public boolean isActive() {
         return true;
     }

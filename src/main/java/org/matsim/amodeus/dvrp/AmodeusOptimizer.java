@@ -57,9 +57,9 @@ public class AmodeusOptimizer implements VrpOptimizer, OnlineTrackerListener, Mo
             throw new IllegalStateException("An Amodeus schedule should always end with a STAY task");
         }
 
-        /*if (!(Double.isInfinite(lastTask.getEndTime()) || lastTask.getEndTime() == Double.MAX_VALUE)) {
-            throw new IllegalStateException("An Amodeus schedule should always end at time Infinity");
-        }*/
+        /* if (!(Double.isInfinite(lastTask.getEndTime()) || lastTask.getEndTime() == Double.MAX_VALUE)) {
+         * throw new IllegalStateException("An Amodeus schedule should always end at time Infinity");
+         * } */
     }
 
     private void advanceSchedule(DvrpVehicle vehicle, Schedule schedule) {
@@ -68,7 +68,7 @@ public class AmodeusOptimizer implements VrpOptimizer, OnlineTrackerListener, Mo
         currentTask.setEndTime(now);
 
         if (currentTask == Schedules.getLastTask(schedule)) {
-            //throw new IllegalStateException("An Amodeus schedule should never end!");
+            // throw new IllegalStateException("An Amodeus schedule should never end!");
             currentTask.setEndTime(Double.POSITIVE_INFINITY);
             return;
         }

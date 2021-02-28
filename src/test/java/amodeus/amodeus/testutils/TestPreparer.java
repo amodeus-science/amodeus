@@ -59,7 +59,7 @@ public class TestPreparer {
         int endTime = (int) config.qsim().getEndTime().seconds();
 
         // 1) cut network (and reduce population to new network)
-        networkPrepared = scenario.getNetwork();        
+        networkPrepared = scenario.getNetwork();
         NetworkPreparer.run(networkPrepared, scenarioOptions);
 
         // 2) adapt the population to new network
@@ -71,13 +71,13 @@ public class TestPreparer {
         PopulationPreparer.run(networkPrepared, populationPrepared, scenarioOptions, config, 10);
 
         // 3) create virtual Network
-        
+
         // Amodeus uses internally a mode-filtered network (default is the car network). The provided
         // VirtualNetwork needs to be consistent with this node-filtered network.
         Network roadNetwork = NetworkUtils.createNetwork();
         new TransportModeNetworkFilter(networkPrepared).filter(roadNetwork, Collections.singleton("car"));
         new NetworkCleaner().run(roadNetwork);
-        
+
         VirtualNetworkPreparer virtualNetworkPreparer = VirtualNetworkPreparer.INSTANCE;
         VirtualNetwork<Link> virtualNetwork = //
                 virtualNetworkPreparer.create(roadNetwork, populationPrepared, scenarioOptions, numRt, endTime);

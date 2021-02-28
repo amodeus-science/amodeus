@@ -192,7 +192,7 @@ public class FeedforwardFluidicTimeVaryingRebalancingPolicy extends PartitionedD
 
             TravelData travelData = inject.getModal(TravelData.class);
             RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
-            
+
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceCost.INSTANCE);
             return new FeedforwardFluidicTimeVaryingRebalancingPolicy(config, operatorConfig, travelTime, router, eventsManager, network, virtualNetwork, abstractVirtualNodeDest,

@@ -35,18 +35,12 @@ public class RedistributionTestsVerySimple {
         link1 = scenario.linkDown;
         link2 = scenario.linkUp;
         link3 = scenario.linkLeft;
-        
-        DvrpVehicleSpecification specification = ImmutableDvrpVehicleSpecification
-                .newBuilder()
-                .id(Id.create("abc", DvrpVehicle.class))
-                .capacity(4)
-                .serviceBeginTime(0.0)
-                .serviceEndTime(Double.POSITIVE_INFINITY)
-                .startLinkId(link3.getId())
-                .build();
-        
+
+        DvrpVehicleSpecification specification = ImmutableDvrpVehicleSpecification.newBuilder().id(Id.create("abc", DvrpVehicle.class)).capacity(4).serviceBeginTime(0.0)
+                .serviceEndTime(Double.POSITIVE_INFINITY).startLinkId(link3.getId()).build();
+
         DvrpVehicle vehicle = new DvrpVehicleImpl(specification, link3);
-        
+
         roboTaxi = new RoboTaxi(vehicle, null, link3, null, null);
     }
 

@@ -12,6 +12,7 @@ public enum ConfigVehiclesChanger {
     ;
 
     /** Changes the number of vehicles in the {@link Config} at
+     * 
      * @param configPath to the value
      * @param vehicleNumber */
     public static void change(String configPath, int vehicleNumber) {

@@ -121,7 +121,7 @@ import amodeus.amodeus.dispatcher.core.RoboTaxi;
         parm.setPresolve(GLPK.GLP_ON); // GLPK documentation at p. 59
         int ret = GLPK.glp_intopt(lp, parm); // different in MIP -> other method for solving
         int stat = GLPK.glp_mip_status(lp); // different in MIP
-        
+
         if (mute) {
             GLPK.glp_term_out(GLPK.GLP_OFF);
         }
