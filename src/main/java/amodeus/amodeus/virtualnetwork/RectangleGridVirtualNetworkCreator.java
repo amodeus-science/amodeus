@@ -11,6 +11,7 @@ import java.util.function.Function;
 
 import org.locationtech.jts.geom.Coordinate;
 
+import amodeus.amodeus.util.math.Scalar2Number;
 import amodeus.amodeus.virtualnetwork.core.AbstractVirtualNetworkCreator;
 import amodeus.amodeus.virtualnetwork.core.VirtualNetwork;
 import amodeus.amodeus.virtualnetwork.core.VirtualNode;
@@ -52,8 +53,8 @@ public class RectangleGridVirtualNetworkCreator<T, U> extends AbstractVirtualNet
     private Map<VirtualNode<T>, Set<T>> createAssignmentMap(Collection<T> elements, Function<T, Tensor> locationOf, //
             int xDiv, int yDiv, Tensor xBounds, Tensor yBounds) {
         /** get network bounds */
-        double xLength = xBounds.Get(1).subtract(xBounds.Get(0)).number().doubleValue() / xDiv;
-        double yLength = yBounds.Get(1).subtract(yBounds.Get(0)).number().doubleValue() / yDiv;
+        double xLength = Scalar2Number.of(xBounds.Get(1).subtract(xBounds.Get(0))).doubleValue() / xDiv;
+        double yLength = Scalar2Number.of(yBounds.Get(1).subtract(yBounds.Get(0))).doubleValue() / yDiv;
 
         System.out.println(xBounds);
         System.out.println(yBounds);
@@ -63,10 +64,10 @@ public class RectangleGridVirtualNetworkCreator<T, U> extends AbstractVirtualNet
         int vNodeIndex = -1;
         for (int i = 0; i < xDiv; ++i)
             for (int j = 0; j < yDiv; ++j) {
-                double xMin = xBounds.Get(0).number().doubleValue() + i * xLength;
-                double xMax = xBounds.Get(0).number().doubleValue() + (i + 1) * xLength;
-                double yMin = yBounds.Get(0).number().doubleValue() + j * yLength;
-                double yMax = yBounds.Get(0).number().doubleValue() + (j + 1) * yLength;
+                double xMin = Scalar2Number.of(xBounds.Get(0)).doubleValue() + i * xLength;
+                double xMax = Scalar2Number.of(xBounds.Get(0)).doubleValue() + (i + 1) * xLength;
+                double yMin = Scalar2Number.of(yBounds.Get(0)).doubleValue() + j * yLength;
+                double yMax = Scalar2Number.of(yBounds.Get(0)).doubleValue() + (j + 1) * yLength;
 
                 final Set<T> set = new LinkedHashSet<>();
                 for (T t : elements) {

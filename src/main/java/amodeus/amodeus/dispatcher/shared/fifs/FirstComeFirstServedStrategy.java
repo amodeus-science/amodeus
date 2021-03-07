@@ -31,6 +31,7 @@ import amodeus.amodeus.net.TensorCoords;
 import amodeus.amodeus.routing.CachedNetworkTimeDistance;
 import amodeus.amodeus.routing.EasyMinTimePathCalculator;
 import amodeus.amodeus.routing.TimeDistanceProperty;
+import amodeus.amodeus.util.math.Scalar2Number;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** Implementation of the Algorithm presented in:
@@ -110,7 +111,7 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
                 boolean assigned = false;
                 if (unassignedRoboTaxis.size() > 0) {
                     RoboTaxi closestRoboTaxi = unassignedRoboTaxis.getClosest(getLocation(avRequest));
-                    double travelTime = timeDb.travelTime(closestRoboTaxi.getDivertableLocation(), avRequest.getFromLink(), now).number().doubleValue();
+                    double travelTime = Scalar2Number.of(timeDb.travelTime(closestRoboTaxi.getDivertableLocation(), avRequest.getFromLink(), now)).doubleValue();
                     if (travelTime < WAITTIME.calculate(avRequest, waitList, extremWaitList)) {
                         setRoboTaxiPickup(closestRoboTaxi, avRequest, Double.NaN, Double.NaN);
                         unassignedRoboTaxis.remove(closestRoboTaxi);

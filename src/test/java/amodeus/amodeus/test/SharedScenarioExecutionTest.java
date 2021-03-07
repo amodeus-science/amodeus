@@ -32,6 +32,7 @@ import amodeus.amodeus.util.io.Locate;
 import amodeus.amodeus.util.io.MultiFileTools;
 import amodeus.amodeus.util.math.GlobalAssert;
 import amodeus.amodeus.util.math.SI;
+import amodeus.amodeus.util.math.Scalar2Number;
 import amodeus.amodeus.util.matsim.NetworkLoader;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -162,7 +163,8 @@ public class SharedScenarioExecutionTest {
 
         /** number of passengers */
         NumberPassengersAnalysis npa = ate.getNumberPassengersAnalysis();
-        assertEquals(Total.ofVector(npa.getSharedOthersDistribution()).number().intValue(), npa.getSharedOthersPerRequest().length());
+
+        assertEquals(Scalar2Number.of(Total.ofVector(npa.getSharedOthersDistribution())).intValue(), npa.getSharedOthersPerRequest().length());
 
         /** presence of plot files */
         File data = new File("output/001/data");

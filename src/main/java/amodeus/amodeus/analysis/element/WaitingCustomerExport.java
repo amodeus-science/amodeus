@@ -10,6 +10,7 @@ import amodeus.amodeus.analysis.UnitSaveUtils;
 import amodeus.amodeus.analysis.plot.AmodeusChartUtils;
 import amodeus.amodeus.util.io.SaveFormats;
 import amodeus.amodeus.util.math.GlobalAssert;
+import amodeus.amodeus.util.math.Scalar2Number;
 import amodeus.tensor.fig.VisualSet;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -31,8 +32,8 @@ public enum WaitingCustomerExport implements AnalysisExport {
         TravelTimeAnalysis tta = analysisSummary.getTravelTimeAnalysis();
 
         /** save graphics */
-        double maxWaiting = ((Scalar) tta.waitingCustomers.flatten(-1) // integer value, double for compatibility
-                .reduce(Max::of).get()).number().doubleValue();
+        double maxWaiting = Scalar2Number.of((Scalar) tta.waitingCustomers.flatten(-1) // integer value, double for compatibility
+                .reduce(Max::of).get()).doubleValue();
 
         Tensor values = tta.waitingCustomers;
         values = AnalysisMeanFilter.of(values);

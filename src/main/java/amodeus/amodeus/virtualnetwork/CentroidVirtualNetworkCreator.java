@@ -14,6 +14,7 @@ import java.util.function.Function;
 
 import org.matsim.core.utils.collections.QuadTree;
 
+import amodeus.amodeus.util.math.Scalar2Number;
 import amodeus.amodeus.virtualnetwork.core.AbstractVirtualNetworkCreator;
 import amodeus.amodeus.virtualnetwork.core.VirtualNode;
 import amodeus.amodeus.virtualnetwork.core.VirtualNodes;
@@ -34,11 +35,16 @@ public class CentroidVirtualNetworkCreator<T, U> extends AbstractVirtualNetworkC
         });
 
         /** create a QuadTree with the centroid loations, requires minX, minY, maxX, maxY */
-        QuadTree<T> quadTree = new QuadTree<>(xVals.first().number().doubleValue(), yVals.first().number().doubleValue(), //
-                xVals.last().number().doubleValue(), yVals.last().number().doubleValue());
+        QuadTree<T> quadTree = new QuadTree<>( //
+                Scalar2Number.of(xVals.first()).doubleValue(), //
+                Scalar2Number.of(yVals.first()).doubleValue(), //
+                Scalar2Number.of(xVals.last()).doubleValue(), //
+                Scalar2Number.of(yVals.last()).doubleValue());
         for (T t : centroids) {
             Tensor loc = locationOf.apply(t);
-            quadTree.put(loc.Get(0).number().doubleValue(), loc.Get(1).number().doubleValue(), t);
+            quadTree.put( //
+                    Scalar2Number.of(loc.Get(0)).doubleValue(), //
+                    Scalar2Number.of(loc.Get(1)).doubleValue(), t);
         }
 
         /** create a virtual node for every centroid */

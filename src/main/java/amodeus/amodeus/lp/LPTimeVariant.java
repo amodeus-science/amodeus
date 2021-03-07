@@ -16,6 +16,7 @@ import org.matsim.api.core.v01.network.Network;
 import amodeus.amodeus.dispatcher.FeedforwardFluidicTimeVaryingRebalancingPolicy;
 import amodeus.amodeus.options.LPOptions;
 import amodeus.amodeus.util.math.GlobalAssert;
+import amodeus.amodeus.util.math.Scalar2Number;
 import amodeus.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -133,7 +134,7 @@ public class LPTimeVariant extends LPTimeVariantBase {
                     // set upper bound
                     double upperBound = 0;
                     for (int k = 0; k < t; k++)
-                        upperBound += ((Scalar) lambdaAbsolute_ij.get(k, i, j)).number().doubleValue();
+                        upperBound += Scalar2Number.of((Scalar) lambdaAbsolute_ij.get(k, i, j)).doubleValue();
                     GLPK.glp_set_row_bnds(lp, rowId, GLPKConstants.GLP_UP, 0.0, upperBound); // Upper bound: first number irrelevant
 
                     // set all coefficient entries of matrix A to zero first
@@ -167,7 +168,7 @@ public class LPTimeVariant extends LPTimeVariantBase {
                 // set fixed bound
                 double fixedBound = 0;
                 for (int k = 0; k < timeSteps; k++)
-                    fixedBound += ((Scalar) lambdaAbsolute_ij.get(k, i, j)).number().doubleValue();
+                    fixedBound += Scalar2Number.of((Scalar) lambdaAbsolute_ij.get(k, i, j)).doubleValue();
                 GLPK.glp_set_row_bnds(lp, rowId, GLPKConstants.GLP_FX, fixedBound, fixedBound);
 
                 // set all coefficient entries of matrix A to zero first
@@ -228,12 +229,12 @@ public class LPTimeVariant extends LPTimeVariantBase {
                         if (j == i)
                             continue;
                         // heaviside function, skip if heaviside gives 0
-                        if ((t - k) * timeIntervalLength - wLambda_ij.Get(j, i).number().doubleValue() > 0) {
+                        if ((t - k) * timeIntervalLength - Scalar2Number.of(wLambda_ij.Get(j, i)).doubleValue() > 0) {
                             index = fIDvarID.get(Arrays.asList(k, j, i));
                             GLPK.intArray_setitem(ind, index, index);
                             GLPK.doubleArray_setitem(val, index, 1);
                         }
-                        if ((t - k) * timeIntervalLength - wAlpha_ij.Get(j, i).number().doubleValue() > 0) {
+                        if ((t - k) * timeIntervalLength - Scalar2Number.of(wAlpha_ij.Get(j, i)).doubleValue() > 0) {
                             index = alphaIDvarID.get(Arrays.asList(k, j, i));
                             GLPK.intArray_setitem(ind, index, index);
                             GLPK.doubleArray_setitem(val, index, 1);
@@ -304,7 +305,7 @@ public class LPTimeVariant extends LPTimeVariantBase {
                     if (i == j)
                         continue;
                     int index = alphaIDvarID.get(Arrays.asList(t, i, j));
-                    GLPK.glp_set_obj_coef(lp, index, weightR / endTime * gamma_ij.Get(i, j).number().doubleValue());
+                    GLPK.glp_set_obj_coef(lp, index, weightR / endTime * Scalar2Number.of(gamma_ij.Get(i, j)).doubleValue());
                 }
     }
 

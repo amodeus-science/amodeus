@@ -38,6 +38,7 @@ import amodeus.amodeus.options.ScenarioOptions;
 import amodeus.amodeus.util.gui.RowPanel;
 import amodeus.amodeus.util.gui.SpinnerLabel;
 import amodeus.amodeus.util.io.MultiFileTools;
+import amodeus.amodeus.util.math.Scalar2Number;
 import amodeus.amodeus.view.jmapviewer.Coordinate;
 import amodeus.amodeus.view.jmapviewer.JMapViewer;
 import amodeus.amodeus.virtualnetwork.core.VirtualNetworkGet;
@@ -326,7 +327,7 @@ public class AmodeusViewerFrame implements Runnable {
             if (jToggleButtonAuto.isSelected()) {
                 jSlider.setValue(jSlider.getValue() + 1);
                 int STEPSIZE_SECONDS = storageSupplier.getIntervalEstimate();
-                millis = RealScalar.of(1000 * STEPSIZE_SECONDS).divide(RealScalar.of(playbackSpeed)).number().intValue();
+                millis = Scalar2Number.of(RealScalar.of(1000 * STEPSIZE_SECONDS).divide(RealScalar.of(playbackSpeed))).intValue();
             }
             try {
                 Thread.sleep(millis);

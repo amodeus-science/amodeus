@@ -32,6 +32,7 @@ import amodeus.amodeus.dispatcher.util.TreeMaintainer;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
 import amodeus.amodeus.net.TensorCoords;
 import amodeus.amodeus.util.math.GlobalAssert;
+import amodeus.amodeus.util.math.Scalar2Number;
 import amodeus.amodeus.util.matsim.SafeConfig;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -64,7 +65,7 @@ public class ExtDemandSupplyBeamSharing extends RebalancingDispatcher {
         SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
         sharingPeriod = safeConfig.getInteger("sharingPeriod", 10); // makes sense to choose this value similar to the pickup duration
         double rMax = safeConfig.getDouble("rMax", 1000.0);
-        double phiMax = Pi.in(100).multiply(RealScalar.of(safeConfig.getDouble("phiMaxDeg", 5.0) / 180.0)).number().doubleValue();
+        double phiMax = Scalar2Number.of(Pi.in(100).multiply(RealScalar.of(safeConfig.getDouble("phiMaxDeg", 5.0) / 180.0))).doubleValue();
         beamExtensionForSharing = new BeamExtensionForSharing(rMax, phiMax);
         double[] networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
         this.requestMaintainer = new TreeMaintainer<>(networkBounds, this::getLocation);

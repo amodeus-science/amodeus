@@ -36,6 +36,7 @@ import amodeus.amodeus.lp.LPMinFlow;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
 import amodeus.amodeus.routing.DistanceFunction;
 import amodeus.amodeus.util.math.GlobalAssert;
+import amodeus.amodeus.util.math.Scalar2Number;
 import amodeus.amodeus.util.matsim.SafeConfig;
 import amodeus.amodeus.virtualnetwork.core.VirtualLink;
 import amodeus.amodeus.virtualnetwork.core.VirtualNetwork;
@@ -157,7 +158,7 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
 
                 /** ensure that not more vehicles are sent away than available */
                 Tensor feasibleRebalanceCount = FeasibleRebalanceCreator.returnFeasibleRebalance(rebalanceCount.unmodifiable(), availableVehicles);
-                total_rebalanceCount += (Integer) ((Scalar) Total.of(Tensor.of(feasibleRebalanceCount.flatten(-1)))).number();
+                total_rebalanceCount += (Integer) Scalar2Number.of((Scalar) Total.of(Tensor.of(feasibleRebalanceCount.flatten(-1))));
 
                 /** generate routing instructions for rebalancing vehicles */
                 Map<VirtualNode<Link>, List<Link>> rebalanceDestinations = virtualNetwork.createVNodeTypeMap();

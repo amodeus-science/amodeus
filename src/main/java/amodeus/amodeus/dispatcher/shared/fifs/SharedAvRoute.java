@@ -13,6 +13,7 @@ import amodeus.amodeus.dispatcher.core.schedule.directives.Directive;
 import amodeus.amodeus.dispatcher.core.schedule.directives.StopDirective;
 import amodeus.amodeus.routing.CachedNetworkTimeDistance;
 import amodeus.amodeus.util.math.SI;
+import amodeus.amodeus.util.math.Scalar2Number;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.qty.Quantity;
 
@@ -34,7 +35,8 @@ import ch.ethz.idsc.tensor.qty.Quantity;
             // TODO @ChengQi after checking with Jan,
             // If the speed becomes to low in the future, here we could improve it by checking
             // the constraints here already to abort a route generation if the constraints are not fulfilled.
-            SharedRoutePoint sharedRoutePoint = new SharedRoutePoint(list.get(i), departureTime.add(driveTime).number().doubleValue(), stopDuration);
+            SharedRoutePoint sharedRoutePoint = new SharedRoutePoint(list.get(i), //
+                    Scalar2Number.of(departureTime.add(driveTime)).doubleValue(), stopDuration);
             routePoints.add(sharedRoutePoint);
             departureTime = Quantity.of(sharedRoutePoint.getEndTime(), SI.SECOND);
         }

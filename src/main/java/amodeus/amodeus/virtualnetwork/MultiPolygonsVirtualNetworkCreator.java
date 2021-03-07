@@ -13,6 +13,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.MultiPolygon;
 
+import amodeus.amodeus.util.math.Scalar2Number;
 import amodeus.amodeus.virtualnetwork.core.AbstractVirtualNetworkCreator;
 import amodeus.amodeus.virtualnetwork.core.VirtualNetwork;
 import amodeus.amodeus.virtualnetwork.core.VirtualNode;
@@ -57,8 +58,9 @@ public class MultiPolygonsVirtualNetworkCreator<T, U> extends AbstractVirtualNet
             /** associate links to the node in which they are contained */
             for (T t : elements) {
                 Tensor tPos = locationOf.apply(t);
-                Coordinate coordinate = new Coordinate(tPos.Get(0).number().doubleValue(), //
-                        tPos.Get(1).number().doubleValue());
+                Coordinate coordinate = new Coordinate( //
+                        Scalar2Number.of(tPos.Get(0)).doubleValue(), //
+                        Scalar2Number.of(tPos.Get(1)).doubleValue());
                 if (polygon.contains(factory.createPoint(coordinate)))
                     set.add(t);
             }

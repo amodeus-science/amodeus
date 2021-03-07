@@ -15,6 +15,7 @@ import amodeus.amodeus.net.SimulationObject;
 import amodeus.amodeus.util.math.MeanOrZero;
 import amodeus.amodeus.util.math.QuantileOrZero;
 import amodeus.amodeus.util.math.SI;
+import amodeus.amodeus.util.math.Scalar2Number;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -67,7 +68,7 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
                 .filter(rc -> RStatusHelper.unserviced(rc.requestStatus))//
                 .map(rc -> RealScalar.of(simulationObject.now - rc.submissionTime)));
         waitTimePlotValues.append(Join.of(Quantiles.SET.map(QuantileOrZero.of(submission)), //
-                Tensors.vector(MeanOrZero.of(submission).number().doubleValue())));
+                Tensors.of(MeanOrZero.of(submission))));
         waitingCustomers.append(RationalScalar.of(simulationObject.requests.stream()//
                 .filter(rc -> RStatusHelper.unserviced(rc.requestStatus)).count(), 1));//
 
@@ -157,31 +158,31 @@ public class TravelTimeAnalysis implements AnalysisElement, TotalValueAppender {
     public Map<TotalValueIdentifier, String> getTotalValues() {
         Map<TotalValueIdentifier, String> map = new HashMap<>();
         /** Wait Times */
-        double meanWaitTime = ((Scalar) Mean.of(getWaitTimes())).number().doubleValue();
+        double meanWaitTime = Scalar2Number.of((Scalar) Mean.of(getWaitTimes())).doubleValue();
         map.put(TtlValIdent.WAITTMEA, String.valueOf(meanWaitTime));
         Tensor quantils = Quantiles.SET.map(Quantile.of(getWaitTimes()));
-        map.put(TtlValIdent.WAITTQU1, String.valueOf(quantils.Get(0).number().doubleValue()));
-        map.put(TtlValIdent.WAITTQU2, String.valueOf(quantils.Get(1).number().doubleValue()));
-        map.put(TtlValIdent.WAITTQU3, String.valueOf(quantils.Get(2).number().doubleValue()));
-        map.put(TtlValIdent.WAITTMAX, String.valueOf(maxWaitTime.number().doubleValue()));
+        map.put(TtlValIdent.WAITTQU1, String.valueOf(Scalar2Number.of(quantils.Get(0)).doubleValue()));
+        map.put(TtlValIdent.WAITTQU2, String.valueOf(Scalar2Number.of(quantils.Get(1)).doubleValue()));
+        map.put(TtlValIdent.WAITTQU3, String.valueOf(Scalar2Number.of(quantils.Get(2)).doubleValue()));
+        map.put(TtlValIdent.WAITTMAX, String.valueOf(Scalar2Number.of(maxWaitTime).doubleValue()));
 
         /** Drive Times */
-        double meanDriveTime = ((Scalar) Mean.of(getDriveTimes())).number().doubleValue();
+        double meanDriveTime = Scalar2Number.of((Scalar) Mean.of(getDriveTimes())).doubleValue();
         map.put(TtlValIdent.DRIVETMEA, String.valueOf(meanDriveTime));
         Tensor quantilsDriveTime = Quantiles.SET.map(Quantile.of(getDriveTimes()));
-        map.put(TtlValIdent.DRIVETQU1, String.valueOf(quantilsDriveTime.Get(0).number().doubleValue()));
-        map.put(TtlValIdent.DRIVETQU2, String.valueOf(quantilsDriveTime.Get(1).number().doubleValue()));
-        map.put(TtlValIdent.DRIVETQU3, String.valueOf(quantilsDriveTime.Get(2).number().doubleValue()));
-        map.put(TtlValIdent.DRIVETMAX, String.valueOf(maxDrveTime.number().doubleValue()));
+        map.put(TtlValIdent.DRIVETQU1, String.valueOf(Scalar2Number.of(quantilsDriveTime.Get(0)).doubleValue()));
+        map.put(TtlValIdent.DRIVETQU2, String.valueOf(Scalar2Number.of(quantilsDriveTime.Get(1)).doubleValue()));
+        map.put(TtlValIdent.DRIVETQU3, String.valueOf(Scalar2Number.of(quantilsDriveTime.Get(2)).doubleValue()));
+        map.put(TtlValIdent.DRIVETMAX, String.valueOf(Scalar2Number.of(maxDrveTime).doubleValue()));
 
         /** Travel Times */
-        double meanTravelTime = ((Scalar) Mean.of(getTotalJourneyTimes())).number().doubleValue();
+        double meanTravelTime = Scalar2Number.of((Scalar) Mean.of(getTotalJourneyTimes())).doubleValue();
         map.put(TtlValIdent.TRAVELTMEA, String.valueOf(meanTravelTime));
         Tensor quantilstravelTime = Quantiles.SET.map(Quantile.of(getTotalJourneyTimes()));
-        map.put(TtlValIdent.TRAVELTQU1, String.valueOf(quantilstravelTime.Get(0).number().doubleValue()));
-        map.put(TtlValIdent.TRAVELTQU2, String.valueOf(quantilstravelTime.Get(1).number().doubleValue()));
-        map.put(TtlValIdent.TRAVELTQU3, String.valueOf(quantilstravelTime.Get(2).number().doubleValue()));
-        map.put(TtlValIdent.TRAVELTMAX, String.valueOf(maxTravelTime.number().doubleValue()));
+        map.put(TtlValIdent.TRAVELTQU1, String.valueOf(Scalar2Number.of(quantilstravelTime.Get(0)).doubleValue()));
+        map.put(TtlValIdent.TRAVELTQU2, String.valueOf(Scalar2Number.of(quantilstravelTime.Get(1)).doubleValue()));
+        map.put(TtlValIdent.TRAVELTQU3, String.valueOf(Scalar2Number.of(quantilstravelTime.Get(2)).doubleValue()));
+        map.put(TtlValIdent.TRAVELTMAX, String.valueOf(Scalar2Number.of(maxTravelTime).doubleValue()));
 
         return map;
     }

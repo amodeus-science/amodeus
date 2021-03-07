@@ -15,6 +15,7 @@ import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
 
+import amodeus.amodeus.util.math.Scalar2Number;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.sca.Clip;
 import ch.ethz.idsc.tensor.sca.Clips;
@@ -54,8 +55,9 @@ public enum PopulationAVRequests {
                              * as the departure time. * */
                             double startTime = leg.getDepartureTime().seconds();
                             if (startTime == Double.NEGATIVE_INFINITY)
-                                startTime = Math.max(timeClip.min().number().doubleValue(), ((Activity) planElMins).getEndTime().seconds());
-                            startTime = Math.min(startTime, timeClip.max().number().doubleValue());
+                                startTime = Math.max( //
+                                        Scalar2Number.of(timeClip.min()).doubleValue(), ((Activity) planElMins).getEndTime().seconds());
+                            startTime = Math.min(startTime, Scalar2Number.of(timeClip.max()).doubleValue());
                             timeClip.requireInside(RealScalar.of(startTime));
 
                             Link startLink = network.getLinks().get(((Activity) planElMins).getLinkId());

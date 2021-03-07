@@ -20,6 +20,7 @@ import com.google.inject.TypeLiteral;
 
 import amodeus.amodeus.traveldata.TravelData;
 import amodeus.amodeus.util.math.GlobalAssert;
+import amodeus.amodeus.util.math.Scalar2Number;
 import amodeus.amodeus.util.matsim.SortedLinks;
 import amodeus.amodeus.virtualnetwork.core.VirtualNetwork;
 import amodeus.amodeus.virtualnetwork.core.VirtualNode;
@@ -60,7 +61,7 @@ public class VehicleToVSGenerator implements AmodeusGenerator {
 
         /** get distribution from travelData */
         Tensor v0 = travelData.getV0();
-        GlobalAssert.that(Total.ofVector(v0).number().intValue() <= operatorConfig.getGeneratorConfig().getNumberOfVehicles());
+        GlobalAssert.that(Scalar2Number.of(Total.ofVector(v0)).intValue() <= operatorConfig.getGeneratorConfig().getNumberOfVehicles());
 
         boolean noDistribution = Scalars.isZero(Total.ofVector(v0));
         long average = operatorConfig.getGeneratorConfig().getNumberOfVehicles() / virtualNetwork.getvNodesCount();

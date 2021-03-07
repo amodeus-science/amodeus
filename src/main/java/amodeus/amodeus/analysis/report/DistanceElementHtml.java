@@ -10,6 +10,7 @@ import amodeus.amodeus.analysis.AnalysisSummary;
 import amodeus.amodeus.analysis.StackedDistanceChartImage;
 import amodeus.amodeus.analysis.element.DistanceElement;
 import amodeus.amodeus.analysis.element.StatusDistributionElement;
+import amodeus.amodeus.util.math.Scalar2Number;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.qty.QuantityUnit;
 
@@ -40,16 +41,16 @@ public enum DistanceElementHtml implements HtmlReportElement {
                         "\nAverage Trip Distance:" //
         );
         aRElement.getHTMLGenerator().insertTextLeft( //
-                "\n" + DECIMAL.format(de.totalDistanceRatio.number().doubleValue() * 100) + "%" + //
-                        "\n" + DECIMAL.format(sd.avgOccupancy.number().doubleValue() * 100) + "%" + //
+                "\n" + DECIMAL.format(Scalar2Number.of(de.totalDistanceRatio).doubleValue() * 100) + "%" + //
+                        "\n" + DECIMAL.format(Scalar2Number.of(sd.avgOccupancy).doubleValue() * 100) + "%" + //
                         "\n\n" + //
                         "\n" + format(de.totalDistance) + //
                         "\n" + format(de.totalDistanceRebal) + " (" + //
-                        DECIMAL.format(100 * de.totalDistanceRebal.number().doubleValue() / de.totalDistance.number().doubleValue()) + "%)" + //
+                        DECIMAL.format(100 * Scalar2Number.of(de.totalDistanceRebal).doubleValue() / Scalar2Number.of(de.totalDistance).doubleValue()) + "%)" + //
                         "\n" + format(de.totalDistancePicku) + " (" + //
-                        DECIMAL.format(100 * de.totalDistancePicku.number().doubleValue() / de.totalDistance.number().doubleValue()) + "%)" + //
+                        DECIMAL.format(100 * Scalar2Number.of(de.totalDistancePicku).doubleValue() / Scalar2Number.of(de.totalDistance).doubleValue()) + "%)" + //
                         "\n" + format(de.totalDistanceWtCst) + " (" + //
-                        DECIMAL.format(100 * de.totalDistanceWtCst.number().doubleValue() / de.totalDistance.number().doubleValue()) + "%)" + //
+                        DECIMAL.format(100 * Scalar2Number.of(de.totalDistanceWtCst).doubleValue() / Scalar2Number.of(de.totalDistance).doubleValue()) + "%)" + //
                         "\n" + //
                         "\n" + format(de.avgTripDistance));
         File img = new File(IMAGE_FOLDER, StackedDistanceChartImage.FILE_PNG);

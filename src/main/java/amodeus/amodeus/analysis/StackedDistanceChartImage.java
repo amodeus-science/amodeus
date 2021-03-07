@@ -28,9 +28,9 @@ public enum StackedDistanceChartImage implements AnalysisExport {
     public void summaryTarget(AnalysisSummary analysisSummary, File relativeDirectory, ColorDataIndexed colorDataIndexed) {
         DistanceElement de = analysisSummary.getDistanceElement();
         VisualSet visualSet = new VisualSet(colorDataIndexed);
-        visualSet.add(DOMAIN, Tensors.vector(de.totalDistanceWtCst.divide(de.totalDistance).number().doubleValue())).setLabel("With Customer");
-        visualSet.add(DOMAIN, Tensors.vector(de.totalDistancePicku.divide(de.totalDistance).number().doubleValue())).setLabel("Pickup");
-        visualSet.add(DOMAIN, Tensors.vector(de.totalDistanceRebal.divide(de.totalDistance).number().doubleValue())).setLabel("Rebalancing");
+        visualSet.add(DOMAIN, Tensors.of(de.totalDistanceWtCst.divide(de.totalDistance))).setLabel("With Customer");
+        visualSet.add(DOMAIN, Tensors.of(de.totalDistancePicku.divide(de.totalDistance))).setLabel("Pickup");
+        visualSet.add(DOMAIN, Tensors.of(de.totalDistanceRebal.divide(de.totalDistance))).setLabel("Rebalancing");
 
         visualSet.setPlotLabel("Total Distance Distribution");
 

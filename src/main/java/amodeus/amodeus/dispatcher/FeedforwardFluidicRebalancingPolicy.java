@@ -37,6 +37,7 @@ import amodeus.amodeus.net.MatsimAmodeusDatabase;
 import amodeus.amodeus.routing.DistanceFunction;
 import amodeus.amodeus.traveldata.TravelData;
 import amodeus.amodeus.util.math.GlobalAssert;
+import amodeus.amodeus.util.math.Scalar2Number;
 import amodeus.amodeus.util.matsim.SafeConfig;
 import amodeus.amodeus.virtualnetwork.core.VirtualLink;
 import amodeus.amodeus.virtualnetwork.core.VirtualNetwork;
@@ -138,7 +139,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
             /** ensure that not more vehicles are sent away than available */
             Map<VirtualNode<Link>, List<RoboTaxi>> availableVehicles = getVirtualNodeDivertableNotRebalancingRoboTaxis();
             Tensor feasibleRebalanceCount = FeasibleRebalanceCreator.returnFeasibleRebalance(rebalanceCountInteger.unmodifiable(), availableVehicles);
-            total_rebalanceCount += (Integer) ((Scalar) Total.of(Tensor.of(feasibleRebalanceCount.flatten(-1)))).number();
+            total_rebalanceCount += (Integer) Scalar2Number.of((Scalar) Total.of(Tensor.of(feasibleRebalanceCount.flatten(-1))));
 
             /** generate routing instructions for rebalancing vehicles */
             Map<VirtualNode<Link>, List<Link>> destinationLinks = virtualNetwork.createVNodeTypeMap();
@@ -148,7 +149,7 @@ public class FeedforwardFluidicRebalancingPolicy extends PartitionedDispatcher {
                 VirtualLink<Link> virtualLink = this.virtualNetwork.getVirtualLink(i);
                 VirtualNode<Link> toNode = virtualLink.getTo();
                 VirtualNode<Link> fromNode = virtualLink.getFrom();
-                int numreb = (Integer) (feasibleRebalanceCount.Get(fromNode.getIndex(), toNode.getIndex())).number();
+                int numreb = (Integer) Scalar2Number.of(feasibleRebalanceCount.Get(fromNode.getIndex(), toNode.getIndex()));
                 List<Link> rebalanceTargets = virtualNodeDest.selectLinkSet(toNode, numreb);
                 destinationLinks.get(fromNode).addAll(rebalanceTargets);
             }

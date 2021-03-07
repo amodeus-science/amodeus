@@ -12,6 +12,7 @@ import org.matsim.core.utils.collections.QuadTree.Rect;
 
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.util.math.GlobalAssert;
+import amodeus.amodeus.util.math.Scalar2Number;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.VectorQ;
 
@@ -43,8 +44,8 @@ public class TreeMaintainer<T> {
     public T getClosest(Tensor coord) {
         VectorQ.requireLength(coord, 2); // ensure that vector of length 2;
         return quadTree.getClosest( //
-                coord.Get(0).number().doubleValue(), //
-                coord.Get(1).number().doubleValue());
+                Scalar2Number.of(coord.Get(0)).doubleValue(), //
+                Scalar2Number.of(coord.Get(1)).doubleValue());
     }
 
     /** Adds the {@link T} @param t to the Tree Maintainer if it is not yet contained in the tree. */
@@ -53,8 +54,8 @@ public class TreeMaintainer<T> {
             Tensor coord = location.apply(t);
             boolean setok = set.add(t);
             boolean treeok = quadTree.put( //
-                    coord.Get(0).number().doubleValue(), //
-                    coord.Get(1).number().doubleValue(), t);
+                    Scalar2Number.of(coord.Get(0)).doubleValue(), //
+                    Scalar2Number.of(coord.Get(1)).doubleValue(), t);
             GlobalAssert.that(setok && treeok);
         }
     }
@@ -64,8 +65,8 @@ public class TreeMaintainer<T> {
         Tensor coord = location.apply(t);
         boolean setok = set.remove(t);
         boolean treeok = quadTree.remove( //
-                coord.Get(0).number().doubleValue(), //
-                coord.Get(1).number().doubleValue(), t);
+                Scalar2Number.of(coord.Get(0)).doubleValue(), //
+                Scalar2Number.of(coord.Get(1)).doubleValue(), t);
         GlobalAssert.that(setok && treeok);
     }
 
@@ -95,8 +96,8 @@ public class TreeMaintainer<T> {
     public boolean contains(Tensor coord) {
         VectorQ.requireLength(coord, 2); // ensure that vector of length 2;
         return outerRect.contains( //
-                coord.Get(0).number().doubleValue(), //
-                coord.Get(1).number().doubleValue());
+                Scalar2Number.of(coord.Get(0)).doubleValue(), //
+                Scalar2Number.of(coord.Get(1)).doubleValue());
     }
 
     public Set<T> getValues() {

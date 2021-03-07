@@ -17,6 +17,7 @@ import org.matsim.api.core.v01.network.Link;
 
 import amodeus.amodeus.dispatcher.FeedforwardFluidicRebalancingPolicy;
 import amodeus.amodeus.util.math.GlobalAssert;
+import amodeus.amodeus.util.math.Scalar2Number;
 import amodeus.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -188,7 +189,8 @@ public class LPTimeInvariant implements LPSolver {
             for (int j = 0; j < nvNodes; j++) {
                 if (i == j)
                     continue;
-                bound += ((Scalar) lambdaAbsolute_ij.get(timeIndex, j, i)).number().doubleValue() - ((Scalar) lambdaAbsolute_ij.get(timeIndex, i, j)).number().doubleValue();
+                bound += Scalar2Number.of((Scalar) lambdaAbsolute_ij.get(timeIndex, j, i)).doubleValue() // 
+                        - Scalar2Number.of((Scalar) lambdaAbsolute_ij.get(timeIndex, i, j)).doubleValue();
             }
             // set name
             String varName = ("deltaV" + "_" + i);
@@ -222,7 +224,7 @@ public class LPTimeInvariant implements LPSolver {
                 if (i == j)
                     continue;
                 int index = alphaIDvarID.get(Arrays.asList(i, j));
-                GLPK.glp_set_obj_coef(lp, index, gamma_ij.Get(i, j).number().doubleValue());
+                GLPK.glp_set_obj_coef(lp, index, Scalar2Number.of(gamma_ij.Get(i, j)).doubleValue());
             }
     }
 

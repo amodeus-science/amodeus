@@ -15,6 +15,7 @@ import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 
 import amodeus.amodeus.dispatcher.util.TreeMultipleItems;
 import amodeus.amodeus.routing.NetworkTimeDistInterface;
+import amodeus.amodeus.util.math.Scalar2Number;
 
 /** A {@link RequestHandler} takes care of all the requests in the scenario. It allows to quickly access the
  * desired subgroups such as unassigned Requests or allows to find the earliest requests computationally efficient. */
@@ -52,7 +53,7 @@ import amodeus.amodeus.routing.NetworkTimeDistInterface;
         unassignedPassengerRequests.forEach(r -> {
             unassignedRequests.add(r);
             requestsLastHour.add(r);
-            driveTimesSingle.put(r, timeDb.travelTime(r.getFromLink(), r.getToLink(), now).number().doubleValue());
+            driveTimesSingle.put(r, Scalar2Number.of(timeDb.travelTime(r.getFromLink(), r.getToLink(), now)).doubleValue());
         });
 
         unassignedPassengerRequests.stream().filter(avr -> !requests.containsKey(avr)).forEach(avr -> requests.put(avr, new RequestWrap(avr)));

@@ -17,6 +17,7 @@ import amodeus.amodeus.net.MatsimAmodeusDatabase;
 import amodeus.amodeus.net.OsmLink;
 import amodeus.amodeus.net.TensorCoords;
 import amodeus.amodeus.util.math.PolygonArea;
+import amodeus.amodeus.util.math.Scalar2Number;
 import amodeus.amodeus.virtualnetwork.core.VirtualNetwork;
 import amodeus.amodeus.virtualnetwork.core.VirtualNode;
 import ch.ethz.idsc.sophus.ply.d2.ConvexHull;
@@ -98,12 +99,12 @@ import ch.ethz.idsc.tensor.sca.Sign;
             if (!init) {
                 init = true;
                 path2d.moveTo( //
-                        vector.Get(0).number().doubleValue(), //
-                        vector.Get(1).number().doubleValue());
+                        Scalar2Number.of(vector.Get(0)).doubleValue(), //
+                        Scalar2Number.of(vector.Get(1)).doubleValue());
             } else
                 path2d.lineTo( //
-                        vector.Get(0).number().doubleValue(), //
-                        vector.Get(1).number().doubleValue());
+                        Scalar2Number.of(vector.Get(0)).doubleValue(), //
+                        Scalar2Number.of(vector.Get(1)).doubleValue());
         path2d.closePath();
         return path2d;
     }

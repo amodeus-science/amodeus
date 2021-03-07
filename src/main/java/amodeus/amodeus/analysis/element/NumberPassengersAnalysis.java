@@ -15,6 +15,7 @@ import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.net.RequestContainer;
 import amodeus.amodeus.net.SimulationObject;
 import amodeus.amodeus.net.VehicleContainer;
+import amodeus.amodeus.util.math.Scalar2Number;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -78,7 +79,7 @@ public class NumberPassengersAnalysis implements AnalysisElement, TotalValueAppe
         Scalar maxLengthNumberPassengers = (Scalar) Tensor.of(passengerDistribution.stream()//
                 .map(t -> RealScalar.of(t.length()))).flatten(-1).reduce(Max::of).get();
         passengerDistribution = //
-                PadRight.zeros(passengerDistribution.length(), maxLengthNumberPassengers.number().intValue())//
+                PadRight.zeros(passengerDistribution.length(), Scalar2Number.of(maxLengthNumberPassengers).intValue())//
                         .apply(passengerDistribution);
         // // for (Integer index : sharedOthersMap.keySet())
         // // sharedOtherPassengersPerRequest.append(RealScalar.of(sharedOthersMap.get(index)));

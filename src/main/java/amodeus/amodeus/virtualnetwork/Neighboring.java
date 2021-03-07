@@ -12,6 +12,7 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
 
 import amodeus.amodeus.util.math.IntPoint;
+import amodeus.amodeus.util.math.Scalar2Number;
 import amodeus.amodeus.virtualnetwork.core.GenericButterfliesAndRainbows;
 import amodeus.amodeus.virtualnetwork.core.VirtualNetwork;
 import amodeus.amodeus.virtualnetwork.core.VirtualNode;
@@ -54,6 +55,6 @@ public class Neighboring {
 
     public int geNumNeighbors(VirtualNode<Link> vN) {
         Scalar num = (Scalar) Total.of(neighbors.get(vN.getIndex()));
-        return num.number().intValue();
+        return Scalar2Number.of(num).intValue();
     }
 }

@@ -22,6 +22,7 @@ import amodeus.amodeus.util.gui.GraphicsUtil;
 import amodeus.amodeus.util.gui.LazyMouse;
 import amodeus.amodeus.util.gui.LazyMouseListener;
 import amodeus.amodeus.util.gui.RowPanel;
+import amodeus.amodeus.util.math.Scalar2Number;
 import amodeus.amodeus.view.jmapviewer.interfaces.ICoordinate;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -51,7 +52,7 @@ import ch.ethz.idsc.tensor.sca.ArcTan;
     }
 
     double angle() {
-        return ArcTan.of(p2.x - p1.x, p2.y - p1.y).number().doubleValue();
+        return Scalar2Number.of(ArcTan.of(p2.x - p1.x, p2.y - p1.y)).doubleValue();
     }
 }
 

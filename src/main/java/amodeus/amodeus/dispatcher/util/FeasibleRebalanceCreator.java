@@ -9,6 +9,7 @@ import org.matsim.api.core.v01.network.Link;
 
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.util.math.GlobalAssert;
+import amodeus.amodeus.util.math.Scalar2Number;
 import amodeus.amodeus.virtualnetwork.core.VirtualNode;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -37,7 +38,7 @@ public enum FeasibleRebalanceCreator {
 
         for (AtomicInteger ai = new AtomicInteger(); ai.get() < dim0; ai.getAndIncrement()) {
             // count number of outgoing vehicles per vNode
-            int outgoingVeh = rebalanceInput.get(ai.get()).stream().map(Scalar.class::cast).reduce(Scalar::add).get().number().intValue();
+            int outgoingVeh = Scalar2Number.of(rebalanceInput.get(ai.get()).stream().map(Scalar.class::cast).reduce(Scalar::add).get()).intValue();
             int availableVehvNode = availableVehicles //
                     .get(availableVehicles.keySet().stream().filter(v -> v.getIndex() == ai.get()).findAny().get()).size();
             // if number of outoing vehicles too small, reduce proportionally

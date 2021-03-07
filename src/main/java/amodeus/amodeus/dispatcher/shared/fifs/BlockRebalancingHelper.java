@@ -11,6 +11,7 @@ import java.util.TreeMap;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.routing.NetworkTimeDistInterface;
 import amodeus.amodeus.util.math.GlobalAssert;
+import amodeus.amodeus.util.math.Scalar2Number;
 
 /** helper Class for a Block to translate planned pushes and pulls into directives of Robotaxis to Links.
  * calculates all travel times of all robotaxis to all the blocks to which pushes and pulls are planned. */
@@ -33,7 +34,7 @@ import amodeus.amodeus.util.math.GlobalAssert;
         freeRoboTaxis.forEach(rt -> allTravelTimesForRoboTaxis.put(rt, new HashMap<>()));
         for (RoboTaxi roboTaxi : freeRoboTaxis)
             for (Block block : blocks) {
-                double travelTime = timeDb.travelTime(roboTaxi.getDivertableLocation(), block.getCenterLink(), now).number().doubleValue();
+                double travelTime = Scalar2Number.of(timeDb.travelTime(roboTaxi.getDivertableLocation(), block.getCenterLink(), now)).doubleValue();
 
                 travelTimesSorted.computeIfAbsent(travelTime, t -> new HashMap<>()) //
                         /* travelTimesSorted.get(travelTime) */ .computeIfAbsent(block, b -> new HashSet<>()) //
