@@ -57,7 +57,9 @@ import amodeus.amodeus.util.math.Scalar2Number;
         });
 
         unassignedPassengerRequests.stream().filter(avr -> !requests.containsKey(avr)).forEach(avr -> requests.put(avr, new RequestWrap(avr)));
-        unassignedPassengerRequests.forEach(avr -> requests.get(avr).setUnitCapDriveTime(timeDb.travelTime(avr.getFromLink(), avr.getToLink(), now).number().doubleValue()));
+        
+        unassignedPassengerRequests.forEach(avr -> // 
+        requests.get(avr).setUnitCapDriveTime(Scalar2Number.of(timeDb.travelTime(avr.getFromLink(), avr.getToLink(), now)).doubleValue()));
     }
 
     public void updatePickupTimes(Collection<PassengerRequest> avRequests, double now) {

@@ -61,6 +61,6 @@ public enum DistanceElementHtml implements HtmlReportElement {
     }
 
     private static String format(Scalar scalar) {
-        return DECIMAL.format(scalar.number().doubleValue()) + " " + QuantityUnit.of(scalar);
+        return DECIMAL.format(Scalar2Number.of(scalar).doubleValue()) + " " + QuantityUnit.of(scalar);
     }
 }
