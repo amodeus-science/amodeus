@@ -12,7 +12,7 @@
 		<skipTests>false</skipTests>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<github.global.server>github</github.global.server>
-		<matsim.version>13.0-2020w45-SNAPSHOT</matsim.version>
+		<matsim.version>13.0-2021w08-SNAPSHOT</matsim.version>
 	</properties>
 
 	<dependencies>
