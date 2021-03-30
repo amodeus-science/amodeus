@@ -16,6 +16,7 @@ import org.gnu.glpk.glp_smcp;
 import org.matsim.api.core.v01.network.Link;
 
 import amodeus.amodeus.util.math.GlobalAssert;
+import amodeus.amodeus.util.math.Scalar2Number;
 import amodeus.amodeus.virtualnetwork.core.VirtualLink;
 import amodeus.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -102,9 +103,9 @@ public class LPMinFlow {
         GlobalAssert.that(minFlow.length() == nvNodes);
         minFlow = LPUtils.getRounded(minFlow);
         // the problem is only feasible when the sum of minFlow is less or equal zero
-        GlobalAssert.that(Sign.isNegativeOrZero(Total.of(minFlow).Get()));
+        GlobalAssert.that(Sign.isNegativeOrZero(Total.ofVector(minFlow)));
         for (int i = 0; i < nvNodes; ++i)
-            GLPK.glp_set_row_bnds(lp, i + 1, GLPK.GLP_LO, minFlow.Get(i).number().doubleValue(), 0.0); // Lower bound: second number irrelevant
+            GLPK.glp_set_row_bnds(lp, i + 1, GLPK.GLP_LO,Scalar2Number.of( minFlow.Get(i)).doubleValue(), 0.0); // Lower bound: second number irrelevant
 
         GLPK.glp_term_out(mute ? GLPK.GLP_OFF : GLPK.GLP_ON);
 
@@ -186,7 +187,7 @@ public class LPMinFlow {
             int i = link.getFrom().getIndex();
             int j = link.getTo().getIndex();
             int index = alphaIDvarID.get(Arrays.asList(i, j));
-            GLPK.glp_set_obj_coef(lp, index, gamma_ij.Get(i, j).number().doubleValue());
+            GLPK.glp_set_obj_coef(lp, index, Scalar2Number.of(gamma_ij.Get(i, j)).doubleValue());
         }
     }
 

@@ -23,10 +23,10 @@ import org.matsim.core.router.util.TravelTime;
 
 import com.google.inject.TypeLiteral;
 
+import amodeus.amodeus.dispatcher.core.PartitionedDispatcher;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.RoboTaxiStatus;
 import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
-import amodeus.amodeus.dispatcher.core.PartitionedDispatcher;
 import amodeus.amodeus.net.FastLinkLookup;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
 import amodeus.amodeus.net.TensorCoords;
@@ -146,7 +146,7 @@ public class SQMDispatcher extends PartitionedDispatcher {
 
             VirtualNetwork<Link> virtualNetwork = inject.getModal(new TypeLiteral<VirtualNetwork<Link>>() {
             });
-            
+
             RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
 
             return new SQMDispatcher(config, operatorConfig, travelTime, router, eventsManager, network, //

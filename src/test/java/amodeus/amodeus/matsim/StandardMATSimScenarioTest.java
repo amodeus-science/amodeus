@@ -54,9 +54,6 @@ import com.google.inject.TypeLiteral;
 
 import amodeus.amodeus.data.LocationSpec;
 import amodeus.amodeus.data.ReferenceFrame;
-import amodeus.amodeus.dispatcher.alonso_mora_2016.AlonsoMoraParameters;
-import amodeus.amodeus.dispatcher.alonso_mora_2016.AlonsoMoraParameters.RejectionType;
-import amodeus.amodeus.dispatcher.alonso_mora_2016.AlonsoMoraParameters.RouteSearchType;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
 import amodeus.amodeus.options.LPOptions;
 import amodeus.amodeus.options.LPOptionsBase;
@@ -312,7 +309,7 @@ public class StandardMATSimScenarioTest {
                 });
             }
         });
-        
+
         controller.configureQSimComponents(AmodeusQSimModule.activateModes(avConfig));
 
         controller.run();
@@ -321,13 +318,13 @@ public class StandardMATSimScenarioTest {
             System.out.println("numberOfDepartures=" + analyzer.numberOfDepartures);
             System.out.println("numberOfArrivals  =" + analyzer.numberOfArrivals);
         }
-        
+
         if (dispatcher.equals("AlonsoMoraDispatcher")) {
             // Algorithm works with rejections!
-         // Seems to be not deterministic ... probably the fault of Sets / Maps
-            
+            // Seems to be not deterministic ... probably the fault of Sets / Maps
+
             Assert.assertTrue(analyzer.numberOfArrivals > 50);
-        } else if (dispatcher.equals("HighCapacityDispatcher")) { 
+        } else if (dispatcher.equals("HighCapacityDispatcher")) {
             // Seems to be not deterministic ... probably the fault of Sets / Maps, or delayed routing
             Assert.assertTrue(analyzer.numberOfArrivals > 50);
         } else {

@@ -22,12 +22,12 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.api.ScalarUnaryOperator;
 import ch.ethz.idsc.tensor.qty.CompatibleUnitQ;
 import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.qty.Unit;
 import ch.ethz.idsc.tensor.qty.UnitConvert;
 import ch.ethz.idsc.tensor.red.Total;
-import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
 
 public class DistanceElement implements AnalysisElement, TotalValueAppender {
     private static Unit TARGET_UNIT = Unit.of("km");
@@ -89,10 +89,10 @@ public class DistanceElement implements AnalysisElement, TotalValueAppender {
                 totalDistanceWtCst.divide(totalDistance) : RealScalar.of(-1);
         // distance per time of day
         distancesOverDay = allVehicleTraceAnalyzers.stream().map(tA -> //
-                // since times are also recorded by VehicleTraceAnalyzers no interpolation is needed
-                Tensor.of(times.stream().map(tA::stepDistance))).reduce(Tensor::add).orElseThrow();
+        // since times are also recorded by VehicleTraceAnalyzers no interpolation is needed
+        Tensor.of(times.stream().map(tA::stepDistance))).reduce(Tensor::add).orElseThrow();
         distanceRatioOverDay = Tensor.of(distancesOverDay.stream().map(dist -> //
-                Scalars.nonZero(dist.Get(0)) ? dist.Get(1).divide(dist.Get(0)) : RealScalar.ONE));
+        Scalars.nonZero(dist.Get(0)) ? dist.Get(1).divide(dist.Get(0)) : RealScalar.ONE));
 
         /** average request distance */
         avgTripDistance = requestElement.reqsize() > 0 //

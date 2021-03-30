@@ -16,7 +16,7 @@ import amodeus.amodeus.dispatcher.core.schedule.directives.StopDirective;
                 }
             }
         }
-        
+
         return false;
     }
 }

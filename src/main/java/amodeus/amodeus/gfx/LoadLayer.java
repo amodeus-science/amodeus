@@ -22,6 +22,7 @@ import amodeus.amodeus.util.gui.GraphicsUtil;
 import amodeus.amodeus.util.gui.RowPanel;
 import amodeus.amodeus.util.gui.SpinnerLabel;
 import amodeus.amodeus.util.math.LruCache;
+import amodeus.amodeus.util.math.Scalar2Number;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -61,7 +62,7 @@ public class LoadLayer extends ViewerLayer {
             Tensor weight;
             if (1 < width) {
                 weight = Subdivide.of(RealScalar.of(1), RealScalar.of(.1), width - 1);
-                weight = weight.divide(Total.of(weight).Get());
+                weight = weight.divide(Total.ofVector(weight));
             } else
                 weight = Tensors.of(RealScalar.ONE);
 
@@ -76,8 +77,8 @@ public class LoadLayer extends ViewerLayer {
                 if (Objects.nonNull(p1)) {
                     Point p2 = amodeusComponent.getMapPositionAlways(osmLink.getCoordTo());
                     Tensor linkTable = weight.dot(entry.getValue());
-                    final double total = Total.of(linkTable).Get().number().doubleValue();
-                    final double carsEmpty = linkTable.Get(1).number().doubleValue();
+                    final double total = Scalar2Number.of(Total.ofVector(linkTable)).doubleValue();
+                    final double carsEmpty = Scalar2Number.of(linkTable.Get(1)).doubleValue();
                     double ratio = carsEmpty / total;
                     double h = (ratio + 0.8) / 3; // r=0->Green, r=1->Blue
                     double v = 0.84 + ratio * .15; // r=0->, r=1->Brighter

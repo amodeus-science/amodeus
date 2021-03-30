@@ -30,10 +30,10 @@ import ch.ethz.idsc.tensor.qty.Quantity;
 
         for (Directive course : newMenu) {
             Link courseLink = null;
-            
+
             if (course instanceof StopDirective) {
                 StopDirective stopDirective = (StopDirective) course;
-                
+
                 if (stopDirective.isPickup()) {
                     courseLink = stopDirective.getRequest().getFromLink();
                 } else {
@@ -42,14 +42,14 @@ import ch.ethz.idsc.tensor.qty.Quantity;
             } else {
                 courseLink = ((DriveDirective) course).getDestination();
             }
-            
+
             Scalar travelTime = //
                     travelTimeCashed.travelTime(startLocation, courseLink, timeNow);
             Scalar timeofCourse = timePrev.add(travelTime);
-            
+
             if (course instanceof StopDirective) {
                 StopDirective stopDirective = (StopDirective) course;
-                
+
                 if (stopDirective.isPickup()) {
                     Scalar latestPickup = LatestPickup.of(stopDirective.getRequest(), pickupDelayMax);
                     if (Scalars.lessThan(latestPickup, timeofCourse)) {
@@ -65,7 +65,7 @@ import ch.ethz.idsc.tensor.qty.Quantity;
                     }
                 }
             }
-            
+
             timePrev = timeofCourse;
         }
         return timeComp;

@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 import org.matsim.core.utils.misc.Time;
 
 import amodeus.amodeus.analysis.report.HtmlGenerator;
+import amodeus.amodeus.util.math.Scalar2Number;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -37,7 +38,7 @@ public enum Quantiles {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(" \n");
         Tensor vector = Flatten.of(aggregates);
-        vector.stream().map(Scalar.class::cast).map(Scalar::number) //
+        vector.stream().map(Scalar.class::cast).map(Scalar2Number::of) //
                 .mapToDouble(Number::doubleValue) //
                 .forEach(scalar -> stringBuilder.append(Time.writeTime(scalar) + "\n"));
         return stringBuilder.toString();

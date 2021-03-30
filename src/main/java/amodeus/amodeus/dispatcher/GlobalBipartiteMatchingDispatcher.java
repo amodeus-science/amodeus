@@ -12,8 +12,8 @@ import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
 
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
-import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
 import amodeus.amodeus.dispatcher.core.RebalancingDispatcher;
+import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
 import amodeus.amodeus.dispatcher.util.BipartiteMatcher;
 import amodeus.amodeus.dispatcher.util.ConfigurableBipartiteMatcher;
 import amodeus.amodeus.dispatcher.util.DistanceCost;
@@ -85,7 +85,7 @@ public class GlobalBipartiteMatchingDispatcher extends RebalancingDispatcher {
             AmodeusRouter router = inject.getModal(AmodeusRouter.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);
             RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
-            
+
             return new GlobalBipartiteMatchingDispatcher(network, config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy);
         }
     }

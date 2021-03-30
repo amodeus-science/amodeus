@@ -11,8 +11,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.matsim.amodeus.config.AmodeusConfigGroup;
-import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.amodeus.config.modal.AmodeusScoringConfig;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;

@@ -7,7 +7,8 @@ import java.util.Set;
 
 import amodeus.amodeus.util.math.GlobalAssert;
 import amodeus.amodeus.util.math.IntPoint;
-import ch.ethz.idsc.tensor.red.Norm;
+import amodeus.amodeus.util.math.Scalar2Number;
+import ch.ethz.idsc.tensor.nrm.Vector2Norm;
 
 /* package */ enum VirtualLinkBuilder {
     ;
@@ -33,7 +34,7 @@ import ch.ethz.idsc.tensor.red.Norm;
                 if (!vNfrom.equals(vNto)) {
                     String indexStr = "vLink_" + Integer.toString(index + 1);
                     virtualNetwork.addVirtualLink(indexStr, vNfrom, vNto, //
-                            Norm._2.between(vNfrom.getCoord(), vNto.getCoord()).number().doubleValue());
+                            Scalar2Number.of(Vector2Norm.between(vNfrom.getCoord(), vNto.getCoord())).doubleValue());
                     ++index;
                 }
 
@@ -55,7 +56,7 @@ import ch.ethz.idsc.tensor.red.Norm;
             VirtualNode<T> vNto = virtualNetwork.getVirtualNode(point.y);
             String indexStr = "vLink_" + Integer.toString(index + 1);
             virtualNetwork.addVirtualLink(indexStr, vNfrom, vNto, //
-                    Norm._2.between(vNfrom.getCoord(), vNto.getCoord()).number().doubleValue());
+                    Scalar2Number.of(Vector2Norm.between(vNfrom.getCoord(), vNto.getCoord())).doubleValue());
             ++index;
         }
     }

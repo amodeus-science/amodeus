@@ -29,7 +29,7 @@ import amodeus.amodeus.options.ScenarioOptionsBase;
 import amodeus.amodeus.util.matsim.SafeConfig;
 import amodeus.amodeus.virtualnetwork.core.VirtualNetwork;
 import amodeus.amodeus.virtualnetwork.core.VirtualNetworkGet;
-import ch.ethz.idsc.tensor.io.UserName;
+import ch.ethz.idsc.tensor.ext.UserName;
 
 public class ScenarioParameters implements TotalValueAppender, Serializable {
     public static final int UNDEFINED_INT = -1;

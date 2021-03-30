@@ -34,11 +34,11 @@ public class TravelDataTestHelper {
     }
 
     public boolean lambdaAbsoluteCheck() {
-        return Chop._06.close(tDSaved.getLambdaAbsolute(), tDCreated.getLambdaAbsolute());
+        return Chop._06.isClose(tDSaved.getLambdaAbsolute(), tDCreated.getLambdaAbsolute());
     }
 
     public boolean lambdaAbsoluteAtTimeCheck() {
-        return Chop._06.close(tDSaved.getLambdaAbsoluteAtTime(1000), tDCreated.getLambdaAbsoluteAtTime(1000));
+        return Chop._06.isClose(tDSaved.getLambdaAbsoluteAtTime(1000), tDCreated.getLambdaAbsoluteAtTime(1000));
     }
 
     public boolean lambdaOutOfRangeCheck() {
@@ -51,11 +51,11 @@ public class TravelDataTestHelper {
     }
 
     public boolean lambdaRateCheck() {
-        return Chop._06.close(tDSaved.getLambdaRate(), tDCreated.getLambdaRate());
+        return Chop._06.isClose(tDSaved.getLambdaRate(), tDCreated.getLambdaRate());
     }
 
     public boolean lambdaRateAtTimeCheck() {
-        return Chop._06.close(tDSaved.getLambdaRateAtTime(1000), tDCreated.getLambdaRateAtTime(1000));
+        return Chop._06.isClose(tDSaved.getLambdaRateAtTime(1000), tDCreated.getLambdaRateAtTime(1000));
     }
 
     public boolean lambdaInvalidRateAtTimeCheck() {

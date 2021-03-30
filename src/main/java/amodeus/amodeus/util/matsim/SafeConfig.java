@@ -24,7 +24,7 @@ public class SafeConfig {
     public int getInteger(String key, int alt) {
         return get(key, alt, Integer::parseInt);
     }
-    
+
     public boolean getBool(String key, boolean alt) {
         return get(key, alt, Boolean::parseBoolean);
     }

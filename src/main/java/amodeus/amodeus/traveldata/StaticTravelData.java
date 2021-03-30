@@ -179,7 +179,8 @@ public class StaticTravelData implements TravelData, Serializable {
     @Override
     public void checkConsistency() {
         GlobalAssert.that(lambdaAbsolute.flatten(-1).map(Scalar.class::cast).allMatch(Sign::isPositiveOrZero));
-        Chop._06.close(lambdaAbsolute, Round.of(lambdaAbsolute)); // make sure lambdaAbsolute is integer valued
+        // TODO should be requireClose instead of isClose
+        Chop._06.isClose(lambdaAbsolute, Round.of(lambdaAbsolute)); // make sure lambdaAbsolute is integer valued
         GlobalAssert.that(Dimensions.of(lambdaAbsolute).equals(Dimensions.of(alphaAbsolute)));
         GlobalAssert.that(Dimensions.of(lambdaAbsolute).equals(Dimensions.of(fAbsolute)));
         GlobalAssert.that(Dimensions.of(lambdaAbsolute).get(1).equals(Dimensions.of(lambdaAbsolute).get(2)));

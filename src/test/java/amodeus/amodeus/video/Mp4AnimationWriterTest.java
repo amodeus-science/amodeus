@@ -9,9 +9,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
+import ch.ethz.idsc.tensor.ext.DeleteDirectory;
+import ch.ethz.idsc.tensor.ext.HomeDirectory;
 import ch.ethz.idsc.tensor.io.AnimationWriter;
-import ch.ethz.idsc.tensor.io.DeleteDirectory;
-import ch.ethz.idsc.tensor.io.HomeDirectory;
 import junit.framework.TestCase;
 
 public class Mp4AnimationWriterTest extends TestCase {

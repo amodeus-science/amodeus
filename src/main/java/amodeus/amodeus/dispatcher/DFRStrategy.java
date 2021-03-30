@@ -21,9 +21,9 @@ import org.matsim.core.router.util.TravelTime;
 import com.google.inject.TypeLiteral;
 
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
+import amodeus.amodeus.dispatcher.core.PartitionedDispatcher;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
-import amodeus.amodeus.dispatcher.core.PartitionedDispatcher;
 import amodeus.amodeus.dispatcher.util.AbstractRoboTaxiDestMatcher;
 import amodeus.amodeus.dispatcher.util.AbstractVirtualNodeDest;
 import amodeus.amodeus.dispatcher.util.ConfigurableBipartiteMatcher;
@@ -40,6 +40,7 @@ import amodeus.amodeus.net.MatsimAmodeusDatabase;
 import amodeus.amodeus.routing.DistanceFunction;
 import amodeus.amodeus.traveldata.TravelData;
 import amodeus.amodeus.util.math.GlobalAssert;
+import amodeus.amodeus.util.math.Scalar2Number;
 import amodeus.amodeus.util.matsim.SafeConfig;
 import amodeus.amodeus.virtualnetwork.Neighboring;
 import amodeus.amodeus.virtualnetwork.core.VirtualNetwork;
@@ -170,7 +171,7 @@ public class DFRStrategy extends PartitionedDispatcher {
             /** fill rebalancing destinations */
             for (VirtualNode<Link> fromNode : virtualNetwork.getVirtualNodes())
                 for (VirtualNode<Link> toNode : virtualNetwork.getVirtualNodes()) {
-                    int numreb = (Integer) (feasibleRebalanceCount.Get(fromNode.getIndex(), toNode.getIndex())).number();
+                    int numreb = (Integer) Scalar2Number.of(feasibleRebalanceCount.Get(fromNode.getIndex(), toNode.getIndex()));
                     List<Link> rebalanceTargets = virtualNodeDest.selectLinkSet(toNode, numreb);
                     destinationLinks.get(fromNode).addAll(rebalanceTargets);
                 }

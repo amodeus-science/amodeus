@@ -26,7 +26,8 @@ public class AmodeusUtils {
     }
 
     static public LinkedBindingBuilder<AmodeusInteractionFinder.AVInteractionFinderFactory> bindInteractionFinderFactory(Binder binder, String interactionFinderName) {
-        MapBinder<String, AmodeusInteractionFinder.AVInteractionFinderFactory> map = MapBinder.newMapBinder(binder, String.class, AmodeusInteractionFinder.AVInteractionFinderFactory.class);
+        MapBinder<String, AmodeusInteractionFinder.AVInteractionFinderFactory> map = MapBinder.newMapBinder(binder, String.class,
+                AmodeusInteractionFinder.AVInteractionFinderFactory.class);
         return map.addBinding(interactionFinderName);
     }
 
@@ -42,7 +43,8 @@ public class AmodeusUtils {
         bindRouterFactory(binder, routerName).to(factoryClass);
     }
 
-    static public void registerInteractionFinderFactory(Binder binder, String interactionFinderName, Class<? extends AmodeusInteractionFinder.AVInteractionFinderFactory> factoryClass) {
+    static public void registerInteractionFinderFactory(Binder binder, String interactionFinderName,
+            Class<? extends AmodeusInteractionFinder.AVInteractionFinderFactory> factoryClass) {
         bindInteractionFinderFactory(binder, interactionFinderName).to(factoryClass);
     }
 }

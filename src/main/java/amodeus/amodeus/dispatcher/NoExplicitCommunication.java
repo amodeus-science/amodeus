@@ -67,7 +67,7 @@ public class NoExplicitCommunication extends AbstractNoExplicitCommunication {
             AmodeusRouter router = inject.getModal(AmodeusRouter.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);
             RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
-            
+
             return new NoExplicitCommunication(network, config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy);
         }
     }

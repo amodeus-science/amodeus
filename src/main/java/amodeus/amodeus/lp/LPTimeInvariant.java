@@ -17,6 +17,7 @@ import org.matsim.api.core.v01.network.Link;
 
 import amodeus.amodeus.dispatcher.FeedforwardFluidicRebalancingPolicy;
 import amodeus.amodeus.util.math.GlobalAssert;
+import amodeus.amodeus.util.math.Scalar2Number;
 import amodeus.amodeus.virtualnetwork.core.VirtualNetwork;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -25,11 +26,10 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.Dimensions;
 
-/** Implementation of the LPTimeInvariant solver of
- * "Feedforward Fluidic Optimal Rebalancing Policy" presented in
- * Pavone, M., Smith, S.L., Frazzoli, E. and Rus, D., 2012.
- * Robotic load balancing for mobility-on-demand systems.
- * The International Journal of Robotics Research, 31(7), pp.839-854.
+/** Implementation of the LPTimeInvariant solver of "Feedforward Fluidic Optimal
+ * Rebalancing Policy" presented in Pavone, M., Smith, S.L., Frazzoli, E. and
+ * Rus, D., 2012. Robotic load balancing for mobility-on-demand systems. The
+ * International Journal of Robotics Research, 31(7), pp.839-854.
  * 
  * On page 845 on the right-hand side is the implemented algorithm shown.
  * 
@@ -56,8 +56,8 @@ public class LPTimeInvariant implements LPSolver {
     private int columnId;
     private int rowId;
 
-    /** @param virtualNetwork
-     *            the virtual network (complete directed graph) on which the optimization is computed. */
+    /** @param virtualNetwork the virtual network (complete directed graph) on which
+     *            the optimization is computed. */
     public LPTimeInvariant(VirtualNetwork<Link> virtualNetwork, Tensor lambdaAbsolute_ij, int numberOfVehicles, int endTime) {
         numberVehicles = numberOfVehicles;
         nvNodes = virtualNetwork.getvNodesCount();
@@ -109,7 +109,8 @@ public class LPTimeInvariant implements LPSolver {
             GLPK.glp_add_rows(lp, rowTotal);
             rowId = 0;
 
-            // Allocate memory NOTE: the first value in this array is not used as variables are counted 1,2,3,...,n*n
+            // Allocate memory NOTE: the first value in this array is not used as variables
+            // are counted 1,2,3,...,n*n
             SWIGTYPE_p_int ind = GLPK.new_intArray(columnTotal + 1);
             SWIGTYPE_p_double val = GLPK.new_doubleArray(columnTotal + 1);
 
@@ -188,7 +189,8 @@ public class LPTimeInvariant implements LPSolver {
             for (int j = 0; j < nvNodes; j++) {
                 if (i == j)
                     continue;
-                bound += lambdaAbsolute_ij.Get(timeIndex, j, i).number().doubleValue() - lambdaAbsolute_ij.Get(timeIndex, i, j).number().doubleValue();
+                bound += Scalar2Number.of((Scalar) lambdaAbsolute_ij.get(timeIndex, j, i)).doubleValue() // 
+                        - Scalar2Number.of((Scalar) lambdaAbsolute_ij.get(timeIndex, i, j)).doubleValue();
             }
             // set name
             String varName = ("deltaV" + "_" + i);
@@ -222,7 +224,7 @@ public class LPTimeInvariant implements LPSolver {
                 if (i == j)
                     continue;
                 int index = alphaIDvarID.get(Arrays.asList(i, j));
-                GLPK.glp_set_obj_coef(lp, index, gamma_ij.Get(i, j).number().doubleValue());
+                GLPK.glp_set_obj_coef(lp, index, Scalar2Number.of(gamma_ij.Get(i, j)).doubleValue());
             }
     }
 

@@ -10,7 +10,7 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import ch.ethz.idsc.tensor.io.ReadLine;
+import ch.ethz.idsc.tensor.ext.ReadLine;
 
 public enum FileLines {
     ;

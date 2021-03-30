@@ -8,6 +8,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -21,15 +22,15 @@ import amodeus.amodeus.util.gui.GraphicsUtil;
 import amodeus.amodeus.util.gui.LazyMouse;
 import amodeus.amodeus.util.gui.LazyMouseListener;
 import amodeus.amodeus.util.gui.RowPanel;
-import amodeus.amodeus.util.nd.NdCenterInterface;
-import amodeus.amodeus.util.nd.NdCluster;
-import amodeus.amodeus.util.nd.NdEntry;
-import amodeus.amodeus.util.nd.NdMap;
-import amodeus.amodeus.util.nd.NdTreeMap;
+import amodeus.amodeus.util.math.Scalar2Number;
 import amodeus.amodeus.view.jmapviewer.interfaces.ICoordinate;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
+import ch.ethz.idsc.tensor.opt.nd.EuclideanNdCenter;
+import ch.ethz.idsc.tensor.opt.nd.NdMap;
+import ch.ethz.idsc.tensor.opt.nd.NdMatch;
+import ch.ethz.idsc.tensor.opt.nd.NdTreeMap;
 import ch.ethz.idsc.tensor.sca.ArcTan;
 
 /* package */ class Street {
@@ -51,7 +52,7 @@ import ch.ethz.idsc.tensor.sca.ArcTan;
     }
 
     double angle() {
-        return ArcTan.of(p2.x - p1.x, p2.y - p1.y).number().doubleValue();
+        return Scalar2Number.of(ArcTan.of(p2.x - p1.x, p2.y - p1.y)).doubleValue();
     }
 }
 
@@ -90,7 +91,8 @@ public class LinkLayer extends ViewerLayer {
 
     /** Draw last coordinate of where mouse clicked onto graphics object
      *
-     * @param graphics Graphics2D object on which the last coord will be drawn/highlighted */
+     * @param graphics Graphics2D object on which the last coord will be
+     *            drawn/highlighted */
     private void drawLastCoord(Graphics2D graphics) {
         Point p = amodeusComponent.getMapPosition(lastCoord.getLat(), lastCoord.getLon());
         if (Objects.nonNull(p)) {
@@ -141,11 +143,11 @@ public class LinkLayer extends ViewerLayer {
         final Point point = amodeusComponent.getMapPosition(lastCoord.getLat(), lastCoord.getLon());
         if (Objects.nonNull(point)) {
             Tensor center = Tensors.vector(point.x, point.y);
-            NdCluster<Street> cluster = map.buildCluster(NdCenterInterface.euclidean(center), 2);
+            Collection<NdMatch<Street>> cluster = map.cluster(EuclideanNdCenter.of(center), 2);
             graphics.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
             GraphicsUtil.setQualityHigh(graphics);
-            for (NdEntry<Street> entry : cluster.collection()) {
-                Street street = entry.value();
+            for (NdMatch<Street> ndMatch : cluster) {
+                Street street = ndMatch.value();
                 double theta = street.angle();
                 Point p1 = street.p1;
                 Point p2 = street.p2;

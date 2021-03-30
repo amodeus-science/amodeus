@@ -3,15 +3,15 @@ package amodeus.amodeus.prep;
 
 import java.io.File;
 
+import org.matsim.amodeus.config.AmodeusModeConfig;
+import org.matsim.api.core.v01.population.Population;
+
 import amodeus.amodeus.test.ScenarioExecutionTest;
 import amodeus.amodeus.test.TestFileHandling;
 import amodeus.amodeus.util.io.Locate;
 import amodeus.amodeus.util.io.MultiFileTools;
 import amodeus.amodeus.util.math.GlobalAssert;
 import junit.framework.TestCase;
-
-import org.matsim.amodeus.config.AmodeusModeConfig;
-import org.matsim.api.core.v01.population.Population;
 
 public class TheRequestApocalypseTest extends TestCase {
 

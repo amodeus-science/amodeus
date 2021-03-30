@@ -135,21 +135,21 @@ import amodeus.amodeus.util.math.GlobalAssert;
             PassengerRequest avRequest, double now, //
             CachedNetworkTimeDistance timeDb, RequestHandler requestMaintainer) {
         Set<PassengerRequest> uniqueRequests = new HashSet<>();
-        
+
         for (Directive directive : roboTaxi.getScheduleManager().getDirectives()) {
             if (directive instanceof StopDirective) {
                 uniqueRequests.add(((StopDirective) directive).getRequest());
             }
         }
-        
+
         Set<PassengerRequest> newRouteRequests = new HashSet<>();
-        
+
         for (Directive directive : newRoute) {
             if (directive instanceof StopDirective) {
                 newRouteRequests.add(((StopDirective) directive).getRequest());
             }
         }
-        
+
         Set<PassengerRequest> currentRequests = uniqueRequests;
         GlobalAssert.that(newRouteRequests.containsAll(currentRequests));
         SharedAvRoute sharedAvRoute = SharedAvRoute.of(newRoute, roboTaxi.getDivertableLocation(), now, pickupDuration, dropoffDuration, timeDb);

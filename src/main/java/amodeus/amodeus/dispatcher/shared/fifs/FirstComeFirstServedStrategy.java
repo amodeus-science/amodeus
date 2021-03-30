@@ -21,9 +21,9 @@ import org.matsim.core.router.FastAStarLandmarksFactory;
 import org.matsim.core.router.util.LeastCostPathCalculator;
 import org.matsim.core.router.util.TravelTime;
 
+import amodeus.amodeus.dispatcher.core.RebalancingDispatcher;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
-import amodeus.amodeus.dispatcher.core.RebalancingDispatcher;
 import amodeus.amodeus.dispatcher.util.TreeMaintainer;
 import amodeus.amodeus.dispatcher.util.TreeMultipleItems;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
@@ -31,6 +31,7 @@ import amodeus.amodeus.net.TensorCoords;
 import amodeus.amodeus.routing.CachedNetworkTimeDistance;
 import amodeus.amodeus.routing.EasyMinTimePathCalculator;
 import amodeus.amodeus.routing.TimeDistanceProperty;
+import amodeus.amodeus.util.math.Scalar2Number;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** Implementation of the Algorithm presented in:
@@ -110,7 +111,7 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
                 boolean assigned = false;
                 if (unassignedRoboTaxis.size() > 0) {
                     RoboTaxi closestRoboTaxi = unassignedRoboTaxis.getClosest(getLocation(avRequest));
-                    double travelTime = timeDb.travelTime(closestRoboTaxi.getDivertableLocation(), avRequest.getFromLink(), now).number().doubleValue();
+                    double travelTime = Scalar2Number.of(timeDb.travelTime(closestRoboTaxi.getDivertableLocation(), avRequest.getFromLink(), now)).doubleValue();
                     if (travelTime < WAITTIME.calculate(avRequest, waitList, extremWaitList)) {
                         setRoboTaxiPickup(closestRoboTaxi, avRequest, Double.NaN, Double.NaN);
                         unassignedRoboTaxis.remove(closestRoboTaxi);
@@ -166,7 +167,7 @@ public class FirstComeFirstServedStrategy extends RebalancingDispatcher {
             Network network = inject.getModal(Network.class);
             AmodeusRouter router = inject.getModal(AmodeusRouter.class);
             TravelTime travelTime = inject.getModal(TravelTime.class);
-            
+
             RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
 
             return new FirstComeFirstServedStrategy(network, config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy);

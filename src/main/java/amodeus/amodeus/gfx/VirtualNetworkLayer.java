@@ -21,16 +21,17 @@ import amodeus.amodeus.net.SimulationObject;
 import amodeus.amodeus.net.TensorCoords;
 import amodeus.amodeus.util.gui.RowPanel;
 import amodeus.amodeus.util.gui.SpinnerLabel;
+import amodeus.amodeus.util.math.Scalar2Number;
 import amodeus.amodeus.view.gheat.gui.ColorSchemes;
 import amodeus.amodeus.virtualnetwork.core.VirtualLink;
 import amodeus.amodeus.virtualnetwork.core.VirtualNetwork;
 import amodeus.amodeus.virtualnetwork.core.VirtualNode;
+import ch.ethz.idsc.sophus.ply.d2.ConvexHull;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Join;
-import ch.ethz.idsc.tensor.opt.ConvexHull;
 import ch.ethz.idsc.tensor.sca.Sqrt;
 
 public class VirtualNetworkLayer extends ViewerLayer {
@@ -124,7 +125,7 @@ public class VirtualNetworkLayer extends ViewerLayer {
                         {
                             Tensor convexHull = ConvexHull.of(Join.of(hull, tensor));
                             Shape shape = VirtualNodeGeometry.createShapePixel(amodeusComponent, convexHull);
-                            final int i = 255 - prob.Get(entry.getKey().getIndex()).number().intValue();
+                            final int i = 255 - Scalar2Number.of(prob.Get(entry.getKey().getIndex())).intValue();
                             Color color2 = colorSchemes.colorDataIndexed.getColor(i);
                             // graphics.setColor(halfAlpha(colorSchemes.colorDataIndexed.getColor(i)));
 
@@ -201,7 +202,7 @@ public class VirtualNetworkLayer extends ViewerLayer {
         Tensor prob = rescaling.apply(count).multiply(_224);
         virtualNodeGeometry.getShapes(amodeusComponent).forEach((key, value) -> {
             // graphics.setColor(new Color(128, 128, 128, prob.Get(key.index).number().intValue()));
-            final int i = 255 - prob.Get(key.getIndex()).number().intValue();
+            final int i = 255 - Scalar2Number.of(prob.Get(key.getIndex())).intValue();
             graphics.setColor(halfAlpha(colorSchemes.colorDataIndexed.getColor(i)));
             graphics.fill(value);
         });

@@ -12,10 +12,10 @@ public interface ParkingCapacityGenerator {
 
     /** @returns a {@link ParkingCapacity} for a given {@link Network} @param network.
      *          Some generators require additional
-     *          @param scenarioOptions {@link ScenarioOptions}
+     * @param scenarioOptions {@link ScenarioOptions}
      * 
-     *          Generation could for example be by searching for a given link attribute in the network
-     *          or by using the length of the link as a indication of its capacity. */
+     *            Generation could for example be by searching for a given link attribute in the network
+     *            or by using the length of the link as a indication of its capacity. */
     ParkingCapacity generate(Network network, Population population, ScenarioOptions scenarioOptions);
 
 }

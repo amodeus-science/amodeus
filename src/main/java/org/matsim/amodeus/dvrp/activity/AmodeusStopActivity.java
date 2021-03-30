@@ -50,7 +50,7 @@ public class AmodeusStopActivity extends FirstLastSimStepDynActivity implements 
         if (pickupRequests.size() > vehicle.getCapacity()) {
             throw new IllegalStateException("Number of requests exceeds number of seats");
         }
-        
+
         if (dropoffRequests.size() > vehicle.getCapacity()) {
             throw new IllegalStateException("Number of requests exceeds number of seats");
         }
@@ -62,7 +62,7 @@ public class AmodeusStopActivity extends FirstLastSimStepDynActivity implements 
             tryPerformPickup(request, now);
         }
     }
-    
+
     @Override
     protected void afterLastStep(double now) {
         for (PassengerRequest request : dropoffRequests.values()) {

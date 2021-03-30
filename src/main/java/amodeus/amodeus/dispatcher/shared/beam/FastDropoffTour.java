@@ -35,25 +35,25 @@ import amodeus.amodeus.util.math.GlobalAssert;
         GlobalAssert.that(set.isEmpty());
         return sharedCourses;
     }
-    
+
     public static boolean isPickup(Directive directive) {
         if (directive instanceof StopDirective) {
             StopDirective stopDirective = (StopDirective) directive;
             return stopDirective.isPickup();
         }
-        
+
         return false;
     }
-    
+
     public static boolean isDropoff(Directive directive) {
         if (directive instanceof StopDirective) {
             StopDirective stopDirective = (StopDirective) directive;
             return !stopDirective.isPickup();
         }
-        
+
         return false;
     }
-    
+
     public static boolean isDrive(Directive directive) {
         return directive instanceof DriveDirective;
     }

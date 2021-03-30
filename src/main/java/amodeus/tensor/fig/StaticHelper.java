@@ -16,6 +16,7 @@ import org.jfree.data.xy.TableXYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
+import amodeus.amodeus.util.math.Scalar2Number;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
@@ -30,7 +31,7 @@ import ch.ethz.idsc.tensor.Tensor;
         for (VisualRow visualRow : visualSet.visualRows())
             for (Tensor point : visualRow.points())
                 defaultCategoryDataset.addValue( //
-                        point.Get(1).number().doubleValue(), //
+                        Scalar2Number.of(point.Get(1)).doubleValue(), //
                         visualRow.getLabel(), //
                         naming.apply(point.Get(0)));
         return defaultCategoryDataset;
@@ -52,8 +53,8 @@ import ch.ethz.idsc.tensor.Tensor;
                     : visualRow.getLabelString();
             for (Tensor point : visualRow.points())
                 categoryTableXYDataset.add( //
-                        point.Get(0).number().doubleValue(), //
-                        point.Get(1).number().doubleValue(), //
+                        Scalar2Number.of(point.Get(0)).doubleValue(), //
+                        Scalar2Number.of(point.Get(1)).doubleValue(), //
                         label); // requires string, might lead to overwriting
         }
         return categoryTableXYDataset;
@@ -65,7 +66,7 @@ import ch.ethz.idsc.tensor.Tensor;
             for (Tensor point : visualRow.points())
                 timeTableXYDataset.add( //
                         toTime(point.Get(0)), //
-                        point.Get(1).number().doubleValue(), //
+                        Scalar2Number.of(point.Get(1)).doubleValue(), //
                         visualRow.getLabel());
         return timeTableXYDataset;
     }
@@ -82,7 +83,7 @@ import ch.ethz.idsc.tensor.Tensor;
             String labelString = visualRow.getLabelString();
             XYSeries xySeries = new XYSeries(labelString.isEmpty() ? xySeriesCollection.getSeriesCount() : labelString);
             for (Tensor point : visualRow.points())
-                xySeries.add(point.Get(0).number(), point.Get(1).number());
+                xySeries.add(Scalar2Number.of(point.Get(0)), Scalar2Number.of(point.Get(1)));
             xySeriesCollection.addSeries(xySeries);
         }
         return xySeriesCollection;
@@ -95,7 +96,7 @@ import ch.ethz.idsc.tensor.Tensor;
             TimeSeries timeSeries = new TimeSeries(labelString.isEmpty() ? timeSeriesCollection.getSeriesCount() : labelString);
             for (Tensor point : visualRow.points())
                 try {
-                    timeSeries.add(toTime(point.Get(0)), point.Get(1).number());
+                    timeSeries.add(toTime(point.Get(0)), Scalar2Number.of(point.Get(1)));
                 } catch (Exception e) {
                     // sensitive to overwriting as smallest unit is second (integer)
                     e.printStackTrace();
@@ -107,7 +108,7 @@ import ch.ethz.idsc.tensor.Tensor;
 
     // from StaticHelper
     /* package for testing */ static Second toTime(Scalar time) {
-        long timeL = time.number().longValue();
+        long timeL = Scalar2Number.of(time).longValue();
         int days = (int) TimeUnit.SECONDS.toDays(timeL);
         int hours = (int) (TimeUnit.SECONDS.toHours(timeL) - 24.0 * days);
         int minutes = (int) (TimeUnit.SECONDS.toMinutes(timeL) - 60.0 * hours - 1440.0 * days);

@@ -4,6 +4,7 @@ package amodeus.amodeus.net;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Link;
 
+import amodeus.amodeus.util.math.Scalar2Number;
 import amodeus.amodeus.virtualnetwork.core.VirtualNode;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -27,7 +28,7 @@ public enum TensorCoords {
     public static Coord toCoord(Tensor vector) {
         VectorQ.requireLength(vector, 2); // ensure that vector of length 2;
         return new Coord( //
-                vector.Get(0).number().doubleValue(), //
-                vector.Get(1).number().doubleValue());
+                Scalar2Number.of(vector.Get(0)).doubleValue(), //
+                Scalar2Number.of(vector.Get(1)).doubleValue());
     }
 }

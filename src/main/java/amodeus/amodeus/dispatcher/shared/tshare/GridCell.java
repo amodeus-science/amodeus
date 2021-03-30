@@ -14,6 +14,7 @@ import amodeus.amodeus.routing.CachedNetworkTimeDistance;
 import amodeus.amodeus.routing.NetworkTimeDistInterface;
 import amodeus.amodeus.util.math.GlobalAssert;
 import amodeus.amodeus.util.math.SI;
+import amodeus.amodeus.util.math.Scalar2Number;
 import amodeus.amodeus.virtualnetwork.core.VirtualNetwork;
 import amodeus.amodeus.virtualnetwork.core.VirtualNode;
 import ch.ethz.idsc.tensor.Scalar;
@@ -54,13 +55,13 @@ import ch.ethz.idsc.tensor.sca.Sign;
             CachedNetworkTimeDistance minDist, NetworkTimeDistInterface minTime) {
         /** the from link is the link closes to the center of the {@link VirtualNode} */
         Link gridCellCenterLink = links.getClosest(//
-                virtualNode.getCoord().Get(0).number().doubleValue(), //
-                virtualNode.getCoord().Get(1).number().doubleValue());
+                Scalar2Number.of(virtualNode.getCoord().Get(0)).doubleValue(), //
+                Scalar2Number.of(virtualNode.getCoord().Get(1)).doubleValue());
         /** calculate distances and travel times to other nodes */
         for (VirtualNode<Link> otherGridCell : virtualNetwork.getVirtualNodes()) {
             Link otherCenterLink = links.getClosest(//
-                    otherGridCell.getCoord().Get(0).number().doubleValue(), //
-                    otherGridCell.getCoord().Get(1).number().doubleValue());
+                    Scalar2Number.of(otherGridCell.getCoord().Get(0)).doubleValue(), //
+                    Scalar2Number.of(otherGridCell.getCoord().Get(1)).doubleValue());
             Scalar time = minTime.travelTime(gridCellCenterLink, otherCenterLink, 0.0);
             Scalar distance = minDist.distance(gridCellCenterLink, otherCenterLink, 0.0);
             temporalSortedMap.put(time, otherGridCell);

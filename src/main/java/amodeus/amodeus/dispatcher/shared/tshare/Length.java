@@ -28,19 +28,19 @@ import ch.ethz.idsc.tensor.qty.Quantity;
         Scalar length = Quantity.of(0.0, SI.METER);
         for (Directive course : menu) {
             Link courseLink = null;
-            
+
             if (course instanceof DriveDirective) {
                 courseLink = ((DriveDirective) course).getDestination();
             } else {
                 StopDirective stop = (StopDirective) course;
-                
+
                 if (stop.isPickup()) {
                     courseLink = stop.getRequest().getFromLink();
                 } else {
                     courseLink = stop.getRequest().getToLink();
                 }
             }
-            
+
             length = length.add(networkTimeDistInterface.distance(link, courseLink, now));
             link = courseLink;
         }

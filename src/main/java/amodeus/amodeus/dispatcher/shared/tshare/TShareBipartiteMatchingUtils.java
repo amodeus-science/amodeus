@@ -14,6 +14,7 @@ import amodeus.amodeus.dispatcher.core.UniversalDispatcher;
 import amodeus.amodeus.dispatcher.util.GlobalBipartiteCost;
 import amodeus.amodeus.dispatcher.util.GlobalBipartiteMatching;
 import amodeus.amodeus.routing.CachedNetworkTimeDistance;
+import amodeus.amodeus.util.math.Scalar2Number;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
@@ -47,7 +48,7 @@ import ch.ethz.idsc.tensor.Tensors;
 
         @Override
         public double between(RoboTaxi roboTaxi, Link link) {
-            return distanceCashed.distance(roboTaxi.getDivertableLocation(), link, now).number().doubleValue();
+            return Scalar2Number.of(distanceCashed.distance(roboTaxi.getDivertableLocation(), link, now)).doubleValue();
 
         }
     }

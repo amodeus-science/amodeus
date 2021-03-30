@@ -7,8 +7,6 @@ import java.io.IOException;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 
-import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.alg.Range;
 import amodeus.tensor.fig.Histogram;
 import amodeus.tensor.fig.ListPlot;
 import amodeus.tensor.fig.StackedHistogram;
@@ -17,8 +15,10 @@ import amodeus.tensor.fig.StackedTimedChart;
 import amodeus.tensor.fig.TimedChart;
 import amodeus.tensor.fig.VisualRow;
 import amodeus.tensor.fig.VisualSet;
+import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.alg.Range;
+import ch.ethz.idsc.tensor.ext.HomeDirectory;
 import ch.ethz.idsc.tensor.img.ColorDataLists;
-import ch.ethz.idsc.tensor.io.HomeDirectory;
 import ch.ethz.idsc.tensor.pdf.RandomVariate;
 import ch.ethz.idsc.tensor.pdf.UniformDistribution;
 

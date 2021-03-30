@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 import amodeus.amodeus.util.math.Magnitude;
+import amodeus.amodeus.util.math.Scalar2Number;
 import ch.ethz.idsc.tensor.Scalar;
 
 public enum LocalDateTimes {
@@ -32,7 +33,7 @@ public enum LocalDateTimes {
      *         also for negative duration */
     public static LocalDateTime addTo(LocalDateTime localDateTime, Scalar duration) {
         Scalar seconds = Magnitude.SECOND.apply(duration);
-        long epochSecond = localDateTime.toInstant(ZoneOffset.UTC).toEpochMilli() / 1000 + seconds.number().longValue();
+        long epochSecond = localDateTime.toInstant(ZoneOffset.UTC).toEpochMilli() / 1000 + Scalar2Number.of(seconds).longValue();
         int nanoRest = (int) (localDateTime.toInstant(ZoneOffset.UTC).toEpochMilli() % 1000 * 1000000);
         return LocalDateTime.ofEpochSecond(epochSecond, nanoRest, ZoneOffset.UTC);
     }

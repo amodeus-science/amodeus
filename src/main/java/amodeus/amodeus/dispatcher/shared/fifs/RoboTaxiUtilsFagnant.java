@@ -13,6 +13,7 @@ import org.matsim.contrib.dvrp.passenger.PassengerRequest;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.routing.NetworkTimeDistInterface;
 import amodeus.amodeus.util.math.GlobalAssert;
+import amodeus.amodeus.util.math.Scalar2Number;
 
 /* package */ enum RoboTaxiUtilsFagnant {
     ;
@@ -31,7 +32,7 @@ import amodeus.amodeus.util.math.GlobalAssert;
                 .collect(Collectors.toSet());
         NavigableMap<Double, RoboTaxi> map = new TreeMap<>();
         for (RoboTaxi roboTaxi : closeRoboTaxis) {
-            double travelTimeToLink = timeDb.travelTime(link, roboTaxi.getDivertableLocation(), now).number().doubleValue();
+            double travelTimeToLink = Scalar2Number.of(timeDb.travelTime(link, roboTaxi.getDivertableLocation(), now)).doubleValue();
             if (travelTimeToLink < maxTime)
                 map.put(travelTimeToLink, roboTaxi);
         }
@@ -59,7 +60,7 @@ import amodeus.amodeus.util.math.GlobalAssert;
             return Optional.empty();
         }
         GlobalAssert.that(roboTaxis.firstKey() < maxTime);
-        GlobalAssert.that(timeDb.travelTime(avRequest.getFromLink(), roboTaxis.firstEntry().getValue().getDivertableLocation(), now).number().doubleValue() < maxTime);
+        GlobalAssert.that(Scalar2Number.of(timeDb.travelTime(avRequest.getFromLink(), roboTaxis.firstEntry().getValue().getDivertableLocation(), now)).doubleValue() < maxTime);
         return Optional.of(roboTaxis.firstEntry().getValue());
     }
 }

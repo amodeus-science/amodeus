@@ -18,7 +18,7 @@ import amodeus.amodeus.util.matsim.xml.XmlDispatchPeriodChanger;
 import amodeus.amodeus.util.matsim.xml.XmlDistanceHeuristicChanger;
 import amodeus.amodeus.util.matsim.xml.XmlGeneratorChanger;
 import amodeus.amodeus.util.matsim.xml.XmlRebalancingPeriodChanger;
-import ch.ethz.idsc.tensor.io.DeleteDirectory;
+import ch.ethz.idsc.tensor.ext.DeleteDirectory;
 
 public class XmlRebalancingPeriodChangerTest {
     private static File workingDirectory;

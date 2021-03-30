@@ -2,10 +2,10 @@
 package amodeus.amodeus.util.math;
 
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.api.ScalarUnaryOperator;
 import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.qty.QuantityMagnitude;
 import ch.ethz.idsc.tensor.qty.Unit;
-import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
 
 /** converts a {@link Quantity} to a unit less {@link Scalar}
  * or throws an exception if the conversion is not possible */

@@ -21,10 +21,10 @@ import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.router.util.TravelTime;
 
 import amodeus.amodeus.dispatcher.core.DispatcherConfigWrapper;
+import amodeus.amodeus.dispatcher.core.RebalancingDispatcher;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.dispatcher.core.RoboTaxiStatus;
 import amodeus.amodeus.dispatcher.core.RoboTaxiUsageType;
-import amodeus.amodeus.dispatcher.core.RebalancingDispatcher;
 import amodeus.amodeus.dispatcher.shared.basic.ExtDemandSupplyBeamSharing;
 import amodeus.amodeus.dispatcher.shared.beam.BeamExtensionForSharing;
 import amodeus.amodeus.dispatcher.util.DistanceHeuristics;
@@ -33,10 +33,11 @@ import amodeus.amodeus.net.MatsimAmodeusDatabase;
 import amodeus.amodeus.net.TensorCoords;
 import amodeus.amodeus.parking.capacities.ParkingCapacity;
 import amodeus.amodeus.parking.strategies.ParkingStrategy;
+import amodeus.amodeus.util.math.Scalar2Number;
 import amodeus.amodeus.util.matsim.SafeConfig;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.opt.Pi;
+import ch.ethz.idsc.tensor.num.Pi;
 
 /** This dispatcher takes the Parking Situation into Account.
  * 
@@ -80,7 +81,7 @@ public class RestrictedLinkCapacityDispatcher extends RebalancingDispatcher {
         SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
         sharingPeriod = safeConfig.getInteger("sharingPeriod", 10); // makes sense to choose this value similar to the pickup duration
         double rMax = safeConfig.getDouble("rMax", 1000.0);
-        double phiMax = Pi.in(100).multiply(RealScalar.of(safeConfig.getDouble("phiMaxDeg", 5.0) / 180.0)).number().doubleValue();
+        double phiMax = Scalar2Number.of(Pi.in(100).multiply(RealScalar.of(safeConfig.getDouble("phiMaxDeg", 5.0) / 180.0))).doubleValue();
         beamExtensionForSharing = new BeamExtensionForSharing(rMax, phiMax);
         this.networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
         this.requestMaintainer = new TreeMaintainer<>(networkBounds, this::getLocation);

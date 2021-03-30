@@ -8,12 +8,13 @@ import org.jfree.chart.JFreeChart;
 import amodeus.amodeus.analysis.AnalysisSummary;
 import amodeus.amodeus.analysis.plot.AmodeusChartUtils;
 import amodeus.amodeus.util.math.GlobalAssert;
-import ch.ethz.idsc.tensor.RealScalar;
-import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Tensor;
+import amodeus.amodeus.util.math.Scalar2Number;
 import amodeus.tensor.fig.TimedChart;
 import amodeus.tensor.fig.VisualRow;
 import amodeus.tensor.fig.VisualSet;
+import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 
 public enum BinnedWaitingTimesImage implements AnalysisExport {
@@ -42,7 +43,7 @@ public enum BinnedWaitingTimesImage implements AnalysisExport {
 
         JFreeChart jFreeChart = TimedChart.of(visualSet);
         jFreeChart.getXYPlot().getRangeAxis().setRange(0., //
-                tta.getWaitAggrgte().Get(2).divide(scalingFactor).number().doubleValue());
+                Scalar2Number.of(tta.getWaitAggrgte().Get(2).divide(scalingFactor)).doubleValue());
 
         try {
             File fileChart = new File(relativeDirectory, FILE_PNG);

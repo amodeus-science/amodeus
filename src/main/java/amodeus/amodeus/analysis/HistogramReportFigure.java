@@ -10,13 +10,14 @@ import org.jfree.chart.plot.CategoryPlot;
 
 import amodeus.amodeus.analysis.plot.AmodeusChartUtils;
 import amodeus.amodeus.util.math.GlobalAssert;
+import amodeus.amodeus.util.math.Scalar2Number;
+import amodeus.tensor.fig.Histogram;
+import amodeus.tensor.fig.VisualSet;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Range;
-import amodeus.tensor.fig.Histogram;
-import amodeus.tensor.fig.VisualSet;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
 import ch.ethz.idsc.tensor.pdf.BinCounts;
 import ch.ethz.idsc.tensor.sca.Round;
@@ -54,7 +55,8 @@ public enum HistogramReportFigure {
         visualSet.setAxesLabelX(xLabel);
 
         final Scalar size = binSize;
-        JFreeChart jFreeChart = Histogram.of(visualSet, s -> "[" + s.number() + " , " + s.add(size).number() + ")");
+        
+        JFreeChart jFreeChart = Histogram.of(visualSet, s -> "[" + Scalar2Number.of(s) + " , " + Scalar2Number.of(s.add(size)) + ")");
         CategoryPlot categoryPlot = jFreeChart.getCategoryPlot();
         categoryPlot.getDomainAxis().setLowerMargin(0.0);
         categoryPlot.getDomainAxis().setUpperMargin(0.0);

@@ -2,8 +2,8 @@
 package amodeus.amodeus.analysis;
 
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.api.ScalarUnaryOperator;
 import ch.ethz.idsc.tensor.qty.Quantity;
-import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
 
 /* package */ enum RemoveUnit implements ScalarUnaryOperator {
     FUNCTION;

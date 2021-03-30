@@ -9,6 +9,7 @@ import org.gnu.glpk.glp_prob;
 import org.gnu.glpk.glp_smcp;
 
 import amodeus.amodeus.util.math.GlobalAssert;
+import amodeus.amodeus.util.math.Scalar2Number;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -33,9 +34,9 @@ public class GLPKAssignmentSolverBetter {
     private final double gamma;// = 0.9;
 
     public GLPKAssignmentSolverBetter(Tensor costFunctionWeights) {
-        alpha = costFunctionWeights.Get(0).number().doubleValue();
-        beta = costFunctionWeights.Get(1).number().doubleValue();
-        gamma = costFunctionWeights.Get(2).number().doubleValue();
+        alpha = Scalar2Number.of(costFunctionWeights.Get(0)).doubleValue();
+        beta = Scalar2Number.of(costFunctionWeights.Get(1)).doubleValue();
+        gamma = Scalar2Number.of(costFunctionWeights.Get(2)).doubleValue();
         this.lp = GLPK.glp_create_prob(); // Create Problem and assign to problem variable lp
         System.out.println("Problem Created");
         GLPK.glp_set_prob_name(lp, "Tryouts");

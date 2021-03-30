@@ -8,8 +8,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import amodeus.amodeus.analysis.element.DistanceElement;
-import ch.ethz.idsc.tensor.qty.Unit;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
@@ -21,6 +19,7 @@ import amodeus.amodeus.analysis.element.AnalysisElement;
 import amodeus.amodeus.analysis.element.AnalysisExport;
 import amodeus.amodeus.analysis.element.BinnedWaitingTimesImage;
 import amodeus.amodeus.analysis.element.DistanceDistributionOverDayImage;
+import amodeus.amodeus.analysis.element.DistanceElement;
 import amodeus.amodeus.analysis.element.DriveTimeHtml;
 import amodeus.amodeus.analysis.element.OccupancyDistanceRatiosImage;
 import amodeus.amodeus.analysis.element.StatusDistributionImage;
@@ -51,8 +50,9 @@ import amodeus.amodeus.options.ScenarioOptions;
 import amodeus.amodeus.options.ScenarioOptionsBase;
 import amodeus.amodeus.util.math.GlobalAssert;
 import amodeus.amodeus.util.matsim.NetworkLoader;
+import ch.ethz.idsc.tensor.ext.Timing;
 import ch.ethz.idsc.tensor.img.ColorDataIndexed;
-import ch.ethz.idsc.tensor.io.Timing;
+import ch.ethz.idsc.tensor.qty.Unit;
 
 public class Analysis {
 

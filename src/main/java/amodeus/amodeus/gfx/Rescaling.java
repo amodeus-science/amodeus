@@ -6,11 +6,12 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.alg.NormalizeUnlessZero;
-import ch.ethz.idsc.tensor.opt.TensorUnaryOperator;
+import ch.ethz.idsc.tensor.api.ScalarUnaryOperator;
+import ch.ethz.idsc.tensor.api.TensorUnaryOperator;
+import ch.ethz.idsc.tensor.nrm.NormalizeUnlessZero;
+import ch.ethz.idsc.tensor.nrm.Vector1Norm;
+import ch.ethz.idsc.tensor.nrm.VectorInfinityNorm;
 import ch.ethz.idsc.tensor.red.Min;
-import ch.ethz.idsc.tensor.red.Norm;
-import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
 import ch.ethz.idsc.tensor.sca.Sign;
 
 class CapAbs implements TensorUnaryOperator {
@@ -29,7 +30,7 @@ class CapAbs implements TensorUnaryOperator {
 }
 
 class CapRel implements TensorUnaryOperator {
-    private static final TensorUnaryOperator NORMALIZE = NormalizeUnlessZero.with(Norm._1);
+    private static final TensorUnaryOperator NORMALIZE = NormalizeUnlessZero.with(Vector1Norm::of);
     // ---
     private final Scalar scalar;
     private final ScalarUnaryOperator scalarUnaryOperator;
@@ -68,9 +69,9 @@ enum Rank implements TensorUnaryOperator {
     REL_20(new CapRel(RealScalar.of(.20))), //
     REL_50(new CapRel(RealScalar.of(.50))), //
     /** 1-norm */
-    ONE(NormalizeUnlessZero.with(Norm._1)), //
+    ONE(NormalizeUnlessZero.with(Vector1Norm::of)), //
     /** earlier, the 1-norm was used, but the infinity-norm is preferred for large fleets */
-    MAX(NormalizeUnlessZero.with(Norm.INFINITY)), //
+    MAX(NormalizeUnlessZero.with(VectorInfinityNorm::of)), //
     /** ranking */
     RANK(Rank.INSTANCE);
 

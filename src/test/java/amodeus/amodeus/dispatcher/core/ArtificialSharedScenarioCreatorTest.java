@@ -5,15 +5,14 @@ import junit.framework.TestCase;
 
 public class ArtificialSharedScenarioCreatorTest extends TestCase {
     public void testSimple() {
-        /*ArtificialSharedScenarioCreator artificialScenarioCreator = new ArtificialSharedScenarioCreator();
-
-        SharedCourse pickupCourse1 = SharedCourse.pickupCourse(artificialScenarioCreator.avRequest1);
-        SharedCourse dropoffCourse1 = SharedCourse.dropoffCourse(artificialScenarioCreator.avRequest1);
-        List<SharedCourse> list1 = Arrays.asList(pickupCourse1, dropoffCourse1, pickupCourse1, dropoffCourse1);
-
-        assertEquals(4, list1.size());
-        assertEquals(1, SharedCourseUtil.getUniquePassengerRequests(list1).size());
-        assertEquals(1, SharedCourseUtil.getUniquePassengerRequests(SharedCourseUtil.copy(list1)).size());
-    */}
+        /* ArtificialSharedScenarioCreator artificialScenarioCreator = new ArtificialSharedScenarioCreator();
+         * 
+         * SharedCourse pickupCourse1 = SharedCourse.pickupCourse(artificialScenarioCreator.avRequest1);
+         * SharedCourse dropoffCourse1 = SharedCourse.dropoffCourse(artificialScenarioCreator.avRequest1);
+         * List<SharedCourse> list1 = Arrays.asList(pickupCourse1, dropoffCourse1, pickupCourse1, dropoffCourse1);
+         * 
+         * assertEquals(4, list1.size());
+         * assertEquals(1, SharedCourseUtil.getUniquePassengerRequests(list1).size());
+         * assertEquals(1, SharedCourseUtil.getUniquePassengerRequests(SharedCourseUtil.copy(list1)).size()); */}
 
 }

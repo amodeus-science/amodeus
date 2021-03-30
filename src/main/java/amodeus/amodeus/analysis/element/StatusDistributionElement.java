@@ -9,6 +9,7 @@ import amodeus.amodeus.analysis.report.TotalValueIdentifier;
 import amodeus.amodeus.analysis.report.TtlValIdent;
 import amodeus.amodeus.dispatcher.core.RoboTaxiStatus;
 import amodeus.amodeus.net.SimulationObject;
+import amodeus.amodeus.util.math.Scalar2Number;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -38,7 +39,7 @@ public class StatusDistributionElement implements AnalysisElement, TotalValueApp
         /** Get the Occupancy Ratio per TimeStep */
         Scalar occupancyRatio = numStatus.Get(RoboTaxiStatus.DRIVEWITHCUSTOMER.ordinal()) //
                 .divide(RealScalar.of(simulationObject.vehicles.size()));
-        occupancyTensor.append(Tensors.vector(simulationObject.now, occupancyRatio.number().doubleValue()));
+        occupancyTensor.append(Tensors.vector(simulationObject.now, Scalar2Number.of(occupancyRatio).doubleValue()));
     }
 
     @Override // from AnalysisElement

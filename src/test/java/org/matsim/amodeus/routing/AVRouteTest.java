@@ -9,8 +9,6 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.matsim.amodeus.config.AmodeusModeConfig;
-import org.matsim.amodeus.routing.AmodeusRoute;
-import org.matsim.amodeus.routing.AmodeusRouteFactory;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.population.Leg;

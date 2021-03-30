@@ -51,7 +51,7 @@ public abstract class AbstractNoExplicitCommunication extends RebalancingDispatc
         /** get set D(t), the open requests */
         Collection<PassengerRequest> d = getPassengerRequests();
         d.forEach(requestMaintainer::add);
-        
+
         /** as soon as {@link RoboTaxi}s appear, initialize with present location */
         if (weberMaintainers.isEmpty())
             getRoboTaxis().forEach(rt -> weberMaintainers.put(rt, new WeberMaintainer(rt.getDivertableLocation(), network)));

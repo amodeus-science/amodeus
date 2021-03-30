@@ -84,7 +84,7 @@ public class AmodeusModeModule extends AbstractDvrpModeModule {
         bindModal(PriceModel.class).toProvider(new PriceCalculatorProider(modeConfig));
 
         install(new VirtualNetworkModeModule(modeConfig));
-        
+
         bindModal(RebalancingStrategy.class).toInstance(new NoRebalancingStrategy());
     }
 
