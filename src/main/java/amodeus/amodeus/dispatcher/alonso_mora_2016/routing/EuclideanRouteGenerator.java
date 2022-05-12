@@ -242,6 +242,12 @@ public class EuclideanRouteGenerator implements RouteGenerator {
         }
 
         @Override
+        public double getCapacityPeriod() {
+            // TODO Auto-generated method stub
+            return 0;
+        }
+
+        @Override
         public double getFlowCapacityPerSec() {
             // TODO Auto-generated method stub
             return 0;

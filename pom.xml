@@ -12,7 +12,7 @@
 		<skipTests>false</skipTests>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<github.global.server>github</github.global.server>
-		<matsim.version>13.0-2021w08-SNAPSHOT</matsim.version>
+		<matsim.version>13.0</matsim.version>
 	</properties>
 
 	<dependencies>
@@ -67,6 +67,11 @@
 			<artifactId>commons-io</artifactId>
 			<version>2.6</version>
 		</dependency>
+		<dependency>
+			<groupId>org.jdom</groupId>
+			<artifactId>jdom2</artifactId>
+			<version>2.0.6</version>
+		</dependency>
 	</dependencies>
 
 	<repositories>
@@ -77,7 +82,7 @@
 		<repository>
 			<id>XypronRelease</id>
 			<name>Xypron Release</name>
-			<url>http://rsync.xypron.de/repository</url>
+			<url>https://rsync.xypron.de/repository</url>
 			<layout>default</layout>
 		</repository>
 		<repository>
@@ -86,12 +91,8 @@
 			<url>https://repo.osgeo.org/repository/release/</url>
 		</repository>
 		<repository>
-			<id>matsim-snapshot</id>
-			<url>https://oss.jfrog.org/libs-snapshot</url>
-		</repository>
-		<repository>
-			<id>matsim-release</id>
-			<url>https://dl.bintray.com/matsim/matsim</url>
+			<id>matsim</id>
+			<url>https://repo.matsim.org/repository/matsim</url>
 		</repository>
 		<repository>
 			<id>ch.sbb</id>
