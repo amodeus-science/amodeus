@@ -11,7 +11,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
-import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
+import org.matsim.core.modal.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
@@ -50,10 +50,12 @@ import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.Round;
 import ch.ethz.idsc.tensor.sca.Sign;
 
-/** Implementation of the "Adaptive Real-Time Rebalancing Policy" presented in
+/**
+ * Implementation of the "Adaptive Real-Time Rebalancing Policy" presented in
  * Pavone, M., Smith, S.L., Frazzoli, E. and Rus, D., 2012.
  * Robotic load balancing for mobility-on-demand systems.
- * The International Journal of Robotics Research, 31(7), pp.839-854. */
+ * The International Journal of Robotics Research, 31(7), pp.839-854.
+ */
 public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
     private final AbstractVirtualNodeDest virtualNodeDest;
     private final AbstractRoboTaxiDestMatcher vehicleDestMatcher;
@@ -78,7 +80,8 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
             AbstractVirtualNodeDest abstractVirtualNodeDest, //
             AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher, //
             MatsimAmodeusDatabase db, RebalancingStrategy rebalancingStrategy) {
-        super(config, operatorConfig, travelTime, router, eventsManager, virtualNetwork, db, rebalancingStrategy, RoboTaxiUsageType.SINGLEUSED);
+        super(config, operatorConfig, travelTime, router, eventsManager, virtualNetwork, db, rebalancingStrategy,
+                RoboTaxiUsageType.SINGLEUSED);
         virtualNodeDest = abstractVirtualNodeDest;
         vehicleDestMatcher = abstractVehicleDestMatcher;
         numRobotaxi = operatorConfig.getGeneratorConfig().getNumberOfVehicles();
@@ -103,7 +106,10 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
         if (!started) {
             if (getRoboTaxis().size() == 0) /** return if the roboTaxis are not ready yet */
                 return;
-            /** as soon as the roboTaxis are ready, make sure to execute rebalancing and dispatching for now=0 */
+            /**
+             * as soon as the roboTaxis are ready, make sure to execute rebalancing and
+             * dispatching for now=0
+             */
             round_now = 0;
             started = true;
         }
@@ -121,15 +127,21 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
                 int num_requests = requests.values().stream().mapToInt(List::size).sum();
                 double vi_desired_num = ((numRobotaxi - num_requests) / (double) virtualNetwork.getvNodesCount());
                 int vi_desired_numint = (int) Math.floor(vi_desired_num);
-                Tensor vi_desiredT = Tensors.vector(i -> RationalScalar.of(vi_desired_numint, 1), virtualNetwork.getvNodesCount());
+                Tensor vi_desiredT = Tensors.vector(i -> RationalScalar.of(vi_desired_numint, 1),
+                        virtualNetwork.getvNodesCount());
 
-                /** calculate excess vehicles per virtual Node i, where
-                 * v_i excess = vi_own - c_i = v_i + sum_j (v_ji) - c_i */
+                /**
+                 * calculate excess vehicles per virtual Node i, where
+                 * v_i excess = vi_own - c_i = v_i + sum_j (v_ji) - c_i
+                 */
                 Map<VirtualNode<Link>, List<RoboTaxi>> v_ij_reb = getVirtualNodeRebalancingToRoboTaxis();
                 Map<VirtualNode<Link>, List<RoboTaxi>> v_ij_cust = getVirtualNodeArrivingWithCustomerRoboTaxis();
 
-                /** this was necessary for some scenarios resulting in undivertable vehicles to ensure
-                 * LP feasibility, will not be triggered in most cases */
+                /**
+                 * this was necessary for some scenarios resulting in undivertable vehicles to
+                 * ensure
+                 * LP feasibility, will not be triggered in most cases
+                 */
                 double diffDueUnDivertable = (getRoboTaxiSubset(RoboTaxiStatus.STAY).size() + //
                         getRoboTaxiSubset(RoboTaxiStatus.DRIVETOCUSTOMER).size() - //
                         getDivertableNotRebalancingRoboTaxis().size()) / ((double) virtualNetwork.getvNodesCount());
@@ -137,7 +149,8 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
 
                 Tensor vi_excessT = Array.zeros(virtualNetwork.getvNodesCount());
                 for (VirtualNode<Link> virtualNode : availableVehicles.keySet()) {
-                    int viExcessVal = availableVehicles.get(virtualNode).size() + v_ij_reb.get(virtualNode).size() + v_ij_cust.get(virtualNode).size() + diffCeil
+                    int viExcessVal = availableVehicles.get(virtualNode).size() + v_ij_reb.get(virtualNode).size()
+                            + v_ij_cust.get(virtualNode).size() + diffCeil
                             - requests.get(virtualNode).size();
                     vi_excessT.set(RealScalar.of(viExcessVal), virtualNode.getIndex());
                 }
@@ -156,8 +169,10 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
                 GlobalAssert.that(rebalanceCount.flatten(-1).map(Scalar.class::cast).allMatch(Sign::isPositiveOrZero));
 
                 /** ensure that not more vehicles are sent away than available */
-                Tensor feasibleRebalanceCount = FeasibleRebalanceCreator.returnFeasibleRebalance(rebalanceCount.unmodifiable(), availableVehicles);
-                total_rebalanceCount += (Integer) ((Scalar) Total.of(Tensor.of(feasibleRebalanceCount.flatten(-1)))).number();
+                Tensor feasibleRebalanceCount = FeasibleRebalanceCreator
+                        .returnFeasibleRebalance(rebalanceCount.unmodifiable(), availableVehicles);
+                total_rebalanceCount += (Integer) ((Scalar) Total.of(Tensor.of(feasibleRebalanceCount.flatten(-1))))
+                        .number();
 
                 /** generate routing instructions for rebalancing vehicles */
                 Map<VirtualNode<Link>, List<Link>> rebalanceDestinations = virtualNetwork.createVNodeTypeMap();
@@ -167,23 +182,32 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
                     VirtualLink<Link> virtualLink = this.virtualNetwork.getVirtualLink(i);
                     VirtualNode<Link> toNode = virtualLink.getTo();
                     VirtualNode<Link> fromNode = virtualLink.getFrom();
-                    int numreb = (Integer) (feasibleRebalanceCount.Get(fromNode.getIndex(), toNode.getIndex())).number();
+                    int numreb = (Integer) (feasibleRebalanceCount.Get(fromNode.getIndex(), toNode.getIndex()))
+                            .number();
                     List<Link> rebalanceTargets = virtualNodeDest.selectLinkSet(toNode, numreb);
                     rebalanceDestinations.get(fromNode).addAll(rebalanceTargets);
                 }
 
-                /** consistency check: rebalancing destination links must not exceed available vehicles in virtual node */
-                GlobalAssert.that(virtualNetwork.getVirtualNodes().stream().allMatch(v -> availableVehicles.get(v).size() >= rebalanceDestinations.get(v).size()));
+                /**
+                 * consistency check: rebalancing destination links must not exceed available
+                 * vehicles in virtual node
+                 */
+                GlobalAssert.that(virtualNetwork.getVirtualNodes().stream()
+                        .allMatch(v -> availableVehicles.get(v).size() >= rebalanceDestinations.get(v).size()));
 
                 /** send rebalancing vehicles using the setVehicleRebalance command */
                 for (VirtualNode<Link> virtualNode : rebalanceDestinations.keySet()) {
-                    Map<RoboTaxi, Link> rebalanceMatching = vehicleDestMatcher.matchLink(availableVehicles.get(virtualNode), rebalanceDestinations.get(virtualNode));
+                    Map<RoboTaxi, Link> rebalanceMatching = vehicleDestMatcher
+                            .matchLink(availableVehicles.get(virtualNode), rebalanceDestinations.get(virtualNode));
                     rebalanceMatching.keySet().forEach(v -> setRoboTaxiRebalance(v, rebalanceMatching.get(v)));
                 }
             }
         }
 
-        /** Part II: outside rebalancing periods, permanently assign destinations to vehicles using bipartite matching */
+        /**
+         * Part II: outside rebalancing periods, permanently assign destinations to
+         * vehicles using bipartite matching
+         */
         if (round_now % dispatchPeriod == 0)
             printVals = bipartiteMatcher.executePickup(this, getDivertableRoboTaxis(), //
                     getPassengerRequests(), distanceFunction, network);
@@ -201,22 +225,24 @@ public class AdaptiveRealTimeRebalancingPolicy extends PartitionedDispatcher {
     public static class Factory implements AVDispatcherFactory {
         @Override
         public AmodeusDispatcher createDispatcher(InstanceGetter inject) {
-            Config config = inject.get(Config.class);
-            MatsimAmodeusDatabase db = inject.get(MatsimAmodeusDatabase.class);
-            EventsManager eventsManager = inject.get(EventsManager.class);
+            Config config = (Config) inject.get(Config.class);
+            MatsimAmodeusDatabase db = (MatsimAmodeusDatabase) inject.get(MatsimAmodeusDatabase.class);
+            EventsManager eventsManager = (EventsManager) inject.get(EventsManager.class);
 
-            AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
-            Network network = inject.getModal(Network.class);
-            AmodeusRouter router = inject.getModal(AmodeusRouter.class);
-            TravelTime travelTime = inject.getModal(TravelTime.class);
+            AmodeusModeConfig operatorConfig = (AmodeusModeConfig) inject.getModal(AmodeusModeConfig.class);
+            Network network = (Network) inject.getModal(Network.class);
+            AmodeusRouter router = (AmodeusRouter) inject.getModal(AmodeusRouter.class);
+            TravelTime travelTime = (TravelTime) inject.getModal(TravelTime.class);
 
-            VirtualNetwork<Link> virtualNetwork = inject.getModal(new TypeLiteral<VirtualNetwork<Link>>() {
-            });
-            
-            RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
+            VirtualNetwork<Link> virtualNetwork = (VirtualNetwork<Link>) inject
+                    .getModal(new TypeLiteral<VirtualNetwork<Link>>() {
+                    });
+
+            RebalancingStrategy rebalancingStrategy = (RebalancingStrategy) inject.getModal(RebalancingStrategy.class);
 
             AbstractVirtualNodeDest abstractVirtualNodeDest = new RandomVirtualNodeDest();
-            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceCost.INSTANCE);
+            AbstractRoboTaxiDestMatcher abstractVehicleDestMatcher = new GlobalBipartiteMatching(
+                    EuclideanDistanceCost.INSTANCE);
             return new AdaptiveRealTimeRebalancingPolicy( //
                     config, operatorConfig, travelTime, //
                     router, eventsManager, network, virtualNetwork, //

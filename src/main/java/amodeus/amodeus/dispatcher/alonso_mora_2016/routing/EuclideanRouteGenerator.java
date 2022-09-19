@@ -28,7 +28,8 @@ public class EuclideanRouteGenerator implements RouteGenerator {
     private final boolean failEarly;
     private boolean expanded = true;
 
-    public EuclideanRouteGenerator(boolean failEarly, Link startLink, List<Link> locations, double now, int initialPassengers) {
+    public EuclideanRouteGenerator(boolean failEarly, Link startLink, List<Link> locations, double now,
+            int initialPassengers) {
         this.startLink = startLink;
 
         this.numberOfDirectives = locations.size();
@@ -46,7 +47,8 @@ public class EuclideanRouteGenerator implements RouteGenerator {
 
     @Override
     public PartialSolution next() {
-        Link originLink = partial.indices.size() > 0 ? locations.get(partial.indices.get(partial.indices.size() - 1)) : startLink;
+        Link originLink = partial.indices.size() > 0 ? locations.get(partial.indices.get(partial.indices.size() - 1))
+                : startLink;
 
         double minimumDistance = Double.POSITIVE_INFINITY;
         int minimumDistanceIndex = -1;
@@ -72,7 +74,8 @@ public class EuclideanRouteGenerator implements RouteGenerator {
 
         expanded = false;
 
-        return new PartialSolution(partial.indices, minimumDistanceIndex, partial.time, partial.cost, partial.passengers);
+        return new PartialSolution(partial.indices, minimumDistanceIndex, partial.time, partial.cost,
+                partial.passengers);
     }
 
     @Override
@@ -249,6 +252,12 @@ public class EuclideanRouteGenerator implements RouteGenerator {
 
         @Override
         public double getFlowCapacityPerSec(double time) {
+            // TODO Auto-generated method stub
+            return 0;
+        }
+
+        @Override
+        public double getCapacityPeriod() {
             // TODO Auto-generated method stub
             return 0;
         }

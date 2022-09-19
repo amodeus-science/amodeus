@@ -10,15 +10,17 @@ import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
 import org.matsim.api.core.v01.population.Person;
-import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
+import org.matsim.core.modal.ModalProviders.InstanceGetter;
 import org.matsim.core.config.groups.GlobalConfigGroup;
 import org.matsim.core.router.FastAStarLandmarksFactory;
 import org.matsim.core.router.util.LeastCostPathCalculator.Path;
 import org.matsim.core.router.util.TravelTime;
 import org.matsim.vehicles.Vehicle;
 
-/** The DefaultAStarLMRouter is a standard ParallelLeastCostPathCalculator using
- * A* Landmarks routing algorithm. */
+/**
+ * The DefaultAStarLMRouter is a standard ParallelLeastCostPathCalculator using
+ * A* Landmarks routing algorithm.
+ */
 public class DefaultAStarLMRouter implements AmodeusRouter {
     final private ParallelLeastCostPathCalculator delegate;
 
@@ -40,9 +42,9 @@ public class DefaultAStarLMRouter implements AmodeusRouter {
     public static class Factory implements AmodeusRouter.Factory {
         @Override
         public AmodeusRouter createRouter(InstanceGetter inject) {
-            TravelTime travelTime = inject.getModal(TravelTime.class);
-            GlobalConfigGroup config = inject.get(GlobalConfigGroup.class);
-            Network network = inject.getModal(Network.class);
+            TravelTime travelTime = (TravelTime) inject.getModal(TravelTime.class);
+            GlobalConfigGroup config = (GlobalConfigGroup) inject.get(GlobalConfigGroup.class);
+            Network network = (Network) inject.getModal(Network.class);
 
             return new DefaultAStarLMRouter(DefaultParallelLeastCostPathCalculator.//
                     create(config.getNumberOfThreads(), new FastAStarLandmarksFactory(config), network, //

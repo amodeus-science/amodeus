@@ -51,7 +51,8 @@ public class DefaultAlonsoMoraTravelFunction implements AlonsoMoraTravelFunction
 
     private final SequenceGeneratorFactory generatorFactory;
 
-    public DefaultAlonsoMoraTravelFunction(TravelTimeCalculator travelTimeCalculator, AlonsoMoraParameters parameters, IdMap<Request, AlonsoMoraRequest> requests,
+    public DefaultAlonsoMoraTravelFunction(TravelTimeCalculator travelTimeCalculator, AlonsoMoraParameters parameters,
+            IdMap<Request, AlonsoMoraRequest> requests,
             double pickupDuration, double dropoffDuration, double now) {
         this.travelTimeCalculator = travelTimeCalculator;
         this.parameters = parameters;
@@ -126,7 +127,8 @@ public class DefaultAlonsoMoraTravelFunction implements AlonsoMoraTravelFunction
                 initialSchedules = getRequestSchedules(initialSequence, startLink);
             }
 
-            Iterator<List<StopDirective>> generator = generatorFactory.create(startLink, existingRequests, addedRequests);
+            Iterator<List<StopDirective>> generator = generatorFactory.create(startLink, existingRequests,
+                    addedRequests);
 
             while (generator.hasNext()) {
                 List<StopDirective> proposedSequence = generator.next();
@@ -146,9 +148,11 @@ public class DefaultAlonsoMoraTravelFunction implements AlonsoMoraTravelFunction
                         }
                     }
 
-                    /* System.out.println(AlonsoMoraUtils.printSequence(proposedSequence));
+                    /*
+                     * System.out.println(AlonsoMoraUtils.printSequence(proposedSequence));
                      * System.out.println(cost);
-                     * System.out.println("---"); */
+                     * System.out.println("---");
+                     */
 
                     if (cost < minimumCost) {
                         minimumCost = cost;
@@ -165,15 +169,18 @@ public class DefaultAlonsoMoraTravelFunction implements AlonsoMoraTravelFunction
         }
     }
 
-    private boolean verifyTiming(IdMap<Request, RequestSchedule> proposedSchedules, IdMap<Request, RequestSchedule> initialSchedules) {
+    private boolean verifyTiming(IdMap<Request, RequestSchedule> proposedSchedules,
+            IdMap<Request, RequestSchedule> initialSchedules) {
         for (Map.Entry<Id<Request>, RequestSchedule> entry : proposedSchedules.entrySet()) {
             RequestSchedule proposedSchedule = entry.getValue();
             RequestSchedule initialSchedule = initialSchedules.get(entry.getKey());
 
             if (initialSchedule != null && parameters.useSoftConstraintsAfterAssignment) {
                 // The request is already assigned to the vehicle. If the vehicle is delayed
-                // (due to congestion) we now might completely exclude the request-vehicle combination
-                // from the tree, which may not be ideal. If the option is actived in the parameters,
+                // (due to congestion) we now might completely exclude the request-vehicle
+                // combination
+                // from the tree, which may not be ideal. If the option is actived in the
+                // parameters,
                 // we, therefore, only make sure that no *additional* delay due to scheduling is
                 // introduced (that means normally new requests can only be appended, but not
                 // inserted before the already delayed request).
@@ -208,7 +215,8 @@ public class DefaultAlonsoMoraTravelFunction implements AlonsoMoraTravelFunction
         IdMap<Request, RequestSchedule> schedules = new IdMap<>(Request.class);
 
         for (StopDirective stop : directives) {
-            RequestSchedule schedule = schedules.computeIfAbsent(stop.getRequest().getId(), id -> new RequestSchedule());
+            RequestSchedule schedule = schedules.computeIfAbsent(stop.getRequest().getId(),
+                    id -> new RequestSchedule());
 
             currentTime += travelTimeCalculator.getTravelTime(currentTime, currentLink, Directive.getLink(stop));
             currentLink = Directive.getLink(stop);
@@ -225,7 +233,8 @@ public class DefaultAlonsoMoraTravelFunction implements AlonsoMoraTravelFunction
         return schedules;
     }
 
-    // TODO: This is called twice. We can also create a map that is relevant the specific problem sequence and save time for the lookup.
+    // TODO: This is called twice. We can also create a map that is relevant the
+    // specific problem sequence and save time for the lookup.
     private AlonsoMoraRequest getRequest(Id<Request> requestId) {
         return Objects.requireNonNull(requests.get(requestId));
     }
@@ -277,8 +286,11 @@ public class DefaultAlonsoMoraTravelFunction implements AlonsoMoraTravelFunction
 
         AlonsoMoraParameters parameters = new AlonsoMoraParameters();
 
-        // AlonsoMoraTravelFunction travelFunction = new DefaultAlonsoMoraTravelFunction(travelTimeCalculator, parameters, requests, 60.0, 60.0, 0.0);
-        AlonsoMoraTravelFunction travelFunction = new DefaultTravelFunction(parameters, 0.0, travelTimeCalculator, requests, 60.0, 60.0, Collections.emptySet());
+        // AlonsoMoraTravelFunction travelFunction = new
+        // DefaultAlonsoMoraTravelFunction(travelTimeCalculator, parameters, requests,
+        // 60.0, 60.0, 0.0);
+        AlonsoMoraTravelFunction travelFunction = new DefaultTravelFunction(parameters, 0.0, travelTimeCalculator,
+                requests, 60.0, 60.0, Collections.emptySet());
 
         {
             Optional<Result> result = travelFunction.calculate(amRequest1, amRequest2);
@@ -316,7 +328,8 @@ public class DefaultAlonsoMoraTravelFunction implements AlonsoMoraTravelFunction
         requests.put(amRequest3.getRequest().getId(), amRequest3);
 
         RequestVehicleGraphBuilder rvBuilder = new RequestVehicleGraphBuilder(travelFunction);
-        RequestVehicleGraph rvGraph = rvBuilder.build(0.0, Arrays.asList(vehicle, vehicle2), Arrays.asList(amRequest1, amRequest2, amRequest3));
+        RequestVehicleGraph rvGraph = rvBuilder.build(0.0, Arrays.asList(vehicle, vehicle2),
+                Arrays.asList(amRequest1, amRequest2, amRequest3));
 
         AlonsoMoraUtils.printRequestVehicleGraph(rvGraph);
 
@@ -329,13 +342,15 @@ public class DefaultAlonsoMoraTravelFunction implements AlonsoMoraTravelFunction
         Collection<TripVehicleEdge> edges = ilpSolver.solve(rtvGraph, rvGraph);
 
         for (TripVehicleEdge edge : edges) {
-            System.out.println(rtvGraph.getVehicles().get(edge.getVehicleIndex()).getId() + ": " + AlonsoMoraUtils.printSequence(edge.getSequence()));
+            System.out.println(rtvGraph.getVehicles().get(edge.getVehicleIndex()).getId() + ": "
+                    + AlonsoMoraUtils.printSequence(edge.getSequence()));
         }
 
         // REBALANCING
 
         RebalancingSolver rebalancingSolver = new RebalancingSolver(travelTimeCalculator, 0.0);
-        Map<AlonsoMoraVehicle, Link> destinations = rebalancingSolver.solve(Arrays.asList(vehicle, vehicle2), Arrays.asList(link1, link2, link5));
+        Map<AlonsoMoraVehicle, Link> destinations = rebalancingSolver.solve(Arrays.asList(vehicle, vehicle2),
+                Arrays.asList(link1, link2, link5));
 
         for (Map.Entry<AlonsoMoraVehicle, Link> entry : destinations.entrySet()) {
             System.out.println(entry.getKey().getId() + " -> " + entry.getValue().getId());
@@ -467,6 +482,12 @@ public class DefaultAlonsoMoraTravelFunction implements AlonsoMoraTravelFunction
             return 0;
         }
 
+        @Override
+        public double getCapacityPeriod() {
+            // TODO Auto-generated method stub
+            return 0;
+        }
+
     }
 
     static public class MockTravelTimeCalculator implements TravelTimeCalculator {
@@ -489,7 +510,7 @@ public class DefaultAlonsoMoraTravelFunction implements AlonsoMoraTravelFunction
         @Override
         public void clear() {
             // TODO Auto-generated method stub
-            
+
         }
     }
 

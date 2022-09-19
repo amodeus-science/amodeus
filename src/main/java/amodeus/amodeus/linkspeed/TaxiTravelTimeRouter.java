@@ -11,7 +11,7 @@ import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
 import org.matsim.api.core.v01.population.Person;
-import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
+import org.matsim.core.modal.ModalProviders.InstanceGetter;
 import org.matsim.core.config.groups.GlobalConfigGroup;
 import org.matsim.core.router.DijkstraFactory;
 import org.matsim.core.router.costcalculators.OnlyTimeDependentTravelDisutility;
@@ -22,9 +22,11 @@ import org.matsim.vehicles.Vehicle;
 import amodeus.amodeus.dispatcher.core.RoboTaxi;
 import amodeus.amodeus.util.io.MultiFileTools;
 
-/** This is a nonfunctional sample demonstrating of how to include a custom
+/**
+ * This is a nonfunctional sample demonstrating of how to include a custom
  * router to AMoDeus which is not the standard choice of the Paralllel Djikstra
- * router used normally to calculate the path for {@link RoboTaxi} */
+ * router used normally to calculate the path for {@link RoboTaxi}
+ */
 public class TaxiTravelTimeRouter implements AmodeusRouter {
     private final ParallelLeastCostPathCalculator delegate;
 
@@ -33,7 +35,8 @@ public class TaxiTravelTimeRouter implements AmodeusRouter {
     }
 
     @Override
-    public Future<Path> calcLeastCostPath(Node fromNode, Node toNode, double starttime, Person person, Vehicle vehicle) {
+    public Future<Path> calcLeastCostPath(Node fromNode, Node toNode, double starttime, Person person,
+            Vehicle vehicle) {
         return delegate.calcLeastCostPath(fromNode, toNode, starttime, person, vehicle);
     }
 
@@ -50,8 +53,8 @@ public class TaxiTravelTimeRouter implements AmodeusRouter {
 
         @Override
         public AmodeusRouter createRouter(InstanceGetter inject) {
-            GlobalConfigGroup config = inject.get(GlobalConfigGroup.class);
-            Network network = inject.getModal(Network.class);
+            GlobalConfigGroup config = (GlobalConfigGroup) inject.get(GlobalConfigGroup.class);
+            Network network = (Network) inject.getModal(Network.class);
 
             TravelTime travelTime = new LSDataTravelTime(lsData);
 

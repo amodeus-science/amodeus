@@ -16,7 +16,7 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
-import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
+import org.matsim.core.modal.ModalProviders.InstanceGetter;
 import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.network.NetworkUtils;
@@ -49,7 +49,8 @@ public class SingleHeuristicDispatcher implements AmodeusDispatcher {
 
     private HeuristicMode dispatcherMode = HeuristicMode.OVERSUPPLY;
 
-    public SingleHeuristicDispatcher(String mode, EventsManager eventsManager, Network network, SingleRideAppender appender, double replanningInterval) {
+    public SingleHeuristicDispatcher(String mode, EventsManager eventsManager, Network network,
+            SingleRideAppender appender, double replanningInterval) {
         this.appender = appender;
         this.mode = mode;
         this.eventsManager = eventsManager;
@@ -75,7 +76,8 @@ public class SingleHeuristicDispatcher implements AmodeusDispatcher {
     }
 
     private void reoptimize(double now) {
-        HeuristicMode updatedMode = availableVehicles.size() > pendingRequests.size() ? HeuristicMode.OVERSUPPLY : HeuristicMode.UNDERSUPPLY;
+        HeuristicMode updatedMode = availableVehicles.size() > pendingRequests.size() ? HeuristicMode.OVERSUPPLY
+                : HeuristicMode.UNDERSUPPLY;
 
         if (!updatedMode.equals(dispatcherMode)) {
             dispatcherMode = updatedMode;
@@ -87,14 +89,14 @@ public class SingleHeuristicDispatcher implements AmodeusDispatcher {
             DvrpVehicle vehicle = null;
 
             switch (dispatcherMode) {
-            case OVERSUPPLY:
-                request = findRequest();
-                vehicle = findClosestVehicle(request.getFromLink());
-                break;
-            case UNDERSUPPLY:
-                vehicle = findVehicle();
-                request = findClosestRequest(vehicleLinks.get(vehicle));
-                break;
+                case OVERSUPPLY:
+                    request = findRequest();
+                    vehicle = findClosestVehicle(request.getFromLink());
+                    break;
+                case UNDERSUPPLY:
+                    vehicle = findVehicle();
+                    request = findClosestRequest(vehicleLinks.get(vehicle));
+                    break;
             }
 
             removeRequest(request);
@@ -180,15 +182,17 @@ public class SingleHeuristicDispatcher implements AmodeusDispatcher {
     static public class Factory implements AVDispatcherFactory {
         @Override
         public AmodeusDispatcher createDispatcher(InstanceGetter inject) {
-            EventsManager eventsManager = inject.get(EventsManager.class);
-            TravelTime travelTime = inject.getModal(TravelTime.class);
-            AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
-            AmodeusRouter router = inject.getModal(AmodeusRouter.class);
-            Network network = inject.getModal(Network.class);
+            EventsManager eventsManager = (EventsManager) inject.get(EventsManager.class);
+            TravelTime travelTime = (TravelTime) inject.getModal(TravelTime.class);
+            AmodeusModeConfig operatorConfig = (AmodeusModeConfig) inject.getModal(AmodeusModeConfig.class);
+            AmodeusRouter router = (AmodeusRouter) inject.getModal(AmodeusRouter.class);
+            Network network = (Network) inject.getModal(Network.class);
 
-            double replanningInterval = Double.parseDouble(operatorConfig.getDispatcherConfig().getParams().getOrDefault("replanningInterval", "10.0"));
+            double replanningInterval = Double.parseDouble(
+                    operatorConfig.getDispatcherConfig().getParams().getOrDefault("replanningInterval", "10.0"));
 
-            return new SingleHeuristicDispatcher(operatorConfig.getMode(), eventsManager, network, new SingleRideAppender(operatorConfig.getTimingConfig(), router, travelTime),
+            return new SingleHeuristicDispatcher(operatorConfig.getMode(), eventsManager, network,
+                    new SingleRideAppender(operatorConfig.getTimingConfig(), router, travelTime),
                     replanningInterval);
         }
     }

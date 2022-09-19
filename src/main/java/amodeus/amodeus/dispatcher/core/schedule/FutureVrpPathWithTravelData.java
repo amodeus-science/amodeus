@@ -20,7 +20,8 @@ public class FutureVrpPathWithTravelData implements VrpPathWithTravelData {
     private final Future<Path> pathFuture;
     private final TravelTime travelTime;
 
-    public FutureVrpPathWithTravelData(double departureTime, double estimatedArrivalTime, Link fromLink, Link toLink, Future<Path> pathFuture, TravelTime travelTime) {
+    public FutureVrpPathWithTravelData(double departureTime, double estimatedArrivalTime, Link fromLink, Link toLink,
+            Future<Path> pathFuture, TravelTime travelTime) {
         this.fromLink = fromLink;
         this.toLink = toLink;
         this.departureTime = departureTime;
@@ -98,5 +99,11 @@ public class FutureVrpPathWithTravelData implements VrpPathWithTravelData {
         } else {
             return delegate.getArrivalTime();
         }
+    }
+
+    @Override
+    public VrpPathWithTravelData withDepartureTime(double timeShift) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

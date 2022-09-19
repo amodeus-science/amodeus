@@ -4,9 +4,10 @@ import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.amodeus.config.modal.WaitingTimeConfig;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.dvrp.run.AbstractDvrpModeModule;
-import org.matsim.contrib.dvrp.run.ModalProviders;
+import org.matsim.core.modal.ModalProviders;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.google.inject.Singleton;
 
 public class WaitingTimeEstimationModule extends AbstractDvrpModeModule {
@@ -22,14 +23,20 @@ public class WaitingTimeEstimationModule extends AbstractDvrpModeModule {
         WaitingTimeConfig waitingTimeConfig = modeConfig.getWaitingTimeEstimationConfig();
 
         if (waitingTimeConfig.getEstimationAlpha() > 0.0) {
-            bindModal(WaitingTimeCollector.class).toProvider(new WaitingTimeCollectorProvider(getMode())).in(Singleton.class);
-            bindModal(WaitingTimeListener.class).toProvider(new WaitingTimeListenerProvider(getMode())).in(Singleton.class);
+            bindModal(WaitingTimeCollector.class)
+                    .toProvider((Provider<? extends WaitingTimeCollector>) new WaitingTimeCollectorProvider(getMode()))
+                    .in(Singleton.class);
+            bindModal(WaitingTimeListener.class)
+                    .toProvider((Provider<? extends WaitingTimeListener>) new WaitingTimeListenerProvider(getMode()))
+                    .in(Singleton.class);
 
             addEventHandlerBinding().to(modalKey(WaitingTimeListener.class));
             addControlerListenerBinding().to(modalKey(WaitingTimeListener.class));
         }
 
-        bindModal(WaitingTime.class).toProvider(new WaitingTimeProvider(getMode())).in(Singleton.class);
+        bindModal(WaitingTime.class)
+                .toProvider((Provider<? extends WaitingTime>) new WaitingTimeProvider(getMode()))
+                .in(Singleton.class);
     }
 
     private static class WaitingTimeProvider extends ModalProviders.AbstractProvider<WaitingTime> {

@@ -15,14 +15,16 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicleSpecification;
 import org.matsim.contrib.dvrp.fleet.ImmutableDvrpVehicleSpecification;
-import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
+import org.matsim.core.modal.ModalProviders.InstanceGetter;
 import org.matsim.core.gbl.MatsimRandom;
 
-/** class generates {@link DvrpVehicle}s and places them at a random link.
+/**
+ * class generates {@link DvrpVehicle}s and places them at a random link.
  * each link is equally likely.
  *
  * all vehicles are created in this iteration. after that, no more AVVehiles are
- * added to the system. */
+ * added to the system.
+ */
 public class RandomDensityGenerator implements AmodeusGenerator {
     private static final Logger LOGGER = Logger.getLogger(RandomDensityGenerator.class);
     // ---
@@ -63,8 +65,8 @@ public class RandomDensityGenerator implements AmodeusGenerator {
     public static class Factory implements AmodeusGenerator.AVGeneratorFactory {
         @Override
         public AmodeusGenerator createGenerator(InstanceGetter inject) {
-            AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
-            Network network = inject.getModal(Network.class);
+            AmodeusModeConfig operatorConfig = (AmodeusModeConfig) inject.getModal(AmodeusModeConfig.class);
+            Network network = (Network) inject.getModal(Network.class);
             int capacity = operatorConfig.getGeneratorConfig().getCapacity();
 
             return new RandomDensityGenerator(operatorConfig, network, capacity);

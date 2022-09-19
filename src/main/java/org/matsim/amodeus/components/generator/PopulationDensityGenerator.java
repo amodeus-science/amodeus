@@ -18,7 +18,7 @@ import org.matsim.api.core.v01.population.Population;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicleSpecification;
 import org.matsim.contrib.dvrp.fleet.ImmutableDvrpVehicleSpecification;
-import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
+import org.matsim.core.modal.ModalProviders.InstanceGetter;
 import org.matsim.facilities.ActivityFacilities;
 
 public class PopulationDensityGenerator implements AmodeusGenerator {
@@ -32,7 +32,8 @@ public class PopulationDensityGenerator implements AmodeusGenerator {
     private List<Link> linkList = new LinkedList<>();
     private Map<Link, Double> cumulativeDensity = new HashMap<>();
 
-    public PopulationDensityGenerator(String mode, int numberOfVehicles, Network network, Population population, ActivityFacilities facilities, int randomSeed, int capacity) {
+    public PopulationDensityGenerator(String mode, int numberOfVehicles, Network network, Population population,
+            ActivityFacilities facilities, int randomSeed, int capacity) {
         this.randomSeed = randomSeed;
         this.numberOfVehicles = numberOfVehicles;
         this.capacity = capacity;
@@ -44,7 +45,8 @@ public class PopulationDensityGenerator implements AmodeusGenerator {
 
         for (Person person : population.getPersons().values()) {
             Activity act = (Activity) person.getSelectedPlan().getPlanElements().get(0);
-            Id<Link> linkId = act.getLinkId() != null ? act.getLinkId() : facilities.getFacilities().get(act.getFacilityId()).getLinkId();
+            Id<Link> linkId = act.getLinkId() != null ? act.getLinkId()
+                    : facilities.getFacilities().get(act.getFacilityId()).getLinkId();
             Link link = network.getLinks().get(linkId);
 
             if (link != null) {
@@ -108,17 +110,18 @@ public class PopulationDensityGenerator implements AmodeusGenerator {
     static public class Factory implements AmodeusGenerator.AVGeneratorFactory {
         @Override
         public AmodeusGenerator createGenerator(InstanceGetter inject) {
-            AmodeusModeConfig modeConfig = inject.getModal(AmodeusModeConfig.class);
-            Network network = inject.getModal(Network.class);
+            AmodeusModeConfig modeConfig = (AmodeusModeConfig) inject.getModal(AmodeusModeConfig.class);
+            Network network = (Network) inject.getModal(Network.class);
 
-            Population population = inject.get(Population.class);
-            ActivityFacilities facilities = inject.get(ActivityFacilities.class);
+            Population population = (Population) inject.get(Population.class);
+            ActivityFacilities facilities = (ActivityFacilities) inject.get(ActivityFacilities.class);
 
             GeneratorConfig generatorConfig = modeConfig.getGeneratorConfig();
             int capacity = generatorConfig.getCapacity();
             int randomSeed = Integer.parseInt(generatorConfig.getParams().getOrDefault("randomSeed", "1234"));
 
-            return new PopulationDensityGenerator(modeConfig.getMode(), generatorConfig.getNumberOfVehicles(), network, population, facilities, randomSeed, capacity);
+            return new PopulationDensityGenerator(modeConfig.getMode(), generatorConfig.getNumberOfVehicles(), network,
+                    population, facilities, randomSeed, capacity);
         }
     }
 }

@@ -1,6 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>amodeus</groupId>
 	<artifactId>amodeus</artifactId>
@@ -12,7 +10,7 @@
 		<skipTests>false</skipTests>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<github.global.server>github</github.global.server>
-		<matsim.version>13.0-2021w08-SNAPSHOT</matsim.version>
+		<matsim.version>14.0</matsim.version>
 	</properties>
 
 	<dependencies>
@@ -46,7 +44,8 @@
 			<artifactId>linopt</artifactId>
 			<version>1.10</version>
 		</dependency>
-		<dependency><!-- necessary to test scenarioPreparer -->
+		<dependency>
+			<!-- necessary to test scenarioPreparer -->
 			<groupId>org.gnu.glpk</groupId>
 			<artifactId>glpk-java</artifactId>
 			<version>1.12.0</version>
@@ -67,6 +66,13 @@
 			<artifactId>commons-io</artifactId>
 			<version>2.6</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.jdom/jdom2 -->
+		<dependency>
+			<groupId>org.jdom</groupId>
+			<artifactId>jdom2</artifactId>
+			<version>2.0.6.1</version>
+		</dependency>
+
 	</dependencies>
 
 	<repositories>
@@ -86,12 +92,9 @@
 			<url>https://repo.osgeo.org/repository/release/</url>
 		</repository>
 		<repository>
-			<id>matsim-snapshot</id>
-			<url>https://oss.jfrog.org/libs-snapshot</url>
-		</repository>
-		<repository>
-			<id>matsim-release</id>
-			<url>https://dl.bintray.com/matsim/matsim</url>
+			<id>matsim</id>
+			<name>MATSim Maven repository</name>
+			<url>https://repo.matsim.org/repository/matsim/</url>
 		</repository>
 		<repository>
 			<id>ch.sbb</id>
@@ -128,8 +131,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.10.4</version>
-				<configuration>
-				</configuration>
+				<configuration></configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-deploy-plugin</artifactId>

@@ -13,7 +13,7 @@ import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
-import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
+import org.matsim.core.modal.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.network.NetworkUtils;
@@ -30,13 +30,19 @@ import amodeus.amodeus.net.TensorCoords;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-/** Implementation of the "demand-supply-balancing" dispatching heuristic presented in
- * Maciejewski, Michal, and Joschka Bischoff. "Large-scale microscopic simulation of taxi services."
+/**
+ * Implementation of the "demand-supply-balancing" dispatching heuristic
+ * presented in
+ * Maciejewski, Michal, and Joschka Bischoff. "Large-scale microscopic
+ * simulation of taxi services."
  * Procedia Computer Science 52 (2015): 358-364.
  * 
- * This dispatcher is not a dispatcher with rebalancing functionality, it could also be derived from
- * the UniversalDispatcher, but in order to allow extended versions to use the setRoboTaxiRebalance
- * functionality, it was extended from the abstract RebalancingDispatcher. */
+ * This dispatcher is not a dispatcher with rebalancing functionality, it could
+ * also be derived from
+ * the UniversalDispatcher, but in order to allow extended versions to use the
+ * setRoboTaxiRebalance
+ * functionality, it was extended from the abstract RebalancingDispatcher.
+ */
 public class DemandSupplyBalancingDispatcher extends RebalancingDispatcher {
 
     private final int dispatchPeriod;
@@ -47,7 +53,8 @@ public class DemandSupplyBalancingDispatcher extends RebalancingDispatcher {
     protected DemandSupplyBalancingDispatcher(Config config, AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, AmodeusRouter router, EventsManager eventsManager, Network network, //
             MatsimAmodeusDatabase db, RebalancingStrategy rebalancingStrategy) {
-        super(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy, RoboTaxiUsageType.SINGLEUSED);
+        super(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy,
+                RoboTaxiUsageType.SINGLEUSED);
         DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(10);
         double[] networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
@@ -97,14 +104,18 @@ public class DemandSupplyBalancingDispatcher extends RebalancingDispatcher {
         }
     }
 
-    /** @param request
-     * @return {@link Coord} with {@link PassengerRequest} location */
+    /**
+     * @param request
+     * @return {@link Coord} with {@link PassengerRequest} location
+     */
     /* package */ Tensor getLocation(PassengerRequest request) {
         return TensorCoords.toTensor(request.getFromLink().getFromNode().getCoord());
     }
 
-    /** @param roboTaxi
-     * @return {@link Coord} with {@link RoboTaxi} location */
+    /**
+     * @param roboTaxi
+     * @return {@link Coord} with {@link RoboTaxi} location
+     */
     /* package */ Tensor getRoboTaxiLoc(RoboTaxi roboTaxi) {
         return TensorCoords.toTensor(roboTaxi.getDivertableLocation().getCoord());
     }
@@ -112,16 +123,16 @@ public class DemandSupplyBalancingDispatcher extends RebalancingDispatcher {
     public static class Factory implements AVDispatcherFactory {
         @Override
         public AmodeusDispatcher createDispatcher(InstanceGetter inject) {
-            Config config = inject.get(Config.class);
-            MatsimAmodeusDatabase db = inject.get(MatsimAmodeusDatabase.class);
-            EventsManager eventsManager = inject.get(EventsManager.class);
+            Config config = (Config) inject.get(Config.class);
+            MatsimAmodeusDatabase db = (MatsimAmodeusDatabase) inject.get(MatsimAmodeusDatabase.class);
+            EventsManager eventsManager = (EventsManager) inject.get(EventsManager.class);
 
-            AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
-            Network network = inject.getModal(Network.class);
-            AmodeusRouter router = inject.getModal(AmodeusRouter.class);
-            TravelTime travelTime = inject.getModal(TravelTime.class);
-            
-            RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
+            AmodeusModeConfig operatorConfig = (AmodeusModeConfig) inject.getModal(AmodeusModeConfig.class);
+            Network network = (Network) inject.getModal(Network.class);
+            AmodeusRouter router = (AmodeusRouter) inject.getModal(AmodeusRouter.class);
+            TravelTime travelTime = (TravelTime) inject.getModal(TravelTime.class);
+
+            RebalancingStrategy rebalancingStrategy = (RebalancingStrategy) inject.getModal(RebalancingStrategy.class);
 
             return new DemandSupplyBalancingDispatcher( //
                     config, operatorConfig, travelTime, //

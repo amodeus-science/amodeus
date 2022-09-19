@@ -16,7 +16,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
-import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
+import org.matsim.core.modal.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
@@ -34,7 +34,8 @@ import amodeus.amodeus.util.math.GlobalAssert;
 import amodeus.amodeus.virtualnetwork.core.VirtualNetwork;
 import amodeus.amodeus.virtualnetwork.core.VirtualNode;
 
-/** Implementation of the SQM algorithm (pp. 5625) of "Fundamental Performance
+/**
+ * Implementation of the SQM algorithm (pp. 5625) of "Fundamental Performance
  * Limits and Efficient Polices for Transportation-On-Demand Systems" presented
  * by M.Pavone, K.Treleaven, E.Frazzoli, 2010, 49th IEEE Conference on Decision
  * and Control, pp.5622-5629
@@ -45,7 +46,8 @@ import amodeus.amodeus.virtualnetwork.core.VirtualNode;
  * 
  * The number of vehicles and virtual nodes have to be equal.
  * 
- * @author fluric */
+ * @author fluric
+ */
 public class SQMDispatcher extends PartitionedDispatcher {
     private final MatsimAmodeusDatabase db;
     private final Map<VirtualNode<Link>, RoboTaxi> nodeToTaxi = new HashMap<>();
@@ -58,7 +60,8 @@ public class SQMDispatcher extends PartitionedDispatcher {
             TravelTime travelTime, AmodeusRouter router, //
             EventsManager eventsManager, Network network, //
             VirtualNetwork<Link> virtualNetwork, MatsimAmodeusDatabase db, RebalancingStrategy rebalancingStrategy) {
-        super(config, operatorConfig, travelTime, router, eventsManager, virtualNetwork, db, rebalancingStrategy, RoboTaxiUsageType.SINGLEUSED);
+        super(config, operatorConfig, travelTime, router, eventsManager, virtualNetwork, db, rebalancingStrategy,
+                RoboTaxiUsageType.SINGLEUSED);
         // <- virtualNetwork is non-null here
         GlobalAssert.that(operatorConfig.getGeneratorConfig().getNumberOfVehicles() == virtualNetwork.getvNodesCount());
         this.db = db;
@@ -89,7 +92,8 @@ public class SQMDispatcher extends PartitionedDispatcher {
                 double earliestSubmission = Double.MAX_VALUE;
                 PassengerRequest earliestAvr = null;
                 for (PassengerRequest avr : unassigned_requests) {
-                    if (taxiToNode.get(taxi).getLinks().contains(avr.getFromLink()) && avr.getSubmissionTime() < earliestSubmission) {
+                    if (taxiToNode.get(taxi).getLinks().contains(avr.getFromLink())
+                            && avr.getSubmissionTime() < earliestSubmission) {
                         earliestSubmission = avr.getSubmissionTime();
                         earliestAvr = avr;
                     }
@@ -117,37 +121,43 @@ public class SQMDispatcher extends PartitionedDispatcher {
         GlobalAssert.that(nodeToTaxi.size() == nodes.size() && taxiToNode.size() == taxis.size());
     }
 
-    /** Returns the nearest {@link Link}'s to the according {@link VirtualNode}'s.
+    /**
+     * Returns the nearest {@link Link}'s to the according {@link VirtualNode}'s.
      * Using fastLinkLookup
      * 
      * @param nodes
-     *            {@link Collection} of {@link VirtualNode}'s which are the virtual
-     *            station
+     *              {@link Collection} of {@link VirtualNode}'s which are the
+     *              virtual
+     *              station
      * @return nearestLinks {@link ArrayList} of {@link Link}'s which are the
      *         closest links to corresponding virtual nodes
-     * @author fluric */
+     * @author fluric
+     */
     private List<Link> assignNodesToNearestLinks(Collection<VirtualNode<Link>> nodes) {
         return nodes.stream().map(VirtualNode::getCoord).map(TensorCoords::toCoord) // get the center coordinate
-                .mapToInt(fastLinkLookup::indexFromLocal).mapToObj(db::getOsmLink).map(osml -> osml.link) // find the closest link
+                .mapToInt(fastLinkLookup::indexFromLocal).mapToObj(db::getOsmLink).map(osml -> osml.link) // find the
+                                                                                                          // closest
+                                                                                                          // link
                 .collect(Collectors.toList());
     }
 
     public static class Factory implements AVDispatcherFactory {
         @Override
         public AmodeusDispatcher createDispatcher(InstanceGetter inject) {
-            Config config = inject.get(Config.class);
-            MatsimAmodeusDatabase db = inject.get(MatsimAmodeusDatabase.class);
-            EventsManager eventsManager = inject.get(EventsManager.class);
+            Config config = (Config) inject.get(Config.class);
+            MatsimAmodeusDatabase db = (MatsimAmodeusDatabase) inject.get(MatsimAmodeusDatabase.class);
+            EventsManager eventsManager = (EventsManager) inject.get(EventsManager.class);
 
-            AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
-            Network network = inject.getModal(Network.class);
-            AmodeusRouter router = inject.getModal(AmodeusRouter.class);
-            TravelTime travelTime = inject.getModal(TravelTime.class);
+            AmodeusModeConfig operatorConfig = (AmodeusModeConfig) inject.getModal(AmodeusModeConfig.class);
+            Network network = (Network) inject.getModal(Network.class);
+            AmodeusRouter router = (AmodeusRouter) inject.getModal(AmodeusRouter.class);
+            TravelTime travelTime = (TravelTime) inject.getModal(TravelTime.class);
 
-            VirtualNetwork<Link> virtualNetwork = inject.getModal(new TypeLiteral<VirtualNetwork<Link>>() {
-            });
-            
-            RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
+            VirtualNetwork<Link> virtualNetwork = (VirtualNetwork<Link>) inject
+                    .getModal(new TypeLiteral<VirtualNetwork<Link>>() {
+                    });
+
+            RebalancingStrategy rebalancingStrategy = (RebalancingStrategy) inject.getModal(RebalancingStrategy.class);
 
             return new SQMDispatcher(config, operatorConfig, travelTime, router, eventsManager, network, //
                     virtualNetwork, db, rebalancingStrategy);

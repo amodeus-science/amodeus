@@ -11,7 +11,7 @@ import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
-import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
+import org.matsim.core.modal.ModalProviders.InstanceGetter;
 import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.router.util.TravelTime;
@@ -75,12 +75,13 @@ public class SingleFIFODispatcher implements AmodeusDispatcher {
     static public class Factory implements AVDispatcherFactory {
         @Override
         public AmodeusDispatcher createDispatcher(InstanceGetter inject) {
-            EventsManager eventsManager = inject.get(EventsManager.class);
-            TravelTime travelTime = inject.getModal(TravelTime.class);
-            AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
-            AmodeusRouter router = inject.getModal(AmodeusRouter.class);
+            EventsManager eventsManager = (EventsManager) inject.get(EventsManager.class);
+            TravelTime travelTime = (TravelTime) inject.getModal(TravelTime.class);
+            AmodeusModeConfig operatorConfig = (AmodeusModeConfig) inject.getModal(AmodeusModeConfig.class);
+            AmodeusRouter router = (AmodeusRouter) inject.getModal(AmodeusRouter.class);
 
-            return new SingleFIFODispatcher(operatorConfig.getMode(), eventsManager, new SingleRideAppender(operatorConfig.getTimingConfig(), router, travelTime));
+            return new SingleFIFODispatcher(operatorConfig.getMode(), eventsManager,
+                    new SingleRideAppender(operatorConfig.getTimingConfig(), router, travelTime));
         }
     }
 }
