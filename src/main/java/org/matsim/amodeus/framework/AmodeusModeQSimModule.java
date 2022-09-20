@@ -25,6 +25,7 @@ import org.matsim.contrib.dvrp.run.AbstractDvrpModeQSimModule;
 import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
 import org.matsim.contrib.dvrp.run.DvrpMode;
 import org.matsim.contrib.dvrp.run.DvrpModes;
+import org.matsim.core.modal.ModalAnnotationCreator;
 import org.matsim.core.modal.ModalProviders;
 import org.matsim.contrib.dvrp.vrpagent.VrpAgentLogic.DynActionCreator;
 import org.matsim.contrib.dvrp.vrpagent.VrpAgentSourceQSimModule;
@@ -40,6 +41,8 @@ public class AmodeusModeQSimModule extends AbstractDvrpModeQSimModule {
     public AmodeusModeQSimModule(AmodeusModeConfig modeConfig) {
         super(modeConfig.getMode());
     }
+
+    private final ModalAnnotationCreator<DvrpMode> modalAnnotationCreator = DvrpModes::mode;
 
     @Override
     protected void configureQSim() {
@@ -89,7 +92,8 @@ public class AmodeusModeQSimModule extends AbstractDvrpModeQSimModule {
             return new AmodeusOptimizer(dispatcher, eventsManager);
         })).in(Singleton.class);
         addModalQSimComponentBinding().to(modalKey(AmodeusOptimizer.class));
-        bindModal(VrpOptimizer.class).to(DvrpModes.key(AmodeusOptimizer.class, getMode())).in(Singleton.class);
+        bindModal(VrpOptimizer.class).to(modalAnnotationCreator.key(AmodeusOptimizer.class, getMode()))
+                .in(Singleton.class);
 
         bindModal(VrpLegFactory.class).toProvider(modalProvider(getter -> {
             AmodeusOptimizer optimizer = getter.getModal(AmodeusOptimizer.class);
