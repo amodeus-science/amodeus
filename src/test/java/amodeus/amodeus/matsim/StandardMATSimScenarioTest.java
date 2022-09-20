@@ -290,17 +290,18 @@ public class StandardMATSimScenarioTest {
 
                 bind(modalAnnotationCreator.key(new TypeLiteral<VirtualNetwork<Link>>() {
                 }, AmodeusModeConfig.DEFAULT_MODE))
-                        .toProvider(ModalProviders.createProvider(AmodeusModeConfig.DEFAULT_MODE, getter -> {
-                            Network network = getter.getModal(Network.class);
-                            return MatsimKMeansVirtualNetworkCreator.createVirtualNetwork(
-                                    scenario.getPopulation(),
-                                    network, 2, true);
-                        }));
+                        .toProvider(ModalProviders.createProvider(AmodeusModeConfig.DEFAULT_MODE,
+                                modalAnnotationCreator, getter -> {
+                                    Network network = getter.getModal(Network.class);
+                                    return MatsimKMeansVirtualNetworkCreator.createVirtualNetwork(
+                                            scenario.getPopulation(),
+                                            network, 2, true);
+                                }));
 
                 bind(modalAnnotationCreator.key(new TypeLiteral<TravelData>() {
                 }, AmodeusModeConfig.DEFAULT_MODE))
                         .toProvider(ModalProviders
-                                .createProvider(AmodeusModeConfig.DEFAULT_MODE, getter -> {
+                                .createProvider(AmodeusModeConfig.DEFAULT_MODE, modalAnnotationCreator, getter -> {
                                     try {
                                         LPOptions lpOptions = new LPOptions(simOptions.getWorkingDirectory(),
                                                 LPOptionsBase.getDefault());
