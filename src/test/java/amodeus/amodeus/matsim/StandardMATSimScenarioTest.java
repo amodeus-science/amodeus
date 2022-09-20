@@ -3,6 +3,7 @@ package amodeus.amodeus.matsim;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -292,7 +293,7 @@ public class StandardMATSimScenarioTest {
                         .toProvider((Provider<? extends VirtualNetwork<Link>>) ModalProviders
                                 .createProvider(AmodeusModeConfig.DEFAULT_MODE, getter -> {
                                     Network network = getter.getModal(Network.class);
-                                    return MatsimKMeansVirtualNetworkCreator.createVirtualNetwork(
+                                    return (Annotation) MatsimKMeansVirtualNetworkCreator.createVirtualNetwork(
                                             scenario.getPopulation(),
                                             network, 2, true);
                                 }, null));
@@ -313,7 +314,8 @@ public class StandardMATSimScenarioTest {
                                         Network network = getter.getModal(Network.class);
                                         Population population = getter.get(Population.class);
 
-                                        return StaticTravelDataCreator.create(simOptions.getWorkingDirectory(),
+                                        return (Annotation) StaticTravelDataCreator.create(
+                                                simOptions.getWorkingDirectory(),
                                                 virtualNetwork,
                                                 network, population, simOptions.getdtTravelData(),
                                                 generatorConfig.getNumberOfVehicles(), endTime);

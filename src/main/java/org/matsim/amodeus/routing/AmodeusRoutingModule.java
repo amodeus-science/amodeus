@@ -16,7 +16,9 @@ import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.PopulationFactory;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.path.VrpPaths;
+import org.matsim.core.router.DefaultRoutingRequest;
 import org.matsim.core.router.RoutingModule;
+import org.matsim.core.router.RoutingRequest;
 import org.matsim.core.router.util.LeastCostPathCalculator;
 import org.matsim.core.router.util.TravelTime;
 import org.matsim.core.utils.geometry.CoordUtils;
@@ -40,8 +42,10 @@ public class AmodeusRoutingModule implements RoutingModule {
 
     private final String mode;
 
-    public AmodeusRoutingModule(AmodeusRouteFactory routeFactory, AmodeusInteractionFinder interactionFinder, WaitingTime waitingTime, PopulationFactory populationFactory,
-            RoutingModule walkRoutingModule, boolean useAccessEgress, boolean predictRoute, LeastCostPathCalculator router, PriceModel priceCalculator, Network network,
+    public AmodeusRoutingModule(AmodeusRouteFactory routeFactory, AmodeusInteractionFinder interactionFinder,
+            WaitingTime waitingTime, PopulationFactory populationFactory,
+            RoutingModule walkRoutingModule, boolean useAccessEgress, boolean predictRoute,
+            LeastCostPathCalculator router, PriceModel priceCalculator, Network network,
             TravelTime travelTime, String mode) {
         this.routeFactory = routeFactory;
         this.interactionFinder = interactionFinder;
@@ -58,18 +62,25 @@ public class AmodeusRoutingModule implements RoutingModule {
     }
 
     @Override
-    public List<? extends PlanElement> calcRoute(Facility fromFacility, Facility toFacility, double departureTime, Person person) {
+    public List<? extends PlanElement> calcRoute(RoutingRequest routingRequest) {
+        Facility fromFacility = routingRequest.getFromFacility();
+        Facility toFacility = routingRequest.getToFacility();
+        double departureTime = routingRequest.getDepartureTime();
+        Person person = routingRequest.getPerson();
+
         Facility pickupFacility = interactionFinder.findPickupFacility(fromFacility, departureTime);
         Facility dropoffFacility = interactionFinder.findDropoffFacility(toFacility, departureTime);
 
         if (pickupFacility.getLinkId().equals(dropoffFacility.getLinkId())) {
             // Special case: PassengerEngine will complain that request has same start and
             // end link. In that case we just return walk.
-            return walkRoutingModule.calcRoute(fromFacility, toFacility, departureTime, person);
+            return walkRoutingModule.calcRoute(routingRequest);
         }
 
-        double pickupEuclideanDistance = CoordUtils.calcEuclideanDistance(fromFacility.getCoord(), pickupFacility.getCoord());
-        double dropoffEuclideanDistance = CoordUtils.calcEuclideanDistance(dropoffFacility.getCoord(), toFacility.getCoord());
+        double pickupEuclideanDistance = CoordUtils.calcEuclideanDistance(fromFacility.getCoord(),
+                pickupFacility.getCoord());
+        double dropoffEuclideanDistance = CoordUtils.calcEuclideanDistance(dropoffFacility.getCoord(),
+                toFacility.getCoord());
 
         // First, we need to access (if configured)
         double accessDepartureTime = departureTime;
@@ -78,10 +89,13 @@ public class AmodeusRoutingModule implements RoutingModule {
         List<PlanElement> routeElements = new LinkedList<>();
 
         if (fromFacility != pickupFacility && useAccessEgress && pickupEuclideanDistance > 0.0) {
-            List<? extends PlanElement> pickupElements = walkRoutingModule.calcRoute(fromFacility, pickupFacility, accessDepartureTime, person);
+            RoutingRequest newRequest = DefaultRoutingRequest.of(fromFacility, pickupFacility, accessDepartureTime,
+                    person, routingRequest.getAttributes());
+            List<? extends PlanElement> pickupElements = walkRoutingModule.calcRoute(newRequest);
             routeElements.addAll(pickupElements);
 
-            Activity pickupActivity = populationFactory.createActivityFromLinkId(INTERACTION_ACTIVITY_TYPE, pickupFacility.getLinkId());
+            Activity pickupActivity = populationFactory.createActivityFromLinkId(INTERACTION_ACTIVITY_TYPE,
+                    pickupFacility.getLinkId());
             pickupActivity.setMaximumDuration(0.0);
             routeElements.add(pickupActivity);
 
@@ -101,7 +115,8 @@ public class AmodeusRoutingModule implements RoutingModule {
         double vehicleDepartureTime = requestSendTime + vehicleWaitingTime;
 
         // Here we can optionally already route the AV leg to estimate travel time
-        // TODO @sebhoerl Maybe we can hide this behind a AVTravelTimePredictor interface or
+        // TODO @sebhoerl Maybe we can hide this behind a AVTravelTimePredictor
+        // interface or
         // something like that
         double vehicleDistance = Double.NaN;
         double vehicleTravelTime = Double.NaN;
@@ -111,12 +126,14 @@ public class AmodeusRoutingModule implements RoutingModule {
             Link pickupLink = network.getLinks().get(pickupFacility.getLinkId());
             Link dropoffLink = network.getLinks().get(dropoffFacility.getLinkId());
 
-            VrpPathWithTravelData path = VrpPaths.calcAndCreatePath(pickupLink, dropoffLink, vehicleDepartureTime, router, travelTime);
+            VrpPathWithTravelData path = VrpPaths.calcAndCreatePath(pickupLink, dropoffLink, vehicleDepartureTime,
+                    router, travelTime);
 
             vehicleDistance = VrpPaths.calcDistance(path);
             vehicleTravelTime = path.getTravelTime();
 
-            price = priceCalculator.calculatePrice(requestSendTime, pickupFacility, dropoffFacility, vehicleDistance, vehicleTravelTime);
+            price = priceCalculator.calculatePrice(requestSendTime, pickupFacility, dropoffFacility, vehicleDistance,
+                    vehicleTravelTime);
         }
 
         double totalTravelTime = vehicleTravelTime + vehicleWaitingTime;
@@ -155,11 +172,14 @@ public class AmodeusRoutingModule implements RoutingModule {
         }
 
         if (toFacility != dropoffFacility && useAccessEgress && dropoffEuclideanDistance > 0.0) {
-            Activity dropoffActivity = populationFactory.createActivityFromLinkId(INTERACTION_ACTIVITY_TYPE, dropoffFacility.getLinkId());
+            Activity dropoffActivity = populationFactory.createActivityFromLinkId(INTERACTION_ACTIVITY_TYPE,
+                    dropoffFacility.getLinkId());
             dropoffActivity.setMaximumDuration(0.0);
             routeElements.add(dropoffActivity);
 
-            List<? extends PlanElement> dropoffElements = walkRoutingModule.calcRoute(dropoffFacility, toFacility, egressDepartureTime, person);
+            RoutingRequest newRequest = DefaultRoutingRequest.of(dropoffFacility, toFacility, egressDepartureTime,
+                    person, routingRequest.getAttributes());
+            List<? extends PlanElement> dropoffElements = walkRoutingModule.calcRoute(newRequest);
             routeElements.addAll(dropoffElements);
         }
 

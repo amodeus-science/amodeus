@@ -22,6 +22,7 @@ import org.matsim.contrib.dvrp.passenger.DefaultPassengerRequestValidator;
 import org.matsim.contrib.dvrp.passenger.PassengerRequestValidator;
 import org.matsim.contrib.dvrp.router.DvrpModeRoutingNetworkModule;
 import org.matsim.contrib.dvrp.run.AbstractDvrpModeModule;
+import org.matsim.contrib.dvrp.run.DvrpMode;
 import org.matsim.contrib.dvrp.run.DvrpModes;
 import org.matsim.core.modal.ModalProviders;
 import org.matsim.contrib.dvrp.trafficmonitoring.DvrpTravelTimeModule;
@@ -92,7 +93,7 @@ public class AmodeusModeModule extends AbstractDvrpModeModule {
         bindModal(RebalancingStrategy.class).toInstance(new NoRebalancingStrategy());
     }
 
-    static private class RoutingModuleProvider extends ModalProviders.AbstractProvider<AmodeusRoutingModule> {
+    static private class RoutingModuleProvider extends ModalProviders.AbstractProvider<DvrpMode, AmodeusRoutingModule> {
         @Inject
         AmodeusRouteFactory routeFactory;
 
@@ -111,7 +112,7 @@ public class AmodeusModeModule extends AbstractDvrpModeModule {
         LeastCostPathCalculatorFactory routerFactory;
 
         RoutingModuleProvider(String mode) {
-            super(mode);
+            super(mode, DvrpModes::mode);
         }
 
         @Override
@@ -135,12 +136,13 @@ public class AmodeusModeModule extends AbstractDvrpModeModule {
         }
     };
 
-    static private class InteractionFinderProvider extends ModalProviders.AbstractProvider<AmodeusInteractionFinder> {
+    static private class InteractionFinderProvider
+            extends ModalProviders.AbstractProvider<DvrpMode, AmodeusInteractionFinder> {
         @Inject
         Map<String, AmodeusInteractionFinder.AVInteractionFinderFactory> factories;
 
         InteractionFinderProvider(String mode) {
-            super(mode);
+            super(mode, DvrpModes::mode);
         }
 
         @Override
@@ -160,9 +162,9 @@ public class AmodeusModeModule extends AbstractDvrpModeModule {
         }
     };
 
-    static class PriceCalculatorProider extends ModalProviders.AbstractProvider<PriceModel> {
+    static class PriceCalculatorProider extends ModalProviders.AbstractProvider<DvrpMode, PriceModel> {
         PriceCalculatorProider(AmodeusModeConfig modeConfig) {
-            super(modeConfig.getMode());
+            super(modeConfig.getMode(), DvrpModes::mode);
         }
 
         @Override

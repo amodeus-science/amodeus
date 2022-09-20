@@ -4,6 +4,8 @@ import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.amodeus.config.modal.WaitingTimeConfig;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.dvrp.run.AbstractDvrpModeModule;
+import org.matsim.contrib.dvrp.run.DvrpMode;
+import org.matsim.contrib.dvrp.run.DvrpModes;
 import org.matsim.core.modal.ModalProviders;
 
 import com.google.inject.Inject;
@@ -39,12 +41,12 @@ public class WaitingTimeEstimationModule extends AbstractDvrpModeModule {
                 .in(Singleton.class);
     }
 
-    private static class WaitingTimeProvider extends ModalProviders.AbstractProvider<WaitingTime> {
+    private static class WaitingTimeProvider extends ModalProviders.AbstractProvider<DvrpMode, WaitingTime> {
         @Inject
         WaitingTimeFactory factory; // TODO: Why not named factories?
 
         WaitingTimeProvider(String mode) {
-            super(mode);
+            super(mode, DvrpModes::mode);
         }
 
         @Override
@@ -55,9 +57,10 @@ public class WaitingTimeEstimationModule extends AbstractDvrpModeModule {
         }
     };
 
-    private static class WaitingTimeCollectorProvider extends ModalProviders.AbstractProvider<WaitingTimeCollector> {
+    private static class WaitingTimeCollectorProvider
+            extends ModalProviders.AbstractProvider<DvrpMode, WaitingTimeCollector> {
         WaitingTimeCollectorProvider(String mode) {
-            super(mode);
+            super(mode, DvrpModes::mode);
         }
 
         @Override
@@ -66,9 +69,10 @@ public class WaitingTimeEstimationModule extends AbstractDvrpModeModule {
         }
     };
 
-    private static class WaitingTimeListenerProvider extends ModalProviders.AbstractProvider<WaitingTimeListener> {
+    private static class WaitingTimeListenerProvider
+            extends ModalProviders.AbstractProvider<DvrpMode, WaitingTimeListener> {
         WaitingTimeListenerProvider(String mode) {
-            super(mode);
+            super(mode, DvrpModes::mode);
         }
 
         @Override

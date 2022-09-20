@@ -23,6 +23,7 @@ import org.matsim.contrib.dvrp.passenger.PassengerEngineQSimModule;
 import org.matsim.contrib.dvrp.passenger.PassengerRequestCreator;
 import org.matsim.contrib.dvrp.run.AbstractDvrpModeQSimModule;
 import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
+import org.matsim.contrib.dvrp.run.DvrpMode;
 import org.matsim.contrib.dvrp.run.DvrpModes;
 import org.matsim.core.modal.ModalProviders;
 import org.matsim.contrib.dvrp.vrpagent.VrpAgentLogic.DynActionCreator;
@@ -100,9 +101,9 @@ public class AmodeusModeQSimModule extends AbstractDvrpModeQSimModule {
         })).in(Singleton.class);
     }
 
-    static private class FleetProvider extends ModalProviders.AbstractProvider<Fleet> {
+    static private class FleetProvider extends ModalProviders.AbstractProvider<DvrpMode, Fleet> {
         FleetProvider(String mode) {
-            super(mode);
+            super(mode, DvrpModes::mode);
         }
 
         @Override
