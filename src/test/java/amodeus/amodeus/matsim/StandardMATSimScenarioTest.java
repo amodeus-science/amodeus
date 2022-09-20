@@ -290,17 +290,16 @@ public class StandardMATSimScenarioTest {
 
                 bind(modalAnnotationCreator.key(new TypeLiteral<VirtualNetwork<Link>>() {
                 }, AmodeusModeConfig.DEFAULT_MODE))
-                        .toProvider((Provider<? extends VirtualNetwork<Link>>) ModalProviders
-                                .createProvider(AmodeusModeConfig.DEFAULT_MODE, getter -> {
-                                    Network network = getter.getModal(Network.class);
-                                    return (Annotation) MatsimKMeansVirtualNetworkCreator.createVirtualNetwork(
-                                            scenario.getPopulation(),
-                                            network, 2, true);
-                                }, null));
+                        .toProvider(ModalProviders.createProvider(AmodeusModeConfig.DEFAULT_MODE, getter -> {
+                            Network network = getter.getModal(Network.class);
+                            return MatsimKMeansVirtualNetworkCreator.createVirtualNetwork(
+                                    scenario.getPopulation(),
+                                    network, 2, true);
+                        }));
 
                 bind(modalAnnotationCreator.key(new TypeLiteral<TravelData>() {
                 }, AmodeusModeConfig.DEFAULT_MODE))
-                        .toProvider((Provider<? extends TravelData>) ModalProviders
+                        .toProvider(ModalProviders
                                 .createProvider(AmodeusModeConfig.DEFAULT_MODE, getter -> {
                                     try {
                                         LPOptions lpOptions = new LPOptions(simOptions.getWorkingDirectory(),
@@ -314,7 +313,7 @@ public class StandardMATSimScenarioTest {
                                         Network network = getter.getModal(Network.class);
                                         Population population = getter.get(Population.class);
 
-                                        return (Annotation) StaticTravelDataCreator.create(
+                                        return StaticTravelDataCreator.create(
                                                 simOptions.getWorkingDirectory(),
                                                 virtualNetwork,
                                                 network, population, simOptions.getdtTravelData(),
@@ -322,7 +321,7 @@ public class StandardMATSimScenarioTest {
                                     } catch (Exception e) {
                                         throw new RuntimeException(e);
                                     }
-                                }, null));
+                                }));
             }
         });
 
