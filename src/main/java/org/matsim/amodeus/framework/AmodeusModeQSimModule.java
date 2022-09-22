@@ -34,7 +34,6 @@ import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.mobsim.qsim.QSim;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.inject.Provider;
 import com.google.inject.Singleton;
 
 public class AmodeusModeQSimModule extends AbstractDvrpModeQSimModule {
@@ -83,7 +82,7 @@ public class AmodeusModeQSimModule extends AbstractDvrpModeQSimModule {
             return getter.get(GeneratorRegistry.class).get(generatorName).createGenerator(getter);
         })).in(Singleton.class);
 
-        bindModal(Fleet.class).toProvider((Provider<? extends Fleet>) new FleetProvider(getMode())).in(Singleton.class);
+        bindModal(Fleet.class).toProvider(new FleetProvider(getMode())).in(Singleton.class);
 
         bindModal(AmodeusOptimizer.class).toProvider(modalProvider(getter -> {
             EventsManager eventsManager = getter.get(EventsManager.class);
