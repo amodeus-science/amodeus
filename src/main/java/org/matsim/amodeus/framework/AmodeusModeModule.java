@@ -35,7 +35,6 @@ import org.matsim.core.router.util.TravelTime;
 
 import com.google.inject.Inject;
 import com.google.inject.Key;
-import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
@@ -60,9 +59,9 @@ public class AmodeusModeModule extends AbstractDvrpModeModule {
 
         // Routing module
         bindModal(AmodeusRoutingModule.class)
-                .toProvider((Provider<? extends AmodeusRoutingModule>) new RoutingModuleProvider(getMode()));
+                .toProvider(new RoutingModuleProvider(getMode()));
         bindModal(AmodeusInteractionFinder.class)
-                .toProvider((Provider<? extends AmodeusInteractionFinder>) new InteractionFinderProvider(getMode()))
+                .toProvider(new InteractionFinderProvider(getMode()))
                 .in(Singleton.class);
         addRoutingModuleBinding(getMode()).to(modalKey(AmodeusRoutingModule.class));
 
@@ -86,7 +85,7 @@ public class AmodeusModeModule extends AbstractDvrpModeModule {
         // Waiting time estimation
         install(new WaitingTimeEstimationModule(modeConfig));
 
-        bindModal(PriceModel.class).toProvider((Provider<? extends PriceModel>) new PriceCalculatorProider(modeConfig));
+        bindModal(PriceModel.class).toProvider(new PriceCalculatorProider(modeConfig));
 
         install(new VirtualNetworkModeModule(modeConfig));
 
