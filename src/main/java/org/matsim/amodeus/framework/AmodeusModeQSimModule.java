@@ -91,7 +91,8 @@ public class AmodeusModeQSimModule extends AbstractDvrpModeQSimModule {
             return new AmodeusOptimizer(dispatcher, eventsManager);
         })).in(Singleton.class);
         addModalQSimComponentBinding().to(modalKey(AmodeusOptimizer.class));
-        bindModal(VrpOptimizer.class).to(modalAnnotationCreator.key(AmodeusOptimizer.class, getMode()))
+        bindModal(VrpOptimizer.class).to(modalAnnotationCreator.key(AmodeusOptimizer.class,
+                getMode()))
                 .in(Singleton.class);
 
         bindModal(VrpLegFactory.class).toProvider(modalProvider(getter -> {
