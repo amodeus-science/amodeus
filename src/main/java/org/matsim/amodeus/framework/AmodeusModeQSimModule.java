@@ -25,13 +25,15 @@ import org.matsim.contrib.dvrp.run.AbstractDvrpModeQSimModule;
 import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
 import org.matsim.contrib.dvrp.run.DvrpMode;
 import org.matsim.contrib.dvrp.run.DvrpModes;
-import org.matsim.core.modal.ModalAnnotationCreator;
-import org.matsim.core.modal.ModalProviders;
 import org.matsim.contrib.dvrp.vrpagent.VrpAgentLogic.DynActionCreator;
 import org.matsim.contrib.dvrp.vrpagent.VrpAgentSourceQSimModule;
 import org.matsim.contrib.dvrp.vrpagent.VrpLegFactory;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.mobsim.qsim.QSim;
+import org.matsim.core.modal.ModalAnnotationCreator;
+import org.matsim.core.modal.ModalProviders;
+import org.matsim.vehicles.VehicleType;
+import org.matsim.vehicles.VehicleUtils;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Singleton;
@@ -50,6 +52,11 @@ public class AmodeusModeQSimModule extends AbstractDvrpModeQSimModule {
         bindModal(PassengerRequestCreator.class).toProvider(modalProvider(getter -> {
             return new AmodeusRequestCreator(getMode());
         })).in(Singleton.class);
+
+        // this is needed due to these changes. This does mean the vehicle type will
+        // always be default
+        // https://github.com/matsim-org/matsim-libs/pull/1822/files
+        bindModal(VehicleType.class).toInstance(VehicleUtils.getDefaultVehicleType());
 
         bindModal(DynActionCreator.class).toProvider(modalProvider(getter -> {
             PassengerEngine passengerEngine = getter.getModal(PassengerEngine.class);
