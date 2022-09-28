@@ -89,8 +89,9 @@ public class AmodeusRoutingModule implements RoutingModule {
         List<PlanElement> routeElements = new LinkedList<>();
 
         if (fromFacility != pickupFacility && useAccessEgress && pickupEuclideanDistance > 0.0) {
-            RoutingRequest newRequest = DefaultRoutingRequest.of(fromFacility, pickupFacility, accessDepartureTime,
-                    person, routingRequest.getAttributes());
+            RoutingRequest newRequest = DefaultRoutingRequest.withoutAttributes(fromFacility, pickupFacility,
+                    accessDepartureTime,
+                    person);
             List<? extends PlanElement> pickupElements = walkRoutingModule.calcRoute(newRequest);
             routeElements.addAll(pickupElements);
 
@@ -177,8 +178,9 @@ public class AmodeusRoutingModule implements RoutingModule {
             dropoffActivity.setMaximumDuration(0.0);
             routeElements.add(dropoffActivity);
 
-            RoutingRequest newRequest = DefaultRoutingRequest.of(dropoffFacility, toFacility, egressDepartureTime,
-                    person, routingRequest.getAttributes());
+            RoutingRequest newRequest = DefaultRoutingRequest.withoutAttributes(dropoffFacility, toFacility,
+                    egressDepartureTime,
+                    person);
             List<? extends PlanElement> dropoffElements = walkRoutingModule.calcRoute(newRequest);
             routeElements.addAll(dropoffElements);
         }
