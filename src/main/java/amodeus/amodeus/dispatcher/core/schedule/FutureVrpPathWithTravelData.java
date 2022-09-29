@@ -103,7 +103,6 @@ public class FutureVrpPathWithTravelData implements VrpPathWithTravelData {
 
     @Override
     public VrpPathWithTravelData withDepartureTime(double timeShift) {
-        // TODO Auto-generated method stub
-        return null;
+        return delegate;
     }
 }
