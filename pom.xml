@@ -40,11 +40,6 @@
 			<version>0.7.1</version>
 		</dependency>
 		<dependency>
-			<groupId>de.xypron.linopt</groupId>
-			<artifactId>linopt</artifactId>
-			<version>1.10</version>
-		</dependency>
-		<dependency>
 			<!-- necessary to test scenarioPreparer -->
 			<groupId>org.gnu.glpk</groupId>
 			<artifactId>glpk-java</artifactId>
@@ -83,7 +78,7 @@
 		<repository>
 			<id>XypronRelease</id>
 			<name>Xypron Release</name>
-			<url>http://rsync.xypron.de/repository</url>
+			<url>https://www.xypron.de/repository/</url>
 			<layout>default</layout>
 		</repository>
 		<repository>
