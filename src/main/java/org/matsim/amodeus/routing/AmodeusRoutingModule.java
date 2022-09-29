@@ -38,13 +38,12 @@ public class AmodeusRoutingModule implements RoutingModule {
     private final AmodeusInteractionFinder interactionFinder;
     private final WaitingTime waitingTime;
     private final boolean useAccessEgress;
-    private final boolean predictRoute;
 
     private final String mode;
 
     public AmodeusRoutingModule(AmodeusRouteFactory routeFactory, AmodeusInteractionFinder interactionFinder,
             WaitingTime waitingTime, PopulationFactory populationFactory,
-            RoutingModule walkRoutingModule, boolean useAccessEgress, boolean predictRoute,
+            RoutingModule walkRoutingModule, boolean useAccessEgress,
             LeastCostPathCalculator router, PriceModel priceCalculator, Network network,
             TravelTime travelTime, String mode) {
         this.routeFactory = routeFactory;
@@ -53,7 +52,6 @@ public class AmodeusRoutingModule implements RoutingModule {
         this.walkRoutingModule = walkRoutingModule;
         this.populationFactory = populationFactory;
         this.useAccessEgress = useAccessEgress;
-        this.predictRoute = predictRoute;
         this.router = router;
         this.priceCalculator = priceCalculator;
         this.mode = mode;
@@ -123,19 +121,18 @@ public class AmodeusRoutingModule implements RoutingModule {
         double vehicleTravelTime = Double.NaN;
         Optional<Double> price = Optional.empty();
 
-        if (predictRoute) {
-            Link pickupLink = network.getLinks().get(pickupFacility.getLinkId());
-            Link dropoffLink = network.getLinks().get(dropoffFacility.getLinkId());
+        // predict route - we must always do this otherwise time tracking breaks
+        Link pickupLink = network.getLinks().get(pickupFacility.getLinkId());
+        Link dropoffLink = network.getLinks().get(dropoffFacility.getLinkId());
 
-            VrpPathWithTravelData path = VrpPaths.calcAndCreatePath(pickupLink, dropoffLink, vehicleDepartureTime,
-                    router, travelTime);
+        VrpPathWithTravelData path = VrpPaths.calcAndCreatePath(pickupLink, dropoffLink, vehicleDepartureTime,
+                router, travelTime);
 
-            vehicleDistance = VrpPaths.calcDistance(path);
-            vehicleTravelTime = path.getTravelTime();
+        vehicleDistance = VrpPaths.calcDistance(path);
+        vehicleTravelTime = path.getTravelTime();
 
-            price = priceCalculator.calculatePrice(requestSendTime, pickupFacility, dropoffFacility, vehicleDistance,
-                    vehicleTravelTime);
-        }
+        price = priceCalculator.calculatePrice(requestSendTime, pickupFacility, dropoffFacility, vehicleDistance,
+                vehicleTravelTime);
 
         double totalTravelTime = vehicleTravelTime + vehicleWaitingTime;
 

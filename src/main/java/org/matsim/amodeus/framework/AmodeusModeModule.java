@@ -117,7 +117,6 @@ public class AmodeusModeModule extends AbstractDvrpModeModule {
         @Override
         public AmodeusRoutingModule get() {
             AmodeusModeConfig modeConfig = getModalInstance(AmodeusModeConfig.class);
-            boolean predictRoute = modeConfig.getPredictRouteTravelTime() || modeConfig.getPredictRoutePrice();
             boolean useAccessEgress = modeConfig.getUseAccessEgress();
 
             AmodeusInteractionFinder interactionFinder = getModalInstance(AmodeusInteractionFinder.class);
@@ -130,7 +129,7 @@ public class AmodeusModeModule extends AbstractDvrpModeModule {
             LeastCostPathCalculator router = routerFactory.createPathCalculator(network, travelDisutility, travelTime);
 
             return new AmodeusRoutingModule(routeFactory, interactionFinder, waitingTime, populationFactory,
-                    walkRoutingModule, useAccessEgress, predictRoute, router,
+                    walkRoutingModule, useAccessEgress, router,
                     priceCalculator, network, travelTime, getMode());
         }
     };
