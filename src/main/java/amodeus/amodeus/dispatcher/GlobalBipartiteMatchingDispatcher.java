@@ -6,7 +6,7 @@ import org.matsim.amodeus.components.AmodeusRouter;
 import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
-import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
+import org.matsim.core.modal.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
@@ -24,13 +24,19 @@ import amodeus.amodeus.util.matsim.SafeConfig;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-/** Dispatcher repeatedly solves a bipartite matching problem to match available vehicles and open requests.
- * The problem can either be solved using networkdistance or Euclidean distance. Currently network
+/**
+ * Dispatcher repeatedly solves a bipartite matching problem to match available
+ * vehicles and open requests.
+ * The problem can either be solved using networkdistance or Euclidean distance.
+ * Currently network
  * distance is enabled.
  * 
- * This dispatcher is not a dispatcher with rebalancing functionality, it could also be derived from
- * the UniversalDispatcher, but in order to allow extended versions to use the setRoboTaxiRebalance
- * functionality, it was extended from the abstract RebalancingDispatcher. */
+ * This dispatcher is not a dispatcher with rebalancing functionality, it could
+ * also be derived from
+ * the UniversalDispatcher, but in order to allow extended versions to use the
+ * setRoboTaxiRebalance
+ * functionality, it was extended from the abstract RebalancingDispatcher.
+ */
 public class GlobalBipartiteMatchingDispatcher extends RebalancingDispatcher {
 
     private final int dispatchPeriod;
@@ -43,7 +49,8 @@ public class GlobalBipartiteMatchingDispatcher extends RebalancingDispatcher {
             AmodeusModeConfig operatorConfig, TravelTime travelTime, //
             AmodeusRouter router, EventsManager eventsManager, //
             MatsimAmodeusDatabase db, RebalancingStrategy rebalancingStrategy) {
-        super(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy, RoboTaxiUsageType.SINGLEUSED);
+        super(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy,
+                RoboTaxiUsageType.SINGLEUSED);
         DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(30);
         DistanceHeuristics distanceHeuristics = //
@@ -51,7 +58,10 @@ public class GlobalBipartiteMatchingDispatcher extends RebalancingDispatcher {
         System.out.println("Using DistanceHeuristics: " + distanceHeuristics.name());
         distanceFunction = distanceHeuristics.getDistanceFunction(network);
         this.network = network;
-        /** matching algorithm - standard is a solution to the assignment problem with the Hungarian method */
+        /**
+         * matching algorithm - standard is a solution to the assignment problem with
+         * the Hungarian method
+         */
         SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
         bipartiteMatcher = new ConfigurableBipartiteMatcher(network, new DistanceCost(distanceFunction), //
                 safeConfig);
@@ -76,17 +86,18 @@ public class GlobalBipartiteMatchingDispatcher extends RebalancingDispatcher {
     public static class Factory implements AVDispatcherFactory {
         @Override
         public AmodeusDispatcher createDispatcher(InstanceGetter inject) {
-            Config config = inject.get(Config.class);
-            MatsimAmodeusDatabase db = inject.get(MatsimAmodeusDatabase.class);
-            EventsManager eventsManager = inject.get(EventsManager.class);
+            Config config = (Config) inject.get(Config.class);
+            MatsimAmodeusDatabase db = (MatsimAmodeusDatabase) inject.get(MatsimAmodeusDatabase.class);
+            EventsManager eventsManager = (EventsManager) inject.get(EventsManager.class);
 
-            AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
-            Network network = inject.getModal(Network.class);
-            AmodeusRouter router = inject.getModal(AmodeusRouter.class);
-            TravelTime travelTime = inject.getModal(TravelTime.class);
-            RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
-            
-            return new GlobalBipartiteMatchingDispatcher(network, config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy);
+            AmodeusModeConfig operatorConfig = (AmodeusModeConfig) inject.getModal(AmodeusModeConfig.class);
+            Network network = (Network) inject.getModal(Network.class);
+            AmodeusRouter router = (AmodeusRouter) inject.getModal(AmodeusRouter.class);
+            TravelTime travelTime = (TravelTime) inject.getModal(TravelTime.class);
+            RebalancingStrategy rebalancingStrategy = (RebalancingStrategy) inject.getModal(RebalancingStrategy.class);
+
+            return new GlobalBipartiteMatchingDispatcher(network, config, operatorConfig, travelTime, router,
+                    eventsManager, db, rebalancingStrategy);
         }
     }
 }

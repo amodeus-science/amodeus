@@ -33,7 +33,7 @@ import org.matsim.contrib.dvrp.fleet.DvrpVehicleSpecification;
 import org.matsim.contrib.dvrp.fleet.ImmutableDvrpVehicleSpecification;
 import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
 import org.matsim.contrib.dvrp.run.DvrpModule;
-import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
+import org.matsim.core.modal.ModalProviders.InstanceGetter;
 import org.matsim.contrib.dvrp.trafficmonitoring.DvrpTravelTimeModule;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
@@ -52,7 +52,10 @@ import org.matsim.vehicles.VehicleUtils;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 
-/** TestScenario is used to create a various elements of a test scenario. This is used in various av.dynamics tests. */
+/**
+ * TestScenario is used to create a various elements of a test scenario. This is
+ * used in various av.dynamics tests.
+ */
 public class TestScenario {
 
     static public Scenario createScenario(AmodeusConfigGroup avConfig, Collection<TestRequest> requests) {
@@ -193,7 +196,7 @@ public class TestScenario {
 
         @Override
         public AmodeusGenerator createGenerator(InstanceGetter inject) {
-            Link link = inject.getModal(Network.class).getLinks().get(linkId);
+            Link link = ((Network) inject.getModal(Network.class)).getLinks().get(linkId);
             return new SingleVehicleGenerator(link, capacity);
         }
     }
@@ -251,7 +254,8 @@ public class TestScenario {
 
         @Override
         public void handleEvent(PersonArrivalEvent event) {
-            if (!event.getPersonId().toString().equals("vehicle") && event.getLegMode().equals(AmodeusModeConfig.DEFAULT_MODE))
+            if (!event.getPersonId().toString().equals("vehicle")
+                    && event.getLegMode().equals(AmodeusModeConfig.DEFAULT_MODE))
                 times.add(event.getTime());
         }
     }

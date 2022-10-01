@@ -14,7 +14,7 @@ import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
-import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
+import org.matsim.core.modal.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.network.NetworkUtils;
@@ -38,23 +38,31 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.opt.Pi;
 
-/** This dispatcher takes the Parking Situation into Account.
+/**
+ * This dispatcher takes the Parking Situation into Account.
  * 
  * To run this dipatcher it is required that
- * 1. The MATSim controler (e.g. in the ScenarioServer) uses the {@link AmodeusParkingModule}.
- * 2. Set the values for the {@link ParkingCapacity} and the {@link ParkingStrategy} in the
+ * 1. The MATSim controler (e.g. in the ScenarioServer) uses the
+ * {@link AmodeusParkingModule}.
+ * 2. Set the values for the {@link ParkingCapacity} and the
+ * {@link ParkingStrategy} in the
  * AMoDeusOptions.properties file
- * 3. Choose the {@link RestrictedLinkCapacityDispatcher} in the av.xml configuration
+ * 3. Choose the {@link RestrictedLinkCapacityDispatcher} in the av.xml
+ * configuration
  * 
  * It extends the {@link ExtDemandSupplyBeamSharing}. At each pickup it is
- * checked if around this {@link RoboTaxi} there exist other Open requests with the same
- * direction. Those are then picked up. */
+ * checked if around this {@link RoboTaxi} there exist other Open requests with
+ * the same
+ * direction. Those are then picked up.
+ */
 public class RestrictedLinkCapacityDispatcher extends RebalancingDispatcher {
     private final int dispatchPeriod;
 
     /** ride sharing parameters */
-    /** the sharing period says every how many seconds the dispatcher should chekc if
-     * new pickups occured */
+    /**
+     * the sharing period says every how many seconds the dispatcher should chekc if
+     * new pickups occured
+     */
     private final int sharingPeriod; // [s]
     private final BeamExtensionForSharing beamExtensionForSharing;
 
@@ -62,8 +70,10 @@ public class RestrictedLinkCapacityDispatcher extends RebalancingDispatcher {
     private final ParkingStrategy parkingStrategy;
     /** PARKING EXTENSION */
 
-    /** the maximal angle between the two directions which is allowed that sharing
-     * occurs */
+    /**
+     * the maximal angle between the two directions which is allowed that sharing
+     * occurs
+     */
 
     /** data structures are used to enable fast "contains" searching */
     private final TreeMaintainer<PassengerRequest> requestMaintainer;
@@ -74,13 +84,16 @@ public class RestrictedLinkCapacityDispatcher extends RebalancingDispatcher {
             TravelTime travelTime, AmodeusRouter router, EventsManager eventsManager, //
             MatsimAmodeusDatabase db, ParkingStrategy parkingStrategy, //
             ParkingCapacity avSpatialCapacityAmodeus, RebalancingStrategy rebalancingStrategy) {
-        super(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy, RoboTaxiUsageType.SHARED);
+        super(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy,
+                RoboTaxiUsageType.SHARED);
         DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(60);
         SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
-        sharingPeriod = safeConfig.getInteger("sharingPeriod", 10); // makes sense to choose this value similar to the pickup duration
+        sharingPeriod = safeConfig.getInteger("sharingPeriod", 10); // makes sense to choose this value similar to the
+                                                                    // pickup duration
         double rMax = safeConfig.getDouble("rMax", 1000.0);
-        double phiMax = Pi.in(100).multiply(RealScalar.of(safeConfig.getDouble("phiMaxDeg", 5.0) / 180.0)).number().doubleValue();
+        double phiMax = Pi.in(100).multiply(RealScalar.of(safeConfig.getDouble("phiMaxDeg", 5.0) / 180.0)).number()
+                .doubleValue();
         beamExtensionForSharing = new BeamExtensionForSharing(rMax, phiMax);
         this.networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
         this.requestMaintainer = new TreeMaintainer<>(networkBounds, this::getLocation);
@@ -89,7 +102,8 @@ public class RestrictedLinkCapacityDispatcher extends RebalancingDispatcher {
         this.parkingStrategy = parkingStrategy;
         DistanceHeuristics distanceHeuristics = //
                 dispatcherConfig.getDistanceHeuristics(DistanceHeuristics.ASTARLANDMARKS);
-        this.parkingStrategy.setRuntimeParameters(avSpatialCapacityAmodeus, network, distanceHeuristics.getDistanceFunction(network));
+        this.parkingStrategy.setRuntimeParameters(avSpatialCapacityAmodeus, network,
+                distanceHeuristics.getDistanceFunction(network));
         /** PARKING EXTENSION */
     }
 
@@ -135,36 +149,49 @@ public class RestrictedLinkCapacityDispatcher extends RebalancingDispatcher {
                         }
                     }
             }
-            /** Delete the not staying vehicles from the tree as they might move to next link
-             * and then they have to be updated in the Quad Tree */
-            unassignedRoboTaxis.getValues().stream().filter(rt -> !rt.getStatus().equals(RoboTaxiStatus.STAY)).collect(Collectors.toSet()).forEach(unassignedRoboTaxis::remove);
+            /**
+             * Delete the not staying vehicles from the tree as they might move to next link
+             * and then they have to be updated in the Quad Tree
+             */
+            unassignedRoboTaxis.getValues().stream().filter(rt -> !rt.getStatus().equals(RoboTaxiStatus.STAY))
+                    .collect(Collectors.toSet()).forEach(unassignedRoboTaxis::remove);
         }
 
         // ADDITIONAL SHARING POSSIBILITY AT EACH PICKUP
-        /** Sharing idea: if a robotaxi Picks up a customer check if other open request
-         * are close with similar direction and pick them up. */
+        /**
+         * Sharing idea: if a robotaxi Picks up a customer check if other open request
+         * are close with similar direction and pick them up.
+         */
         if (round_now % sharingPeriod == 0) {
-            Map<PassengerRequest, RoboTaxi> addedRequests = beamExtensionForSharing.findAssignementAndExecute(getRoboTaxis(), getPassengerRequests(), this);
+            Map<PassengerRequest, RoboTaxi> addedRequests = beamExtensionForSharing
+                    .findAssignementAndExecute(getRoboTaxis(), getPassengerRequests(), this);
             for (PassengerRequest avRequest : addedRequests.keySet())
-                /** a avRequest is not contained in the requestMaintainer if the request was
-                 * already assigned before. in that case a removal is not needed */
+                /**
+                 * a avRequest is not contained in the requestMaintainer if the request was
+                 * already assigned before. in that case a removal is not needed
+                 */
                 if (requestMaintainer.contains(avRequest))
                     requestMaintainer.remove(avRequest);
         }
 
         /** PARKING EXTENSION */
-        parkingStrategy.keepFree(getRoboTaxiSubset(RoboTaxiStatus.STAY), getRoboTaxiSubset(RoboTaxiStatus.REBALANCEDRIVE), round_now).forEach(this::setRoboTaxiRebalance);
+        parkingStrategy.keepFree(getRoboTaxiSubset(RoboTaxiStatus.STAY),
+                getRoboTaxiSubset(RoboTaxiStatus.REBALANCEDRIVE), round_now).forEach(this::setRoboTaxiRebalance);
         /** PARKING EXTENSION */
     }
 
-    /** @param request
-     * @return {@link Coord} with {@link PassengerRequest} location */
+    /**
+     * @param request
+     * @return {@link Coord} with {@link PassengerRequest} location
+     */
     /* package */ Tensor getLocation(PassengerRequest request) {
         return TensorCoords.toTensor(request.getFromLink().getFromNode().getCoord());
     }
 
-    /** @param roboTaxi
-     * @return {@link Coord} with {@link RoboTaxi} location */
+    /**
+     * @param roboTaxi
+     * @return {@link Coord} with {@link RoboTaxi} location
+     */
     /* package */ Tensor getRoboTaxiLoc(RoboTaxi roboTaxi) {
         return TensorCoords.toTensor(roboTaxi.getDivertableLocation().getCoord());
     }
@@ -172,23 +199,26 @@ public class RestrictedLinkCapacityDispatcher extends RebalancingDispatcher {
     public static class Factory implements AVDispatcherFactory {
         @Override
         public AmodeusDispatcher createDispatcher(InstanceGetter inject) {
-            Config config = inject.get(Config.class);
-            EventsManager eventsManager = inject.get(EventsManager.class);
-            MatsimAmodeusDatabase db = inject.get(MatsimAmodeusDatabase.class);
+            Config config = (Config) inject.get(Config.class);
+            EventsManager eventsManager = (EventsManager) inject.get(EventsManager.class);
+            MatsimAmodeusDatabase db = (MatsimAmodeusDatabase) inject.get(MatsimAmodeusDatabase.class);
 
-            Network network = inject.getModal(Network.class);
-            AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
-            TravelTime travelTime = inject.getModal(TravelTime.class);
-            AmodeusRouter router = inject.getModal(AmodeusRouter.class);
+            Network network = (Network) inject.getModal(Network.class);
+            AmodeusModeConfig operatorConfig = (AmodeusModeConfig) inject.getModal(AmodeusModeConfig.class);
+            TravelTime travelTime = (TravelTime) inject.getModal(TravelTime.class);
+            AmodeusRouter router = (AmodeusRouter) inject.getModal(AmodeusRouter.class);
 
-            // TODO: Eventually, if parking should be configurable per mode, this should be made modal.
-            ParkingStrategy parkingStrategy = inject.get(ParkingStrategy.class);
-            ParkingCapacity avSpatialCapacityAmodeus = inject.get(ParkingCapacity.class);
+            // TODO: Eventually, if parking should be configurable per mode, this should be
+            // made modal.
+            ParkingStrategy parkingStrategy = (ParkingStrategy) inject.get(ParkingStrategy.class);
+            ParkingCapacity avSpatialCapacityAmodeus = (ParkingCapacity) inject.get(ParkingCapacity.class);
 
-            RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
+            RebalancingStrategy rebalancingStrategy = (RebalancingStrategy) inject.getModal(RebalancingStrategy.class);
 
-            return new RestrictedLinkCapacityDispatcher(network, config, operatorConfig, travelTime, router, eventsManager, db, //
-                    Objects.requireNonNull(parkingStrategy), Objects.requireNonNull(avSpatialCapacityAmodeus), rebalancingStrategy);
+            return new RestrictedLinkCapacityDispatcher(network, config, operatorConfig, travelTime, router,
+                    eventsManager, db, //
+                    Objects.requireNonNull(parkingStrategy), Objects.requireNonNull(avSpatialCapacityAmodeus),
+                    rebalancingStrategy);
         }
     }
 }

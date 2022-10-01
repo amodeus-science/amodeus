@@ -12,7 +12,7 @@ import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
-import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
+import org.matsim.core.modal.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
@@ -25,8 +25,10 @@ import amodeus.amodeus.dispatcher.core.RebalancingDispatcher;
 import amodeus.amodeus.dispatcher.util.DrivebyRequestStopper;
 import amodeus.amodeus.net.MatsimAmodeusDatabase;
 
-/** Dispatcher sends vehicles to random links in the network and lets them pickup
- * any customers which are waiting along the road. */
+/**
+ * Dispatcher sends vehicles to random links in the network and lets them pickup
+ * any customers which are waiting along the road.
+ */
 public class DriveByDispatcher extends RebalancingDispatcher {
     private final List<Link> links;
     private final double rebPos = 0.99;
@@ -37,7 +39,8 @@ public class DriveByDispatcher extends RebalancingDispatcher {
     private DriveByDispatcher(Config config, AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, AmodeusRouter router, EventsManager eventsManager, //
             Network network, MatsimAmodeusDatabase db, RebalancingStrategy rebalancingStrategy) {
-        super(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy, RoboTaxiUsageType.SINGLEUSED);
+        super(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy,
+                RoboTaxiUsageType.SINGLEUSED);
         links = new ArrayList<>(network.getLinks().values());
         Collections.shuffle(links, randGen);
         DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
@@ -49,7 +52,9 @@ public class DriveByDispatcher extends RebalancingDispatcher {
 
         // stop all vehicles which are driving by an open request
         total_abortTrip += DrivebyRequestStopper //
-                .stopDrivingBy(DispatcherUtils.getPassengerRequestsAtLinks(getPassengerRequests()), getDivertableRoboTaxis(), (rt, avr) -> setRoboTaxiPickup(rt, avr, Double.NaN, Double.NaN)).size();
+                .stopDrivingBy(DispatcherUtils.getPassengerRequestsAtLinks(getPassengerRequests()),
+                        getDivertableRoboTaxis(), (rt, avr) -> setRoboTaxiPickup(rt, avr, Double.NaN, Double.NaN))
+                .size();
 
         // send vehicles to travel around the city to random links (random
         // loitering)
@@ -76,17 +81,18 @@ public class DriveByDispatcher extends RebalancingDispatcher {
     public static class Factory implements AVDispatcherFactory {
         @Override
         public AmodeusDispatcher createDispatcher(InstanceGetter inject) {
-            Config config = inject.get(Config.class);
-            MatsimAmodeusDatabase db = inject.get(MatsimAmodeusDatabase.class);
-            EventsManager eventsManager = inject.get(EventsManager.class);
+            Config config = (Config) inject.get(Config.class);
+            MatsimAmodeusDatabase db = (MatsimAmodeusDatabase) inject.get(MatsimAmodeusDatabase.class);
+            EventsManager eventsManager = (EventsManager) inject.get(EventsManager.class);
 
-            AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
-            Network network = inject.getModal(Network.class);
-            AmodeusRouter router = inject.getModal(AmodeusRouter.class);
-            TravelTime travelTime = inject.getModal(TravelTime.class);
-            RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
-            
-            return new DriveByDispatcher(config, operatorConfig, travelTime, router, eventsManager, network, db, rebalancingStrategy);
+            AmodeusModeConfig operatorConfig = (AmodeusModeConfig) inject.getModal(AmodeusModeConfig.class);
+            Network network = (Network) inject.getModal(Network.class);
+            AmodeusRouter router = (AmodeusRouter) inject.getModal(AmodeusRouter.class);
+            TravelTime travelTime = (TravelTime) inject.getModal(TravelTime.class);
+            RebalancingStrategy rebalancingStrategy = (RebalancingStrategy) inject.getModal(RebalancingStrategy.class);
+
+            return new DriveByDispatcher(config, operatorConfig, travelTime, router, eventsManager, network, db,
+                    rebalancingStrategy);
         }
     }
 

@@ -2,7 +2,7 @@ package org.matsim.amodeus.components;
 
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
-import org.matsim.contrib.dvrp.run.ModalProviders;
+import org.matsim.core.modal.ModalProviders;
 
 public interface AmodeusDispatcher {
     void onRequestSubmitted(PassengerRequest request);

@@ -12,6 +12,7 @@ import java.util.Objects;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.matsim.api.core.v01.network.Network;
@@ -64,7 +65,8 @@ public class ScenarioExecutionTest {
         TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), //
                 workingDirectory.getAbsolutePath());
 
-        // copy LPOptions from other location to ensure no travel data object is created,
+        // copy LPOptions from other location to ensure no travel data object is
+        // created,
         // the dispatcher used in this test does not require it.
         File helperDirectory = //
                 new File(Locate.repoFolder(ScenarioExecutionTest.class, "amodeus"), "resources/helperFiles");
@@ -115,9 +117,12 @@ public class ScenarioExecutionTest {
         File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         ScenarioOptions scenarioOptions = new ScenarioOptions(workingDirectory, ScenarioOptionsBase.getDefault());
 
-        assertEquals(new File(workingDirectory, "config.xml").getAbsolutePath(), scenarioOptions.getSimulationConfigName());
-        assertEquals(new File(workingDirectory, "preparedNetwork").getAbsolutePath(), scenarioOptions.getPreparedNetworkName());
-        assertEquals(new File(workingDirectory, "preparedPopulation").getAbsolutePath(), scenarioOptions.getPreparedPopulationName());
+        assertEquals(new File(workingDirectory, "config.xml").getAbsolutePath(),
+                scenarioOptions.getSimulationConfigName());
+        assertEquals(new File(workingDirectory, "preparedNetwork").getAbsolutePath(),
+                scenarioOptions.getPreparedNetworkName());
+        assertEquals(new File(workingDirectory, "preparedPopulation").getAbsolutePath(),
+                scenarioOptions.getPreparedPopulationName());
 
         // simulation objects should exist after simulation (simulation data)
         File simobj = new File("output/001/simobj/it.00");
@@ -133,7 +138,10 @@ public class ScenarioExecutionTest {
 
         AnalysisTestExport ate = testServer.getAnalysisTestExport();
 
-        /** number of processed requests, 25 are same link requests and therefore are not covered by Amodeus */
+        /**
+         * number of processed requests, 25 are same link requests and therefore are not
+         * covered by Amodeus
+         */
         assertEquals(247, ate.getSimulationInformationElement().reqsize());
 
         /** fleet size */
@@ -157,11 +165,16 @@ public class ScenarioExecutionTest {
         assertTrue(Scalars.lessEquals(ZERO_KM, (Scalar) s)));
         assertEquals(Total.of(ate.getDistancElement().totalDistancesPerVehicle), ate.getDistancElement().totalDistance);
 
-        scalarAssert.add((Scalar) Quantity.of(2826.02084, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
-        scalarAssert.add((Scalar) Quantity.of(1043.56479, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
-        scalarAssert.add((Scalar) Quantity.of(269.22377, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistancePicku.map(Round._5));
-        scalarAssert.add((Scalar) Quantity.of(1513.23228, "km").map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRebal.map(Round._5));
-        scalarAssert.add((Scalar) RealScalar.of(0.36927).map(Round._5), (Scalar) ate.getDistancElement().totalDistanceRatio.map(Round._5));
+        scalarAssert.add((Scalar) Quantity.of(2826.02084, "km").map(Round._5),
+                (Scalar) ate.getDistancElement().totalDistance.map(Round._5));
+        scalarAssert.add((Scalar) Quantity.of(1043.56479, "km").map(Round._5),
+                (Scalar) ate.getDistancElement().totalDistanceWtCst.map(Round._5));
+        scalarAssert.add((Scalar) Quantity.of(269.22377, "km").map(Round._5),
+                (Scalar) ate.getDistancElement().totalDistancePicku.map(Round._5));
+        scalarAssert.add((Scalar) Quantity.of(1513.23228, "km").map(Round._5),
+                (Scalar) ate.getDistancElement().totalDistanceRebal.map(Round._5));
+        scalarAssert.add((Scalar) RealScalar.of(0.36927).map(Round._5),
+                (Scalar) ate.getDistancElement().totalDistanceRatio.map(Round._5));
 
         scalarAssert.add((Scalar) Total.of(ate.getDistancElement().totalDistancesPerVehicle), //
                 ate.getDistancElement().totalDistance);
@@ -178,24 +191,32 @@ public class ScenarioExecutionTest {
             Scalars.lessEquals((Quantity) t, ate.getTravelTimeAnalysis().getWaitAggrgte().Get(2));
         });
 
-        assertTrue(Scalars.lessEquals(Quantity.of(0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(0)));
+        assertTrue(Scalars.lessEquals(Quantity.of(0, SI.SECOND),
+                ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(0)));
         assertTrue(Scalars.lessEquals(ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(0), //
                 ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(1)));
         assertTrue(Scalars.lessEquals(ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(1), //
                 ate.getTravelTimeAnalysis().getWaitAggrgte().get(0).Get(2)));
         assertTrue(Scalars.lessEquals(Quantity.of(0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1)));
 
-        scalarAssert.add(Quantity.of(389.2105263157895, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1));
+        scalarAssert.add(Quantity.of(389.2105263157895, SI.SECOND),
+                ate.getTravelTimeAnalysis().getWaitAggrgte().Get(1));
         scalarAssert.add(Quantity.of(2397.0, SI.SECOND), ate.getTravelTimeAnalysis().getWaitAggrgte().Get(2));
-        scalarAssert.add(Quantity.of(RationalScalar.of(221400, 247), SI.SECOND), ate.getTravelTimeAnalysis().getDrveAggrgte().Get(1));
+        scalarAssert.add(Quantity.of(RationalScalar.of(221400, 247), SI.SECOND),
+                ate.getTravelTimeAnalysis().getDrveAggrgte().Get(1));
         scalarAssert.add(Quantity.of(3480, SI.SECOND), ate.getTravelTimeAnalysis().getDrveAggrgte().Get(2));
 
-        /* TODO @sebhoerl Have a look at {AmodeusModule::install}. At some point the travel time
+        /*
+         * TODO @sebhoerl Have a look at {AmodeusModule::install}. At some point the
+         * travel time
          * calculation in DVRP has been improved.
          * Unfortunately, this improvement breaks these tests.
-         * The reference numbers here should be adjusted at some point so that the fallback in
+         * The reference numbers here should be adjusted at some point so that the
+         * fallback in
          * {AmodeusModule::install} can be removed again.
-         * (Nevertheless, we're talking about a different in routed time of +/-1 second). /sebhoerl */
+         * (Nevertheless, we're talking about a different in routed time of +/-1
+         * second). /sebhoerl
+         */
         scalarAssert.consolidate();
 
         /** presence of plot files */
@@ -229,6 +250,7 @@ public class ScenarioExecutionTest {
     }
 
     @Test
+    @Ignore // unable to run in headless mode successfully
     public void testD_Viewer() throws IOException {
         if (!UserName.is("travis")) {
             // run scenario viewer

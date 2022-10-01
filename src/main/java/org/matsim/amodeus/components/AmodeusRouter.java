@@ -1,7 +1,7 @@
 package org.matsim.amodeus.components;
 
 import org.matsim.amodeus.plpc.ParallelLeastCostPathCalculator;
-import org.matsim.contrib.dvrp.run.ModalProviders;
+import org.matsim.core.modal.ModalProviders;
 
 public interface AmodeusRouter extends ParallelLeastCostPathCalculator {
     interface Factory {

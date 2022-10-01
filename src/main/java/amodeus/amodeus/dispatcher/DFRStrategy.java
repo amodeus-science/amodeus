@@ -13,7 +13,7 @@ import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
-import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
+import org.matsim.core.modal.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
@@ -54,10 +54,14 @@ import ch.ethz.idsc.tensor.io.Export;
 import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.red.Mean;
 
-/** Implementation of the "DFR algorithm" presented in
+/**
+ * Implementation of the "DFR algorithm" presented in
  * Albert, M., Ruch, C. and Frazzoli, E., 2019.
- * Imbalance in Mobility-on-Demand Systems: A Stochastic Model and Distributed Control Approach.
- * ACM Transactions on Spatial Algorithms and Systems (TSAS) - Special Issue on Urban Mobility: Algorithms and Systems, 5(2), article no. 13. */
+ * Imbalance in Mobility-on-Demand Systems: A Stochastic Model and Distributed
+ * Control Approach.
+ * ACM Transactions on Spatial Algorithms and Systems (TSAS) - Special Issue on
+ * Urban Mobility: Algorithms and Systems, 5(2), article no. 13.
+ */
 public class DFRStrategy extends PartitionedDispatcher {
     private final int dispatchPeriod;
     private final int rebalancingPeriod;
@@ -84,7 +88,8 @@ public class DFRStrategy extends PartitionedDispatcher {
             AmodeusModeConfig operatorConfig, TravelTime travelTime, //
             AmodeusRouter router, EventsManager eventsManager, TravelData travelData, //
             MatsimAmodeusDatabase db, RebalancingStrategy rebalancingStrategy) {
-        super(config, operatorConfig, travelTime, router, eventsManager, virtualNetwork, db, rebalancingStrategy, RoboTaxiUsageType.SINGLEUSED);
+        super(config, operatorConfig, travelTime, router, eventsManager, virtualNetwork, db, rebalancingStrategy,
+                RoboTaxiUsageType.SINGLEUSED);
         DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(30);
         rebalancingPeriod = dispatcherConfig.getRebalancingPeriod(300);
@@ -101,7 +106,8 @@ public class DFRStrategy extends PartitionedDispatcher {
         this.vehicleDestMatcher = new GlobalBipartiteMatching(EuclideanDistanceCost.INSTANCE);
         this.virtualNodeDest = new RandomVirtualNodeDest();
         SafeConfig safeConfig = SafeConfig.wrap(operatorConfig);
-        bipartiteMatchingUtils = new ConfigurableBipartiteMatcher(network, new DistanceCost(distanceFunction), safeConfig);
+        bipartiteMatchingUtils = new ConfigurableBipartiteMatcher(network, new DistanceCost(distanceFunction),
+                safeConfig);
         this.doDFR = dispatcherConfig.getBoolStrict("DFR");
         this.config = config;
         System.out.println("DFR is set to: " + doDFR);
@@ -139,7 +145,8 @@ public class DFRStrategy extends PartitionedDispatcher {
                         long timeDFR = System.currentTimeMillis();
                         if (isNeighboring && doDFR) {
                             Scalar wij = metropolisHastings.Get(from.getIndex(), to.getIndex());
-                            Scalar contribution = epsilon.multiply(wij).multiply(imbalance.get(to).subtract(imbalance.get(from)));
+                            Scalar contribution = epsilon.multiply(wij)
+                                    .multiply(imbalance.get(to).subtract(imbalance.get(from)));
                             if (Scalars.lessEquals(RealScalar.ZERO, contribution))
                                 reb = reb.add(contribution);
                         }
@@ -162,7 +169,8 @@ public class DFRStrategy extends PartitionedDispatcher {
 
             /** ensure feasible rebalance solution and execute */
             Map<VirtualNode<Link>, List<RoboTaxi>> availableVehicles = getVirtualNodeDivertableNotRebalancingRoboTaxis();
-            Tensor feasibleRebalanceCount = FeasibleRebalanceCreator.returnFeasibleRebalance(rebalancingToExecute.unmodifiable(), availableVehicles);
+            Tensor feasibleRebalanceCount = FeasibleRebalanceCreator
+                    .returnFeasibleRebalance(rebalancingToExecute.unmodifiable(), availableVehicles);
 
             /** generate routing instructions for rebalancing vehicles */
             Map<VirtualNode<Link>, List<Link>> destinationLinks = virtualNetwork.createVNodeTypeMap();
@@ -170,17 +178,23 @@ public class DFRStrategy extends PartitionedDispatcher {
             /** fill rebalancing destinations */
             for (VirtualNode<Link> fromNode : virtualNetwork.getVirtualNodes())
                 for (VirtualNode<Link> toNode : virtualNetwork.getVirtualNodes()) {
-                    int numreb = (Integer) (feasibleRebalanceCount.Get(fromNode.getIndex(), toNode.getIndex())).number();
+                    int numreb = (Integer) (feasibleRebalanceCount.Get(fromNode.getIndex(), toNode.getIndex()))
+                            .number();
                     List<Link> rebalanceTargets = virtualNodeDest.selectLinkSet(toNode, numreb);
                     destinationLinks.get(fromNode).addAll(rebalanceTargets);
                 }
 
-            /** consistency check: rebalancing destination links must not exceed available vehicles in virtual node */
-            GlobalAssert.that(virtualNetwork.getVirtualNodes().stream().noneMatch(v -> availableVehicles.get(v).size() < destinationLinks.get(v).size()));
+            /**
+             * consistency check: rebalancing destination links must not exceed available
+             * vehicles in virtual node
+             */
+            GlobalAssert.that(virtualNetwork.getVirtualNodes().stream()
+                    .noneMatch(v -> availableVehicles.get(v).size() < destinationLinks.get(v).size()));
 
             /** send rebalancing vehicles using the setVehicleRebalance command */
             for (VirtualNode<Link> virtualNode : destinationLinks.keySet()) {
-                Map<RoboTaxi, Link> rebalanceMatching = vehicleDestMatcher.matchLink(availableVehicles.get(virtualNode), destinationLinks.get(virtualNode));
+                Map<RoboTaxi, Link> rebalanceMatching = vehicleDestMatcher.matchLink(availableVehicles.get(virtualNode),
+                        destinationLinks.get(virtualNode));
                 rebalanceMatching.keySet().forEach(v -> setRoboTaxiRebalance(v, rebalanceMatching.get(v)));
             }
         }
@@ -203,7 +217,8 @@ public class DFRStrategy extends PartitionedDispatcher {
 
     private Map<VirtualNode<Link>, Scalar> getImbalances() {
         return virtualNetwork.getVirtualNodes().stream()
-                .collect(Collectors.toMap(vNode -> vNode, vNode -> RealScalar.of(getVirtualNodeRequests().get(vNode).size() - ownedRoboTaxis.in(vNode).size())));
+                .collect(Collectors.toMap(vNode -> vNode, vNode -> RealScalar
+                        .of(getVirtualNodeRequests().get(vNode).size() - ownedRoboTaxis.in(vNode).size())));
     }
 
     @Override
@@ -217,20 +232,21 @@ public class DFRStrategy extends PartitionedDispatcher {
     public static class Factory implements AVDispatcherFactory {
         @Override
         public AmodeusDispatcher createDispatcher(InstanceGetter inject) {
-            Config config = inject.get(Config.class);
-            MatsimAmodeusDatabase db = inject.get(MatsimAmodeusDatabase.class);
-            EventsManager eventsManager = inject.get(EventsManager.class);
+            Config config = (Config) inject.get(Config.class);
+            MatsimAmodeusDatabase db = (MatsimAmodeusDatabase) inject.get(MatsimAmodeusDatabase.class);
+            EventsManager eventsManager = (EventsManager) inject.get(EventsManager.class);
 
-            AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
-            Network network = inject.getModal(Network.class);
-            AmodeusRouter router = inject.getModal(AmodeusRouter.class);
-            TravelTime travelTime = inject.getModal(TravelTime.class);
+            AmodeusModeConfig operatorConfig = (AmodeusModeConfig) inject.getModal(AmodeusModeConfig.class);
+            Network network = (Network) inject.getModal(Network.class);
+            AmodeusRouter router = (AmodeusRouter) inject.getModal(AmodeusRouter.class);
+            TravelTime travelTime = (TravelTime) inject.getModal(TravelTime.class);
 
-            VirtualNetwork<Link> virtualNetwork = inject.getModal(new TypeLiteral<VirtualNetwork<Link>>() {
-            });
+            VirtualNetwork<Link> virtualNetwork = (VirtualNetwork<Link>) inject
+                    .getModal(new TypeLiteral<VirtualNetwork<Link>>() {
+                    });
 
-            TravelData travelData = inject.getModal(TravelData.class);
-            RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
+            TravelData travelData = (TravelData) inject.getModal(TravelData.class);
+            RebalancingStrategy rebalancingStrategy = (RebalancingStrategy) inject.getModal(RebalancingStrategy.class);
 
             return new DFRStrategy(network, virtualNetwork, config, operatorConfig, travelTime, router, //
                     eventsManager, travelData, db, rebalancingStrategy);

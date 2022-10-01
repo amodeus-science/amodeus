@@ -22,8 +22,9 @@ import org.matsim.contrib.dvrp.passenger.DefaultPassengerRequestValidator;
 import org.matsim.contrib.dvrp.passenger.PassengerRequestValidator;
 import org.matsim.contrib.dvrp.router.DvrpModeRoutingNetworkModule;
 import org.matsim.contrib.dvrp.run.AbstractDvrpModeModule;
+import org.matsim.contrib.dvrp.run.DvrpMode;
 import org.matsim.contrib.dvrp.run.DvrpModes;
-import org.matsim.contrib.dvrp.run.ModalProviders;
+import org.matsim.core.modal.ModalProviders;
 import org.matsim.contrib.dvrp.trafficmonitoring.DvrpTravelTimeModule;
 import org.matsim.core.router.RoutingModule;
 import org.matsim.core.router.costcalculators.OnlyTimeDependentTravelDisutilityFactory;
@@ -57,8 +58,11 @@ public class AmodeusModeModule extends AbstractDvrpModeModule {
         install(new DvrpModeRoutingNetworkModule(getMode(), modeConfig.getUseModeFilteredSubnetwork()));
 
         // Routing module
-        bindModal(AmodeusRoutingModule.class).toProvider(new RoutingModuleProvider(getMode()));
-        bindModal(AmodeusInteractionFinder.class).toProvider(new InteractionFinderProvider(getMode())).in(Singleton.class);
+        bindModal(AmodeusRoutingModule.class)
+                .toProvider(new RoutingModuleProvider(getMode()));
+        bindModal(AmodeusInteractionFinder.class)
+                .toProvider(new InteractionFinderProvider(getMode()))
+                .in(Singleton.class);
         addRoutingModuleBinding(getMode()).to(modalKey(AmodeusRoutingModule.class));
 
         // DVRP dynamics
@@ -84,11 +88,11 @@ public class AmodeusModeModule extends AbstractDvrpModeModule {
         bindModal(PriceModel.class).toProvider(new PriceCalculatorProider(modeConfig));
 
         install(new VirtualNetworkModeModule(modeConfig));
-        
+
         bindModal(RebalancingStrategy.class).toInstance(new NoRebalancingStrategy());
     }
 
-    static private class RoutingModuleProvider extends ModalProviders.AbstractProvider<AmodeusRoutingModule> {
+    static private class RoutingModuleProvider extends ModalProviders.AbstractProvider<DvrpMode, AmodeusRoutingModule> {
         @Inject
         AmodeusRouteFactory routeFactory;
 
@@ -107,13 +111,12 @@ public class AmodeusModeModule extends AbstractDvrpModeModule {
         LeastCostPathCalculatorFactory routerFactory;
 
         RoutingModuleProvider(String mode) {
-            super(mode);
+            super(mode, DvrpModes::mode);
         }
 
         @Override
         public AmodeusRoutingModule get() {
             AmodeusModeConfig modeConfig = getModalInstance(AmodeusModeConfig.class);
-            boolean predictRoute = modeConfig.getPredictRouteTravelTime() || modeConfig.getPredictRoutePrice();
             boolean useAccessEgress = modeConfig.getUseAccessEgress();
 
             AmodeusInteractionFinder interactionFinder = getModalInstance(AmodeusInteractionFinder.class);
@@ -121,20 +124,23 @@ public class AmodeusModeModule extends AbstractDvrpModeModule {
             PriceModel priceCalculator = getModalInstance(PriceModel.class);
             Network network = getModalInstance(Network.class);
 
-            TravelDisutility travelDisutility = new OnlyTimeDependentTravelDisutilityFactory().createTravelDisutility(travelTime);
+            TravelDisutility travelDisutility = new OnlyTimeDependentTravelDisutilityFactory()
+                    .createTravelDisutility(travelTime);
             LeastCostPathCalculator router = routerFactory.createPathCalculator(network, travelDisutility, travelTime);
 
-            return new AmodeusRoutingModule(routeFactory, interactionFinder, waitingTime, populationFactory, walkRoutingModule, useAccessEgress, predictRoute, router,
+            return new AmodeusRoutingModule(routeFactory, interactionFinder, waitingTime, populationFactory,
+                    walkRoutingModule, useAccessEgress, router,
                     priceCalculator, network, travelTime, getMode());
         }
     };
 
-    static private class InteractionFinderProvider extends ModalProviders.AbstractProvider<AmodeusInteractionFinder> {
+    static private class InteractionFinderProvider
+            extends ModalProviders.AbstractProvider<DvrpMode, AmodeusInteractionFinder> {
         @Inject
         Map<String, AmodeusInteractionFinder.AVInteractionFinderFactory> factories;
 
         InteractionFinderProvider(String mode) {
-            super(mode);
+            super(mode, DvrpModes::mode);
         }
 
         @Override
@@ -145,7 +151,8 @@ public class AmodeusModeModule extends AbstractDvrpModeModule {
             AmodeusInteractionFinder.AVInteractionFinderFactory factory = factories.get(interactionConfig.getType());
 
             if (factory == null) {
-                throw new IllegalStateException("AVInteractionFinder with this type does not exist: " + interactionConfig.getType());
+                throw new IllegalStateException(
+                        "AVInteractionFinder with this type does not exist: " + interactionConfig.getType());
             }
 
             Network network = getModalInstance(Network.class);
@@ -153,9 +160,9 @@ public class AmodeusModeModule extends AbstractDvrpModeModule {
         }
     };
 
-    static class PriceCalculatorProider extends ModalProviders.AbstractProvider<PriceModel> {
+    static class PriceCalculatorProider extends ModalProviders.AbstractProvider<DvrpMode, PriceModel> {
         PriceCalculatorProider(AmodeusModeConfig modeConfig) {
-            super(modeConfig.getMode());
+            super(modeConfig.getMode(), DvrpModes::mode);
         }
 
         @Override

@@ -49,7 +49,8 @@ public class RunTest {
 
         config.controler().setWriteEventsInterval(1);
 
-        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams(AmodeusModeConfig.DEFAULT_MODE); // TODO: Refactor
+        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore()
+                .getOrCreateModeParams(AmodeusModeConfig.DEFAULT_MODE); // TODO: Refactor
         modeParams.setMonetaryDistanceRate(0.0);
         modeParams.setMarginalUtilityOfTraveling(8.86);
         modeParams.setConstant(0.0);
@@ -122,7 +123,8 @@ public class RunTest {
         Config config = ConfigUtils.createConfig(avConfigGroup, new DvrpConfigGroup());
         Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
 
-        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams(AmodeusModeConfig.DEFAULT_MODE); // Refactor av
+        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore()
+                .getOrCreateModeParams(AmodeusModeConfig.DEFAULT_MODE); // Refactor av
         modeParams.setMonetaryDistanceRate(0.0);
         modeParams.setMarginalUtilityOfTraveling(8.86);
         modeParams.setConstant(0.0);
@@ -176,7 +178,8 @@ public class RunTest {
         activityParams.setTypicalDuration(1.0);
         config.planCalcScore().addActivityParams(activityParams);
 
-        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams(AmodeusModeConfig.DEFAULT_MODE); // Refactor av
+        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore()
+                .getOrCreateModeParams(AmodeusModeConfig.DEFAULT_MODE); // Refactor av
         modeParams.setMonetaryDistanceRate(0.0);
         modeParams.setMarginalUtilityOfTraveling(8.86);
         modeParams.setConstant(0.0);
@@ -227,7 +230,8 @@ public class RunTest {
         activityParams.setTypicalDuration(1.0);
         config.planCalcScore().addActivityParams(activityParams);
 
-        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams(AmodeusModeConfig.DEFAULT_MODE); // Refactor av
+        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore()
+                .getOrCreateModeParams(AmodeusModeConfig.DEFAULT_MODE); // Refactor av
         modeParams.setMonetaryDistanceRate(0.0);
         modeParams.setMarginalUtilityOfTraveling(8.86);
         modeParams.setConstant(0.0);
@@ -279,7 +283,8 @@ public class RunTest {
         controller.addOverridingModule(new AmodeusModule());
 
         controller.addOverridingQSimModule(new AmodeusQSimModule());
-        controller.configureQSimComponents(AmodeusQSimModule.activateModes(AmodeusConfigGroup.get(controller.getConfig())));
+        controller.configureQSimComponents(
+                AmodeusQSimModule.activateModes(AmodeusConfigGroup.get(controller.getConfig())));
 
         // Some analysis listener for testing
         TestScenarioAnalyzer analyzer = new TestScenarioAnalyzer();

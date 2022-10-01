@@ -4,9 +4,12 @@ import org.matsim.amodeus.config.AmodeusModeConfig;
 import org.matsim.amodeus.config.modal.WaitingTimeConfig;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.dvrp.run.AbstractDvrpModeModule;
-import org.matsim.contrib.dvrp.run.ModalProviders;
+import org.matsim.contrib.dvrp.run.DvrpMode;
+import org.matsim.contrib.dvrp.run.DvrpModes;
+import org.matsim.core.modal.ModalProviders;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.google.inject.Singleton;
 
 public class WaitingTimeEstimationModule extends AbstractDvrpModeModule {
@@ -22,22 +25,28 @@ public class WaitingTimeEstimationModule extends AbstractDvrpModeModule {
         WaitingTimeConfig waitingTimeConfig = modeConfig.getWaitingTimeEstimationConfig();
 
         if (waitingTimeConfig.getEstimationAlpha() > 0.0) {
-            bindModal(WaitingTimeCollector.class).toProvider(new WaitingTimeCollectorProvider(getMode())).in(Singleton.class);
-            bindModal(WaitingTimeListener.class).toProvider(new WaitingTimeListenerProvider(getMode())).in(Singleton.class);
+            bindModal(WaitingTimeCollector.class)
+                    .toProvider((Provider<? extends WaitingTimeCollector>) new WaitingTimeCollectorProvider(getMode()))
+                    .in(Singleton.class);
+            bindModal(WaitingTimeListener.class)
+                    .toProvider((Provider<? extends WaitingTimeListener>) new WaitingTimeListenerProvider(getMode()))
+                    .in(Singleton.class);
 
             addEventHandlerBinding().to(modalKey(WaitingTimeListener.class));
             addControlerListenerBinding().to(modalKey(WaitingTimeListener.class));
         }
 
-        bindModal(WaitingTime.class).toProvider(new WaitingTimeProvider(getMode())).in(Singleton.class);
+        bindModal(WaitingTime.class)
+                .toProvider((Provider<? extends WaitingTime>) new WaitingTimeProvider(getMode()))
+                .in(Singleton.class);
     }
 
-    private static class WaitingTimeProvider extends ModalProviders.AbstractProvider<WaitingTime> {
+    private static class WaitingTimeProvider extends ModalProviders.AbstractProvider<DvrpMode, WaitingTime> {
         @Inject
         WaitingTimeFactory factory; // TODO: Why not named factories?
 
         WaitingTimeProvider(String mode) {
-            super(mode);
+            super(mode, DvrpModes::mode);
         }
 
         @Override
@@ -48,9 +57,10 @@ public class WaitingTimeEstimationModule extends AbstractDvrpModeModule {
         }
     };
 
-    private static class WaitingTimeCollectorProvider extends ModalProviders.AbstractProvider<WaitingTimeCollector> {
+    private static class WaitingTimeCollectorProvider
+            extends ModalProviders.AbstractProvider<DvrpMode, WaitingTimeCollector> {
         WaitingTimeCollectorProvider(String mode) {
-            super(mode);
+            super(mode, DvrpModes::mode);
         }
 
         @Override
@@ -59,9 +69,10 @@ public class WaitingTimeEstimationModule extends AbstractDvrpModeModule {
         }
     };
 
-    private static class WaitingTimeListenerProvider extends ModalProviders.AbstractProvider<WaitingTimeListener> {
+    private static class WaitingTimeListenerProvider
+            extends ModalProviders.AbstractProvider<DvrpMode, WaitingTimeListener> {
         WaitingTimeListenerProvider(String mode) {
-            super(mode);
+            super(mode, DvrpModes::mode);
         }
 
         @Override

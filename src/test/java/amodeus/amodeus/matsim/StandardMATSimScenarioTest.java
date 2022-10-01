@@ -3,6 +3,7 @@ package amodeus.amodeus.matsim;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -38,8 +39,10 @@ import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
+import org.matsim.contrib.dvrp.run.DvrpMode;
 import org.matsim.contrib.dvrp.run.DvrpModes;
-import org.matsim.contrib.dvrp.run.ModalProviders;
+import org.matsim.core.modal.ModalAnnotationCreator;
+import org.matsim.core.modal.ModalProviders;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
@@ -50,6 +53,7 @@ import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.algorithms.TransportModeNetworkFilter;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.inject.Provider;
 import com.google.inject.TypeLiteral;
 
 import amodeus.amodeus.data.LocationSpec;
@@ -98,7 +102,8 @@ public class StandardMATSimScenarioTest {
                 { "NoExplicitCommunication" }, //
                 { "SBNoExplicitCommunication" }, //
 
-                // This one doesn't finish all requests. Bug or not enough of time? Also it's not good in an automated unit test because it
+                // This one doesn't finish all requests. Bug or not enough of time? Also it's
+                // not good in an automated unit test because it
                 // produces large amounts of log output.
                 { "HighCapacityDispatcher" },
 
@@ -116,7 +121,8 @@ public class StandardMATSimScenarioTest {
     }
 
     private static void makeMultimodal(Scenario scenario) {
-        // Add pt-links to the network to test a multimodal network as it appears in standard MATSim use cases
+        // Add pt-links to the network to test a multimodal network as it appears in
+        // standard MATSim use cases
 
         Network network = scenario.getNetwork();
         NetworkFactory factory = network.getFactory();
@@ -128,33 +134,42 @@ public class StandardMATSimScenarioTest {
             Id<Node> fromNodeId = Id.createNodeId(String.format("%d:%d", i, i));
             Id<Node> toNodeId = Id.createNodeId(String.format("%d:%d", i + 1, i + 1));
 
-            Link ptFowardLink = factory.createLink(ptFowardLinkId, network.getNodes().get(fromNodeId), network.getNodes().get(toNodeId));
+            Link ptFowardLink = factory.createLink(ptFowardLinkId, network.getNodes().get(fromNodeId),
+                    network.getNodes().get(toNodeId));
             ptFowardLink.setFreespeed(100.0 * 1000.0 / 3600.0);
             ptFowardLink.setLength(1000.0);
             ptFowardLink.setAllowedModes(Collections.singleton("pt"));
             network.addLink(ptFowardLink);
 
-            Link ptBackwardLink = factory.createLink(ptBackwardLinkId, network.getNodes().get(toNodeId), network.getNodes().get(fromNodeId));
+            Link ptBackwardLink = factory.createLink(ptBackwardLinkId, network.getNodes().get(toNodeId),
+                    network.getNodes().get(fromNodeId));
             ptBackwardLink.setFreespeed(100.0 * 1000.0 / 3600.0);
             ptBackwardLink.setLength(1000.0);
             ptBackwardLink.setAllowedModes(Collections.singleton("pt"));
             network.addLink(ptBackwardLink);
         }
 
-        // Also, a routed population may have "pt interaction" activities, which take place at links that are not part of the road network. Amodeus must be able
+        // Also, a routed population may have "pt interaction" activities, which take
+        // place at links that are not part of the road network. Amodeus must be able
         // to
         // handle these cases.
 
-        /* for (Person person : scenario.getPopulation().getPersons().values())
+        /*
+         * for (Person person : scenario.getPopulation().getPersons().values())
          * for (Plan plan : person.getPlans()) {
-         * Activity trickyActivity = PopulationUtils.createActivityFromCoordAndLinkId("pt interaction", new Coord(5500.0, 5500.0), Id.createLinkId("pt_fwd_5:5"));
+         * Activity trickyActivity =
+         * PopulationUtils.createActivityFromCoordAndLinkId("pt interaction", new
+         * Coord(5500.0, 5500.0), Id.createLinkId("pt_fwd_5:5"));
          * 
          * plan.getPlanElements().add(PopulationUtils.createLeg("walk"));
          * plan.getPlanElements().add(trickyActivity);
-         * } */
+         * }
+         */
 
-        // TODO @sebhoerl Difficult to keep this in as handling of "interaction" activities become much smarter in MATSim now. We would need to
-        // set up a much more realistic test scenario. There is one in the AV package, so we can use that one!
+        // TODO @sebhoerl Difficult to keep this in as handling of "interaction"
+        // activities become much smarter in MATSim now. We would need to
+        // set up a much more realistic test scenario. There is one in the AV package,
+        // so we can use that one!
 
         for (Link link : network.getLinks().values()) {
             if (link.getAllowedModes().contains("car")) {
@@ -164,7 +179,8 @@ public class StandardMATSimScenarioTest {
     }
 
     private static void fixInvalidActivityLocations(Network network, Population population) {
-        // In the test fixture there are agents who start and end activities on non-car links. This should not be happen and is fixed here.
+        // In the test fixture there are agents who start and end activities on non-car
+        // links. This should not be happen and is fixed here.
 
         Network roadNetwork = NetworkUtils.createNetwork();
         new TransportModeNetworkFilter(network).filter(roadNetwork, Collections.singleton("car"));
@@ -187,16 +203,20 @@ public class StandardMATSimScenarioTest {
     @BeforeClass
     public static void setUp() throws IOException {
         // copy scenario data into main directory
-        File scenarioDirectory = new File(Locate.repoFolder(StandardMATSimScenarioTest.class, "amodeus"), "resources/testScenario");
+        File scenarioDirectory = new File(Locate.repoFolder(StandardMATSimScenarioTest.class, "amodeus"),
+                "resources/testScenario");
         File workingDirectory = MultiFileTools.getDefaultWorkingDirectory();
         GlobalAssert.that(workingDirectory.isDirectory());
-        TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(), workingDirectory.getAbsolutePath());
+        TestFileHandling.copyScnearioToMainDirectory(scenarioDirectory.getAbsolutePath(),
+                workingDirectory.getAbsolutePath());
     }
 
     @Test
     public void testStandardMATSimScenario() throws IOException {
-        /* This test runs a small test scenario with the different dispatchers and makes
-         * sure that all 100 generated agents arrive */
+        /*
+         * This test runs a small test scenario with the different dispatchers and makes
+         * sure that all 100 generated agents arrive
+         */
         StaticHelper.setup();
         MatsimRandom.reset();
         Id.resetCaches();
@@ -216,7 +236,8 @@ public class StandardMATSimScenarioTest {
         ReferenceFrame referenceFrame = locationSpec.referenceFrame();
         MatsimAmodeusDatabase db = MatsimAmodeusDatabase.initialize(scenario.getNetwork(), referenceFrame);
 
-        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore().getOrCreateModeParams(AmodeusModeConfig.DEFAULT_MODE);
+        PlanCalcScoreConfigGroup.ModeParams modeParams = config.planCalcScore()
+                .getOrCreateModeParams(AmodeusModeConfig.DEFAULT_MODE);
         modeParams.setMonetaryDistanceRate(0.0);
         modeParams.setMarginalUtilityOfTraveling(8.86);
         modeParams.setConstant(0.0);
@@ -261,34 +282,47 @@ public class StandardMATSimScenarioTest {
         // Set up a virtual network for the LPFBDispatcher
 
         controller.addOverridingModule(new AbstractModule() {
+            private final ModalAnnotationCreator<DvrpMode> modalAnnotationCreator = DvrpModes::mode;
+
             @Override
             public void install() {
                 // TODO: This is not modalized now!
 
-                bind(DvrpModes.key(new TypeLiteral<VirtualNetwork<Link>>() {
-                }, AmodeusModeConfig.DEFAULT_MODE)).toProvider(ModalProviders.createProvider(AmodeusModeConfig.DEFAULT_MODE, getter -> {
-                    Network network = getter.getModal(Network.class);
-                    return MatsimKMeansVirtualNetworkCreator.createVirtualNetwork(scenario.getPopulation(), network, 2, true);
-                }));
+                bind(modalAnnotationCreator.key(new TypeLiteral<VirtualNetwork<Link>>() {
+                }, AmodeusModeConfig.DEFAULT_MODE))
+                        .toProvider(ModalProviders.createProvider(AmodeusModeConfig.DEFAULT_MODE,
+                                modalAnnotationCreator, getter -> {
+                                    Network network = getter.getModal(Network.class);
+                                    return MatsimKMeansVirtualNetworkCreator.createVirtualNetwork(
+                                            scenario.getPopulation(),
+                                            network, 2, true);
+                                }));
 
-                bind(DvrpModes.key(new TypeLiteral<TravelData>() {
-                }, AmodeusModeConfig.DEFAULT_MODE)).toProvider(ModalProviders.createProvider(AmodeusModeConfig.DEFAULT_MODE, getter -> {
-                    try {
-                        LPOptions lpOptions = new LPOptions(simOptions.getWorkingDirectory(), LPOptionsBase.getDefault());
-                        lpOptions.setProperty(LPOptionsBase.LPSOLVER, "timeInvariant");
-                        lpOptions.saveAndOverwriteLPOptions();
+                bind(modalAnnotationCreator.key(new TypeLiteral<TravelData>() {
+                }, AmodeusModeConfig.DEFAULT_MODE))
+                        .toProvider(ModalProviders
+                                .createProvider(AmodeusModeConfig.DEFAULT_MODE, modalAnnotationCreator, getter -> {
+                                    try {
+                                        LPOptions lpOptions = new LPOptions(simOptions.getWorkingDirectory(),
+                                                LPOptionsBase.getDefault());
+                                        lpOptions.setProperty(LPOptionsBase.LPSOLVER, "timeInvariant");
+                                        lpOptions.saveAndOverwriteLPOptions();
 
-                        VirtualNetwork<Link> virtualNetwork = getter.getModal(new TypeLiteral<VirtualNetwork<Link>>() {
-                        });
-                        Network network = getter.getModal(Network.class);
-                        Population population = getter.get(Population.class);
+                                        VirtualNetwork<Link> virtualNetwork = getter
+                                                .getModal(new TypeLiteral<VirtualNetwork<Link>>() {
+                                                });
+                                        Network network = getter.getModal(Network.class);
+                                        Population population = getter.get(Population.class);
 
-                        return StaticTravelDataCreator.create(simOptions.getWorkingDirectory(), virtualNetwork, network, population, simOptions.getdtTravelData(),
-                                generatorConfig.getNumberOfVehicles(), endTime);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }));
+                                        return StaticTravelDataCreator.create(
+                                                simOptions.getWorkingDirectory(),
+                                                virtualNetwork,
+                                                network, population, simOptions.getdtTravelData(),
+                                                generatorConfig.getNumberOfVehicles(), endTime);
+                                    } catch (Exception e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                }));
             }
         });
 
@@ -305,14 +339,15 @@ public class StandardMATSimScenarioTest {
                     public void handleEvent(LinkEnterEvent event) {
                         // Fail if an AV attempts to enter a pt link
 
-                        if (event.getVehicleId().toString().startsWith("amodeus") && event.getLinkId().toString().startsWith("pt")) {
+                        if (event.getVehicleId().toString().startsWith("amodeus")
+                                && event.getLinkId().toString().startsWith("pt")) {
                             Assert.fail("AV attempted to enter PT link");
                         }
                     }
                 });
             }
         });
-        
+
         controller.configureQSimComponents(AmodeusQSimModule.activateModes(avConfig));
 
         controller.run();
@@ -321,14 +356,15 @@ public class StandardMATSimScenarioTest {
             System.out.println("numberOfDepartures=" + analyzer.numberOfDepartures);
             System.out.println("numberOfArrivals  =" + analyzer.numberOfArrivals);
         }
-        
+
         if (dispatcher.equals("AlonsoMoraDispatcher")) {
             // Algorithm works with rejections!
-         // Seems to be not deterministic ... probably the fault of Sets / Maps
-            
+            // Seems to be not deterministic ... probably the fault of Sets / Maps
+
             Assert.assertTrue(analyzer.numberOfArrivals > 50);
-        } else if (dispatcher.equals("HighCapacityDispatcher")) { 
-            // Seems to be not deterministic ... probably the fault of Sets / Maps, or delayed routing
+        } else if (dispatcher.equals("HighCapacityDispatcher")) {
+            // Seems to be not deterministic ... probably the fault of Sets / Maps, or
+            // delayed routing
             Assert.assertTrue(analyzer.numberOfArrivals > 50);
         } else {
             Assert.assertEquals(analyzer.numberOfDepartures, analyzer.numberOfArrivals);

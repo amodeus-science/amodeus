@@ -23,13 +23,17 @@ import org.matsim.contrib.dvrp.passenger.PassengerEngineQSimModule;
 import org.matsim.contrib.dvrp.passenger.PassengerRequestCreator;
 import org.matsim.contrib.dvrp.run.AbstractDvrpModeQSimModule;
 import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
+import org.matsim.contrib.dvrp.run.DvrpMode;
 import org.matsim.contrib.dvrp.run.DvrpModes;
-import org.matsim.contrib.dvrp.run.ModalProviders;
 import org.matsim.contrib.dvrp.vrpagent.VrpAgentLogic.DynActionCreator;
 import org.matsim.contrib.dvrp.vrpagent.VrpAgentSourceQSimModule;
 import org.matsim.contrib.dvrp.vrpagent.VrpLegFactory;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.mobsim.qsim.QSim;
+import org.matsim.core.modal.ModalAnnotationCreator;
+import org.matsim.core.modal.ModalProviders;
+import org.matsim.vehicles.VehicleType;
+import org.matsim.vehicles.VehicleUtils;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Singleton;
@@ -39,6 +43,8 @@ public class AmodeusModeQSimModule extends AbstractDvrpModeQSimModule {
         super(modeConfig.getMode());
     }
 
+    private final ModalAnnotationCreator<DvrpMode> modalAnnotationCreator = DvrpModes::mode;
+
     @Override
     protected void configureQSim() {
         install(new PassengerEngineQSimModule(getMode()));
@@ -46,6 +52,11 @@ public class AmodeusModeQSimModule extends AbstractDvrpModeQSimModule {
         bindModal(PassengerRequestCreator.class).toProvider(modalProvider(getter -> {
             return new AmodeusRequestCreator(getMode());
         })).in(Singleton.class);
+
+        // this is needed due to these changes. This does mean the vehicle type will
+        // always be default
+        // https://github.com/matsim-org/matsim-libs/pull/1822/files
+        bindModal(VehicleType.class).toInstance(VehicleUtils.getDefaultVehicleType());
 
         bindModal(DynActionCreator.class).toProvider(modalProvider(getter -> {
             PassengerEngine passengerEngine = getter.getModal(PassengerEngine.class);
@@ -61,7 +72,8 @@ public class AmodeusModeQSimModule extends AbstractDvrpModeQSimModule {
             AmodeusModeConfig operatorConfig = getter.getModal(AmodeusModeConfig.class);
             String dispatcherName = operatorConfig.getDispatcherConfig().getType();
 
-            AmodeusDispatcher dispatcher = getter.get(DispatcherRegistry.class).get(dispatcherName).createDispatcher(getter);
+            AmodeusDispatcher dispatcher = getter.get(DispatcherRegistry.class).get(dispatcherName)
+                    .createDispatcher(getter);
 
             for (DvrpVehicle vehicle : getter.getModal(Fleet.class).getVehicles().values()) {
                 dispatcher.addVehicle(vehicle);
@@ -86,20 +98,23 @@ public class AmodeusModeQSimModule extends AbstractDvrpModeQSimModule {
             return new AmodeusOptimizer(dispatcher, eventsManager);
         })).in(Singleton.class);
         addModalQSimComponentBinding().to(modalKey(AmodeusOptimizer.class));
-        bindModal(VrpOptimizer.class).to(DvrpModes.key(AmodeusOptimizer.class, getMode())).in(Singleton.class);
+        bindModal(VrpOptimizer.class).to(modalAnnotationCreator.key(AmodeusOptimizer.class,
+                getMode()))
+                .in(Singleton.class);
 
         bindModal(VrpLegFactory.class).toProvider(modalProvider(getter -> {
             AmodeusOptimizer optimizer = getter.getModal(AmodeusOptimizer.class);
             QSim qsim = getter.get(QSim.class);
             DvrpConfigGroup dvrpConfig = getter.get(DvrpConfigGroup.class);
 
-            return vehicle -> VrpLegFactory.createWithOnlineTracker(dvrpConfig.getMobsimMode(), vehicle, optimizer, qsim.getSimTimer());
+            return vehicle -> VrpLegFactory.createWithOnlineTracker(dvrpConfig.getMobsimMode(), vehicle, optimizer,
+                    qsim.getSimTimer());
         })).in(Singleton.class);
     }
 
-    static private class FleetProvider extends ModalProviders.AbstractProvider<Fleet> {
+    static private class FleetProvider extends ModalProviders.AbstractProvider<DvrpMode, Fleet> {
         FleetProvider(String mode) {
-            super(mode);
+            super(mode, DvrpModes::mode);
         }
 
         @Override
@@ -115,11 +130,13 @@ public class AmodeusModeQSimModule extends AbstractDvrpModeQSimModule {
                     throw new IllegalStateException("AV vehicles must have infinite service time");
                 }
 
-                vehicles.add(new DvrpVehicleImpl(specification, network.getLinks().get(specification.getStartLinkId())));
+                vehicles.add(
+                        new DvrpVehicleImpl(specification, network.getLinks().get(specification.getStartLinkId())));
             }
 
             for (DvrpVehicle vehicle : vehicles) {
-                vehicle.getSchedule().addTask(new DrtStayTask(vehicle.getServiceBeginTime(), vehicle.getServiceEndTime(), vehicle.getStartLink()));
+                vehicle.getSchedule().addTask(new DrtStayTask(vehicle.getServiceBeginTime(),
+                        vehicle.getServiceEndTime(), vehicle.getStartLink()));
             }
 
             return () -> vehicles.stream().collect(ImmutableMap.toImmutableMap(DvrpVehicle::getId, v -> v));

@@ -11,11 +11,13 @@ import org.matsim.contrib.dvrp.optimizer.VrpOptimizer;
 import org.matsim.contrib.dvrp.passenger.PassengerEngine;
 import org.matsim.contrib.dvrp.run.AbstractDvrpModeQSimModule;
 import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
+import org.matsim.contrib.dvrp.run.DvrpMode;
 import org.matsim.contrib.dvrp.run.DvrpModes;
 import org.matsim.contrib.dvrp.vrpagent.VrpAgentLogic.DynActionCreator;
 import org.matsim.contrib.dvrp.vrpagent.VrpLegFactory;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.mobsim.qsim.QSim;
+import org.matsim.core.modal.ModalAnnotationCreator;
 
 import com.google.inject.Singleton;
 
@@ -23,6 +25,8 @@ public class AmodeusDrtQSimModeModule extends AbstractDvrpModeQSimModule {
     public AmodeusDrtQSimModeModule(String mode) {
         super(mode);
     }
+
+    private final ModalAnnotationCreator<DvrpMode> modalAnnotationCreator = DvrpModes::mode;
 
     @Override
     protected void configureQSim() {
@@ -38,7 +42,8 @@ public class AmodeusDrtQSimModeModule extends AbstractDvrpModeQSimModule {
             AmodeusModeConfig operatorConfig = getter.getModal(AmodeusModeConfig.class);
             String dispatcherName = operatorConfig.getDispatcherConfig().getType();
 
-            AmodeusDispatcher dispatcher = getter.get(DispatcherRegistry.class).get(dispatcherName).createDispatcher(getter);
+            AmodeusDispatcher dispatcher = getter.get(DispatcherRegistry.class).get(dispatcherName)
+                    .createDispatcher(getter);
 
             for (DvrpVehicle vehicle : getter.getModal(Fleet.class).getVehicles().values()) {
                 dispatcher.addVehicle(vehicle);
@@ -59,14 +64,17 @@ public class AmodeusDrtQSimModeModule extends AbstractDvrpModeQSimModule {
             AmodeusOptimizer delegate = getter.getModal(AmodeusOptimizer.class);
             return new AmodeusDrtOptimizer(delegate);
         })).in(Singleton.class);
-        bindModal(VrpOptimizer.class).to(DvrpModes.key(AmodeusDrtOptimizer.class, getMode())).in(Singleton.class);
+
+        bindModal(VrpOptimizer.class).to(modalAnnotationCreator.key(AmodeusDrtOptimizer.class, getMode()))
+                .in(Singleton.class);
 
         bindModal(VrpLegFactory.class).toProvider(modalProvider(getter -> {
             AmodeusOptimizer optimizer = getter.getModal(AmodeusOptimizer.class);
             QSim qsim = getter.get(QSim.class);
             DvrpConfigGroup dvrpConfig = getter.get(DvrpConfigGroup.class);
 
-            return vehicle -> VrpLegFactory.createWithOnlineTracker(dvrpConfig.getMobsimMode(), vehicle, optimizer, qsim.getSimTimer());
+            return vehicle -> VrpLegFactory.createWithOnlineTracker(dvrpConfig.getMobsimMode(), vehicle, optimizer,
+                    qsim.getSimTimer());
         })).in(Singleton.class);
     }
 }

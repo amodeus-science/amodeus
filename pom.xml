@@ -1,10 +1,8 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>amodeus</groupId>
 	<artifactId>amodeus</artifactId>
-	<version>2.1.1</version>
+	<version>2.2.0</version>
 
 	<properties>
 		<maven.compiler.source>11</maven.compiler.source>
@@ -12,7 +10,7 @@
 		<skipTests>false</skipTests>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<github.global.server>github</github.global.server>
-		<matsim.version>13.0-2021w08-SNAPSHOT</matsim.version>
+		<matsim.version>14.0</matsim.version>
 	</properties>
 
 	<dependencies>
@@ -37,16 +35,13 @@
 			<version>0.8.4</version>
 		</dependency>
 		<dependency>
+			<!-- bumping to 0.7.5 breaks some tests -->
 			<groupId>de.lmu.ifi.dbs.elki</groupId>
 			<artifactId>elki</artifactId>
 			<version>0.7.1</version>
 		</dependency>
 		<dependency>
-			<groupId>de.xypron.linopt</groupId>
-			<artifactId>linopt</artifactId>
-			<version>1.10</version>
-		</dependency>
-		<dependency><!-- necessary to test scenarioPreparer -->
+			<!-- necessary to test scenarioPreparer -->
 			<groupId>org.gnu.glpk</groupId>
 			<artifactId>glpk-java</artifactId>
 			<version>1.12.0</version>
@@ -54,19 +49,27 @@
 		<dependency>
 			<groupId>io.humble</groupId>
 			<artifactId>humble-video-all</artifactId>
-			<version>0.2.1</version>
+			<version>0.3.0</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.13.1</version>
+			<version>4.13.2</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<!-- for some reason I can't bump this past 2.7. Will need to investgiate. -->
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.6</version>
+			<version>2.7</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.jdom/jdom2 -->
+		<dependency>
+			<groupId>org.jdom</groupId>
+			<artifactId>jdom2</artifactId>
+			<version>2.0.6.1</version>
+		</dependency>
+
 	</dependencies>
 
 	<repositories>
@@ -77,7 +80,7 @@
 		<repository>
 			<id>XypronRelease</id>
 			<name>Xypron Release</name>
-			<url>http://rsync.xypron.de/repository</url>
+			<url>https://www.xypron.de/repository/</url>
 			<layout>default</layout>
 		</repository>
 		<repository>
@@ -86,16 +89,9 @@
 			<url>https://repo.osgeo.org/repository/release/</url>
 		</repository>
 		<repository>
-			<id>matsim-snapshot</id>
-			<url>https://oss.jfrog.org/libs-snapshot</url>
-		</repository>
-		<repository>
-			<id>matsim-release</id>
-			<url>https://dl.bintray.com/matsim/matsim</url>
-		</repository>
-		<repository>
-			<id>ch.sbb</id>
-			<url>https://schweizerischebundesbahnen.bintray.com/simba.mvn</url>
+			<id>matsim</id>
+			<name>MATSim Maven repository</name>
+			<url>https://repo.matsim.org/repository/matsim/</url>
 		</repository>
 	</repositories>
 
@@ -128,8 +124,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.10.4</version>
-				<configuration>
-				</configuration>
+				<configuration></configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-deploy-plugin</artifactId>

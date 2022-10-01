@@ -14,7 +14,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
-import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
+import org.matsim.core.modal.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.router.util.TravelTime;
@@ -38,9 +38,12 @@ import amodeus.amodeus.util.matsim.SafeConfig;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-/** Implementation of the "+1 method" presented in
+/**
+ * Implementation of the "+1 method" presented in
  * Ruch, C., Gächter, J., Hakenberg, J. and Frazzoli, E., 2019.
- * The +1 Method: Model-Free Adaptive Repositioning Policies for Robotic Multi-Agent Systems. */
+ * The +1 Method: Model-Free Adaptive Repositioning Policies for Robotic
+ * Multi-Agent Systems.
+ */
 public class ModelFreeAdaptiveRepositioning extends RebalancingDispatcher {
     private final Network network;
     private final BipartiteMatcher assignmentMatcher;
@@ -58,7 +61,8 @@ public class ModelFreeAdaptiveRepositioning extends RebalancingDispatcher {
     private ModelFreeAdaptiveRepositioning(Network network, Config config, AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, AmodeusRouter router, EventsManager eventsManager, //
             MatsimAmodeusDatabase db, RebalancingStrategy rebalancingStrategy) {
-        super(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy, RoboTaxiUsageType.SINGLEUSED);
+        super(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy,
+                RoboTaxiUsageType.SINGLEUSED);
         this.network = network;
         DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(30);
@@ -99,13 +103,18 @@ public class ModelFreeAdaptiveRepositioning extends RebalancingDispatcher {
         if (round_now % rebalancingPeriod == 0) {
             /** step 2, perform rebalancing on last known request locations */
             Collection<Link> rebalanceLinks = getLastRebalanceLocations(getDivertableRoboTaxis().size());
-            Map<RoboTaxi, Link> rebalanceMatching = rebalanceMatcher.matchLink(getDivertableRoboTaxis(), rebalanceLinks);
+            Map<RoboTaxi, Link> rebalanceMatching = rebalanceMatcher.matchLink(getDivertableRoboTaxis(),
+                    rebalanceLinks);
             rebalanceMatching.forEach(this::setRoboTaxiRebalance);
 
-            /** stop vehicles which are still divertable and driving to have only one rebalance vehicles
-             * going to a request */
-            getDivertableRoboTaxis().stream().filter(rt -> rt.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE)).forEach(rt -> //
-            setRoboTaxiRebalance(rt, rt.getDivertableLocation()));
+            /**
+             * stop vehicles which are still divertable and driving to have only one
+             * rebalance vehicles
+             * going to a request
+             */
+            getDivertableRoboTaxis().stream().filter(rt -> rt.getStatus().equals(RoboTaxiStatus.REBALANCEDRIVE))
+                    .forEach(rt -> //
+                    setRoboTaxiRebalance(rt, rt.getDivertableLocation()));
         }
     }
 
@@ -125,16 +134,16 @@ public class ModelFreeAdaptiveRepositioning extends RebalancingDispatcher {
     public static class Factory implements AVDispatcherFactory {
         @Override
         public AmodeusDispatcher createDispatcher(InstanceGetter inject) {
-            Config config = inject.get(Config.class);
-            MatsimAmodeusDatabase db = inject.get(MatsimAmodeusDatabase.class);
-            EventsManager eventsManager = inject.get(EventsManager.class);
+            Config config = (Config) inject.get(Config.class);
+            MatsimAmodeusDatabase db = (MatsimAmodeusDatabase) inject.get(MatsimAmodeusDatabase.class);
+            EventsManager eventsManager = (EventsManager) inject.get(EventsManager.class);
 
-            AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
-            Network network = inject.getModal(Network.class);
-            AmodeusRouter router = inject.getModal(AmodeusRouter.class);
-            TravelTime travelTime = inject.getModal(TravelTime.class);
-            RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
-            
+            AmodeusModeConfig operatorConfig = (AmodeusModeConfig) inject.getModal(AmodeusModeConfig.class);
+            Network network = (Network) inject.getModal(Network.class);
+            AmodeusRouter router = (AmodeusRouter) inject.getModal(AmodeusRouter.class);
+            TravelTime travelTime = (TravelTime) inject.getModal(TravelTime.class);
+            RebalancingStrategy rebalancingStrategy = (RebalancingStrategy) inject.getModal(RebalancingStrategy.class);
+
             return new ModelFreeAdaptiveRepositioning( //
                     network, config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy);
         }

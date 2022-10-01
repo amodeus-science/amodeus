@@ -10,7 +10,8 @@ import org.matsim.api.core.v01.events.handler.PersonArrivalEventHandler;
 import org.matsim.api.core.v01.events.handler.PersonDepartureEventHandler;
 import org.matsim.core.controler.AbstractModule;
 
-public class TestScenarioAnalyzer extends AbstractModule implements PersonDepartureEventHandler, PersonArrivalEventHandler, ActivityStartEventHandler {
+public class TestScenarioAnalyzer extends AbstractModule
+        implements PersonDepartureEventHandler, PersonArrivalEventHandler, ActivityStartEventHandler {
     public long numberOfDepartures;
     public long numberOfArrivals;
     public long numberOfInteractionActivities;

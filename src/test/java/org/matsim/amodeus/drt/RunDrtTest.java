@@ -20,7 +20,7 @@ import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
-import org.matsim.contrib.drt.optimizer.insertion.ExtensiveInsertionSearchParams;
+import org.matsim.contrib.drt.optimizer.insertion.extensive.ExtensiveInsertionSearchParams;
 import org.matsim.contrib.drt.routing.DrtRoute;
 import org.matsim.contrib.drt.routing.DrtRouteFactory;
 import org.matsim.contrib.drt.run.DrtConfigGroup;
@@ -64,11 +64,13 @@ public class RunDrtTest {
 
     @Test
     public void testAmodeusDrt() {
-        Config config = ConfigUtils.createConfig(new MultiModeDrtConfigGroup(), new DvrpConfigGroup(), new AmodeusConfigGroup());
+        Config config = ConfigUtils.createConfig(new MultiModeDrtConfigGroup(), new DvrpConfigGroup(),
+                new AmodeusConfigGroup());
         Scenario scenario = TestScenarioGenerator.generateWithAVLegs(config);
         run(config, scenario, true);
 
-        // Currently, Amodeus does not know where to put the auto-generated ScenarioOptions file.
+        // Currently, Amodeus does not know where to put the auto-generated
+        // ScenarioOptions file.
         // We can make this a config option for AmodeusConfigGroup.
         FileUtils.deleteQuietly(new File("AmodeusOptions.properties"));
     }
@@ -115,7 +117,8 @@ public class RunDrtTest {
         dvrpConfig.setTravelTimeEstimationBeta(900);
 
         // SCENARIO PART
-        scenario.getPopulation().getFactory().getRouteFactories().setRouteFactory(DrtRoute.class, new DrtRouteFactory());
+        scenario.getPopulation().getFactory().getRouteFactories().setRouteFactory(DrtRoute.class,
+                new DrtRouteFactory());
 
         // CONTROLLER PART
         Controler controller = new Controler(scenario);
@@ -128,13 +131,17 @@ public class RunDrtTest {
         // Here we start overriding things of DRT with Amodeus
         if (useAmodeus) {
 
-            // This is a per-mode config, which usually is contained in a AmodeusConfigGroup,
-            // here we only use it to set up a small portion of Amodeus (the dispatching part),
+            // This is a per-mode config, which usually is contained in a
+            // AmodeusConfigGroup,
+            // here we only use it to set up a small portion of Amodeus (the dispatching
+            // part),
             // and not scoring, waiting times, etc.
             AmodeusModeConfig amodeusModeConfig = new AmodeusModeConfig(drtModeConfig.getMode());
 
-            // We can choose the dispatcher and set additional options. Note that some dispatchers
-            // rely heavily on GLPK. You need to install it and then tell JAVA where to find it
+            // We can choose the dispatcher and set additional options. Note that some
+            // dispatchers
+            // rely heavily on GLPK. You need to install it and then tell JAVA where to find
+            // it
             // via -Djava.library.path=/path/to/glpk/lib/jni on the command line.
             amodeusModeConfig.getDispatcherConfig().setType("FeedforwardFluidicRebalancingPolicy");
 
@@ -144,19 +151,24 @@ public class RunDrtTest {
             // Disable Amodeus-specific output (e.g., for the viewer)
             amodeusModeConfig.getDispatcherConfig().setPublishPeriod(0);
 
-            // Path where to generate or read a VirtualNetwork and TravelData for rebalancing.
+            // Path where to generate or read a VirtualNetwork and TravelData for
+            // rebalancing.
             // Note that not all dispatchers need this.
-            amodeusModeConfig.getDispatcherConfig().setVirtualNetworkPath(new File("test_data/virtualNetwork").getAbsolutePath());
-            amodeusModeConfig.getDispatcherConfig().setTravelDataPath(new File("test_data/travelData").getAbsolutePath());
+            amodeusModeConfig.getDispatcherConfig()
+                    .setVirtualNetworkPath(new File("test_data/virtualNetwork").getAbsolutePath());
+            amodeusModeConfig.getDispatcherConfig()
+                    .setTravelDataPath(new File("test_data/travelData").getAbsolutePath());
 
             // Add a subset of Amodeus modules which usually would be added automatically
             // in the upper-level AmodeusModule.
             controller.addOverridingModule(new VirtualNetworkModeModule(amodeusModeConfig));
             controller.addOverridingModule(new AmodeusModule());
 
-            // Add overriding modules for the Drt <-> Amodeus integration, which override some
+            // Add overriding modules for the Drt <-> Amodeus integration, which override
+            // some
             // components of DRT. Later on, we would only override DrtOptimizer, but we are
-            // not there yet, because Amodeus internally still works with AmodeusStayTask, etc.
+            // not there yet, because Amodeus internally still works with AmodeusStayTask,
+            // etc.
             // and does not understand DrtStayTask, etc.
             controller.addOverridingModule(new AmodeusDrtModule());
             AmodeusDrtModule.overrideDispatchers(controller, config);
@@ -168,7 +180,8 @@ public class RunDrtTest {
     static public void createFleet(String path, int numberOfVehicles, Network network) {
         Random random = new Random(0);
 
-        List<Link> links = network.getLinks().values().stream().filter(link -> link.getAllowedModes().contains("car")).collect(Collectors.toList());
+        List<Link> links = network.getLinks().values().stream().filter(link -> link.getAllowedModes().contains("car"))
+                .collect(Collectors.toList());
 
         new FleetWriter(IntStream.range(0, 100).mapToObj(i -> {
             return ImmutableDvrpVehicleSpecification.newBuilder() //

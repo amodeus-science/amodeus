@@ -15,7 +15,7 @@ import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
-import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
+import org.matsim.core.modal.ModalProviders.InstanceGetter;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.network.NetworkUtils;
@@ -37,18 +37,27 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.opt.Pi;
 
-/** this is a first Shared Dispatcher.
+/**
+ * this is a first Shared Dispatcher.
  * 
- * It extends the {@link DemandSupplyBalancingDispatcher}. At each pickup, it is checked if around this Robotaxi there exist other
- * open requests with the same direction. Those are then picked up. */
+ * It extends the {@link DemandSupplyBalancingDispatcher}. At each pickup, it is
+ * checked if around this Robotaxi there exist other
+ * open requests with the same direction. Those are then picked up.
+ */
 public class ExtDemandSupplyBeamSharing extends RebalancingDispatcher {
     private final int dispatchPeriod;
 
     /** ride sharing parameters */
-    /** the sharing period says every how many seconds the dispatcher should check if new pickups occurred */
+    /**
+     * the sharing period says every how many seconds the dispatcher should check if
+     * new pickups occurred
+     */
     private final int sharingPeriod; // [s]
     private final BeamExtensionForSharing beamExtensionForSharing;
-    /** the maximal angle between the two directions which is allowed that sharing occurs */
+    /**
+     * the maximal angle between the two directions which is allowed that sharing
+     * occurs
+     */
 
     /** data structures are used to enable fast "contains" searching */
     private final TreeMaintainer<PassengerRequest> requestMaintainer;
@@ -58,13 +67,16 @@ public class ExtDemandSupplyBeamSharing extends RebalancingDispatcher {
             Config config, AmodeusModeConfig operatorConfig, //
             TravelTime travelTime, AmodeusRouter router, EventsManager eventsManager, //
             MatsimAmodeusDatabase db, RebalancingStrategy rebalancingStrategy) {
-        super(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy, RoboTaxiUsageType.SHARED);
+        super(config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy,
+                RoboTaxiUsageType.SHARED);
         DispatcherConfigWrapper dispatcherConfig = DispatcherConfigWrapper.wrap(operatorConfig.getDispatcherConfig());
         dispatchPeriod = dispatcherConfig.getDispatchPeriod(60);
         SafeConfig safeConfig = SafeConfig.wrap(operatorConfig.getDispatcherConfig());
-        sharingPeriod = safeConfig.getInteger("sharingPeriod", 10); // makes sense to choose this value similar to the pickup duration
+        sharingPeriod = safeConfig.getInteger("sharingPeriod", 10); // makes sense to choose this value similar to the
+                                                                    // pickup duration
         double rMax = safeConfig.getDouble("rMax", 1000.0);
-        double phiMax = Pi.in(100).multiply(RealScalar.of(safeConfig.getDouble("phiMaxDeg", 5.0) / 180.0)).number().doubleValue();
+        double phiMax = Pi.in(100).multiply(RealScalar.of(safeConfig.getDouble("phiMaxDeg", 5.0) / 180.0)).number()
+                .doubleValue();
         beamExtensionForSharing = new BeamExtensionForSharing(rMax, phiMax);
         double[] networkBounds = NetworkUtils.getBoundingBox(network.getNodes().values());
         this.requestMaintainer = new TreeMaintainer<>(networkBounds, this::getLocation);
@@ -106,7 +118,10 @@ public class ExtDemandSupplyBeamSharing extends RebalancingDispatcher {
                         }
                     }
             }
-            /** Delete the not staying vehicles from the tree as they might move to next link and then they have to be updated in the Quad Tree */
+            /**
+             * Delete the not staying vehicles from the tree as they might move to next link
+             * and then they have to be updated in the Quad Tree
+             */
 
             Collection<RoboTaxi> unassignedRoboTaxisNow = new HashSet<>(unassignedRoboTaxis.getValues());
 
@@ -116,26 +131,37 @@ public class ExtDemandSupplyBeamSharing extends RebalancingDispatcher {
         }
 
         // ADDITIONAL SHARING POSSIBILITY AT EACH PICKUP
-        /** Sharing idea: if a robotaxi Picks up a customer check if other open request are close with similar direction and pick them up. */
+        /**
+         * Sharing idea: if a robotaxi Picks up a customer check if other open request
+         * are close with similar direction and pick them up.
+         */
         if (round_now % sharingPeriod == 0) {
-            Map<PassengerRequest, RoboTaxi> addedRequests = beamExtensionForSharing.findAssignementAndExecute(getRoboTaxis(), getPassengerRequests(), this);
+            Map<PassengerRequest, RoboTaxi> addedRequests = beamExtensionForSharing
+                    .findAssignementAndExecute(getRoboTaxis(), getPassengerRequests(), this);
             for (Entry<PassengerRequest, RoboTaxi> entry : addedRequests.entrySet()) {
                 GlobalAssert.that(!unassignedRoboTaxis.contains(entry.getValue()));
-                /** a avRequest is not contained in the requestMaintainer if the request was already assigned before. in that case a removal is not needed */
+                /**
+                 * a avRequest is not contained in the requestMaintainer if the request was
+                 * already assigned before. in that case a removal is not needed
+                 */
                 if (requestMaintainer.contains(entry.getKey()))
                     requestMaintainer.remove(entry.getKey());
             }
         }
     }
 
-    /** @param request
-     * @return {@link Coord} with {@link PassengerRequest} location */
+    /**
+     * @param request
+     * @return {@link Coord} with {@link PassengerRequest} location
+     */
     /* package */ Tensor getLocation(PassengerRequest request) {
         return TensorCoords.toTensor(request.getFromLink().getFromNode().getCoord());
     }
 
-    /** @param roboTaxi
-     * @return {@link Coord} with {@link RoboTaxi} location */
+    /**
+     * @param roboTaxi
+     * @return {@link Coord} with {@link RoboTaxi} location
+     */
     /* package */ Tensor getRoboTaxiLoc(RoboTaxi roboTaxi) {
         return TensorCoords.toTensor(roboTaxi.getDivertableLocation().getCoord());
     }
@@ -143,18 +169,19 @@ public class ExtDemandSupplyBeamSharing extends RebalancingDispatcher {
     public static class Factory implements AVDispatcherFactory {
         @Override
         public AmodeusDispatcher createDispatcher(InstanceGetter inject) {
-            Config config = inject.get(Config.class);
-            MatsimAmodeusDatabase db = inject.get(MatsimAmodeusDatabase.class);
-            EventsManager eventsManager = inject.get(EventsManager.class);
+            Config config = (Config) inject.get(Config.class);
+            MatsimAmodeusDatabase db = (MatsimAmodeusDatabase) inject.get(MatsimAmodeusDatabase.class);
+            EventsManager eventsManager = (EventsManager) inject.get(EventsManager.class);
 
-            AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
-            Network network = inject.getModal(Network.class);
-            AmodeusRouter router = inject.getModal(AmodeusRouter.class);
-            TravelTime travelTime = inject.getModal(TravelTime.class);
+            AmodeusModeConfig operatorConfig = (AmodeusModeConfig) inject.getModal(AmodeusModeConfig.class);
+            Network network = (Network) inject.getModal(Network.class);
+            AmodeusRouter router = (AmodeusRouter) inject.getModal(AmodeusRouter.class);
+            TravelTime travelTime = (TravelTime) inject.getModal(TravelTime.class);
 
-            RebalancingStrategy rebalancingStrategy = inject.getModal(RebalancingStrategy.class);
+            RebalancingStrategy rebalancingStrategy = (RebalancingStrategy) inject.getModal(RebalancingStrategy.class);
 
-            return new ExtDemandSupplyBeamSharing(network, config, operatorConfig, travelTime, router, eventsManager, db, rebalancingStrategy);
+            return new ExtDemandSupplyBeamSharing(network, config, operatorConfig, travelTime, router, eventsManager,
+                    db, rebalancingStrategy);
         }
     }
 }

@@ -21,7 +21,7 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.drt.schedule.DrtStayTask;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.passenger.PassengerRequest;
-import org.matsim.contrib.dvrp.run.ModalProviders.InstanceGetter;
+import org.matsim.core.modal.ModalProviders.InstanceGetter;
 import org.matsim.contrib.dvrp.schedule.Task;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.network.NetworkUtils;
@@ -56,7 +56,8 @@ public class MultiODHeuristic implements AmodeusDispatcher {
     final private AggregateRideAppender appender;
     final private FactorTravelTimeEstimator estimator;
 
-    public MultiODHeuristic(String mode, EventsManager eventsManager, Network network, AggregateRideAppender appender, FactorTravelTimeEstimator estimator,
+    public MultiODHeuristic(String mode, EventsManager eventsManager, Network network, AggregateRideAppender appender,
+            FactorTravelTimeEstimator estimator,
             double replanningInterval, long numberOfSeats) {
         this.mode = mode;
         this.eventsManager = eventsManager;
@@ -89,7 +90,8 @@ public class MultiODHeuristic implements AmodeusDispatcher {
     }
 
     private void reoptimize(double now) {
-        SingleHeuristicDispatcher.HeuristicMode updatedMode = availableVehicles.size() > pendingRequests.size() ? SingleHeuristicDispatcher.HeuristicMode.OVERSUPPLY
+        SingleHeuristicDispatcher.HeuristicMode updatedMode = availableVehicles.size() > pendingRequests.size()
+                ? SingleHeuristicDispatcher.HeuristicMode.OVERSUPPLY
                 : SingleHeuristicDispatcher.HeuristicMode.UNDERSUPPLY;
 
         if (!updatedMode.equals(dispatcherMode)) {
@@ -102,14 +104,14 @@ public class MultiODHeuristic implements AmodeusDispatcher {
             DvrpVehicle vehicle = null;
 
             switch (dispatcherMode) {
-            case OVERSUPPLY:
-                request = findRequest();
-                vehicle = findClosestVehicle(request.getMasterRequest().getFromLink());
-                break;
-            case UNDERSUPPLY:
-                vehicle = findVehicle();
-                request = findClosestRequest(vehicleLinks.get(vehicle));
-                break;
+                case OVERSUPPLY:
+                    request = findRequest();
+                    vehicle = findClosestVehicle(request.getMasterRequest().getFromLink());
+                    break;
+                case UNDERSUPPLY:
+                    vehicle = findVehicle();
+                    request = findClosestRequest(vehicleLinks.get(vehicle));
+                    break;
             }
 
             removeRequest(request);
@@ -224,22 +226,26 @@ public class MultiODHeuristic implements AmodeusDispatcher {
     static public class Factory implements AVDispatcherFactory {
         @Override
         public AmodeusDispatcher createDispatcher(InstanceGetter inject) {
-            EventsManager eventsManager = inject.get(EventsManager.class);
-            TravelTime travelTime = inject.getModal(TravelTime.class);
-            AmodeusModeConfig operatorConfig = inject.getModal(AmodeusModeConfig.class);
-            Network network = inject.getModal(Network.class);
-            AmodeusRouter parallelRouter = inject.getModal(AmodeusRouter.class);
+            EventsManager eventsManager = (EventsManager) inject.get(EventsManager.class);
+            TravelTime travelTime = (TravelTime) inject.getModal(TravelTime.class);
+            AmodeusModeConfig operatorConfig = (AmodeusModeConfig) inject.getModal(AmodeusModeConfig.class);
+            Network network = (Network) inject.getModal(Network.class);
+            AmodeusRouter parallelRouter = (AmodeusRouter) inject.getModal(AmodeusRouter.class);
 
             DispatcherConfig dispatcherConfig = operatorConfig.getDispatcherConfig();
 
-            double replanningInterval = Double.parseDouble(dispatcherConfig.getParams().getOrDefault("replanningInterval", "10.0"));
-            double threshold = Double.parseDouble(dispatcherConfig.getParams().getOrDefault("maximumTimeRadius", "600.0"));
+            double replanningInterval = Double
+                    .parseDouble(dispatcherConfig.getParams().getOrDefault("replanningInterval", "10.0"));
+            double threshold = Double
+                    .parseDouble(dispatcherConfig.getParams().getOrDefault("maximumTimeRadius", "600.0"));
             long numberOfSeats = operatorConfig.getGeneratorConfig().getCapacity();
 
             FactorTravelTimeEstimator estimator = new FactorTravelTimeEstimator(threshold);
 
             return new MultiODHeuristic(operatorConfig.getMode(), eventsManager, network,
-                    new ParallelAggregateRideAppender(operatorConfig.getTimingConfig(), parallelRouter, travelTime, estimator), estimator, replanningInterval, numberOfSeats);
+                    new ParallelAggregateRideAppender(operatorConfig.getTimingConfig(), parallelRouter, travelTime,
+                            estimator),
+                    estimator, replanningInterval, numberOfSeats);
         }
     }
 }
